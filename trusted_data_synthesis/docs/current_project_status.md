@@ -631,10 +631,173 @@ mutations, and 18/18 static Gates reject or pass as required. The 320-file sourc
 23-file formal Root complete with zero empirical or model behavior. The current transition
 permits only a credential-free 192-Job Runner preflight over the exact v26.174 zero-Prompt Catalog.
 
+v26.175 has now consumed the external State-local higher-order presentation and source-parent
+hardening decision with zero Provider calls. It preserves and independently rebuilds all 23
+v26.174 files, reproduces the concrete three-rank attack at 396/396, both accepted top-level
+source-Catalog replacements, the 146-row single-Choice scope, and classifier-only Receipt
+mutation evidence, then blocks the stale `joint_neutral` Runner transition. Eighty State-local
+pre-outcome Schedules remove reference-first source normalization and bind 80 distinct rank
+codebooks directly into the new Packages. The old 23,918 univariate/pairwise rules and
+14,865,120 new three-variable affine/modular equality/min/max evaluations produce zero
+exact-stratum excess. The concrete attack falls to 116/396 under a three-Choice structural-
+baseline total of 132. A separate local Runtime audit enumerates all 772 declared Package Choice
+combinations, including 594 multi-nonreference rows, with zero Qualified-conjunction,
+dependency/Receipt, exact-Receipt, or Runtime-exception failures. All 120 Receipt mutations now
+execute through production `step()` and typed-reject with zero Retry, Tool-call delta, or target-
+Component advancement. Exact v26.174/v26.173/v26.171 top-level parents, 32 Development
+Packages, 80 Schedules, and 32 Runner rows reconstruct; 8/8 fully rehashed parent attacks, 20/20
+production mutations, and 23/23 static Gates close. The 324-file source closure and 19-file
+formal Root reproduce byte for byte. This remains registered structural and local Runtime
+evidence, not universal model-visible noninterference, Runner preflight, model behavior, or an
+empirical capability boundary. The current transition permits only a credential-free 192-Job
+state-local higher-order Step-Runtime Development Runner preflight.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.175 State-Local Higher-Order Presentation And Parent Hardening Decision
+
+Finance v26.175 consumed only
+`capability_observation_state_local_higher_order_presentation_and_source_catalog_parent_hardening_only`.
+The external review is bound at 22,189 bytes and SHA-256
+`b59abae33438607bfe7aef62ccfb0ee4c6daa70d11bfdc4583c4192c5ea205b6`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, GPU jobs, Mapper calls, State Assignment, frequency, Contribution,
+VTDO, Student visibility, training, release, and production counts are zero.
+
+All 23 v26.174 files remain immutable and independently rebuild byte for byte. Before replacement
+construction, the audit reproduces:
+
+```text
+three-Choice States / presentations                         66 / 396
+registered univariate/pairwise rule evaluations                 23,918
+registered excess strata                                             0
+(-2p + 2a - 3l) mod 6 unique-maximum recovery              396 / 396
+three-Choice structural-baseline total                            132
+legal single-Choice nonreference executions                       146
+full multicomponent audit in v26.174                             false
+accepted rehashed v26.173 / v26.171 Catalog parents            1 / 1
+classifier-only / production-step Receipt mutations          120 / 0
+```
+
+The stale v26.174 `joint_neutral` transition is blocked without Runner execution. Its historical
+23,918-rule result remains valid under the original registered univariate/pairwise scope and no
+v26.174 label changes.
+
+The replacement source order is canonical public Operation bytes followed by source Choice
+handle; it no longer normalizes the reference to source slot zero. One pre-outcome Schedule is
+frozen for every source Package artifact x target Component. Across 80 States, all 80 Schedule
+IDs and materialized rank codebooks are unique. Every source Choice occupies every latent rank
+exactly `6 / Choice count` times over six Replicas. Candidate, action-ID, Legend, display-handle,
+and all value-handle ranks receive State-local relabelings of that balanced latent rank. Schedule
+identity is a direct Development and Runner Package parent, and model-outcome inputs remain zero.
+
+The old univariate/pairwise audit is rerun, and a new exact-stratum Gate enumerates every visible
+rank-channel triple under coefficient set `{-3,-2,-1,1,2,3}`, moduli 2 through 6, and unique
+equality, minimum, and maximum selection. The exact result is:
+
+```text
+State strata / presentations                                 80 / 480
+univariate/pairwise evaluations                                 23,918
+three-variable affine evaluations                           14,865,120
+exact strata above their own structural baseline                     0
+predecessor / current concrete attack recovery              396 / 116
+current three-Choice structural-baseline total                     132
+maximum exact-stratum recovery                                        3
+unique State-local codebooks                                  80 / 80
+```
+
+The maximum three occurs only in a two-Choice stratum, whose structural baseline is three; every
+three-Choice stratum is bounded by two. The concrete current attack result 116/396 is below the
+pre-registered aggregate structural baseline 132. This is a registered rank-surface control, not
+a universal Prompt noninterference or model-unreadability claim.
+
+A new semantic-interaction audit enumerates every Package's complete declared Choice Cartesian
+product at one presentation Replica. It separately retains the frozen 146 single-Choice rows and
+adds all multi-Choice interactions:
+
+```text
+Packages / declared combinations                            32 / 772
+maximum combinations in one Package                               81
+fully accepted / typed-rejected combinations               592 / 180
+reference combinations / Qualified references                32 / 32
+single-Choice / multi-nonreference combinations             146 / 594
+multi-nonreference fully accepted                                  434
+Base / Mechanism / Qualified accepted combinations          72 / 88 / 72
+Qualified-conjunction mismatches                                     0
+dependency or exact-Receipt consistency failures                    0
+Runtime exceptions                                                   0
+```
+
+These are deterministic local design-combination results, not model outcomes, trajectory
+frequencies, or a natural-agent distribution. The separate six-Replica audit remains the
+presentation evidence.
+
+The Development Catalog now reconstructs exact v26.174, v26.173, and v26.171 top-level Catalog
+parents. It also reconstructs all 32 Development Packages and 80 Schedules. Runner Input has 32
+unique rows and validates each exact Development artifact, v26.174 artifact, source Package,
+public Task, topology, and Schedule tuple pairwise. Three fully rehashed top-level Catalog attacks
+and eight total fully rehashed parent attacks reject; accepted attacks are zero.
+
+For each of twenty Recovery Components, missing or changed Receipt ID, error, failed-selector
+hash, source Tool, and current Rule are injected after the real pre-Prompt failure. All 120
+mutations execute through production `step()`, return typed rejection, retain the exact failure
+event, and produce zero Retry, Recovery-success event, local Tool-call, target-Component advance,
+or next-Component advance. Typed precondition rejection is therefore a non-committing Runtime
+outcome rather than only a classifier inference.
+
+All 23 noncompensatory static Gates and twenty production destructive controls pass. The formal
+Root contains 19 files and 12,547,305 bytes; report SHA-256 is
+`32f379c309a04d1087f862f2ffe4a6a248462b48384fbb38a6d204630b81d31c`.
+The transitive source Root contains 324 files with zero unresolved imports. Focused Pytest passes
+7/7 in 286.70 seconds, including a complete empty-directory 19/19 byte rebuild. The six fast
+tests pass in 3.14 seconds and the adjacent v26.174 non-rebuild regression passes 6/6 in 12.76
+seconds. Focused PyCompile, Ruff, format, and no-import-follow Mypy pass. Package-wide Ruff passes;
+package-wide Mypy checks 553 source files and retains six diagnostics in four historical files,
+with zero v26.175 diagnostics.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_state_local_presentation_parent_hardening_report:235234180fc895baf7166070a4a74b4e45b77d0d79bc9fac965079e19f731773`;
+- transitive source Root:
+  `finance_v26_state_local_presentation_transitive_source_root:91d87757cf1bc2ac5c17b0648c0b83bea18971c54bfda61421ceb8314533efe3`;
+- State-Local Presentation Contract:
+  `state_local_higher_order_presentation_contract:9d71588943d10ad959beb9bcdd54df8e22b8585f80245087198e7d2ba15d5e6d`;
+- Interaction/Parent/Receipt Contract:
+  `interaction_parent_receipt_hardening_contract:c8c453a668e4dabc7d03c5fb1f960d42ef77fd820e4142d8bc66ecaa9810112b`;
+- Schedule Catalog:
+  `finance_v26_state_local_schedule_catalog:60aee3b8365b3e1a2820694cbfcedf86ebe6dada11ec0b264ad1d12c9b299bae`;
+- Development Catalog:
+  `finance_v26_state_local_presentation_development_catalog:646bbc38c16bd7690f884ad704c46173df5c5f2a245de2d82204f91736dfb589`;
+- zero-Prompt Runner Input Catalog:
+  `finance_v26_state_local_presentation_runner_input_catalog:cf9ba56916e8921618c935d859297bf63f1186802d4342a947ac0909749c7218`;
+- higher-order Presentation audit:
+  `finance_v26_higher_order_presentation_audit:5f9c8d9ae15fff620de291a0a29f9abaf9daf0eb01a53a8b260de9d034ead8b4`;
+- exhaustive trajectory audit:
+  `finance_v26_exhaustive_trajectory_interaction_audit:100df067863563b7c3a905019b4f640b6712fd365a671a071a15c43f31c62932`;
+- Runtime Receipt mutation audit:
+  `finance_v26_runtime_receipt_mutation_audit:ea3b93f195a8626d6a48843820fdaa902b34bc0066dd172a75a44cf91eed96c8`;
+- transition:
+  `finance_v26_state_local_presentation_transition:657049ff5cb1a5716639524bb700e78a496606830eccef144a565245885e7ca9`.
+
+The only permitted transition is:
+
+```text
+capability_observation_state_local_higher_order_state_bound_step_runtime_
+development_runner_preflight_only
+```
+
+A successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight from the exact v26.175 zero-Prompt
+Runner Input Catalog. Provider execution, Development outcomes, reference-Trace input,
+precommitted vectors, future Prompt materialization, complete baseline loading, Confirmation
+payload loading, source/task/Component/Candidate/Schedule change, presentation or validity
+tuning, threshold change, historical rewrite, Mapper, State, frequency, Contribution, VTDO,
+Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_175_state_local_higher_order_presentation_and_parent_hardening.md`.
 
 ## v26.174 Joint Presentation, Mechanism Semantics, Receipt, And Runner Parent Hardening Decision
 
@@ -746,6 +909,13 @@ source/task/Component/Candidate change, presentation or validity tuning, thresho
 historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
 release, and production remain forbidden. See
 `docs/finance_v26_174_joint_presentation_mechanism_receipt_and_runner_parent_hardening.md`.
+
+That transition has now been superseded without Runner execution by the external v26.175 audit.
+Every v26.174 byte and narrow registered result remains immutable, but its fixed cross-State
+schedule, concrete 396/396 three-rank shortcut, single-Choice-only interaction evidence,
+unvalidated top-level source Catalog fields, and classifier-only Receipt mutation evidence are
+not authorized for a Runner preflight. The current transition is the credential-free state-local
+higher-order Step-Runtime preflight recorded above.
 
 ## v26.173 Semantic Table, State Precondition, And Trace Parent Hardening Decision
 
