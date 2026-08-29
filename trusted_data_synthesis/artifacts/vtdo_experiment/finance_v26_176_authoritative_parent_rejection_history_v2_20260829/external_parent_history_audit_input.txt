@@ -1,0 +1,712 @@
+# v26.175 修订报告与源码联合审计
+
+## 一、最终判定
+
+v26.175 **真实完成了上一轮要求的主要修复**。尤其是：
+
+* v26.174 的三变量 \(396/396\) 呈现捷径被正式复现，而不是事后改写；
+* reference-first source normalization 已删除；
+* 80 个 State 使用 80 个不同的 State-local rank codebook；
+* 新增了 14,865,120 次三变量 affine exact-stratum 检验；
+* 旧三变量攻击由 \(396/396\) 降至 \(116/396\)，且没有单个 exact stratum 超过自身结构基线；
+* 本地语义审计由 146 条单组件替换扩展到 772 条完整声明 Choice 笛卡尔积；
+* 三个顶层 Source Catalog ID 得到直接检查；
+* 六类 Failure Receipt 变异共 120 次，已经真正进入生产 `step()`，并证明零 Retry、零 Tool 调用和零 Component 推进。  
+
+但联合审计最新源码后，发现当前第一个根本阻塞点已经从 Presentation 转移到了 **Parent Closure**：
+
+$$
+\boxed{
+\text{v26.175 的正式对象看起来构造正确，}
+\quad
+\text{但其独立 Validator 只重建了部分父字段。}
+}
+$$
+
+具体存在两个可完整重哈希绕过的父绑定面：
+
+1. Runner Package 中四个继承自 v26.174 的关键 Contract ID 被序列化，却没有被 Runner Validator 或 `_validate_catalog()` 核对；
+2. Development Package 的 `public_task_id` 等冗余源元数据没有重新锚定到 authoritative v26.171 source object。
+
+因此：
+
+| 审计对象                                                   | 判定                       |
+| ------------------------------------------------------ | ------------------------ |
+| v26.174 历史工件冻结与缺陷复现                                    | **通过**                   |
+| State-local rank presentation                          | **通过注册 rank-surface 口径** |
+| 旧 \(396/396\) 三-rank 捷径                                | **已关闭**                  |
+| 三变量 affine exact-stratum Gate                          | **通过**                   |
+| 完整声明 Choice 组合语义审计                                     | **通过，但仅 Replica 0**      |
+| 顶层 v26.174/v26.173/v26.171 Catalog ID                  | **通过**                   |
+| Production-step Receipt mutation                       | **通过**                   |
+| Development Package 全部 authoritative parents           | **不完整**                  |
+| Runner Package 全部 transition-critical Contract parents | **不完整**                  |
+| typed rejection 后的模型可见恢复轮次                             | **尚未实例化**                |
+| 当前 192-Job Runner preflight transition                 | **暂不授权**                 |
+
+这不是在声称正式 v26.175 JSON 中已经出现错误 ID。问题是：**当前 Parent Gate 无法独立排除一份字段被替换并整体重哈希的替代图**。按照现行 fail-closed 审计原则，Constructor 看起来正确不能替代独立 Parent Reconstruction。
+
+---
+
+# 二、源码与证据范围
+
+本轮提供了：
+
+* v26.175 修订报告；
+* 2026 年 8 月 29 日版 `Current Project Status`。
+
+通过已连接的 GitHub 仓库，审计了精确提交：
+
+```text
+repository:
+haoyueliuzhao/Data-Synthesis
+
+commit:
+f7126fecd98f85e4a4c9a632fa5d913d437bb615
+
+message:
+Implement v26.175 state-local presentation hardening
+```
+
+主要审计文件包括：
+
+```text
+core/task/
+  state_local_presentation_hardening.py
+
+experiments/vtdo_experiment/
+  phase1_v26_capability_state_local_presentation_runtime.py
+  phase1_v26_capability_state_local_presentation_parent_hardening.py
+  phase1_v26_capability_state_local_presentation_parent_hardening_models.py
+
+tests/
+  test_v26_capability_state_local_presentation_parent_hardening.py
+```
+
+本轮没有附带 v26.175 源码归档。因此，报告记录的聚焦 Pytest 7/7、空目录 19/19 字节一致重建、Ruff 和 Mypy 结果没有在当前容器中独立重跑；它们在本审计中属于报告记录，而源码结论来自对上述精确提交的直接检查。报告记录的正式 Root、测试和静态检查结果为：19 个文件、12,547,305 字节，聚焦 Pytest 7/7，包括 19/19 空目录重建。
+
+---
+
+# 三、上一轮 Presentation P0 已得到实质修复
+
+## 1. v26.174 缺陷被正确冻结和复现
+
+v26.175 没有把旧 23,918-rule Gate 重新标成失败，而是保留其原有限定口径，并在一个新的诊断对象中复现上一轮发现：
+
+```text
+three-Choice States                         66
+three-Choice presentations                 396
+old triple-rank recovery               396/396
+structural-baseline total                  132
+```
+
+同时，它记录 v26.174 只覆盖单变量、二变量和有限 value-vector 规则，未覆盖完整多组件组合，也没有执行 production-step Receipt mutation。
+
+这种处理符合历史工件不可重分类原则。
+
+---
+
+## 2. reference-first source normalization 已删除
+
+v26.175 不再把 reference 强制移动到 normalized source slot 0，而是按照：
+
+```text
+canonical public Operation bytes
+then source Choice handle
+```
+
+排序 source Choices。
+
+源码中的 `make_state_local_rank_schedule()` 与报告一致：先按公开 Operation 的 canonical bytes 和 source Choice handle 排序，再生成 State-local master rank 和各可见通道的 rank relabeling。
+
+这关闭了 v26.174 中“reference 先规范化为 source index 0，再通过全局固定 schedule 编码”的直接根因。
+
+---
+
+## 3. State-local latent-rank factorization 是一个真实结构修复
+
+每个：
+
+```text
+source Package artifact × target Component
+```
+
+拥有一个独立 Schedule。80 个 State 对应 80 个 Schedule 和 80 个不同 materialized codebook；六个 Replica 内，每个 Choice 占据每个 latent rank 恰好 \(6/K\) 次。
+
+Candidate position、action-ID rank、Legend position、display-handle rank 和每个 value-handle rank，均为同一个平衡 latent rank 的双射重标记。由此，对一个固定 State 而言，任何只依赖这些注册 rank 通道的固定选择函数，最多选中某个 latent-rank 类；reference 对每个类的占用恰好是结构基线。
+
+当前具体反例从：
+
+$$
+396/396
+$$
+
+下降到：
+
+$$
+116/396,
+$$
+
+低于三候选 State 总基线 \(132\)，而且所有三候选 exact stratum 都不超过 \(2/6\)。
+
+因此以下结论成立：
+
+$$
+\boxed{
+\text{v26.174 的具体三-rank 全恢复捷径已经关闭。}
+}
+$$
+
+但该结论仍应限定为：
+
+```text
+registered structural rank-surface control
+```
+
+而不是 universal Prompt noninterference。报告本身也正确保留了这一限制。
+
+---
+
+# 四、完整 Choice 组合审计得到实质扩展
+
+v26.175 不再把 146 条单 Choice 非 reference 替换称为完整非 reference trajectory surface，而是另行枚举每个 Package 的完整声明 Choice 笛卡尔积：
+
+```text
+Packages                                      32
+declared combinations                        772
+maximum per Package                           81
+fully accepted                               592
+typed rejected                               180
+single-nonreference                          146
+multi-nonreference                           594
+multi-nonreference fully accepted            434
+Base-valid                                    72
+Mechanism-qualified                           88
+Qualified-valid                               72
+```
+
+同时：
+
+```text
+Qualified conjunction mismatch                 0
+dependency/Receipt inconsistency                0
+exact Failure Receipt inconsistency             0
+Runtime exception                               0
+```
+
+
+
+源码确实对每个 Package 构造各 Component Choice 集的 `product(...)`，为每个组合创建新 Runtime，并执行到 typed rejection 或最终 `finalize()`。
+
+这修复了上一轮“一阶替换不能代表多组件交互面”的证据缺口。
+
+不过，该审计固定使用：
+
+```python
+replica_index=0
+```
+
+因此最准确的解释是：
+
+$$
+\boxed{
+\text{完整 source-Choice 组合语义面在 Replica 0 得到审计。}
+}
+$$
+
+它尚未独立执行：
+
+$$
+772 \times 6 = 4632
+$$
+
+个组合—Replica 对。报告对此已有明确披露，并将六 Replica presentation 与 source-Choice semantics 分开解释，所以这不是对当前报告的直接反证；但后继 Runner preflight 应覆盖全部 Replica，或提供单独的 display/source/runtime 等价性证明。
+
+---
+
+# 五、P0：Runner 的四个继承 Contract 父对象未被校验
+
+这是当前最直接的 Parent Closure 缺口。
+
+## 1. Runner Package 保存了这些字段
+
+`StateLocalRunnerInputPackage` 包含：
+
+```text
+mechanism_semantics_contract_id
+failure_receipt_contract_id
+step_runtime_contract_id
+sequential_estimand_contract_id
+```
+
+但其自身 Validator 只检查：
+
+* 不包含预物化 Prompt、Observation、Result 或 Trace；
+* `schedule_ids` 数量与拓扑数量一致；
+* Runner Package ID 的自哈希一致。
+
+Runner Catalog Validator 逐 Package 只要求以下三个当前 v26.175 父对象一致：
+
+```text
+presentation_contract_id
+interaction_parent_receipt_contract_id
+schedule_catalog_id
+```
+
+它没有比较上述四个继承 Contract。
+
+---
+
+## 2. `_validate_catalog()` 同样忽略这些字段
+
+源码中的 Runner pairwise 检查只比较：
+
+```text
+source_v174_package_artifact_id
+source_package_id
+public_task_id
+topological_component_keys
+schedule_ids
+```
+
+没有比较：
+
+```text
+mechanism_semantics_contract_id
+failure_receipt_contract_id
+step_runtime_contract_id
+sequential_estimand_contract_id
+```
+
+因此可以构造最小完整重哈希变异：
+
+```python
+changed_runner = _replace_runner_package_fields(
+    runner,
+    {
+        0: {
+            "failure_receipt_contract_id":
+                "forged:failure_receipt_contract"
+        }
+    },
+)
+```
+
+随后重新计算该 Runner Package ID 和 Runner Catalog ID。由于：
+
+* source Development artifact 未变；
+* source Package ID 未变；
+* public Task 未变；
+* topology 未变；
+* Schedule tuple 未变；
+  -三个 v26.175 当前 Contract 未变；
+
+当前两个 Validator 中都不存在拒绝这一变异的比较条件。
+
+同样适用于另外三个继承 Contract。
+
+这是一条由源码分支条件直接导出的静态接受路径。由于本轮没有本地源码归档，我没有在当前容器中实际执行该变异；但 Pydantic Validator 与 `_validate_catalog()` 的完整条件中均没有这些字段，接受结论不依赖概率或运行结果。
+
+---
+
+## 3. 正式 destructive audit 没有覆盖该攻击
+
+v26.175 正式记录的八个 Parent Attack 覆盖：
+
+-三个顶层 Source Catalog ID；
+
+* Runner source Development Catalog；
+* Development Package 的 v26.174 parent；
+* Development Package Schedule cross；
+* Runner source pair cross；
+* Runner Schedule cross。
+
+20 个 destructive controls 还覆盖 malformed rank、codebook reuse、旧攻击、Qualified conjunction、Receipt retry／advance 和 Runner duplicate 等，但没有任何：
+
+```text
+Runner failure_receipt_contract_id replacement
+Runner mechanism_semantics_contract_id replacement
+Runner step_runtime_contract_id replacement
+Runner sequential_estimand_contract_id replacement
+```
+
+正式 destructive audit 的 20 个 mutation 名称可以直接确认这一遗漏。
+
+因此：
+
+```text
+runner_package_reconstruction_match_count = 32
+```
+
+只能解释为**已检查字段的 32/32 匹配**，不能解释为完整 transition-critical parent reconstruction。
+
+---
+
+# 六、P0：Development Package 的 authoritative source metadata 也未完全重建
+
+## 1. `public_task_id` 是最小反例
+
+`StateLocalDevelopmentPackage` 保存：
+
+```text
+public_task_id
+```
+
+但是 Package 自身 Validator 没有要求该字段与六个保存的 Runtime Result 或任何 authoritative source object 一致。
+
+v26.175 `_validate_catalog()` 会使用 authoritative v26.171 source object 重新计算 `package_id`，但不会执行：
+
+```python
+package.public_task_id == source_package.public_task.task_id
+```
+
+Runner 端只检查：
+
+```python
+runner_package.public_task_id == development_package.public_task_id
+```
+
+也就是说，它比较的是两个可以一起被修改的保存对象，而不是 authoritative source。
+
+因此可构造：
+
+1. 修改一个 Development Package 的 `public_task_id`；
+2. 重新计算其 artifact ID、Group ID 和 Development Catalog ID；
+3. 修改对应 Runner Package 的 `public_task_id` 与 source Development artifact ID；
+4. 更新 Runner expected artifact set；
+5. 重新计算 Runner Package 和 Runner Catalog ID；
+6. 保留原 `package_id` 和原六个 Replica Results。
+
+当前 Validator 不会把修改后的 `public_task_id` 与 v26.171 source Task 直接比较。
+
+---
+
+## 2. v26.175 相比 v26.174 出现了验证强度回退
+
+v26.174 的 Validator 明确比较：
+
+```text
+source Package artifact
+source Package ID
+source group
+Finance Core
+capability family
+depth
+public Task
+topology
+reference path
+six authoritative Contracts
+```
+
+并对每个 Package 的六个 Replica Result 重新执行 exact-source Runtime replay，再与保存结果逐对象比较。
+
+v26.175 新 Validator：
+
+-重建 Schedule；
+-重算 Package ID；
+-检查部分源父对象；
+-检查部分 Runner 投影；
+
+但没有保留上述完整 Package metadata equality，也没有 fresh replay 六个保存的 Replica Results。
+
+这意味着报告所称：
+
+> reconstructs all 32 Development Packages
+
+应收窄为：
+
+```text
+reconstructs Package IDs, selected source links,
+Schedule parents, and registered Runner projections
+```
+
+而不能直接等价于：
+
+```text
+independently reconstructs every serialized
+Development Package and Runner parent field
+```
+
+---
+
+## 3. 四个继承 Development Contract 也存在同类风险
+
+`StateLocalDevelopmentCatalog` 和各 Development Package 还保存：
+
+```text
+mechanism_semantics_contract_id
+failure_receipt_contract_id
+step_runtime_contract_id
+sequential_estimand_contract_id
+```
+
+Catalog 模型只要求 Package 字段与 Catalog 顶层字段内部一致；`_validate_catalog()` 没有把这些顶层字段重新比较到 exact v26.174 predecessor Contract。
+
+因此，一次同时替换 Catalog 和全部 Package 中某个继承 Contract、重新物化其下游身份的完整重哈希变异，也不在当前八个 Parent Attack 中。
+
+### P0 结论
+
+$$
+\boxed{
+\text{当前问题不是正式工件已损坏，}
+}
+$$
+
+而是：
+
+$$
+\boxed{
+\text{Parent Closure Gate 不能独立证明正式工件的全部关键父字段来自权威源。}
+}
+$$
+
+在 fail-closed 证据链中，这已经足以阻止 Runner preflight transition。
+
+---
+
+# 七、P1：typed rejection Observation 尚未成为 reached public State 的父对象
+
+v26.175 在 Receipt 变异方面已经证明：
+
+```text
+production step executions           120
+typed rejections                     120
+Retry delta                            0
+Tool-call delta                        0
+Component advance                      0
+```
+
+
+
+但直接检查拒绝分支可以看到：
+
+1. Runtime 将 `action_state_precondition_rejected` 加入 `state.events`；
+2. 构造并返回一个 public Observation；
+3. 清除 `pending_prompt` 和 display/source mapping；
+4. 保持当前 Component 不变；
+5. **没有把该 Observation 写入 `state.observations`；**
+6. **没有把该 Acceptance 写入 `state.acceptances`。**
+
+下一次 `render_next_prompt()` 只从 dependency Components 的已保存 Observations 构造：
+
+```text
+prior_observations
+```
+
+同一 Component 刚发生的 typed rejection 不在其中。
+
+因此，对于一个正常、未篡改 Prompt 上的错误模型 Action，可能出现：
+
+```text
+Prompt P
+→ wrong Action
+→ typed rejection returned to Host
+→ same Component remains current
+→ Prompt P is rendered again
+```
+
+而模型可见 State 中没有内容寻址的同组件失败反馈。若模型输出具有确定性，它可能反复选择同一 Action。
+
+报告已经明确承认，本阶段没有执行随后 corrected model response，并将该恢复流程留给 Runner preflight。
+
+这可以留给后继，但后继必须正式冻结以下对象：
+
+```text
+typed rejection feedback parent
+recovery-turn prompt/envelope
+rejected action identity
+corrected-response attempt index
+recovery bound
+final rejection/recovery lineage
+```
+
+仅依赖 Host 内部 `state.events` 不足以证明模型收到了恢复信息。
+
+---
+
+# 八、State-local Schedule 仍是 reference-conditioned，而非完全 label-independent
+
+v26.175 的 source ordering 已经不再 reference-first，但报告和源码都显示，Schedule seed 仍绑定：
+
+```text
+reference_choice_handle
+```
+
+
+
+所以当前设计的准确描述应是：
+
+```text
+reference-conditioned
+pre-outcome
+State-local
+exact-rank-balanced presentation
+```
+
+而不是：
+
+```text
+reference-independent randomization
+```
+
+这一点当前不构成新的直接 P0，因为 latent-rank factorization 已经证明了注册 rank surface 的 exact-stratum 平衡，且没有找到超过基线的具体 rank 规则。
+
+但未来模型可见输入必须继续排除：
+
+```text
+Schedule ID
+Schedule seed
+collision nonce
+source Package artifact ID
+reference Choice handle
+reference path
+Replica metadata
+```
+
+否则，“Schedule 本身依赖 reference”可能在注册 rank 之外形成新的可逆父对象通道。
+
+---
+
+# 九、测试覆盖评价
+
+正式测试完整覆盖了报告中声明的主要计数：
+
+* 80 个独立 Schedule；
+* \(396\to116\) 的具体攻击；
+* 14,865,120 个三变量规则；
+* 772 条 Choice 组合；
+* 120 个 production-step Receipt mutation；
+  -八个 Parent Attack；
+* 20 个 destructive controls；
+* 23 个 Static Gate；
+* 19/19 空目录重建。
+
+但测试也继承了生产审计的注册范围：
+
+-只断言 Parent Attack 总数为 8；
+-只断言 destructive mutation 总数为 20；
+-不逐项要求 Runner 四个继承 Contract mutation 存在；
+-不包含 Development `public_task_id` authoritative cross-replacement；
+-不执行 typed rejection 后的 corrected second response；
+-不执行 772 个 Choice 组合的六 Replica 展开。
+
+所以“测试全部通过”与本次新发现并不矛盾：缺失对象没有进入测试分母。
+
+---
+
+# 十、科学证据边界
+
+v26.175 可以支持：
+
+$$
+\boxed{
+\text{注册 rank surface 上的 State-local 平衡呈现}
+}
+$$
+
+$$
+\boxed{
+\text{旧三-rank 具体捷径被关闭}
+}
+$$
+
+$$
+\boxed{
+\text{Replica 0 上完整声明 source-Choice 组合的本地语义审计}
+}
+$$
+
+$$
+\boxed{
+\text{Failure Receipt 变异在 production step 前 fail-closed}
+}
+$$
+
+但不能支持：
+
+-全部 Development/Runner 父字段已得到 independent authoritative reconstruction；
+
+* typed rejection 后的完整模型可见恢复交互已经实例化；
+  -所有 nonreference Choice 在六 Replica 中均经过 Runtime 语义执行；
+* universal Prompt noninterference；
+  -模型能力或经验深度边界；
+  -频率、State Mapping、Contribution、VTDO 或训练授权。
+
+报告和 Current Project Status 都将当前后继设为一个 192-Job credential-free Runner preflight。
+
+---
+
+# 十一、最终审计决策
+
+## 1. v26.175 历史工件
+
+$$
+\boxed{\text{保留并冻结}}
+$$
+
+它应作为以下真实修复的历史证据：
+
+* State-local latent-rank presentation；
+  -旧 \(396/396\) 三变量攻击的关闭；
+  -完整声明 Choice Cartesian interaction audit；
+  -三个顶层 Source Catalog ID 检查；
+* production-step Receipt mutation fail-closed。
+
+---
+
+## 2. 当前 transition
+
+当前 transition 为：
+
+```text
+capability_observation_state_local_higher_order_state_bound_step_runtime_
+development_runner_preflight_only
+```
+
+它要求后继严格保留 Failure Receipt、Step Runtime、Base／Mechanism／Qualified、sequential estimand 和 Schedule 等父对象。
+
+本次判定：
+
+$$
+\boxed{\text{暂不消费}}
+$$
+
+因为当前 Parent Closure Validator 恰好没有完整检查其中四类被要求保留的继承 Contract，也没有完整重新锚定 Development Package 的 authoritative Task metadata。
+
+---
+
+## 3. 首个根本阻塞点
+
+$$
+\boxed{
+\text{authoritative Development / Runner parent reconstruction}
+}
+$$
+
+不再是 Presentation，也不是 Receipt mutation 本身。
+
+---
+
+## 4. 建议的唯一零调用后继
+
+```text
+capability_observation_authoritative_package_runner_parent_
+and_typed_rejection_history_hardening_only
+```
+
+该阶段只需要：
+
+1. 恢复 v26.174 级别的 exact Package metadata equality；
+2. 将四个继承 Contract 逐 Package 比较到 exact v26.174 authoritative parents；
+3. 从 source + Schedule fresh replay 全部六 Replica Result；
+4. 新增 Development `public_task_id` 和 Runner 四 Contract 的完整重哈希攻击；
+5. 将 typed rejection Observation 纳入下一模型可见恢复轮次的内容寻址父链；
+6. 加入 corrected second response、重复错误 Action 和 all-Replica nonreference controls；
+7. 保持 Provider、Development Job、Confirmation、Mapper、State、frequency、Contribution、VTDO、Student 和训练全部为零。
+
+修复并重新冻结这一层后，再进入 192-Job credential-free Runner preflight，证据链才是闭合的。
+
+## 审计附件
+
+* [v26.175 源码联合审计证据](sandbox:/mnt/data/v26_175_code_audit_evidence.md)
+* [v26.175 结构化诊断 JSON](sandbox:/mnt/data/v26_175_diagnostic.json)

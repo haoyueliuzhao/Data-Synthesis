@@ -652,10 +652,181 @@ evidence, not universal model-visible noninterference, Runner preflight, model b
 empirical capability boundary. The current transition permits only a credential-free 192-Job
 state-local higher-order Step-Runtime Development Runner preflight.
 
+v26.176 has now consumed the external authoritative Package/Runner parent and typed-rejection
+history hardening decision with zero Provider calls. It freezes and independently rebuilds all
+nineteen v26.175 files, then actually reproduces ten fully rehashed alternatives accepted by the
+old validator: four Runner inherited-Contract replacements, one cascaded Development public-Task
+replacement, four all-Package inherited-Contract replacements, and one saved Replica Result
+replacement. The replacement chain reconstructs 736 Development and 768 Runner metadata fields
+from exact v26.171/v26.173/v26.174/v26.175 source objects, checks 128/128 inherited Contract
+bindings on each surface, and freshly replays all 192 baseline Results with exact canonical-byte
+matches. All 44 new fully rehashed attacks reject. The complete 772 declared source-Choice
+combinations now execute in all six Replicas, for 4,632 local Runtime executions with zero
+semantic-outcome Replica mismatch. Across all twenty Recovery Components and six Replicas, 120
+wrong-then-corrected paths expose an exact content-addressed rejection parent and finish
+Qualified, while 120 wrong-then-repeated-wrong paths emit a typed terminal and permit no third
+Prompt. Hidden Schedule/source/reference parent exposure, Provider, Development Job, Mapper,
+State, and frequency counts are zero. The current transition permits only a credential-free
+192-Job Runner preflight over the exact v26.176 authoritative-parent-closed zero-Prompt Catalog.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.176 Authoritative Package/Runner Parent And Typed-Rejection History Decision
+
+Finance v26.176 consumed only
+`capability_observation_authoritative_package_runner_parent_and_typed_rejection_history_hardening_only`.
+The external review is bound at 22,178 bytes and SHA-256
+`a27241c83208eb0312a58508539321688e2c7385aaf9e7be6a675fa2cbb2ac42`. Credential lookup,
+Provider-client construction, Stage 1 and Stage 2 Provider calls, Development Jobs, sealed
+Confirmation payload access, GPU jobs, Mapper calls, State Assignment, frequency, Contribution,
+VTDO, Student visibility, training, release, and production counts are zero.
+
+All nineteen v26.175 files remain immutable and independently rebuild byte for byte. Before
+replacement construction, the audit executes and accepts under the frozen old validator:
+
+```text
+Runner inherited-Contract replacements                         4 / 4
+Development public_task_id cascades                            1 / 1
+all-Package inherited-Contract replacements                    4 / 4
+saved Replica Result replacements                              1 / 1
+accepted fully rehashed alternatives total                   10 / 10
+v26.175 complete-combination Replica count                         1
+persisted rejection-feedback / corrected-response rows          0 / 0
+```
+
+No v26.175 field is reclassified as wrong. These controls show only that the old validator could
+not exclude self-consistent alternatives. The stale v26.175 Runner transition is blocked without
+Manifest or Runner construction.
+
+The new Authoritative Parent Contract registers 23 Development and 24 Runner metadata fields.
+For each of 32 Packages it independently reconstructs the exact v26.175 execution Package and
+artifact; v26.174, v26.173, and v26.171 Package artifacts; source Package, Group, Finance Core,
+capability, depth, public Task, topological Components, reference-path hash, State-local
+Schedule tuple, and every Contract. The four inherited v26.174 Contracts are loaded from their
+separate exact files before Package comparison. The exact closure is:
+
+```text
+Development Packages / metadata fields                    32 / 736
+Development inherited-Contract bindings                  128 / 128
+fresh baseline Replica Result replays                     192 / 192
+fresh/saved Result canonical-byte matches                 192 / 192
+Runner Packages / metadata fields                          32 / 768
+Runner inherited-Contract bindings                        128 / 128
+Runner missing / duplicate / extra                      0 / 0 / 0
+```
+
+Fresh replay receives only the exact public source Task, Finance Core, Components, Schedule,
+Replica index, and production incremental Runtime. It reads no saved Result, complete baseline,
+reference Trace, precommitted Choice vector, future Prompt, or saved event list. The v26.175
+execution Package ID remains unchanged, while the new artifact and Runner identities bind the
+stricter parent and rejection-history Contracts.
+
+The replacement mutation denominator contains thirteen single-Package Development metadata
+attacks, eight all-Package Development Contract attacks, four source-Catalog attacks, one saved
+Result attack, nine Runner metadata attacks, eight all-Runner Contract attacks, and one duplicate
+Runner source attack. All 44 complete their registered downstream rehash or reject during typed
+rematerialization; all 44 are rejected and accepted attacks are zero. The exact required names
+include Development `public_task_id`, all four inherited Development Contracts, a saved Result,
+all four inherited Runner Contracts, and the Runner duplicate denominator.
+
+The complete 772 source-Choice Cartesian combinations are then run under every exact Replica:
+
+```text
+Packages / Replicas                                           32 / 6
+local Runtime executions                                       4,632
+reference / single-nonreference / multi-nonreference      192 / 876 / 3,564
+fully accepted / typed rejected                         3,552 / 1,080
+Base / Mechanism / Qualified                              432 / 528 / 432
+semantic-outcome Replica mismatches                                  0
+dependency or exact-Receipt failures                                 0
+display/source round-trip failures                                   0
+Qualified-conjunction mismatches                                    0
+Runtime exceptions                                                   0
+```
+
+Each exact `Package x source-Choice vector` has six presentation-specific execution identities
+and six hashes over the presentation-independent semantic outcome. All six semantic hashes match.
+This is deterministic local Runtime equivalence over the registered six-Replica design, not
+universal Prompt noninterference or model-behavior equivalence.
+
+The new Runtime persists each typed rejection Observation and Acceptance and creates a
+content-addressed public feedback parent. The feedback binds the rejected Action, displayed
+Choice, selected Operation hash, rejection code, Observation Receipt, Acceptance report,
+predecessor feedback, correction attempt, and exact one-attempt bound. The next Prompt includes
+that feedback in current-State facts, so its State token and Prompt hash bind the model-visible
+failure history without changing dependency `prior_observations`.
+
+Every one of the twenty Recovery Components runs in all six Replicas under two fresh branches:
+
+```text
+wrong -> visible feedback -> corrected response -> final Qualified       120 / 120
+wrong -> visible feedback -> repeated wrong -> typed terminal            120 / 120
+exact feedback-parented recovery Prompts                                 120 / 120
+later Prompt after typed terminal                                                 0
+rejection Retry / Tool-call / Component-advance deltas                     0 / 0 / 0
+hidden Schedule/source/reference parent exposures                                 0
+```
+
+The hidden-parent scan checks exact Schedule IDs and seeds, derivation/collision nonces, source
+Package artifacts, reference Choice handles, reference-path hashes, and Replica metadata on all
+120 corrected-response Prompts. The underlying v26.175 Schedule remains reference-conditioned,
+pre-outcome, State-local, and exact-rank-balanced; it is not relabeled reference-independent.
+
+All 28 noncompensatory Gates and all 44 production destructive controls pass. The formal Root
+contains 16 files and 17,627,887 bytes; report SHA-256 is
+`0dd7b440a93ba421d257bd6b160092f05911eac8836c06d1cc5e895f1f651ae7`. The transitive source
+Root contains 328 files with zero unresolved imports. Focused Pytest passes 7/7 in 472.78 seconds
+with a complete empty-directory 16/16 byte rebuild under warning-as-error. The adjacent
+v26.175-v26.176 non-rebuild regression passes 12/12 in 6.06 seconds. Focused PyCompile, Ruff,
+format, and no-import-follow Mypy pass. Package-wide Ruff passes. Package-wide Mypy checks 557
+source files, retains six diagnostics in four historical files, and has zero v26.176 diagnostics.
+A successful preliminary v1 Root remains immutable after package-wide Mypy found five local type
+diagnostics. The type-complete v2 changes only annotations, local mapping names, and
+implementation-bound Run/output identities. Fourteen of sixteen files are byte-identical; only
+the transitive source Root and top-level Report change. All scientific, protocol, Catalog, Audit,
+Static, and Transition identities remain exact. The v2 identities below are authoritative.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_authoritative_parent_history_hardening_report:16389dd50d9834b882df1b38ce212e113fc87e9b2e889b0de544af44636d0039`;
+- transitive source Root:
+  `finance_v26_authoritative_parent_history_transitive_source_root:12a251595b75b660e16f1ddd2a18d5d6b9f58be60c7ad6c091425df3e6a33b2c`;
+- Parent Contract:
+  `authoritative_package_runner_parent_contract:0530a85c3190f1090ad8ad3521bd62848765347d9f85a50c6975c5f258ba73c2`;
+- typed-rejection History Contract:
+  `typed_rejection_history_contract:dcc6dfa9a756d2714551be6ae878d6ee2aa5a02756614e890160ee3025074e0c`;
+- Development Catalog:
+  `finance_v26_authoritative_parent_history_development_catalog:bfd415fd1e4241fa43aa25d09259c0710eda5291e543c68ebf06aa5a1e779b6c`;
+- zero-Prompt Runner Input Catalog:
+  `finance_v26_authoritative_parent_history_runner_input_catalog:8a347f40584609867d9ee9de51b0d5e754c7c54a080df861458c2a642efee1dc`;
+- Parent Reconstruction Audit:
+  `finance_v26_authoritative_parent_reconstruction_audit:e78a544bc66c6ae929bf7ee10c1e843928ceab6d834a1c684d67c07093d2af9b`;
+- all-Replica audit:
+  `finance_v26_all_replica_trajectory_audit:9a113a7bdf0192bfc6a6dbc8fba3f9b20c1f8acf134f2978f3a7f028d8084924`;
+- rejection-recovery audit:
+  `finance_v26_typed_rejection_recovery_audit:fcd245aefdc31df86660d9b0c1142533a1b83ff79c9ac5c9c983ea84cd20674b`;
+- transition:
+  `finance_v26_authoritative_parent_history_transition:e2705d925fcd7619e538a75100a6e3914ba70c8a0c58868ccf9e2b804c91ad64`.
+
+The only permitted transition is:
+
+```text
+capability_observation_authoritative_parent_closed_rejection_history_
+state_bound_step_runtime_development_runner_preflight_only
+```
+
+A successor may materialize only the exact future 192-Job Development Manifest and perform a
+credential-free one-current-Prompt-at-a-time Runner preflight from the exact v26.176 zero-Prompt
+Catalog. Provider execution, Development outcomes, reference-Trace input, precommitted vectors,
+future Prompt materialization, complete baseline loading, Confirmation payload loading, source,
+Task, Component, Candidate, Schedule, presentation, validity, correction-bound, or threshold
+change, historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility,
+training, release, and production remain forbidden. See
+`docs/finance_v26_176_authoritative_package_runner_parent_and_typed_rejection_history_hardening.md`.
 
 ## v26.175 State-Local Higher-Order Presentation And Parent Hardening Decision
 
@@ -798,6 +969,13 @@ payload loading, source/task/Component/Candidate/Schedule change, presentation o
 tuning, threshold change, historical rewrite, Mapper, State, frequency, Contribution, VTDO,
 Student visibility, training, release, and production remain forbidden. See
 `docs/finance_v26_175_state_local_higher_order_presentation_and_parent_hardening.md`.
+
+That transition has now been superseded without Runner execution by the external v26.176 audit.
+Every v26.175 byte and narrow registered result remains immutable, but its omitted inherited
+Runner Contract comparisons, incomplete Development metadata anchoring, absent fresh Result
+replay, Replica-zero-only combination audit, and Host-only rejection history are not authorized
+for a Runner preflight. The current transition is the exact v26.176 authoritative-parent-closed
+credential-free preflight recorded above.
 
 ## v26.174 Joint Presentation, Mechanism Semantics, Receipt, And Runner Parent Hardening Decision
 
