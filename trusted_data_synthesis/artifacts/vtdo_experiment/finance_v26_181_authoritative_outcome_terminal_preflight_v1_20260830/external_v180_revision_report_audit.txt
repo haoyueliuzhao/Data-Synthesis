@@ -1,0 +1,806 @@
+# v26.180 修订报告审计
+
+## 一、最终判定
+
+综合两份上传材料、v26.179 被审计提交以及 v26.180 的实际实现源码，我的判定是：
+
+```text
+v26.180 作为对 v26.179 的负向诊断：
+    保留并冻结。
+
+v26.179 exact 192-Job prospective index：
+    保留。
+
+v26.179 exact Job Outcome evidence set：
+    未闭合。
+
+经验 Outcome parent authenticity：
+    FAILED。
+
+Runner terminal totality：
+    FAILED。
+
+online Development execution：
+    继续禁止。
+
+v26.180 自身的形式化审计合同：
+    尚有 1 个 measurement-identity 缺口，
+    另有 1 个 terminal-registry completeness unknown。
+
+当前 transition：
+    stage 方向正确，但不能按现有九项 change surface 原样消费；
+    必须由新的外部授权补入本文列出的非补偿 Gate。
+```
+
+报告关于 v26.179 的核心结论是正确的：精确 Job 索引集合不等于精确 Job Outcome 证据集合；六类父身份攻击均被旧 estimator 接受；Final ABI 和 unknown first Action 都存在非类型化异常逃逸；在线执行继续禁止。报告与 `Current Project Status` 在计数、结论和授权边界上没有发现矛盾。 
+
+但本轮源码级审计发现，**v26.180 不能被解释为“审计证据层已经完全闭合，只剩修复被审计对象”**。它自己的 Final-parser 控制仍有一个可产生错误通过的形式化缺口；同时，“outer terminal totality”的六类枚举没有证明覆盖此前冻结的完整终止面。
+
+---
+
+## 二、审计范围和证据边界
+
+本轮使用了：
+
+1. 上传的 `Finance v26.180 Job-Bound Outcome Parent Authenticity And Terminal Totality Audit`；
+2. 上传的 `Current Project Status`；
+3. v26.179 被审计提交
+   `27ac98d03d078d522cecf7a0cb290230cac63036`；
+4. v26.180 实际实现提交
+   `a9f8435f375a1e2a4da21b29e1f9d1917f3e964c`；
+5. v26.180 audit、model 和 test 源码；
+6. v26.179 `JobBoundOutcomePayload`、`EmpiricalCapabilityOutcomeRow` 与 estimator 源码。
+
+需要区分两个 commit：
+
+```text
+27ac98...  = 被审计的 v26.179 实现
+a9f843...  = 实现 v26.180 负向审计的后继提交
+```
+
+GitHub 记录确认后一个提交的说明是 `Add v26.180 outcome parent and terminal audit`。
+
+我完成了源码级与工件逻辑核对，但没有在当前环境重新运行报告所述 667.08 秒的完整重建测试。因此：
+
+* 缺陷构造方式、validator 逻辑和 Gate 语义属于本轮独立源码审查；
+* 14/14 rebuild、运行时长及 package-wide 工具计数仍属于报告和仓库工件支持的结果；
+* 测试源码确实包含从空目录重新 `build()`、比较 14 个输出文件字节完全一致的测试。
+
+`Current Project Status` 明确声明它只从 Git tree、不可变工件、去凭证恢复记录及服务器重跑检查重建，不把缺失对话内容作为实验事实，这一证据原则是正确的。
+
+---
+
+# 三、v26.180 已经真实证明了什么
+
+## 3.1 v26.179 的窄成果可以保留
+
+v26.180 独立重建了 v26.179 的 18 个正式文件，并保留：
+
+```text
+32 authoritative Runner Packages
+6 Replicas per Package
+192 prospective Job identities
+192 unique Job / Raw namespace / Result namespace
+772 source Choice combinations
+4,632 local Replica runs
+14,388 reached accepted-prefix States
+41,124 Candidate acceptance evaluations
+11 scripted branch controls
+```
+
+但最强 estimator 解释被正确收窄为：
+
+```text
+exact_job_key_set_and_wrapper_parent_estimator_gate
+```
+
+这只能说明 Job wrapper 和 Manifest key set 得到了约束，不能说明每个 Outcome 真正来自对应 Job 的 Raw、Result 和 AttemptTrace。
+
+## 3.2 六类 parent-authenticity attack 确实被实际送入旧 estimator
+
+源码不是只写入六个 aggregate 常量。它实际：
+
+1. 从 192 条 scripted rows 构造六组变异行；
+2. 对 Outcome、Raw ID、Result ID 和 AttemptTrace 做交叉、复用或旋转；
+3. 为每条变异行重新计算 `row_id`；
+4. 将每一组传入未修改的
+   `evaluate_empirical_capability_estimands()`。
+
+旧 estimator 只检查：
+
+* 192 条 row；
+* row ID 和 Job ID 唯一；
+* Job ID exact-set；
+* Manifest、Package、Replica 和 namespace wrapper 字段；
+
+它不读取或验证任何真实 `RawExecutionDescriptor`、`JobResultDescriptor`，也不验证 Result、Trace 和 Outcome 的内容父关系。
+
+因此以下结果是可信的：
+
+| 攻击                            | 旧 estimator |
+| ----------------------------- | ----------- |
+| Outcome 跨 Job 旋转              | 接受          |
+| 192 个 Job 共用一个 Raw ID         | 接受          |
+| 192 个 Job 共用一个 Result ID      | 接受          |
+| Raw 和 Result parents 跨 Job 旋转 | 接受          |
+| Result 与 Outcome/Final 无关     | 接受          |
+| 192 个 Job 共用一条 attempt trace  | 接受          |
+
+每组仍可返回：
+
+$$
+q_{\mathrm{first}}=192/192,\qquad
+q_{\mathrm{bounded}}=192/192
+$$
+
+这些数值只是攻击控制输出，绝不是 Capability estimate。
+
+## 3.3 Final 和 first Action 的异常逃逸是真实 Runtime 控制
+
+Final 控制实际将一个完成态 Qualified payload 改成：
+
+```text
+final_response_abi_valid = false
+```
+
+重哈希后仍然得到：
+
+```text
+endpoint_kind = completed_qualified
+final_qualified_valid = true
+bounded_policy_qualified_valid = true
+```
+
+另一个控制通过 v26.179 的本地 Runner 执行完整 Component 路径，再向 Final parser 提交 `{}`。当前工件记录的实际异常是 Pydantic `ValidationError`，且没有返回 typed Outcome。
+
+unknown first Action 控制也真实生成了一个当前 Candidate 集与历史 Action 集都不存在的 24 位 Action ID。它通过 ABI 和 State token 后，在 Runner 中以：
+
+```text
+ValueError:
+ABI-valid first response references an absent current Action
+```
+
+逃逸，没有产生 `ComponentAttemptOutcome` 或 exact Outcome row。
+
+## 3.4 报告正确保持了 fail-closed 边界
+
+v26.180 没有 Provider 调用、Development outcome、经验 Outcome row、经验估计、Mapper、State、frequency、Contribution、VTDO 或训练操作。静态审计通过没有被用来补偿 online Gate 失败。 
+
+这一点完全符合当前 theory-first 审计要求。
+
+---
+
+# 四、新发现的关键问题
+
+## P0：Final-parser 控制的“parser 正确拒绝”没有被形式化保证
+
+这是本轮最重要的新发现。
+
+v26.180 的控制函数大致是：
+
+```python
+def parse_malformed_final(...):
+    invocation_count += 1
+    parse_qualified_final_response({})
+    raise ValueError(
+        "malformed Final unexpectedly crossed the exact Final Grammar"
+    )
+```
+
+外围随后：
+
+```python
+try:
+    execute_trace(...)
+except Exception as exc:
+    error = exc
+```
+
+最终只检查：
+
+```text
+returned_trace == false
+error is not None
+invocation_count == 1
+```
+
+随后无条件写入：
+
+```text
+invalid_final_parser_rejected = true
+```
+
+问题在于，它没有要求：
+
+```text
+type(error) == ValidationError
+```
+
+也没有区分：
+
+```text
+A. parser 正确拒绝 {}，抛出 ValidationError
+B. parser 错误接受 {}，随后 sentinel ValueError 被触发
+```
+
+A 和 B 都会满足当前控制的后置条件，并使 static Gate 通过。源码中的 `FinalAbiTotalityAudit` model 也只要求异常 type/message 非空，测试没有断言异常类型必须为 `ValidationError`。
+
+### 科学解释
+
+当前正式工件记录的是 `ValidationError`，所以：
+
+```text
+本次实际 parser 确实拒绝了 malformed Final。
+```
+
+这一历史观察可以保留。
+
+但不能进一步声称：
+
+```text
+v26.180 的 Final-parser audit contract
+能够 fail-closed 地证明 parser rejection。
+```
+
+这与此前 repeatedly encountered 的 evidence-generation identity 问题同构：**当前事实恰好为真，不等于测量合同已经保证该事实必须由其命名机制产生。**
+
+### 必须修复为
+
+```python
+parser_rejected = False
+try:
+    parse_qualified_final_response(...)
+except ValidationError as exc:
+    parser_rejected = True
+    parser_error = exc
+else:
+    raise AssertionError("malformed Final was accepted")
+
+assert parser_rejected
+assert runner_returned_typed_outcome is False
+assert escaped_exception_phase == "final_parser"
+```
+
+并增加完整重哈希攻击：
+
+```text
+ValidationError -> sentinel ValueError substitution
+parser_rejected=true but exception phase != final_parser
+parser accepted but later Runtime branch failed
+exception type/message changed while audit ID chain is recomputed
+```
+
+因此，“25 个 static audit Gates 全部通过”目前只能理解为**当前 audit builder 按其现有条件完成**，不能理解为每个命名 estimand 都已形成不可伪造的形式化证明。
+
+---
+
+## P0-unknown：六类 outer terminal 没有证明是完整终止面
+
+v26.180 手工注册了六类：
+
+```text
+provider_failure_no_payload
+provider_transport_failure
+privacy_rejection
+resource_budget_exhausted
+instrument_failure
+provider_identity_thinking_usage_failure
+```
+
+它确实证明这六类都不在 v26.179 `EndpointKind` 中，也都无法构造 exact Outcome row；但没有证明这六类等于完整的 prospective outer-terminal registry。
+
+更早的 v26.166 已经冻结过一个八类 Future Runner Terminal × Endpoint matrix：
+
+```text
+completed endpoint
+model-result failure
+typed semantic rejection
+policy Horizon
+Measurement Support exit
+Instrument
+Privacy
+Transport
+```
+
+并要求每类分别冻结 task completion、Base、Mechanism、Qualified、Mapping 和 Verifier null/false policy。
+
+当前六类没有：
+
+* 绑定该八类矩阵；
+* 给出 `policy Horizon` 不适用于本 Runner 的排除证明；
+* 给出 `Measurement Support exit` 不适用的排除证明；
+* 明确 `typed semantic rejection` 应落入哪个 exact endpoint；
+* 将 Provider identity、Thinking 和 Usage 保持为正交 failure classes。
+
+因此当前只能声称：
+
+```text
+六个选定的 outer endpoint classes 均缺少 exact rows。
+```
+
+不能声称：
+
+```text
+完整 outer terminal surface 已被枚举并审计。
+```
+
+这不会推翻 terminal-totality failure——发现更多未覆盖终点只会加强失败结论；但它会阻止后继只实现这六类后就宣布 totality closure。
+
+---
+
+## P1：25 个“通过的 Gate”实际上是 audit-integrity Gates
+
+v26.180 的 static Gate 中包括：
+
+```text
+all_parent_authenticity_attacks_accepted
+final_abi_runner_non_total_reproduced
+unknown_first_action_non_total_reproduced
+outer_terminal_rows_missing
+online_execution_gate_failed_closed
+```
+
+也就是说，“pass”表示：
+
+> 缺陷被成功复现，且实验被正确阻断。
+
+它不是：
+
+> 系统已经具备在线执行 readiness。
+
+源码确实把“旧 estimator 接受攻击”“异常未形成 typed row”“online Gate 正确失败”作为 static pass 条件。
+
+报告已经写明 static pass 不补偿 online failure，因此没有直接越级。但为了防止后续摘要、PPT 或自动状态机误读，建议正式改名：
+
+```text
+static audit Gates
+    ->
+audit-integrity / defect-reproduction meta-Gates
+```
+
+并将顶层状态固定写成：
+
+| 层级                               | 判定       |
+| -------------------------------- | -------- |
+| Audit construction integrity     | PASS     |
+| v26.179 local scripted preflight | RETAINED |
+| Empirical parent authenticity    | FAIL     |
+| Terminal totality                | FAIL     |
+| Online execution admission       | BLOCKED  |
+
+---
+
+## P1：后继的 authoritative parent binding 规范仍然过于抽象
+
+报告仅规定后继新增：
+
+```text
+RawExecutionDescriptor
+JobResultDescriptor
+Job-bound AttemptTrace parent
+constructor-only empirical Outcome row
+exact evidence-set estimator
+```
+
+方向正确，但不足以保证权威父绑定。
+
+尤其是“constructor-only”本身不能成为 Python 中的可信边界：即使不公开正式 constructor，Pydantic model 仍可能被直接构造；真正的安全条件必须在 estimator 入口重新验证。
+
+后继至少必须冻结以下一一对应关系：
+
+$$
+\begin{aligned}
+\text{Manifest Job}
+&\leftrightarrow \text{RawExecutionDescriptor}\\
+&\leftrightarrow \text{JobResultDescriptor}\\
+&\leftrightarrow \text{JobBoundAttemptTrace}\\
+&\leftrightarrow \text{EmpiricalOutcomeRow}.
+\end{aligned}
+$$
+
+每一层都应满足：
+
+```text
+exact Job set equality
+exactly one object per Job
+missing / duplicate / extra = 0
+ID = hash(canonical bytes)
+parent ID = independently recomputed child parent
+namespace/path belongs to exact Job
+no cross-Job aliases
+no arbitrary caller-supplied authoritative IDs
+```
+
+estimator 不应只接收 Outcome rows，而应接收完整 descriptor catalogs，或从这些 catalogs 独立重建 Outcome row。当前旧 estimator 只比较 wrapper 字段，正是六类攻击能够通过的根本原因。
+
+---
+
+## P1：现有六类攻击不足以成为后继的完整 destructive denominator
+
+当前六类攻击足以否定旧 estimator，但不能反过来定义“新 estimator 已完全安全”。
+
+后继还应加入：
+
+```text
+相同 Raw 内容、不同伪造 Raw IDs
+相同 Result 内容、不同伪造 Result IDs
+唯一 Trace IDs，但 Trace canonical bytes 完全重复
+ComponentAttemptOutcome 的截断、拼接和重新排序
+Outcome 内层 Job parent 与外层 row Job 不一致
+final_result_id 与 JobResultDescriptor 不一致
+Raw/Result namespace 正确但实际文件路径跨 Job
+Package×Replica 相同但 Manifest Job identity 被替换
+192 行中缺少一个真实 Job并增加一个额外伪 Job
+outer terminal row 缺失、重复或与 Raw terminal 不一致
+Result 和 Final 正确，但 Provider/Transport artifact parent 被替换
+```
+
+这里必须区分：
+
+```text
+unique ID
+```
+
+与：
+
+```text
+unique、内容寻址且具有权威父链的对象
+```
+
+前者不能代替后者。
+
+---
+
+## P1：failure localization 仍不能只靠两个 Component key
+
+报告建议拆成：
+
+```text
+first_uncommitted_component_key
+first_mechanism_failed_component_key
+```
+
+这比旧的 overloaded `first_failed_component_key` 明显更好，但仍不足以覆盖：
+
+* first Action ABI failure；
+* first Action reference failure；
+* State-precondition failure；
+* Operation/Support failure；
+* Final ABI failure；
+* Base answer/citation failure；
+* Mechanism-only failure；
+* Provider、Transport、Privacy、Resource、Instrument terminal；
+* 无 Component 归属的 Final 或外层失败。
+
+更稳妥的对象应是强类型：
+
+```text
+FailureLocus:
+    stage
+    component_key | null
+    attempt_index | null
+    reason_code
+    evaluability
+    source_descriptor_id
+```
+
+其中至少分离：
+
+```text
+first_runtime_uncommitted_locus
+first_base_invalid_locus
+first_mechanism_failed_locus
+terminal_locus
+```
+
+不得再让一个字段同时表达“未提交 Component”和“Mechanism semantic check 首次失败”。
+
+---
+
+## P2：报告应区分被审计 commit 与审计实现 commit
+
+上传报告只写：
+
+```text
+audits exact commit 27ac98...
+```
+
+这正确指向 v26.179，但没有在人类可读正文中明确说明 v26.180 本身位于：
+
+```text
+a9f8435f375a1e2a4da21b29e1f9d1917f3e964c
+```
+
+虽然 transitive source Root 已经绑定源码字节，形式上不依赖 Git commit 才能重建，但正文最好同时登记：
+
+```text
+audited predecessor commit
+audit implementation commit
+audit implementation tree/root
+```
+
+避免读者误把 27ac98 当成 v26.180 的实现 commit。
+
+---
+
+## P2：两处措辞需要收窄
+
+报告结尾称 v26.180 支持：
+
+```text
+a complete negative audit
+```
+
+更准确的表述应是：
+
+```text
+a complete negative audit over the pre-registered
+eleven-control matrix and the six explicitly enumerated outer classes
+```
+
+因为有限控制矩阵可以证明旧系统不满足 parent authenticity 或 totality，但不能证明攻击空间已经穷尽。
+
+同样：
+
+```text
+six synthetic 192-row denominators
+```
+
+建议改成：
+
+```text
+six adversarial 192-row control sets
+```
+
+避免被误读成六个经验统计分母。
+
+---
+
+# 五、Gate 重判定
+
+| 理论/证据 Gate                               | 本轮判定                                    | 解释                                           |
+| ---------------------------------------- | --------------------------------------- | -------------------------------------------- |
+| v26.179 immutable freeze                 | **PASSED**                              | 18/18 文件与窄结果保留                               |
+| Exact prospective Job index              | **PASSED**                              | 192 个精确 Job identities                       |
+| Multi-Component attempt representation   | **PASSED**                              | 可保存两个不同 Component 的 correction               |
+| Job-level estimand definition            | **PASSED**                              | \(q_{\text{first}}\) 与 bounded correction 分离 |
+| Old estimator counterexample existence   | **PASSED**                              | 六类攻击实际被接受                                    |
+| Empirical Outcome parent authenticity    | **FAILED**                              | 无权威 Raw/Result/Trace descriptors             |
+| Current malformed-Final observation      | **PASSED as historical execution fact** | 本次实际异常是 `ValidationError`                    |
+| Formal malformed-Final rejection Gate    | **FAILED as measurement contract**      | sentinel `ValueError` 也能令控制通过                |
+| First Action reference terminal totality | **FAILED**                              | `ValueError` 逃逸，无 typed row                  |
+| Failure localization semantics           | **FAILED**                              | 旧字段可伪造并复用                                    |
+| Selected six outer endpoint absence      | **PASSED as negative diagnosis**        | 六类确实无 exact row                              |
+| Complete terminal registry               | **UNKNOWN**                             | 未绑定既有八类矩阵或给出排除证明                             |
+| Audit-integrity/meta-Gates               | **PASSED with narrowed interpretation** | 只证明缺陷复现链完成                                   |
+| Online Development execution             | **BLOCKED**                             | 不得执行                                         |
+| Mapper / State / frequency               | **NOT AUTHORIZED**                      | 无经验 Outcome evidence set                     |
+| Contribution / VTDO / Student            | **NOT AUTHORIZED**                      | 前置链未闭合                                       |
+
+---
+
+# 六、当前允许与禁止的科学主张
+
+## 当前允许
+
+可以保留：
+
+```text
+v26.179 materialized an exact prospective 192-Job index set.
+
+The old estimator accepts the six executed parent-authenticity attacks.
+
+The old Runner is non-total for the executed malformed-Final
+and unknown-first-Action controls.
+
+The six explicitly enumerated outer endpoint classes lack exact Outcome rows.
+
+No empirical Capability estimate or model endpoint frequency was produced.
+
+Online Development execution remains unauthorized.
+```
+
+## 当前禁止
+
+除原报告列出的禁止项外，还应明确禁止：
+
+```text
+The v26.180 Final-parser rejection audit is formally fail-closed.
+
+The six outer classes exhaust the future Runner terminal surface.
+
+All 25 passed static Gates imply execution readiness.
+
+The existing nine-item repair surface is sufficient without an
+authoritative terminal-registry exact-set Gate.
+
+Constructor-only Outcome construction alone establishes authenticity.
+
+The next online 192-Job Development execution may begin after merely
+adding Raw and Result ID fields.
+```
+
+---
+
+# 七、唯一合理的下一实验
+
+下一 stage 名称仍可保持：
+
+```text
+capability_observation_empirical_outcome_authoritative_parent_binding_
+and_terminal_totality_preflight_only
+```
+
+没有必要再拆出多个微小 stage；但**当前 transition 不能原样消费**。新的外部授权必须把以下对象同时设为非补偿条件。
+
+## 7.1 权威终止注册表
+
+从冻结 Runner、Provider、Transport、Measurement Support、Policy、Resource、Privacy、Instrument、model identity、Thinking、Usage 和 Grammar 合同中自动派生 exact terminal registry，而不是手写六类列表。
+
+每类必须是：
+
+```text
+reachable
+registered_but_unreachable_under_frozen_runner
+not_applicable_with_independent_exclusion_witness
+```
+
+三者之一，不允许静默遗漏。
+
+## 7.2 权威证据 DAG
+
+```text
+Manifest Job
+→ RawExecutionDescriptor
+→ JobResultDescriptor
+→ JobBoundAttemptTrace
+→ EmpiricalCapabilityOutcomeRow
+→ ExactEvidenceSetEvaluation
+```
+
+要求每个父关系都由 canonical bytes 独立重建，不能只比较字符串 ID。
+
+## 7.3 Exactly-one terminal projection
+
+对 192 个 Job 中的每一个，都必须产生：
+
+```text
+exactly one JobResultDescriptor
+exactly one terminal AttemptTrace
+exactly one EmpiricalOutcomeRow
+```
+
+包括：
+
+```text
+Provider 无 payload
+Transport failure
+Privacy rejection
+Resource or policy terminal
+Instrument failure
+model identity / Thinking / Usage failure
+Action ABI invalid
+Action reference invalid
+typed State-precondition rejection
+Final ABI invalid
+completed invalid
+completed Qualified
+```
+
+任何 Python/Pydantic/ValueError 异常逃逸都使 Gate 失败。
+
+## 7.4 Final parser 的语义控制
+
+明确要求：
+
+```text
+malformed Final
+→ exact Final parser invocation
+→ ValidationError caught at parser boundary
+→ typed final_response_abi_invalid JobResult
+→ task Verifier not invoked
+→ Base / Mechanism / Qualified follow frozen null/false policy
+→ exactly one empirical Outcome row
+```
+
+不能以“Runner 最终抛了某种异常”替代“Final parser 正确拒绝”。
+
+## 7.5 Unknown first Action policy
+
+在 Provider 执行前冻结：
+
+```text
+first_action_reference_invalid
+→ immediate typed terminal
+```
+
+或：
+
+```text
+first_action_reference_invalid
+→ exactly one public correction
+→ then typed commit/terminal
+```
+
+二者必须明确选一，并绑定进 Runner、Outcome Contract、Manifest 和 estimator identity，不能继续处于 `correction_policy_frozen=false`。
+
+## 7.6 独立 destructive audit
+
+新 estimator 必须拒绝本报告第四部分列出的扩展攻击；所有攻击都要：
+
+```text
+重构对象
+重算对象 ID
+重算所有下游 parent identities
+重算 Transition 和 Report
+```
+
+不能只做 stale-hash mutation。
+
+## 7.7 授权边界
+
+本阶段仍然必须保持：
+
+```text
+Provider calls                    0
+Development model outcomes        0
+formal empirical rows             0
+formal empirical estimates        0
+Confirmation access               0
+Mapper / State / frequency        0
+Contribution / VTDO               0
+Student / training                0
+```
+
+source、Task、Component、Candidate、Schedule、presentation、model、Thinking、Grammar、Policy、resource、correction bound、threshold、validity 和 192-Job Manifest set 均不得改变。原报告对此边界的规定是正确的。
+
+---
+
+# 八、最终审计决定
+
+```text
+PRESERVE:
+    v26.180 对 v26.179 的负向 parent-authenticity
+    与 Runtime non-totality 诊断。
+
+NARROW:
+    “25 static Gates passed”
+    -> “25 audit-integrity/meta-Gates passed”。
+
+DOWNGRADE:
+    Final parser formal rejection closure
+    -> current-run fact true, formal measurement Gate not closed。
+
+MARK UNKNOWN:
+    complete outer-terminal registry coverage。
+
+DO NOT CONSUME AS WRITTEN:
+    当前九项 permitted change surface。
+
+ONLY AUTHORIZED NEXT WORK:
+    同名的 zero-Provider authoritative-parent-binding
+    and terminal-totality preflight，
+    但必须加入 semantic parser Gate、authoritative terminal registry、
+    exact evidence-set bijection、typed FailureLocus 和
+    exactly-one terminal row per Job。
+
+FORBIDDEN:
+    online Development execution、Capability estimate、endpoint frequency、
+    Mapper、State、Contribution、VTDO、Student、training、
+    release 和 production。
+```
+
+当前第一个根本阻塞点应更新为：
+
+$$
+\boxed{
+\begin{gathered}
+\text{权威 Job}\rightarrow\text{Raw}\rightarrow\text{Result}
+\rightarrow\text{AttemptTrace}\rightarrow\text{Outcome 证据 DAG}\\
++\ \text{完整且正交的 terminal registry}\\
++\ \text{所有执行分支到恰好一个 typed Outcome 的 total projection}
+\end{gathered}
+}
+$$
+
+本轮审计结论已用于当前对话上下文；由于本轮同时使用了代码连接工具，跨对话记忆写入未能完成。需要持久化时，应在新对话中重新提交这份最终审计决定。

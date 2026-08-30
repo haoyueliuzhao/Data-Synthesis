@@ -13,7 +13,9 @@ runner_preflight_independent_audit_only
 
 The bound external review is exactly 22,294 bytes with SHA-256
 `f2da2aef728d78964a6c6b0060382f55a91937dc86c029c5cd7b8fdd9f7cdd78`. It audits exact
-commit `27ac98d03d078d522cecf7a0cb290230cac63036`.
+v26.179 commit `27ac98d03d078d522cecf7a0cb290230cac63036`. The v26.180 audit implementation is
+commit `a9f8435f375a1e2a4da21b29e1f9d1917f3e964c`; its source bytes remain independently
+bound by the transitive source Root.
 
 This stage performed an independent credential-free negative audit. Credential lookup,
 Provider-client construction, Stage 1 and Stage 2 Provider calls, Development model outcomes,
@@ -80,9 +82,9 @@ An exact Job key set is not treated as an exact Job Outcome evidence set.
 
 ## Empirical Parent-Authenticity Attacks
 
-The audit constructed six separate synthetic 192-row denominators. Every row retained its exact
+The audit constructed six separate adversarial 192-row control sets. Every row retained its exact
 Manifest Job wrapper and was fully content-rehashed. No row was persisted as empirical evidence.
-Each denominator was passed to the unchanged v26.179
+Each control set was passed to the unchanged v26.179
 `evaluate_empirical_capability_estimands()` implementation.
 
 ```text
@@ -95,7 +97,7 @@ Control  Attack                                      Raw IDs  Result IDs  Trace 
 6        one attempt trace reused by all Jobs            192         192          1  accepted
 ```
 
-All six denominators retained 192 unique row IDs and 192 unique Job IDs. The unchanged estimator
+All six control sets retained 192 unique row IDs and 192 unique Job IDs. The unchanged estimator
 returned fixture-only `q_first=192/192` and `q_bounded_correction=192/192` for every attack.
 Those fractions are defect-control outputs, not model outcomes or Capability estimates.
 
@@ -205,13 +207,14 @@ was made to test them. This is a schema-totality result, not an observed failure
 
 ## Noncompensatory Gates
 
-All 25 static audit Gates pass. They require the exact external review, 343-file transitive source
+All 25 audit-integrity and defect-reproduction meta-Gates pass under the later v26.181 scope
+narrowing. They require the exact external review, 343-file transitive source
 closure, 18/18 predecessor rebuild, retained v26.179 narrow results, all six parent attacks, both
 Final controls, the unknown first Action control, the failure-field control, the six-class outer
 terminal check, zero authoritative repair descriptors, zero empirical rows and estimates, zero
 Provider calls, and the failed online Gate.
 
-The static pass does not compensate for the online Gate failure. The two conclusions are:
+The meta-Gate pass does not compensate for the online Gate failure. The two conclusions are:
 
 ```text
 independent audit implementation and evidence chain       PASS
@@ -269,11 +272,13 @@ The two v26.180 source modules contribute zero diagnostics.
 
 ## Scientific Boundary And Next Transition
 
-v26.180 supports a complete negative audit of the v26.179 Outcome-to-Job parent relation and
-registered terminal language. It supports the exact conclusion that the old wrapper estimator
-accepts all six registered parent attacks and that the old Runner is not total over malformed
-Final, unknown first Action, or the six registered outer endpoint classes. It does not support an
-empirical Capability estimate, model failure frequency, or a claim about how often any endpoint
+v26.180 supports a complete negative audit over the pre-registered eleven-control matrix and the
+six explicitly enumerated outer classes. It supports the exact conclusion that the old wrapper
+estimator accepts all six registered parent attacks and that the old Runner is not total over
+malformed Final, unknown first Action, or those six outer endpoint classes. It does not establish
+that its parser measurement Gate was fail-closed or that those six classes exhaust the future
+Runner terminal surface. It does not support an empirical Capability estimate, model failure
+frequency, or a claim about how often any endpoint
 will occur.
 
 The only permitted transition is:
@@ -295,3 +300,9 @@ presentation, model, Thinking, Action or Final Grammar, generation Policy, resou
 correction bound, threshold, validity semantics, Manifest Job set, Confirmation access,
 historical rewrite or reclassification, Mapper, State, frequency, Contribution, VTDO, Student
 visibility, training, release, and production remain forbidden.
+
+That transition has now been consumed by v26.181 without Provider execution. v26.181 preserves
+all v26.180 negative facts, formally records the parser-Gate and terminal-registry scope
+narrowing, and closes only the prospective authoritative evidence DAG and terminal-totality
+preflight. Online Development execution remains blocked pending an independent credential-free
+audit of the exact v26.181 preflight.
