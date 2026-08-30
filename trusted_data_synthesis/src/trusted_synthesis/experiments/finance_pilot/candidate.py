@@ -15,6 +15,16 @@ from trusted_synthesis.hashing import canonical_hash
 from trusted_synthesis.runtime.tools import EvidenceToolRuntime
 
 CANDIDATE_GENERATOR_VERSION = "finance_numeric_candidate.v6"
+FINANCE_NUMERIC_GENERATOR_CONTRACT_ID = canonical_hash(
+    {
+        "implementation": "FinanceNumericCandidateGenerator",
+        "generator_version": CANDIDATE_GENERATOR_VERSION,
+        "input_schema": "TaskPublicSpec+EvidenceCorpus",
+        "output_schema": "Trajectory",
+        "schema_version": "deterministic_generator_contract.v1",
+    },
+    prefix="deterministic_generator_contract:",
+)
 
 
 class FinanceNumericCandidateGenerator:

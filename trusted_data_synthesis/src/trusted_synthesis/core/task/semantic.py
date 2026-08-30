@@ -177,8 +177,18 @@ class CanonicalProgramNode(BaseModel):
     output_schema: str = Field(min_length=1)
     verifier_id: str = Field(min_length=1)
     input_order_policy: str = Field(pattern="^(ordered|permutation_invariant)$")
+    tool_capability: str | None = None
     operation_semantic_contract_hash: str = Field(min_length=1)
     operation_implementation_hash: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_node_keys(self) -> CanonicalProgramNode:
+        topology_node_key, node_key = _canonical_program_node_keys(self)
+        if self.topology_node_key != topology_node_key:
+            raise ValueError("canonical Program topology node key is invalid")
+        if self.node_key != node_key:
+            raise ValueError("canonical Program node key is invalid")
+        return self
 
 
 class CanonicalSemanticPlan(BaseModel):
@@ -209,6 +219,37 @@ class CanonicalSemanticPlan(BaseModel):
 
     @model_validator(mode="after")
     def validate_hashes(self) -> CanonicalSemanticPlan:
+        node_by_key = {node.node_key: node for node in self.nodes}
+        topology_by_key = {node.topology_node_key: node for node in self.nodes}
+        if len(node_by_key) != len(self.nodes) or len(topology_by_key) != len(self.nodes):
+            raise ValueError("canonical semantic plan repeats a Program node identity")
+        try:
+            output_node = node_by_key[self.output_node_key]
+        except KeyError as exc:
+            raise ValueError("canonical semantic plan output node is absent") from exc
+        if output_node.topology_node_key != self.output_topology_node_key:
+            raise ValueError("canonical semantic plan output topology pair is invalid")
+        role_by_id = {role.role_id: role for role in self.evidence_roles}
+        dependencies: dict[str, set[str]] = {node.node_key: set() for node in self.nodes}
+        for node in self.nodes:
+            for item in node.inputs:
+                if item.kind == "evidence_role":
+                    role = role_by_id.get(str(item.role_id))
+                    if role is None:
+                        raise ValueError("canonical Program references an unknown evidence role")
+                    if (
+                        role.max_count is not None
+                        and int(item.role_position or 0) >= role.max_count
+                    ):
+                        raise ValueError("canonical Program evidence role position exceeds maximum")
+                    continue
+                target = node_by_key.get(str(item.operation_key))
+                if target is None:
+                    raise ValueError("canonical Program references an unknown operation node")
+                if target.topology_node_key != item.operation_topology_key:
+                    raise ValueError("canonical Program operation/topology parent pair is invalid")
+                dependencies[node.node_key].add(target.node_key)
+        _validate_canonical_program_acyclic(dependencies)
         topology = _canonical_program_payload(
             self.nodes,
             self.output_node_key,
@@ -482,6 +523,7 @@ def canonicalize_semantic_plan(
             "output_schema": node.output_schema,
             "verifier_id": node.verifier_id,
             "input_order_policy": definition.input_order_policy,
+            "tool_capability": definition.tool_capability,
         }
         topology_node_key = canonical_hash(
             topology_identity,
@@ -505,6 +547,7 @@ def canonicalize_semantic_plan(
                 output_schema=node.output_schema,
                 verifier_id=node.verifier_id,
                 input_order_policy=definition.input_order_policy,
+                tool_capability=definition.tool_capability,
                 operation_semantic_contract_hash=operation_semantic_contract_hash(definition),
                 operation_implementation_hash=definition.implementation_hash,
             )
@@ -704,6 +747,7 @@ def _canonical_program_payload(
                 "output_schema": node.output_schema,
                 "verifier_id": node.verifier_id,
                 "input_order_policy": node.input_order_policy,
+                "tool_capability": node.tool_capability,
                 "operation_semantic_contract_hash": (node.operation_semantic_contract_hash),
             }
         )
@@ -712,6 +756,51 @@ def _canonical_program_payload(
         "output_node_key": output_node_key if parameters else output_topology_node_key,
         "schema_version": ("parameterized_program.v1" if parameters else "program_topology.v1"),
     }
+
+
+def _canonical_program_node_keys(node: CanonicalProgramNode) -> tuple[str, str]:
+    topology_inputs = [_canonical_input_payload(item, parameters=False) for item in node.inputs]
+    parameterized_inputs = [_canonical_input_payload(item, parameters=True) for item in node.inputs]
+    topology_identity = {
+        "operator_id": node.operator_id,
+        "inputs": topology_inputs,
+        "output_schema": node.output_schema,
+        "verifier_id": node.verifier_id,
+        "input_order_policy": node.input_order_policy,
+        "tool_capability": node.tool_capability,
+    }
+    topology_node_key = canonical_hash(
+        topology_identity,
+        prefix="canonical_program_topology_node:",
+    )
+    node_key = canonical_hash(
+        {
+            **topology_identity,
+            "inputs": parameterized_inputs,
+            "parameters": node.parameters,
+        },
+        prefix="canonical_program_node:",
+    )
+    return topology_node_key, node_key
+
+
+def _validate_canonical_program_acyclic(dependencies: dict[str, set[str]]) -> None:
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(node_key: str) -> None:
+        if node_key in visiting:
+            raise ValueError("canonical Program dependency graph contains a cycle")
+        if node_key in visited:
+            return
+        visiting.add(node_key)
+        for parent_key in dependencies[node_key]:
+            visit(parent_key)
+        visiting.remove(node_key)
+        visited.add(node_key)
+
+    for key in dependencies:
+        visit(key)
 
 
 def _canonical_input_payload(

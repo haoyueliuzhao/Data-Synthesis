@@ -24,6 +24,16 @@ _FORBIDDEN_EXTENSION = re.compile(
     flags=re.IGNORECASE,
 )
 _PROHIBITED_SLOT_TOKENS = frozenset({"answer", "expected", "gold", "payload", "result", "value"})
+_REALIZATION_CHECK_IDS = (
+    "protected_template_round_trip",
+    "slot_schema_exact",
+    "required_slots_non_empty",
+    "required_operator_cues_present",
+    "response_form_valid",
+    "numeric_grounding",
+    "semantic_extension_absent",
+    "answer_exposure_absent",
+)
 
 
 class QuestionRendererProfile(BaseModel):
@@ -117,7 +127,13 @@ class RealizationValidationReport(BaseModel):
 
     @model_validator(mode="after")
     def validate_summary(self) -> RealizationValidationReport:
-        expected_issues = tuple(check_id for check_id, passed in self.checks.items() if not passed)
+        if len(self.checks) != len(_REALIZATION_CHECK_IDS) or set(self.checks) != set(
+            _REALIZATION_CHECK_IDS
+        ):
+            raise ValueError("realization validation check manifest is not exact")
+        expected_issues = tuple(
+            check_id for check_id in _REALIZATION_CHECK_IDS if not self.checks[check_id]
+        )
         if self.passed != (not expected_issues):
             raise ValueError("realization validation pass flag disagrees with checks")
         if self.issues != expected_issues:
@@ -150,6 +166,32 @@ class SurfaceRealization(BaseModel):
 
     @model_validator(mode="after")
     def validate_identity(self) -> SurfaceRealization:
+        declared_slots = set(self.slot_values)
+        if declared_slots != set(self.slot_variant_ids):
+            raise ValueError("surface realization slot variants do not cover exact slots")
+        if sorted(_PROTECTED_SLOT_PATTERN.findall(self.protected_template)) != sorted(
+            declared_slots
+        ):
+            raise ValueError("surface realization protected slots do not match slot values")
+        if normalize_question_skeleton(self.protected_template) != self.normalized_skeleton:
+            raise ValueError("surface realization normalized skeleton is invalid")
+        if render_protected_template(self.protected_template, self.slot_values) != (
+            self.final_instruction
+        ):
+            raise ValueError("surface realization instruction is not rendered from protected slots")
+        expected_validation = _validate_surface_without_profile(
+            self.slot_values,
+            self.final_instruction,
+        )
+        for check_id in (
+            "protected_template_round_trip",
+            "slot_schema_exact",
+            "numeric_grounding",
+            "semantic_extension_absent",
+            "answer_exposure_absent",
+        ):
+            if self.validation.checks[check_id] != expected_validation[check_id]:
+                raise ValueError("surface realization persisted validation is not derived")
         expected = canonical_hash(
             _realization_identity(self.model_dump(mode="json")),
             prefix="surface_realization:",
@@ -202,6 +244,8 @@ class RealizedTaskPackage(BaseModel):
             raise ValueError("realized task does not preserve the legacy task identity")
         if self.task.task_hash != self.realization.realized_task_hash:
             raise ValueError("realized task hash does not match the realization")
+        if self.task.public.instruction != self.realization.final_instruction:
+            raise ValueError("realized task instruction crosses the SurfaceRealization")
         if (
             self.task.oracle.task_program.program_id != self.semantic_plan.source_program_id
             or self.task.oracle.task_program.program_hash != self.semantic_plan.source_program_hash
@@ -214,10 +258,19 @@ class RealizedTaskPackage(BaseModel):
             or self.task.public.planning_track != self.semantic_plan.planning_track
         ):
             raise ValueError("realized task public semantics cross the CanonicalSemanticPlan")
-        if any(
-            self.task.public.answer_schema.get(key) != value
-            for key, value in self.semantic_plan.answer_schema.items()
-        ):
+        expected_tools = (
+            "evidence.search",
+            *sorted(
+                {
+                    node.tool_capability
+                    for node in self.semantic_plan.nodes
+                    if node.tool_capability is not None
+                }
+            ),
+        )
+        if self.task.public.allowed_tools != expected_tools:
+            raise ValueError("realized task tools cross the CanonicalSemanticPlan")
+        if self.task.public.answer_schema != self.semantic_plan.answer_schema:
             raise ValueError("realized task Answer Schema crosses the CanonicalSemanticPlan")
         if set(self.task.oracle.gold_evidence_ids) != set(
             self.binding_snapshot.evidence_ids
@@ -229,12 +282,22 @@ class RealizedTaskPackage(BaseModel):
         ):
             raise ValueError("realized task ProofGraph crosses the BindingSnapshot")
         pattern_binding = self.task.oracle.selection_contract.get("pattern_binding")
+        observed_role_bindings: dict[str, tuple[str, ...]] | None = None
+        if isinstance(pattern_binding, dict):
+            raw_role_bindings = pattern_binding.get("role_bindings")
+            if isinstance(raw_role_bindings, dict):
+                try:
+                    observed_role_bindings = {
+                        str(role_id): tuple(str(value) for value in values)
+                        for role_id, values in raw_role_bindings.items()
+                    }
+                except TypeError:
+                    observed_role_bindings = None
         if not isinstance(pattern_binding, dict) or (
             pattern_binding.get("binding_id") != self.binding_snapshot.evidence_binding.binding_id
             or pattern_binding.get("binding_hash")
             != self.binding_snapshot.evidence_binding.binding_hash
-            or pattern_binding.get("role_bindings")
-            != self.binding_snapshot.evidence_binding.role_bindings
+            or observed_role_bindings != self.binding_snapshot.evidence_binding.role_bindings
         ):
             raise ValueError("realized task Pattern Binding crosses the BindingSnapshot")
         expected = canonical_hash(
@@ -511,6 +574,25 @@ def validate_realized_question(
         answer_exposure_count=0,
         unprotected_number_count=len(unprotected_numbers),
     )
+
+
+def _validate_surface_without_profile(
+    slot_values: Mapping[str, str],
+    instruction: str,
+) -> dict[str, bool]:
+    allowed_numbers = {
+        number for value in slot_values.values() for number in _NUMBER_PATTERN.findall(str(value))
+    }
+    observed_numbers = set(_NUMBER_PATTERN.findall(instruction))
+    return {
+        "protected_template_round_trip": True,
+        "slot_schema_exact": True,
+        "numeric_grounding": not (observed_numbers - allowed_numbers),
+        "semantic_extension_absent": _FORBIDDEN_EXTENSION.search(instruction) is None,
+        "answer_exposure_absent": not any(
+            set(slot.casefold().split("_")) & _PROHIBITED_SLOT_TOKENS for slot in slot_values
+        ),
+    }
 
 
 def validate_protected_rewrite(

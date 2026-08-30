@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter, defaultdict
 from collections.abc import Iterable
@@ -30,8 +31,10 @@ from trusted_synthesis.core.evaluation.evaluator import (
 from trusted_synthesis.core.evaluation.realization_binding import (
     RealizationExecutionBinding,
     bind_realization_execution,
+    describe_generated_trajectory,
 )
 from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
+from trusted_synthesis.core.immutable_artifacts import write_immutable_artifact_directory
 from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.release import (
     DiversityAwareReleaseSelection,
@@ -66,6 +69,7 @@ from trusted_synthesis.experiments.cross_domain_contract_suite import (
     run_cross_domain_contract_suite,
 )
 from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
     FinanceNumericCandidateGenerator,
 )
 from trusted_synthesis.experiments.finance_pilot.mutations import (
@@ -93,7 +97,8 @@ def run_finance_pilot(
     inspection = adapter.inspect()
     if not inspection["compatible"]:
         raise ValueError(f"incompatible finance archive: {inspection['errors']}")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if output_dir.exists():
+        raise FileExistsError(f"immutable finance pilot output already exists: {output_dir}")
     policy = FinanceSemanticPolicy()
     source_grounding_verifier = adapter.source_grounding_verifier()
     sample = sample_evidence(
@@ -402,17 +407,11 @@ def _evaluate_realization_portfolios(
                 realized.task.public,
                 InMemoryEvidenceToolRuntime(case.corpus),
             )
-            trajectory = generated.model_copy(
-                update={
-                    "trajectory_id": canonical_hash(
-                        {
-                            "realized_package_id": realized.realized_package_id,
-                            "generated_trajectory_hash": generated.trajectory_hash,
-                            "schema_version": "finance_pilot_realized_trajectory.v1",
-                        },
-                        prefix="finance_pilot_realized_trajectory:",
-                    )
-                }
+            trajectory, descriptor = describe_generated_trajectory(
+                realized,
+                case.corpus,
+                generated,
+                generator_contract_id=FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
             )
             assessment = candidate_evaluator.evaluate(
                 realized.task,
@@ -425,6 +424,7 @@ def _evaluate_realization_portfolios(
                 compilation.portfolio,
                 trajectory,
                 assessment,
+                descriptor,
             )
             trajectories.append(trajectory)
             assessments.append(assessment)
@@ -1023,9 +1023,10 @@ def _write_artifacts(
     portfolio_execution_bindings: tuple[RealizationExecutionBinding, ...],
     portfolio_selection: DiversityAwareReleaseSelection,
 ) -> None:
-    config.write(output_dir / "config.json")
-    _write_jsonl(output_dir / "task_packages.jsonl", (case.task for case in cases))
-    _write_jsonl(
+    payloads: dict[str, bytes] = {"config.json": _json_bytes(config)}
+    _collect_jsonl(payloads, output_dir / "task_packages.jsonl", (case.task for case in cases))
+    _collect_jsonl(
+        payloads,
         output_dir / "task_contexts.jsonl",
         (
             {
@@ -1044,38 +1045,47 @@ def _write_artifacts(
             for case in cases
         ),
     )
-    _write_jsonl(output_dir / "reference_workflows.jsonl", references)
-    _write_jsonl(output_dir / "reference_assessments.jsonl", reference_assessments)
-    _write_jsonl(output_dir / "proof_carrying_samples.jsonl", proof_samples)
-    _write_jsonl(output_dir / "quality_contracts.jsonl", quality_contracts)
-    _write_jsonl(output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
-    _write_jsonl(output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
-    _write_jsonl(
+    _collect_jsonl(payloads, output_dir / "reference_workflows.jsonl", references)
+    _collect_jsonl(payloads, output_dir / "reference_assessments.jsonl", reference_assessments)
+    _collect_jsonl(payloads, output_dir / "proof_carrying_samples.jsonl", proof_samples)
+    _collect_jsonl(payloads, output_dir / "quality_contracts.jsonl", quality_contracts)
+    _collect_jsonl(payloads, output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
+    _collect_jsonl(payloads, output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
+    _collect_jsonl(
+        payloads,
         output_dir / "realization_portfolios.jsonl",
         (case.realization_compilation.portfolio for case in cases),
     )
-    _write_jsonl(
+    _collect_jsonl(
+        payloads,
         output_dir / "selected_realized_task_packages.jsonl",
         (realized for case in cases for realized in case.realization_compilation.selected),
     )
-    _write_jsonl(
+    _collect_jsonl(
+        payloads,
         output_dir / "realization_candidate_workflows.jsonl",
         portfolio_candidates,
     )
-    _write_jsonl(
+    _collect_jsonl(
+        payloads,
         output_dir / "realization_quality_assessments.jsonl",
         portfolio_assessments,
     )
-    _write_jsonl(
+    _collect_jsonl(
+        payloads,
         output_dir / "realization_execution_bindings.jsonl",
         portfolio_execution_bindings,
     )
-    _write_json(
+    _collect_json(
+        payloads,
         output_dir / "realization_release_selection.json",
         portfolio_selection,
     )
-    _write_jsonl(output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments)
-    _write_jsonl(
+    _collect_jsonl(
+        payloads, output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments
+    )
+    _collect_jsonl(
+        payloads,
         output_dir / "mutated_candidate_workflows.jsonl",
         (
             {
@@ -1092,35 +1102,74 @@ def _write_artifacts(
             for mutation, assessment in zip(mutation_cases, mutation_assessments, strict=True)
         ),
     )
-    _write_jsonl(
+    _collect_jsonl(
+        payloads,
         output_dir / "mutated_contract_assessments.jsonl",
         mutation_contract_assessments,
     )
-    _write_jsonl(output_dir / "decision_parity.jsonl", decision_parities)
-    _write_jsonl(output_dir / "counterfactual_cases.jsonl", counterfactual_cases)
-    _write_json(
+    _collect_jsonl(payloads, output_dir / "decision_parity.jsonl", decision_parities)
+    _collect_jsonl(payloads, output_dir / "counterfactual_cases.jsonl", counterfactual_cases)
+    _collect_json(
+        payloads,
         output_dir / "counterfactual_calibration_report.json",
         counterfactual_report,
     )
-    _write_json(output_dir / "release_manifest.json", manifest)
-    _write_json(output_dir / "pilot_report.json", report)
-    (output_dir / "pilot_report.md").write_text(
-        _markdown_report(report),
-        encoding="utf-8",
+    _collect_json(payloads, output_dir / "release_manifest.json", manifest)
+    artifact_rows = tuple(
+        {
+            "name": name,
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "byte_count": len(content),
+        }
+        for name, content in sorted(payloads.items())
     )
-
-
-def _write_json(path: Path, value: Any) -> None:
-    path.write_text(
-        json.dumps(_json_value(value), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+    artifact_root = canonical_hash(
+        artifact_rows,
+        prefix="finance_pilot_artifact_root:",
     )
+    artifact_manifest = {
+        "artifacts": artifact_rows,
+        "artifact_root": artifact_root,
+        "schema_version": "finance_pilot_artifact_manifest.v1",
+    }
+    artifact_manifest_hash = canonical_hash(
+        artifact_manifest,
+        prefix="finance_pilot_artifact_manifest:",
+    )
+    published_report = {
+        **report,
+        "artifact_publication": {
+            "artifact_root": artifact_root,
+            "artifact_manifest_hash": artifact_manifest_hash,
+            "immutable_no_replace": True,
+            "schema_version": "finance_pilot_artifact_publication.v1",
+        },
+    }
+    payloads["pilot_artifact_manifest.json"] = _json_bytes(artifact_manifest)
+    payloads["pilot_report.json"] = _json_bytes(published_report)
+    payloads["pilot_report.md"] = _markdown_report(published_report).encode("utf-8")
+    write_immutable_artifact_directory(output_dir, payloads)
 
 
-def _write_jsonl(path: Path, values: Iterable[Any]) -> None:
-    with path.open("w", encoding="utf-8") as handle:
-        for value in values:
-            handle.write(json.dumps(_json_value(value), ensure_ascii=False, sort_keys=True) + "\n")
+def _collect_json(payloads: dict[str, bytes], path: Path, value: Any) -> None:
+    payloads[path.name] = _json_bytes(value)
+
+
+def _collect_jsonl(
+    payloads: dict[str, bytes],
+    path: Path,
+    values: Iterable[Any],
+) -> None:
+    payloads[path.name] = "".join(
+        json.dumps(_json_value(value), ensure_ascii=False, sort_keys=True) + "\n"
+        for value in values
+    ).encode("utf-8")
+
+
+def _json_bytes(value: Any) -> bytes:
+    return (
+        json.dumps(_json_value(value), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
 
 
 def _json_value(value: Any) -> Any:
@@ -1131,6 +1180,50 @@ def _json_value(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_json_value(item) for item in value]
     return value
+
+
+def load_finance_pilot_artifact_directory(output_dir: Path) -> dict[str, Any]:
+    """Rehash and validate one immutable Pilot publication before use."""
+
+    manifest_path = output_dir / "pilot_artifact_manifest.json"
+    report_path = output_dir / "pilot_report.json"
+    manifest = json.loads(manifest_path.read_bytes())
+    report = json.loads(report_path.read_bytes())
+    rows = tuple(manifest.get("artifacts") or ())
+    expected_names = {str(row["name"]) for row in rows} | {
+        "pilot_artifact_manifest.json",
+        "pilot_report.json",
+        "pilot_report.md",
+    }
+    observed_names = {path.name for path in output_dir.iterdir() if path.is_file()}
+    if observed_names != expected_names:
+        raise ValueError("finance pilot artifact catalog membership is not exact")
+    for row in rows:
+        content = (output_dir / str(row["name"])).read_bytes()
+        if len(content) != int(row["byte_count"]):
+            raise ValueError("finance pilot artifact byte count mismatch")
+        if hashlib.sha256(content).hexdigest() != str(row["sha256"]):
+            raise ValueError("finance pilot artifact SHA-256 mismatch")
+    expected_root = canonical_hash(
+        rows,
+        prefix="finance_pilot_artifact_root:",
+    )
+    if manifest.get("artifact_root") != expected_root:
+        raise ValueError("finance pilot artifact root is invalid")
+    expected_manifest_hash = canonical_hash(
+        manifest,
+        prefix="finance_pilot_artifact_manifest:",
+    )
+    publication = report.get("artifact_publication") or {}
+    if (
+        publication.get("artifact_root") != expected_root
+        or publication.get("artifact_manifest_hash") != expected_manifest_hash
+        or publication.get("immutable_no_replace") is not True
+    ):
+        raise ValueError("finance pilot report does not bind its artifact root")
+    selection_payload = json.loads((output_dir / "realization_release_selection.json").read_bytes())
+    DiversityAwareReleaseSelection.model_validate(selection_payload)
+    return report
 
 
 def _markdown_report(report: dict[str, Any]) -> str:

@@ -16,6 +16,7 @@ from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluato
 from trusted_synthesis.core.evaluation.realization_binding import (
     RealizationExecutionBinding,
     bind_realization_execution,
+    describe_generated_trajectory,
 )
 from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
 from trusted_synthesis.core.immutable_artifacts import write_immutable_artifact_directory
@@ -35,6 +36,7 @@ from trusted_synthesis.experiments.counterfactual_finance_fixture import (
     build_finance_counterfactual_case,
 )
 from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
     FinanceNumericCandidateGenerator,
 )
 from trusted_synthesis.hashing import canonical_hash
@@ -358,17 +360,11 @@ def _fixture_portfolio(index: int) -> tuple[Any, tuple[Any, ...]]:
             realized.task.public,
             InMemoryEvidenceToolRuntime(contract_case.corpus),
         )
-        trajectory = generated.model_copy(
-            update={
-                "trajectory_id": canonical_hash(
-                    {
-                        "fixture_index": index,
-                        "realized_package_id": realized.realized_package_id,
-                        "generated_trajectory_hash": generated.trajectory_hash,
-                    },
-                    prefix="qa_parent_authority_trajectory:",
-                )
-            }
+        trajectory, descriptor = describe_generated_trajectory(
+            realized,
+            contract_case.corpus,
+            generated,
+            generator_contract_id=FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
         )
         assessment = evaluator.evaluate(
             realized.task,
@@ -381,6 +377,7 @@ def _fixture_portfolio(index: int) -> tuple[Any, tuple[Any, ...]]:
             compilation.portfolio,
             trajectory,
             assessment,
+            descriptor,
         )
         records.append((realized, trajectory, assessment, execution_binding))
     return compilation, tuple(records)
@@ -491,6 +488,7 @@ def _attack_controls(
                 primary_compilation.portfolio,
                 primary_records[0][1],
                 stale_assessment,
+                primary_records[0][3].execution_descriptor,
             ),
         )
     )

@@ -8,7 +8,10 @@ from pathlib import Path
 import pytest
 
 from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluator
-from trusted_synthesis.core.evaluation.realization_binding import bind_realization_execution
+from trusted_synthesis.core.evaluation.realization_binding import (
+    bind_realization_execution,
+    describe_generated_trajectory,
+)
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
@@ -45,6 +48,7 @@ from trusted_synthesis.domains.finance.semantic_proposals import (
 )
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.experiments.finance_pilot.candidate import (
+    FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
     FinanceNumericCandidateGenerator,
 )
 from trusted_synthesis.experiments.qa_realization_vnext.census import (
@@ -131,7 +135,7 @@ def test_realization_portfolio_closes_three_identity_layers_without_legacy_drift
     )
 
     realization_payload["validation"] = validation
-    with pytest.raises(ValueError, match="realization identity is invalid"):
+    with pytest.raises(ValueError, match="persisted validation is not derived"):
         SurfaceRealization.model_validate(realization_payload)
 
 
@@ -393,13 +397,17 @@ def test_semantic_instance_split_and_execution_bound_release_conserve_exact_weig
     records = []
     generator = FinanceNumericCandidateGenerator()
     evaluator = CandidateQualityEvaluator()
-    for index, realized in enumerate(compilation.selected):
-        trajectory_id = f"trajectory:realization:{index}"
+    for realized in compilation.selected:
         generated = generator.generate(
             realized.task.public,
             InMemoryEvidenceToolRuntime(corpus),
         )
-        trajectory = generated.model_copy(update={"trajectory_id": trajectory_id})
+        trajectory, descriptor = describe_generated_trajectory(
+            realized,
+            corpus,
+            generated,
+            generator_contract_id=FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
+        )
         assessment = evaluator.evaluate(
             realized.task,
             corpus,
@@ -417,18 +425,21 @@ def test_semantic_instance_split_and_execution_bound_release_conserve_exact_weig
                     compilation.portfolio,
                     trajectory,
                     assessment,
+                    descriptor,
                 ),
             )
         )
-    _, trajectory, _, _ = next(
+    _, trajectory, _, canonical_binding = next(
         record for record in records if record[0].realization.style == "canonical"
     )
-    rejected_trajectory_id = "trajectory:realization:rejected"
-    rejected_trajectory = trajectory.model_copy(
-        update={
-            "trajectory_id": rejected_trajectory_id,
-            "final_answer": {"value": "deliberately_wrong"},
-        }
+    rejected_generated = canonical_binding.execution_descriptor.generated_trajectory.model_copy(
+        update={"final_answer": {"value": "deliberately_wrong"}}
+    )
+    rejected_trajectory, rejected_descriptor = describe_generated_trajectory(
+        canonical,
+        corpus,
+        rejected_generated,
+        generator_contract_id=FINANCE_NUMERIC_GENERATOR_CONTRACT_ID,
     )
     rejected_assessment = evaluator.evaluate(
         canonical.task,
@@ -447,10 +458,11 @@ def test_semantic_instance_split_and_execution_bound_release_conserve_exact_weig
                 compilation.portfolio,
                 rejected_trajectory,
                 rejected_assessment,
+                rejected_descriptor,
             ),
         )
     )
-    with pytest.raises(ValueError, match="does not match record contents"):
+    with pytest.raises(ValueError, match="execution descriptor crosses its public task"):
         select_diversity_aware_release(
             (
                 (
@@ -488,7 +500,7 @@ def test_semantic_instance_split_and_execution_bound_release_conserve_exact_weig
         {key: value for key, value in missing_weight.items() if key != "selection_id"},
         prefix="diversity_aware_release_selection:",
     )
-    with pytest.raises(ValueError, match="coverage is incomplete"):
+    with pytest.raises(ValueError, match="persisted release selection is not source-derived"):
         type(selection).model_validate(missing_weight)
 
 

@@ -11048,3 +11048,35 @@ See:
 - docs/finance_v25_43_v25_44_stopping_role_position_validation_report.md
 - docs/finance_v25_44_snapshot_v3_capacity_hardening_report.md
 - docs/finance_v25_44_hardened_replication_instrument_audit.md
+
+
+## v26.183 QA Release Authority Source-Derived Repair
+
+The 2026-08-31 external re-audit accepted the frozen v26.182 negative audit but rejected the
+persisted QA release authority. v26.183 addresses that separate defect without changing v26.181
+or any historical formal artifact.
+
+The new authority is an exact replay chain rather than a self-hash chain:
+
+- full Git tree snapshot, archive SHA-256, and every-file manifest;
+- current Operation Registry, Pattern manifest, Renderer manifest, and tool capabilities;
+- exact EvidenceBundle, EvidenceCorpus, ProofGraph, and EvidenceBinding;
+- source-recompiled Plan and source-rerendered Task;
+- deterministic generator input/output descriptor and exact trajectory binding;
+- evaluator-rerun QualityAssessment;
+- Policy/SplitPolicy/record-embedded selection with instance Split and exact Fractions;
+- top-level QAReleaseAuthorityBundle and report-bound artifact root;
+- Finance Pilot in-memory cataloging plus fsync/RENAME_NOREPLACE publication.
+
+The credential-free smoke result is 2 fixtures, 6 release records, 8 frozen task types,
+32 frozen renderer profiles, and 12/12 fully-rehashed attacks rejected. An unrelated RuntimeError
+is not counted. Provider calls are zero. The directly related suite is 29 passed.
+
+The environment lacks pyarrow and torch, so five unrelated existing test modules cannot collect.
+A dependency-excluded broader run reached 397 passed and 2 skipped before interruption after two
+pre-existing generalization-contract failures in an unmodified runtime file. These are not
+represented as passing evidence.
+
+v26.181's empirical Gate remains failed. Production release, online execution, Provider
+generation, training, Contribution, and VTDO changes remain blocked. See
+`docs/finance_v26_183_qa_release_authority.md`.

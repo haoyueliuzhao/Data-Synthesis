@@ -42,6 +42,46 @@ class DiversityReleasePolicy(BaseModel):
         return canonical_hash(self, prefix="diversity_release_policy:")
 
 
+class PersistedReleaseRecord(BaseModel):
+    """One exact package/trajectory/assessment/binding row used by selection."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    record_id: str = Field(min_length=1)
+    realized: RealizedTaskPackage
+    trajectory: Trajectory
+    assessment: QualityAssessment
+    execution_binding: RealizationExecutionBinding
+    schema_version: str = "persisted_release_record.v1"
+
+    @model_validator(mode="after")
+    def validate_record(self) -> PersistedReleaseRecord:
+        expected_binding = bind_realization_execution(
+            self.realized,
+            self.execution_binding.realization_portfolio,
+            self.trajectory,
+            self.assessment,
+            self.execution_binding.execution_descriptor,
+        )
+        if self.execution_binding != expected_binding:
+            raise ValueError("persisted release record binding is not derived")
+        expected = canonical_hash(
+            self.model_dump(mode="json", exclude={"record_id"}),
+            prefix="persisted_release_record:",
+        )
+        if self.record_id != expected:
+            raise ValueError("persisted release record identity is invalid")
+        return self
+
+    def as_tuple(self) -> ReleaseRecord:
+        return (
+            self.realized,
+            self.trajectory,
+            self.assessment,
+            self.execution_binding,
+        )
+
+
 class ReleaseWeightAssignment(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -78,6 +118,9 @@ class DiversityAwareReleaseSelection(BaseModel):
 
     selection_id: str = Field(min_length=1)
     release_plan_id: str = Field(min_length=1)
+    release_policy: DiversityReleasePolicy
+    split_policy: SplitPolicy
+    release_records: tuple[PersistedReleaseRecord, ...]
     selected_realized_package_ids: tuple[str, ...]
     selected_realization_ids: tuple[str, ...]
     selected_trajectory_ids: tuple[str, ...]
@@ -95,10 +138,29 @@ class DiversityAwareReleaseSelection(BaseModel):
     policy_hash: str = Field(min_length=1)
     split_policy_hash: str = Field(min_length=1)
     hard_gates: dict[str, bool]
-    schema_version: str = "diversity_aware_release_selection.v2"
+    schema_version: str = "diversity_aware_release_selection.v3"
 
     @model_validator(mode="after")
     def validate_selection(self) -> DiversityAwareReleaseSelection:
+        if self.policy_hash != self.release_policy.policy_hash:
+            raise ValueError("persisted release policy hash is not derived")
+        if self.split_policy_hash != self.split_policy.policy_hash:
+            raise ValueError("persisted split policy hash is not derived")
+        for record in self.release_records:
+            PersistedReleaseRecord.model_validate(record.model_dump(mode="python", warnings=False))
+        record_ids = tuple(record.record_id for record in self.release_records)
+        if len(record_ids) != len(set(record_ids)):
+            raise ValueError("persisted release records contain duplicate identities")
+        expected = select_diversity_aware_release(
+            (record.as_tuple() for record in self.release_records),
+            policy=self.release_policy,
+            split_policy=self.split_policy,
+            _validate=False,
+        )
+        observed_payload = self.model_dump(mode="json", exclude={"selection_id"})
+        expected_payload = expected.model_dump(mode="json", exclude={"selection_id"})
+        if observed_payload != expected_payload:
+            raise ValueError("persisted release selection is not source-derived")
         if any(not passed for passed in self.hard_gates.values()):
             raise ValueError("diversity-aware release failed a hard gate")
         selected_sets = (
@@ -160,15 +222,23 @@ def select_diversity_aware_release(
     *,
     policy: DiversityReleasePolicy,
     split_policy: SplitPolicy,
+    _validate: bool = True,
 ) -> DiversityAwareReleaseSelection:
+    records_tuple = tuple(records)
+    persisted_records = tuple(
+        sorted(
+            (_persist_release_record(row) for row in records_tuple), key=lambda row: row.record_id
+        )
+    )
     valid: list[ReleaseRecord] = []
     failures: Counter[str] = Counter()
-    for realized, trajectory, assessment, execution_binding in records:
+    for realized, trajectory, assessment, execution_binding in records_tuple:
         expected_binding = bind_realization_execution(
             realized,
             execution_binding.realization_portfolio,
             trajectory,
             assessment,
+            execution_binding.execution_descriptor,
         )
         if execution_binding != expected_binding:
             raise ValueError("realization execution binding does not match record contents")
@@ -327,6 +397,7 @@ def select_diversity_aware_release(
                 item[3].realization_portfolio,
                 item[1],
                 item[2],
+                item[3].execution_descriptor,
             )
             for item in selected
         ),
@@ -360,6 +431,9 @@ def select_diversity_aware_release(
     }
     payload = {
         "release_plan_id": release_plan_id,
+        "release_policy": policy,
+        "split_policy": split_policy,
+        "release_records": persisted_records,
         "selected_realized_package_ids": selected_package_ids,
         "selected_realization_ids": selected_realization_ids,
         "selected_trajectory_ids": tuple(item[1].trajectory_id for item in selected),
@@ -377,7 +451,7 @@ def select_diversity_aware_release(
         "policy_hash": policy.policy_hash,
         "split_policy_hash": split_policy.policy_hash,
         "hard_gates": hard_gates,
-        "schema_version": "diversity_aware_release_selection.v2",
+        "schema_version": "diversity_aware_release_selection.v3",
     }
     provisional = DiversityAwareReleaseSelection.model_construct(
         selection_id="pending",
@@ -387,7 +461,32 @@ def select_diversity_aware_release(
         provisional.model_dump(mode="json", exclude={"selection_id"}),
         prefix="diversity_aware_release_selection:",
     )
+    if not _validate:
+        return DiversityAwareReleaseSelection.model_construct(
+            selection_id=selection_id,
+            **payload,
+        )
     return DiversityAwareReleaseSelection(selection_id=selection_id, **payload)
+
+
+def _persist_release_record(record: ReleaseRecord) -> PersistedReleaseRecord:
+    realized, trajectory, assessment, execution_binding = record
+    payload = {
+        "realized": realized,
+        "trajectory": trajectory,
+        "assessment": assessment,
+        "execution_binding": execution_binding,
+        "schema_version": "persisted_release_record.v1",
+    }
+    provisional = PersistedReleaseRecord.model_construct(
+        record_id="pending",
+        **payload,
+    )
+    record_id = canonical_hash(
+        provisional.model_dump(mode="json", exclude={"record_id"}),
+        prefix="persisted_release_record:",
+    )
+    return PersistedReleaseRecord(record_id=record_id, **payload)
 
 
 def _make_weight_assignment(

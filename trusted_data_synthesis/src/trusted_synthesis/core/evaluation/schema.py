@@ -68,6 +68,42 @@ class QualityAssessment(BaseModel):
 
     @model_validator(mode="after")
     def validate_identity(self) -> QualityAssessment:
+        gate_ids = tuple(gate.gate_id for gate in self.hard_gates)
+        if len(gate_ids) != len(set(gate_ids)):
+            raise ValueError("quality assessment repeats a hard Gate identity")
+        expected_universal = tuple(
+            gate for gate in self.hard_gates if gate.scope == GateScope.UNIVERSAL
+        )
+        expected_domain = tuple(gate for gate in self.hard_gates if gate.scope == GateScope.DOMAIN)
+        if self.universal_gates != expected_universal or self.domain_gates != expected_domain:
+            raise ValueError("quality assessment Gate scope partitions are invalid")
+        expected_fatal = tuple(gate.gate_id for gate in self.hard_gates if not gate.passed)
+        if self.fatal_failures != expected_fatal:
+            raise ValueError("quality assessment fatal failures disagree with hard Gates")
+        dimension_ids = tuple(item.dimension for item in self.dimensions)
+        if len(dimension_ids) != len(set(dimension_ids)):
+            raise ValueError("quality assessment repeats a score dimension")
+        if abs(sum(item.weight for item in self.dimensions) - 1.0) > 1e-9:
+            raise ValueError("quality assessment dimension weights do not sum to one")
+        expected_total = round(
+            sum(item.score * item.weight for item in self.dimensions),
+            4,
+        )
+        if self.total_score != expected_total:
+            raise ValueError("quality assessment total score is not derived from dimensions")
+        expected_decision = (
+            ReleaseDecision.REJECTED
+            if expected_fatal
+            else ReleaseDecision.ACCEPTED
+            if expected_total >= 90
+            else ReleaseDecision.QUARANTINED
+        )
+        if self.decision != expected_decision:
+            raise ValueError("quality assessment decision is not derived from Gates and score")
+        if len(self.failed_check_ids) != len(set(self.failed_check_ids)):
+            raise ValueError("quality assessment repeats a failed check identity")
+        if not set(self.check_failure_details).issubset(self.failed_check_ids):
+            raise ValueError("quality assessment failure details reference a passing check")
         expected = canonical_hash(
             self.model_dump(mode="json", exclude={"assessment_id"}),
             prefix="quality_assessment:",

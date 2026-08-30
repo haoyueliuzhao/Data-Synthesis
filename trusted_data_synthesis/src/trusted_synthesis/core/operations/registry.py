@@ -448,6 +448,7 @@ def operation_semantic_contract(definition: OperationDefinition) -> dict[str, ob
             if definition.output_model is not None
             else None
         ),
+        "tool_capability": definition.tool_capability,
         "action_type": definition.action_type,
         "execution_mode": definition.execution_mode,
         "program_role": definition.program_role,

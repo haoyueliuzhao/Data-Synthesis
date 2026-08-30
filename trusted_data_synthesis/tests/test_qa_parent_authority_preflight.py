@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -16,16 +17,13 @@ from trusted_synthesis.experiments.qa_realization_vnext.parent_authority_preflig
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _FORMAL = (
-    _REPO_ROOT
-    / "trusted_data_synthesis/artifacts/qa_realization_vnext/"
+    _REPO_ROOT / "trusted_data_synthesis/artifacts/qa_realization_vnext/"
     "parent_authority_v2_20260831"
 )
 
 
 def test_parent_authority_v2_formal_artifacts_revalidate_exact_bytes() -> None:
-    report = QAParentAuthorityPreflight.model_validate_json(
-        (_FORMAL / "report.json").read_bytes()
-    )
+    report = QAParentAuthorityPreflight.model_validate_json((_FORMAL / "report.json").read_bytes())
     source_rows = tuple(
         SourceFileBinding.model_validate_json(line)
         for line in (_FORMAL / "source_manifest.jsonl").read_bytes().splitlines()
@@ -49,7 +47,13 @@ def test_parent_authority_v2_formal_artifacts_revalidate_exact_bytes() -> None:
     assert report.attack_control_count == report.rejected_attack_count == len(attacks) == 11
     assert all(row.passed and row.observed == "rejected" for row in attacks)
     assert all(
-        hashlib.sha256((_REPO_ROOT / row.path).read_bytes()).hexdigest() == row.sha256
+        hashlib.sha256(
+            subprocess.check_output(
+                ("git", "show", f"{report.source_commit}:{row.path}"),
+                cwd=_REPO_ROOT,
+            )
+        ).hexdigest()
+        == row.sha256
         for row in source_rows
     )
     assert all(
@@ -59,8 +63,7 @@ def test_parent_authority_v2_formal_artifacts_revalidate_exact_bytes() -> None:
         for row in raw_rows
     )
     assert all(
-        hashlib.sha256((_FORMAL / row["filename"]).read_bytes()).hexdigest()
-        == row["sha256"]
+        hashlib.sha256((_FORMAL / row["filename"]).read_bytes()).hexdigest() == row["sha256"]
         and (_FORMAL / row["filename"]).stat().st_size == row["byte_count"]
         for row in artifact_manifest["files"]
     )
