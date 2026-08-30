@@ -24,6 +24,10 @@ if TYPE_CHECKING:
         QualityVectorCompiler,
         QualityVectorPolicy,
     )
+    from trusted_synthesis.core.evaluation.realization_binding import (
+        RealizationExecutionBinding,
+        bind_realization_execution,
+    )
     from trusted_synthesis.core.evaluation.schema import (
         DiagnosticQualityVector,
         DimensionScore,
@@ -139,9 +143,17 @@ _EXPORTS = {
         "trusted_synthesis.core.evaluation.evaluator",
         "ReferenceQualityEvaluator",
     ),
+    "RealizationExecutionBinding": (
+        "trusted_synthesis.core.evaluation.realization_binding",
+        "RealizationExecutionBinding",
+    ),
     "ReleaseDecision": (
         "trusted_synthesis.core.evaluation.schema",
         "ReleaseDecision",
+    ),
+    "bind_realization_execution": (
+        "trusted_synthesis.core.evaluation.realization_binding",
+        "bind_realization_execution",
     ),
     "TRAINING_UTILITY_PROTOCOL_VERSION": (
         "trusted_synthesis.core.evaluation.utility",

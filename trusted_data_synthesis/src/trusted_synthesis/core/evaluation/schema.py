@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from trusted_synthesis.hashing import canonical_hash
 
 
 class ReleaseDecision(str, Enum):
@@ -62,3 +64,18 @@ class QualityAssessment(BaseModel):
     failed_check_ids: tuple[str, ...] = ()
     check_failure_details: dict[str, tuple[str, ...]] = Field(default_factory=dict)
     evaluator_version: str
+    schema_version: str = "quality_assessment.v2"
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> QualityAssessment:
+        expected = canonical_hash(
+            self.model_dump(mode="json", exclude={"assessment_id"}),
+            prefix="quality_assessment:",
+        )
+        if self.assessment_id != expected:
+            raise ValueError("quality assessment content identity is invalid")
+        return self
+
+    @property
+    def assessment_hash(self) -> str:
+        return canonical_hash(self, prefix="quality_assessment_content:")

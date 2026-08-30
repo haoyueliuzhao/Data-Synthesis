@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from collections import Counter
 from decimal import Decimal
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 
 from trusted_synthesis.core.evaluation.evaluator import CandidateQualityEvaluator
+from trusted_synthesis.core.evaluation.realization_binding import bind_realization_execution
 from trusted_synthesis.core.evaluation.schema import ReleaseDecision
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
@@ -26,6 +28,7 @@ from trusted_synthesis.core.task.program import make_program
 from trusted_synthesis.core.task.realization import (
     PROTECTED_REWRITE_VERSION,
     QuestionRendererProfile,
+    RealizedTaskPackage,
     SurfaceRealization,
     validate_protected_rewrite,
 )
@@ -98,8 +101,22 @@ def test_realization_portfolio_closes_three_identity_layers_without_legacy_drift
         {key: value for key, value in binding_payload.items() if key != "binding_snapshot_id"},
         prefix="binding_snapshot:",
     )
-    with pytest.raises(ValueError, match="disagree with role bindings"):
+    with pytest.raises(ValueError, match="cross the EvidenceBinding"):
         BindingSnapshot.model_validate(binding_payload)
+
+    assert len({item.semantic_instance_id for item in compilation.candidates}) == 1
+    assert len({item.realized_package_id for item in compilation.candidates}) == 4
+    forged_plan = canonical.semantic_plan.model_copy(
+        update={"plan_id": "canonical_semantic_plan:forged"}
+    )
+    forged_package = canonical.model_construct(
+        **{
+            **canonical.model_dump(mode="python"),
+            "semantic_plan": forged_plan,
+        }
+    )
+    with pytest.raises(ValueError, match="semantic plan identity is invalid"):
+        RealizedTaskPackage.model_validate(forged_package.model_dump(mode="python", warnings=False))
 
     realization_payload = canonical.realization.model_dump(mode="json")
     validation = dict(realization_payload["validation"])
@@ -362,7 +379,7 @@ def test_registered_cross_metric_rejects_unregistered_or_context_drift(
         )
 
 
-def test_semantic_parent_split_and_diversity_release_conserve_parent_weight(
+def test_semantic_instance_split_and_execution_bound_release_conserve_exact_weight(
     finance_evidence: EvidenceItem,
 ) -> None:
     compilation, bundle, graph = _fact_realization_compilation(finance_evidence)
@@ -372,13 +389,11 @@ def test_semantic_parent_split_and_diversity_release_conserve_parent_weight(
     )
 
     corpus = EvidenceCorpus.from_bundle(bundle)
-    canonical = next(
-        item for item in compilation.candidates if item.realization.style == "canonical"
-    )
+    canonical = next(item for item in compilation.selected if item.realization.style == "canonical")
     records = []
     generator = FinanceNumericCandidateGenerator()
     evaluator = CandidateQualityEvaluator()
-    for index, realized in enumerate(compilation.candidates):
+    for index, realized in enumerate(compilation.selected):
         trajectory_id = f"trajectory:realization:{index}"
         generated = generator.generate(
             realized.task.public,
@@ -397,33 +412,52 @@ def test_semantic_parent_split_and_diversity_release_conserve_parent_weight(
                 realized,
                 trajectory,
                 assessment,
+                bind_realization_execution(
+                    realized,
+                    compilation.portfolio,
+                    trajectory,
+                    assessment,
+                ),
             )
         )
-    _, trajectory, assessment = next(
+    _, trajectory, _, _ = next(
         record for record in records if record[0].realization.style == "canonical"
     )
     rejected_trajectory_id = "trajectory:realization:rejected"
+    rejected_trajectory = trajectory.model_copy(
+        update={
+            "trajectory_id": rejected_trajectory_id,
+            "final_answer": {"value": "deliberately_wrong"},
+        }
+    )
+    rejected_assessment = evaluator.evaluate(
+        canonical.task,
+        corpus,
+        graph,
+        rejected_trajectory,
+    )
+    assert rejected_assessment.decision == ReleaseDecision.REJECTED
     records.append(
         (
             canonical,
-            trajectory.model_copy(update={"trajectory_id": rejected_trajectory_id}),
-            assessment.model_copy(
-                update={
-                    "assessment_id": "assessment:realization:rejected",
-                    "trajectory_id": rejected_trajectory_id,
-                    "decision": ReleaseDecision.REJECTED,
-                    "fatal_failures": ("question_contract_round_trip",),
-                }
+            rejected_trajectory,
+            rejected_assessment,
+            bind_realization_execution(
+                canonical,
+                compilation.portfolio,
+                rejected_trajectory,
+                rejected_assessment,
             ),
         )
     )
-    with pytest.raises(ValueError, match="trajectory task identity mismatch"):
+    with pytest.raises(ValueError, match="does not match record contents"):
         select_diversity_aware_release(
             (
                 (
-                    records[0][0],
-                    records[0][1].model_copy(update={"task_id": "task:foreign"}),
-                    records[0][2],
+                    records[1][0],
+                    records[1][1],
+                    records[1][2],
+                    records[0][3],
                 ),
             ),
             policy=DiversityReleasePolicy(policy_id="qa_realization_bad_binding.v1"),
@@ -433,16 +467,29 @@ def test_semantic_parent_split_and_diversity_release_conserve_parent_weight(
         records,
         policy=DiversityReleasePolicy(
             policy_id="qa_realization_release_fixture.v1",
-            max_per_semantic_parent=2,
+            max_per_semantic_instance=2,
         ),
         split_policy=split_policy,
     )
 
     assert len(selection.selected_realization_ids) == 2
-    assert len(selection.valid_but_not_selected_realization_ids) == 2
-    assert set(selection.semantic_parent_child_counts.values()) == {2}
-    assert set(selection.semantic_parent_child_weights.values()) == {"1/2"}
-    assert selection.failure_distribution == {"question_contract_round_trip": 1}
+    assert len(selection.valid_but_not_selected_realization_ids) == 1
+    assert set(selection.semantic_instance_child_counts.values()) == {2}
+    assert {item.exact_fraction for item in selection.weight_assignments} == {"1/2"}
+    assert sum(
+        (Fraction(item.numerator, item.denominator) for item in selection.weight_assignments),
+        start=Fraction(0, 1),
+    ) == Fraction(1, 1)
+    assert sum(selection.failure_distribution.values()) == 1
+
+    missing_weight = selection.model_dump(mode="json")
+    missing_weight["weight_assignments"] = missing_weight["weight_assignments"][:-1]
+    missing_weight["selection_id"] = canonical_hash(
+        {key: value for key, value in missing_weight.items() if key != "selection_id"},
+        prefix="diversity_aware_release_selection:",
+    )
+    with pytest.raises(ValueError, match="coverage is incomplete"):
+        type(selection).model_validate(missing_weight)
 
 
 def test_read_only_census_writes_exact_artifact_set(

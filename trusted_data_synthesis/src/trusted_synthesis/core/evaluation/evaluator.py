@@ -461,29 +461,29 @@ def _assessment(
         else ReleaseDecision.QUARANTINED
     )
     manifest_hash = canonical_hash(manifest, prefix="check_manifest:")
-    identity = {
+    payload = {
         "task_id": task.task_id,
         "trajectory_id": trajectory.trajectory_id,
-        "manifest_hash": manifest_hash,
+        "hard_gates": hard_gates,
+        "universal_gates": tuple(gate for gate in hard_gates if gate.scope == GateScope.UNIVERSAL),
+        "domain_gates": tuple(gate for gate in hard_gates if gate.scope == GateScope.DOMAIN),
+        "required_check_manifest_hash": manifest_hash,
+        "diagnostic_vector": diagnostic,
+        "dimensions": dimensions,
+        "total_score": total,
+        "decision": decision,
+        "fatal_failures": fatal_failures,
+        "failed_check_ids": failed_check_ids,
+        "check_failure_details": check_failure_details or {},
         "evaluator_version": evaluator_version,
+        "schema_version": "quality_assessment.v2",
     }
-    return QualityAssessment(
-        assessment_id=canonical_hash(identity, prefix="assessment:"),
-        task_id=task.task_id,
-        trajectory_id=trajectory.trajectory_id,
-        hard_gates=hard_gates,
-        universal_gates=tuple(gate for gate in hard_gates if gate.scope == GateScope.UNIVERSAL),
-        domain_gates=tuple(gate for gate in hard_gates if gate.scope == GateScope.DOMAIN),
-        required_check_manifest_hash=manifest_hash,
-        diagnostic_vector=diagnostic,
-        dimensions=dimensions,
-        total_score=total,
-        decision=decision,
-        fatal_failures=fatal_failures,
-        failed_check_ids=failed_check_ids,
-        check_failure_details=check_failure_details or {},
-        evaluator_version=evaluator_version,
+    provisional = QualityAssessment.model_construct(assessment_id="pending", **payload)
+    assessment_id = canonical_hash(
+        provisional.model_dump(mode="json", exclude={"assessment_id"}),
+        prefix="quality_assessment:",
     )
+    return QualityAssessment(assessment_id=assessment_id, **payload)
 
 
 def _failure_detail_map(

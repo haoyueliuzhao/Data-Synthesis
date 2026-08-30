@@ -7,10 +7,14 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.task.schema import TaskPackage
-from trusted_synthesis.core.task.semantic import BindingSnapshot, CanonicalSemanticPlan
+from trusted_synthesis.core.task.semantic import (
+    BindingSnapshot,
+    CanonicalSemanticPlan,
+    SemanticInstance,
+)
 from trusted_synthesis.hashing import canonical_hash
 
-REALIZATION_SCHEMA_VERSION = "surface_realization.v1"
+REALIZATION_SCHEMA_VERSION = "surface_realization.v2"
 PROTECTED_REWRITE_VERSION = "protected_question_rewrite.v1"
 
 _PROTECTED_SLOT_PATTERN = re.compile(r"<slot_([a-z][a-z0-9_]*)>")
@@ -126,6 +130,7 @@ class SurfaceRealization(BaseModel):
 
     realization_id: str = Field(min_length=1)
     semantic_task_id: str = Field(min_length=1)
+    semantic_instance_id: str = Field(min_length=1)
     binding_snapshot_id: str = Field(min_length=1)
     legacy_task_id: str = Field(min_length=1)
     renderer_profile_id: str = Field(min_length=1)
@@ -157,41 +162,134 @@ class SurfaceRealization(BaseModel):
 class RealizedTaskPackage(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    semantic_plan_id: str = Field(min_length=1)
-    binding_snapshot_id: str = Field(min_length=1)
+    realized_package_id: str = Field(min_length=1)
+    semantic_plan: CanonicalSemanticPlan
+    binding_snapshot: BindingSnapshot
+    semantic_instance: SemanticInstance
     realization: SurfaceRealization
     task: TaskPackage
+    schema_version: str = "realized_task_package.v2"
 
     @model_validator(mode="after")
     def validate_lineage(self) -> RealizedTaskPackage:
+        CanonicalSemanticPlan.model_validate(
+            self.semantic_plan.model_dump(mode="python", warnings=False)
+        )
+        BindingSnapshot.model_validate(
+            self.binding_snapshot.model_dump(mode="python", warnings=False)
+        )
+        SemanticInstance.model_validate(
+            self.semantic_instance.model_dump(mode="python", warnings=False)
+        )
+        SurfaceRealization.model_validate(
+            self.realization.model_dump(mode="python", warnings=False)
+        )
+        TaskPackage.model_validate(self.task.model_dump(mode="python", warnings=False))
+        if (
+            self.semantic_instance.semantic_task_id != self.semantic_plan.semantic_task_id
+            or self.semantic_instance.semantic_plan_id != self.semantic_plan.plan_id
+            or self.semantic_instance.binding_snapshot_id
+            != self.binding_snapshot.binding_snapshot_id
+        ):
+            raise ValueError("realized package crosses its semantic instance parents")
+        if (
+            self.realization.semantic_task_id != self.semantic_plan.semantic_task_id
+            or self.realization.semantic_instance_id != self.semantic_instance.semantic_instance_id
+            or self.realization.binding_snapshot_id != self.binding_snapshot.binding_snapshot_id
+        ):
+            raise ValueError("realization crosses its semantic instance")
         if self.task.task_id != self.realization.legacy_task_id:
             raise ValueError("realized task does not preserve the legacy task identity")
         if self.task.task_hash != self.realization.realized_task_hash:
             raise ValueError("realized task hash does not match the realization")
-        if self.binding_snapshot_id != self.realization.binding_snapshot_id:
-            raise ValueError("realized task binding lineage mismatch")
+        if (
+            self.task.oracle.task_program.program_id != self.semantic_plan.source_program_id
+            or self.task.oracle.task_program.program_hash != self.semantic_plan.source_program_hash
+        ):
+            raise ValueError("realized task Program crosses the CanonicalSemanticPlan")
+        if (
+            self.task.public.domain != self.semantic_plan.domain
+            or self.task.public.task_type != self.semantic_plan.task_type
+            or self.task.public.retrieval_track != self.semantic_plan.retrieval_track
+            or self.task.public.planning_track != self.semantic_plan.planning_track
+        ):
+            raise ValueError("realized task public semantics cross the CanonicalSemanticPlan")
+        if any(
+            self.task.public.answer_schema.get(key) != value
+            for key, value in self.semantic_plan.answer_schema.items()
+        ):
+            raise ValueError("realized task Answer Schema crosses the CanonicalSemanticPlan")
+        if set(self.task.oracle.gold_evidence_ids) != set(
+            self.binding_snapshot.evidence_ids
+        ) or len(self.task.oracle.gold_evidence_ids) != len(self.binding_snapshot.evidence_ids):
+            raise ValueError("realized task Evidence crosses the BindingSnapshot")
+        if (
+            self.task.oracle.proof_graph_id != self.binding_snapshot.proof_graph_id
+            or self.task.oracle.proof_graph_hash != self.binding_snapshot.proof_graph_hash
+        ):
+            raise ValueError("realized task ProofGraph crosses the BindingSnapshot")
+        pattern_binding = self.task.oracle.selection_contract.get("pattern_binding")
+        if not isinstance(pattern_binding, dict) or (
+            pattern_binding.get("binding_id") != self.binding_snapshot.evidence_binding.binding_id
+            or pattern_binding.get("binding_hash")
+            != self.binding_snapshot.evidence_binding.binding_hash
+            or pattern_binding.get("role_bindings")
+            != self.binding_snapshot.evidence_binding.role_bindings
+        ):
+            raise ValueError("realized task Pattern Binding crosses the BindingSnapshot")
+        expected = canonical_hash(
+            self.model_dump(mode="json", exclude={"realized_package_id"}),
+            prefix="realized_task_package:",
+        )
+        if self.realized_package_id != expected:
+            raise ValueError("realized task package identity is invalid")
         return self
+
+    @property
+    def semantic_plan_id(self) -> str:
+        return self.semantic_plan.plan_id
+
+    @property
+    def binding_snapshot_id(self) -> str:
+        return self.binding_snapshot.binding_snapshot_id
+
+    @property
+    def semantic_instance_id(self) -> str:
+        return self.semantic_instance.semantic_instance_id
 
 
 class RealizationPortfolio(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     portfolio_id: str = Field(min_length=1)
-    semantic_task_id: str = Field(min_length=1)
+    semantic_schema_id: str = Field(min_length=1)
+    semantic_instance_id: str = Field(min_length=1)
     binding_snapshot_id: str = Field(min_length=1)
+    candidate_realized_package_ids: tuple[str, ...] = Field(min_length=1)
+    selected_realized_package_ids: tuple[str, ...] = Field(min_length=1)
+    rejected_realized_package_ids: tuple[str, ...] = ()
     candidate_realization_ids: tuple[str, ...] = Field(min_length=1)
     selected_realization_ids: tuple[str, ...] = Field(min_length=1)
     rejected_realization_ids: tuple[str, ...] = ()
     parent_weight_numerator: int = Field(default=1, ge=1)
     child_weight_denominator: int = Field(ge=1)
-    selection_policy_id: str = "deterministic_realization_portfolio.v1"
-    schema_version: str = "realization_portfolio.v1"
+    selection_policy_id: str = "deterministic_realization_portfolio.v2"
+    schema_version: str = "realization_portfolio.v2"
 
     @model_validator(mode="after")
     def validate_portfolio(self) -> RealizationPortfolio:
+        candidate_packages = set(self.candidate_realized_package_ids)
+        selected_packages = set(self.selected_realized_package_ids)
+        rejected_packages = set(self.rejected_realized_package_ids)
         candidate_set = set(self.candidate_realization_ids)
         selected_set = set(self.selected_realization_ids)
         rejected_set = set(self.rejected_realization_ids)
+        if len(candidate_packages) != len(self.candidate_realized_package_ids):
+            raise ValueError("realization portfolio contains duplicate candidate packages")
+        if len(selected_packages) != len(self.selected_realized_package_ids):
+            raise ValueError("realization portfolio contains duplicate selected packages")
+        if len(rejected_packages) != len(self.rejected_realized_package_ids):
+            raise ValueError("realization portfolio contains duplicate rejected packages")
         if len(candidate_set) != len(self.candidate_realization_ids):
             raise ValueError("realization portfolio contains duplicate candidates")
         if len(selected_set) != len(self.selected_realization_ids):
@@ -202,7 +300,18 @@ class RealizationPortfolio(BaseModel):
             raise ValueError("realization portfolio disposition is outside the candidate set")
         if selected_set & rejected_set or selected_set | rejected_set != candidate_set:
             raise ValueError("realization portfolio does not partition candidates")
-        if self.child_weight_denominator != len(self.selected_realization_ids):
+        if (
+            selected_packages & rejected_packages
+            or selected_packages | rejected_packages != candidate_packages
+        ):
+            raise ValueError("realization portfolio does not partition candidate packages")
+        if (
+            len(self.candidate_realized_package_ids) != len(self.candidate_realization_ids)
+            or len(self.selected_realized_package_ids) != len(self.selected_realization_ids)
+            or len(self.rejected_realized_package_ids) != len(self.rejected_realization_ids)
+        ):
+            raise ValueError("realization portfolio package/realization cardinality differs")
+        if self.child_weight_denominator != len(self.selected_realized_package_ids):
             raise ValueError("realization portfolio does not conserve parent weight")
         expected = canonical_hash(
             self.model_dump(mode="json", exclude={"portfolio_id"}),
@@ -279,6 +388,7 @@ def realize_task(
     *,
     plan: CanonicalSemanticPlan,
     binding: BindingSnapshot,
+    instance: SemanticInstance,
     task: TaskPackage,
     profile: QuestionRendererProfile,
     slot_values: Mapping[str, str],
@@ -286,6 +396,12 @@ def realize_task(
 ) -> RealizedTaskPackage:
     if binding.semantic_task_id != plan.semantic_task_id:
         raise ValueError("realization binding does not target the semantic plan")
+    if (
+        instance.semantic_task_id != plan.semantic_task_id
+        or instance.semantic_plan_id != plan.plan_id
+        or instance.binding_snapshot_id != binding.binding_snapshot_id
+    ):
+        raise ValueError("realization semantic instance crosses its Plan or BindingSnapshot")
     if profile.task_type != plan.task_type or task.public.task_type != plan.task_type:
         raise ValueError("renderer profile does not target the task type")
     values = {str(key): str(value) for key, value in slot_values.items()}
@@ -305,6 +421,7 @@ def realize_task(
     realized_task = task.model_copy(update={"public": realized_public})
     identity_payload = {
         "semantic_task_id": plan.semantic_task_id,
+        "semantic_instance_id": instance.semantic_instance_id,
         "binding_snapshot_id": binding.binding_snapshot_id,
         "legacy_task_id": task.task_id,
         "renderer_profile_id": profile.profile_id,
@@ -333,11 +450,25 @@ def realize_task(
         validation=validation,
         **identity_payload,
     )
+    package_payload = {
+        "semantic_plan": plan,
+        "binding_snapshot": binding,
+        "semantic_instance": instance,
+        "realization": realization,
+        "task": realized_task,
+        "schema_version": "realized_task_package.v2",
+    }
+    provisional = RealizedTaskPackage.model_construct(
+        realized_package_id="pending",
+        **package_payload,
+    )
+    package_id = canonical_hash(
+        provisional.model_dump(mode="json", exclude={"realized_package_id"}),
+        prefix="realized_task_package:",
+    )
     return RealizedTaskPackage(
-        semantic_plan_id=plan.plan_id,
-        binding_snapshot_id=binding.binding_snapshot_id,
-        realization=realization,
-        task=realized_task,
+        realized_package_id=package_id,
+        **package_payload,
     )
 
 
@@ -441,12 +572,16 @@ def select_realization_portfolio(
     if max_realizations < 1:
         raise ValueError("realization portfolio maximum must be positive")
     semantic_ids = {row.realization.semantic_task_id for row in rows}
+    instance_ids = {row.semantic_instance_id for row in rows}
     binding_ids = {row.binding_snapshot_id for row in rows}
-    if len(semantic_ids) != 1 or len(binding_ids) != 1:
+    if len(semantic_ids) != 1 or len(instance_ids) != 1 or len(binding_ids) != 1:
         raise ValueError("realization portfolio candidates must share one semantic binding")
     if any(not row.realization.validation.passed for row in rows):
         raise ValueError("realization portfolio cannot compensate for invalid candidates")
     realization_ids = [row.realization.realization_id for row in rows]
+    package_ids = [row.realized_package_id for row in rows]
+    if len(package_ids) != len(set(package_ids)):
+        raise ValueError("realization portfolio contains duplicate realized packages")
     if len(realization_ids) != len(set(realization_ids)):
         raise ValueError("realization portfolio contains duplicate realization identities")
     if len({row.realization.final_instruction for row in rows}) != len(rows):
@@ -482,19 +617,29 @@ def select_realization_portfolio(
         seen_languages.add(chosen.realization.language)
 
     candidate_ids = tuple(sorted(realization_ids))
+    candidate_package_ids = tuple(sorted(package_ids))
     selected_ids = tuple(row.realization.realization_id for row in selected)
+    selected_package_ids = tuple(row.realized_package_id for row in selected)
     selected_set = set(selected_ids)
     rejected_ids = tuple(item for item in candidate_ids if item not in selected_set)
+    selected_package_set = set(selected_package_ids)
+    rejected_package_ids = tuple(
+        item for item in candidate_package_ids if item not in selected_package_set
+    )
     payload = {
-        "semantic_task_id": next(iter(semantic_ids)),
+        "semantic_schema_id": next(iter(semantic_ids)),
+        "semantic_instance_id": next(iter(instance_ids)),
         "binding_snapshot_id": next(iter(binding_ids)),
+        "candidate_realized_package_ids": candidate_package_ids,
+        "selected_realized_package_ids": selected_package_ids,
+        "rejected_realized_package_ids": rejected_package_ids,
         "candidate_realization_ids": candidate_ids,
         "selected_realization_ids": selected_ids,
         "rejected_realization_ids": rejected_ids,
         "parent_weight_numerator": 1,
         "child_weight_denominator": len(selected),
-        "selection_policy_id": "deterministic_realization_portfolio.v1",
-        "schema_version": "realization_portfolio.v1",
+        "selection_policy_id": "deterministic_realization_portfolio.v2",
+        "schema_version": "realization_portfolio.v2",
     }
     portfolio_id = canonical_hash(payload, prefix="realization_portfolio:")
     return RealizationPortfolio(portfolio_id=portfolio_id, **payload), tuple(selected)

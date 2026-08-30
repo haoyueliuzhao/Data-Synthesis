@@ -7,6 +7,7 @@ from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from trusted_synthesis.canonical_json import strict_canonical_hash
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.core.operations.executors import (
@@ -254,6 +255,7 @@ class OperationRegistry:
                 "tolerance_policy": item.tolerance_policy,
                 "implementation_hash": item.implementation_hash,
                 "implementation_dependency_ids": item.implementation_dependency_ids,
+                "semantic_contract_hash": operation_semantic_contract_hash(item),
             }
             for item in sorted(self._definitions.values(), key=lambda value: value.operator_id)
         )
@@ -430,6 +432,43 @@ def make_operation_definition(
         tolerance_policy="exact_decimal_and_exact_structure",
         implementation_hash=implementation_hash,
         implementation_dependency_ids=tuple(sorted(dependency_sources)),
+    )
+
+
+def operation_semantic_contract(definition: OperationDefinition) -> dict[str, object]:
+    return {
+        "operator_id": definition.operator_id,
+        "verifier_id": definition.verifier_id,
+        "input_schema": definition.input_schema,
+        "output_schema": definition.output_schema,
+        "compatibility_policy": definition.compatibility_policy,
+        "invariant_checks": definition.invariant_checks,
+        "output_model_schema": (
+            definition.output_model.model_json_schema()
+            if definition.output_model is not None
+            else None
+        ),
+        "action_type": definition.action_type,
+        "execution_mode": definition.execution_mode,
+        "program_role": definition.program_role,
+        "input_role_contract": definition.input_role_contract,
+        "parameter_contract": definition.parameter_contract,
+        "downstream_selector_contract": definition.downstream_selector_contract,
+        "input_order_policy": definition.input_order_policy,
+        "executor_version": definition.executor_version,
+        "verifier_version": definition.verifier_version,
+        "semantic_version": definition.semantic_version,
+        "formula_id": definition.formula_id,
+        "rounding_policy": definition.rounding_policy,
+        "tolerance_policy": definition.tolerance_policy,
+        "schema_version": "operation_semantic_contract.v1",
+    }
+
+
+def operation_semantic_contract_hash(definition: OperationDefinition) -> str:
+    return strict_canonical_hash(
+        operation_semantic_contract(definition),
+        prefix="operation_semantic_contract:",
     )
 
 

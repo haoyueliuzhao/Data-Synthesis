@@ -7,9 +7,16 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
-from trusted_synthesis.core.operations.registry import OperationRegistry
+from trusted_synthesis.core.operations.registry import (
+    OperationRegistry,
+    operation_semantic_contract_hash,
+)
 from trusted_synthesis.core.task.binding import EvidenceBinding
 from trusted_synthesis.core.task.pattern import TaskPatternSpec
+from trusted_synthesis.core.task.pattern_compiler import (
+    instantiate_pattern_program,
+    validate_and_resolve_binding,
+)
 from trusted_synthesis.core.task.program import InputRefKind, TaskProgram
 from trusted_synthesis.core.task.schema import PlanningTrack, RetrievalTrack
 from trusted_synthesis.hashing import canonical_hash
@@ -170,6 +177,8 @@ class CanonicalProgramNode(BaseModel):
     output_schema: str = Field(min_length=1)
     verifier_id: str = Field(min_length=1)
     input_order_policy: str = Field(pattern="^(ordered|permutation_invariant)$")
+    operation_semantic_contract_hash: str = Field(min_length=1)
+    operation_implementation_hash: str = Field(min_length=1)
 
 
 class CanonicalSemanticPlan(BaseModel):
@@ -180,6 +189,8 @@ class CanonicalSemanticPlan(BaseModel):
     plan_id: str = Field(min_length=1)
     proposal_id: str = Field(min_length=1)
     semantic_task_id: str = Field(min_length=1)
+    source_program_id: str = Field(min_length=1)
+    source_program_hash: str = Field(min_length=1)
     domain: str = Field(min_length=1)
     task_family: str = Field(min_length=1)
     task_type: str = Field(min_length=1)
@@ -194,7 +205,7 @@ class CanonicalSemanticPlan(BaseModel):
     planning_track: PlanningTrack
     semantic_constraints: tuple[str, ...] = ()
     mechanism_contract: dict[str, Any] = Field(default_factory=dict)
-    schema_version: str = "canonical_semantic_plan.v1"
+    schema_version: str = "canonical_semantic_plan.v2"
 
     @model_validator(mode="after")
     def validate_hashes(self) -> CanonicalSemanticPlan:
@@ -233,6 +244,7 @@ class BindingSnapshot(BaseModel):
     binding_snapshot_id: str = Field(min_length=1)
     semantic_task_id: str = Field(min_length=1)
     evidence_binding_id: str = Field(min_length=1)
+    evidence_binding: EvidenceBinding
     role_bindings: dict[str, tuple[str, ...]] = Field(min_length=1)
     evidence_ids: tuple[str, ...] = Field(min_length=1)
     evidence_version_ids: tuple[str, ...] = Field(min_length=1)
@@ -243,10 +255,17 @@ class BindingSnapshot(BaseModel):
     proof_graph_id: str = Field(min_length=1)
     proof_graph_hash: str = Field(min_length=1)
     kg_build_id: str | None = None
-    schema_version: str = "binding_snapshot.v1"
+    schema_version: str = "binding_snapshot.v2"
 
     @model_validator(mode="after")
     def validate_identity(self) -> BindingSnapshot:
+        EvidenceBinding.model_validate(
+            self.evidence_binding.model_dump(mode="python", warnings=False)
+        )
+        if self.evidence_binding_id != self.evidence_binding.binding_id:
+            raise ValueError("binding snapshot crosses its EvidenceBinding identity")
+        if self.role_bindings != self.evidence_binding.role_bindings:
+            raise ValueError("binding snapshot role bindings cross the EvidenceBinding")
         flattened = tuple(
             evidence_id
             for role_id in sorted(self.role_bindings)
@@ -273,19 +292,56 @@ class BindingSnapshot(BaseModel):
         return self
 
 
+class SemanticInstance(BaseModel):
+    """One concrete binding-level parent for sibling surface realizations."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    semantic_instance_id: str = Field(min_length=1)
+    semantic_task_id: str = Field(min_length=1)
+    semantic_plan_id: str = Field(min_length=1)
+    binding_snapshot_id: str = Field(min_length=1)
+    schema_version: str = "semantic_instance.v1"
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> SemanticInstance:
+        expected = canonical_hash(
+            {
+                "semantic_task_id": self.semantic_task_id,
+                "binding_snapshot_id": self.binding_snapshot_id,
+                "schema_version": self.schema_version,
+            },
+            prefix="semantic_instance:",
+        )
+        if self.semantic_instance_id != expected:
+            raise ValueError("semantic instance identity is invalid")
+        return self
+
+
 class SemanticBindingBundle(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     proposal: SemanticTaskProposal
     plan: CanonicalSemanticPlan
     binding: BindingSnapshot
+    instance: SemanticInstance
 
     @model_validator(mode="after")
     def validate_lineage(self) -> SemanticBindingBundle:
+        SemanticTaskProposal.model_validate(self.proposal.model_dump(mode="python", warnings=False))
+        CanonicalSemanticPlan.model_validate(self.plan.model_dump(mode="python", warnings=False))
+        BindingSnapshot.model_validate(self.binding.model_dump(mode="python", warnings=False))
+        SemanticInstance.model_validate(self.instance.model_dump(mode="python", warnings=False))
         if self.plan.proposal_id != self.proposal.proposal_id:
             raise ValueError("canonical plan does not bind the proposal")
         if self.binding.semantic_task_id != self.plan.semantic_task_id:
             raise ValueError("binding snapshot does not bind the semantic task")
+        if (
+            self.instance.semantic_task_id != self.plan.semantic_task_id
+            or self.instance.semantic_plan_id != self.plan.plan_id
+            or self.instance.binding_snapshot_id != self.binding.binding_snapshot_id
+        ):
+            raise ValueError("semantic instance crosses its Plan or BindingSnapshot")
         return self
 
 
@@ -381,6 +437,7 @@ def canonicalize_semantic_plan(
     nodes: list[CanonicalProgramNode] = []
     for node in program.nodes:
         definition = registry.require(node.operator_id)
+        registry.validate_node_contract(node)
         inputs = []
         for ref in node.input_refs:
             if ref.kind == InputRefKind.EVIDENCE:
@@ -445,6 +502,8 @@ def canonicalize_semantic_plan(
                 output_schema=node.output_schema,
                 verifier_id=node.verifier_id,
                 input_order_policy=definition.input_order_policy,
+                operation_semantic_contract_hash=operation_semantic_contract_hash(definition),
+                operation_implementation_hash=definition.implementation_hash,
             )
         )
     canonical_nodes = tuple(sorted(nodes, key=lambda item: canonical_hash(item)))
@@ -475,12 +534,14 @@ def canonicalize_semantic_plan(
         "planning_track": proposal.planning_track.value,
         "semantic_constraints": proposal.semantic_constraints,
         "mechanism_contract": proposal.mechanism_contract,
-        "schema_version": "semantic_task_identity.v1",
+        "schema_version": "semantic_task_identity.v2",
     }
     semantic_task_id = canonical_hash(semantic_payload, prefix="semantic_task:")
     payload = {
         "proposal_id": proposal.proposal_id,
         "semantic_task_id": semantic_task_id,
+        "source_program_id": program.program_id,
+        "source_program_hash": program.program_hash,
         "domain": proposal.domain,
         "task_family": proposal.task_family,
         "task_type": proposal.task_type,
@@ -495,7 +556,7 @@ def canonicalize_semantic_plan(
         "planning_track": proposal.planning_track,
         "semantic_constraints": proposal.semantic_constraints,
         "mechanism_contract": proposal.mechanism_contract,
-        "schema_version": "canonical_semantic_plan.v1",
+        "schema_version": "canonical_semantic_plan.v2",
     }
     plan_id = canonical_hash(_json_ready(payload), prefix="canonical_semantic_plan:")
     return CanonicalSemanticPlan(plan_id=plan_id, **payload)
@@ -534,6 +595,7 @@ def make_binding_snapshot(
     payload = {
         "semantic_task_id": plan.semantic_task_id,
         "evidence_binding_id": binding.binding_id,
+        "evidence_binding": binding,
         "role_bindings": binding.role_bindings,
         "evidence_ids": evidence_ids,
         "evidence_version_ids": tuple(item.evidence_version_id for item in evidence),
@@ -544,10 +606,33 @@ def make_binding_snapshot(
         "proof_graph_id": proof_graph.graph_id,
         "proof_graph_hash": proof_graph.graph_hash,
         "kg_build_id": proof_graph.source_build_id or bundle.graph_build_id,
-        "schema_version": "binding_snapshot.v1",
+        "schema_version": "binding_snapshot.v2",
     }
-    identity = canonical_hash(payload, prefix="binding_snapshot:")
+    identity = canonical_hash(_json_ready(payload), prefix="binding_snapshot:")
     return BindingSnapshot(binding_snapshot_id=identity, **payload)
+
+
+def make_semantic_instance(
+    plan: CanonicalSemanticPlan,
+    binding: BindingSnapshot,
+) -> SemanticInstance:
+    if binding.semantic_task_id != plan.semantic_task_id:
+        raise ValueError("semantic instance BindingSnapshot crosses the Plan")
+    payload = {
+        "semantic_task_id": plan.semantic_task_id,
+        "semantic_plan_id": plan.plan_id,
+        "binding_snapshot_id": binding.binding_snapshot_id,
+        "schema_version": "semantic_instance.v1",
+    }
+    instance_id = canonical_hash(
+        {
+            "semantic_task_id": plan.semantic_task_id,
+            "binding_snapshot_id": binding.binding_snapshot_id,
+            "schema_version": "semantic_instance.v1",
+        },
+        prefix="semantic_instance:",
+    )
+    return SemanticInstance(semantic_instance_id=instance_id, **payload)
 
 
 def build_semantic_binding_bundle(
@@ -560,10 +645,20 @@ def build_semantic_binding_bundle(
     registry: OperationRegistry,
     question_intents: tuple[str, ...] | None = None,
 ) -> SemanticBindingBundle:
+    validate_and_resolve_binding(pattern, binding, bundle, proof_graph)
+    expected_program, _ = instantiate_pattern_program(pattern, binding, registry)
+    if program != expected_program:
+        raise ValueError("semantic binding Program is not authorized by Pattern and Binding")
     proposal = proposal_from_pattern(pattern, registry, question_intents=question_intents)
     plan = canonicalize_semantic_plan(proposal, program, binding, registry)
     snapshot = make_binding_snapshot(plan, binding, bundle, proof_graph)
-    return SemanticBindingBundle(proposal=proposal, plan=plan, binding=snapshot)
+    instance = make_semantic_instance(plan, snapshot)
+    return SemanticBindingBundle(
+        proposal=proposal,
+        plan=plan,
+        binding=snapshot,
+        instance=instance,
+    )
 
 
 def _proposal_identity(payload: dict[str, Any]) -> dict[str, Any]:
@@ -599,6 +694,7 @@ def _canonical_program_payload(
                 "output_schema": node.output_schema,
                 "verifier_id": node.verifier_id,
                 "input_order_policy": node.input_order_policy,
+                "operation_semantic_contract_hash": (node.operation_semantic_contract_hash),
             }
         )
     return {
@@ -639,7 +735,7 @@ def _semantic_task_identity(payload: dict[str, Any]) -> dict[str, Any]:
         "planning_track": payload["planning_track"],
         "semantic_constraints": payload["semantic_constraints"],
         "mechanism_contract": payload["mechanism_contract"],
-        "schema_version": "semantic_task_identity.v1",
+        "schema_version": "semantic_task_identity.v2",
     }
 
 

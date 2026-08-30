@@ -80,8 +80,32 @@ def assign_semantic_parent_split(
     return DatasetSplit.TEST
 
 
+def semantic_instance_cluster_id(semantic_instance_id: str) -> str:
+    if not semantic_instance_id:
+        raise ValueError("semantic instance split requires a semantic instance identity")
+    return canonical_hash(
+        {
+            "semantic_instance_id": semantic_instance_id,
+            "schema_version": "semantic_instance_cluster.v1",
+        },
+        prefix="semantic_instance_cluster:",
+    )
+
+
+def assign_semantic_instance_split(
+    semantic_instance_id: str,
+    policy: SplitPolicy,
+) -> DatasetSplit:
+    bucket = int(canonical_hash(semantic_instance_cluster_id(semantic_instance_id))[-8:], 16) % 100
+    if bucket < policy.train_share:
+        return DatasetSplit.TRAIN
+    if bucket < policy.train_share + policy.dev_share:
+        return DatasetSplit.DEV
+    return DatasetSplit.TEST
+
+
 def assign_realization_split(
     realized: RealizedTaskPackage,
     policy: SplitPolicy,
 ) -> DatasetSplit:
-    return assign_semantic_parent_split(realized.realization.semantic_task_id, policy)
+    return assign_semantic_instance_split(realized.semantic_instance_id, policy)

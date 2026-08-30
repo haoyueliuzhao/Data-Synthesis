@@ -1,6 +1,7 @@
 from trusted_synthesis.core.release.diversity_selector import (
     DiversityAwareReleaseSelection,
     DiversityReleasePolicy,
+    ReleaseWeightAssignment,
     select_diversity_aware_release,
 )
 from trusted_synthesis.core.release.manifest import build_release_manifest
@@ -14,9 +15,11 @@ from trusted_synthesis.core.release.selector import select_candidate_release
 from trusted_synthesis.core.release.split import (
     DatasetSplit,
     assign_realization_split,
+    assign_semantic_instance_split,
     assign_semantic_parent_split,
     assign_split,
     semantic_cluster_id,
+    semantic_instance_cluster_id,
     semantic_parent_cluster_id,
 )
 from trusted_synthesis.core.release.validation import (
@@ -28,6 +31,7 @@ __all__ = [
     "DatasetSplit",
     "DiversityAwareReleaseSelection",
     "DiversityReleasePolicy",
+    "ReleaseWeightAssignment",
     "CandidateReleaseSelection",
     "CrossDomainContractSuiteResult",
     "ReleaseManifest",
@@ -35,10 +39,12 @@ __all__ = [
     "SplitPolicy",
     "assign_split",
     "assign_realization_split",
+    "assign_semantic_instance_split",
     "assign_semantic_parent_split",
     "build_release_manifest",
     "build_release_validation_summary",
     "semantic_cluster_id",
+    "semantic_instance_cluster_id",
     "semantic_parent_cluster_id",
     "select_candidate_release",
     "select_diversity_aware_release",

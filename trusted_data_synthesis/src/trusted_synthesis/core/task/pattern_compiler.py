@@ -64,7 +64,7 @@ class TaskPatternCompiler:
         bundle: EvidenceBundle,
         proof_graph: ProofGraph,
     ) -> TaskPatternInstantiation:
-        evidence_by_role = _validate_and_resolve_binding(
+        evidence_by_role = validate_and_resolve_binding(
             pattern,
             binding,
             bundle,
@@ -82,7 +82,7 @@ class TaskPatternCompiler:
             raise ValueError(
                 "task pattern binding failed domain semantics: " + ", ".join(report.issues)
             )
-        program, concrete_node_roles = _instantiate_program(
+        program, concrete_node_roles = instantiate_pattern_program(
             pattern,
             binding,
             self._operation_registry,
@@ -187,7 +187,7 @@ def _merge_answer_schema(
     return {**declared, **materialized}
 
 
-def _validate_and_resolve_binding(
+def validate_and_resolve_binding(
     pattern: TaskPatternSpec,
     binding: EvidenceBinding,
     bundle: EvidenceBundle,
@@ -250,7 +250,7 @@ def _validate_and_resolve_binding(
     return resolved
 
 
-def _instantiate_program(
+def instantiate_pattern_program(
     pattern: TaskPatternSpec,
     binding: EvidenceBinding,
     registry: OperationRegistry,

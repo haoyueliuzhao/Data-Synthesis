@@ -72,6 +72,7 @@ def compile_finance_realization_portfolio(
         realize_task(
             plan=semantic_binding.plan,
             binding=semantic_binding.binding,
+            instance=semantic_binding.instance,
             task=instantiation.task,
             profile=profile,
             slot_values={
@@ -116,6 +117,10 @@ def compile_finance_realization_portfolio(
         ),
         "binding_snapshot_identity_match": all(
             row.binding_snapshot_id == semantic_binding.binding.binding_snapshot_id
+            for row in candidates
+        ),
+        "semantic_instance_identity_match": all(
+            row.semantic_instance_id == semantic_binding.instance.semantic_instance_id
             for row in candidates
         ),
         "legacy_task_identity_preserved": all(
