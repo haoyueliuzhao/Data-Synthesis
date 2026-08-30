@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -77,22 +79,54 @@ def test_fully_rehashed_attacks_reach_exact_authority_gates(
 def test_preflight_publishes_once_and_exact_loader_rehashes_bytes(
     tmp_path: Path,
 ) -> None:
+    source_tree_id = "a" * 40
+    source_root = tmp_path / "source"
+    source_root.mkdir()
+    tracked_bytes = b"source fixture\n"
+    (source_root / "tracked.txt").write_bytes(tracked_bytes)
+    source_archive = tmp_path / "source.tar"
+    source_archive.write_bytes(b"archive fixture\n")
+    source_archive_sha256 = hashlib.sha256(source_archive.read_bytes()).hexdigest()
     source_manifest = tmp_path / "source_manifest.json"
-    source_manifest.write_bytes(b'{"tree":"fixture"}\n')
+    source_manifest.write_text(
+        json.dumps(
+            {
+                "source_tree_id": source_tree_id,
+                "file_count": 1,
+                "files": (
+                    {
+                        "path": "tracked.txt",
+                        "kind": "file",
+                        "executable": False,
+                        "byte_count": len(tracked_bytes),
+                        "sha256": hashlib.sha256(tracked_bytes).hexdigest(),
+                    },
+                ),
+                "schema_version": "git_tree_source_manifest.v1",
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     output = tmp_path / "authority"
     report = run_release_authority_preflight(
-        source_tree_id="a" * 40,
-        source_archive_sha256="b" * 64,
+        source_tree_id=source_tree_id,
+        source_archive_sha256=source_archive_sha256,
         source_manifest_path=source_manifest,
         output_dir=output,
+        source_archive_path=source_archive,
+        source_root=source_root,
     )
     assert load_qa_release_authority_artifact_directory(output) == report
     with pytest.raises(FileExistsError):
         run_release_authority_preflight(
-            source_tree_id="a" * 40,
-            source_archive_sha256="b" * 64,
+            source_tree_id=source_tree_id,
+            source_archive_sha256=source_archive_sha256,
             source_manifest_path=source_manifest,
             output_dir=output,
+            source_archive_path=source_archive,
+            source_root=source_root,
         )
 
     record_path = output / "release_records.jsonl"

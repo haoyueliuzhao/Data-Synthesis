@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -50,17 +51,67 @@ class AttackControl(BaseModel):
     schema_version: str = "qa_release_authority_attack_control.v1"
 
 
+def _validate_full_source_manifest(
+    manifest_bytes: bytes,
+    *,
+    source_tree_id: str,
+    source_root: Path,
+) -> str:
+    manifest = json.loads(manifest_bytes)
+    if manifest.get("source_tree_id") != source_tree_id:
+        raise ValueError("source manifest Git tree identity mismatch")
+    rows = tuple(manifest.get("files") or ())
+    expected = {str(row["path"]): row for row in rows}
+    if len(expected) != len(rows) or manifest.get("file_count") != len(rows):
+        raise ValueError("source manifest contains duplicate paths or an invalid count")
+    root = source_root.resolve()
+    observed_paths = {
+        path.relative_to(root).as_posix()
+        for path in root.rglob("*")
+        if path.is_file() or path.is_symlink()
+    }
+    if observed_paths != set(expected):
+        raise ValueError("source manifest membership is not exact")
+    for relative_path, row in expected.items():
+        path = root / relative_path
+        if path.is_symlink():
+            content = os.readlink(path).encode("utf-8")
+            kind = "symlink"
+            executable = False
+        else:
+            content = path.read_bytes()
+            kind = "file"
+            executable = bool(path.stat().st_mode & 0o111)
+        if row.get("kind") != kind or row.get("executable") is not executable:
+            raise ValueError("source manifest file kind or executable mode mismatch")
+        if int(row.get("byte_count", -1)) != len(content):
+            raise ValueError("source manifest byte count mismatch")
+        if row.get("sha256") != hashlib.sha256(content).hexdigest():
+            raise ValueError("source manifest SHA-256 mismatch")
+    return hashlib.sha256(manifest_bytes).hexdigest()
+
+
 def run_release_authority_preflight(
     *,
     source_tree_id: str,
     source_archive_sha256: str,
     source_manifest_path: Path,
     output_dir: Path,
+    source_archive_path: Path | None = None,
+    source_root: Path | None = None,
 ) -> dict[str, Any]:
     if output_dir.exists():
         raise FileExistsError(f"immutable authority output already exists: {output_dir}")
     source_manifest_bytes = source_manifest_path.read_bytes()
-    source_manifest_sha256 = hashlib.sha256(source_manifest_bytes).hexdigest()
+    source_manifest_sha256 = _validate_full_source_manifest(
+        source_manifest_bytes,
+        source_tree_id=source_tree_id,
+        source_root=source_root or Path(__file__).resolve().parents[5],
+    )
+    if source_archive_path is not None:
+        observed_archive_sha256 = hashlib.sha256(source_archive_path.read_bytes()).hexdigest()
+        if observed_archive_sha256 != source_archive_sha256:
+            raise ValueError("executed source archive SHA-256 mismatch")
     bundle = build_qa_release_authority_bundle(
         source_tree_id=source_tree_id,
         source_archive_sha256=source_archive_sha256,
@@ -575,6 +626,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-tree-id", required=True)
     parser.add_argument("--source-archive-sha256", required=True)
+    parser.add_argument("--source-archive", type=Path, required=True)
     parser.add_argument("--source-manifest", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
@@ -583,6 +635,7 @@ def main() -> None:
         source_archive_sha256=args.source_archive_sha256,
         source_manifest_path=args.source_manifest,
         output_dir=args.output_dir,
+        source_archive_path=args.source_archive,
     )
     print(json.dumps(report, ensure_ascii=False, sort_keys=True))
 
