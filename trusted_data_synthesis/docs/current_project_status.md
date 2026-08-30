@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-30
+Audit date: 2026-08-31
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -801,6 +801,24 @@ attacks reject with distinct mutation Transition and Report identities. All 41 l
 pass, but online execution remains blocked pending an independent credential-free audit. Formal
 empirical rows, estimates, Development outcomes, Confirmation, Mapper, State, frequency,
 Contribution, and VTDO counts remain zero.
+
+v26.182 has now consumed v26.181's exact independent-audit-only transition without changing any
+v26.181 source or formal artifact. It materializes the exact `a934a755` Git source closure in a
+temporary snapshot, matches all 347 transitive source files, all four entry modules, all fifteen
+formal artifacts, and all fourteen Report detail bindings. Ten negative controls then preserve
+three narrow predecessor passes but fail five empirical-authority Gates. Two valid mixed
+`completed_invalid` states are rewritten to Base=false/Mechanism=false; two diagnostic-only
+terminals enter fully rehashed 192-row empirical attack denominators; two invented FailureLoci
+are accepted on `completed_qualified` rows; changed Raw/Result file bytes remain invisible behind
+path-only descriptors; and invalid Registry, Contract, and Manifest parents injected through
+`model_construct()` reach the estimator despite failing direct revalidation. The result contains
+eight admitted attacks plus two semantic-loss controls, not empirical Outcomes. Online execution
+is frozen at `BLOCKED_FAILED_INDEPENDENT_AUDIT`; only artifact-backed terminal-validity
+factorization and FailureLocus reconstruction preflight is authorized. The eight-file, 24,868-byte
+formal output has report identity
+`finance_v26_181_independent_audit_report:71e7810db19c41f68c0bb3a72cb5e361d84a29f99691ea4f1d8e41f60bda7e62`.
+Focused tests pass 6/6 with zero Provider calls. See
+`docs/finance_v26_182_authoritative_outcome_terminal_independent_audit.md`.
 
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
