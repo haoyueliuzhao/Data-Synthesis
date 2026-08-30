@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from trusted_synthesis.core.evidence.schema import EvidenceBundle
 from trusted_synthesis.core.graph.schema import ProofGraph
-from trusted_synthesis.core.operations.registry import OperationRegistry, default_registry
+from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.task.binding import EvidenceBinding, make_evidence_binding
 from trusted_synthesis.core.task.materialization import temporal_sort_key
 from trusted_synthesis.core.task.pattern import TaskPatternSpec
@@ -11,17 +11,25 @@ from trusted_synthesis.core.task.pattern_compiler import (
     TaskPatternInstantiation,
 )
 from trusted_synthesis.core.task.schema import TaskPackage, VerifierRequirement
+from trusted_synthesis.domains.finance.operations import finance_vnext_operation_registry
 from trusted_synthesis.domains.finance.pattern_runtime import FinanceTaskPatternRuntime
 from trusted_synthesis.domains.finance.patterns import finance_task_patterns
+from trusted_synthesis.domains.finance.question_rendering import finance_renderer_registry
+from trusted_synthesis.domains.finance.realization import (
+    FinanceRealizationCompilation,
+    compile_finance_realization_portfolio,
+)
 
 
 class FinanceTaskPlugin:
     """Finance semantics over universal declarative Task Pattern compilation."""
 
     plugin_id = "finance_tasks.v2"
+    realization_plugin_id = "finance_qa_realization_vnext.v1"
     task_family_ids = (
         "fact_retrieval",
         "comparison",
+        "registered_cross_metric_comparison",
         "temporal_growth",
         "temporal_average",
         "temporal_absolute_change",
@@ -35,7 +43,7 @@ class FinanceTaskPlugin:
         allow_structured_claims: bool = False,
         source_grounding_requirement: VerifierRequirement = VerifierRequirement.NOT_APPLICABLE,
     ) -> None:
-        registry = default_registry()
+        registry = finance_vnext_operation_registry()
         patterns = finance_task_patterns(
             allow_structured_claims=allow_structured_claims,
             source_grounding_requirement=source_grounding_requirement,
@@ -45,11 +53,15 @@ class FinanceTaskPlugin:
 
     @staticmethod
     def operation_registry() -> OperationRegistry:
-        return default_registry()
+        return finance_vnext_operation_registry()
 
     @property
     def pattern_manifest(self) -> tuple[TaskPatternSpec, ...]:
         return tuple(self._patterns[key] for key in sorted(self._patterns))
+
+    @property
+    def renderer_manifest(self) -> tuple[dict[str, object], ...]:
+        return finance_renderer_registry().manifest()
 
     def fact_retrieval(
         self, proof_graph: ProofGraph, bundle: EvidenceBundle, evidence_id: str
@@ -87,6 +99,26 @@ class FinanceTaskPlugin:
             proof_graph,
             bundle,
             {"earlier": (earlier_evidence_id,), "later": (later_evidence_id,)},
+        ).task
+
+    def registered_cross_metric_comparison(
+        self,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        left_evidence_id: str,
+        right_evidence_id: str,
+        *,
+        registered_pair: str,
+    ) -> TaskPackage:
+        return self._compile(
+            "registered_cross_metric_comparison",
+            proof_graph,
+            bundle,
+            {
+                "left_metric": (left_evidence_id,),
+                "right_metric": (right_evidence_id,),
+            },
+            node_parameters={"result": {"registered_pair": registered_pair}},
         ).task
 
     def temporal_absolute_change(
@@ -180,6 +212,94 @@ class FinanceTaskPlugin:
             binding,
             bundle,
             proof_graph,
+        )
+
+    def compile_binding_realizations(
+        self,
+        task_type: str,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        binding: EvidenceBinding,
+        *,
+        max_realizations: int = 3,
+    ) -> FinanceRealizationCompilation:
+        instantiation = self.compile_binding(task_type, proof_graph, bundle, binding)
+        return compile_finance_realization_portfolio(
+            instantiation,
+            bundle,
+            proof_graph,
+            max_realizations=max_realizations,
+        )
+
+    def materialize_evidence_ids(
+        self,
+        task_type: str,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        evidence_ids: tuple[str, ...],
+    ) -> TaskPackage:
+        try:
+            pattern = self._patterns[task_type]
+        except KeyError as exc:
+            raise ValueError(f"unsupported finance task type: {task_type}") from exc
+        if len(pattern.evidence_roles) == 1:
+            role = pattern.evidence_roles[0]
+            ordered_ids = evidence_ids
+            if task_type == "temporal_average":
+                by_id = {item.evidence_id: item for item in bundle.evidence}
+                try:
+                    ordered_ids = tuple(
+                        item.evidence_id
+                        for item in sorted(
+                            (by_id[evidence_id] for evidence_id in evidence_ids),
+                            key=temporal_sort_key,
+                        )
+                    )
+                except KeyError as exc:
+                    raise ValueError(f"evidence not found in bundle: {exc.args[0]}") from exc
+            role_bindings = {role.role_id: ordered_ids}
+        elif len(pattern.evidence_roles) == len(evidence_ids) and all(
+            role.min_count == 1 and role.max_count == 1 for role in pattern.evidence_roles
+        ):
+            role_bindings = {
+                role.role_id: (evidence_id,)
+                for role, evidence_id in zip(
+                    pattern.evidence_roles,
+                    evidence_ids,
+                    strict=True,
+                )
+            }
+        else:
+            raise ValueError("evidence IDs do not satisfy the declared finance pattern roles")
+        node_parameters: dict[str, dict[str, object]] | None = None
+        if task_type in {"registered_ratio", "registered_cross_metric_comparison"}:
+            by_id = {item.evidence_id: item for item in bundle.evidence}
+            try:
+                left, right = (by_id[evidence_id] for evidence_id in evidence_ids)
+            except KeyError as exc:
+                raise ValueError(f"evidence not found in bundle: {exc.args[0]}") from exc
+            node_parameters = {"result": {"registered_pair": f"{left.predicate}/{right.predicate}"}}
+        return self._compile(
+            task_type,
+            proof_graph,
+            bundle,
+            role_bindings,
+            node_parameters=node_parameters,
+        ).task
+
+    def realize_instantiation(
+        self,
+        instantiation: TaskPatternInstantiation,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        *,
+        max_realizations: int = 3,
+    ) -> FinanceRealizationCompilation:
+        return compile_finance_realization_portfolio(
+            instantiation,
+            bundle,
+            proof_graph,
+            max_realizations=max_realizations,
         )
 
     def _compile(

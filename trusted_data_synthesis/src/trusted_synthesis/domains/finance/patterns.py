@@ -19,6 +19,15 @@ REGISTERED_FINANCIAL_RATIO_PAIRS: tuple[tuple[str, str], ...] = (
     ("operating_cash_flow", "revenue"),
 )
 
+REGISTERED_FINANCIAL_COMPARISON_PAIRS: tuple[tuple[str, str], ...] = (
+    ("revenue", "gross_profit"),
+    ("revenue", "operating_income"),
+    ("revenue", "net_income"),
+    ("total_assets", "total_liabilities"),
+    ("current_assets", "current_liabilities"),
+    ("operating_cash_flow", "net_income"),
+)
+
 
 def finance_task_patterns(
     *,
@@ -105,6 +114,69 @@ def finance_task_patterns(
             allow_structured_claims=allow_structured_claims,
             source_grounding_requirement=source_grounding_requirement,
             metadata={"pattern_catalog": "finance_reference_patterns.v1"},
+        ),
+        TaskPatternSpec(
+            pattern_id="finance.raw_registered_cross_metric_comparison",
+            task_type="registered_cross_metric_comparison",
+            level=TaskLevel.EVIDENCE_INTEGRATION,
+            evidence_roles=(
+                EvidenceRoleSpec(
+                    role_id="left_metric",
+                    accepted_kinds=scalar,
+                    semantic_constraints=("finance_evidence_valid",),
+                ),
+                EvidenceRoleSpec(
+                    role_id="right_metric",
+                    accepted_kinds=scalar,
+                    semantic_constraints=("finance_evidence_valid",),
+                ),
+            ),
+            program_template=(
+                ProgramNodeTemplate(
+                    node_role_id="result",
+                    operator_id="registered_compare",
+                    input_refs=(
+                        PatternInputRef(
+                            kind=PatternInputKind.EVIDENCE_ROLE,
+                            ref_id="left_metric",
+                        ),
+                        PatternInputRef(
+                            kind=PatternInputKind.EVIDENCE_ROLE,
+                            ref_id="right_metric",
+                        ),
+                    ),
+                    output_schema="comparison",
+                ),
+            ),
+            output_node_role_id="result",
+            answer_schema={
+                "type": "comparison",
+                "required_fields": ["higher_ref", "difference"],
+            },
+            instruction_renderer_id="finance.registered_cross_metric_comparison.v1",
+            quality_profile_id="finance.registered_cross_metric_comparison.quality.v1",
+            cross_role_constraints=(
+                "registered_financial_comparison_pair",
+                "same_subject_period_scope_source_and_payload_context",
+                "same_statement_type",
+                "same_metric_period_type",
+                "compatible_source_definition",
+                "historical_non_forecast",
+            ),
+            difficulty_base="medium",
+            difficulty_base_cost=2.5,
+            domain="finance",
+            pattern_version="1.0.0",
+            allow_structured_claims=allow_structured_claims,
+            source_grounding_requirement=source_grounding_requirement,
+            metadata={
+                "pattern_catalog": "finance_raw_graph_pattern_migration.v1",
+                "proposal_source": "raw_static_graph_pattern",
+                "raw_pattern_id": "entity_cross_metric_comparison",
+                "raw_pattern_version": 3,
+                "raw_qa_rows_imported": False,
+                "dynamic_node_parameters": {"result": ("registered_pair",)},
+            },
         ),
         TaskPatternSpec(
             pattern_id="finance.temporal_growth",

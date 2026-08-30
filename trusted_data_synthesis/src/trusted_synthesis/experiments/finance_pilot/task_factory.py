@@ -62,37 +62,12 @@ def build_task_cases(
             graph_build_id=gold[0].provenance.build_ids.get("kg"),
         )
         graph = graph_builder.build(bundle)
-        if binding.task_type == "fact_retrieval":
-            task = task_synthesizer.fact_retrieval(graph, bundle, binding.evidence_ids[0])
-        elif binding.task_type == "comparison":
-            task = task_synthesizer.comparison(graph, bundle, *binding.evidence_ids)
-        elif binding.task_type == "temporal_growth":
-            task = task_synthesizer.temporal_growth(graph, bundle, *binding.evidence_ids)
-        elif binding.task_type == "temporal_absolute_change":
-            task = task_synthesizer.temporal_absolute_change(
-                graph,
-                bundle,
-                *binding.evidence_ids,
-            )
-        elif binding.task_type == "registered_ratio":
-            numerator = by_id[binding.evidence_ids[0]]
-            denominator = by_id[binding.evidence_ids[1]]
-            task = task_synthesizer.registered_ratio(
-                graph,
-                bundle,
-                *binding.evidence_ids,
-                registered_pair=f"{numerator.predicate}/{denominator.predicate}",
-            )
-        elif binding.task_type == "derived_growth_comparison":
-            task = task_synthesizer.derived_growth_comparison(
-                graph,
-                bundle,
-                *binding.evidence_ids,
-            )
-        elif binding.task_type == "temporal_average":
-            task = task_synthesizer.temporal_average(graph, bundle, binding.evidence_ids)
-        else:
-            raise ValueError(f"unsupported pilot task type: {binding.task_type}")
+        task = task_synthesizer.materialize_evidence_ids(
+            binding.task_type,
+            graph,
+            bundle,
+            binding.evidence_ids,
+        )
         hard_count = (
             distractors_per_task if hard_distractors_per_task is None else hard_distractors_per_task
         )

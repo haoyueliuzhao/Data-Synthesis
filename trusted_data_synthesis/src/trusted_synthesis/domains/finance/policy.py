@@ -121,6 +121,79 @@ class FinanceSemanticPolicy:
             reasons=tuple(dict.fromkeys(reasons)),
         )
 
+    def validate_registered_comparison_pair(
+        self,
+        left: EvidenceItem,
+        right: EvidenceItem,
+        registered_pairs: tuple[tuple[str, str], ...],
+    ) -> ComparabilityDecision:
+        reasons: list[str] = []
+        if not self.validate_evidence(left).passed or not self.validate_evidence(right).passed:
+            reasons.append("invalid_finance_evidence")
+        pair = (left.predicate, right.predicate)
+        if pair not in registered_pairs:
+            reasons.append("unregistered_financial_comparison_pair")
+        if left.predicate == right.predicate:
+            reasons.append("cross_metric_pair_not_distinct")
+        if left.subject.subject_id != right.subject.subject_id:
+            reasons.append("cross_metric_subject_mismatch")
+        if left.temporal_context != right.temporal_context:
+            reasons.append("cross_metric_period_mismatch")
+        if left.scope != right.scope:
+            reasons.append("cross_metric_scope_mismatch")
+        if left.source.source_id != right.source.source_id:
+            reasons.append("cross_metric_source_mismatch")
+        if not left.definition.definition_id or not right.definition.definition_id:
+            reasons.append("cross_metric_definition_missing")
+        definition_fields = {
+            "statement_type": (
+                _definition_context(left, "statement_type"),
+                _definition_context(right, "statement_type"),
+            ),
+            "metric_period_type": (
+                _definition_context(left, "period_type", "metric_period_type"),
+                _definition_context(right, "period_type", "metric_period_type"),
+            ),
+            "source_definition": (
+                _definition_context(left, "comparability_level"),
+                _definition_context(right, "comparability_level"),
+            ),
+        }
+        for field, (left_value, right_value) in definition_fields.items():
+            if not left_value or not right_value:
+                reasons.append(f"cross_metric_{field}_missing")
+            elif left_value != right_value:
+                reasons.append(f"cross_metric_{field}_mismatch")
+        left_context = left.payload.model_dump(
+            mode="json", exclude={"value", "precision"}, exclude_none=False
+        )
+        right_context = right.payload.model_dump(
+            mode="json", exclude={"value", "precision"}, exclude_none=False
+        )
+        if left_context != right_context:
+            reasons.append("cross_metric_payload_context_mismatch")
+        unique_reasons = tuple(dict.fromkeys(reasons))
+        return ComparabilityDecision(
+            comparable=not unique_reasons,
+            compatibility_class=(
+                f"finance_registered_comparison:{left.predicate}/{right.predicate}"
+                if not unique_reasons
+                else None
+            ),
+            reasons=unique_reasons,
+        )
+
+
+def _definition_context(evidence: EvidenceItem, *keys: str) -> str:
+    for key in keys:
+        value = evidence.definition.attributes.get(key)
+        if value in (None, ""):
+            value = evidence.domain_context.get(key)
+        normalized = str(value or "").strip().casefold()
+        if normalized:
+            return normalized
+    return ""
+
 
 def _metric_unit_compatible(evidence: EvidenceItem) -> bool:
     if not isinstance(evidence.payload, ScalarObservation):

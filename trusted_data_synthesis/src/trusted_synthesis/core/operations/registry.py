@@ -184,6 +184,25 @@ class OperationRegistry:
                     f"ratio pair is not explicitly registered: {expected_pair}"
                 )
             return
+        elif policy == "registered_comparison_pair":
+            if len(evidence) != 2 or any(not item.definition.definition_id for item in evidence):
+                raise OperationContractError("registered comparison requires two definitions")
+            expected_pair = f"{evidence[0].predicate}/{evidence[1].predicate}"
+            if evidence[0].predicate == evidence[1].predicate:
+                raise OperationContractError("registered comparison requires distinct metrics")
+            if parameters.get("registered_pair") != expected_pair:
+                raise OperationContractError(
+                    f"comparison pair is not explicitly registered: {expected_pair}"
+                )
+            fields = (
+                "subject",
+                "payload_context",
+                "time_basis",
+                "frequency",
+                "scope_identity",
+                "temporal_identity",
+                "source",
+            )
         else:
             raise OperationContractError(f"unknown compatibility policy: {policy}")
         signatures = [_compatibility_signature(item) for item in evidence]
@@ -454,4 +473,13 @@ def _compatibility_signature(evidence: EvidenceItem) -> dict[str, Any]:
         "time_basis": evidence.temporal_context.basis,
         "frequency": evidence.temporal_context.frequency,
         "scope_type": evidence.scope.scope_type if evidence.scope else None,
+        "scope_identity": canonical_hash(
+            evidence.scope.model_dump(mode="json") if evidence.scope else None,
+            prefix="scope_identity:",
+        ),
+        "temporal_identity": canonical_hash(
+            evidence.temporal_context.model_dump(mode="json"),
+            prefix="temporal_identity:",
+        ),
+        "source": evidence.source.source_id,
     }

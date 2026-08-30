@@ -12,7 +12,10 @@ from typing import Any, TypeVar
 from trusted_synthesis.core.evidence.payloads import ScalarObservation
 from trusted_synthesis.core.evidence.schema import EvidenceItem
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
-from trusted_synthesis.domains.finance.patterns import REGISTERED_FINANCIAL_RATIO_PAIRS
+from trusted_synthesis.domains.finance.patterns import (
+    REGISTERED_FINANCIAL_COMPARISON_PAIRS,
+    REGISTERED_FINANCIAL_RATIO_PAIRS,
+)
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.experiments.finance_pilot.schema import FinancePilotConfig
 from trusted_synthesis.hashing import canonical_hash
@@ -343,6 +346,7 @@ def discover_bindings(
     candidates = {
         "fact_retrieval": _lookup_bindings(evidence),
         "comparison": _comparison_bindings(evidence),
+        "registered_cross_metric_comparison": _registered_cross_metric_bindings(evidence),
         "temporal_growth": temporal_growth,
         "temporal_average": _temporal_bindings(
             evidence,
@@ -778,6 +782,43 @@ def _registered_ratio_bindings(
                     stratum=(
                         *_evidence_stratum(numerator),
                         f"{numerator_predicate}/{denominator_predicate}",
+                    ),
+                )
+            )
+    return tuple(bindings)
+
+
+def _registered_cross_metric_bindings(
+    evidence: tuple[EvidenceItem, ...],
+) -> tuple[TaskBinding, ...]:
+    groups: dict[tuple[Any, ...], list[EvidenceItem]] = defaultdict(list)
+    for item in evidence:
+        groups[_ratio_context_key(item)].append(item)
+    policy = FinanceSemanticPolicy()
+    bindings = []
+    for items in groups.values():
+        by_predicate: dict[str, EvidenceItem] = {}
+        for item in sorted(items, key=lambda value: value.evidence_id):
+            by_predicate.setdefault(item.predicate, item)
+        for left_predicate, right_predicate in REGISTERED_FINANCIAL_COMPARISON_PAIRS:
+            left = by_predicate.get(left_predicate)
+            right = by_predicate.get(right_predicate)
+            if left is None or right is None:
+                continue
+            if not policy.validate_registered_comparison_pair(
+                left,
+                right,
+                REGISTERED_FINANCIAL_COMPARISON_PAIRS,
+            ).comparable:
+                continue
+            bindings.append(
+                TaskBinding(
+                    task_type="registered_cross_metric_comparison",
+                    evidence_ids=(left.evidence_id, right.evidence_id),
+                    stratum=(
+                        *_evidence_stratum(left),
+                        "raw_static_graph_pattern",
+                        f"{left_predicate}/{right_predicate}",
                     ),
                 )
             )

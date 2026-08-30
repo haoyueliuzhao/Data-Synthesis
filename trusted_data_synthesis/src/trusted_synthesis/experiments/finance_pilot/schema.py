@@ -60,6 +60,7 @@ class FinancePilotConfig(BaseModel):
         supported = {
             "fact_retrieval",
             "comparison",
+            "registered_cross_metric_comparison",
             "temporal_growth",
             "temporal_average",
             "temporal_absolute_change",

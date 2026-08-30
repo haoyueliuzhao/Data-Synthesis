@@ -807,6 +807,103 @@ zero GPU jobs. It does not materialize a task Population, empirical Contract, or
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
 
+## QA Realization vNext And Raw Capability Migration Decision
+
+The independent QA vNext engineering path binds the exact 28,811-byte external audit at SHA-256
+`1c74b70688123962672cf6d5cda0e7932269880ddb77216860dc0c524b2eb811` and starts from commit
+`a934a7557caab65cf7f4e6bc65fa87222a2d7461`. It leaves every v26.167-v26.181 task, Population,
+Job, Runner, model outcome, terminal, and formal evidence identity immutable. Provider, Stage 2,
+GPU, imported Raw QA row, frozen-v26 mutation, Mapper, State, frequency, Contribution, VTDO,
+training, release, and production counts are zero.
+
+The new sidecar identity chain is exactly:
+
+```text
+SemanticTaskProposal / CanonicalSemanticPlan
+  -> semantic_task_id
+  -> BindingSnapshot / binding_snapshot_id
+  -> SurfaceRealization / realization_id
+```
+
+It does not add default fields to the historical `TaskPackage` models or change `task_id`.
+Canonical Programs remove local node and exact Evidence IDs, bind role semantics, normalize
+permutation-invariant inputs, and retain separate topology and parameterized hashes. Binding
+Snapshots bind exact Evidence/Version/source records, Bundle, ProofGraph, and KG build. Surface
+Realizations bind the public Renderer profile, slots, skeleton, final instruction, and realized
+Task hash. A renderer-only change leaves `semantic_task_id` unchanged; for identical current
+source and binding inputs, canonical profiles preserve the current compiler's instruction,
+`task_id`, and `task_hash`. Frozen v06 files are unchanged. Exact v06-context reconstruction on
+unmodified `main` and this branch produces the same current-compiler root
+`rebuilt_v06_root:e5e08b6ba8517271c12c109b95a137d663760970999550b1a7c7f8d403aa3e01`;
+both trees match zero of fifty frozen v06 package hashes because of pre-existing post-v06
+compiler and Runtime-metadata evolution, so no historical byte-rebuild claim is made.
+
+The Finance Renderer Registry contains 32 profiles over eight task types, exactly four each.
+The seven old Renderer IDs are canonical profiles; concise, analyst, and evidence-explicit
+siblings are new. One Binding materializes four hard-valid candidates and deterministically keeps
+at most three with parent weight `1 / child_count`. Strict protected-placeholder validation from
+the Raw verbalizer design is migrated, but Provider rewriting remains disabled and unexecuted.
+
+Three Raw Graph Patterns are translated as semantic Proposals without importing any old QA row.
+The compatibility partition is one authorized and two fail-closed blocked:
+
+```text
+registered_cross_metric_comparison    authorized
+temporal_peak_secondary_lookup        blocked: argmax, select_by_period absent
+growth_filter_margin_rank             blocked: five entity-table Operations absent
+```
+
+The authorized cross-metric path has a current TaskPattern, four Renderers, a registered-pair
+Finance Policy, deterministic Executor, and independent Oracle Verifier. It requires exact
+subject, period, scope, source, unit/currency context, statement type, metric period type,
+compatible source definitions, historical status, and registered pair agreement. Authorization
+also matches exact Role, DAG, dynamic-parameter, Answer, semantic, Renderer-intent, and Quality
+contracts rather than task-type equality. The two blocked Proposals cannot create a TaskPackage
+or empirical row; they still faithfully retain the Raw temporal answer fields and fixed
+`normalized_value > 10`, `top_k=3` parameters.
+
+The Pilot Task factory now uses one plugin-owned Evidence-ID materialization entry instead of a
+seven-way `if/elif`. Semantic-parent split assignment forces sibling Realizations into one split.
+A new diversity-aware Release API operates only inside the Quality-accepted pool, enforces a
+Semantic Parent quota, and conserves parent weight; diversity never compensates for a failed hard
+Gate.
+
+The exact read-only Census covers only the immutable v06 50-TaskPackage Pilot. It finds four
+inferred Semantic Parents, fifty Binding Snapshots, four Program topologies, four parameterized
+Programs, four Answer Schemas, and four normalized question Skeletons. Largest topology and
+Skeleton shares are both 0.26. Skeleton entropy is `1.998845535995` bits,
+`NMI(Task Family; Skeleton)=1.0`, and `H(Skeleton | Task Family)=0.0`. Cross-split sibling leakage
+is zero. Every exact Binding has one Realization, all fifty use resolved retrieval, given planning,
+and the legacy-canonical slot variant, and the four weighted lexical near-duplicate clusters have
+maximum size thirteen. Census rows bind exact manifest
+`qa_census_row_manifest:252af8906787670058abf775be880bad4c2b123ae3485d3bc29896e682ec484d`.
+These are exact scoped legacy-Pilot results, not repository-wide or model-behavior claims.
+
+Authoritative engineering identities are:
+
+- preflight:
+  `qa_realization_vnext_preflight:051ffecc83238a3a85e3309fd264f4034b7be17b8f23fa516140bc298acd3614`;
+- Census:
+  `qa_diversity_census:f2b54aa6a4a89eaa91f4917e2b5fca655d9fa6b5556de3740285b18ff2c16b04`;
+- Raw migration audit:
+  `raw_proposal_migration_audit:a39fe7baa8a32a13f3ea4887b03a387c2a154b16542e4f4ff5a1d66159028d17`.
+
+The fourteen-file, 170,173-byte artifact directory is
+`artifacts/qa_realization_vnext/v1`. Focused QA vNext tests pass 9/9 and the selected adjacent
+suite passes 47/47. The expanded Generalization-inclusive suite reports 49 passed and three
+failed on one pre-existing v26.181 diagnostic at
+`prospective_two_stage_exact_response_grammar.py:424`, independently reproduced on unchanged
+`main`. Package-wide Ruff passes; package-wide Mypy checks 585 source files and retains six
+diagnostics in four historical files, with zero QA-vNext diagnostics. The optional Finance
+archive adapter test is not collected because `pyarrow` is absent. See
+`docs/finance_qa_realization_vnext_and_raw_capability_migration.md`.
+
+The next QA work remains credential-free: broaden the explicitly scoped Census and authorize the
+two blocked Operation families one by one. Provider rewrite, mined/typed-walk publication,
+blocked-Pattern materialization, online QA generation, VTDO, training, and production require a
+new explicit authorization. This independent QA path does not consume or alter the current v26.181
+independent-audit-only transition.
+
 ## v26.181 Authoritative Outcome Parent Binding And Terminal Totality Preflight Decision
 
 Finance v26.181 consumed only

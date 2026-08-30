@@ -9,7 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceItem
-from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.refinement import build_synthesis_cell
 from trusted_synthesis.core.refinement.materialization import (
     SynthesisBindingCandidate,
@@ -179,7 +178,7 @@ class FinanceArchiveBindingProvider:
             source_grounding_requirement=VerifierRequirement.REQUIRED,
         )
         self._runtime = FinanceTaskPatternRuntime()
-        self._registry = default_registry()
+        self._registry = self._task_plugin.operation_registry()
         self._counterfactual_registry = finance_counterfactual_registry()
         self._plugin_set = finance_plugin_set(
             self._adapter,

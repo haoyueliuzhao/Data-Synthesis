@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from trusted_synthesis.core.release.schema import SplitPolicy
+from trusted_synthesis.core.task.realization import RealizedTaskPackage
 from trusted_synthesis.core.task.schema import TaskPackage
 from trusted_synthesis.hashing import canonical_hash
 
@@ -53,3 +54,34 @@ def assign_split(task: TaskPackage, policy: SplitPolicy) -> DatasetSplit:
     if bucket < policy.train_share + policy.dev_share:
         return DatasetSplit.DEV
     return DatasetSplit.TEST
+
+
+def semantic_parent_cluster_id(semantic_task_id: str) -> str:
+    if not semantic_task_id:
+        raise ValueError("semantic parent split requires a semantic task identity")
+    return canonical_hash(
+        {
+            "semantic_task_id": semantic_task_id,
+            "schema_version": "semantic_parent_cluster.v1",
+        },
+        prefix="semantic_parent_cluster:",
+    )
+
+
+def assign_semantic_parent_split(
+    semantic_task_id: str,
+    policy: SplitPolicy,
+) -> DatasetSplit:
+    bucket = int(canonical_hash(semantic_parent_cluster_id(semantic_task_id))[-8:], 16) % 100
+    if bucket < policy.train_share:
+        return DatasetSplit.TRAIN
+    if bucket < policy.train_share + policy.dev_share:
+        return DatasetSplit.DEV
+    return DatasetSplit.TEST
+
+
+def assign_realization_split(
+    realized: RealizedTaskPackage,
+    policy: SplitPolicy,
+) -> DatasetSplit:
+    return assign_semantic_parent_split(realized.realization.semantic_task_id, policy)

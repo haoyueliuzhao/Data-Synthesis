@@ -18,8 +18,21 @@ from trusted_synthesis.core.task.pattern import (
     TaskPatternMaterialization,
     TaskPatternSpec,
 )
-from trusted_synthesis.domains.finance.patterns import REGISTERED_FINANCIAL_RATIO_PAIRS
+from trusted_synthesis.domains.finance.patterns import (
+    REGISTERED_FINANCIAL_COMPARISON_PAIRS,
+    REGISTERED_FINANCIAL_RATIO_PAIRS,
+)
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
+from trusted_synthesis.domains.finance.question_rendering import (
+    _comparison_subject_noun as _comparison_subject_noun,
+)
+from trusted_synthesis.domains.finance.question_rendering import (
+    _time_range_phrase as _time_range_phrase,
+)
+from trusted_synthesis.domains.finance.question_rendering import (
+    _time_window_phrase as _time_window_phrase,
+)
+from trusted_synthesis.domains.finance.question_rendering import canonical_finance_instruction
 
 
 class FinanceTaskPatternRuntime:
@@ -29,6 +42,7 @@ class FinanceTaskPatternRuntime:
     renderer_ids: tuple[str, ...] = (
         "finance.fact_retrieval.v1",
         "finance.comparison.v1",
+        "finance.registered_cross_metric_comparison.v1",
         "finance.temporal_growth.v1",
         "finance.temporal_average.v1",
         "finance.temporal_absolute_change.v1",
@@ -63,6 +77,39 @@ class FinanceTaskPatternRuntime:
                 evidence_by_role["right"][0],
             )
             checks["finance_metric_comparable"] = decision.comparable
+            issues.extend(decision.reasons)
+        elif pattern.task_type == "registered_cross_metric_comparison":
+            left = evidence_by_role["left_metric"][0]
+            right = evidence_by_role["right_metric"][0]
+            decision = self._policy.validate_registered_comparison_pair(
+                left,
+                right,
+                REGISTERED_FINANCIAL_COMPARISON_PAIRS,
+            )
+            checks["registered_financial_comparison_pair"] = decision.comparable
+            checks["same_subject_period_scope_source_and_payload_context"] = decision.comparable
+            reason_set = set(decision.reasons)
+            checks["same_statement_type"] = not reason_set.intersection(
+                {
+                    "cross_metric_statement_type_missing",
+                    "cross_metric_statement_type_mismatch",
+                }
+            )
+            checks["same_metric_period_type"] = not reason_set.intersection(
+                {
+                    "cross_metric_metric_period_type_missing",
+                    "cross_metric_metric_period_type_mismatch",
+                }
+            )
+            checks["compatible_source_definition"] = not reason_set.intersection(
+                {
+                    "cross_metric_source_definition_missing",
+                    "cross_metric_source_definition_mismatch",
+                }
+            )
+            checks["historical_non_forecast"] = not any(
+                bool(item.domain_context.get("is_forecast")) for item in (left, right)
+            )
             issues.extend(decision.reasons)
         elif pattern.task_type == "temporal_growth":
             earlier = evidence_by_role["earlier"][0]
@@ -194,12 +241,9 @@ class FinanceTaskPatternRuntime:
         evidence = tuple(
             item for role in pattern.evidence_roles for item in evidence_by_role[role.role_id]
         )
+        instruction = canonical_finance_instruction(pattern.task_type, evidence_by_role)
         if pattern.task_type == "fact_retrieval":
             item = evidence_by_role["fact"][0]
-            instruction = (
-                f"What is {item.subject.name}'s {item.predicate}{_finance_time_phrase(item)}? "
-                "Report the result and identify the source."
-            )
             answer_schema = {
                 "payload_kind": item.evidence_kind.value,
                 "allowed_payload_fields": sorted(
@@ -208,49 +252,20 @@ class FinanceTaskPatternRuntime:
             }
         elif pattern.task_type == "comparison":
             left = evidence_by_role["left"][0]
-            right = evidence_by_role["right"][0]
-            instruction = (
-                f"Compare {left.predicate} for {left.subject.name}{_finance_time_phrase(left)} "
-                f"with {right.subject.name}{_finance_time_phrase(right)}. "
-                "Which is higher, and by how much?"
-            )
+            answer_schema = scalar_answer_schema(left, "comparison")
+        elif pattern.task_type == "registered_cross_metric_comparison":
+            left = evidence_by_role["left_metric"][0]
             answer_schema = scalar_answer_schema(left, "comparison")
         elif pattern.task_type == "temporal_growth":
-            earlier = evidence_by_role["earlier"][0]
-            later = evidence_by_role["later"][0]
-            instruction = (
-                f"How much did {earlier.subject.name}'s {earlier.predicate} change "
-                f"{_time_range_phrase(earlier, later)}? Report the percentage change."
-            )
             answer_schema = {}
         elif pattern.task_type == "temporal_absolute_change":
             earlier = evidence_by_role["earlier"][0]
-            later = evidence_by_role["later"][0]
-            instruction = (
-                f"Calculate the signed absolute change in {earlier.subject.name}'s "
-                f"{earlier.predicate} {_time_range_phrase(earlier, later)}."
-            )
             answer_schema = scalar_answer_schema(earlier, "absolute_change")
         elif pattern.task_type == "registered_ratio":
-            numerator = evidence_by_role["numerator"][0]
-            denominator = evidence_by_role["denominator"][0]
-            instruction = (
-                f"Calculate {numerator.subject.name}'s {numerator.predicate}-to-"
-                f"{denominator.predicate} ratio{_finance_time_phrase(numerator)} using the "
-                "registered financial ratio definition."
-            )
             answer_schema = {}
         elif pattern.task_type == "derived_growth_comparison":
             left_earlier = evidence_by_role["left_earlier"][0]
-            left_later = evidence_by_role["left_later"][0]
             right_earlier = evidence_by_role["right_earlier"][0]
-            instruction = (
-                f"Compare the percentage growth in {left_earlier.predicate} for "
-                f"{left_earlier.subject.name} and {right_earlier.subject.name} "
-                f"{_time_range_phrase(left_earlier, left_later)}. "
-                f"Which {_comparison_subject_noun(left_earlier, right_earlier)} recorded "
-                "the faster growth rate, and by how many percentage points?"
-            )
             answer_schema = {
                 "comparison_entities": [
                     {
@@ -270,11 +285,6 @@ class FinanceTaskPatternRuntime:
         elif pattern.task_type == "temporal_average":
             series = evidence_by_role["series"]
             first = series[0]
-            instruction = (
-                f"What was the mean {first.predicate} for {first.subject.name} "
-                f"{_time_window_phrase(series[0], series[-1])}? "
-                "Use every listed observation and identify the sources."
-            )
             answer_schema = scalar_answer_schema(first, "aggregate")
         else:
             raise ValueError(f"unsupported finance task pattern: {pattern.task_type}")
@@ -382,56 +392,6 @@ def _finance_agent_contract_guidance(
     elif task_type == "comparison":
         guidance["comparison"] = {"input_role_order": ("left", "right")}
     return guidance
-
-
-def _time_range_phrase(earlier: EvidenceItem, later: EvidenceItem) -> str:
-    left = time_label(earlier)
-    right = time_label(later)
-    if left.startswith("as of ") and right.startswith("as of "):
-        return f"between {left.removeprefix('as of ')} and {right.removeprefix('as of ')}"
-    if left.startswith("year ended ") and right.startswith("year ended "):
-        left_date = left.removeprefix("year ended ")
-        right_date = right.removeprefix("year ended ")
-        return f"between the years ended {left_date} and {right_date}"
-    return f"from {left} to {right}"
-
-
-def _time_window_phrase(first: EvidenceItem, last: EvidenceItem) -> str:
-    left = time_label(first)
-    right = time_label(last)
-    if left.startswith("as of ") and right.startswith("as of "):
-        left_date = left.removeprefix("as of ")
-        right_date = right.removeprefix("as of ")
-        return f"across all observations between {left_date} and {right_date}"
-    if left.startswith("year ended ") and right.startswith("year ended "):
-        left_date = left.removeprefix("year ended ")
-        right_date = right.removeprefix("year ended ")
-        return f"over the years ended {left_date} through {right_date}"
-    return f"across {left} through {right}"
-
-
-def _comparison_subject_noun(left: EvidenceItem, right: EvidenceItem) -> str:
-    subject_types = {left.subject.subject_type.casefold(), right.subject.subject_type.casefold()}
-    if subject_types <= {"company", "corporation", "issuer"}:
-        return "company"
-    if subject_types <= {"country", "economy", "sovereign"}:
-        return "country"
-    if subject_types == {"index"}:
-        return "index"
-    if subject_types == {"fund"}:
-        return "fund"
-    return "entity"
-
-
-def _finance_time_phrase(item: EvidenceItem) -> str:
-    label = time_label(item)
-    if label == "the stated period":
-        return ""
-    if label.startswith("as of "):
-        return f" {label}"
-    if label.startswith("year ended "):
-        return f" for the {label}"
-    return f" for {label}"
 
 
 def _period_identity(
