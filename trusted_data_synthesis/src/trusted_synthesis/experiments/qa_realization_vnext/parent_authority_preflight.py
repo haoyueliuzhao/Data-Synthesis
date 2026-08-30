@@ -666,7 +666,7 @@ def _exception_control(
             attack_id,
             attack_class,
             True,
-            f"{type(exc).__name__}: {exc}",
+            f"{type(exc).__name__}: rejected {attack_class} attack",
         )
     return _control(attack_id, attack_class, False, "attack was admitted")
 
