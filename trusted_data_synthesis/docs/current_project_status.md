@@ -728,10 +728,199 @@ Outcome, Mapper, State, frequency, Contribution, VTDO, Student, training, releas
 counts remain zero. Because the external decision authorized only this closure, the current
 decision is `no_further_experiment_authorized_without_new_audit_decision`.
 
+v26.179 has now consumed the new Job-bound multistep Outcome and 192-Job Runner-preflight
+decision with zero Provider calls. It preserves and independently rebuilds all fourteen v26.178
+files, narrows that stage's strongest Outcome claim to payload-fixture and denominator-geometry
+closure, and identifies its 480-row exact scan as reference-prefix evidence. One frozen
+generation profile binds the unchanged Prompt, Action Grammar, Final Grammar, exact model,
+Thinking, bounded Policy, and resource identities. A fresh Manifest contains 32 exact
+authoritative Runner Packages x six Replicas, or 192 unique Jobs, Raw namespaces, Result
+namespaces, and Package x Replica cells with zero missing, duplicate, or extra rows.
+
+The new Outcome language stores an ordered `ComponentAttemptOutcome` for every reached
+Component, so two different Components may each reject once, expose public Feedback, correct,
+and commit without losing first-response or correction lineage. ABI-invalid response, ABI-valid
+but unbound Action reference, typed State-precondition rejection, accepted Action, task-Verifier
+evaluability, and final Base/Mechanism/Qualified validity are separate fields. `q_first` is now
+complete-Job Qualified success with zero corrections, while `q_bounded_correction` is complete-
+Job Qualified success under one correction per reached Component. The empirical estimator accepts
+only Job- and Manifest-bound rows with Raw and Result identities and exact 192-Job set equality;
+formal empirical rows and estimates remain zero.
+
+The credential-free Runner executes 192 reference controls through 480 one-current-Prompt Action
+ABI parses, production Steps, 192 Final ABI parses, and 192 finalizations. Their 192/192 local
+Qualified values are scripted reference controls, not model outcomes or capability estimates.
+A complete 772-Choice-combination x six-Replica census performs 4,632 local trajectories, reaches
+14,388 accepted-prefix States, evaluates 41,124 Candidate acceptances, and finds one invariant
+acceptance signature in all 480 Package x Component x Replica rows. Eleven branch controls cover
+direct success, ABI failure, accepted downstream failure, one and two Component corrections,
+valid nonreference correction, same/different invalid, stale/foreign Action, and third-Prompt
+prohibition. Only different-current-invalid uses an explicit canonical diagnostic because the
+exact Catalog contains no second current-invalid Action; it enters no Manifest denominator. All
+21 fully rehashed mutations and 39 static Gates close. The 341-file source closure and 18-file
+formal Root reproduce byte for byte. Provider, Development model outcome, empirical Outcome,
+Confirmation, Mapper, State, frequency, Contribution, VTDO, Student, training, release, and
+production counts remain zero. The current transition permits only an independent credential-
+free audit of this exact preflight.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.179 Job-Bound Multistep Outcome And 192-Job Runner Preflight Decision
+
+Finance v26.179 consumed only
+`capability_observation_job_bound_multistep_outcome_contract_and_192_job_runner_preflight_only`.
+The external review is bound at 19,996 bytes and SHA-256
+`fac64d597640109f965cfd4acea6ffa25a6891909113d62053bd570debb10601` and audits exact commit
+`b8a728e3e3342abc1ec8d2002c738cfdbcfddc21`. Credential lookup, Provider-client construction,
+Stage 1 and Stage 2 Provider calls, Development model outcomes, sealed Confirmation access, GPU,
+Mapper, State Assignment, frequency, Contribution, VTDO, Student visibility, training, release,
+and production counts are zero.
+
+All fourteen v26.178 files independently rebuild byte for byte. Its five real Outcome fixtures,
+3,024 executed Host interventions, rematerialized controls, and narrow mechanism results remain
+immutable. The strongest Outcome interpretation is narrowed to
+`outcome_payload_fixture_and_denominator_geometry_closure`; its 480-row exact scan is explicitly a
+complete reference-prefix Component/Candidate acceptance scan. Historical rewrite and
+reclassification counts remain zero.
+
+One generation profile is reconstructed from the exact v26.167 Development Catalog and binds
+eight source nuisance signatures to one unchanged Prompt, Action Grammar, Final Grammar, exact
+model, Thinking, bounded generation Policy, and resource configuration. Both Grammars compile to
+their bound identities. The exact prospective denominator is now materialized:
+
+```text
+authoritative Runner Packages / Replicas                 32 / 6
+prospective Jobs                                            192
+unique Job / Raw namespace / Result namespace       192 / 192 / 192
+Package x Replica cells                                     192
+missing / duplicate / extra Jobs                        0 / 0 / 0
+Runner / source / profile / Outcome parent matches 192 / 192 / 192 / 192
+```
+
+Each Job binds its Runner and execution Package, authoritative and v26.171 source artifacts,
+source Package/Group, Finance Core, capability/depth, fixed condition, Replica, ordered Schedules,
+generation profile, Public Feedback and rejection Surface, Outcome Contract, Raw/Result
+namespaces, and deterministic seed. Job IDs do not circularly contain the Manifest ID; future
+Outcome rows must bind both exact identities.
+
+The new `ComponentAttemptOutcome` records reached State, first ABI and Action disposition,
+State-precondition result, rejection and Observation, public correction Feedback, corrected ABI
+and Action relation, correction terminal, and commit. Ordered attempts are contiguous and a
+terminal must be last. A Job derives exact correction count and Feedback lineage. ABI-invalid
+responses make Action acceptance and Verifier values unevaluable rather than overloading false;
+ABI-valid stale/foreign references remain separate from typed current-State rejection.
+
+The Job-level estimands are frozen as:
+
+```text
+q_first
+  = complete Qualified Jobs with zero Component corrections / exact Manifest Jobs
+q_bounded_correction
+  = complete Qualified Jobs under one correction per reached Component / exact Manifest Jobs
+```
+
+A first Action is no longer used as a proxy for a complete zero-correction Job. The empirical
+estimator accepts only `EmpiricalCapabilityOutcomeRow`, requires Raw/Result identities, 192 unique
+row and Job IDs, and exact Manifest Job-set and parent equality. Fixture and scripted rows reject.
+The formal empirical row and estimate counts are zero.
+
+The one-current-Prompt Runner receives no reference Trace, precommitted vector, future Prompt,
+complete baseline, saved Replica Result oracle, or Confirmation payload. Its exact Manifest
+reference control produces:
+
+```text
+scripted rows / exact Job-set matches                 192 / 192
+current Prompt renders / Action ABI parses            480 / 480
+accepted production Actions                                 480
+Final ABI parses / Runtime finalizations               192 / 192
+component corrections                                         0
+first-policy / bounded-policy Qualified controls       192 / 192
+empirical Outcome rows / estimates                         0 / 0
+```
+
+These are deterministic local reference controls, not model outcomes or capability estimates.
+The complete accepted-prefix audit enumerates all 772 declared source-Choice combinations under
+six Replicas:
+
+```text
+local trajectories                                         4,632
+reached accepted-prefix States                            14,388
+Candidate acceptance evaluations                         41,124
+accepted selected Actions / typed Candidate rejections 13,308 / 3,240
+Package x Component x Replica rows                           480
+one-signature invariant / history-dependent rows          480 / 0
+Runtime exceptions                                              0
+```
+
+Eleven actual trace controls cover direct first-policy Qualified; ABI-invalid first response;
+accepted first Action with downstream task invalid; one Component correction; two different
+Components each corrected once; valid nonreference correction; same-current-invalid,
+different-current-invalid, stale, and foreign second responses; and terminal third-Prompt
+prohibition. Ten use exact Manifest sources. The different-current-invalid control is explicitly
+canonical diagnostic because the frozen exact Catalog has one typed-invalid current Candidate;
+its Component, source Package, presentations, Prompt Binding, reference baseline, artifact, and
+Schedules are content-rematerialized and it enters no Job or empirical denominator.
+
+All 21 fully rehashed destructive mutations reject and all 39 noncompensatory static Gates pass.
+The formal Root contains 18 files and 1,802,473 bytes; report SHA-256 is
+`e110a179f07391147bf746cf55dbcdd6d0d5103bfbfaa1cd38b0a02a048c0007`. The transitive source Root
+contains 341 files and zero unresolved imports. Fast tests pass 7/7 in 3.43 seconds. The complete
+warning-as-error suite passes 8/8 in 652.48 seconds and reproduces all 18 files byte for byte.
+Focused PyCompile, Ruff, format, and Mypy pass. Package-wide Ruff passes. Package-wide Mypy checks
+569 source files, retains six historical diagnostics in four files, and has zero v26.179
+diagnostics.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_job_bound_multistep_outcome_preflight_report:2f2984578a50a8ef9288af67a1a4dd7062ac9f61d10eb3223c7620ce32bf3ba8`;
+- transitive source Root:
+  `finance_v26_job_bound_outcome_transitive_source_root:437797ffafc5673f8e2d56a1c9206b30323e1ddf48275f10eef405ca3016314f`;
+- v26.178 predecessor Freeze:
+  `finance_v26_v178_predecessor_freeze_audit:0c25bbb4bb3980c0707666d78d3922e463edfc1a885ebddb1914a9607bdecb9c`;
+- v26.178 scope narrowing:
+  `finance_v26_v178_outcome_scope_narrowing_audit:d9ccb28fb488f7ab0148c1f912697eb76098eacc322a10c23c2330f087855bf7`;
+- generation profile Binding:
+  `finance_v26_job_bound_generation_profile_binding_audit:33fcf99c64e2832318252c46b9e166f5b517400b313ccff1259072f6c984e25f`;
+- Outcome Contract:
+  `capability_job_bound_multistep_outcome_contract:08a8cdf22b0c51d063fd9668a473aa305881efeced4b946b72a6fa648f2a26f7`;
+- Development Manifest:
+  `capability_job_bound_development_manifest:ab33e14cb0dbf81ab38682bfa4785cc1dc8eb5031b696d738a12acc9a97b203a`;
+- exact Job-set Audit:
+  `finance_v26_exact_192_job_set_audit:29ad14b7b2a3ffc3d0ea002de2817945b5bfec561e5c7e46ebc3d6c23564774e`;
+- Runner:
+  `capability_job_bound_multistep_runner_contract:11e3e81775a4c38e2c888957cb704c0a718213b25db52a376efbe6f3f4f52238`;
+- accepted-prefix Surface:
+  `finance_v26_accepted_prefix_action_surface_audit:a6ea7829f12c70bc49c4722d66d9117a53e776d5e10717bb141409efc6adb0a8`;
+- scripted denominator Preflight:
+  `finance_v26_scripted_192_job_denominator_preflight_audit:d39f29626771393e018e46865e20f0cb9acc9abc14865381538fb20263537941`;
+- branch controls:
+  `finance_v26_job_bound_runner_branch_control_audit:f3e357f806535f08e10bb820875cf413f75ab82ad23ebf970e2563de001b7f35`;
+- empirical Outcome Schema:
+  `finance_v26_empirical_job_bound_outcome_schema_audit:b7d7de5af211ef5abe224497e175504605fde58d641cc79fae1d39a3f957efbc`;
+- destructive Audit:
+  `finance_v26_job_bound_outcome_production_destructive_audit:052f25dc95f8be9bafbf520049ab329e461029f6d33e1f9553c90f837713c5b4`;
+- static Audit:
+  `finance_v26_job_bound_outcome_static_audit:359cb96c692d4eefcd679487142aac5d64e895a88021c38e7ffb0153baf17826`;
+- transition:
+  `finance_v26_job_bound_outcome_preflight_transition:9df22a6cd940a0693a20d2c38c0cb34a37b6da9e46a0320900bd1d6415eaad35`.
+
+The only permitted transition is:
+
+```text
+capability_observation_job_bound_multistep_outcome_192_job_
+runner_preflight_independent_audit_only
+```
+
+A successor may only independently rebuild and audit this exact credential-free preflight.
+Provider execution, Development outcomes, source/Task/Component/Candidate/Schedule/presentation,
+correction-bound, threshold, model/Thinking, Grammar, Policy, resource, terminal, Manifest Job set,
+or Outcome semantics changes, historical rewrite, Confirmation access, Mapper, State, frequency,
+Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
+`docs/finance_v26_179_job_bound_multistep_outcome_and_runner_preflight.md`.
 
 ## v26.178 Executed Counterfactual, Valid Control, And Outcome Row Closure Decision
 
@@ -882,6 +1071,12 @@ Provider execution, Runner preflight, Manifest, Development outcome, source or C
 historical rewrite, Mapper, State, frequency, Contribution, VTDO, Student visibility, training,
 release, and production require a new explicit audit decision. See
 `docs/finance_v26_178_executed_counterfactual_valid_control_and_outcome_row_contract_closure.md`.
+
+That no-further-experiment boundary has now been consumed by the exact external v26.179 audit.
+Every v26.178 byte and local result remains immutable. Its Outcome interpretation is narrowed to
+fixture payload plus denominator geometry, and its exact scan to reference-prefix acceptance.
+The current transition is the independent credential-free audit of the exact v26.179 192-Job
+Runner preflight recorded above.
 
 ## v26.177 All-Typed-Rejection Public Feedback And Correction-Bound Closure Decision
 

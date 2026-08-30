@@ -1,0 +1,807 @@
+# v26.178 最新修订与源码联合审计
+
+## 一、最终判定
+
+最新修订不是附件标题中的 v26.177，而是状态文件中已经完成的：
+
+```text
+Finance v26.178
+Executed Counterfactual, Valid Control, And Outcome Row Closure
+```
+
+v26.177 本身只完成了 Public Feedback、typed rejection 和 correction-bound 的局部闭合，没有创建 Manifest、Runner、Development Job 或经验结果。
+最新状态则表明 v26.178 已经消费后续 evidence-identity audit，关闭局部证据对象后，将当前决策冻结为：
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+
+
+我的总体判定是：
+
+$$
+\boxed{
+\text{v26.178 的证据身份修复基本通过，应保留并冻结。}
+}
+$$
+
+但：
+
+$$
+\boxed{
+\text{“Outcome Row Closure”目前只达到 fixture-level，}
+}
+$$
+
+尚未达到：
+
+$$
+\boxed{
+\text{未来 192 个经验 Job 的完整 Outcome 身份与轨迹闭合。}
+}
+$$
+
+因此当前不应直接授权在线执行。不过，v26.178 已经主动取消所有后续授权，所以不存在需要紧急阻断的错误 transition。下一步只需一次收敛的、credential-free 的 **Job-bound Outcome Contract + Runner preflight**，不必继续扩展理论或重做任务体系。
+
+| 审计层                                 | 判定               |
+| ----------------------------------- | ---------------- |
+| v26.177 证据命名降级                      | **通过**           |
+| exact-Catalog 实际扫描                  | **通过，需收窄扫描范围解释** |
+| canonical diagnostic controls 内容重物化 | **通过**           |
+| 3,024 个 Host 反事实实际执行                | **通过**           |
+| 五条强类型 Outcome fixture               | **通过，限于本地合同夹具**  |
+| 未来分母几何 \(32\times6=192\)            | **通过**           |
+| 未来经验 Outcome 行的 Job 身份              | **未实例化**         |
+| 多 Component、多次纠错的表示                 | **不通过**          |
+| ABI 与 Action acceptance 语义约束        | **不通过**          |
+| 当前 `no further experiment` 决策       | **正确**           |
+
+当前状态文件明确以 Git tree、不可变工件和迁移服务器重跑作为证据边界，缺失聊天内容不作为实验事实。 本次源码审计对应 GitHub 精确提交：
+
+```text
+b8a728e3e3342abc1ec8d2002c738cfdbcfddc21
+Implement v26.178 evidence identity closure
+```
+
+---
+
+# 二、v26.178 已经真正修复了什么
+
+## 1. v26.177 的三类“名不副实证据”得到正确降级
+
+v26.178 没有篡改 v26.177 的 Public Feedback、Correction Runtime 或其他局部结果，而是准确冻结：
+
+```text
+旧 Host-counterfactual：声明 432，实际执行 0
+旧 registered controls：312，内容身份重建 0
+旧 Outcome fixtures：声明 5，实际行 0
+旧 eligibility denominator：未识别
+旧 fully rehashed Outcome erosion attacks：0
+```
+
+同时保留 v26.177 已真实成立的：
+
+* 九字段严格 Public Feedback；
+* Host/Public 对象分离；
+* correction attempt bound；
+* exact Recovery correction matrix；
+* valid nonreference correction 的局部语义等价。
+
+这符合当前审计原则：**降级错误的证据名称，而不是借此否定未被反证的机制属性。** 
+
+---
+
+## 2. exact-Catalog reachability 不再依赖声明字段
+
+v26.178 源码实际扫描：
+
+```text
+32 Packages
+× 80 Components
+× 6 Replicas
+= 480 current-State rows
+
+displayed Candidate reports    1,356
+accepted                       1,236
+typed rejected                   120
+```
+
+并从 classifier 的真实输出推导五个注册分支的 reachability，而不是继续读取旧的 `exact_catalog=True/False` 声明。正式结果只有：
+
+```text
+revise_selector /
+typed_current_state_target_mismatch
+```
+
+在原始 Catalog 中可达，其余四类为：
+
+```text
+registered_but_unreachable_under_valid_public_object_model
+```
+
+
+
+这是一次真实修复。
+
+---
+
+## 3. 312 条旧 synthetic controls 已完成内容重物化
+
+对于会修改 Component 内容的 192 个诊断执行，源码已经按顺序重建：
+
+```text
+Public Operation
+→ Choice handle
+→ Public State
+→ Component ID
+→ 全部 Replica Presentations
+→ Prompt Binding
+→ reference baseline
+→ source Package artifact
+→ State-local Schedules
+```
+
+随后再调用 production `step()`。完整控制面为：
+
+```text
+control objects                         72
+executions                             432
+exact-Catalog executions               120
+canonical diagnostic executions        312
+changed-Component rematerializations   192
+validation bypasses                       0
+Runtime exceptions                        0
+```
+
+
+
+因此，上一轮“通过 `model_copy(update=...)` 修改内容却保留旧 ID”的证据身份缺陷已经关闭。
+
+---
+
+## 4. Host counterfactual 这次确实执行了干预
+
+每个 432-row control 分别接受七种干预：
+
+```text
+package_id
+component_key
+source_choice_handle
+selected_operation_hash
+ActionAcceptanceReport
+Runtime event identities
+all Host parents jointly
+```
+
+共计：
+
+$$
+432\times7=3024
+$$
+
+次。
+
+源码确实构造变化后的 Host Binding，并从固定公开输入重新生成 Observation、Feedback 和 recovery Prompt；要求：
+
+```text
+Host Binding bytes / identity changed
+Public Observation unchanged
+Public Feedback unchanged
+Recovery Prompt bytes / hash unchanged
+```
+
+正式结果为 3,024/3,024 invariance，且不再复用 public-preimage boolean 冒充 counterfactual 结果。
+
+所以这里可以支持：
+
+> 在注册的局部 Host-parent 干预下，严格 public projection 不依赖这些 Host-only 父对象。
+
+仍不能升级为一般信息流定理，但当前报告也没有越过这一边界。
+
+---
+
+## 5. 五条 Outcome fixture 现在是真实对象
+
+源码实际构造了：
+
+```text
+reference-valid correction
+valid nonreference correction
+same-current-invalid terminal
+different-current-invalid terminal
+stale-or-foreign terminal
+```
+
+并逐条执行：
+
+* Pydantic round-trip；
+* canonical JSON serialization round-trip；
+* row identity 校验；
+* 条件字段约束；
+* fixture estimand 计算。
+
+局部结果为：
+
+$$
+q_{\mathrm{first}}=0/5,
+\qquad
+q_{\mathrm{bounded}}=2/5.
+$$
+
+这些只是合同夹具，不是经验 Capability 估计。
+
+---
+
+# 三、P0：Runtime 的纠错粒度与 Outcome 行不一致
+
+这是当前最早、最本质的后继阻塞点。
+
+## 1. Runtime 的 correction bound 是逐 Component 的
+
+生产 Runtime 保存：
+
+```python
+public_feedback_by_component:
+    dict[str, list[PublicTypedRejectionFeedback]]
+```
+
+当前纠错编号为：
+
+```python
+correction_attempt_index =
+    len(feedback_for_current_component) + 1
+```
+
+一个 Component 的纠错成功后，Runtime 进入下一个 Component；下一个 Component 的 feedback list 又从空开始。也就是说，一个 D2／D3 Package 完全可能形成：
+
+```text
+Component A：
+  first response rejected
+  correction accepted
+
+Component B：
+  first response rejected
+  correction accepted
+
+Component C：
+  first response accepted
+```
+
+并最终 Qualified。源码明确以 `public_feedback_by_component` 维护这种状态，且 correction attempt 是当前 Component 局部计数。
+
+---
+
+## 2. `CapabilityOutcomeRow` 只有一个纠错槽
+
+当前行只有：
+
+```text
+correction_invoked
+correction_feedback_id
+corrected_action_accepted
+correction_terminal_reason
+```
+
+没有：
+
+```text
+correction_count
+correction_feedback_ids
+component_attempt_rows
+每个 Component 的首次响应结果
+每个 Component 的纠错结果
+有序 correction lineage
+```
+
+因此，一个 Job 若在两个 Component 上分别纠错，当前 Outcome 行不能无损表达：
+
+* 两个 Feedback；
+* 两个 correction commit；
+* 两个首次失败；
+* 各自的 Component identity；
+* 纠错顺序。
+
+这不是简单少一个统计字段，而是：
+
+$$
+\boxed{
+\text{生成政策允许的轨迹类型超出了 Outcome schema 的表达能力。}
+}
+$$
+
+---
+
+## 3. \(q_{\text{first}}\) 的含义因此仍不唯一
+
+当前合同写成：
+
+$$
+q_{\text{first}}
+=
+\frac{\sum\text{first\_attempt\_qualified\_valid}}{192}.
+$$
+
+但对于多步 Job，`first_attempt` 可能有三种解释：
+
+1. 只指整个 Job 的第一个模型响应；
+2. 指每个 Component 的第一次响应；
+3. 指完整的零纠错生成政策。
+
+只有第三种适合与 bounded-correction policy 比较：
+
+$$
+q_{\text{first}}
+=
+P(\text{完整 Job 在零纠错政策下 Qualified}),
+$$
+
+$$
+q_{\text{bounded}}
+=
+P(\text{完整 Job 在冻结的逐 Component 有界纠错政策下 Qualified}).
+$$
+
+最小实现可以定义：
+
+```text
+first-policy Qualified
+=
+final Qualified
+and correction_count == 0
+```
+
+而每一步的首次响应质量另行记录为 reached-component conditional success，不能再用一个 Job-level `first_action_*` 代表整条多步轨迹。
+
+---
+
+# 四、P0：经验 Outcome 行尚未绑定唯一 Job
+
+## 1. 当前 `CapabilityOutcomeRow` 明确是 fixture-only
+
+源码固定：
+
+```python
+fixture_only: Literal[True] = True
+```
+
+并且不包含：
+
+```text
+job_id
+manifest_id
+source_package_id
+source_package_artifact_id
+replica_index
+raw_execution_id
+result_id
+attempt_trace_id
+```
+
+这完全可以作为本地 schema fixture，但不能直接成为未来经验 Outcome 行。
+
+报告本身也明确说明：
+
+```text
+No future Job object or empirical row is materialized.
+```
+
+未来 192 只是前置冻结的分母几何，而不是已经形成的 Job 集。
+
+---
+
+## 2. estimator 只验证行数，没有验证 exact Job set
+
+`evaluate_capability_estimands()` 当前只检查：
+
+```text
+eligible row count == expected eligible count
+eligible row count == input row count
+```
+
+随后直接对布尔字段求和。它没有检查：
+
+```text
+row_id uniqueness
+job_id uniqueness
+exact Job-ID set equality
+每个 Package × Replica 恰好一行
+missing / duplicate / extra = 0
+```
+
+因此，在当前 core API 层面：
+
+```python
+evaluate_capability_estimands(
+    [same_eligible_row] * 192,
+    expected_eligible_job_count=192,
+)
+```
+
+能够通过长度和 eligibility 检查并产生估计量。
+
+这不会污染当前五条 fixture，因为 `OutcomeRowFixtureAudit` 额外要求五个不同 `row_id`。但它意味着：
+
+$$
+\boxed{
+\text{固定“192”并不等于固定了 192 个唯一经验 Job。}
+}
+$$
+
+在 Runner preflight 前，必须将 Outcome denominator 绑定为 exact Manifest Job set，而不是只绑定数量。
+
+---
+
+# 五、P0：ABI 无效仍可能被标记为已接受和 Qualified
+
+当前 validator 强制：
+
+```text
+accepted => state_precondition_valid
+```
+
+却没有强制：
+
+```text
+accepted => first_response_abi_valid
+```
+
+因此，以下完整重哈希行可以通过现有通用约束：
+
+```text
+first_response_abi_valid                    false
+first_action_state_precondition_valid       true
+first_action_accepted                       true
+
+first_attempt_base_valid                    true
+first_attempt_mechanism_qualified           true
+first_attempt_qualified_valid               true
+
+correction_invoked                          false
+
+final_base_valid                            true
+final_mechanism_qualified                   true
+final_qualified_valid                       true
+```
+
+`Qualified = accepted ∧ Base ∧ Mechanism` 和 final conjunction 都成立，且无 correction 分支的字段相等约束也成立；唯一缺失的就是 ABI 对 acceptance 的前置约束。
+
+当前五条 fixture 全部采用：
+
+```text
+first_response_abi_valid = true
+first Action rejected
+correction_invoked = true
+```
+
+所以没有覆盖该分支。Fixture 构造可以从源码直接确认。
+
+下一合同至少必须加入：
+
+$$
+\neg ABI_{\mathrm{valid}}
+\Rightarrow
+\neg Action_{\mathrm{accepted}}
+\Rightarrow
+\neg Qualified_{\mathrm{first}}.
+$$
+
+还应明确 ABI 无效时 Base／Mechanism 是：
+
+* policy-level 显式失败；
+* 还是 Verifier 不可评估。
+
+不能让一个 `false` 同时承担这两种含义。
+
+---
+
+# 六、P1：五个 fixture 的名称没有绑定其因果形状
+
+`fixture_kind` 是 Literal 标签，但 validator 没有按 kind 验证：
+
+```text
+same-current-invalid
+different-current-invalid
+stale-or-foreign
+reference correction
+nonreference correction
+```
+
+对应的 Action identity、第二响应关系和 terminal lineage。
+
+例如 same-current 与 different-current 两条 fixture：
+
+* 使用相同的 generic terminal reason；
+* 没有保存第一次和第二次 Action ID；
+* 没有字段证明两次 Action 相同或不同；
+* 主要依靠 `fixture_kind` 字符串和不同 feedback hash 区分。
+
+所以当前五条 fixture 可以支持：
+
+> 五种预期字段组合能够通过序列化和通用约束。
+
+不能单独支持：
+
+> 五种真实 Runtime disposition 已经与 Outcome row 建立因果映射。
+
+下一步应让 scripted Runner trace 生成 Outcome row，而不是手工用 `_fixture_values()` 填充。
+
+此外，当前 fixture 集全部从“首次响应被拒绝并调用 correction”开始，没有覆盖：
+
+```text
+首次直接成功且无 correction
+ABI-invalid terminal
+首次 Action accepted，但后续任务仍失败
+同一 Job 在两个不同 Component 上分别 correction
+```
+
+这些才是未来经验合同真正容易出错的分支。
+
+---
+
+# 七、P1：exact-Catalog scan 的“完整”需要收窄解释
+
+扫描到目标 Component 前，`_state_at_component()` 始终用：
+
+```python
+public_only_select_hardened_action(prompt)
+```
+
+执行前序 reference/public-only Choice。
+
+所以当前 480 行准确表示：
+
+```text
+32 Package
+× 80 Component
+× 6 Replica
+under one public-only/reference predecessor prefix
+```
+
+而不是：
+
+```text
+所有合法 nonreference predecessor history
+下的所有 reached current Prompt。
+```
+
+这不一定改变当前 rejection branch 计数，因为若干 acceptance 条件主要读取冻结 Component facts。但“完整 unchanged exact Catalog scan”应收窄为：
+
+> complete reference-prefix component/candidate acceptance scan。
+
+未来 Runner preflight 应补充以下二者之一：
+
+1. 对全部 scripted accepted prefix classes 重建 reached-state surface；
+2. 独立证明 Action Acceptance 对允许的 predecessor history 不变。
+
+---
+
+# 八、对 v26.178 报告应如何定级
+
+## 可以保留的最强结论
+
+v26.178 已经可信建立：
+
+```text
+v26.177 evidence-name downgrade
+exact reference-prefix acceptance scan
+content-rematerialized diagnostic controls
+executed local Host counterfactuals
+five real Outcome schema fixtures
+fixed 32 × 6 prospective denominator geometry
+fully rehashed parent-level semantic controls
+```
+
+当前状态文件也明确记录：
+
+```text
+Manifest / empirical Outcome / empirical estimates = 0
+```
+
+以及当前无进一步实验授权。
+
+## 需要收窄的表述
+
+将：
+
+```text
+Outcome Row Closure
+```
+
+收窄为：
+
+```text
+Outcome payload fixture and denominator-geometry closure
+```
+
+当前尚未建立：
+
+```text
+Job-bound empirical Outcome identity closure
+multi-Component correction trace closure
+exact 192-Job denominator closure
+```
+
+---
+
+# 九、下一步应一次性收敛，不再继续无限拆阶段
+
+v26.178 当前决定：
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+是正确的。
+
+建议新的唯一 transition 为：
+
+```text
+capability_observation_job_bound_multistep_outcome_contract_
+and_192_job_runner_preflight_only
+```
+
+它仍然必须保持：
+
+```text
+Provider calls                  0
+Development model outcomes      0
+sealed Confirmation reads       0
+Mapper / State / frequency      0
+Contribution / VTDO             0
+Student / training              0
+```
+
+但应一次完成以下内容：
+
+### 1. 物化精确 192 个 Job 身份
+
+```text
+32 exact Packages
+× 6 exact Replicas
+= 192 unique Jobs
+```
+
+要求：
+
+```text
+missing   = 0
+duplicate = 0
+extra     = 0
+```
+
+### 2. 新建 Job-bound 经验 Outcome
+
+建议新增：
+
+```text
+EmpiricalCapabilityOutcomeRow
+```
+
+至少绑定：
+
+```text
+job_id
+manifest_id
+execution_package_id
+source_package_artifact_id
+replica_index
+attempt_trace_id
+raw_namespace
+result_namespace
+outcome payload
+```
+
+当前 `fixture_only` 行继续只用于测试，不直接升级为经验行。
+
+### 3. 建立逐 Component attempt trace
+
+```text
+ComponentAttemptOutcome:
+  component_key
+  reached_state_token
+  first_response_abi_valid
+  first_action_accepted
+  rejection_code
+  correction_invoked
+  correction_feedback_id
+  corrected_action_accepted
+  terminal_reason
+  committed
+```
+
+Job 行保存有序 tuple，并由它推导：
+
+```text
+correction_count
+correction_feedback_ids
+first failed Component
+per-Component conditional success
+final Base / Mechanism / Qualified
+```
+
+### 4. 明确两个 estimand
+
+$$
+q_{\mathrm{first}}
+=
+\frac{
+\#\{\text{零纠错政策下完整 Qualified Jobs}\}
+}{192},
+$$
+
+$$
+q_{\mathrm{bounded}}
+=
+\frac{
+\#\{\text{逐 Component 有界纠错政策下完整 Qualified Jobs}\}
+}{192}.
+$$
+
+不能再把 Job 的第一个 Action 与完整零纠错轨迹混为同一对象。
+
+### 5. credential-free Runner 必须覆盖关键分支
+
+至少包括：
+
+```text
+direct first-attempt Qualified
+ABI-invalid first response
+accepted first Action but downstream task-invalid
+one Component correction
+two different Components each corrected once
+valid nonreference correction
+same-invalid second response
+different-invalid second response
+stale / foreign Action
+correction terminal followed by forbidden third Prompt
+```
+
+Outcome row 必须从这些真实 trace 自动投影，而不能手填 disposition。
+
+---
+
+# 十、最终结论
+
+v26.178 并不是又一次“修了一个地方、证据仍完全无效”的阶段。它已经真实关闭了 v26.177 的三个证据身份问题：
+
+$$
+\boxed{
+\text{Host 反事实真实执行}
++
+\text{诊断对象真实重物化}
++
+\text{Outcome fixture 真实构造}
+}
+$$
+
+因此应当保留其成果，不再回退到 Public Feedback、Presentation 或任务构造层。
+
+当前阻塞已经非常集中：
+
+$$
+\boxed{
+\text{局部 fixture Outcome}
+\;\not\Rightarrow\;
+\text{完整的 192-Job 经验 Outcome}
+}
+$$
+
+具体缺口是：
+
+1. Runtime 可以在多个 Component 上分别纠错，Outcome 行却只有一个 correction 槽；
+2. Outcome 行不绑定 Job、Package、Replica 或 Manifest；
+3. estimator 不检查 192 个唯一 Job 的 exact set；
+4. ABI 无效仍可能被通用 validator 接受为成功 Action；
+5. fixture 没有覆盖无纠错成功和多 Component 纠错。
+
+所以最新审计结论不是继续做另一个庞大的理论修订，而是：
+
+> **保留 v26.178，并用一个 credential-free、Job-bound、multi-step 的 Runner preflight，将现有局部机制真正装配成未来 192-Job 实验对象。**
+
+该 preflight 通过独立审计后，才决定是否执行在线 Development；在此之前，模型行为、能力深度、频率、State、VTDO 和训练仍保持未授权。
+
+## 审计附件
+
+* [v26.178 最新修订与源码联合审计](sandbox:/mnt/data/v26_178_latest_revision_source_audit.md)
+* [v26.178 结构化诊断 JSON](sandbox:/mnt/data/v26_178_latest_revision_diagnostic.json)
