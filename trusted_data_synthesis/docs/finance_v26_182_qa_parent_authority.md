@@ -130,3 +130,121 @@ These are engineering controls. They do not establish empirical model quality, p
 Contribution, training authorization, or release authorization. Those remain gated by the final
 credential-free Parent Authority preflight and Finance Pilot portfolio integration described in
 the completion section appended after those stages run.
+
+## Completion Gate And Finance Pilot Integration
+
+The Finance Pilot factory now retains the full `FinanceRealizationCompilation` for every exact
+Evidence Binding while preserving the canonical Task projection used by existing reference
+quality machinery. The Pilot Runner additionally evaluates all three portfolio-selected surfaces.
+It derives a distinct trajectory identity from the realized-package identity and generated
+trajectory hash, content-addresses each assessment, constructs an Execution Binding, and runs the
+instance-level diversity release. Pilot artifacts now include the portfolios, selected realized
+packages, realized candidate workflows, assessments, Execution Bindings, and release selection.
+
+The final credential-free Gate binds exact source commit
+`e0581f17f69484dd4e49311908e766bed5ccbd97`, fifteen implementation Git blobs, and the actual
+working-tree bytes. Its source Root is
+`qa_parent_source_root:a7428b375c620ce301650fbe2bcce79907a525f5b51f067a693dc5087c02b847`.
+It separately re-reads and hashes the three Raw reference files; their Root is
+`qa_raw_reference_root:8324c964591c30eae2090847d81eff826a27f20e503ae11afa2543a897f132d7`.
+The new external review is exactly 31,266 bytes with SHA-256
+`f89dce636bb7176e4dea9466fb794cccdfc6d73d1f4b79578bcef6090b3f2557`.
+
+The Gate uses two concrete Evidence bindings of the same semantic schema. They produce two
+distinct SemanticInstances, proving that an abstract schema no longer consumes one instance
+quota. The primary Instance produces three valid packages and accepted assessments; a policy cap
+selects two, persists two `1/2` assignments, and verifies an exact Fraction sum of one.
+
+All seventeen hard Gates pass and all eleven registered attacks reject:
+
+```text
+Operation semantic-version mutation
+forged Plan through model_construct
+forged BindingSnapshot through model_construct
+same-task-id sibling execution substitution
+stale assessment content hash
+deleted child weight assignment
+abstract schema used as instance quota
+mutated source bytes
+mutated Raw bytes
+arbitrary 40-character Git identity
+existing artifact-directory overwrite
+```
+
+Formal report identity:
+`qa_parent_authority_preflight:843be597c47077eeb713f536d9f2530dbf6038cf594f833940b55ce3ed3ef355`.
+Release selection identity:
+`diversity_aware_release_selection:e41a702c12f578767334cb7d34d7a6011dac6d9aa10170721d2d50713620d894`.
+The deterministic eleven-file formal set is 84,289 bytes with artifact Root
+`qa_parent_authority_artifact_root:1e0d6eed4578d8b59e6bbdfb62c462f3b5c5d01ff0ca33912211f1e52cf2247a`.
+An independent same-source rebuild matches all eleven files byte for byte.
+
+The earlier immutable `parent_authority_v1_20260831` directory remains unchanged. Its Gates were
+correct, but one attack detail embedded a randomized temporary path, so its 85,530 bytes are not a
+byte-reproducible formal endpoint. The deterministic error-category repair is source-bound and
+published only under the new `parent_authority_v2_20260831` identity; nothing overwrites v1.
+
+The final adjacent suite passes 53 tests. The formal stage has zero Provider calls, zero GPU jobs,
+zero imported Raw QA rows, and zero historical artifact mutations. It authorizes the corrected
+credential-free QA parent chain and Finance Pilot portfolio plumbing only. It does not authorize
+Provider generation, production release, training, Contribution, VTDO State, or any
+reinterpretation of the independently frozen failed v26.181 empirical Gate.
+
+## Completion Gate And Finance Pilot Integration
+
+The Finance Pilot factory now retains the full `FinanceRealizationCompilation` for every exact
+Evidence Binding while preserving the canonical Task projection used by existing reference
+quality machinery. The Pilot Runner additionally evaluates all three portfolio-selected surfaces.
+It derives a distinct trajectory identity from the realized-package identity and generated
+trajectory hash, content-addresses each assessment, constructs an Execution Binding, and runs the
+instance-level diversity release. Pilot artifacts now include the portfolios, selected realized
+packages, realized candidate workflows, assessments, Execution Bindings, and release selection.
+
+The final credential-free Gate binds exact source commit
+`e0581f17f69484dd4e49311908e766bed5ccbd97`, fifteen implementation Git blobs, and the actual
+working-tree bytes. Its source Root is
+`qa_parent_source_root:a7428b375c620ce301650fbe2bcce79907a525f5b51f067a693dc5087c02b847`.
+It separately re-reads and hashes the three Raw reference files; their Root is
+`qa_raw_reference_root:8324c964591c30eae2090847d81eff826a27f20e503ae11afa2543a897f132d7`.
+The new external review is exactly 31,266 bytes with SHA-256
+`f89dce636bb7176e4dea9466fb794cccdfc6d73d1f4b79578bcef6090b3f2557`.
+
+The Gate uses two concrete Evidence bindings of the same semantic schema. They produce two
+distinct SemanticInstances, proving that an abstract schema no longer consumes one instance
+quota. The primary Instance produces three valid packages and accepted assessments; a policy cap
+selects two, persists two `1/2` assignments, and verifies an exact Fraction sum of one.
+
+All seventeen hard Gates pass and all eleven registered attacks reject:
+
+```text
+Operation semantic-version mutation
+forged Plan through model_construct
+forged BindingSnapshot through model_construct
+same-task-id sibling execution substitution
+stale assessment content hash
+deleted child weight assignment
+abstract schema used as instance quota
+mutated source bytes
+mutated Raw bytes
+arbitrary 40-character Git identity
+existing artifact-directory overwrite
+```
+
+Formal report identity:
+`qa_parent_authority_preflight:843be597c47077eeb713f536d9f2530dbf6038cf594f833940b55ce3ed3ef355`.
+Release selection identity:
+`diversity_aware_release_selection:e41a702c12f578767334cb7d34d7a6011dac6d9aa10170721d2d50713620d894`.
+The deterministic eleven-file formal set is 84,289 bytes with artifact Root
+`qa_parent_authority_artifact_root:1e0d6eed4578d8b59e6bbdfb62c462f3b5c5d01ff0ca33912211f1e52cf2247a`.
+An independent same-source rebuild matches all eleven files byte for byte.
+
+The earlier immutable `parent_authority_v1_20260831` directory remains unchanged. Its Gates were
+correct, but one attack detail embedded a randomized temporary path, so its 85,530 bytes are not a
+byte-reproducible formal endpoint. The deterministic error-category repair is source-bound and
+published only under the new `parent_authority_v2_20260831` identity; nothing overwrites v1.
+
+The final adjacent suite passes 53 tests. The formal stage has zero Provider calls, zero GPU jobs,
+zero imported Raw QA rows, and zero historical artifact mutations. It authorizes the corrected
+credential-free QA parent chain and Finance Pilot portfolio plumbing only. It does not authorize
+Provider generation, production release, training, Contribution, VTDO State, or any reinterpretation
+of the independently frozen failed v26.181 empirical Gate.

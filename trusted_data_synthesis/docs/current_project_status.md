@@ -922,6 +922,48 @@ blocked-Pattern materialization, online QA generation, VTDO, training, and produ
 new explicit authorization. This independent QA path does not consume or alter the current v26.181
 independent-audit-only transition.
 
+## v26.182 QA Parent Authority Completion
+
+The first QA realization engineering path above is retained as immutable history, but its abstract
+`semantic_task_id` parent, unbound assessment records, path-only Raw checks, and overwrite-capable
+writers are not authoritative for release. v26.182 now closes that gap under the separate
+31,266-byte review at SHA-256
+`f89dce636bb7176e4dea9466fb794cccdfc6d73d1f4b79578bcef6090b3f2557`.
+
+The v2 chain is Operation Semantic Contract -> Plan -> embedded EvidenceBinding/Snapshot ->
+SemanticInstance -> content-addressed RealizedTaskPackage -> Portfolio -> Execution Binding ->
+content-addressed Assessment -> per-child exact Fraction assignment -> instance-level Release.
+Finance Pilot cases retain this portfolio, evaluate every selected surface under a realized-
+package-specific trajectory identity, and persist the resulting parents and release selection.
+
+The exact source commit is `e0581f17f69484dd4e49311908e766bed5ccbd97`; fifteen Git-bound
+implementation files produce source Root
+`qa_parent_source_root:a7428b375c620ce301650fbe2bcce79907a525f5b51f067a693dc5087c02b847`.
+Three actual Raw files are independently rehashed under Root
+`qa_raw_reference_root:8324c964591c30eae2090847d81eff826a27f20e503ae11afa2543a897f132d7`.
+The kernel no-replace writer stages and fsyncs the complete set, then publishes with
+`renameat2(RENAME_NOREPLACE)`; an existing target fails without byte drift.
+
+All seventeen hard Gates pass, and all eleven Operation, parent-injection, sibling-substitution,
+assessment, weight, instance-quota, source-byte, Raw-byte, Git-identity, and overwrite attacks
+reject. One semantic schema produces two distinct binding-level Instances. The primary Instance
+persists three valid realized packages and Execution Bindings, selects two under its cap, and
+assigns exact `1/2` weights summing to one. Report identity is
+`qa_parent_authority_preflight:843be597c47077eeb713f536d9f2530dbf6038cf594f833940b55ce3ed3ef355`;
+release identity is
+`diversity_aware_release_selection:e41a702c12f578767334cb7d34d7a6011dac6d9aa10170721d2d50713620d894`.
+
+The authoritative deterministic formal directory is
+`artifacts/qa_realization_vnext/parent_authority_v2_20260831`: eleven files, 84,289 bytes, artifact
+Root `qa_parent_authority_artifact_root:1e0d6eed4578d8b59e6bbdfb62c462f3b5c5d01ff0ca33912211f1e52cf2247a`.
+All eleven files rebuild byte for byte. The preceding 85,530-byte v1 directory remains immutable
+but is superseded because one otherwise correct attack detail contained a randomized temporary
+path. The adjacent validation suite passes 53/53. Provider, GPU, imported Raw QA row, historical
+artifact mutation, empirical Outcome, Contribution, VTDO, training, and production counts remain
+zero. This completion does not repair or reinterpret the frozen failed v26.181 empirical Gate.
+
+See `docs/finance_v26_182_qa_parent_authority.md`.
+
 ## v26.181 Authoritative Outcome Parent Binding And Terminal Totality Preflight Decision
 
 Finance v26.181 consumed only

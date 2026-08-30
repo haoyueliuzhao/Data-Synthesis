@@ -1,0 +1,11 @@
+{"attack_class":"operation_contract","attack_id":"operation_semantic_contract_mutation","detail":"semantic version mutation must change the semantic schema identity","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"parent_injection","attack_id":"model_construct_forged_plan_parent","detail":"ValidationError: rejected parent_injection attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"parent_injection","attack_id":"model_construct_forged_binding_parent","detail":"ValidationError: rejected parent_injection attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"execution_binding","attack_id":"same_task_id_sibling_execution_substitution","detail":"ValueError: rejected execution_binding attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"assessment_hash","attack_id":"stale_assessment_hash","detail":"ValidationError: rejected assessment_hash attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"exact_fraction_weight","attack_id":"deleted_child_weight_assignment","detail":"ValidationError: rejected exact_fraction_weight attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"instance_release","attack_id":"abstract_schema_not_used_as_instance_quota","detail":"two bindings of one semantic schema must retain independent instance quota","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"source_byte_authenticity","attack_id":"mutated_source_bytes","detail":"mutated bytes must not match the Git-bound source manifest","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"raw_byte_authenticity","attack_id":"mutated_raw_reference_bytes","detail":"Raw reference validation must recompute actual file bytes","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"source_commit","attack_id":"arbitrary_40_character_commit","detail":"CalledProcessError: rejected source_commit attack","expected":"rejected","observed":"rejected","passed":true}
+{"attack_class":"immutable_writer","attack_id":"existing_artifact_directory_overwrite","detail":"FileExistsError: rejected immutable_writer attack","expected":"rejected","observed":"rejected","passed":true}
