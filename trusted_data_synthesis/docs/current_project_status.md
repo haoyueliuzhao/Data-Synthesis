@@ -763,10 +763,144 @@ Confirmation, Mapper, State, frequency, Contribution, VTDO, Student, training, r
 production counts remain zero. The current transition permits only an independent credential-
 free audit of this exact preflight.
 
+v26.180 has now consumed that exact independent-audit-only transition with zero Provider calls.
+It freezes and independently rebuilds all eighteen v26.179 files byte for byte, retains the exact
+192-Job index, multicomponent correction, Job-level estimand, and accepted-prefix results, and
+narrows the strongest estimator claim to an exact Job-key-set and wrapper-parent Gate. Six
+separate fully rehashed 192-row controls then cross Job Outcomes, duplicate Raw IDs, duplicate
+Result IDs, rotate Raw/Result parents, break Result-to-Outcome/Final parentage, or reuse one
+attempt trace. The unchanged estimator accepts all six and returns synthetic `192/192` first and
+bounded fractions; no control row enters an empirical denominator. A Final-ABI-false Qualified
+payload also validates, while a real malformed-Final Runtime path and one ABI-valid unknown first
+Action each escape as exceptions with zero typed Outcome rows. A completed payload accepts a fake
+`first_failed_component_key`, and six registered outer failure classes have zero exact rows. All
+11 defect controls reproduce and all 25 audit-construction Gates pass, but the noncompensatory
+online Gate fails exactly as required. Provider, Development outcome, empirical row or estimate,
+Mapper, State, frequency, Contribution, and VTDO counts remain zero. The current transition
+authorizes only a credential-free authoritative Raw/Result parent-binding and terminal-totality
+repair preflight; online execution remains forbidden.
+
 The policy implementation and concrete profile pass 10/10 focused tests with zero API calls and
 zero GPU jobs. It does not materialize a task Population, empirical Contract, or Job Manifest and
 did not by itself change the then-current permitted transition. See
 `docs/finance_v26_prospective_thinking_mode_policy.md`.
+
+## v26.180 Job-Bound Outcome Parent Authenticity And Terminal Totality Audit Decision
+
+Finance v26.180 consumed only
+`capability_observation_job_bound_multistep_outcome_192_job_runner_preflight_independent_audit_only`.
+The external review is bound at 22,294 bytes and SHA-256
+`f2da2aef728d78964a6c6b0060382f55a91937dc86c029c5cd7b8fdd9f7cdd78` and audits exact commit
+`27ac98d03d078d522cecf7a0cb290230cac63036`. Credential lookup, Provider-client construction,
+Stage 1 and Stage 2 Provider calls, Development model outcomes, formal empirical Outcome rows,
+empirical estimates, Confirmation access, GPU, Mapper, State Assignment, frequency,
+Contribution, VTDO, Student visibility, training, release, and production counts are zero.
+
+All eighteen authoritative v26.179 files independently rebuild byte for byte. Its exact 32 x 6
+prospective Job index, 192 unique Raw and Result namespaces, ordered multicomponent attempt
+language, complete-Job `q_first` and `q_bounded_correction` definitions, 4,632 accepted-prefix
+local trajectories, 41,124 Candidate evaluations, and eleven scripted branch controls remain
+immutable. The strongest estimator interpretation is narrowed to
+`exact_job_key_set_and_wrapper_parent_estimator_gate`; exact Job index closure is not treated as
+exact Job Outcome evidence closure.
+
+The parent-authenticity audit constructs six independent synthetic 192-row denominators. Every
+row keeps its exact Manifest Job wrapper and receives a fresh content identity. The unchanged
+estimator accepts all six:
+
+```text
+Control  Attack                                      Raw IDs  Result IDs  Trace IDs
+1        cross-Job Outcome reassignment                  192         192        192
+2        one Raw ID reused by all Jobs                     1         192        192
+3        one Result ID reused by all Jobs                192           1        192
+4        Raw and Result parents rotated across Jobs      192         192        192
+5        Result parent unrelated to Outcome/Final        192         192        192
+6        one attempt trace reused by all Jobs            192         192          1
+```
+
+Every attack retains 192 unique Job and row IDs and returns fixture-only
+`q_first=192/192` and `q_bounded_correction=192/192`. These are diagnostic outputs, not empirical
+Capability estimates. `RawExecutionDescriptor`, `JobResultDescriptor`, authoritative Job-bound
+trace, formal empirical row, and formal estimate counts all remain zero.
+
+Controls 7 and 8 show that a fully rehashed completed Qualified payload with
+`final_response_abi_valid=false` passes the frozen validator, while a real Runtime trace that
+reaches production finalization and submits an exact malformed Final propagates a Pydantic
+`ValidationError`. `final_response_abi_invalid` has no registered endpoint; typed Outcome,
+exact-row, Verifier-null-policy, and Qualified-false-policy evidence counts are zero. Control 9
+uses the current State, exact four-field Grammar, and unknown 24-hex Action
+`753cf4b44888c3d513d5877a`; the Runner raises
+`ABI-valid first response references an absent current Action` and emits zero typed rows. The
+first-Action correction policy remains intentionally unfrozen.
+
+Control 10 fully rehashes a completed all-committed Outcome with
+`first_failed_component_key=audit.fake.completed.component`; the old validator accepts it. The
+old Runtime also uses that field as a mechanism-failure fallback, while separate
+`first_uncommitted_component_key` and `first_mechanism_failed_component_key` fields are absent.
+Control 11 registers Provider no-payload, Transport, Privacy, Resource, Instrument, and Provider
+identity/Thinking/Usage outer classes. All six lack a v26.179 EndpointKind and exact Outcome row.
+No real outer failure is induced and no occurrence rate is claimed.
+
+All 25 noncompensatory static audit Gates pass, including the expected reproduction of all eleven
+defect controls. The separate online execution Gate fails with exact decision:
+
+```text
+job_bound_outcome_parent_authenticity_and_terminal_totality_failed
+```
+
+The 343-file transitive source Root has zero unresolved imports. The formal Root contains 14 files
+and 132,421 bytes; report SHA-256 is
+`521772cfa330867fec456d282664f6e31efc03a6aac0d3e71322a8c58a53b375`. Five fast tests pass in
+3.30 seconds with the rebuild test deselected. The complete warning-as-error empty-directory
+rebuild passes in 667.08 seconds and matches 14/14 files. The v26.179-v26.180 adjacent
+non-rebuild regression passes 12/12 in 3.47 seconds. Focused PyCompile, Ruff, format, and Mypy
+pass; package-wide Ruff passes. Package-wide Mypy checks 571 source files, retains six historical
+diagnostics in four files, and has zero v26.180 diagnostics.
+
+Authoritative identities include:
+
+- report:
+  `finance_v26_job_bound_parent_terminal_audit_report:1b7fcb0be4139dadf88ba3bc4ce3035662d6737224fc8171747fb7f48bd98131`;
+- transitive source Root:
+  `finance_v26_job_bound_parent_terminal_transitive_source_root:b838dab849f93c9afd8212dc1d20d29ff1b8f607b57e4627bcfa0bc4edc03d7c`;
+- v26.179 predecessor Freeze:
+  `finance_v26_v179_predecessor_freeze_audit:0ec5952fbc1bd603a8b861976df48182eddc5279e26606b1cc363d373df4cdcd`;
+- v26.179 claim-scope Audit:
+  `finance_v26_v179_outcome_claim_scope_audit:dc441e79043be3d8283c5e0a223de2d2f4bab07365596d82e046281b8b540afb`;
+- empirical parent-authenticity Audit:
+  `finance_v26_empirical_outcome_parent_authenticity_audit:a638dad296b17d26e6e49178b87d85cbdd78cf0e412265a61d2ebe37e4859421`;
+- Final ABI totality Audit:
+  `finance_v26_final_abi_terminal_totality_audit:70dab64cc651d2f20ff9bdffbe7255d8e103d08dbcc8b09987c0eae00d3f85be`;
+- first-Action reference totality Audit:
+  `finance_v26_first_action_reference_terminal_totality_audit:46169958fba4b7281284d170cfc02c34ca31755df0e6462f7722b40deff72b75`;
+- failure-field semantics Audit:
+  `finance_v26_first_failure_field_semantics_audit:1e3f266cf959ba81e6b583993a503b29e8deb49f59dda98b5ad0ddb57c7bf14e`;
+- outer terminal-totality Audit:
+  `finance_v26_outer_terminal_totality_audit:24bcbaf5bda9cd9baa4db2156b02afb58f696e55ed9f2d9661995abdabffbe9d`;
+- online execution Gate:
+  `finance_v26_job_bound_online_execution_gate:094b857d263c8739d2417f85018a18e267cb9a5a9b56ca0a0ae1fb8be61f7247`;
+- static Audit:
+  `finance_v26_job_bound_parent_terminal_static_audit:1462bed9516aced2f1b8e516c47566901f02cfb76382f9c8780edb4f276b9674`;
+- transition:
+  `finance_v26_job_bound_parent_terminal_audit_transition:79adc64e56f669ebf171ca2d0ae04c5258ea99a7a1d451f78f3deac81c031353`.
+
+The only permitted transition is:
+
+```text
+capability_observation_empirical_outcome_authoritative_parent_binding_
+and_terminal_totality_preflight_only
+```
+
+A successor may introduce only prospective content-addressed RawExecution and JobResult
+descriptors, a Job-bound AttemptTrace parent, constructor-only empirical Outcome rows, an exact
+evidence-set estimator, typed first-Action-reference-invalid and Final-ABI-invalid endpoints,
+strictly separated failure-localization fields, and exact outer-terminal rows. It must preflight
+them with zero Provider calls and zero Development outcomes. Provider execution, source, Task,
+Component, Candidate, Schedule, presentation, model, Thinking, Grammar, Policy, resource,
+correction-bound, threshold, validity, Manifest Job-set, Confirmation, historical rewrite,
+Mapper, State, frequency, Contribution, VTDO, Student, training, release, and production changes
+remain forbidden. See
+`docs/finance_v26_180_job_bound_outcome_parent_authenticity_and_terminal_totality_audit.md`.
 
 ## v26.179 Job-Bound Multistep Outcome And 192-Job Runner Preflight Decision
 
@@ -921,6 +1055,12 @@ correction-bound, threshold, model/Thinking, Grammar, Policy, resource, terminal
 or Outcome semantics changes, historical rewrite, Confirmation access, Mapper, State, frequency,
 Contribution, VTDO, Student visibility, training, release, and production remain forbidden. See
 `docs/finance_v26_179_job_bound_multistep_outcome_and_runner_preflight.md`.
+
+That independent-audit transition has now been consumed by v26.180 with zero Provider calls.
+Every v26.179 byte and narrow local result remains immutable, while its empirical parent-
+authenticity and terminal-totality claims fail under the eleven exact controls recorded above.
+The current transition is the credential-free authoritative parent-binding and terminal-totality
+repair preflight authorized by v26.180.
 
 ## v26.178 Executed Counterfactual, Valid Control, And Outcome Row Closure Decision
 

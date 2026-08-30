@@ -1,0 +1,820 @@
+# v26.179 修订结果审计
+
+## 一、最终判定
+
+v26.179 消费的范围与上一轮建议一致：
+
+```text
+capability_observation_job_bound_multistep_outcome_contract_
+and_192_job_runner_preflight_only
+```
+
+它仅物化一个 192-Job prospective Manifest 和一个 credential-free Runner Contract，执行 scripted local Runtime controls，没有 Provider 调用、Development model outcome、Mapper、State、frequency、Contribution 或 VTDO 操作。
+
+本次审计同时按项目既定证据规则处理：以当前 Git tree、不可变实验工件和服务器重跑结果为准，不把缺失对话内容视为实验事实。 对应实现已提交为：
+
+```text
+27ac98d03d078d522cecf7a0cb290230cac63036
+Implement v26.179 job-bound outcome preflight
+```
+
+综合报告、工件、测试和源码，我的判定是：
+
+```text
+v26.179 作为 credential-free 本地 Runner preflight：
+    有实质进展，可以保留并冻结。
+
+v26.179 作为未来经验 Outcome 证据闭合：
+    尚未通过。
+
+当前 online Development execution：
+    继续禁止。
+
+当前 next_stage = independent audit only：
+    正确，不能改成在线执行授权。
+```
+
+更精确地说：
+
+$$
+\boxed{
+\text{v26.179 固定了 exact Job 索引集，}
+\neq
+\text{固定了 exact Job Outcome 证据集。}
+}
+$$
+
+当前**第一个根本阻塞点**是：
+
+> `EmpiricalCapabilityOutcomeRow` 虽然携带 Job、Manifest、Raw 和 Result 字段，但还没有证明其中的 Outcome、Raw 和 Result 确实来自该 Job 的实际执行。
+
+除此之外，在线终点语言还缺少 Final ABI invalid 和首次 ABI-valid-but-unbound Action 两条现实分支。
+
+---
+
+# 二、上一轮问题的修订结果
+
+| v26.178 审计问题              | v26.179 修订                                    | 本轮判定             |
+| ------------------------- | --------------------------------------------- | ---------------- |
+| 多个 Component 的纠错无法装入一行    | 引入有序 `ComponentAttemptOutcome` tuple          | **已关闭**          |
+| 没有精确 192 个 Job 身份         | 32 Package × 6 Replica，192 个唯一 Job            | **已关闭**          |
+| estimator 只看行数            | 检查唯一 Job ID 和 exact Manifest Job set          | **索引层关闭，证据层未关闭** |
+| ABI-invalid 可被标为 accepted | first-response ABI invalid 强制 acceptance 不可评估 | **首次响应分支已关闭**    |
+| fixture kind 只是手工标签       | 11 条 branch control 从真实 Runtime trace 投影      | **大部分关闭**        |
+| 只扫描 reference prefix      | 执行 772 个 Choice vectors × 6 Replicas          | **已关闭**          |
+| 后续执行授权过早                  | 仅授权独立零调用审计                                    | **正确**           |
+
+---
+
+## 1. 多 Component 纠错表示已经真正关闭
+
+v26.179 新增的对象链是：
+
+```text
+ComponentAttemptOutcome
+  -> ordered JobBoundOutcomePayload
+  -> ScriptedPreflightOutcomeRow
+     or EmpiricalCapabilityOutcomeRow
+```
+
+每个 Component attempt 保存 State token、首次响应 ABI、Action acceptance、State precondition、typed rejection、Feedback、纠错 Action、terminal 和 commit。Attempt index 必须连续，Component key 不能重复，terminal 必须位于最后。
+
+源码进一步从 attempt tuple 重新计算：
+
+```text
+reached_component_count
+committed_component_count
+correction_count
+correction_feedback_ids
+first_policy_qualified_valid
+bounded_policy_qualified_valid
+```
+
+并验证 correction Feedback 顺序与 attempts 一致。
+
+`two_component_corrections` 控制实际运行了四个 Component，其中前两个分别：
+
+```text
+wrong -> public Feedback -> corrected -> commit
+wrong -> public Feedback -> corrected -> commit
+```
+
+最终得到：
+
+```text
+correction_count = 2
+final_qualified_valid = true
+first_policy_qualified_valid = false
+bounded_policy_qualified_valid = true
+```
+
+因此，上一轮最直接的“一个 Job 只能保存一个 correction”的缺陷已经实质关闭。
+
+---
+
+## 2. 精确 192-Job Manifest 已经成立
+
+新 Manifest 确实具有：
+
+```text
+32 authoritative Runner Packages
+× 6 Replicas
+= 192 Jobs
+
+unique Job IDs            192
+unique Raw namespaces     192
+unique Result namespaces  192
+Package × Replica cells   192
+missing / duplicate / extra = 0 / 0 / 0
+```
+
+
+
+Manifest validator 也检查：
+
+* 192 个唯一 Job ID；
+* 每个 Package 恰好具有 Replica `{0,1,2,3,4,5}`；
+* Raw namespace 和 Result namespace 唯一；
+* 每个 Package × Replica cell 恰好一次；
+* Job 使用同一个 generation profile 和 Outcome Contract。
+
+构造器从 authoritative Runner Package 生成 Job，而不是读取手工表格；随后 `_exact_job_set()` 又对 Runner Package、source Package、generation profile 和 Outcome Contract 做独立匹配。
+
+因此：
+
+$$
+\boxed{
+\text{exact prospective Job index set 已经实例化。}
+}
+$$
+
+---
+
+## 3. 两个 Job-level estimand 的定义已澄清
+
+当前定义为：
+
+$$
+q_{\mathrm{first}}
+=
+\frac{
+\#\{\text{完整 Job 在零 Component 纠错下 Qualified}\}
+}{
+\text{exact Manifest Job count}
+},
+$$
+
+$$
+q_{\mathrm{bounded}}
+=
+\frac{
+\#\{\text{完整 Job 在每个 reached Component 至多一次纠错下 Qualified}\}
+}{
+\text{exact Manifest Job count}
+}.
+$$
+
+这正确区分了“第一次 Action”与“完整零纠错 Job policy”。
+
+源码实现也不是直接信任字段，而是：
+
+```python
+first_policy_qualified_valid
+    = final_qualified_valid is True
+      and correction_count == 0
+```
+
+并要求 first-policy success 必然也是 bounded-policy success。
+
+这一点已经关闭。
+
+---
+
+## 4. accepted-prefix 扫描关闭了 reference-prefix 范围问题
+
+v26.179 不再只沿一个 reference prefix 到达每个 Component，而是枚举全部 frozen declared Choice vectors：
+
+```text
+source Choice combinations          772
+Replica executions                4,632
+reached accepted-prefix States   14,388
+Candidate evaluations            41,124
+accepted selected Actions        13,308
+typed-rejected evaluations        3,240
+summary rows                         480
+history-dependent rows                0
+```
+
+
+
+源码对每个 reached prefix 重新渲染当前 Prompt、重新运行 production acceptance classifier，并在 selected Action typed-reject 后停止该路径。该证据足以支持：
+
+> 在当前 frozen declared Choice surface 内，Candidate acceptance signature 对所有已接受的 predecessor prefixes 保持不变。
+
+它仍不是未来任意任务或未登记历史的定理，但报告已经明确保留了这条边界。
+
+---
+
+# 三、P0：exact Job set 尚未成为 exact Outcome evidence set
+
+这是本轮最早的根本阻塞点。
+
+## 1. `EmpiricalCapabilityOutcomeRow` 只要求 Raw/Result ID 非空
+
+当前经验行包含：
+
+```text
+job_id
+manifest_id
+execution_package_id
+source_package_artifact_id
+replica_index
+attempt_trace_id
+raw_namespace
+result_namespace
+raw_execution_id
+result_id
+outcome
+```
+
+但其 validator 实际只检查：
+
+```text
+row.attempt_trace_id == row.outcome.attempt_trace_id
+row_id == 当前行内容的 canonical hash
+```
+
+`raw_execution_id` 和 `result_id` 只是 `min_length=1` 的字符串。没有验证：
+
+```text
+raw_execution_id 属于该 Job 的 raw_namespace
+result_id 属于该 Job 的 result_namespace
+Raw Execution 内部 job_id == row.job_id
+Result 的 raw parent == row.raw_execution_id
+Result 的 Outcome parent == row.outcome
+row.result_id 与 outcome.final_result_id 的登记关系
+```
+
+内容哈希只能证明对象在哈希后没有变化，不能证明这些父对象来自真实执行。
+
+---
+
+## 2. estimator 只验证 Job wrapper，不验证 Outcome 来源
+
+`evaluate_empirical_capability_estimands()` 已经正确检查：
+
+```text
+192 rows
+unique row IDs
+unique Job IDs
+exact Job-ID set == Manifest expected_job_ids
+Package / source artifact / Replica / namespaces match Job
+```
+
+但它随后直接对：
+
+```text
+row.outcome.first_policy_qualified_valid
+row.outcome.bounded_policy_qualified_valid
+```
+
+求和。它没有加载或验证任何 Raw Execution、Result 或 actual trace object。
+
+因此，下面这类完整重哈希攻击仍然可以通过：
+
+```text
+对每个 Manifest Job J_i：
+
+保留：
+  job_id                  = J_i.job_id
+  Package / Replica       = J_i 的正确值
+  raw_namespace           = J_i.raw_namespace
+  result_namespace        = J_i.result_namespace
+
+替换：
+  outcome                 = 某一个 Qualified Job 的 Outcome
+  attempt_trace_id        = 该被复制 Outcome 的 trace ID
+  raw_execution_id        = 任意非空字符串
+  result_id               = 任意非空字符串
+
+最后重新计算 row_id。
+```
+
+这样：
+
+* 192 个 Job ID 仍然唯一；
+* exact Manifest Job set 仍然匹配；
+* row ID 仍然唯一；
+* Package、Replica 和 namespace 仍然匹配；
+* 但 192 个 Outcome 可以全部来自同一条轨迹。
+
+当前 estimator 不检查 `outcome` 是否是对应 Job Raw trace 的 push-forward，因此仍会接受。
+
+---
+
+## 3. 测试代码直接暴露了这一边界
+
+测试辅助函数将经验行的父字段填写为：
+
+```text
+raw_execution_id = "test_only_raw:<job_id>"
+result_id        = "test_only_result:<job_id>"
+```
+
+这些并不是正式 Raw/Result 对象的内容地址。测试随后调用经验 estimator，并成功获得：
+
+```text
+q_first   = 192/192
+q_bounded = 192/192
+```
+
+报告诚实说明这些只是 test-only wrappers，不是正式经验行。 因此当前正式工件没有被污染。
+
+但该测试证明的是：
+
+> estimator 可以被调用。
+
+它没有证明：
+
+> estimator 只能消费具有真实 Raw/Result lineage 的经验行。
+
+所以 v26.179 的 strongest claim 应从：
+
+```text
+exact-set empirical estimator gate
+```
+
+收窄为：
+
+```text
+exact Job-key-set and wrapper-parent estimator gate
+```
+
+---
+
+## 4. 还缺少三个不可补偿条件
+
+未来 estimator 必须至少检查：
+
+```text
+unique raw_execution_id count == 192
+unique result_id count        == 192
+unique Job-bound trace parent == 192
+```
+
+更重要的是，它应接收真实对象或强 descriptor：
+
+```text
+RawExecutionDescriptor:
+  raw_execution_id
+  job_id
+  manifest_id
+  runner_id
+  raw_namespace
+  attempt_trace_hash
+
+JobResultDescriptor:
+  result_id
+  job_id
+  raw_execution_id
+  outcome_payload_id
+```
+
+然后独立重建每个 `EmpiricalCapabilityOutcomeRow`，而不是接受调用方已经填写好的行。
+
+---
+
+# 四、P0：Final ABI invalid 没有完整 Outcome 语义
+
+## 1. Endpoint enum 没有 Final ABI invalid
+
+当前 `EndpointKind` 只包含：
+
+```text
+completed_qualified
+completed_invalid
+first_response_abi_invalid
+correction_response_abi_invalid
+correction_attempt_typed_invalid
+correction_action_reference_invalid
+```
+
+没有：
+
+```text
+final_response_abi_invalid
+```
+
+---
+
+## 2. validator 允许 Final ABI false 但仍然 Qualified
+
+当 `task_verifier_invoked=True` 时，validator 只要求 Final 字段不是 `None`，但没有要求：
+
+```text
+final_response_abi_valid == true
+```
+
+因此下面的完整重哈希 Outcome 可以通过当前 validator：
+
+```text
+final_response_abi_valid          false
+final_base_valid                  true
+final_mechanism_qualified         true
+final_qualified_valid             true
+bounded_policy_qualified_valid    true
+endpoint_kind                     completed_qualified
+```
+
+只要所有 Component 已 committed，其他 conjunction 一致即可。
+
+这与独立 Validity 逻辑冲突：模型没有跨过 Final ABI，就不应进入可验证 Final，更不能成为 Qualified。
+
+---
+
+## 3. scripted Runner 没有测试该分支
+
+当前 Runner 只在 production `finalize()` 成功后构造一个合法 scripted Final payload，调用 Final parser，并固定：
+
+```text
+final_abi_valid = true
+```
+
+11 条 branch controls 包含：
+
+```text
+first-response ABI invalid
+accepted downstream invalid
+one/two Component corrections
+same/different invalid correction
+stale/foreign correction
+```
+
+但没有：
+
+```text
+Final ABI invalid
+```
+
+
+
+因此当前 `192 Final ABI parses` 只证明合法 scripted Final 能解析，不证明在线 Final ABI failure 能：
+
+* 形成完整 Raw terminal；
+* 投影为完整 Job Outcome；
+* 保持 Verifier fields 为 null；
+* 保持 Qualified 为 false；
+* 不破坏 exact 192-row denominator。
+
+这是在线执行前必须关闭的 P0。
+
+---
+
+# 五、P0：首次 ABI-valid 但不存在的 Action 仍会中断 Outcome 投影
+
+报告写道：
+
+> ABI-valid stale or foreign Action reference 会被表示为 Action-reference-invalid，并且 acceptance 不可评估。
+
+但源码只对**纠错响应**实现了 stale／foreign terminal。
+
+对于首次响应，流程是：
+
+```text
+四字段 ABI 解析成功
+    ↓
+查找 action_id 是否位于当前 Candidate rows
+    ↓
+若不存在，直接 raise ValueError
+```
+
+具体分支是：
+
+```python
+if first_row is None:
+    raise ValueError(
+        "ABI-valid first response references an absent current Action"
+    )
+```
+
+也就是说，模型首次返回：
+
+```json
+{
+  "state_id": "正确当前 State",
+  "action_id": "格式正确但当前不存在的 24-hex ID",
+  "decision_kind": "execute_public_operation",
+  "protocol": "正确协议"
+}
+```
+
+时：
+
+* Action ABI 是有效的；
+* Action reference 是无效的；
+* 但不会产生 typed policy endpoint；
+* 不会生成 `ComponentAttemptOutcome`；
+* 不会生成完整 empirical Outcome row；
+* 当前 Runner 会抛异常。
+
+现有 stale／foreign controls 都是 **second response**。
+
+因此报告中的表述应暂时收窄为：
+
+```text
+ABI-valid stale or foreign correction Action reference
+is separately represented.
+```
+
+不能推广到首次 Action。
+
+需要新增：
+
+```text
+first_action_relation
+或 first_action_reference_valid
+
+EndpointKind:
+  first_action_reference_invalid
+```
+
+并明确该终点是否允许一次 public correction；无论采用哪种政策，都必须在执行前冻结。
+
+---
+
+# 六、P1：`first_failed_component_key` 并未完全“derive rather than trust”
+
+报告声称 Job payload 会导出：
+
+```text
+first uncommitted Component
+```
+
+
+
+源码实际检查是：
+
+```python
+expected_failed = first attempt where committed == false
+
+if expected_failed is not None:
+    require first_failed_component_key == expected_failed
+```
+
+当全部 Component 都 committed 时，validator 没有要求：
+
+```text
+first_failed_component_key == null
+```
+
+因此可以：
+
+```text
+所有 attempts committed = true
+first_failed_component_key = "arbitrary.fake.component"
+```
+
+重新计算 `attempt_trace_id` 后通过验证。
+
+此外，runtime 在 completed-invalid 情况下还会尝试把第一个 mechanism semantic check failure 写入同一个字段。
+
+这意味着该字段同时可能表示：
+
+1. 第一个未 commit 的 Component；
+2. 第一个 mechanism semantic failure；
+3. 任意未被校验的字符串。
+
+它当前不影响 \(q_{\mathrm{first}}\) 或 \(q_{\mathrm{bounded}}\)，所以我将其定为 P1，而非首个 P0。但在后续 State Mapping 或 failure localization 前必须拆成：
+
+```text
+first_uncommitted_component_key
+first_mechanism_failed_component_key
+```
+
+并分别严格导出。
+
+---
+
+# 七、为什么 21 个 destructive controls 没发现这些问题
+
+现有 destructive audit 确实覆盖了：
+
+```text
+duplicate / missing / extra Job
+duplicate Package × Replica cell
+duplicate Raw / Result namespace
+crossed source Package parent
+ABI-invalid first response marked accepted
+deleted correction Feedback
+swapped Component attempts
+truncated correction count
+scripted row promoted empirical
+missing raw_execution_id
+duplicate Job rows in estimator
+```
+
+
+
+但没有覆盖：
+
+```text
+cross-Job Outcome payload reassignment
+duplicate raw_execution_id across distinct Jobs
+duplicate result_id across distinct Jobs
+crossed Raw/Result IDs
+Raw/Result ID与真实对象内容不匹配
+result_id 与 Outcome/Final result parent 不一致
+same attempt_trace reused across Jobs
+Final ABI false promoted to Qualified
+ABI-valid unknown first Action
+fake first_failed_component_key on completed Outcome
+```
+
+因此：
+
+```text
+21 / 21 attacks rejected
+```
+
+只能解释为登记的 21 种攻击被拒绝，不能补偿尚未进入攻击分母的 parent-authenticity 和 terminal-totality 缺口。
+
+---
+
+# 八、当前证据真正支持到哪一层
+
+## 已经支持
+
+```text
+v26.178 的历史对象保持不可变。
+v26.178 Outcome claim 被正确收窄。
+冻结生成配置保持唯一。
+32 × 6 = 192 个 prospective Job identity 已精确实例化。
+Package × Replica cells、Raw/Result namespaces 唯一。
+多 Component correction 能被有序 attempt trace 表达。
+q_first 与 q_bounded 的 Job-level 定义清晰。
+全部 frozen accepted-prefix classes 得到本地执行。
+11 个已登记 scripted branch controls 得到 Runtime 投影。
+当前没有 Provider、经验 Outcome 或 Capability estimate。
+```
+
+当前项目状态中对这些本地结果和零调用边界的记录与 v26.179 报告一致。
+
+## 仍不支持
+
+```text
+EmpiricalCapabilityOutcomeRow 已由真实 Raw/Result 唯一导出。
+exact Job set 等价于 exact Job Outcome evidence set。
+Raw/Result identity 不是任意非空字符串。
+Outcome 不可能跨 Job 复制或交换。
+Final ABI invalid 一定产生完整 typed endpoint。
+ABI-valid unknown first Action 一定产生完整 typed endpoint。
+在线 192-Job Runner 对所有可能终点是 total 的。
+经验 q_first 或 q_bounded 已可计算。
+Capability Depth、频率、State、Contribution 或 VTDO 已获授权。
+```
+
+---
+
+# 九、对当前 Transition 的判定
+
+v26.179 当前没有直接授权 online execution，而只允许：
+
+```text
+capability_observation_job_bound_multistep_outcome_192_job_
+runner_preflight_independent_audit_only
+```
+
+该独立审计只能重建和审计 Manifest、Runner、prefix surface、scripted projection、branch controls、estimator gate 和父身份，Provider execution 仍然禁止。
+
+这个 transition 是正确的。
+
+因此，当前不需要撤销 v26.179，也不需要回退到 v26.171—v26.178。正确做法是：
+
+$$
+\boxed{
+\text{保留 v26.179，但下一独立审计必须给出负向执行授权结论。}
+}
+$$
+
+---
+
+# 十、唯一合理的下一步
+
+按当前已授权的 independent-audit-only transition，下一阶段必须新增以下 fully rehashed controls：
+
+```text
+1. 将 Job A 的 Qualified Outcome 挂到 Job B，重算所有行身份；
+2. 192 个不同 Job 复用同一个 raw_execution_id；
+3. 192 个不同 Job 复用同一个 result_id；
+4. 交换两个 Job 的 Raw/Result parents；
+5. Result parent 与 Outcome / final_result parent 不一致；
+6. 多个 Job 复用同一个 attempt_trace_id；
+7. Final ABI invalid，但 Base/Mechanism/Qualified 标 true；
+8. Final ABI invalid 的真实 Runner terminal projection；
+9. ABI-valid、State-valid、但 unknown first action_id；
+10. completed Outcome 带伪造 first_failed_component_key；
+11. Provider no-payload、Transport、Privacy、Resource 等外层终点的
+    exact-row totality 检查。
+```
+
+其中前六项预计会被当前 estimator 接受，或者至少不会在现有 parent relation 上被拒绝；第七项预计会被当前 `JobBoundOutcomePayload` validator 接受；第九项当前会抛异常而不是生成 Outcome。
+
+独立审计应据此冻结：
+
+```text
+job_bound_outcome_parent_authenticity_and_terminal_totality_failed
+```
+
+并且继续保持：
+
+```text
+Provider calls              0
+Development outcomes        0
+empirical Outcome rows      0
+empirical estimates         0
+Mapper / State / frequency  0
+Contribution / VTDO         0
+```
+
+随后新的、唯一的修订授权应是：
+
+```text
+capability_observation_empirical_outcome_authoritative_parent_binding_
+and_terminal_totality_preflight_only
+```
+
+该修订只需要局部修改 v26.179 Outcome／Runner 层：
+
+```text
+RawExecutionDescriptor
+  -> JobResultDescriptor
+  -> Job-bound AttemptTrace
+  -> EmpiricalCapabilityOutcomeRow
+  -> exact evidence-set estimator
+```
+
+并新增：
+
+```text
+first_action_reference_invalid
+final_response_abi_invalid
+严格 first_uncommitted / mechanism-failure 字段
+```
+
+不需要再改变 Task、Component、Candidate、Schedule、presentation、model、Thinking、Grammar、Policy 或 resource。
+
+---
+
+# 十一、审计结论
+
+v26.179 的修订不是表面修补。它已经真实关闭：
+
+$$
+\boxed{
+\text{多 Component 纠错表达}
++
+\text{192-Job Manifest}
++
+\text{Job-level estimand}
++
+\text{accepted-prefix coverage}
+}
+$$
+
+但它仍把两个不同问题混在了一起：
+
+$$
+\text{Job wrapper 属于 Manifest}
+$$
+
+与：
+
+$$
+\text{Outcome 真实产生于该 Job 的 Raw/Result}
+$$
+
+前者已经成立，后者尚未成立。
+
+所以最终审计结论是：
+
+```text
+v26.179 local scripted preflight:
+    PASS
+
+v26.179 exact prospective Job identity:
+    PASS
+
+v26.179 empirical Outcome parent closure:
+    FAIL
+
+v26.179 online terminal totality:
+    FAIL
+
+online Development execution:
+    NOT AUTHORIZED
+
+next independent audit:
+    AUTHORIZED AND MUST FAIL CLOSED ON THE NEW ATTACKS
+```
+
+当前应冻结 v26.179 的有效成果，同时禁止用“192 个唯一 Job”越级声称“192 条唯一可信经验 Outcome”。下一独立审计只需集中攻击 **Outcome-to-Job parent authenticity** 和 **Runner terminal totality**；这是当前唯一需要修复的本质层。
