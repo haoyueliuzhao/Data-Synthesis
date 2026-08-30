@@ -27,13 +27,20 @@ from trusted_synthesis.core.evaluation.evaluator import (
     CandidateQualityEvaluator,
     ReferenceQualityEvaluator,
 )
+from trusted_synthesis.core.evaluation.realization_binding import (
+    RealizationExecutionBinding,
+    bind_realization_execution,
+)
 from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
 from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.release import (
+    DiversityAwareReleaseSelection,
+    DiversityReleasePolicy,
     SplitPolicy,
     assign_split,
     build_release_manifest,
     select_candidate_release,
+    select_diversity_aware_release,
 )
 from trusted_synthesis.core.release.split import semantic_cluster_id
 from trusted_synthesis.core.synthesis import (
@@ -41,6 +48,7 @@ from trusted_synthesis.core.synthesis import (
     ProofCarryingSampleCompiler,
     ProofCertificate,
 )
+from trusted_synthesis.core.task.realization import RealizedTaskPackage
 from trusted_synthesis.core.task.schema import VerifierRequirement
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
@@ -239,6 +247,24 @@ def run_finance_pilot(
     )
 
     split_policy = SplitPolicy(policy_id="finance_pilot_semantic_split.v1")
+    (
+        portfolio_candidates,
+        portfolio_assessments,
+        portfolio_execution_bindings,
+        portfolio_records,
+    ) = _evaluate_realization_portfolios(
+        cases,
+        candidate_generator,
+        candidate_evaluator,
+    )
+    portfolio_selection = select_diversity_aware_release(
+        portfolio_records,
+        policy=DiversityReleasePolicy(
+            policy_id="finance_pilot_realization_release.v2",
+            max_per_semantic_instance=3,
+        ),
+        split_policy=split_policy,
+    )
     selection = select_candidate_release(candidate_records, split_policy)
     cross_domain_contracts = run_cross_domain_contract_suite()
     release_plugin_sets = (
@@ -281,6 +307,7 @@ def run_finance_pilot(
         clean_assessments=clean_assessments,
         mutation_cases=mutation_cases,
         selection_id=selection.selection_id,
+        portfolio_selection_id=portfolio_selection.selection_id,
         manifest_hash=manifest.manifest_hash,
         adapter=adapter,
         split_policy=split_policy,
@@ -314,6 +341,10 @@ def run_finance_pilot(
         decision_parities=decision_parities,
         counterfactual_report=counterfactual_report,
         counterfactual_cases=counterfactual_cases,
+        portfolio_candidates=portfolio_candidates,
+        portfolio_assessments=portfolio_assessments,
+        portfolio_execution_bindings=portfolio_execution_bindings,
+        portfolio_selection=portfolio_selection,
     )
     _write_artifacts(
         output_dir=output_dir,
@@ -334,8 +365,77 @@ def run_finance_pilot(
         decision_parities=decision_parities,
         counterfactual_report=counterfactual_report,
         counterfactual_cases=counterfactual_cases,
+        portfolio_candidates=portfolio_candidates,
+        portfolio_assessments=portfolio_assessments,
+        portfolio_execution_bindings=portfolio_execution_bindings,
+        portfolio_selection=portfolio_selection,
     )
     return report
+
+
+def _evaluate_realization_portfolios(
+    cases: tuple[PilotTaskCase, ...],
+    candidate_generator: FinanceNumericCandidateGenerator,
+    candidate_evaluator: CandidateQualityEvaluator,
+) -> tuple[
+    tuple[Trajectory, ...],
+    tuple[QualityAssessment, ...],
+    tuple[RealizationExecutionBinding, ...],
+    tuple[
+        tuple[
+            RealizedTaskPackage,
+            Trajectory,
+            QualityAssessment,
+            RealizationExecutionBinding,
+        ],
+        ...,
+    ],
+]:
+    trajectories: list[Trajectory] = []
+    assessments: list[QualityAssessment] = []
+    execution_bindings: list[RealizationExecutionBinding] = []
+    records = []
+    for case in cases:
+        compilation = case.realization_compilation
+        for realized in compilation.selected:
+            generated = candidate_generator.generate(
+                realized.task.public,
+                InMemoryEvidenceToolRuntime(case.corpus),
+            )
+            trajectory = generated.model_copy(
+                update={
+                    "trajectory_id": canonical_hash(
+                        {
+                            "realized_package_id": realized.realized_package_id,
+                            "generated_trajectory_hash": generated.trajectory_hash,
+                            "schema_version": "finance_pilot_realized_trajectory.v1",
+                        },
+                        prefix="finance_pilot_realized_trajectory:",
+                    )
+                }
+            )
+            assessment = candidate_evaluator.evaluate(
+                realized.task,
+                case.corpus,
+                case.proof_graph,
+                trajectory,
+            )
+            execution_binding = bind_realization_execution(
+                realized,
+                compilation.portfolio,
+                trajectory,
+                assessment,
+            )
+            trajectories.append(trajectory)
+            assessments.append(assessment)
+            execution_bindings.append(execution_binding)
+            records.append((realized, trajectory, assessment, execution_binding))
+    return (
+        tuple(trajectories),
+        tuple(assessments),
+        tuple(execution_bindings),
+        tuple(records),
+    )
 
 
 def _build_report(
@@ -362,6 +462,10 @@ def _build_report(
     decision_parities: list[DecisionParityReport],
     counterfactual_report: CounterfactualCalibrationReport,
     counterfactual_cases: tuple[CounterfactualCase, ...],
+    portfolio_candidates: tuple[Trajectory, ...],
+    portfolio_assessments: tuple[QualityAssessment, ...],
+    portfolio_execution_bindings: tuple[RealizationExecutionBinding, ...],
+    portfolio_selection: DiversityAwareReleaseSelection,
 ) -> dict[str, Any]:
     task_counts = Counter(case.task.public.task_type for case in cases)
     region_counts = Counter(case.binding.stratum[0] for case in cases)
@@ -474,6 +578,10 @@ def _build_report(
     contract_mutation_rejected = sum(
         item.decision == ReleaseDecision.REJECTED for item in mutation_contract_assessments
     )
+    expected_portfolio_count = sum(len(case.realization_compilation.selected) for case in cases)
+    portfolio_accepted = sum(
+        item.decision == ReleaseDecision.ACCEPTED for item in portfolio_assessments
+    )
     coverage_warnings = []
     if not region_counts.get("mainland_hong_kong_macau"):
         coverage_warnings.append(
@@ -517,6 +625,15 @@ def _build_report(
         "difficulty_clause_coverage": difficulty_clause_count == len(cases),
         "counterfactual_calibration_passed": counterfactual_report.status == "passed",
         "counterfactual_case_coverage": len(counterfactual_cases) > 0,
+        "qa_parent_authority_portfolio_complete": (
+            len(portfolio_candidates)
+            == len(portfolio_assessments)
+            == len(portfolio_execution_bindings)
+            == expected_portfolio_count
+            and portfolio_accepted == expected_portfolio_count
+            and len(portfolio_selection.selected_realization_ids) == expected_portfolio_count
+            and all(portfolio_selection.hard_gates.values())
+        ),
     }
     return {
         "pilot_id": config.pilot_id,
@@ -579,6 +696,9 @@ def _build_report(
             ),
             "unique_evidence_binding_count": len(binding_hashes),
             "difficulty_level_counts": dict(sorted(difficulty_level_counts.items())),
+            "realization_portfolio_count": len(cases),
+            "selected_realization_count": expected_portfolio_count,
+            "execution_binding_count": len(portfolio_execution_bindings),
             "minimum_distractors": min((len(case.distractor_ids) for case in cases), default=0),
             "mean_distractors": (mean(len(case.distractor_ids) for case in cases) if cases else 0),
             "minimum_hard_distractors": min(
@@ -665,6 +785,23 @@ def _build_report(
             "split_counts": selection.split_counts,
             "semantic_leakage_count": leakage_count,
             "generalization_contract": manifest.metadata,
+            "qa_parent_authority": {
+                "selection_id": portfolio_selection.selection_id,
+                "release_plan_id": portfolio_selection.release_plan_id,
+                "selected_realized_package_ids": (
+                    portfolio_selection.selected_realized_package_ids
+                ),
+                "selected_execution_binding_ids": (
+                    portfolio_selection.selected_execution_binding_ids
+                ),
+                "semantic_instance_child_counts": (
+                    portfolio_selection.semantic_instance_child_counts
+                ),
+                "weight_assignments": tuple(
+                    item.model_dump(mode="json") for item in portfolio_selection.weight_assignments
+                ),
+                "hard_gates": portfolio_selection.hard_gates,
+            },
         },
         "reproducibility": reproducibility,
         "current_boundaries": [
@@ -759,6 +896,7 @@ def _reproducibility_check(
     clean_assessments: list[QualityAssessment],
     mutation_cases: list[MutationCase],
     selection_id: str,
+    portfolio_selection_id: str,
     manifest_hash: str,
     adapter: FinanceArchiveAdapter,
     split_policy: SplitPolicy,
@@ -805,6 +943,19 @@ def _reproducibility_check(
             for mutation in generate_mutations(case, candidate, config.mutation_types)
         )
     selection_replay = select_candidate_release(candidate_records, split_policy)
+    *_, replay_portfolio_records = _evaluate_realization_portfolios(
+        cases,
+        candidate_generator,
+        candidate_evaluator,
+    )
+    replay_portfolio_selection = select_diversity_aware_release(
+        replay_portfolio_records,
+        policy=DiversityReleasePolicy(
+            policy_id="finance_pilot_realization_release.v2",
+            max_per_semantic_instance=3,
+        ),
+        split_policy=split_policy,
+    )
     replay_source_grounding = adapter.source_grounding_verifier()
     replay_registry = default_registry()
     replay_cross_domain_contracts = run_cross_domain_contract_suite()
@@ -840,6 +991,9 @@ def _reproducibility_check(
         "proof_certificate_hashes": [item.certificate_hash for item in proof_certificates]
         == [item.certificate_hash for item in replay_proof_certificates],
         "candidate_selection_id": selection_id == selection_replay.selection_id,
+        "realization_portfolio_selection_id": (
+            portfolio_selection_id == replay_portfolio_selection.selection_id
+        ),
         "release_manifest_hash": manifest_hash == manifest_replay.manifest_hash,
     }
 
@@ -864,6 +1018,10 @@ def _write_artifacts(
     decision_parities: list[DecisionParityReport],
     counterfactual_report: CounterfactualCalibrationReport,
     counterfactual_cases: tuple[CounterfactualCase, ...],
+    portfolio_candidates: tuple[Trajectory, ...],
+    portfolio_assessments: tuple[QualityAssessment, ...],
+    portfolio_execution_bindings: tuple[RealizationExecutionBinding, ...],
+    portfolio_selection: DiversityAwareReleaseSelection,
 ) -> None:
     config.write(output_dir / "config.json")
     _write_jsonl(output_dir / "task_packages.jsonl", (case.task for case in cases))
@@ -878,6 +1036,10 @@ def _write_artifacts(
                 "proof_graph": case.proof_graph,
                 "corpus_id": case.corpus.corpus_id,
                 "distractor_ids": case.distractor_ids,
+                "semantic_instance_id": (
+                    case.realization_compilation.semantic_binding.instance.semantic_instance_id
+                ),
+                "realization_portfolio_id": (case.realization_compilation.portfolio.portfolio_id),
             }
             for case in cases
         ),
@@ -888,6 +1050,30 @@ def _write_artifacts(
     _write_jsonl(output_dir / "quality_contracts.jsonl", quality_contracts)
     _write_jsonl(output_dir / "clean_candidate_workflows.jsonl", clean_candidates)
     _write_jsonl(output_dir / "clean_candidate_assessments.jsonl", clean_assessments)
+    _write_jsonl(
+        output_dir / "realization_portfolios.jsonl",
+        (case.realization_compilation.portfolio for case in cases),
+    )
+    _write_jsonl(
+        output_dir / "selected_realized_task_packages.jsonl",
+        (realized for case in cases for realized in case.realization_compilation.selected),
+    )
+    _write_jsonl(
+        output_dir / "realization_candidate_workflows.jsonl",
+        portfolio_candidates,
+    )
+    _write_jsonl(
+        output_dir / "realization_quality_assessments.jsonl",
+        portfolio_assessments,
+    )
+    _write_jsonl(
+        output_dir / "realization_execution_bindings.jsonl",
+        portfolio_execution_bindings,
+    )
+    _write_json(
+        output_dir / "realization_release_selection.json",
+        portfolio_selection,
+    )
     _write_jsonl(output_dir / "clean_contract_assessments.jsonl", clean_contract_assessments)
     _write_jsonl(
         output_dir / "mutated_candidate_workflows.jsonl",

@@ -238,6 +238,20 @@ class FinanceTaskPlugin:
         bundle: EvidenceBundle,
         evidence_ids: tuple[str, ...],
     ) -> TaskPackage:
+        return self.compile_evidence_ids(
+            task_type,
+            proof_graph,
+            bundle,
+            evidence_ids,
+        ).task
+
+    def compile_evidence_ids(
+        self,
+        task_type: str,
+        proof_graph: ProofGraph,
+        bundle: EvidenceBundle,
+        evidence_ids: tuple[str, ...],
+    ) -> TaskPatternInstantiation:
         try:
             pattern = self._patterns[task_type]
         except KeyError as exc:
@@ -285,7 +299,7 @@ class FinanceTaskPlugin:
             bundle,
             role_bindings,
             node_parameters=node_parameters,
-        ).task
+        )
 
     def realize_instantiation(
         self,

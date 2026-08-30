@@ -15,7 +15,12 @@ from trusted_synthesis.core.evidence.corpus import EvidenceCorpus
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.refinement import build_synthesis_cell
-from trusted_synthesis.core.release import SplitPolicy, select_candidate_release
+from trusted_synthesis.core.release import (
+    DiversityReleasePolicy,
+    SplitPolicy,
+    select_candidate_release,
+    select_diversity_aware_release,
+)
 from trusted_synthesis.core.task.difficulty import assess_task_difficulty
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.domains.finance.pattern_runtime import (
@@ -30,6 +35,9 @@ from trusted_synthesis.experiments.finance_pilot.candidate import (
     FinanceNumericCandidateGenerator,
 )
 from trusted_synthesis.experiments.finance_pilot.mutations import generate_mutations
+from trusted_synthesis.experiments.finance_pilot.runner import (
+    _evaluate_realization_portfolios,
+)
 from trusted_synthesis.experiments.finance_pilot.sampler import (
     RealDistractorIndex,
     TaskBinding,
@@ -82,11 +90,15 @@ def _case(finance_evidence: EvidenceItem) -> PilotTaskCase:
         graph_build_id="kg_test",
     )
     graph = ProofGraphBuilder().build(bundle)
-    task = FinanceTaskPlugin(allow_structured_claims=True).temporal_average(
+    plugin = FinanceTaskPlugin(allow_structured_claims=True)
+    instantiation = plugin.compile_evidence_ids(
+        "temporal_average",
         graph,
         bundle,
         tuple(item.evidence_id for item in observations),
     )
+    task = instantiation.task
+    realization_compilation = plugin.realize_instantiation(instantiation, graph, bundle)
     corpus = EvidenceCorpus.from_bundle(bundle)
     binding = TaskBinding(
         task_type="temporal_average",
@@ -99,8 +111,40 @@ def _case(finance_evidence: EvidenceItem) -> PilotTaskCase:
         corpus=corpus,
         proof_graph=graph,
         task=task,
+        realization_compilation=realization_compilation,
         distractor_ids=(),
     )
+
+
+def test_finance_pilot_evaluates_authoritative_realization_portfolio(
+    finance_evidence: EvidenceItem,
+) -> None:
+    case = _case(finance_evidence)
+    evaluator = CandidateQualityEvaluator(
+        semantic_policy=FinanceSemanticPolicy(),
+        claim_verifier=FinanceClaimVerifier(),
+    )
+    trajectories, assessments, bindings, records = _evaluate_realization_portfolios(
+        (case,),
+        FinanceNumericCandidateGenerator(),
+        evaluator,
+    )
+    selection = select_diversity_aware_release(
+        records,
+        policy=DiversityReleasePolicy(
+            policy_id="finance_pilot_test_realization_release.v2",
+            max_per_semantic_instance=3,
+        ),
+        split_policy=SplitPolicy(policy_id="finance_pilot_test_instance_split.v1"),
+    )
+
+    assert len(case.realization_compilation.selected) == 3
+    assert len(trajectories) == len(assessments) == len(bindings) == 3
+    assert all(item.decision == ReleaseDecision.ACCEPTED for item in assessments)
+    assert len({item.trajectory_id for item in trajectories}) == 3
+    assert len(selection.selected_realization_ids) == 3
+    assert {item.exact_fraction for item in selection.weight_assignments} == {"1/3"}
+    assert all(selection.hard_gates.values())
 
 
 def test_finance_wording_uses_subject_type_and_natural_point_in_time_ranges(

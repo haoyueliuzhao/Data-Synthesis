@@ -63,6 +63,7 @@ def compile_finance_realization_portfolio(
         bundle=bundle,
         proof_graph=proof_graph,
         registry=registry,
+        effective_answer_schema=instantiation.task.public.answer_schema,
     )
     evidence_by_role = _resolve_evidence_by_role(instantiation, bundle)
     available_slots = finance_question_slots(instantiation.pattern.task_type, evidence_by_role)

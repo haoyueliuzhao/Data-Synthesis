@@ -13,6 +13,7 @@ from trusted_synthesis.core.evidence.schema import (
 from trusted_synthesis.core.graph.builder import ProofGraphBuilder
 from trusted_synthesis.core.graph.schema import ProofGraph
 from trusted_synthesis.core.task.schema import TaskPackage
+from trusted_synthesis.domains.finance.realization import FinanceRealizationCompilation
 from trusted_synthesis.domains.finance.tasks import FinanceTaskPlugin
 from trusted_synthesis.experiments.finance_pilot.sampler import (
     TaskBinding,
@@ -29,6 +30,7 @@ class PilotTaskCase:
     corpus: EvidenceCorpus
     proof_graph: ProofGraph
     task: TaskPackage
+    realization_compilation: FinanceRealizationCompilation
     distractor_ids: tuple[str, ...]
     hard_distractor_ids: tuple[str, ...] = ()
     distractor_kinds: dict[str, str] = field(default_factory=dict)
@@ -62,12 +64,18 @@ def build_task_cases(
             graph_build_id=gold[0].provenance.build_ids.get("kg"),
         )
         graph = graph_builder.build(bundle)
-        task = task_synthesizer.materialize_evidence_ids(
+        instantiation = task_synthesizer.compile_evidence_ids(
             binding.task_type,
             graph,
             bundle,
             binding.evidence_ids,
         )
+        realization_compilation = task_synthesizer.realize_instantiation(
+            instantiation,
+            graph,
+            bundle,
+        )
+        task = instantiation.task
         hard_count = (
             distractors_per_task if hard_distractors_per_task is None else hard_distractors_per_task
         )
@@ -112,6 +120,7 @@ def build_task_cases(
                 corpus=corpus,
                 proof_graph=graph,
                 task=task,
+                realization_compilation=realization_compilation,
                 distractor_ids=tuple(item.evidence_id for item in distractors),
                 hard_distractor_ids=tuple(item.evidence_id for item in hard_distractors),
                 distractor_kinds=distractor_kinds,

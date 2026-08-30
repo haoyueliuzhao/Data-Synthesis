@@ -424,7 +424,10 @@ def canonicalize_semantic_plan(
     program: TaskProgram,
     binding: EvidenceBinding,
     registry: OperationRegistry,
+    *,
+    effective_answer_schema: dict[str, Any] | None = None,
 ) -> CanonicalSemanticPlan:
+    answer_schema = effective_answer_schema or proposal.answer_schema
     evidence_roles: dict[str, tuple[str, int]] = {}
     for role_id, evidence_ids in sorted(binding.role_bindings.items()):
         for position, evidence_id in enumerate(evidence_ids):
@@ -529,7 +532,7 @@ def canonicalize_semantic_plan(
         "task_type": proposal.task_type,
         "parameterized_hash": parameterized_hash,
         "evidence_roles": [role.model_dump(mode="json") for role in proposal.evidence_roles],
-        "answer_schema": proposal.answer_schema,
+        "answer_schema": answer_schema,
         "retrieval_track": proposal.retrieval_track.value,
         "planning_track": proposal.planning_track.value,
         "semantic_constraints": proposal.semantic_constraints,
@@ -551,7 +554,7 @@ def canonicalize_semantic_plan(
         "topology_hash": topology_hash,
         "parameterized_hash": parameterized_hash,
         "evidence_roles": proposal.evidence_roles,
-        "answer_schema": proposal.answer_schema,
+        "answer_schema": answer_schema,
         "retrieval_track": proposal.retrieval_track,
         "planning_track": proposal.planning_track,
         "semantic_constraints": proposal.semantic_constraints,
@@ -644,13 +647,20 @@ def build_semantic_binding_bundle(
     proof_graph: ProofGraph,
     registry: OperationRegistry,
     question_intents: tuple[str, ...] | None = None,
+    effective_answer_schema: dict[str, Any] | None = None,
 ) -> SemanticBindingBundle:
     validate_and_resolve_binding(pattern, binding, bundle, proof_graph)
     expected_program, _ = instantiate_pattern_program(pattern, binding, registry)
     if program != expected_program:
         raise ValueError("semantic binding Program is not authorized by Pattern and Binding")
     proposal = proposal_from_pattern(pattern, registry, question_intents=question_intents)
-    plan = canonicalize_semantic_plan(proposal, program, binding, registry)
+    plan = canonicalize_semantic_plan(
+        proposal,
+        program,
+        binding,
+        registry,
+        effective_answer_schema=effective_answer_schema,
+    )
     snapshot = make_binding_snapshot(plan, binding, bundle, proof_graph)
     instance = make_semantic_instance(plan, snapshot)
     return SemanticBindingBundle(
