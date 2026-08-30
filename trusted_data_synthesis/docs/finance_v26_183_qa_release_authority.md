@@ -179,6 +179,47 @@ pre-existing generalization-contract failures. Both failures point to
 revision. These facts are recorded as environmental/unrelated boundaries, not converted into a
 passing claim.
 
++## Formal Full-Tree Result
+
+The formal successor is
+`qa_parent_authority_fully_rehashed_source_derived_bundle_independent_audit_only`.
+It executed only from the extracted archive of source commit
+`794a546aa2f934939425d7ce929b49f2ce2d1d73`:
+
+```text
+Git tree ID                         c4a99bd20b25e5f7db59fab9056ab4255101b542
+Git archive SHA-256                8b4f671fdbf04a543b33566e04db613518e9be9b1769d5c3b49e45826eb3483d
+Git archive bytes                  986,398,720
+source manifest SHA-256            cc04c596c51fc7e347b210af334d27403e4acbbcf93fbc6847aba1282fab470d
+source manifest bytes              11,904,982
+source manifest members            34,374
+```
+
+The runner directly rehashed the archive, required exact extracted-tree membership, and verified
+each member's kind, executable bit, byte count, and SHA-256. It ran with Python bytecode writes
+disabled so runtime cache files could not contaminate the snapshot.
+
+The immutable formal directory is
+`artifacts/qa_realization_vnext/qa_release_authority_v3_20260831`. It contains nine files totaling
+12,546,211 bytes. The top identities are:
+
+```text
+QAReleaseAuthorityBundle
+  qa_release_authority_bundle:c27d2eb35e029d48f267e4726d69c78fff904a9f684e6ecaecd2b878df320923
+DiversityAwareReleaseSelection
+  diversity_aware_release_selection:ea8359a70f1cedcfe9cf635a49dd347ab18467de2ade99ad063720d31f3afac0
+artifact root
+  qa_release_authority_artifact_root:54ccb4378c1d8397e218f65dff4776c1c341d9a2d0341a8b9cc29d3faa482f77
+artifact manifest
+  qa_release_authority_artifact_manifest:25c8dac0c6b7e0f279b8810c41c5a97d5b217058ae2627f17568f034fecc1ae0
+```
+
+All twelve counted fully-rehashed attacks reached the declared validator and rejected. The
+unrelated RuntimeError did not count. A second independent execution from the same extracted
+snapshot produced a directory that matched all nine formal files byte for byte. Provider calls
+remained zero.
+
+
 ## Authorization Boundary
 
 This successor can authorize only the deterministic, credential-free QA Release Authority and

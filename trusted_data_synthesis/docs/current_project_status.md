@@ -11080,3 +11080,19 @@ represented as passing evidence.
 v26.181's empirical Gate remains failed. Production release, online execution, Provider
 generation, training, Contribution, and VTDO changes remain blocked. See
 `docs/finance_v26_183_qa_release_authority.md`.
+
+
+The exact formal run now passes from source commit
+`794a546aa2f934939425d7ce929b49f2ce2d1d73`, Git tree
+`c4a99bd20b25e5f7db59fab9056ab4255101b542`, and full archive SHA-256
+`8b4f671fdbf04a543b33566e04db613518e9be9b1769d5c3b49e45826eb3483d`.
+The 34,374-member source manifest has SHA-256
+`cc04c596c51fc7e347b210af334d27403e4acbbcf93fbc6847aba1282fab470d`.
+
+The formal artifact root is
+`qa_release_authority_artifact_root:54ccb4378c1d8397e218f65dff4776c1c341d9a2d0341a8b9cc29d3faa482f77`.
+All 12 counted fully-rehashed attacks reject, the unrelated RuntimeError does not count, and an
+independent same-snapshot rebuild matches all nine files byte for byte. This passes the
+credential-free QA Release Authority Gate and authorizes the integrated deterministic Finance
+Pilot portfolio/artifact plumbing only; it does not authorize an archive-backed Pilot run in the
+current environment or any production action.
