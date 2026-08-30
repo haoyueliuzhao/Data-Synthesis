@@ -5,6 +5,7 @@ import hashlib
 import subprocess
 import tempfile
 from collections.abc import Iterable
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -404,7 +405,7 @@ def _attack_controls(
         original_registry.require(str(row["operator_id"])) for row in original_registry.manifest()
     )
     changed = tuple(
-        definition.model_copy(update={"semantic_version": "attack.semantic.v999"})
+        replace(definition, semantic_version="attack.semantic.v999")
         if definition.operator_id == "lookup"
         else definition
         for definition in definitions
