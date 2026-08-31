@@ -11239,17 +11239,38 @@ attempts and Final Verifier artifacts; empirical admission restricted to reachab
 policies; and strict Registry, Contract, Manifest, Job, and Runner revalidation at estimator
 entry. Historical v26.181/v26.182 artifacts remain immutable.
 
-The provisional credential-free working-tree smoke writes and reloads 192 Raw plus 192 Result
-artifacts, reconstructs all 192 scripted traces and rows, preserves both mixed completed-invalid
-states, and rejects 11/11 controls: two exact 192-row diagnostic empirical attacks, two fully
-rehashed invented-locus attacks, two file-byte substitutions, and five parent injections.
-Provider, Development outcome, formal empirical row or estimate, Mapper, State, frequency,
-Contribution, VTDO, Student, training, and release counts are zero. Formal source-projected
-execution and byte-identical rebuild are pending the exact v26.186 source commit. See
-`docs/finance_v26_186_artifact_backed_outcome_preflight.md`.
-
 A preliminary v1 source-projected directory is retained but superseded: its
 `policy_horizon_exhausted` control rejected during pre-admission validity construction rather than
 at the registered non-reachable empirical Gate. The authoritative v2 requires both diagnostic
 policies to complete all rehashing and reject at empirical admission; v1 created no empirical
 evaluation and authorizes no transition.
+
+The authoritative v2 executes only from source commit
+`0cd043a101eeed39b6e4e92b351d9e42bbdd5355`, tree
+`9fe5294e52ed5cbbe23a270190c94340997fe9c9`, and a 1,016,115,200-byte Git Archive at SHA-256
+`b04b3c2207b5b71a24daae841b923774e2dd560df7be38478f15d62fb1a86d78`. The exact seven-path
+source change surface closes. Both source-projected builds independently reconstruct every Git
+blob and recursive tree and produce byte-identical 398-file outputs.
+
+The formal scripted denominator contains 192 Jobs, 192 canonical Raw files, 192 canonical Result
+files, 192 reconstructed AttemptTraces, and 192 reconstructed Outcome rows. Both mixed
+completed-invalid states preserve their separate Base and Mechanism factors. Both fully rehashed
+diagnostic 192-row catalogs reject at
+`non-reachable terminal policy cannot enter empirical evidence`; both invented FailureLoci, both
+file substitutions, and all five Registry/Contract/Manifest/Job/Runner injections also reject.
+The exact result is 11/11 controls rejected and 14/14 static Gates passed.
+
+The 398-file, 2,115,309-byte authoritative directory is
+`artifacts/vtdo_experiment/finance_v26_186_artifact_backed_outcome_preflight_v2_20260831`.
+Artifact Root is
+`finance_v26_artifact_backed_artifact_root:ee17623d7f3c8e6344eaa27f01dfa28cc14ed4ae2e9d3d209721b18f63266e40`;
+Report is
+`finance_v26_artifact_backed_outcome_preflight_report:4665101aa78d60e7b56b52c8a87003a7af714908ac49316f32d857f0831c2c5d`.
+The focused suite passes 7/7 and the adjacent non-rebuild regression passes 21 tests with one
+historical long rebuild deselected. Focused PyCompile, Ruff, format, and Mypy pass.
+
+Provider, Development outcome, formal empirical row or estimate, Mapper, State, frequency,
+Contribution, VTDO, Student, training, and release counts remain zero. The only next transition is
+`artifact_backed_empirical_outcome_authority_independent_audit_only`; it does not authorize the
+192-Job online Development execution. See
+`docs/finance_v26_186_artifact_backed_outcome_preflight.md`.

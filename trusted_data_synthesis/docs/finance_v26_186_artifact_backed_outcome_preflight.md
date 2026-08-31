@@ -124,10 +124,6 @@ Registry/Contract/Manifest/Job/Runner injection  5 / 5
 Provider calls                            0
 ```
 
-This smoke is implementation evidence only. Authoritative source commit, source Archive, formal
-artifact identities, byte-identical rebuild, and final verification results are filled only after
-the source-projected run.
-
 A preliminary v1 source-projected directory remains immutable but is superseded. Its
 `measurement_support_exit` control reached the intended non-reachable empirical-admission Gate,
 while `policy_horizon_exhausted` rejected earlier because the old Registry's false validity
@@ -135,10 +131,65 @@ projection conflicted with the v3 rule that non-Verifier validity is null. The a
 requires both diagnostic policies to materialize complete rehashed attack catalogs and reject at
 the exact non-reachable admission Gate. No empirical evaluation was created by v1.
 
+The preliminary source was commit `70dd8bd38d1fa15ffc506d1d27f12deb25afc933`, tree
+`2f9c713ea5661358f2be4f4656c4d993871e0d9a`, and 1,016,115,200-byte Archive SHA-256
+`2aa662416dc1b2b653ac035bd7a2371147a4c601b47877dea8f77653f00931de`.
+Its 398-file directory and report
+`finance_v26_artifact_backed_outcome_preflight_report:e795d3fcdda5ff2f32730f7714c5b0af140b86e13c58f390b2c19c292b13bc37`
+remain diagnostic-only and authorize no transition.
+
+## Authoritative Source-Projected Result
+
+The authoritative v2 run executes only from:
+
+```text
+source commit         0cd043a101eeed39b6e4e92b351d9e42bbdd5355
+source tree           9fe5294e52ed5cbbe23a270190c94340997fe9c9
+source Archive bytes  1,016,115,200
+source Archive SHA-256
+b04b3c2207b5b71a24daae841b923774e2dd560df7be38478f15d62fb1a86d78
+authorized change surface  7 / 7 exact
+```
+
+The inner process independently reads the Archive commit, recomputes every Git blob and recursive
+tree identity, and executes only from the extracted source root. Both independent v2 builds
+produce the exact same Archive SHA-256 and all 398 formal files match byte for byte under
+`diff -qr`.
+
+The authoritative directory is
+`artifacts/vtdo_experiment/finance_v26_186_artifact_backed_outcome_preflight_v2_20260831`:
+398 files and 2,115,309 bytes. Its Manifest covers the other 397 files and 2,024,222 bytes; the
+Manifest itself is 91,087 bytes. Exact identities are:
+
+```text
+Authorization
+finance_v26_artifact_backed_outcome_authorization:a5ad6e813f0a88200fd8d80703bfa59dfb8fb94d9818c71bd36364dc59ef4b8e
+Contract
+capability_artifact_backed_outcome_contract:00fd9874ff98b5e58bc999ee76328639580393b49652417bf9ab7cdf22bd8376
+Empirical admission audit
+finance_v26_artifact_backed_empirical_admission_audit:0bef4564486d7288ea174c81c117d08d046950f44a93503f4cd94d5d141468d9
+Artifact root
+finance_v26_artifact_backed_artifact_root:ee17623d7f3c8e6344eaa27f01dfa28cc14ed4ae2e9d3d209721b18f63266e40
+Artifact Manifest
+finance_v26_artifact_backed_artifact_manifest:d8b2bcc8bdc8c0522d09a544fdd9e035b852f707dce23ab70099c388badd7f0b
+Report
+finance_v26_artifact_backed_outcome_preflight_report:4665101aa78d60e7b56b52c8a87003a7af714908ac49316f32d857f0831c2c5d
+Transition
+finance_v26_artifact_backed_outcome_transition:7b76a4a2484ce70c0ac37ab22aee6d6bf215423789624236486c8744c3681f44
+```
+
+Both diagnostic attack catalogs now reject at the exact reason
+`non-reachable terminal policy cannot enter empirical evidence`. All eleven controls reject and
+all fourteen static Gates pass. The focused v26.186 suite passes 7/7. The adjacent v26.181,
+v26.182, and v26.186 non-rebuild regression passes 21 tests with the historical 673-second
+v26.181 empty-directory rebuild deliberately deselected; the v26.186 double source-projected
+build independently covers its own complete rebuild. Focused PyCompile, Ruff check/format, and
+no-import-follow Mypy pass.
+
 ## Authorization Boundary
 
-Until the formal source-projected preflight and its independent credential-free audit pass, the
-mainline state remains:
+The formal v26.186 preflight passes, but it is not self-auditing authorization for online
+execution. The mainline state is:
 
 ```text
 v26.181 scripted object-DAG preflight       retained
@@ -149,5 +200,13 @@ Mapper / State / frequency                   unauthorized
 Contribution / VTDO / Student                unauthorized
 ```
 
-The prospective next transition is limited to an independent audit of the exact artifact-backed
-preflight. It does not self-authorize the 192-Job online Development execution.
+The only prospective transition is:
+
+```text
+artifact_backed_empirical_outcome_authority_independent_audit_only
+```
+
+A successor may only independently rebuild and attack this exact credential-free preflight.
+Provider execution, the 192-Job Development denominator, empirical estimates, Confirmation,
+Mapper, State, frequency, Contribution, VTDO, Student visibility, training, and release remain
+forbidden.
