@@ -69,8 +69,10 @@ Authoritative v3 replaces only that path with the fixed logical name
 ## Authoritative v3 result
 
 The exact audit implementation source is commit
-`8d68eceaf6b9ad5a7109212082bb439e25cb50d7`, tree
-`bc2374d5ccebb1a2f46f271650f43614791e438b`. Its 1,021,143,040-byte Git Archive has SHA-256
+`8d68ecea607215e483a33a55cf82fc7375cd954f`, tree
+`bc2374d5ccebb1a2f46f271650f43614791e438b`. The artifact-freeze commit is
+`d30b7cb105d1e469cb34c68ada363f642181cc03`. The implementation source's 1,021,143,040-byte Git
+Archive has SHA-256
 `04700fe0659f39577a2e6833d3f92ef7e0e28108d8a53dea0fba05c5bd891032` in both complete builds.
 The independently reconstructed v26.186 Archive remains 1,016,115,200 bytes at SHA-256
 `b04b3c2207b5b71a24daae841b923774e2dd560df7be38478f15d62fb1a86d78`.

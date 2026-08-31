@@ -11295,8 +11295,9 @@ Archive absolute path entered a FileBinding. Preliminary v2 is therefore also su
 Authoritative v3 binds the same Archive bytes under one fixed logical path and adds an exact
 two-temporary-path equality regression.
 
-Authoritative v3 uses source commit `8d68eceaf6b9ad5a7109212082bb439e25cb50d7`, tree
-`bc2374d5ccebb1a2f46f271650f43614791e438b`, and a 1,021,143,040-byte Git Archive at SHA-256
+Authoritative v3 uses source commit `8d68ecea607215e483a33a55cf82fc7375cd954f`, tree
+`bc2374d5ccebb1a2f46f271650f43614791e438b`, and artifact-freeze commit
+`d30b7cb105d1e469cb34c68ada363f642181cc03`. Its 1,021,143,040-byte Git Archive has SHA-256
 `04700fe0659f39577a2e6833d3f92ef7e0e28108d8a53dea0fba05c5bd891032`.
 Both complete builds independently recreate the same v26.186 1,016,115,200-byte Archive, all 398
 audited files, 192 Jobs, 384 Raw/Result artifacts, 480 Attempts, 192 Traces, 192 Outcomes, 192
