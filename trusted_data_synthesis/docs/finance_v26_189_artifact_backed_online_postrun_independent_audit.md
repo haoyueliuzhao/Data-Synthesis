@@ -167,8 +167,45 @@ model-observation rejection, exact external-audit bytes, credential rejection, b
 empty-directory rebuild, and no-replace publication. The formal build uses kernel
 `renameat2(RENAME_NOREPLACE)` through the shared immutable-artifact writer.
 
-Final test counts, formal identities, and the formal artifact Root are recorded after the
-source-freeze build.
+The exact source-freeze commit is
+`bca20b7857bdda89523c94ee40ea1fbc22fb7404`, with Tree
+`4a39b83ceb5acf67fda52c084802f3c6763fb867`. Focused v26.189 tests pass 6/6 and the
+v26.187-v26.189 focused regression passes 19/19. Focused PyCompile, Ruff check/format, and
+no-import-follow Mypy pass.
+
+The deterministic formal directory contains fourteen files and 664,713 bytes. Its thirteen
+Manifest members contain 662,458 bytes. A second empty-directory build matches every byte. The
+formal Artifact Manifest is
+`finance_v26_189_postrun_artifact_manifest:52824d4525219d2e737bcbc2137f49884a7122e3c04a5141f871355e385f3dd2`
+and the formal Artifact Root is
+`finance_v26_189_postrun_artifact_root:b47af81da69c929da1860d74a6360d8ce5f4fb7b401e7f525c24f1574a16b6b0`.
+
+Authoritative identities are:
+
+- Report:
+  `finance_v26_188_postrun_independent_audit_report:847db4a57b5a73aac16676b2d5b4bc2f1cfa08e2610c8e308035b8415329d1d9`;
+- external Authorization:
+  `finance_v26_188_postrun_external_authorization:a5b15356b5b0c51cfe5cc980e535508950a274bb6b54b9281584f3c66a9ec3e1`;
+- predecessor Freeze:
+  `finance_v26_188_online_predecessor_freeze:5543193e07ad40f5e1a7d7535fd8b33a5d58b0cbb907593fd5d9b3eef86f5cc7`;
+- independent v26.188 directory Manifest:
+  `finance_v26_188_independent_directory_manifest:1c16ca9112d60efd726d8eecb33c5b1758c9d2857823ab0cb4a46d53d92f997b`;
+- explicitly defined independent directory content Root:
+  `finance_v26_188_independent_directory_content_root:a1cdb58c4eda548ece6060e68126ab1b9750848850c5aa69ca739a6356653196`;
+- Job replay Catalog:
+  `finance_v26_188_independent_job_replay_catalog:6d39e790d43fe09b7b7e35ad7f699ceb407a61de6ad2ef34d6e74a3f58ced0b0`;
+- evidence replay Audit:
+  `finance_v26_188_independent_evidence_replay:33f809fe2dd03798f4de8b906cfe3440d49287db52fdedd8b26e0a0b496bb4f4`;
+- raw-event decomposition Audit:
+  `finance_v26_188_independent_raw_event_decomposition:f7017fd67799bc12eab22469d789053b2dab302d77444b539c5ae072e572d491`;
+- estimand-separation Audit:
+  `finance_v26_188_independent_estimand_separation:0b85e067597a11912d3cf66485694d83f4f07652459d12d79943674e34af5da6`;
+- layered Gate Audit:
+  `finance_v26_188_independent_layered_gate:8251435e80623fec74e7dab82c21ab5399292f486c7b90e069763cedfc399386`;
+- static Audit:
+  `finance_v26_188_independent_static_audit:9d42434bcf49485e9b2647141e0a9141d5253bedb1056f7b83b17aa3986bdd09`;
+- Transition:
+  `finance_v26_188_postrun_transition:7fb8883ea96250d8d7ba3202215a2806168f53482242fda9c83a2b99d4e78a9b`.
 
 ## Decision
 

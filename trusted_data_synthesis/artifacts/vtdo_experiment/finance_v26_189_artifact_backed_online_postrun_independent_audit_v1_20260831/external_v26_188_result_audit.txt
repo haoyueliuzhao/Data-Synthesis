@@ -1,0 +1,389 @@
+# v26.188 实验结果审计
+
+## 总体判定
+
+$$
+\boxed{
+\begin{aligned}
+&\text{在线执行与证据链闭合：PASS}\\
+&\text{模型语义能力观测：未实例化}\\
+&\text{正式端到端 }q：0/192\\
+&\text{模型端点条件能力 }q：\text{null}
+\end{aligned}
+}
+$$
+
+本轮没有发现需要否定 v26.188 执行结果的 Blocking defect。192 个 Job 均被执行且未重选，Raw、Result、Provider、Transport、Outcome 和父链完整，证据分母没有缺失或事后排除。
+
+但是，**本轮没有真正观测到模型行为**：192 次请求全部在形成响应 Envelope、模型身份、公共 Payload 和 Usage 之前返回 HTTP 400。当前项目状态也明确记录了这一点。
+
+因此，v26.188 是一次有效的：
+
+> **精确在线请求执行与失败终止测量**
+
+而不是一次有效的：
+
+> **模型语义 Capability 测量**
+
+---
+
+## 一、哪些结果可以正式保留
+
+### 1. 192-Job 在线执行完整性：PASS
+
+以下结果可以冻结：
+
+```text
+Job records / checkpoints       192 / 192
+Raw / Result                    192 / 192
+actual artifact byte matches    384 / 384
+Stage 1 requests                192
+Stage 2 requests                  0
+typed Outcome rows              192
+post-outcome Job deletion         0
+Job rerun                         0
+Confirmation access               0
+```
+
+这说明 v26.186–v26.187 建立的 Artifact-backed Outcome Authority 确实在一次真实在线失败场景下工作了：即使 Provider 请求全部失败，系统仍然为每个 Job 生成了完整的、可重放的 typed Outcome，而没有回到异常逃逸、缺失行或事后删分母的旧状态。
+
+这是一个重要的工程与测量链结论。
+
+### 2. Artifact Authority：PASS
+
+正式目录具有：
+
+```text
+1,350 files
+3,618,348 bytes
+192 complete Job parent chains
+384 verified Raw/Result files
+```
+
+只读重放能够重新验证全部对象，并获得同一个 empirical evaluation identity。
+
+因此，本轮没有重现 v26.180–v26.182 时的父绑定、文件字节或 FailureLocus 问题。
+
+### 3. 低成功率没有被错误地当成 Gate 失败：正确
+
+系统没有因为结果是零而删除失败 Job、增加修正次数或重新请求。这个处理符合冻结实验协议。
+
+---
+
+# 二、\(q=0/192\) 应如何解释
+
+需要区分两个不同 estimand。
+
+## 1. 冻结 Contract 下的端到端 Job 成功率
+
+令：
+
+$$
+Y_i=
+\mathbf 1[
+\text{Job }i\text{ 最终形成 Qualified outcome}
+]
+$$
+
+那么：
+
+$$
+\widehat q_{\text{job}}
+=
+\frac{1}{192}\sum_{i=1}^{192}Y_i
+=
+0/192
+$$
+
+这是一个合法的有限分母结果。它表示：
+
+> 在冻结的 exact route、请求协议、模型配置、Runner 和资源条件共同组成的端到端系统下，没有一个 Job 获得 Qualified completion。
+
+因此，报告保存：
+
+```text
+q_first = 0 / 192
+q_bounded_correction = 0 / 192
+paired correction gain = 0 / 192
+```
+
+在形式上是成立的。
+
+## 2. 模型端点条件下的语义能力
+
+再定义：
+
+$$
+A_i=
+\mathbf 1[
+\text{请求获得 HTTP-success 且形成可验证模型端点}
+]
+$$
+
+模型语义能力应当更接近：
+
+$$
+\widehat q_{\text{semantic}}
+=
+\frac{\sum_i A_iY_i}{\sum_i A_i}
+$$
+
+但本轮：
+
+$$
+\sum_i A_i=0
+$$
+
+因此：
+
+$$
+\widehat q_{\text{semantic}}
+=
+\frac{0}{0}
+=
+\text{null}
+$$
+
+而不是零。
+
+报告已经正确写明：由于 HTTP success 和 model endpoint 都是零，当前分数不是模型语义能力测量，而只是全 HTTP-400 执行在冻结 estimator 下的形式输出。
+
+---
+
+# 三、`provider_identity_failure: 192` 的准确含义
+
+当前所有行被投影为：
+
+```text
+provider_identity_failure
+exact_model_mismatch_or_missing
+```
+
+但实际观察到的是：
+
+```text
+HTTP 400
+response envelope absent
+response_model absent
+public payload absent
+Usage absent
+```
+
+因此，这些行不能解释为：
+
+> 服务器返回了一个错误模型。
+
+更准确的解释是：
+
+> 请求在模型身份可评估之前失败；由于现有 `_charge` 投影将缺失 `response_model` 也归入 identity failure，因此产生了该冻结标签。
+
+当前报告已经明确说明，这个标签反映的是 HTTP 失败后缺失模型遥测，而不是观察到了不同模型。
+
+这不是必须追溯修改 v26.188 的 Blocking defect。历史行应保持不变，但后续独立审计应同时报告两层结果：
+
+```text
+Frozen terminal projection:
+    provider_identity_failure = 192
+
+Independent raw-event decomposition:
+    HTTP request rejected before envelope = 192
+    model identity evaluable               = 0
+    observed wrong-model response          = 0
+    actual responding model                = unknown
+```
+
+---
+
+# 四、Gate 应如何分层解释
+
+报告称八个 evidence/measurement Gates 全部通过。这个结论在 Contract 内成立，但需要限制其名称和科学解释。
+
+| Gate 层级                         | 结果                        | 含义                                      |
+| ------------------------------- | ------------------------- | --------------------------------------- |
+| Job exact-set                   | **PASS**                  | 192/192，无缺失、重复或额外 Job                   |
+| Raw/Result completeness         | **PASS**                  | 192/192 + 192/192                       |
+| Artifact-byte authority         | **PASS**                  | 384/384                                 |
+| Typed terminal totality         | **PASS**                  | 192 个 Job 均有一个 Outcome                  |
+| Parent-chain reconstruction     | **PASS**                  | 192/192                                 |
+| Frozen terminal admission       | **PASS**                  | `provider_identity_failure` 是 reachable |
+| Provider request acceptance     | **FAIL**                  | HTTP success 0/192                      |
+| Model endpoint observability    | **FAIL / uninstantiated** | 0/192                                   |
+| Semantic Capability measurement | **UNAVAILABLE**           | 无模型行为分母                                 |
+| Mapper / State admission        | **NOT AUTHORIZED**        | 无 Qualified trajectory                  |
+
+因此，更准确的汇总是：
+
+```text
+Evidence authority Gates          PASS
+Exact execution denominator       PASS
+Provider request-acceptance Gate  FAIL
+Model-behavior observation        UNINSTANTIATED
+Semantic capability estimand      NULL
+```
+
+不需要否定“八个冻结 Gate 通过”，但不能把它解释成“Capability Measurement Gate 通过”。
+
+---
+
+# 五、第一个根本阻塞点
+
+当前第一个阻塞点已经不再是：
+
+* Outcome parent authority；
+* FailureLocus；
+* Terminal totality；
+* Action Grammar；
+* Final Grammar；
+* 任务难度；
+* 模型规划或纠正能力。
+
+而是：
+
+$$
+\boxed{
+\text{exact-route request 在响应 Envelope 形成前被 Provider 以 HTTP 400 拒绝}
+}
+$$
+
+192 个 Job 全部在第一次 Stage 1 请求上出现同一种终止，强烈表明这是一个**共同的请求级或路由级阻塞**，而不是由不同任务语义导致的模型行为差异。
+
+但由于 HTTP 400 响应 Body 没有持久化，目前不能进一步判断具体原因。可能的请求参数、路由或 Provider 合同问题只能作为待检验假设，不能从状态码猜测。
+
+---
+
+# 六、当前允许与禁止的科学结论
+
+## 允许
+
+可以声称：
+
+> v26.188 在精确冻结的 192-Job Development Population 上完成了一次无重试、无替换的在线执行，Artifact-backed evidence denominator 和全部父链完整闭合。
+
+可以声称：
+
+> 冻结端到端系统的 Qualified Job rate 为 \(0/192\)。
+
+可以声称：
+
+> Exact DeepSeek Flash 路由上的 192 个请求均在模型端点形成之前返回 HTTP 400。
+
+## 禁止
+
+不能声称：
+
+* DeepSeek Flash 的语义能力为零；
+* 模型无法完成 D0–D3 任务；
+* 模型规划、纠正、工具选择或 Final 回答能力失败；
+* `provider_identity_failure:192` 证明响应来自错误模型；
+* 当前结果支持 Capability Depth；
+* 当前结果支持 Mapper、State、frequency、Contribution 或 VTDO。
+
+---
+
+# 七、唯一合理的下一阶段
+
+当前正式 successor 是正确的：
+
+```text
+capability_observation_artifact_backed_
+192_job_postrun_independent_audit_only
+```
+
+不应直接开始 HTTP 路由修复，也不应补跑任何 Job。当前状态明确禁止 Provider rerun、Recovery、HTTP-route 改动和 Mapper。
+
+## Post-run independent audit 应重点复现
+
+```text
+192/192 Job records
+192/192 checkpoints
+192/192 Raw
+192/192 Result
+384/384 file-byte matches
+192/192 transport certificates
+HTTP 400                     192
+HTTP success                   0
+response envelopes             0
+model identity evaluable       0
+public payload                  0
+Usage                           0
+frozen provider_identity_failure 192
+formal q_first               0/192
+formal q_bounded             0/192
+semantic capability q          null
+Provider calls during audit     0
+```
+
+尤其应当独立确认：
+
+$$
+q_{\text{job}}=0/192
+$$
+
+和：
+
+$$
+q_{\text{semantic}\mid\text{model endpoint}}=\text{null}
+$$
+
+是两个不同结果。
+
+## 独立审计之后
+
+若 post-run audit 完全复现本轮结果，下一份新审计决策应优先授权：
+
+```text
+exact_route_http_400_request_contract_root_cause_audit_only
+```
+
+先进行零 Provider 调用的请求合同对比：
+
+* 实际序列化请求；
+* endpoint 和 route；
+* model 字段；
+* Thinking 字段；
+* completion bound；
+* response-format 字段；
+* headers 与 content type；
+* 当前 Adapter 与历史成功请求的差异。
+
+若仅凭已持久化对象无法定位，才设计新的小规模、全新身份的 Route diagnostic，并前置冻结能够安全保留的 Provider error code。不得重跑 v26.188 的 192 个旧 Job。
+
+---
+
+# 最终决定
+
+```text
+PRESERVE:
+    v26.188 exact 192-Job online execution
+    all 1,350 persisted files
+    192 typed Outcomes
+    formal q_first = 0/192
+    formal q_bounded = 0/192
+
+PASS:
+    execution completeness
+    artifact authority
+    exact denominator
+    terminal totality
+
+FIRST BLOCKER:
+    HTTP 400 before response envelope and model endpoint
+
+NOT INSTANTIATED:
+    model semantic capability
+    Capability Depth
+    valid trajectory support
+
+NEXT:
+    capability_observation_artifact_backed_
+    192_job_postrun_independent_audit_only
+
+DO NOT AUTHORIZE:
+    Provider rerun
+    recovery Jobs
+    request-route repair
+    Mapper / State / frequency
+    Contribution / VTDO / Student training
+```
+
+当前检查点应更新为：**v26.188 在线证据分母成功闭合，但模型行为分布没有被实例化；首个阻塞点是全量 HTTP-400 请求拒绝。** 项目实验事实仍只以 Git 树、不可变工件、脱敏恢复记录和迁移服务器复核为依据。

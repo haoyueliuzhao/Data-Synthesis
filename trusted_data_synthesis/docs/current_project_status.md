@@ -11368,3 +11368,71 @@ The only permitted successor is
 recovery, HTTP-route changes, Mapper, State, frequency, Contribution, VTDO, Student, training,
 release, and production remain unauthorized. See
 `docs/finance_v26_188_artifact_backed_online_development_execution.md`.
+
+## v26.189 Artifact-Backed Online Post-run Independent Audit
+
+Finance v26.189 consumed only
+`capability_observation_artifact_backed_192_job_postrun_independent_audit_only`. The exact
+11,240-byte external audit is bound at SHA-256
+`25b3049a42cd22f3613ce4e29df77b8eb92299f69f3dce625964914434a5a762`.
+Credential lookup, Provider-client construction, Stage 1 and Stage 2 Provider calls, RecoveryJob,
+request-route repair, Mapper, State, frequency, Contribution, VTDO, Student, training, release,
+and production counts are zero.
+
+The audit freezes the v26.188 source and artifact identities and replays the immutable 1,350-file,
+3,618,348-byte online directory without using the v26.188 projector, evaluator, Gate, summary, or
+report as an outcome oracle. Because the historical
+`finance_v26_188_online_execution_content_root:c2aac4f4cfcfad9729bcd64fd8945026d75b5fb85a067d7022a4db22f55bd3a7`
+did not persist its exact content-root preimage, it remains a predecessor statement rather than
+an independently reproduced equality. The audit separately freezes an explicit sorted
+`path / sha256 / byte_count` directory Manifest and recomputes content Root
+`finance_v26_188_independent_directory_content_root:a1cdb58c4eda548ece6060e68126ab1b9750848850c5aa69ca739a6356653196`.
+
+Exact Manifest-order replay reconstructs 192/192 Job records and checkpoints, 192/192 canonical
+Raw files, 192/192 canonical Result files, 384/384 Raw/Result byte bindings, 192 Provider
+descriptors, 192 public projections, 192 transport certificates, and all 576 descriptor-file byte
+bindings. All 192 Job -> Raw -> Result -> Evidence parents, evaluation identities, checkpoint
+ordinals, and typed terminal projections match. Frozen predecessor files remain byte-identical
+before and after the audit.
+
+The independent raw-event decomposition is exact:
+
+```text
+Stage 1 requests / Stage 2 requests               192 / 0
+HTTP 400 / HTTP success                           192 / 0
+response Envelope / public payload                  0 / 0
+model identity evaluable / wrong-model response     0 / 0
+Usage observations / Usage tokens                  0 / 0
+frozen provider_identity_failure                      192
+actual responding model                          unknown
+```
+
+The frozen historical terminal label is admitted under its exact Registry, but the causal
+interpretation is narrower: HTTP rejection occurred before any response Envelope or model
+identity became observable. The evidence does not show that a different model answered. The
+redacted artifacts contain no HTTP error body, so the server-side rejection reason remains
+unknown and is not inferred.
+
+The frozen end-to-end Job estimates remain `q_first=0/192`,
+`q_bounded_correction=0/192`, and paired gain `0/192`. A separately defined semantic endpoint
+denominator contains zero HTTP-success model endpoints, so
+`q_semantic_given_model_endpoint=null`, not zero. Job exact-set, Raw/Result completeness,
+artifact-byte authority, terminal totality, parent reconstruction, and frozen-terminal admission
+pass. Provider request acceptance fails; model endpoint observability is uninstantiated; semantic
+Capability measurement is unavailable. The first blocker is exactly
+`HTTP 400 before response Envelope and model endpoint`.
+
+The source-freeze commit is `bca20b7857bdda89523c94ee40ea1fbc22fb7404` with Tree
+`4a39b83ceb5acf67fda52c084802f3c6763fb867`. The deterministic formal directory contains fourteen
+files and 664,713 bytes. Its Artifact Root is
+`finance_v26_189_postrun_artifact_root:b47af81da69c929da1860d74a6360d8ce5f4fb7b401e7f525c24f1574a16b6b0`;
+Report is
+`finance_v26_188_postrun_independent_audit_report:847db4a57b5a73aac16676b2d5b4bc2f1cfa08e2610c8e308035b8415329d1d9`.
+Focused v26.189 tests pass 6/6 and the v26.187-v26.189 regression passes 19/19. Focused
+PyCompile, Ruff check/format, and no-import-follow Mypy pass.
+
+After consuming the exact independent-audit authorization, the current decision is
+`no_further_experiment_authorized_without_new_audit_decision`. The external review's
+`exact_route_http_400_request_contract_root_cause_audit_only` is retained only as a recommended
+subject for a future new audit decision; it is not currently authorized. See
+`docs/finance_v26_189_artifact_backed_online_postrun_independent_audit.md`.
