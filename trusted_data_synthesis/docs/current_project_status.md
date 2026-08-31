@@ -11175,3 +11175,16 @@ v26.181 empirical Outcome Gate            FAILED (unchanged)
 ```
 
 See `docs/finance_v26_184_qa_release_authority_envelope.md`.
+
+## v26.185 QA Release Authority Independent Audit
+
+The latest 9,348-byte external audit at SHA-256
+`925b1818862ed22852b117f62a8cbde438c568f9e852bb6c35bb88c181a2bb1f` accepts the narrowly
+scoped v26.184 External Envelope Preflight and authorizes only an independent audit of its exact
+fifteen files. v26.185 independently implements Git Archive/blob/tree reconstruction, legacy
+content identities, cross-Catalog comparisons, pre-outcome Population reconstruction, direct
+Fixture/generator/evaluator/selection replay, Runtime capture, and thirteen negative controls.
+It does not use the v26.184 directory Loader as its result oracle.
+
+Formal execution is pending the v26.185 source commit. Archive-backed Pilot, Provider generation,
+production, training, Contribution, VTDO, and v26.181 reinterpretation remain blocked.
