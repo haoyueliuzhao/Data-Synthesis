@@ -57,8 +57,15 @@ reconstructs all 398 v26.186 files, replays all 192 Jobs and 384 Raw/Result arti
 
 The v1 directory is retained but superseded for top-level evidence authority because its Report
 left `artifact_manifest_id=null`. No Source, replay, attack, Gate, decision, or transition result
-changes. Authoritative v2 makes the Manifest parent mandatory and constructs it before the
-Report. Final v2 identities remain pending. Online execution remains blocked.
+changes. Preliminary v2 from commit `7d92cd7b` makes the Manifest parent mandatory, but its two
+complete source-projected builds expose a deterministic evidence defect: the source Archive
+FileBinding stores the temporary absolute path. Six top-level files therefore differ even though
+the Archive bytes, all 398 audited files, 192 semantic rows, thirteen attacks, and narrow decision
+are unchanged.
+
+Authoritative v3 replaces only that path with the fixed logical name
+`v26.186-source-0cd043a1.git-archive.tar` and adds a two-path equality regression. Final v3
+identities remain pending. Online execution remains blocked.
 
 ## Decision boundary
 

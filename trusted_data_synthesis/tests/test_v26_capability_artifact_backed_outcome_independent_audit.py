@@ -191,3 +191,21 @@ def test_immutable_writer_does_not_replace_existing_directory(tmp_path: Path) ->
     with pytest.raises(FileExistsError):
         write_immutable_artifact_directory(output, {"report.json": b"{}\n"})
     assert sentinel.read_text(encoding="utf-8") == "keep"
+
+
+def test_source_archive_binding_is_independent_of_temporary_path(tmp_path: Path) -> None:
+    first = tmp_path / "first.tar"
+    second = tmp_path / "different-name.tar"
+    first.write_bytes(b"same archive bytes")
+    second.write_bytes(b"same archive bytes")
+    first_binding = audit._logical_binding(
+        first,
+        logical_path="v26.186-source-0cd043a1.git-archive.tar",
+        source_kind="audited_v26_186_git_archive",
+    )
+    second_binding = audit._logical_binding(
+        second,
+        logical_path="v26.186-source-0cd043a1.git-archive.tar",
+        source_kind="audited_v26_186_git_archive",
+    )
+    assert first_binding == second_binding

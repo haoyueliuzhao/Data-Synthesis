@@ -11289,9 +11289,13 @@ rehashed diagnostic 192-row attacks must reject at the exact non-reachable admis
 Implementation checks pass 7/7 with all thirteen controls rejected. Preliminary v1 independently
 rebuilds all 398 files and returns `PASSED_INDEPENDENT_AUDIT`, but its Report leaves the new audit
 Manifest parent null. The v1 directory remains immutable and is superseded for evidence authority;
-v2 makes that parent mandatory without changing any replay, attack, Gate, or decision count.
+v2 makes that parent mandatory without changing any replay, attack, Gate, or decision count. Its
+second complete build then finds six path-sensitive top-level files because the temporary source
+Archive absolute path entered a FileBinding. Preliminary v2 is therefore also superseded.
+Authoritative v3 binds the same Archive bytes under one fixed logical path and adds an exact
+two-temporary-path equality regression.
 
-Until the authoritative v2 formal build completes, v26.186 remains the active checkpoint. The
+Until the authoritative v3 formal build completes, v26.186 remains the active checkpoint. The
 v26.187 pass boundary is `no_further_experiment_authorized_without_new_audit_decision`; online
 Development and every empirical or VTDO downstream stage remain blocked. See
 `docs/finance_v26_187_artifact_backed_outcome_independent_audit.md`.

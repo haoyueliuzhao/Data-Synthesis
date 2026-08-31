@@ -45,7 +45,7 @@ from trusted_synthesis.experiments.vtdo_experiment import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-RUN_ID: Final = "finance_v26_187_artifact_backed_outcome_independent_audit_v2_20260831"
+RUN_ID: Final = "finance_v26_187_artifact_backed_outcome_independent_audit_v3_20260831"
 OUTPUT_DIR: Final = f"artifacts/vtdo_experiment/{RUN_ID}"
 AUDITED_V186_DIR: Final = (
     "artifacts/vtdo_experiment/finance_v26_186_artifact_backed_outcome_preflight_v2_20260831"
@@ -149,6 +149,16 @@ def _binding(path: Path, *, relative_to: Path | None, source_kind: str) -> model
     )
     return models.FileBinding(
         relative_path=relative_path,
+        sha256=digest,
+        byte_count=byte_count,
+        source_kind=source_kind,
+    )
+
+
+def _logical_binding(path: Path, *, logical_path: str, source_kind: str) -> models.FileBinding:
+    digest, byte_count = _sha256_path(path)
+    return models.FileBinding(
+        relative_path=logical_path,
         sha256=digest,
         byte_count=byte_count,
         source_kind=source_kind,
@@ -343,9 +353,9 @@ def _source_rebuild(
     authorization: models.IndependentAuditAuthorization,
     audited_source_archive: Path,
 ) -> models.SourceRebuildAudit:
-    archive_binding = _binding(
+    archive_binding = _logical_binding(
         audited_source_archive,
-        relative_to=None,
+        logical_path="v26.186-source-0cd043a1.git-archive.tar",
         source_kind="audited_v26_186_git_archive",
     )
     if (
