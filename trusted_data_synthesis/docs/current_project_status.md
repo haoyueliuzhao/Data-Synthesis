@@ -11157,6 +11157,13 @@ modules, changed-file Ruff, and full-source compileall pass. Full-suite collecti
 in five existing modules: one imports absent `pyarrow` and four import absent `torch`. This
 environment boundary is not represented as passing evidence. The precise Gate state is:
 
+One post-merge working-checkout control also behaved fail-closed. The ordinary main source path
+contains an existing ignored `trusted_data_synthesis.egg-info` directory that is absent from the
+Git Archive, so it exposed 97 distributions instead of the formal 96 and the Loader rejected at
+`runtime_environment`. The same main commit loaded from the clean isolation source path returned
+`passed 23 0`. No ignored local metadata was deleted; only the Archive/extracted-root or exact
+clean-environment invocation is authoritative.
+
 ```text
 v26.184 formal Envelope Gate              PASSED
 fixed 2-Fixture cross-catalog authority   PASSED

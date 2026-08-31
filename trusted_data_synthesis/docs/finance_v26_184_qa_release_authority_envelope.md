@@ -348,6 +348,22 @@ These environment facts are descriptive identities and exact Loader requirements
 compensate for the absent `pyarrow` and `torch` full-suite coverage. The v26.184 final
 collection reproduced the same five-module dependency boundary recorded by v26.183.
 
+### Post-merge working-checkout control
+
+After fast-forwarding `main`, a Loader invocation whose `PYTHONPATH` pointed at the ordinary
+main checkout correctly failed the Runtime Gate. That checkout contains an existing ignored
+`trusted_data_synthesis/src/trusted_data_synthesis.egg-info` directory which is not a Git Archive
+member. It exposes a local `trusted-data-synthesis==0.9.0` distribution to
+`importlib.metadata`, changing the installed-distribution denominator from the formal 96 to 97
+and changing the Runtime identity.
+
+No ignored file was removed or rewritten. Repeating the same post-merge Loader against the clean
+isolation worktree at the identical `main` commit restored the formal 96-distribution identity
+and returned `passed 23 0`. This is positive evidence that the Runtime Gate rejects an
+unprojected local environment rather than silently normalizing it. The canonical invocation
+remains the Git-archive/extracted-root runner; a dirty or metadata-augmented checkout is not an
+authorized substitute.
+
 ## Scientific Boundary
 
 If the formal Gate passes, it establishes only:
