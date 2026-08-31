@@ -1,0 +1,686 @@
+# v26.192 本轮修订审计结论
+
+## 总体判定
+
+$$
+\boxed{
+\begin{aligned}
+&\text{JSON 词法合同修复：PASS}\\
+&\text{局部 scripted 构造性预检：PASS}\\
+&\text{“20/20 权威 Gate 全部闭合”：FAIL}\\
+&\text{在线 192-Job Development 执行：继续 BLOCKED}
+\end{aligned}
+}
+$$
+
+建议将正式审计决定记为：
+
+```text
+json_explicit_prompt_local_constructibility_passed_but_
+prompt_population_and_parent_authority_failed
+```
+
+本轮不是“JSON 修复无效”。共享输出协议本身基本正确；失败发生在更靠后的证据层：
+
+> **792 行 Census 尚未成为对未来全部 Provider 可达 Prompt 的权威 exact evidence set，Fresh Job/Runner 链也尚未抵抗 fully-rehashed 交叉父绑定攻击。**
+
+因此，v26.192 可以保留为**局部构造性证据**，但当前 `all_gates_passed=true` 和“formal reachable Prompt Census”需要收窄，不能据此进入在线执行。
+
+本审计继续采用当前项目状态规定的证据边界：只认当前 Git 树、不可变工件、脱敏恢复记录和可重放检查，不把缺失聊天记录当实验依据。
+
+---
+
+# 一、可以保留的窄正面结论
+
+## 1. JSON-explicit 协议文本本身正确
+
+新协议明确要求：
+
+```text
+Return exactly one valid JSON object matching the response ABI.
+Do not return Markdown or surrounding prose.
+```
+
+并与：
+
+```json
+{"response_format":{"type":"json_object"}}
+```
+
+共同进入 Provider-facing Prompt。Action、Correction 和 Final 的旧 Prompt 核心被放在独立的 `prompt_core` 中，设计上没有直接改写任务文本、State、Candidate、Grammar、Policy 或 Validity。
+
+因此可以保留：
+
+```text
+shared_json_explicit_prompt_renderer_constructibility = passed
+```
+
+这足以证明 v26.191 定位出的缺失 JSON 指令已经在新 renderer 中得到直接修复。
+
+---
+
+## 2. 当前 scripted 路径上的 792 个 Prompt 均被成功包装
+
+本轮实际构造的 Prompt 分区为：
+
+```text
+first Action                         192
+subsequent Action                    288
+typed-rejection Correction           120
+Final                                192
+total                                792
+```
+
+当前工件记录 792/792 新 Prompt 包含 JSON 指令、792/792 与 `json_object` 配对，并将 Census 正式放入 Artifact Manifest，修复了 v26.191 仅有报告级 192-Prompt 计数而没有正式 sidecar 的缺口。
+
+这支持的精确说法是：
+
+> 在 v26.192 当前 reference-plus-registered-rejection scripted construction 中，所有实际生成的 792 个 Prompt 都满足新 JSON-explicit renderer 合同。
+
+---
+
+## 3. 当前局部 Runtime 控制确实能够完成
+
+scripted 控制完成了：
+
+```text
+480 primary Action parses and commits
+120 typed rejection + reference correction paths
+192 Final parses
+192 finalized Runtime Results
+192 Base-valid
+192 Mechanism-qualified
+192 Qualified-valid
+0 Provider calls
+```
+
+
+
+这说明添加外层 JSON 协议对象没有破坏当前参考 Action、Correction 和 Final 的本地构造性。
+
+---
+
+## 4. 历史边界处理正确
+
+v26.192 没有修改：
+
+* v26.191 六条在线 Observation；
+* v26.188 的 192 个旧 Job；
+* 历史 `0/192` Job 结果；
+* 历史 `q_semantic_given_model_endpoint=null`；
+* Mapper、State、Contribution、VTDO 或训练结果。
+
+并且本轮仍明确保持：
+
+```text
+online_development_execution_authorized = false
+next_stage = no_further_experiment_authorized_without_new_audit_decision
+```
+
+
+
+这个 fail-closed 边界应当完整保留。
+
+---
+
+# 二、Blocking Defect 1：792 行 Census 不是权威 exact Prompt evidence set
+
+这是当前**首个根本阻塞点**。
+
+## 2.1 Census 验证器只检查相位计数，不检查 exact Job/坐标集合
+
+`PromptJsonContractCensus` 当前主要检查：
+
+* 四类 phase 的总数是否为 `192/288/120/192`；
+* 每行保存的 `new_prompt_json_token_present` 是否为真；
+* first Action 的旧 Prompt 是否不含 JSON；
+* 顶层 Census ID 是否与自身内容哈希一致。
+
+但它没有检查：
+
+* 792 个 `row_id` 是否唯一；
+* 192 个 fresh Job 是否各自精确出现；
+* 每个 Job 是否恰好有一个 first Action 和一个 Final；
+* Component index/key 是否来自该 Job 的冻结 Component Schedule；
+* Correction 是否由该 Job 的真实 typed rejection 产生；
+* `(job, phase, component, state)` exact set 是否无缺失、无重复、无额外项；
+* Census 中的 Manifest ID 是否对应嵌入或重新加载后的精确 Manifest；
+* `response_format_json_object` 等布尔字段是否由真实 request-body bytes 重新解析得到。
+
+相关验证逻辑只做 phase `Counter` 和少量布尔检查。
+
+因此可以直接构造一个 fully-rehashed 攻击：
+
+```text
+每个 phase 只保留一条合法行
+    first_action row × 192
+    subsequent_action row × 288
+    correction row × 120
+    final row × 192
+
+重新计算顶层 census_id
+```
+
+该对象仍满足当前：
+
+```text
+phase counts
+JSON-visible flags
+old-first-token rule
+content identity
+```
+
+但实际上可能只覆盖一个 Job。当前验证器没有 row uniqueness 或 exact Manifest Job-set Gate，因而会接受这种语义上失真的 Census。
+
+所以正式结论不能是：
+
+```text
+authoritative exact 192-Job reachable Prompt Census = passed
+```
+
+只能是：
+
+```text
+honest-build scripted Prompt rows materialized = 792
+```
+
+---
+
+## 2.2 792 个 Prompt 不是全部模型可达 State 的枚举
+
+v26.192 的主循环沿 reference selection 执行每个 Component，并在这些 reference-reached States 上对当前 invalid Candidates 构造 Correction。它没有展开合法 nonreference Action 所产生的后继 State。
+
+而冻结的 v26.179 accepted-prefix 审计已经表明，完整声明 Choice 组合在六个 Replica 下能够形成：
+
+```text
+4,632 local trajectories
+14,388 reached accepted-prefix States
+41,124 Candidate evaluations
+```
+
+并且包含 valid nonreference correction、不同 Component 的多次 correction 等分支。
+
+因此，792 不是未来模型行为的完整状态展开，而是：
+
+```text
+reference primary path
++
+registered invalid-Candidate correction controls
++
+reference Final
+```
+
+这里需要区分两种可能的证明方式：
+
+1. **穷举证明**：枚举全部 model-reachable accepted prefixes 和 correction/final 分支；
+2. **调用点总性证明**：证明未来 online Runner 的每一个 Provider 调用，无论 State 如何产生，都只能通过同一个 `_render_prompt()` 进入客户端。
+
+v26.192 两者都没有完全闭合。它实现了一个通用 renderer，但没有实现并审计绑定该 renderer 的实际 future online Runner。
+
+因此可以保留：
+
+```text
+JSON renderer is structurally generic
+```
+
+但不能声称：
+
+```text
+all future online Provider-visible Prompts have been censused
+```
+
+---
+
+# 三、Blocking Defect 2：两个阶段专属破坏控制实际上没有执行对应阶段
+
+这是一个可直接从源码确认的实现问题。
+
+破坏控制先统一构造：
+
+```python
+base = _render_prompt(
+    prompt_kind="action",
+    core=sample_core,
+    ...
+)
+```
+
+随后，对以下三个 mutation：
+
+```text
+action_prompt_core_changed
+correction_prompt_core_changed
+final_prompt_core_changed
+```
+
+都只是修改同一个 Action payload 的 `prompt_core`，最后统一调用：
+
+```python
+_validate_rendered_prompt(
+    prompt_kind="action",
+    expected_core=sample_core,
+    ...
+)
+```
+
+也就是说：
+
+* `action_prompt_core_changed` 确实走了 Action Gate；
+* `correction_prompt_core_changed` 没有用 `prompt_kind="correction"`；
+* `final_prompt_core_changed` 没有用 `prompt_kind="final"`，也没有使用字符串类型的真实 Final core。
+
+相关实现可以在破坏控制循环中直接看到。
+
+所以正式的：
+
+```text
+Action / Correction / Final phase-specific core mutation controls = 3/3
+```
+
+实际上只支持：
+
+```text
+generic Action-core mismatch mechanism = reproduced
+Correction-specific mutation Gate      = untested
+Final-specific mutation Gate           = untested
+```
+
+此外，当前破坏审计只要捕获任意 `ValueError` 就增加 `rejected`：
+
+```python
+except ValueError:
+    rejected += 1
+```
+
+没有保存：
+
+```text
+expected exception type
+actual exception type
+expected stage
+actual stage
+expected reason
+actual reason
+target validator reached
+```
+
+因此它不能排除“在错误的前置位置因无关原因失败，然后被计作目标 Gate 拒绝”的证据漂白。
+
+本轮 `12/12 destructive controls rejected` 应收窄为：
+
+```text
+12 mutation labels raised ValueError under the current construction
+```
+
+而不是：
+
+```text
+12 exact typed production attacks rejected at their registered stages
+```
+
+---
+
+# 四、Blocking Defect 3：Fresh Package → Job → Manifest → Runner 仍是自哈希链，而非权威父绑定链
+
+## 4.1 Manifest 没有重建 Job 与 Package 的交叉父关系
+
+当前 Job 会独立校验自己的：
+
+```text
+job_id
+raw_namespace
+result_namespace
+deterministic_seed_id
+```
+
+Manifest 会检查：
+
+```text
+192 unique Job IDs
+192 unique Raw namespaces
+192 unique Result namespaces
+192 unique Package × Replica cells
+32 distinct runner_package_id values
+```
+
+但它没有检查：
+
+```text
+job.runner_package_id
+    -> exact package in RunnerPackageCatalog
+
+job.source_runner_package_id
+    -> package.source_runner_package_id
+
+job.execution_package_id / source_package / finance_core / schedules
+    -> exact source Job and exact fresh Runner Package
+```
+
+相关 Job 与 Manifest 验证逻辑只检查自身哈希、数量和局部唯一性。
+
+因此可以构造如下 fully-rehashed 交叉父攻击：
+
+```text
+选择同一 replica_index 的两个 Job A、B
+交换 A、B 的 runner_package_id
+重新计算各自 namespace、seed ID、job_id
+重新排序 expected_job_ids
+重新计算 manifest_id、runner_id、report 和 artifact manifest
+```
+
+交换后：
+
+* 192 个 Job 仍唯一；
+* 32 个 Package 仍存在；
+* 192 个 Package × Replica cell 仍唯一；
+* 所有内容哈希都可以保持自洽；
+
+但 Job 已不再绑定自己的真实 source Runner Package。当前 Manifest validator 没有 Package Catalog 对象可供重建，因此无法拒绝该攻击。
+
+这与此前 v26.180–v26.187 反复修复的“wrapper parent / self-hash chain 不等于 authoritative parent binding”属于同一类问题。
+
+---
+
+## 4.2 Runner Contract 不是可执行 Runner 的证据
+
+正式 Runner Contract 自己明确记录：
+
+```text
+scripted_reference_only = true
+provider_calls = 0
+```
+
+并且 v26.192 源码提交只新增了：
+
+* 一个 preflight 模块；
+* 一个测试模块；
+
+没有新增绑定 fresh Manifest、fresh renderer 和 artifact-backed Outcome evidence chain 的在线执行模块。
+
+因此当前对象更准确地说是：
+
+```text
+scripted Runner preflight descriptor
+```
+
+而不是：
+
+```text
+future online Runner implementation proven to route every request
+through the JSON-explicit renderer
+```
+
+这并不违反“本轮不执行在线请求”的授权，但它阻止下一阶段直接跳到 192-Job online execution。
+
+---
+
+## 4.3 Fresh Job 尚未获得 fresh artifact-backed Outcome authority
+
+v26.192 为新 Job 保存的是：
+
+```text
+source_outcome_contract_id
+```
+
+但正式工件中没有新的：
+
+```text
+artifact-backed Outcome Contract
+Terminal Registry binding
+RawExecutionDescriptor Contract
+JobResultDescriptor Contract
+JobBoundAttemptTrace Contract
+ExactEvidenceSetEvaluator binding
+```
+
+旧 v26.186/v26.187 authority 链绑定的是旧 v26.179 Manifest Job set，不能自动获得对 fresh v26.192 Job IDs 和 Raw/Result namespaces 的权威性。
+
+因此，哪怕 Prompt 问题已经修好，当前仍不存在：
+
+```text
+fresh Job
+  -> fresh Raw
+  -> fresh Result
+  -> fresh Trace
+  -> fresh Outcome
+  -> exact empirical estimator
+```
+
+的授权链。
+
+这也是为什么当前保持 `online_development_execution_authorized=false` 是科学上正确的。
+
+---
+
+# 五、48 个 Semantic Reconciliation Result-ID 漂移不能被视为已解决
+
+本轮诚实记录了：
+
+```text
+source Result ID matches     144 / 192
+source Result ID drifts       48 / 192
+drift family                  semantic_reconciliation
+```
+
+而且 48 行当前 Base、Mechanism 和 Qualified 都为真。
+
+“在 JSON envelope 加入前的当前代码路径上同样出现 144/192”可以证明：
+
+```text
+JSON wrapper 不是这 48 个漂移的直接原因
+```
+
+但它不能证明：
+
+```text
+48 个旧 Result 与当前 Result 语义完全相同
+```
+
+当前没有正式保存：
+
+* 旧、新 Result canonical field diff；
+* 第一个发生变化的事件、Receipt、Operation 或 parent；
+* 漂移是否只来自非语义 metadata；
+* 漂移是否影响未来 Raw/Result/Trace parent identity；
+* 使用 v26.179 exact source snapshot 而非当前共享依赖时是否仍复现。
+
+此外，`SemanticPreservationAudit` 中的多项“match count”不是独立比较得到的。例如：
+
+```text
+task_parent_match_count
+execution_package_parent_match_count
+source_artifact_parent_match_count
+schedule_parent_match_count
+fixed_condition_parent_match_count
+```
+
+都直接赋值为 `len(manifest.jobs)`；Action State、Candidate order 和 ABI match 也共同来自同一个 `prompt_core_exactly_preserved` 布尔量。
+
+因此正确状态应为：
+
+```text
+JSON-envelope causal independence of Result drift   passed
+historical/current Result semantic equivalence      unknown
+future Result-parent authority                      failed
+```
+
+这不是修改历史 Result 的理由，但在未来证据链使用 `result_id` 前必须定位。
+
+---
+
+# 六、`all_gates_passed=true` 不是独立 Gate 结果
+
+正式 Report 当前记录所有二十个 Gate 为真。
+
+但源码中大量 Gate 直接写成常量：
+
+```python
+"external_authorization_exact": True
+"v191_predecessor_immutable": True
+"json_explicit_prompt_contract": True
+"all_first_action_prompts_json_explicit": True
+"all_correction_prompts_json_explicit": True
+"prompt_core_semantics_preserved": True
+"scripted_action_observation_final_chain": True
+...
+```
+
+其中：
+
+```python
+"response_format_instruction_pairing": len(census.rows) == 792
+```
+
+只检查行数，并没有重新解析 792 个 request bodies 的 `response_format`。
+
+同时，Census row 中：
+
+```text
+new_prompt_json_token_present
+exact_protocol_instruction_present
+response_format_json_object
+prompt_core_exactly_preserved
+```
+
+主要是带 Literal 默认值的声明字段；`_census_row()` 没有从持久化 request-body bytes 重新推导这些字段。它计算了 request-body hash，但没有重新解析并核对 body 中的 model、messages、Thinking 和 `response_format`。
+
+当前测试也主要断言这些已构造对象中的计数和布尔值，没有执行：
+
+* fully-rehashed duplicate Census attack；
+* cross-Job row attack；
+* Package/Job parent swap；
+* Correction/Final exact-stage mutation；
+* source commit/tree injection；
+* request-body `response_format` 与 Prompt envelope 不一致。
+
+所以 `all_gates_passed=true` 应被收窄为：
+
+```text
+the authoritative construction path completed without raising
+```
+
+不能解释为：
+
+```text
+an independent adversarial audit closed all twenty scientific Gates
+```
+
+---
+
+# 七、Gate Matrix
+
+| Gate                                              | 审计判定           | 精确解释                                       |
+| ------------------------------------------------- | -------------- | ------------------------------------------ |
+| v26.191 Observation 与旧 Job 不变                     | **PASS**       | 未发现历史修改或重分类                                |
+| JSON-explicit instruction 内容                      | **PASS**       | 指令明确、包含 JSON、禁止 Markdown                   |
+| 当前 792 个 scripted Prompt 构造                       | **PASS**       | honest build 中全部成功包装                       |
+| 当前 reference Runtime 192/192                      | **PASS，局部**    | scripted reference control，不是模型结果          |
+| Fresh ID 与旧 ID 不重合                                | **PASS，构造级**   | 当前生成结果确实 disjoint                          |
+| Census 进入 Artifact Manifest                       | **PASS**       | 修复 v26.191 sidecar 缺口                      |
+| Exact 192-Job Prompt evidence set                 | **FAIL**       | 无 row uniqueness、Job-set、坐标 exact-set Gate |
+| 全部 model-reachable Prompt 覆盖                      | **FAIL/未实例化**  | 仅 reference 与注册 rejection 分支               |
+| Correction 专属 core mutation                       | **FAIL**       | 实际走的是 Action validator                     |
+| Final 专属 core mutation                            | **FAIL**       | 实际走的是 Action validator                     |
+| Typed destructive stage/reason                    | **FAIL**       | 任意 `ValueError` 均可计作拒绝                     |
+| Package→Job→Manifest authoritative parent binding | **FAIL**       | fully-rehashed crossed-parent 攻击可构造        |
+| Future online Runner callsite totality            | **未实例化**       | 正式 Runner 为 `scripted_reference_only`      |
+| Fresh artifact-backed Outcome authority           | **未实例化**       | 仍只有 source outcome-contract parent         |
+| 48 Result-ID 语义等价                                 | **UNKNOWN**    | 只证明非 JSON-envelope 所致                      |
+| 二十个独立非补偿 Gate                                     | **FAIL**       | 多项 Gate 是常量或共享代理量                          |
+| Provider execution authorization                  | **BLOCKED，正确** | 当前不得执行在线 192 Jobs                          |
+
+---
+
+# 八、当前允许与禁止的科学结论
+
+## 允许保留
+
+```text
+1. v26.191 的当前 HTTP 400 根因定位保持有效。
+2. 新 shared renderer 已加入明确 JSON 输出指令。
+3. 当前 scripted construction 生成的 792 个 Prompt 均经过该 renderer。
+4. 当前 reference-plus-rejection local control 可完成 192/192 Jobs。
+5. 当前持久化 fresh Package/Job/namespace IDs 与旧身份不重合。
+6. Provider call、Development outcome、Mapper、State、VTDO 和训练均为零。
+7. v26.192 没有自授权在线执行。
+```
+
+## 仍然禁止
+
+```text
+1. “所有未来在线 Prompt 已完整覆盖”。
+2. “20/20 authoritative Gates 独立通过”。
+3. “Fresh Manifest/Runner 已具有完全父绑定权威”。
+4. “48 个 Result-ID 漂移只是无关 metadata”。
+5. 直接执行 fresh 192-Job online Development。
+6. 复用旧 v26.186 Outcome Contract 接收新 Job。
+7. Capability estimate、Confirmation、Mapper、State、frequency。
+8. Contribution、VTDO、Student、训练、release 或 production。
+```
+
+---
+
+# 九、唯一合理的下一实验
+
+建议只授权：
+
+```text
+json_explicit_prompt_population_authoritative_exact_set_
+and_runner_callsite_totality_repair_preflight_only
+```
+
+必须保持零 Provider 调用，并冻结现有 Task、Component、Candidate、Schedule、presentation、model、Thinking、Grammar、Policy、resource、validity 与 192 个 source semantic cells。
+
+该实验只修复当前首个阻塞层：
+
+1. **精确 source projection**
+   从 `281abb8...` 的 Git Archive 执行，重建 Git tree、transitive source manifest 和全部 17 个 v26.192 工件；不能只接受调用方传入的 commit/tree 字符串。
+
+2. **真正的 exact Prompt evidence set**
+   Census validator 必须要求：
+
+   ```text
+   unique row IDs
+   exact fresh Job set
+   exact Job × phase × Component × State coordinates
+   exactly one first Action and Final per Job
+   no missing / duplicate / extra rows
+   exact Schedule and Runner Package parents
+   request body reparse and exact model/Thinking/response_format/message binding
+   ```
+
+3. **Runner 调用点总性**
+   实现一个零调用的 exact future Runner，使 Action、Correction、Final 的每一个 `_invoke` 前都必须通过同一个 JSON-explicit renderer；绕过 renderer 的 Provider 调用点必须不存在。
+
+4. **扩大或形式化 reachability 证明**
+   要么重新展开冻结的 4,632 accepted-prefix trajectories 和 14,388 States，要么提供源码级 callsite-totality 证明；不能继续把 792 个 reference-path Prompt 称为全部 reachable Prompt。
+
+5. **真实分阶段破坏控制**
+   分别使用：
+
+   ```text
+   prompt_kind=action
+   prompt_kind=correction
+   prompt_kind=final
+   ```
+
+   并保存 exact expected/actual exception type、stage、reason 与 target-validator-reached。
+
+6. **fully-rehashed authority attacks**
+   至少覆盖：
+
+   ```text
+   duplicated Census rows with preserved phase counts
+   dropped Job plus duplicated replacement
+   cross-Job Prompt rows
+   Package/Job parent swap
+   source Job / fresh Package mismatch
+   Manifest/Runner parent replacement
+   response_format body/envelope mismatch
+   arbitrary source commit/tree injection
+   ```
+
+7. **48 个 Result drift 的只读分解**
+   保存旧、新 canonical Result 的最小 field-level witness；若存在任何 semantic/event/receipt 差异，则保持在线执行 blocked。不得修改或重算历史 Result。
+
+在该修复预检和后续独立审计通过前，**不得直接进入 fresh 192-Job online execution**。

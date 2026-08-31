@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-08-31
+Audit date: 2026-09-01
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -11598,3 +11598,84 @@ The current decision is `no_further_experiment_authorized_without_new_audit_deci
 credential-free repaired Population is ready for independent review but does not self-authorize
 online Development execution. See
 `docs/finance_v26_192_json_explicit_prompt_contract_and_development_population_preflight.md`.
+
+The external v26.192 audit subsequently narrows those positive claims. The shared JSON renderer
+and honest-build scripted construction remain valid, but the old phase-count Census, self-hashed
+Package/Job/Manifest/Runner chain, phase-generic destructive controls, and scripted Runner
+descriptor are not authoritative evidence for online execution. That audit authorizes only the
+credential-free v26.193 repair preflight recorded below.
+
+## v26.193 Prompt Population Authority And Runner Callsite Totality Repair Preflight
+
+Finance v26.193 consumes only the exact 22,168-byte external v26.192 audit at SHA-256
+`35ff5c6f064dafbe604eb3cf24eb99942ee6f714424c77e3582c73d3c9ad3546` and transition
+`json_explicit_prompt_population_authoritative_exact_set_and_runner_callsite_totality_repair_preflight_only`.
+Credential lookup, Provider and Stage 2 calls, Development outcomes, empirical rows, historical
+rewrite or reclassification, Confirmation, Mapper, State, frequency, Contribution, VTDO,
+Student, training, release, and production counts are zero.
+
+The exact v26.192 commit `281abb8a2eb12434a6ade981c2a6b35b5951d98a` and tree
+`d1bf6b2f165875348e6e9bcdc54492ffa07cfc84` are loaded from a Git Archive rather than trusted
+as caller strings. A 390-file internal source closure completes, the archived builder executes,
+and all seventeen v26.192 formal files rebuild byte for byte. The authoritative v26.193 source
+commit is `b5b21ee90926713773d4028028ec67c7a7d40d4e` with tree
+`9ce799b058750a397083e125ccbd58967642b54d`.
+
+The exact old 32 Package and 192 Job semantics remain frozen, but their source parents are
+independently reconstructed. Package source/Schedule matches are 32/32; Job source, fresh
+Package, Schedule, and namespace-parent matches are each 192/192; exact source Job and
+Package x Replica cell sets, Manifest parents, and Runner parents all match.
+
+A new authoritative evidence set contains 792 unique registered coordinates split 192 first
+Action, 288 subsequent Action, 120 real typed-rejection Correction, and 192 Final. Every Job has
+exactly one first Action and Final; no coordinate is missing, duplicated, or extra. Every row
+binds exact Job, Package, Replica, Component, Schedule, State, and Correction Receipt parents and
+reparses the exact model, Thinking, `json_object`, message, protocol, Prompt core, and canonical
+request body. This is an exact registered invocation set, not a claim that 792 rows enumerate all
+model-reachable States.
+
+The exact future invocation implementation has one `_invoke`, one renderer, one request-body
+builder, one injected transport sink, one Action/Correction/Final route each, and zero bypass,
+network-library, or direct Provider-client callsites. AST ordering and all 792 dynamic calls
+preserve `renderer -> body -> validate -> sink`. The proof binds the frozen v26.179 surface of
+4,632 trajectories, 14,388 accepted-prefix States, and 41,124 Candidate evaluations; source-level
+callsite totality, not 792-row exhaustion, supplies the reachability claim.
+
+Fourteen fully rehashed attacks all reach and reject at exact registered type/stage/reason
+boundaries. They cover phase-count-preserving duplication, dropped/duplicated Job replacement,
+cross-Job Prompt rows, denominator-preserving Package and source-Job swaps, Manifest/Runner
+replacement, request-body/envelope and cross-Job core mismatch, extended protocol, source
+commit/tree injection, and real Action, Correction, and Final core mutations.
+
+The read-only Result audit executes the exact v26.179 source snapshot and produces 192 Results
+with zero Provider calls. Snapshot bytes match the immutable v26.176 saved Results 192/192 and
+current Runtime Results 144/192. All 48 drifts are Semantic Reconciliation and have an eleven-field
+witness. Event identity/output-hash drift is 48/48; actual validity-value or answer drift is
+0/48. Semantic equivalence remains explicitly unknown and unclaimed. The event drift and six
+still-missing fresh Terminal/Raw/Result/Trace/Outcome/evaluator authority layers keep online
+execution blocked.
+
+All 22 repair-preflight Gates pass, while the independent online Gate remains false. The formal
+authoritative v2 directory has twelve files and 54,045,203 bytes. Its Artifact Root is
+`finance_v26_193_artifact_root:4eaebaec735f310ac55056c7ca57f50682dc3472f79f799a4a886531c7e627e0`;
+the Report is
+`finance_v26_193_prompt_authority_repair_report:b7d13fef2097d90cc6772320761608a79d556630fe96622f2d6ac2c884296ea3`.
+An independent empty-directory source-projected suite passes 8/8 in 681.59 seconds and matches
+all twelve formal files byte for byte. Focused Ruff and Mypy plus package-wide Ruff pass.
+Package-wide Mypy checks 614 source files, retains ten pre-existing diagnostics in six historical
+files, and has zero v26.193 diagnostics. The complete preliminary v1 directory remains immutable;
+seven of twelve files are byte-identical with v2, and v2 supersedes only its two local
+loop-variable inference diagnostics and implementation-bound identities.
+
+The only permitted transition is:
+
+```text
+json_explicit_prompt_population_authority_and_runner_callsite_totality_
+independent_audit_only
+```
+
+Online Provider execution, Development outcomes, fresh Outcome authority construction, reuse of
+the old v26.186 authority chain, semantic-equivalence claims, source or protocol tuning,
+Confirmation, Mapper, State, frequency, Contribution, VTDO, Student, training, release, and
+production remain forbidden. See
+`docs/finance_v26_193_json_prompt_population_authority_and_runner_callsite_totality_repair_preflight.md`.
