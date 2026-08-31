@@ -257,19 +257,88 @@ The Loader recaptures the runtime and requires exact identity. This does not cla
 `pyarrow` or `torch` tests passed. It makes the environment limitation explicit and
 fail-closed.
 
-## Verification Before Formal Freeze
+## Verification Results
 
 ```text
 new Envelope test module                         6 passed
+directly related regression suite               35 passed
+Mypy over three new source modules              passed
+Ruff over all changed Python files              passed
+compileall over trusted_synthesis               passed
 exact attack registry                           23/23 typed rejections
 wrong-validator phrase control                  not counted
 unrelated RuntimeError                          not counted
 Provider calls                                  0
 ```
 
-The implementation-source snapshot and formal fifteen-file directory are frozen only after the
-source commit is created and the source-projected runner completes. Exact formal identities and
-independent rebuild results are added in the evidence-freeze commit; they are not predicted here.
+## Formal Source-Projected Result
+
+The formal runner executed only from the internally extracted Archive of:
+
+```text
+source commit                 78b950174bee109f765bf3715f9243648fb4b67a
+Git tree                      9146e365a1c866edb9de3a732d50d52538b43427
+Archive SHA-256               9d2bd4e34dd335375f19d34fc2e5364f81b52d1fb7c025663c53eca91a6fbe54
+Archive bytes                 999,086,080
+source manifest SHA-256       e0b38623458311a040d64c585e3110e9a1ff3afd1175e28e1d308ec4e71654e2
+source manifest bytes         15,381,910
+source manifest members       34,388
+```
+
+The exact external Authorization and top identities are:
+
+```text
+Authorization
+  qa_release_authority_authorization:59dbf2aac8957b8ebe661c758247b882b896466e83ad541a71c3c1c3f7365884
+SourceProjection
+  qa_release_source_projection:361b3dd691e6319465f3de85179358184d8bef59a2cd44e18baa8e6236016758
+Exact Population
+  qa_release_population_manifest:2091318902368887a6e31355af934676a027f639cdca167377cc3747991e392d
+Authority Bundle
+  qa_release_authority_bundle:ee72e2665d9654fc531820c593d2cbb61d21ac22dde21d044eb7ef0c2249e9b1
+Attack Audit
+  qa_release_authority_attack_audit:c33f3bc33c8c3bdfe1c7ebad3181f71f94e241560fadcdcc578fa796795bd8fc
+Artifact Manifest
+  qa_release_authority_artifact_manifest:4201a2cf8b2fe75b5f165b7adf9c6ea6c79979c8bc16b4c6b8ecd7bbca438842
+Artifact Root
+  qa_release_authority_artifact_root:d5d43b2ec2dc65176f9051bb6780fb3f1c75a7286a812b2d0cc3ce5a8a88b069
+Report
+  qa_release_authority_report:4a626b3eb7f249652259e09170705799febbe4d7ef45965e069e02f6087330fa
+Envelope
+  qa_release_authority_envelope:967e1fdc1cdc5522b80b230962b5b96c394b4e77e0cf759bf1e49cf9d0915787
+```
+
+The immutable directory is
+`artifacts/qa_realization_vnext/qa_release_authority_envelope_v4_20260831`. It contains exactly
+fifteen files totaling 16,737,780 file bytes. It records:
+
+```text
+Fixtures / Records / selected records        2 / 6 / 6
+frozen task types / renderer profiles        8 / 32
+exact typed attacks rejected                 23 / 23
+missing / duplicate / extra attack IDs       0 / 0 / 0
+wrong-validator raw phrase counted           false
+unrelated RuntimeError counted               false
+Provider calls                               0
+archive-backed Pilot authorized              false
+production authorized                        false
+```
+
+A second runner invocation independently generated another Git Archive and extracted root. Both
+Archive files had the same 999,086,080-byte SHA-256. `diff -qr` reported no difference between
+the formal and rebuilt fifteen-file directories, and both directories contained 16,737,780 file
+bytes.
+
+The frozen runtime is CPython 3.14.6, Pydantic 2.13.4, Linux kernel 6.8.0-41-generic, glibc 2.39,
+96 installed Python distributions, and environment root `/data1/zhuxinrui/miniconda3`. The exact
+runtime identity is:
+
+```text
+qa_release_runtime_environment:e543c7b2c6a1aca66fef73de1cf8741a5b0bc2489690e444c1afc84b05949d54
+```
+
+These environment facts are descriptive identities and exact Loader requirements. They do not
+compensate for the absent `pyarrow` and `torch` full-suite coverage recorded by v26.183.
 
 ## Scientific Boundary
 

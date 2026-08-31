@@ -1,0 +1,1021 @@
+# v26.183 最新修订审计
+
+## 一、最终判定
+
+本轮依据两份最新上传材料、报告绑定的实现提交 `794a546aa2f934939425d7ce929b49f2ce2d1d73`、当前冻结提交 `2485d44b506814a507b4c45fa3245758bcd16d11`、正式九文件工件集以及关键 Loader、Bundle、Trajectory、Assessment、Release Selector 和测试源码进行审计。
+
+项目状态文件明确规定：实验状态只能从当前 Git 树、不可变工件、恢复记录和重跑检查中重建，缺失聊天内容不能作为实验事实；本轮沿用这一原则。
+
+我的最终判定是：
+
+```text
+v26.183 对 v26.182 代码级缺陷的修复：
+    实质有效，应保留。
+
+固定 2-Fixture / 6-Record 的 source-derived replay：
+    PASSED。
+
+当前正式九文件目录的历史字节冻结：
+    PASSED。
+
+通用 QA Release Authority：
+    尚未闭合。
+
+完整 Source Archive → Executed Tree 权威投影：
+    FAILED AS A FORMAL CONTRACT。
+
+外部审计授权父绑定：
+    FAILED / ABSENT。
+
+Exact Release Population 身份：
+    FAILED / NOT FROZEN。
+
+Report + Sidecar Catalog 顶层权威封装：
+    FAILED。
+
+12 项攻击的当前历史观察：
+    12/12 PASSED。
+
+攻击集合精确性与 rejection-stage 测量合同：
+    PARTIAL / NOT FAIL-CLOSED。
+
+Finance Pilot 多表面接线与不可覆盖写入：
+    工程路径 PASSED。
+
+Archive-backed Finance Pilot、生产发布、Provider、训练、VTDO：
+    继续禁止。
+
+v26 主实验线的经验 Outcome Gate：
+    继续保持 FAILED，不受 QA 分支影响。
+```
+
+换言之，v26.183 已经从 v26.182 的“对象自哈希链”前进到了一个真正有价值的**固定 Fixture source-replay 原型**，但仍不能提升为：
+
+> 任意持久化 QA Release 均具有外部授权、精确人口、源快照、跨 Catalog 和 Report 的端到端权威性。
+
+报告正确保留了 v26.181 的失败状态、历史工件和零 Provider 边界，没有借 QA 修订重解释主实验线。
+
+---
+
+# 二、v26.183 已经真实修复了什么
+
+## 1. Source-derived reconstruction 不再只是对象自哈希
+
+v26.183 的核心方向是正确的。当前链路已经包括：
+
+```text
+Operation Registry / Pattern / Renderer
+→ Evidence parents
+→ source-compiled Program / Plan
+→ Surface / Task
+→ deterministic generator replay
+→ TrajectoryExecutionDescriptor
+→ evaluator replay
+→ Release selector replay
+→ QAReleaseAuthorityBundle
+```
+
+报告明确强调：内容哈希是必要条件，但不再被视为充分条件，Loader 必须从 source-owned parents 重建对象再比较。
+
+源码确实实现了这一点：
+
+* Loader 重新实例化 `FinanceTaskPlugin`；
+* 比较 Operation、Pattern、Renderer、Generator、Evaluator、Policy、Split 等 Contract；
+* 按 Fixture index 重建 Evidence parents；
+* 重新编译 Program 和 Semantic Plan；
+* 重新生成每个选中表面的 Trajectory；
+* 重新运行 `CandidateQualityEvaluator`；
+* 重新运行 `select_diversity_aware_release()`；
+* 比较完整 Selection。
+
+这是相较 v26.182 最重要的机制进步。
+
+## 2. Operation、Plan 和 Tool 语义明显增强
+
+`tool_capability` 已经进入 Operation Semantic Contract、Canonical Node、节点键和 Plan 投影；Canonical Plan 也开始验证：
+
+* Node key 唯一性；
+* output node 与 topology node 配对；
+* Evidence role position；
+* Operation parent 存在；
+* dependency acyclicity；
+* topology、parameterized、semantic 和 Plan identities。
+
+`RealizedTaskPackage` 现在还验证：
+
+```text
+task instruction == realization final_instruction
+allowed_tools == evidence.search + Plan tool capabilities
+answer_schema == Plan answer_schema
+Program ID/hash == Plan source Program
+Evidence / ProofGraph / Pattern Binding parents exact
+```
+
+因此上一轮指出的“完整重哈希后修改 allowed tools 或让 Surface 与 Task 脱离”问题，在正常对象路径上已经得到实质修复。
+
+## 3. Trajectory 的表面父绑定明显增强
+
+新的 `TrajectoryExecutionDescriptor` 绑定：
+
+```text
+realized_package_id
+public_task_hash
+EvidenceCorpus ID/hash
+generation_input_hash
+generator_contract_id
+raw generated trajectory/hash
+bound trajectory ID/hash
+```
+
+`bind_realization_execution()` 还要求传入 Trajectory 必须等于 Descriptor 中 raw output 重新绑定后的精确对象。
+
+因此旧的：
+
+```text
+Surface A 的旧 ExecutionBinding
+→ 直接替换到 Surface B
+```
+
+已经不能通过。
+
+## 4. QualityAssessment 的内部决策关系已类型化
+
+`QualityAssessment` 现在重新派生：
+
+* universal/domain Gate 分区；
+* fatal failures；
+* Dimension 权重和为 1；
+* weighted total；
+* accepted/quarantined/rejected decision；
+* failed-check uniqueness；
+* Assessment content identity。
+
+这修复了上一版中“修改 Decision 后重新计算 Assessment ID 即可洗成 accepted”的直接漏洞。
+
+## 5. Release Selection v3 已能自重放
+
+`DiversityAwareReleaseSelection` v3 嵌入：
+
+```text
+ReleasePolicy
+SplitPolicy
+全部 PersistedReleaseRecords
+WeightAssignments
+各类统计与 hard Gates
+```
+
+其 Pydantic validator 会重新运行 deterministic selector，并比较完整 payload，而不是只检查几个汇总字段。
+
+当前正式工件中：
+
+* 2 个 Fixture；
+* 6 条 Release Record；
+* 6 条被选中记录；
+* 12 项攻击全部拒绝；
+* Bundle、Selection、Artifact Root 与 Manifest ID 均与报告一致。
+
+
+
+当前 `main` 也确实冻结在正式工件提交上，其父提交为报告绑定的实现提交。
+
+所以，**当前这次固定输入的成功执行和字节结果可以保留为真实历史事实**。
+
+---
+
+# 三、P0：外部审计授权没有进入正式父链
+
+报告声明本阶段响应一份 SHA-256 为：
+
+```text
+9fb5cc07c0db8ceb95c745bcec3dede6a52e82f2555de77784ee1498360ab649
+```
+
+、大小为 34,207 字节的外部审计，并据此消费后继阶段。
+
+但正式实现中的：
+
+```python
+run_release_authority_preflight(...)
+build_qa_release_authority_bundle(...)
+QAReleaseAuthorityBundle
+report.json
+```
+
+均没有：
+
+```text
+external_audit_path
+external_audit_sha256
+external_audit_byte_count
+authorized_transition_id
+permitted_change_surface
+forbidden_change_surface
+```
+
+也没有读取外部审计实际字节。正式 preflight 只接收 Source Tree、Archive Hash、Source Manifest 和输出目录。
+
+因此当前形式上可以：
+
+```text
+完全不提供外部审计文件
+→ 直接构造同一个 QA Release Authority preflight
+```
+
+完整 Git Tree 中保存了一份文档和外部审计哈希字符串，不能替代：
+
+```text
+ExternalAuthorization
+→ exact audit bytes
+→ exact authorized transition
+→ exact permitted changes
+→ resulting implementation
+```
+
+的权威父关系。
+
+### 影响
+
+当前可以声称：
+
+> v26.183 实现与一份外部审计的文字要求相符。
+
+但不能声称：
+
+> 正式 QA Release Authority Bundle 在对象层证明自己只消费了该外部授权。
+
+在你当前的 fail-closed 实验体系中，这属于正式授权链的 P0 缺口。
+
+---
+
+# 四、P0：Archive、Manifest、Executed Tree 是三项并列断言，不是一个权威投影
+
+报告称正式阶段：
+
+```text
+Git commit/archive
+→ extracted exact tree
+→ every-file manifest
+→ from-snapshot execution
+```
+
+并给出了 commit、tree、archive SHA-256 和 34,374 个 Manifest 成员。
+
+但源码实际做的是两项独立检查：
+
+1. 对传入 Archive 文件计算 SHA-256；
+2. 对另一个 `source_root` 目录逐文件比较 Manifest；
+3. 仅检查 Manifest 中写着的 `source_tree_id` 等于调用者传入的字符串。
+
+它没有：
+
+```text
+解析该 Archive
+→ 从 Archive 自身派生文件集合
+→ 从同一 Archive 解包到 source_root
+→ 从文件模式和内容重算 Git Tree ID
+→ 证明执行目录就是该 Archive 的投影
+```
+
+更直接的证据来自正式测试。测试构造了：
+
+```text
+source_tree_id = "a" * 40
+Archive bytes = "archive fixture\n"
+Source root = 只有一个完全无关的 tracked.txt
+Manifest = 对该 tracked.txt 的描述
+```
+
+然后 `run_release_authority_preflight()` 仍然通过。
+
+这证明当前 Contract 接受：
+
+$$
+\text{Archive A}
+\quad+\quad
+\text{Unrelated Root B}
+\quad+\quad
+\text{Arbitrary Tree-ID String C}
+$$
+
+只要三者分别内部自洽。
+
+### 科学解释
+
+当前正式运行很可能确实使用了正确的 `794a546...` Archive 和对应 Extracted Root；GitHub 也确认该 commit 的实际 Tree 是 `c4a99bd...`。
+
+因此当前历史运行结果可以保留。
+
+但是不能进一步声称：
+
+> v26.183 的正式接口已经形式化保证 Archive、Git Tree、Manifest 和 Executed Root 是同一个源对象。
+
+准确状态应为：
+
+```text
+current formal invocation:
+    observed source identities mutually consistent
+
+general source-projection contract:
+    not closed
+```
+
+---
+
+# 五、P0：Report 和旁路 Catalog 未形成顶层权威 Bundle
+
+这是本轮最重要的新代码缺口。
+
+## 1. Artifact Root 实际只覆盖六个文件
+
+正式目录有九个文件，但 `artifact_manifest.json` 只列入并哈希了：
+
+```text
+attack_controls.json
+direct_source_manifest.json
+qa_release_authority_bundle.json
+release_records.jsonl
+release_selection.json
+source_snapshot_manifest.json
+```
+
+没有列入：
+
+```text
+artifact_manifest.json
+report.json
+report.md
+```
+
+Manifest 自身不进入自己的 Root 是合理的 Merkle 设计；但这要求 `report.json` 成为一个具有外部可信身份的顶层锚。当前没有做到这一点。
+
+## 2. Loader 只验证 Report 的两个字段
+
+目录 Loader 只要求：
+
+```text
+report.artifact_root == recomputed root
+report.artifact_manifest_hash == recomputed manifest hash
+```
+
+然后解析并重建 `qa_release_authority_bundle.json`。它没有验证 Report 中的：
+
+```text
+status
+authority_bundle_id
+release_selection_id
+fixture_count
+release_record_count
+selected_record_count
+frozen_task_type_count
+frozen_renderer_profile_count
+fully_rehashed_attack_count
+fully_rehashed_attack_rejection_count
+provider_calls
+unrelated_exception_counted
+```
+
+是否与真实 Bundle、Selection 和 Attack Catalog 一致。
+
+因此可以构造一个不需要修改 Artifact Root 的直接反例：
+
+```text
+status                    "passed" → "failed" 或任意字符串
+provider_calls            0 → 999
+fully_rehashed_attack_count 12 → 1
+authority_bundle_id       → 任意值
+release_selection_id      → 任意值
+```
+
+只要保留原来的：
+
+```text
+artifact_root
+artifact_manifest_hash
+source identity fields
+```
+
+当前 Loader 就会返回被修改的 Report。
+
+`report.md` 甚至只检查“文件存在”，不检查字节或内容。
+
+## 3. Sidecar Catalog 只做字节检查，不做语义父绑定
+
+Loader 不解析或交叉比较：
+
+```text
+release_selection.json
+release_records.jsonl
+attack_controls.json
+source_snapshot_manifest.json
+```
+
+与 Bundle 内嵌对象是否完全相同。
+
+因此可以进一步构造完整重哈希攻击：
+
+```text
+修改 release_records.jsonl
+修改 release_selection.json
+修改 attack_controls.json
+修改 source_snapshot_manifest.json
+重新计算每个文件 SHA-256
+重新计算 Artifact Root
+重新计算 Artifact Manifest Hash
+更新 Report 的两个 Root 字段
+```
+
+只要保持 `qa_release_authority_bundle.json` 不变，当前 Loader 仍会成功，因为它只对 Bundle 执行语义重建。
+
+v26.183 注册的第 12 项攻击只覆盖：
+
+```text
+修改 Catalog 和 Manifest Root
+但保持旧 Report Root
+```
+
+
+
+它没有覆盖真正的：
+
+```text
+Catalog + Manifest + Report 一起完整重哈希
+```
+
+攻击。
+
+### 精确结论
+
+当前正式九文件目录在 Git 中已经冻结，因此**当前历史字节集可以保留**。
+
+但当前 Loader 只证明：
+
+> 给定这个当前 Report Root，六个被列入 Manifest 的文件没有发生 stale-byte 修改。
+
+它没有证明：
+
+> Report、Markdown、Bundle、Selection、Records、Attacks 和 Source Manifest 共同组成一个不可替换的顶层 Release Authority Envelope。
+
+---
+
+# 六、P0：没有冻结 Exact Release Population
+
+`build_qa_release_authority_bundle()` 默认使用：
+
+```python
+fixture_indexes = (1, 2)
+```
+
+所以当前正式结果确实是两个 Fixture、六条 Record。
+
+但 `QAReleaseAuthorityBundle` 的 Schema 只要求：
+
+```text
+fixture_inputs 非空
+fixture_input_id 唯一
+fixture_index 唯一
+```
+
+Loader 随后遍历持久化 Bundle 中**调用者提供的那些 Fixture indexes**，分别从 Source 重建。它没有要求：
+
+```text
+fixture index set == {1, 2}
+exact task/binding set equality
+pre-outcome ReleasePopulationManifest
+missing / duplicate / extra population = 0
+```
+
+因此从当前 validator 条件可以构造：
+
+```python
+build_qa_release_authority_bundle(
+    ...,
+    fixture_indexes=(1,),
+)
+```
+
+重新计算 Selection 和 Bundle 后，Loader 会把它视为一个合法 source-derived Authority Bundle。
+
+这作为“通用 Bundle constructor”并不错误；问题在于它不能承担“精确 Release population 已预先冻结”的科学主张。
+
+当前真正冻结的是：
+
+```text
+某个 Bundle ID 当前恰好包含两个 Fixture
+```
+
+而不是：
+
+```text
+生产 Loader 只接受预授权的 exact two-Fixture population
+```
+
+### 必须增加
+
+```text
+QAReleasePopulationManifest
+  population_id
+  exact fixture_input_ids
+  exact semantic_instance_ids
+  exact task/binding identities
+  source selection contract
+  missing/duplicate/extra policy
+  pre-outcome authorization parent
+```
+
+Loader 必须由外部授权获得 `expected_population_id`，不能从待验证 Bundle 自己读取。
+
+---
+
+# 七、P1：12/12 是当前事实，但攻击准入合同并非精确
+
+当前正式 `attack_controls.json` 确实记录：
+
+```text
+12 个 counted fully-rehashed controls
+12 个 target_validator_reached
+12 个 rejected
+unrelated RuntimeError not counted
+```
+
+这一历史观察可以保留。
+
+但是正式 preflight 的准入条件是：
+
+```python
+if len(counted) < 11 or any(not item.rejected for item in counted):
+    fail
+```
+
+不是：
+
+```python
+exact attack ID set == frozen 12 IDs
+len(counted) == 12
+missing / duplicate / extra == 0
+```
+
+这意味着未来少掉一项攻击，只剩 11 项，preflight 本身仍可通过。测试单独断言了 `len(counted) == 12`，所以当前提交没有发生该问题，但正式 Builder 的非补偿 Gate 本身仍不精确。
+
+## rejection stage 也不是独立测量
+
+`_capture()` 对 `QAReleaseAuthorityError` 会读取实际 `exc.stage`。
+
+但对普通：
+
+```text
+ValidationError
+ValueError
+```
+
+它直接执行：
+
+```python
+actual_stage = expected_stage
+```
+
+因此攻击工件中记录的：
+
+```text
+actual_stage = canonical_plan
+actual_stage = surface_realization
+actual_stage = quality_assessment
+actual_stage = release_selection
+```
+
+并不是 Runtime 实际产生的 Stage，而是测试预先填入的 Expected Stage。
+
+当前 Exception type 和 reason token 大多足以说明目标 validator 很可能被触达，但不能据此声称：
+
+> rejection stage 已被独立测量。
+
+这比旧版“任意 Exception 都算成功”已经好很多，但仍应改为每个权威入口都抛出：
+
+```text
+QAReleaseAuthorityError(
+    reason_code=...,
+    stage=...,
+    target_validator_reached=True,
+)
+```
+
+---
+
+# 八、P1：正式 smoke 并没有验证实际 Archive-backed Finance Pilot
+
+正式 Authority Bundle 使用：
+
+```python
+FinanceTaskPlugin(allow_structured_claims=True)
+CandidateQualityEvaluator(
+    semantic_policy=FinanceSemanticPolicy()
+)
+```
+
+即默认：
+
+```text
+source_grounding_requirement = NOT_APPLICABLE
+无 FinanceClaimVerifier
+无 SourceGroundingVerifier
+无 CandidateWorkflowVerifier
+```
+
+实际 Finance Pilot 则使用：
+
+```text
+source_grounding_requirement = REQUIRED
+FinanceClaimVerifier
+SourceGroundingVerifier
+CandidateWorkflowVerifier
+```
+
+并依赖真实 Archive Adapter 和抽样数据。
+
+因此当前正式测试证明的是：
+
+> 两个本地 Counterfactual Finance Fixtures 下，简化的 deterministic QA replay 和 release machinery 可以闭合。
+
+它没有证明：
+
+> 实际 Raw/Archive-backed Finance Pilot 的完整 Source Grounding、Claim Verification、Workflow Verification 和 Release Authority 已经闭合。
+
+最新状态文件对此保持了正确边界：它只授权 integrated deterministic Pilot plumbing，不授权当前环境中的 archive-backed Pilot run 或任何生产操作。
+
+---
+
+# 九、QA 多样性问题本身仍未获得新证据
+
+v26.183 主要修复的是：
+
+```text
+身份
+父绑定
+重放
+Assessment
+Selection
+持久化
+```
+
+而不是扩大实际 QA 任务分布。
+
+正式结果中：
+
+```text
+实际执行 Fixtures          2
+实际 Release Records       6
+选中 Records               6
+注册 Task Types            8
+注册 Renderer Profiles    32
+```
+
+其中 8 个 Task Types 和 32 个 Renderer Profiles 是 Manifest freeze，不表示全部都被行为执行和评测。
+
+本阶段还明确：
+
+* 没有 Provider rewrite；
+* 没有新模型生成 Population；
+* 没有新 Raw GraphPattern 大规模物化；
+* 没有训练；
+* 没有新的全量 Diversity Census；
+* 没有 Student utility。
+
+所以当前只能声称：
+
+> 多表达 QA 的权威工程基础明显增强。
+
+不能声称：
+
+> 当前 QA 数据集的实际语言多样性、任务结构多样性或模型训练收益已经改善。
+
+---
+
+# 十、最新 Gate 重判定
+
+| Gate                             | 判定                 | 精确解释                              |
+| -------------------------------- | ------------------ | --------------------------------- |
+| v26.181/v26.182 历史工件冻结           | **PASSED**         | 未修改主线历史                           |
+| 当前实现 commit/tree 与报告一致           | **PASSED**         | `794a546... / c4a99bd...`         |
+| 当前九文件 Git 冻结                     | **PASSED**         | 当前字节集存在且被冻结                       |
+| 当前 12 项控制执行                      | **PASSED**         | 当前工件实际为 12/12                     |
+| Fixed-Fixture source replay      | **PASSED**         | 2 Fixtures / 6 Records            |
+| Operation/Plan/Tool replay       | **PASSED**         | 当前 Fixture 范围                     |
+| Surface/Task replay              | **PASSED**         | 当前 Fixture 范围                     |
+| Trajectory descriptor replay     | **PASSED**         | 当前 Fixture 范围                     |
+| Assessment replay                | **PASSED**         | 当前 Fixture 范围                     |
+| Selection/Fraction replay        | **PASSED**         | 当前 Fixture 范围                     |
+| 外部审计授权父绑定                        | **FAILED**         | 正式代码未消费审计字节                       |
+| Archive→Root→Manifest→Tree 投影    | **FAILED**         | 三者仅分别校验                           |
+| Exact Release Population         | **FAILED**         | 无精确 Population Manifest           |
+| Report content authority         | **FAILED**         | 多数字段不被 Loader 重建                  |
+| Report.md byte authority         | **FAILED**         | 只检查文件存在                           |
+| Sidecar Catalog 跨文件一致性           | **FAILED**         | Loader 只语义重建 Bundle               |
+| Report-bound top envelope        | **FAILED**         | 无外部 expected report/root          |
+| exact 12-control set Gate        | **PARTIAL**        | 当前 12，但 Builder 允许 11             |
+| rejection stage identity         | **PARTIAL**        | 普通异常的 Stage 为预填值                  |
+| Runtime environment identity     | **UNKNOWN**        | 未绑定实际 Python/dependency/container |
+| Archive-backed Pilot authority   | **UNINSTANTIATED** | 当前环境未运行                           |
+| QA diversity/model utility       | **UNINSTANTIATED** | 无新经验数据                            |
+| Provider / production / training | **BLOCKED**        | 明确未授权                             |
+| v26.181 empirical Outcome Gate   | **FAILED**         | QA 修订不补偿主线失败                      |
+
+---
+
+# 十一、当前允许与禁止的结论
+
+## 允许保留
+
+可以正式保留：
+
+```text
+v26.183 materially repairs the v26.182 constructor-path defects.
+
+The exact current two-Fixture authority bundle can be reconstructed
+under the bound implementation snapshot.
+
+The current six persisted release records reproduce deterministic
+generation, evaluation, execution binding, and release selection.
+
+The current twelve registered controls reject, and the unrelated
+RuntimeError is not counted.
+
+The current formal directory was published without replacing an
+existing target and reproduced byte-for-byte in the reported rerun.
+
+No Provider call, model-generated QA population, training, VTDO,
+or production action occurred.
+```
+
+## 当前禁止
+
+仍禁止：
+
+```text
+The general QA Release Authority is fully closed.
+
+The external audit authorization is a formal parent of the Bundle.
+
+The executed source root is formally proven to be the projection
+of the bound Git archive.
+
+The exact release population is pre-authorized and immutable.
+
+All nine files are jointly authenticated by the current directory Loader.
+
+The Report is source-derived or content-addressed.
+
+The twelve-control denominator is exact-set fail-closed.
+
+Every recorded rejection stage is independently observed.
+
+The Archive-backed Finance Pilot has passed Release Authority.
+
+QA diversity or Student utility has empirically improved.
+
+Provider generation, production release, training, Contribution,
+or VTDO may begin.
+```
+
+---
+
+# 十二、唯一合理的下一 QA 实验
+
+建议新的唯一后继为：
+
+```text
+qa_release_authority_external_authorization_exact_population_
+source_projection_cross_catalog_envelope_independent_audit_only
+```
+
+仍然必须保持：
+
+```text
+Provider calls                         0
+new model-generated QA rows            0
+production release rows                0
+training                               0
+Contribution / VTDO                    0
+v26.181 empirical changes              0
+```
+
+该阶段应只完成以下闭合。
+
+## 1. 外部授权对象
+
+新增：
+
+```text
+QAReleaseAuthorityAuthorization
+  external_audit_sha256
+  external_audit_byte_count
+  audit_bytes_hash
+  authorized_predecessor
+  permitted_transition
+  exact change surface
+  forbidden operations
+  authorization_id
+```
+
+正式 Builder 必须读取实际审计字节，而不是只在文档里写一个哈希。
+
+## 2. Source projection
+
+强制要求：
+
+```text
+exact Git commit
+→ internally generated Git archive
+→ mandatory archive path
+→ internally extracted tree
+→ manifest derived from extracted tree
+→ recomputed Git tree identity
+→ execution only from that tree
+```
+
+不能让调用者分别提供彼此无关的：
+
+```text
+tree ID
+archive
+source root
+manifest
+```
+
+## 3. Exact Release Population Manifest
+
+冻结：
+
+```text
+exact fixture/task/binding set
+exact SemanticInstance set
+exact population ID
+missing / duplicate / extra = 0
+selection provenance
+```
+
+Loader 必须接收外部可信的 `expected_population_id`。
+
+## 4. 顶层 Release Authority Envelope
+
+新增一个唯一顶层对象：
+
+```text
+QAReleaseAuthorityEnvelope
+  Authorization
+  SourceProjection
+  PopulationManifest
+  QAReleaseAuthorityBundle
+  ReleaseSelection
+  ReleaseRecords
+  AttackAudit
+  ArtifactManifest
+  Report
+  envelope_id
+```
+
+`report.json` 必须内容寻址，并逐字段从上述对象重建。
+
+## 5. 所有 Catalog 必须语义交叉验证
+
+Loader 必须解析并要求：
+
+```text
+release_selection.json
+    == Bundle.embedded release_selection
+
+release_records.jsonl
+    == Selection.embedded release_records
+
+attack_controls.json
+    == exact frozen attack registry and results
+
+source_snapshot_manifest.json
+    == SourceProjection manifest
+```
+
+不能只做文件 SHA-256 检查。
+
+## 6. 精确攻击集合
+
+正式条件应改为：
+
+```text
+exact attack IDs == frozen 12-ID set
+count == 12
+missing / duplicate / extra == 0
+all target validators actually reached
+all typed exception type/stage/reason exact
+```
+
+并新增以下攻击：
+
+```text
+Report-only status/count/ID mutation
+Report.md mutation
+all Catalogs + Manifest + Report jointly rehashed
+one Fixture removed with Bundle and Report rehashed
+one extra valid Fixture added
+external audit omitted or replaced
+unrelated Archive paired with valid source Root
+arbitrary tree ID paired with valid Manifest
+one registered attack silently omitted
+wrong validator emits same exception phrase
+actual Pilot evaluator/profile substituted for fixture evaluator
+```
+
+## 7. Runtime 环境身份
+
+至少冻结：
+
+```text
+Python version
+Pydantic version
+dependency lock hash
+OS/kernel/libc
+locale/timezone
+container or environment root
+```
+
+当前报告已经诚实记录 `pyarrow`、`torch` 缺失以及完整测试未完成，这一边界不能被 397 个通过测试补偿。
+
+---
+
+# 十三、主实验线同步
+
+QA v26.183 是一条独立工程支线。它没有修复 v26.181 独立审计已经确认的五个经验 Outcome 权威失败，也没有获得在线执行资格。
+
+主实验线当前仍是：
+
+```text
+v26.181 empirical authority Gate:
+    FAILED
+
+online Development:
+    BLOCKED_FAILED_INDEPENDENT_AUDIT
+
+唯一允许的主线后继：
+    artifact_backed_terminal_validity_factorization_and_
+    failure_locus_reconstruction_preflight_only
+```
+
+最新状态文件也明确保留这一点：生产发布、在线执行、Provider generation、训练、Contribution 和 VTDO 均继续阻断。
+
+---
+
+# 最终审计决定
+
+```text
+PRESERVE:
+    v26.183 的 source-derived fixed-Fixture reconstruction、
+    Trajectory descriptor、Assessment derivation、
+    Release replay 和 immutable publication 工程成果。
+
+FREEZE AS HISTORICAL FACT:
+    当前 2 Fixtures、6 Records、12/12 attacks、
+    九文件正式目录及其现有 identities。
+
+NARROW:
+    “QA Release Authority passed”
+    ->
+    “fixed-Fixture same-snapshot source-replay and
+     immutable-publication smoke passed”。
+
+FAIL:
+    external authorization parent
+    archive-to-executed-tree projection
+    exact release population
+    report/cross-catalog envelope authority
+    exact attack-set admission contract
+
+DO NOT AUTHORIZE:
+    Archive-backed Pilot run
+    Provider generation
+    production QA release
+    training
+    Contribution
+    VTDO
+    or any reinterpretation of v26.181.
+
+ONLY RATIONAL NEXT QA STAGE:
+    qa_release_authority_external_authorization_exact_population_
+    source_projection_cross_catalog_envelope_independent_audit_only
+```
+
+当前 QA 路径的第一个根本阻塞点可以精确写成：
+
+$$
+\boxed{
+\text{External Authorization}
+\rightarrow
+\text{Exact Source Projection}
+\rightarrow
+\text{Exact Release Population}
+\rightarrow
+\text{Source-Replayed Bundle}
+\rightarrow
+\text{Cross-Catalog Envelope}
+\rightarrow
+\text{Content-Addressed Report}
+}
+$$
+
+v26.183 已经较好地闭合了中间的 **Source-Replayed Bundle**，但链条的授权起点、人口身份和顶层持久化终点仍未共同闭合。

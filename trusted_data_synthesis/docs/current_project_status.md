@@ -11130,11 +11130,33 @@ negative controls, a wrong-validator same-text control that is not counted, exac
 projection with symlink/executable coverage, full cross-catalog reload, and immutable publication.
 Provider calls remain zero.
 
-Formal source-projected execution and independent byte reproduction are pending the implementation
-source commit. Until that evidence is frozen:
+The formal source-projected Gate executed only from source commit
+`78b950174bee109f765bf3715f9243648fb4b67a`, Git tree
+`9146e365a1c866edb9de3a732d50d52538b43427`, and internally generated Archive SHA-256
+`9d2bd4e34dd335375f19d34fc2e5364f81b52d1fb7c025663c53eca91a6fbe54`.
+The 34,388-member source manifest SHA-256 is
+`e0b38623458311a040d64c585e3110e9a1ff3afd1175e28e1d308ec4e71654e2`.
+
+The formal directory
+`artifacts/qa_realization_vnext/qa_release_authority_envelope_v4_20260831` has exactly fifteen
+files and 16,737,780 file bytes. Its external anchor identities are:
 
 ```text
-v26.184 formal Envelope Gate              NOT YET FROZEN
+Authorization  qa_release_authority_authorization:59dbf2aac8957b8ebe661c758247b882b896466e83ad541a71c3c1c3f7365884
+Population     qa_release_population_manifest:2091318902368887a6e31355af934676a027f639cdca167377cc3747991e392d
+Envelope       qa_release_authority_envelope:967e1fdc1cdc5522b80b230962b5b96c394b4e77e0cf759bf1e49cf9d0915787
+Report         qa_release_authority_report:4a626b3eb7f249652259e09170705799febbe4d7ef45965e069e02f6087330fa
+Artifact root  qa_release_authority_artifact_root:d5d43b2ec2dc65176f9051bb6780fb3f1c75a7286a812b2d0cc3ce5a8a88b069
+```
+
+All 23 exact typed attacks reject; missing, duplicate, and extra attack ID sets are empty. The raw
+wrong-validator same-phrase probe and unrelated RuntimeError do not count. A second internally
+generated Archive has the same hash, and the independently rebuilt fifteen-file directory is
+byte-identical under `diff -qr`. The precise Gate state is:
+
+```text
+v26.184 formal Envelope Gate              PASSED
+fixed 2-Fixture cross-catalog authority   PASSED
 archive-backed Finance Pilot              BLOCKED
 Provider generation                       BLOCKED
 production QA release                     BLOCKED
