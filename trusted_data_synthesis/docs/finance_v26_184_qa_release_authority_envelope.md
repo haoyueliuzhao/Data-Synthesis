@@ -269,7 +269,14 @@ exact attack registry                           23/23 typed rejections
 wrong-validator phrase control                  not counted
 unrelated RuntimeError                          not counted
 Provider calls                                  0
+full-suite collection                           blocked in 5 existing modules
 ```
+
+The final full-suite invocation was interrupted during collection: one existing Finance Archive
+Adapter module requires absent `pyarrow`, and four existing VTDO modules require absent `torch`.
+No collected test failed before that interruption. The directly related 35-test result, Mypy,
+Ruff, and compileall results are not used to convert those five uncollected modules into passing
+evidence.
 
 ## Formal Source-Projected Result
 
@@ -338,7 +345,8 @@ qa_release_runtime_environment:e543c7b2c6a1aca66fef73de1cf8741a5b0bc2489690e444c
 ```
 
 These environment facts are descriptive identities and exact Loader requirements. They do not
-compensate for the absent `pyarrow` and `torch` full-suite coverage recorded by v26.183.
+compensate for the absent `pyarrow` and `torch` full-suite coverage. The v26.184 final
+collection reproduced the same five-module dependency boundary recorded by v26.183.
 
 ## Scientific Boundary
 

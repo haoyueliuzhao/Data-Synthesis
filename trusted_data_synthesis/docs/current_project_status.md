@@ -11152,7 +11152,10 @@ Artifact root  qa_release_authority_artifact_root:d5d43b2ec2dc65176f9051bb6780fb
 All 23 exact typed attacks reject; missing, duplicate, and extra attack ID sets are empty. The raw
 wrong-validator same-phrase probe and unrelated RuntimeError do not count. A second internally
 generated Archive has the same hash, and the independently rebuilt fifteen-file directory is
-byte-identical under `diff -qr`. The precise Gate state is:
+byte-identical under `diff -qr`. The directly related suite is 35 passed; Mypy over the three new
+modules, changed-file Ruff, and full-source compileall pass. Full-suite collection remains blocked
+in five existing modules: one imports absent `pyarrow` and four import absent `torch`. This
+environment boundary is not represented as passing evidence. The precise Gate state is:
 
 ```text
 v26.184 formal Envelope Gate              PASSED
