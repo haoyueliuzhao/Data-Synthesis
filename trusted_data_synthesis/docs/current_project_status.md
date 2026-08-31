@@ -11216,3 +11216,34 @@ utility remain unmeasured. The next transition is
 generation, production, training, Contribution, VTDO, and reinterpretation of the still-failed
 v26.181 empirical Outcome Gate remain blocked. See
 `docs/finance_v26_185_qa_release_authority_independent_audit.md`.
+
+## v26.186 VTDO Mainline Artifact-Backed Outcome Authority Preflight
+
+The QA Release Authority side branch is frozen and closed at v26.185
+`PASSED_INDEPENDENT_AUDIT`. Its next-stage value is
+`no_further_experiment_authorized_without_new_audit_decision`; Archive-backed Finance Pilot,
+Provider QA generation, larger QA Population, production release, and Student training remain
+blocked. No further QA Authority Gate is active.
+
+The active checkpoint has returned to the VTDO mainline at the exact v26.182 independent negative
+audit. v26.181's scripted object-DAG result is retained, while its empirical Outcome authority
+remains failed on terminal factorization, diagnostic empirical isolation, FailureLocus
+authenticity, persisted Raw/Result bytes, and top-level parent revalidation. Online Development,
+empirical q values, Mapper, State, frequency, Contribution, VTDO, and Student remain unauthorized.
+
+v26.186 consumes only
+`artifact_backed_terminal_validity_factorization_and_failure_locus_reconstruction_preflight_only`.
+It introduces a prospective v3 chain with canonical Raw/Result files bound by path, SHA-256 and
+byte count; independent completed Base and Mechanism factors; FailureLocus reconstruction from
+attempts and Final Verifier artifacts; empirical admission restricted to reachable terminal
+policies; and strict Registry, Contract, Manifest, Job, and Runner revalidation at estimator
+entry. Historical v26.181/v26.182 artifacts remain immutable.
+
+The provisional credential-free working-tree smoke writes and reloads 192 Raw plus 192 Result
+artifacts, reconstructs all 192 scripted traces and rows, preserves both mixed completed-invalid
+states, and rejects 11/11 controls: two exact 192-row diagnostic empirical attacks, two fully
+rehashed invented-locus attacks, two file-byte substitutions, and five parent injections.
+Provider, Development outcome, formal empirical row or estimate, Mapper, State, frequency,
+Contribution, VTDO, Student, training, and release counts are zero. Formal source-projected
+execution and byte-identical rebuild are pending the exact v26.186 source commit. See
+`docs/finance_v26_186_artifact_backed_outcome_preflight.md`.
