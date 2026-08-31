@@ -128,6 +128,13 @@ This smoke is implementation evidence only. Authoritative source commit, source 
 artifact identities, byte-identical rebuild, and final verification results are filled only after
 the source-projected run.
 
+A preliminary v1 source-projected directory remains immutable but is superseded. Its
+`measurement_support_exit` control reached the intended non-reachable empirical-admission Gate,
+while `policy_horizon_exhausted` rejected earlier because the old Registry's false validity
+projection conflicted with the v3 rule that non-Verifier validity is null. The authoritative v2
+requires both diagnostic policies to materialize complete rehashed attack catalogs and reject at
+the exact non-reachable admission Gate. No empirical evaluation was created by v1.
+
 ## Authorization Boundary
 
 Until the formal source-projected preflight and its independent credential-free audit pass, the

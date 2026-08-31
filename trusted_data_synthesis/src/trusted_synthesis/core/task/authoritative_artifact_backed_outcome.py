@@ -1342,8 +1342,17 @@ def validate_artifact_backed_bundle(
             and (validity.final_base_valid is False or validity.final_mechanism_qualified is False)
         ):
             raise ValueError("completed-invalid terminal lost independent validity factors")
-    elif observed_values != policy_values:
-        raise ValueError("artifact-backed Outcome differs from exact terminal policy")
+    elif row.terminal_kind == "completed_qualified":
+        if observed_values != policy_values:
+            raise ValueError("completed Outcome differs from exact terminal policy")
+    elif (
+        validity.task_completion,
+        validity.task_verifier_invoked,
+    ) != (
+        policy.expected_task_completion,
+        policy.expected_task_verifier_invoked,
+    ):
+        raise ValueError("non-completed Outcome differs from its terminal boundary policy")
     expected_trace, expected_row = _build_trace_and_row(
         job=job,
         manifest=manifest,

@@ -11247,3 +11247,9 @@ Provider, Development outcome, formal empirical row or estimate, Mapper, State, 
 Contribution, VTDO, Student, training, and release counts are zero. Formal source-projected
 execution and byte-identical rebuild are pending the exact v26.186 source commit. See
 `docs/finance_v26_186_artifact_backed_outcome_preflight.md`.
+
+A preliminary v1 source-projected directory is retained but superseded: its
+`policy_horizon_exhausted` control rejected during pre-admission validity construction rather than
+at the registered non-reachable empirical Gate. The authoritative v2 requires both diagnostic
+policies to complete all rehashing and reject at empirical admission; v1 created no empirical
+evaluation and authorizes no transition.

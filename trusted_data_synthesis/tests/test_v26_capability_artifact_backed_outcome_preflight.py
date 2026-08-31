@@ -128,6 +128,10 @@ def test_diagnostic_policies_cannot_enter_exact_empirical_catalog(
         "policy_horizon_exhausted",
     }
     assert all(item.fully_rehashed and item.rejected for item in audit.controls)
+    assert all(
+        item.rejection_reason == "non-reachable terminal policy cannot enter empirical evidence"
+        for item in audit.controls
+    )
 
 
 def test_independent_git_tree_leaf_vector() -> None:

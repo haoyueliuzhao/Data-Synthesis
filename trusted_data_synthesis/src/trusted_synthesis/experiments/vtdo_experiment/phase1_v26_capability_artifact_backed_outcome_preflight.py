@@ -47,7 +47,7 @@ from trusted_synthesis.experiments.vtdo_experiment import (
 )
 from trusted_synthesis.hashing import canonical_hash
 
-RUN_ID: Final = "finance_v26_186_artifact_backed_outcome_preflight_v1_20260831"
+RUN_ID: Final = "finance_v26_186_artifact_backed_outcome_preflight_v2_20260831"
 OUTPUT_DIR: Final = f"artifacts/vtdo_experiment/{RUN_ID}"
 V181_DIR: Final = v181.OUTPUT_DIR
 V182_DIR: Final = (
