@@ -11496,3 +11496,53 @@ Because persisted evidence cannot localize the unique cause, only
 `fresh_identity_minimal_exact_route_diagnostic_contract_preflight_only` is recorded as a future
 recommended subject, not as a current authorization. See
 `docs/finance_v26_190_exact_route_http400_request_contract_root_cause_audit.md`.
+
+## v26.191 Minimal Exact-route Online Diagnostic
+
+Finance v26.191 consumes the new exact 10,990-byte external authorization at SHA-256
+`d8fd6ad5cda29e419737c87b5dbd3641e0b5f906a98c0f222ab0a70c40ae510c` and the operator decision
+`做在线诊断` only as
+`fresh_identity_minimal_exact_route_diagnostic_online_execution_only`. It is a fresh engineering
+diagnostic Population, not a v26.188 Recovery or replacement. Old-Job rerun, RecoveryJob,
+historical reclassification, Confirmation, Mapper, State, frequency, Contribution, VTDO,
+Student, training, release, and production counts are zero.
+
+The embedded prepare check performs zero credential reads and Provider calls, validates the
+v26.190 Report and Artifact Root, and reconstructs the exact first frozen v26.188 Prompt and
+request certificate. The final online source is commit
+`662122f4db381ef936a91f985070f42ed6bca2a8` with Tree
+`834976a2ece966ef99e36db4127c9280d9ab8cee`. The canonical private `.env` is loaded only into
+process memory through an explicit mode-`0600` credential-file input; its path, value, and value
+hash are absent from formal artifacts.
+
+The online state machine executes six requests with zero retries. D0 `/models`, D1 official
+`/chat/completions`, D2 historical `/v1/chat/completions`, and D3 the full seven-field request
+shape with a minimal JSON Prompt all return HTTP 200. D4 sends the exact first frozen v26.188
+Prompt and 14,409-byte request body on the successful official route and returns one typed HTTP
+400: the Prompt must contain the word `json` to use `response_format=json_object`. D5 keeps the
+exact 12,986-byte Prompt UTF-8 length, explicitly asks for JSON, retains the complete parameter
+shape, and returns HTTP 200. The formal decision is
+`prompt_specific_request_rejection`.
+
+A credential-free census then rerenders all 192 frozen v26.188 first Prompts and finds the
+case-insensitive `json` token absent in 192/192. This is a denominator-wide frozen-source fact and,
+together with the exact current D4 reproduction, strongly supports the shared Prompt/response-
+format mismatch as the historical HTTP-400 explanation. Because the old Provider error bodies
+were never persisted and temporal server-state equality cannot be proven,
+`historical_exact_cause_recovered` remains false. The old `q_job=0/192` and
+`q_semantic_given_model_endpoint=null` remain immutable.
+
+Successful response content and private reasoning are discarded. The typed error projection
+retains only safe error fields, body hash/bytes, and an optional request ID. An exact-byte scan
+finds zero current-credential occurrences across all formal files; eleven Manifest members
+independently match. The Artifact Root is
+`finance_v26_191_online_diagnostic_artifact_root:47ce56c1e3ada224121b334c19fee66b485920de3bce132e0d4fea4b49672004`
+and the Report is
+`finance_v26_191_online_diagnostic_report:4bbd4b1de318271017870147065de6415a7b7f3215bf54b58ded1ac7cde9cb26`.
+Focused tests pass 7/7 and the v26.190--v26.191 adjacent suite passes 14/14; focused Ruff, format,
+PyCompile, and Mypy pass.
+
+The current decision is `no_further_experiment_authorized_without_new_audit_decision`. A repaired
+JSON-explicit Prompt and any fresh Development Population or successor Job set require a new
+explicit audit decision. See
+`docs/finance_v26_191_minimal_exact_route_online_diagnostic.md`.

@@ -1,0 +1,374 @@
+对，**现在应该进行在线测试**。v26.190 已经把现有离线证据能回答的问题基本回答完了：192 个失败请求与历史 7,229 个成功请求之间，没有发现可持久化的固定请求合同差异；剩余不可观察面正是执行时凭证/账户路由、Provider 当时的服务状态，以及被丢弃的 HTTP 400 响应正文。继续做同类离线审计不会增加根因信息。
+
+而且，DeepSeek 当前官方文档仍将 `deepseek-v4-flash`、`thinking={"type":"enabled"}`、JSON Output 和远高于 16,384 的最大输出范围列为支持能力；官方错误码将 HTTP 400 定义为请求格式错误，并明确要求依据错误消息修正请求。因此，**下一步最重要的观测量就是经过脱敏的 HTTP 400 error body，而不是再比较一次哈希**。([DeepSeek API Docs][1])
+
+# 下一实验：最小在线路由诊断
+
+建议将你这条指令落盘为新的 operator decision，只授权：
+
+```text
+fresh_identity_minimal_exact_route_diagnostic_online_execution_only
+```
+
+它不是 v26.188 的 Recovery，也不是旧 192 Job 的重跑，而是一组**全新身份、极小分母、用于定位 HTTP 400 的在线诊断请求**。
+
+## 一、固定边界
+
+```text
+旧 v26.188 Jobs 重跑                       0
+RecoveryJobs                              0
+旧 Outcome 重分类                          0
+Confirmation access                       0
+Mapper / State / frequency                0
+Contribution / VTDO / Student             0
+最大在线 HTTP 请求                         9
+自动重试                                  0
+```
+
+执行前只做一次内嵌的 credential-free prepare check，不再单独建立一条长期 preflight 支线。
+
+---
+
+# 二、第一阶段：四个固定在线请求
+
+## D0：账户与模型可见性
+
+请求：
+
+```http
+GET https://api.deepseek.com/models
+Authorization: Bearer <same current credential>
+```
+
+官方提供 `/models` 接口用于列出当前账户可使用的模型。([DeepSeek API Docs][2])
+
+判定：
+
+| 结果                         | 根因分类                 |
+| -------------------------- | -------------------- |
+| 401                        | 当前 API Key 无效        |
+| 402                        | 账户余额问题               |
+| 200，但无 `deepseek-v4-flash` | 当前账户没有该模型路由或模型不可用    |
+| 200，包含 `deepseek-v4-flash` | 凭证、账户访问和模型可见性初步通过    |
+| 400                        | 账户路由、网关或请求头异常，读取错误正文 |
+
+这一步比直接发复杂 Prompt 更干净，因为它完全不涉及 Chat Completion body。
+
+## D1：官方路径上的最小请求
+
+当前官方文档将 OpenAI 格式的 Base URL 写为：
+
+```text
+https://api.deepseek.com
+```
+
+Chat Completion 路径写为：
+
+```text
+/chat/completions
+```
+
+([DeepSeek API Docs][1])
+
+请求体只保留最小核心字段：
+
+```json
+{
+  "model": "deepseek-v4-flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Reply with the single word OK."
+    }
+  ],
+  "max_tokens": 64
+}
+```
+
+这一步用于判断：**当前凭证和当前服务是否能够完成最基础的 Flash Chat Completion。**
+
+## D2：历史精确路径对照
+
+使用与 D1 完全相同的请求字节，只把路径改为 v26.188 使用的：
+
+```text
+https://api.deepseek.com/v1/chat/completions
+```
+
+判定：
+
+| D1  | D2  | 解释                      |
+| --- | --- | ----------------------- |
+| 200 | 400 | `/v1` 路径当前不再兼容，路由原因基本定位 |
+| 200 | 200 | 两个路径均可用，排除路径别名          |
+| 400 | 200 | 官方文档路径与当前实际服务存在异常差异     |
+| 400 | 400 | 继续依据错误正文和后续字段测试定位       |
+
+这里不能预先认定 `/v1` 已失效，因为历史 7,229 个成功请求确实使用了相同路由；它只是必须在线重测的一个动态面。
+
+## D3：完整参数形状、最小 Prompt
+
+在 D1/D2 中成功的路径上发送：
+
+```json
+{
+  "model": "deepseek-v4-flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Return JSON exactly as {\"ok\":true}."
+    }
+  ],
+  "max_tokens": 16384,
+  "response_format": {
+    "type": "json_object"
+  },
+  "temperature": 0.6,
+  "thinking": {
+    "type": "enabled"
+  },
+  "top_p": 0.9
+}
+```
+
+官方文档支持这些字段；在 thinking mode 下，`temperature` 和 `top_p` 应被忽略，而不是成为错误。JSON Output 要求 Prompt 明确要求 JSON，因此该控制也满足这一条件。([DeepSeek API Docs][1])
+
+若 D1 成功而 D3 返回 400，问题就从“账户/路由”缩小为“完整参数组合”。
+
+---
+
+# 三、第二阶段：按结果自适应，最多五次请求
+
+## 分支 A：D3 成功
+
+发送一次新的、全新 Diagnostic Job：
+
+```text
+D4 = v26.188 第一个冻结 Prompt
+     + 完整 v26.188 请求参数
+     + 成功路径
+```
+
+注意：
+
+* 使用全新 diagnostic ID；
+* 不使用原 v26.188 Job ID；
+* 不写入原 192-Job 分母；
+* 不解释为 Capability 数据。
+
+若 D4 成功：
+
+```text
+当前 exact route 已恢复
+v26.188 的 192×HTTP-400 属于历史时点或历史凭证/账户状态
+其精确历史原因仍不可恢复
+```
+
+若 D4 失败，而 D3 成功，则问题被定位到：
+
+```text
+Prompt 内容或长 Prompt 处理面
+```
+
+再执行：
+
+```text
+D5 = 与 D4 字节长度相近的安全合成 Prompt
+     + 完全相同请求参数
+```
+
+判定：
+
+| D4  | D5  | 解释                       |
+| --- | --- | ------------------------ |
+| 400 | 200 | v26.188 Prompt 内容或结构触发拒绝 |
+| 400 | 400 | 当前长 Prompt/请求长度面需要进一步定位  |
+| 200 | —   | 当前路由已经健康                 |
+
+## 分支 B：D1 成功、D3 失败
+
+按固定顺序增量加入字段，直到第一次失败：
+
+```text
+D4a  + thinking={"type":"enabled"}
+D4b  + response_format={"type":"json_object"}
+D4c  max_tokens: 64 → 16384
+D4d  + temperature=0.6, top_p=0.9
+```
+
+第一次从 HTTP 200 变为 HTTP 400 的字段，就是本轮直接定位到的请求合同阻塞面。
+
+## 分支 C：D0 成功，但 D1、D2 都失败
+
+用**同一份请求体字节**分别通过：
+
+```text
+现有 Python/urllib transport
+curl --data-binary
+```
+
+各执行一次。
+
+判定：
+
+| Python | curl | 解释                                    |
+| ------ | ---- | ------------------------------------- |
+| 400    | 200  | 当前 Python transport 或隐式 Header/编码路径问题 |
+| 400    | 400  | Provider 端、账户路由或请求体问题                 |
+| 200    | 200  | 当前故障已消失                               |
+| 200    | 400  | curl 控制自身配置错误，不改变主路径结论                |
+
+---
+
+# 四、这次必须保存什么
+
+v26.188 最大的信息损失是没有保存 HTTP 400 error body。v26.190 因而只能得到：
+
+```text
+not_localizable_from_persisted_artifacts
+```
+
+
+
+新诊断必须读取响应正文，但采用安全的 typed projection。建议只持久化：
+
+```text
+HTTP status
+HTTP method
+endpoint
+diagnostic request ID
+request-body SHA-256
+request-body byte count
+request field set
+Content-Type
+x-request-id / request-id（如存在）
+error.type
+error.code
+error.param
+经过凭证模式脱敏的 error.message
+response-body SHA-256
+response-body byte count
+```
+
+禁止保存：
+
+```text
+Authorization 值
+API Key hash
+Cookie
+完整请求 Header
+私有 reasoning_content
+成功响应中的私有推理文本
+未经检查的任意响应正文
+```
+
+若错误正文不是预期 JSON：
+
+```text
+保存 body SHA-256 和 byte count
+保存经过密钥模式、Bearer 模式和长 token 模式脱敏后的前 4 KiB
+标记 error_body_schema = unrecognized
+```
+
+这样才能既保持隐私边界，又不再次丢掉根因。
+
+---
+
+# 五、结果决策树
+
+```text
+GET /models = 401
+→ credential_invalid
+
+GET /models = 402
+→ account_balance_unavailable
+
+GET /models = 200, Flash absent
+→ account_model_route_unavailable
+
+official /chat succeeds, /v1 fails
+→ legacy_v1_endpoint_rejected
+
+minimal request succeeds, full shape fails
+→ request_parameter_contract_failure
+→ 由第一个失败增量字段定位
+
+full minimal succeeds, exact Prompt fails
+→ prompt_specific_request_rejection
+
+Python fails, identical curl succeeds
+→ client_transport_or_implicit_header_failure
+
+所有诊断均成功
+→ current_route_healthy
+→ v26.188 failure remains historical/transient
+
+所有最小请求仍失败且 error body 指向服务端限制
+→ provider_or_account_route_failure
+
+所有最小请求仍失败且 error body 仍无可用细节
+→ online_root_cause_remains_unlocalized
+```
+
+最后一种结果仍然是有效负结果，但至少会得到当前时间点的实时响应正文和 request ID，可用于 Provider 支持查询。
+
+---
+
+# 六、与 v26.188 的关系
+
+这次在线诊断必须作为**新的工程诊断 Population**，不能解释为修复或补齐 v26.188。
+
+v26.188 和 v26.189 继续冻结为：
+
+$$
+q_{\text{job}}=0/192
+$$
+
+以及：
+
+$$
+q_{\text{semantic}\mid\text{model endpoint}}=\text{null}
+$$
+
+因为当时 192 次请求全部在 response Envelope 与模型身份可观察之前失败。
+
+诊断成功后，也不能把旧 192 Job 原 ID 重新运行。下一步应重新冻结一个 fresh Development Population 或 fresh successor Job set。
+
+---
+
+# 七、正式授权建议
+
+```text
+PRESERVE:
+    v26.188 immutable 192-Job online execution
+    v26.189 independent replay
+    v26.190 persisted request-contract comparison
+
+AUTHORIZE ONLY:
+    fresh_identity_minimal_exact_route_diagnostic_online_execution_only
+
+MAXIMUM:
+    1 GET /models
+    8 POST diagnostics
+    zero automatic retries
+
+REQUIRE:
+    safe typed HTTP-error-body projection
+    fresh diagnostic identities
+    exact request-byte certificates
+    stop-on-first-localized-cause policy
+
+FORBID:
+    old v26.188 Job rerun
+    RecoveryJob
+    192-Job replacement execution
+    Mapper / State / frequency
+    Contribution / VTDO
+    Student / training
+    release / production
+```
+
+因此，你的判断是对的：**当下应该进入小规模在线诊断，而不是继续靠离线工件猜 HTTP 400。** 上一轮两项 visibility control 的测试问题也不需要单独再拖出一轮审计；在这次在线诊断中真正执行“错误正文可见性”和“凭证不可持久化”即可。
+
+[1]: https://api-docs.deepseek.com/api/create-chat-completion/?utm_source=chatgpt.com "Chat Completions API | DeepSeek API Docs"
+[2]: https://api-docs.deepseek.com/api/list-models/?utm_source=chatgpt.com "Lists Models | DeepSeek API Docs"
