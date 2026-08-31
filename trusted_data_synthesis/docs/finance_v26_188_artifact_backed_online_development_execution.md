@@ -124,6 +124,62 @@ Capability estimates.
 
 ## Online result
 
-The real Provider result, terminal partition, empirical Gate, estimands, Usage, and transition
-are recorded below only after the exact source-frozen online command completes. Until then no
-model Outcome or empirical estimate is claimed.
+The source-freeze commit is `53d0128f22043a88efb612af835aa99bdc78ede4`. The online command
+repeated the complete prepare-only Gate before loading `.env`, then executed all 192 frozen Jobs
+without retry or replacement.
+
+The execution closes the artifact-backed denominator:
+
+```text
+Job records / checkpoints                         192 / 192
+canonical Raw / Result                            192 / 192
+actual Raw/Result byte matches                    384 / 384
+Provider envelopes / public projections           192 / 192
+transport-inclusive invocation certificates             192
+Stage 1 Provider calls                                  192
+Stage 2 Provider calls                                    0
+typed Outcomes                                           192
+```
+
+Every request returned HTTP 400 before a response envelope, model identity, public payload, or
+Usage was available. The redacted telemetry partition is exactly 192 `HTTPError`, 192 HTTP 400,
+zero HTTP-success calls, zero non-null response-model values, and zero counted Usage tokens. The
+privacy-first journal's existing `_charge` rule checks `response_model` even on HTTP failure, so
+all rows acquire `exact_model_mismatch_or_missing` and project as
+`provider_identity_failure`. This is the frozen projection behavior; it is not evidence that a
+different model answered the requests.
+
+The authoritative artifact-backed evaluator accepts all 192 rows because
+`provider_identity_failure` is a `reachable` policy in the frozen Terminal Registry. Therefore
+the formal finite-denominator output is:
+
+```text
+terminal partition                    provider_identity_failure: 192
+q_first                                              0 / 192
+q_bounded_correction                                 0 / 192
+paired correction gain                               0 / 192
+artifact authority                                  384 / 384
+all eight evidence/measurement Gates                     pass
+```
+
+Low q is not treated as a Gate failure and no Job is rerun. Nevertheless, the zero fractions are
+not evidence of the model's semantic capability: no call produced an HTTP-success model endpoint.
+They are the frozen Contract's formal treatment of an all-HTTP-400 exact-route execution. The
+currently persisted response-redacted artifacts do not contain the HTTP 400 response bodies, so
+the server-side rejection detail is unavailable and must not be guessed.
+
+A separate read-only replay validates 192 records, 192 checkpoints, all 384 Raw/Result bytes,
+192 Provider-envelope descriptors, 192 public no-payload projections, 192 transport certificates,
+every Job parent chain, and exact empirical evaluation identity
+`capability_artifact_backed_empirical_evaluation:71771453c6fe86b832e7b7924b03896c8643ceda27d572972fcf826a2672842a`.
+At replay time the online directory has 1,350 files and 3,618,348 bytes with content root
+`finance_v26_188_online_execution_content_root:c2aac4f4cfcfad9729bcd64fd8945026d75b5fb85a067d7022a4db22f55bd3a7`.
+
+The only successor is:
+
+```text
+capability_observation_artifact_backed_192_job_postrun_independent_audit_only
+```
+
+No further Provider execution, recovery Job, Mapper, State, frequency, Contribution, VTDO,
+Student, training, release, or production action is authorized by this stage.

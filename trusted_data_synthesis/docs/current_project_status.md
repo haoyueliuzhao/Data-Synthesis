@@ -384,7 +384,7 @@ Paths, 48 strong Cells, and 360 Jobs split 144 Unconditional and 216 conditioned
 The new Route B policy makes each frozen Horizon a complete
 `policy_horizon_exhausted` endpoint under its own generation-policy identity. A Horizon is
 task-incomplete, Base-invalid, Qualified-invalid, and mapping-ineligible, but it is neither a
-Measurement Support exit nor a model semantic error. Raw Instrument, Support, Resource, Provider
+Measurement Support exit nor a model's semantic error. Raw Instrument, Support, Resource, Provider
 identity, Thinking/Usage, Privacy, Transport, policy endpoint, validity, and mapping fields are
 orthogonal. The exact second-Detour fixture retains Instrument, Support, and Resource integrity,
 emits the Horizon before any later call, and invokes neither task Verifier nor Mapper. The
@@ -11323,3 +11323,48 @@ independent pass does not self-authorize online execution. The current transitio
 `no_further_experiment_authorized_without_new_audit_decision`; online Development and every
 empirical or VTDO downstream stage remain blocked. See
 `docs/finance_v26_187_artifact_backed_outcome_independent_audit.md`.
+
+## v26.188 Artifact-Backed Online Development Execution
+
+A new exact 14,542-byte external decision at SHA-256
+`bf239f9f346ac8398ffe69db2fb9ef3875878b9e9fc8d7a460e74162ea98efe5`
+consumes the v26.187 no-further-experiment boundary and authorizes only
+`capability_observation_artifact_backed_authoritative_192_job_online_development_execution_only`.
+The online Runner source is frozen at commit `53d0128f22043a88efb612af835aa99bdc78ede4`.
+
+Before credential loading, the Runner matches the exact v26.187 Decision, Report, and Artifact
+Root; v26.186 Contract and Terminal Registry; v26.179 Manifest and Runner; one exact frozen
+generation profile; the 192 unique Job set; and the exact model, Thinking, Action/Final Grammar,
+bounded policy, and resource parents. It directly loads the immutable v26.171/v26.175/v26.176
+Runtime catalogs because the migrated current tree's historical v26.171 rebuild no longer matches
+`depth_increment_causal_catalog.json`; that current-tree rebuild is not substituted for a frozen
+online parent. Provider, Stage 2, and Confirmation counts remain zero during this preparation.
+
+The online execution completes 192/192 Job records and checkpoints with 192 canonical Raw files,
+192 canonical Result files, 384/384 artifact byte matches, 192 redacted Provider envelopes, 192
+public no-payload projections, and 192 transport-invocation certificates. Each Job makes exactly
+one Stage 1 request; Stage 2 calls are zero. All 192 requests return HTTP 400 before an admitted
+response envelope, response-model identity, public payload, or Usage. The existing privacy-first
+journal consequently projects all rows as `provider_identity_failure` with
+`exact_model_mismatch_or_missing`; this reflects missing response-model telemetry after HTTP
+failure, not observation of a different responding model.
+
+The frozen Registry marks that terminal reachable, so the artifact-backed evaluator closes all
+eight evidence/measurement Gates and formally returns `q_first=0/192`,
+`q_bounded_correction=0/192`, and paired gain `0/192`. No row is deleted or retried. Because HTTP
+success and model endpoints are both zero, these fractions are not a semantic model-capability
+measurement; they are the frozen estimator's formal output for an all-HTTP-400 exact-route run.
+The persisted redacted artifacts omit HTTP error bodies, so the unique server-side rejection
+detail is unavailable.
+
+A read-only replay independently validates all 192 parent chains and all actual artifact files.
+The 1,350-file, 3,618,348-byte online directory has content root
+`finance_v26_188_online_execution_content_root:c2aac4f4cfcfad9729bcd64fd8945026d75b5fb85a067d7022a4db22f55bd3a7`;
+the empirical evaluation is
+`capability_artifact_backed_empirical_evaluation:71771453c6fe86b832e7b7924b03896c8643ceda27d572972fcf826a2672842a`.
+
+The only permitted successor is
+`capability_observation_artifact_backed_192_job_postrun_independent_audit_only`. Provider rerun or
+recovery, HTTP-route changes, Mapper, State, frequency, Contribution, VTDO, Student, training,
+release, and production remain unauthorized. See
+`docs/finance_v26_188_artifact_backed_online_development_execution.md`.

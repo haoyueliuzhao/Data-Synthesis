@@ -1,0 +1,523 @@
+# 后续实验规划
+
+修订后的 v26.187 源码提交、Tree 和工件冻结提交已经一致，当前可以将其正式冻结为：
+
+```text
+v26.187 Artifact-Backed Outcome Authority Independent Audit
+Decision: PASSED_INDEPENDENT_AUDIT
+```
+
+它已经独立重建 192 个 Job、384 个 Raw/Result 工件、480 个 Attempt、192 个 Trace、192 个 Outcome 及完整父链，13/13 负向控制拒绝，14/14 Gate 通过。
+
+以下规划继续只把 Git 树、不可变工件和已重放检查作为实验事实。
+
+## 一、下一阶段不应继续做 Authority 审计
+
+当前 Outcome 证据链已经经历：
+
+```text
+v26.180 发现缺陷
+→ v26.181 首轮修复
+→ v26.182 独立否定
+→ v26.186 定向修复
+→ v26.187 独立通过
+```
+
+因此，不应再增加新的 Outcome Authority Gate。现在真正缺失的是**模型产生的经验 Outcome**，而不是另一个 scripted control。
+
+v26.187 的 `no_further_experiment_authorized_without_new_audit_decision` 只意味着在线执行需要一份新的显式授权，不意味着还要再做一次技术预检。
+
+建议新的外部决策只授权：
+
+```text
+capability_observation_artifact_backed_authoritative_
+192_job_online_development_execution_only
+```
+
+这是下一阶段唯一应被激活的实验。
+
+---
+
+# 二、v26.188：192-Job 在线 Development 执行
+
+## 2.1 本轮理论命题
+
+本轮只检验：
+
+> 在冻结任务、模型、Prompt、Grammar、Policy、资源合同和修正边界下，当前模型是否能够在精确 192-Job Development Population 上产生完整、可验证、可进入经验估计的 Outcome 证据集合？
+
+这一步的目标不是证明 VTDO 有效，而是第一次可信实例化：
+
+$$
+\text{当前模型经验可达性}
+$$
+
+以及后续 State Mapping 所需的有效轨迹支持。
+
+## 2.2 冻结 Population
+
+当前 Development 设计来自：
+
+$$
+8\ \text{Development Finance Cores}
+\times
+4\ \text{Depths}
+\times
+6\ \text{Replicas}
+=
+192\ \text{Jobs}
+$$
+
+完整设计还有八个 sealed Confirmation groups，但本轮不得读取或执行 Confirmation。当前 Development 与 Confirmation 分别来自十六个 matched groups；每组具有 D0–D3 四个版本。
+
+D0–D3 是冻结的**顺序决策深度**，不是自动成立的潜在能力等级。它们分别包含 1、2、3、4 个目标决策，因此本轮只能研究模型表现随执行深度的描述性变化，不能直接宣称发现了能力阈值。
+
+必须保持不变的对象包括：
+
+```text
+8 个 Development Finance Cores
+32 个 Development Packages
+192 个 Job IDs
+Package × Replica 对应关系
+Component sequence
+Candidate presentation
+Public Prompt / Feedback / Observation
+模型和 Thinking 配置
+Action Grammar / Final Grammar
+bounded correction policy
+资源上限
+Validity 和 terminal policy
+q_first / q_bounded 的定义
+```
+
+不得根据在线结果删除 Job、替换困难任务、重新抽样 Replica 或改变阈值。
+
+---
+
+## 2.3 Primary estimands
+
+对每个 Job \(i\)，定义：
+
+$$
+Y_i^{\mathrm{first}}
+=
+\mathbf 1[
+\text{first\_attempt\_qualified\_valid}
+]
+$$
+
+$$
+Y_i^{\mathrm{bounded}}
+=
+\mathbf 1[
+\text{final\_qualified\_valid}
+]
+$$
+
+正式主估计量为：
+
+$$
+\widehat q_{\mathrm{first}}
+=
+\frac{1}{192}
+\sum_{i=1}^{192}
+Y_i^{\mathrm{first}}
+$$
+
+$$
+\widehat q_{\mathrm{bounded}}
+=
+\frac{1}{192}
+\sum_{i=1}^{192}
+Y_i^{\mathrm{bounded}}
+$$
+
+以及同一 Job 内配对的修正增益：
+
+$$
+\widehat{\Delta}_{\mathrm{correction}}
+=
+\widehat q_{\mathrm{bounded}}
+-
+\widehat q_{\mathrm{first}}
+$$
+
+当前 Contract 已明确区分 first-attempt Qualified success 和 bounded-correction 后的最终 Qualified success，不能用最终结果覆盖第一尝试结果。
+
+### 预注册分层
+
+除总体估计外，报告以下描述性分层：
+
+| 分层                       | Cell 数 | 每 Cell Job 数 |
+| ------------------------ | -----: | -----------: |
+| Capability family        |      4 |           48 |
+| Observation depth D0–D3  |      4 |           48 |
+| Capability × Depth       |     16 |           12 |
+| Development Finance Core |      8 |           24 |
+| Package                  |     32 |            6 |
+
+每个 Cell 报告：
+
+```text
+N
+first-attempt Qualified
+bounded Qualified
+correction-rescued
+first-valid but final-invalid
+Base-valid
+Mechanism-qualified
+terminal partition
+95% Wilson interval
+```
+
+这些都是**冻结有限 Population 下的描述性结果**。因为 192 个 Job 只来自八个独立 Finance Cores，不能把 192 个 Replica 当成 192 个独立金融任务做广泛总体推断。
+
+---
+
+# 三、执行协议
+
+## 3.1 执行前检查
+
+在线命令可以包含一个 `--prepare-only` 阶段，但它只是执行命令的前置检查，不应单独创建 v26.188a 或新的科学 Gate。
+
+它必须在凭证读取前确认：
+
+```text
+v26.187 Decision / Report / Artifact Root exact
+v26.186 Contract / Registry / Manifest / Runner exact
+Manifest Job set = 192
+missing / duplicate / extra Jobs = 0 / 0 / 0
+输出目录不存在
+Provider calls = 0
+Confirmation payload access = 0
+```
+
+若现有在线 Runner 尚未直接写入 v26.186 的 Artifact-backed payload，只允许增加一个**薄的持久化适配层**：
+
+```text
+online Runner terminal
+→ canonical Raw payload
+→ canonical Result payload
+→ audited artifact-backed evaluator
+```
+
+不得修改核心 Runner 行为、Terminal Registry、Validity、Estimator 或任务内容，也不需要为这个适配层再建立一条新的 Authority 研究支线。
+
+## 3.2 在线执行
+
+按冻结顺序执行全部 192 个 Job。每个 Job 必须即时、不可覆盖地持久化：
+
+```text
+Provider artifacts
+Raw artifact bytes
+RawExecutionDescriptor
+Result artifact bytes
+JobResultDescriptor
+AttemptTrace
+FailureLocus projections
+EmpiricalCapabilityOutcomeRow
+Usage and terminal metadata
+```
+
+正常参考拓扑包含 480 个 Component Attempts 和 192 个最终 Outcome。
+
+资源规划上可按以下上界准备：
+
+```text
+首次 Component 响应             480
+Final 响应                       192
+若每个 Component 均使用一次修正  +480
+粗略最大响应数                  1,152
+```
+
+这只是容量上界，实际 Job 可能提前终止；正式调用上限仍以冻结 Runner 和 Resource Contract 为准。
+
+## 3.3 不得混淆模型失败和测量失败
+
+下列模型行为只要形成冻结 Contract 允许的 typed terminal，就应保留在分母中，而不能重跑：
+
+```text
+Action ABI invalid
+Action reference invalid
+typed semantic invalid
+Final ABI invalid
+completed-invalid
+Base-invalid
+Mechanism-unqualified
+```
+
+它们是模型行为，不是工程数据损坏。
+
+Provider、Transport、Privacy、Instrument、Resource、model identity、Thinking 或 Usage 终止是否允许进入估计，必须完全服从现有冻结 Measurement Contract。不得在结果出现后临时决定“计为失败”还是“排除”。
+
+两个 diagnostic-only 类型：
+
+```text
+policy_horizon_exhausted
+measurement_support_exit
+```
+
+在当前冻结 Runner 下不得进入经验集合。v26.187 已独立证明，完整重哈希的 192-row 攻击会在精确的经验准入 Gate 被拒绝。
+
+---
+
+# 四、本轮非补偿 Gate
+
+| Gate                        | 通过条件                                              | 失败后的处理                 |
+| --------------------------- | ------------------------------------------------- | ---------------------- |
+| Pre-execution identity      | 所有冻结父身份和 192 Job exact-set 一致                     | 不读取凭证                  |
+| Raw/Result completeness     | 192 Raw、192 Result，缺失/重复/额外均为零                    | 冻结失败目录                 |
+| Artifact authority          | 384 个实际文件均匹配路径、SHA-256、字节数和 payload identity      | 不生成估计                  |
+| Outcome totality            | 每个 Job 恰有一个 typed terminal 和 Outcome row          | 不生成估计                  |
+| Parent-chain reconstruction | 192/192 Job→Raw→Result→Trace→Outcome 闭合           | 不生成估计                  |
+| Measurement admission       | 全部行符合冻结经验准入规则                                     | 否则所有正式 \(q\) 保持 `null` |
+| Estimand exactness          | first 与 bounded numerator 分开且分母固定为 192            | 否则不发布统计                |
+| Downstream isolation        | Confirmation、Mapper、State、Contribution、VTDO、训练均为零 | 阶段失败                   |
+
+这里最重要的是：
+
+$$
+\boxed{\text{低 }q\text{ 不是 Gate 失败}}
+$$
+
+只要 192-Job 证据集合完整且 Measurement Gate 通过，即使：
+
+$$
+\widehat q_{\mathrm{bounded}}=0
+$$
+
+也仍然是一个有效的模型能力负结果。不得因为 Qualified 数量低而重新生成任务、重跑无效 Job 或提高修正次数。
+
+---
+
+# 五、运行异常的处理分支
+
+## 情况 A：192/192 完整且 Measurement Gate 通过
+
+发布：
+
+```text
+exact empirical evidence set
+q_first
+q_bounded
+paired correction gain
+terminal partition
+Base / Mechanism / Qualified partition
+family × depth summaries
+```
+
+然后唯一后继为：
+
+```text
+capability_observation_artifact_backed_
+192_job_postrun_independent_audit_only
+```
+
+不得立即进入 Mapper。
+
+## 情况 B：192 个 typed Outcome 完整，但 Measurement Gate 失败
+
+保留全部 Outcome 和首个阻塞原因，所有正式估计置为 `null`。
+
+下一阶段只能针对第一个真实测量阻塞点做修复或恢复，不能因为大部分 Job 可用就对 191、190 或其他子集计算正式 \(q\)。
+
+## 情况 C：执行中断，但已有 Raw/Result 工件完整
+
+冻结原目录，不覆盖、不删除、不重跑模型结果。
+
+允许后续设计：
+
+```text
+credential-free Raw/Result-only aggregation recovery
+```
+
+它只能读取已有字节并恢复聚合。
+
+## 情况 D：出现 Provider orphan 或尚未执行的 Job
+
+不得自动补跑，也不得复用相同 Job ID 静默重试。必须先独立确定：
+
+```text
+哪些 Job 已产生模型暴露
+哪些 Job 没有产生模型暴露
+哪些 Provider artifacts 已存在
+```
+
+然后由新的精确 Recovery authorization 决定是否创建 successor Job。
+
+---
+
+# 六、v26.189：独立 Post-run Audit
+
+无论 \(q\) 高低，只要 v26.188 完成正式结果，都应进行一次零 Provider 调用的独立审计。
+
+该阶段只做：
+
+```text
+重算在线目录 Content Root
+重读所有 Provider artifacts
+重读 192 Raw 和 192 Result
+重建 480 Attempt identities
+重建 192 Trace 和 Outcome
+复现 Measurement Gate
+独立重算 q_first / q_bounded
+复现 family × depth summaries
+确认没有 Confirmation / Mapper / State 操作
+```
+
+它不需要重新审计 v26.186–v26.187 已经关闭的通用 Authority 机制，只需验证**这次具体在线运行**。
+
+通过条件是：
+
+```text
+192/192 empirical rows exact
+online 与 independent Outcome bytes exact
+online 与 independent Gate exact
+online 与 independent estimands exact
+historical mutation count = 0
+Provider calls in audit = 0
+```
+
+---
+
+# 七、通过 Post-run Audit 后的条件路线
+
+## 阶段 1：Qualified-only Quotient State Mapping
+
+只对：
+
+```text
+final_qualified_valid = true
+```
+
+的行进行 Mapper 投影。
+
+此时才实例化：
+
+$$
+z=m(\tau)
+$$
+
+并产生：
+
+```text
+structural State
+route projection
+State contrast witness
+per-task valid-state support
+```
+
+无效或测量不可判定的轨迹不能进入 State Mapper。
+
+## 阶段 2：Push-forward 分布与非退化 Gate
+
+对每个冻结任务或 Cell 计算：
+
+$$
+\widehat{\pi}_t(z\mid x)
+=
+\frac{N_{x,z}^{+}}{N_x^{+}}
+$$
+
+然后区分：
+
+```text
+valid support absent
+single valid observation
+observed single-state support
+observed multistate support
+```
+
+只有至少存在两个有效商状态的任务，才构成真实的 VTDO 优化对象。单状态任务不能靠增加表面措辞或重复 Replica 被解释成分布非退化。
+
+## 阶段 3：Contribution 授权
+
+只有 State support 和频率通过后，才设计 Contribution 干预。该阶段应回答：
+
+$$
+C_t(z,x)
+$$
+
+是否获得因果或至少有限干预授权，而不是直接把当前成功率、Novelty 或轨迹长度当作 Contribution。
+
+## 阶段 4：Anchored Energy Update 与新鲜物化
+
+在 Contribution 与 Coverage-relative Novelty 均获得授权后，再形成：
+
+$$
+\pi_{t+1}(z\mid x)
+\propto
+\pi_0(z\mid x)
+\exp\left(
+\eta_C \widetilde C_t(z,x)
++
+\eta_N \widetilde N_t(z,x)
+\right)
+$$
+
+并从独立的新鲜候选池物化 Baseline 与 VTDO 训练集。
+
+## 阶段 5：Equal-token Student 验证
+
+最后才进入：
+
+```text
+Baseline distribution
+vs.
+Anchored VTDO distribution
+```
+
+保持：
+
+```text
+相同任务边际
+相同训练 token
+相同 Student 初始化族
+至少 3 个训练 seeds
+独立持出任务
+```
+
+---
+
+# 八、当前建议的正式授权文本
+
+```text
+PRESERVE:
+    v26.187 PASSED_INDEPENDENT_AUDIT
+    exact implementation commit
+      8d68ecea607215e483a33a55cf82fc7375cd954f
+    artifact-freeze commit
+      d30b7cb105d1e469cb34c68ada363f642181cc03
+    exact 192-Job Manifest
+    v26.186 Artifact-Backed Outcome Contract
+    all v26.187 artifacts and negative controls
+
+AUTHORIZE ONLY:
+    capability_observation_artifact_backed_authoritative_
+    192_job_online_development_execution_only
+
+PRIMARY ESTIMANDS:
+    q_first
+    q_bounded_correction
+    paired correction gain
+
+FORBID:
+    task or Job reselection
+    post-outcome exclusion
+    policy or threshold changes
+    sealed Confirmation access
+    Mapper / State / frequency
+    Contribution / VTDO
+    Student / training
+    release / production
+
+PASS SUCCESSOR:
+    capability_observation_artifact_backed_
+    192_job_postrun_independent_audit_only
+
+FAIL SUCCESSOR:
+    first-blocker-specific credential-free repair
+    or exact recovery decision only
+```
+
+因此，当前不需要再完善证明链。**下一项真正有科学信息增量的实验，就是冻结的 192-Job Development 在线执行。**
