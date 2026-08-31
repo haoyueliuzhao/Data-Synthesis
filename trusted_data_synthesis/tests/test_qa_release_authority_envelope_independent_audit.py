@@ -56,6 +56,18 @@ def test_independent_external_anchor_rejects_fully_rehashed_envelope(
     assert captured.value.reason_code == "envelope_external_anchor_mismatch"
 
 
+def test_jsonl_byte_change_remains_valid_and_rejects_cross_envelope(
+    payloads: dict[str, bytes],
+) -> None:
+    attacked = dict(payloads)
+    attacked["release_records.jsonl"] += b"\n"
+    audit._rehash_artifact_manifest(attacked)
+    with pytest.raises(audit.IndependentAuditError) as captured:
+        audit._validate_fast_catalogs(attacked)
+    assert captured.value.stage == "cross_catalog"
+    assert captured.value.reason_code == "artifact_manifest_cross_envelope_mismatch"
+
+
 def test_latest_audit_authorization_bytes_are_exact() -> None:
     path = Path(
         "/home/zhuxinrui/.codex/attachments/d1038bec-9e84-4c38-8a36-82efa4337202/pasted-text.txt"

@@ -1238,7 +1238,8 @@ def _run_negative_controls(
 
     def changed_core(name: str) -> None:
         attacked = dict(payloads)
-        attacked[name] = attacked[name] + b" "
+        suffix = b"\n" if name.endswith(".jsonl") else b" "
+        attacked[name] = attacked[name] + suffix
         _rehash_artifact_manifest(attacked)
         _validate_fast_catalogs(attacked)
 
