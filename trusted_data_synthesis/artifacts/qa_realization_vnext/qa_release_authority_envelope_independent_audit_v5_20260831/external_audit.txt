@@ -1,0 +1,217 @@
+# 审计结论
+
+## 总体判定
+
+$$
+\boxed{\text{v26.184 External Envelope Preflight：PASS}}
+$$
+
+该结论严格限定在本轮声明的 **credential-free、固定两 Fixture、确定性 QA Release Authority Envelope** 范围内。
+
+根据上传的正式报告和最新项目状态，**未发现能够直接推翻本轮核心声明的 Blocking defect**。v26.184 对应修复了上一轮明确指出的七项缺口：
+
+* 外部审计授权父绑定；
+* Archive 到实际执行源码树的单一投影；
+* 结果生成前冻结的精确 Population；
+* 跨 Catalog、Report 与 Markdown 的统一 Envelope；
+* 精确攻击分母；
+* 类型化拒绝阶段；
+* Runtime 环境身份。
+
+这正是 v26.184 声明的修订范围，没有借此修改或重新解释 v26.183、v26.181 或历史工件。
+
+---
+
+## 一、本轮命题是否真正闭合
+
+### 1. 外部授权父链：**PASS**
+
+Loader 不再从候选目录或 Report 中读取自己应该满足的身份，而是要求调用方外部提供：
+
+```text
+expected_authorization_id
+expected_population_id
+expected_envelope_id
+```
+
+同时还要求实际外部审计文件与源码 Archive。Authorization 对象绑定审计文件字节、前驱与后继提交、唯一允许的 transition、精确 Git 变更路径以及禁止操作集合。
+
+这直接关闭了 v26.183 中“报告提到外部审计，但正式对象链没有消费其字节”的问题。
+
+### 2. Source Projection：**PASS**
+
+本轮不再允许调用方分别提交互不相关的 Archive、Manifest、Tree ID 和 `source_root`。外层 Runner 从精确提交内部生成 Git Archive、在新目录安全解包，并只从该目录执行；内层再重新计算：
+
+* Archive SHA-256；
+* 每个文件和符号链接的内容与模式；
+* Git blob identity；
+* 递归 Git tree identity；
+* 执行模块路径和源码哈希。
+
+报告明确取消了公共 `source_root` 参数，从而关闭了此前“Archive A + Root B + Tree ID C 分别自洽也可能通过”的直接反例。
+
+### 3. Exact Release Population：**PASS**
+
+`QAReleasePopulationManifest` 在生成 Trajectory、Assessment 和 Release outcome **之前**冻结：
+
+* 精确 Fixture indexes；
+* Fixture input IDs；
+* SemanticInstance IDs；
+* 每个预评测 Surface 的任务、BindingSnapshot、Package 与 Realization 身份；
+* Release/Split selection contract；
+* missing、duplicate、extra 均为 fail-closed 的 exact-set policy。
+
+删除 Fixture 2 或加入合法 Fixture 3 都会改变 Population ID，并在结果获得自我授权前失败。
+
+这足以关闭上一轮“Bundle 可以换成不同 Fixture 集合后重新自洽”的当前阻塞点。
+
+### 4. Cross-Catalog Envelope：**PASS**
+
+本轮十五个文件不再只是各自有哈希。Loader 要求：
+
+```text
+Selection sidecar
+  = Bundle 内 Selection
+  = Envelope 内 Selection
+
+Records sidecar
+  = Selection 内 Records
+  = Envelope 内 Records
+
+Attack controls
+  = AttackAudit controls
+  = Envelope 内 AttackAudit controls
+```
+
+Source Manifest、Report 各字段和 Markdown 字节也必须从已验证父对象重新派生。Envelope 最终由调用方提供的外部 `expected_envelope_id` 锚定。
+
+因此，上一轮的几种直接反例——只改 Report、只改 Markdown，或者联合重哈希 Catalog、Manifest 和 Report——都已进入当前明确的拒绝面。
+
+### 5. Attack denominator 与拒绝身份：**PASS**
+
+本轮攻击分母精确冻结为 **23 个有序攻击 ID**，不是“至少 11 个”或“任意异常都算拒绝”。每个计数控制必须同时满足：
+
+```text
+exception type = QAReleaseAuthorityError
+reason_code    = frozen expected reason
+stage          = frozen expected stage
+```
+
+missing、duplicate 和 extra attack IDs 均必须为空。错误 Validator 产生相同错误文本、以及无关 `RuntimeError`，均不得计为拒绝证据。
+
+正式结果为：
+
+```text
+exact typed attacks rejected       23 / 23
+missing / duplicate / extra IDs    0 / 0 / 0
+wrong-validator phrase counted     false
+unrelated RuntimeError counted     false
+```
+
+
+
+### 6. Runtime identity：**PASS**
+
+Runtime identity 当前绑定 CPython、Python executable、Pydantic、安装分发集合、dependency definitions、OS、kernel、libc、locale、timezone 和环境根。
+
+普通 working checkout 因额外的 ignored `egg-info` 将安装分发数从 96 改为 97，Loader 正确拒绝；相同提交的干净隔离目录恢复正式身份并通过。这是一个与本轮 Runtime 命题直接相关的有效 fail-closed 控制。
+
+---
+
+## 二、正式结果的一致性
+
+用户给出的主要身份与正式报告一致：
+
+| 对象                  | 正式身份                                               |
+| ------------------- | -------------------------------------------------- |
+| Authorization       | `qa_release_authority_authorization:59dbf2...5884` |
+| Source Projection   | `qa_release_source_projection:361b3d...6758`       |
+| Exact Population    | `qa_release_population_manifest:209131...92d`      |
+| Authority Bundle    | `qa_release_authority_bundle:ee72e2...9e9b1`       |
+| Runtime Environment | `qa_release_runtime_environment:e543c7...9d54`     |
+| Artifact Root       | `qa_release_authority_artifact_root:d5d43b...b069` |
+| Envelope            | `qa_release_authority_envelope:967e1f...5787`      |
+
+正式目录包含 15 个文件，记录 2 个 Fixture、6 条 Record、6 条选中 Record、23/23 类型化攻击拒绝、0 次 Provider 调用，并明确保持 Archive-backed Pilot 与 production 未授权。第二次 Runner 调用生成了相同 Archive 哈希，十五文件目录经 `diff -qr` 无差异。
+
+---
+
+## 三、验证覆盖边界
+
+本轮直接相关验证为：
+
+```text
+new Envelope tests             6 passed
+direct regression suite       35 passed
+Mypy                           passed
+Ruff                           passed
+compileall                     passed
+typed attacks                  23/23
+Provider calls                 0
+```
+
+完整测试收集仍因环境缺少 `pyarrow` 和 `torch` 而在五个既有模块处中断。报告没有把这些未收集模块包装成通过证据，因此这是 **Scope limitation**，不是推翻本轮 Envelope Gate 的 Blocking defect。
+
+当前连接到的公开 GitHub `main` 仍显示在较早的 v26.183 冻结提交，因此我没有取得报告中的 `78b950…` 源码提交进行新的独立源码复跑。 这不会否定此次正式 preflight，但意味着本轮外部结论应保持为：
+
+```text
+附件、正式身份与状态记录一致；
+未发现直接反例；
+独立源码/工件审计仍是下一阶段。
+```
+
+项目状态本身也明确规定，只把 Git 树、不可变工件、恢复记录和重跑检查作为实验事实，不以缺失聊天内容补全证据。
+
+---
+
+# 四、Gate 判定
+
+| Gate                                   | 结果                       |
+| -------------------------------------- | ------------------------ |
+| External Authorization                 | **PASS**                 |
+| Archive-derived Source Projection      | **PASS**                 |
+| Pre-outcome Exact Population           | **PASS**                 |
+| Cross-Catalog Report/Markdown Envelope | **PASS**                 |
+| Exact 23-ID Typed Attack Audit         | **PASS**                 |
+| Frozen Runtime Identity                | **PASS**                 |
+| v26.184 Formal Envelope Preflight      | **PASS**                 |
+| Independent audit of exact artifacts   | **PENDING / next stage** |
+| Archive-backed Finance Pilot           | **NOT AUTHORIZED**       |
+| Provider QA generation                 | **NOT AUTHORIZED**       |
+| Production QA release                  | **NOT AUTHORIZED**       |
+| Training / Contribution / VTDO         | **NOT AUTHORIZED**       |
+| v26.181 empirical Outcome Gate         | **FAILED, unchanged**    |
+
+---
+
+# 五、允许的正式结论
+
+当前可以声称：
+
+> 在冻结 Runtime 下，精确的两 Fixture 确定性 QA Release 可以由外部审计授权，从一个 Git Archive 投影中重建，接受外部预期的 pre-outcome Population 检查，并通过统一 Envelope 认证全部持久化 Catalog、Report 和 Markdown。
+
+这与报告自己的科学边界一致。
+
+不能据此声称：
+
+* 实际 Finance Archive 的 Claim、Source Grounding 或 Workflow 验证已通过；
+* QA 语言或任务多样性已经经验改善；
+* 模型生成 QA 已有效；
+* Student 训练收益成立；
+* 生产发布已准备完成；
+* v26.181 的五个经验 Outcome authority 缺陷已修复。
+
+---
+
+# 六、下一步
+
+原授权下一步可以继续，不需要再新增其他 Gate：
+
+```text
+对这套精确、credential-free、十五文件 v26.184 工件
+执行独立审计。
+```
+
+在该独立审计完成前，仍不进入 Archive-backed Pilot、Provider generation、生产发布或训练。报告也明确将独立审计列为唯一下一决策，并保持 Archive-backed Pilot 未实例化和阻断。
+
+**最终决定：保留并冻结 v26.184 External Envelope Preflight 的 PASS；未发现需要阻断当前进度的新增问题。**

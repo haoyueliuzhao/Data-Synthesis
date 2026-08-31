@@ -11178,13 +11178,41 @@ See `docs/finance_v26_184_qa_release_authority_envelope.md`.
 
 ## v26.185 QA Release Authority Independent Audit
 
-The latest 9,348-byte external audit at SHA-256
+The exact 9,348-byte external audit at SHA-256
 `925b1818862ed22852b117f62a8cbde438c568f9e852bb6c35bb88c181a2bb1f` accepts the narrowly
 scoped v26.184 External Envelope Preflight and authorizes only an independent audit of its exact
-fifteen files. v26.185 independently implements Git Archive/blob/tree reconstruction, legacy
-content identities, cross-Catalog comparisons, pre-outcome Population reconstruction, direct
-Fixture/generator/evaluator/selection replay, Runtime capture, and thirteen negative controls.
-It does not use the v26.184 directory Loader as its result oracle.
+fifteen files. v26.185 has now consumed that transition with zero Provider calls.
 
-Formal execution is pending the v26.185 source commit. Archive-backed Pilot, Provider generation,
-production, training, Contribution, VTDO, and v26.181 reinterpretation remain blocked.
+The formal audit executes only from Git commit
+`b317bdf3158effff203597edd46be8fc54854e43`, tree
+`d999380b4013e76e28a98a5eb96ac5887ecbd301`, and a 1,015,920,640-byte source Archive at SHA-256
+`072f6399301f4a459f0d0d8727735a55a5e985f15965092ef96620f80189231d`. It does not import or
+call the v26.184 directory Loader as an outcome oracle. It independently reconstructs the exact
+v26.184 Git Archive, all 34,388 source-manifest members, all fifteen frozen artifacts, legacy
+content identities, the complete cross-Catalog Envelope, two Fixtures, two Semantic Instances,
+six Population members, six generated/evaluated Release Records, six selected Records, all 23
+frozen attacks, and the Runtime contract.
+
+All fifteen predecessor artifacts match byte for byte, all six semantic replay rows match, and
+all thirteen independent typed negative controls reject at their exact registered stage and
+reason. A fully rehashed Envelope still rejects against the external expected identity. The
+formal result is `PASSED_INDEPENDENT_AUDIT`; report identity is
+`qa_release_independent_audit_report:9655c80b258fac26984c23644502c4a8566665d33cc49e7839e389dab711d895`
+and decision identity is
+`qa_release_independent_audit_decision:9f6cae516803995bcb0415e8117b5169e2f8a5dadf7042f34ded748a814cf367`.
+
+The authoritative nine-file, 23,111-byte directory is
+`artifacts/qa_realization_vnext/qa_release_authority_envelope_independent_audit_v5_20260831`, with
+artifact Root
+`qa_release_independent_audit_artifact_root:717ebb460b7f4e9a54f96f9d0e70f595356ec1d3d026ba7ee59f1cd72a4394de`.
+A second complete source-projected build produces the same current/predecessor Archive hashes and
+matches all nine files byte for byte. The directly related v26.183-v26.185 suite passes 15/15;
+focused PyCompile, Ruff, format, and Mypy pass.
+
+This pass is independent evidence only for the fixed two-Fixture v26.184 Envelope. Actual Finance
+Archive grounding, realistic diversity, model behavior, production readiness, and training
+utility remain unmeasured. The next transition is
+`no_further_experiment_authorized_without_new_audit_decision`. Archive-backed Pilot, Provider
+generation, production, training, Contribution, VTDO, and reinterpretation of the still-failed
+v26.181 empirical Outcome Gate remain blocked. See
+`docs/finance_v26_185_qa_release_authority_independent_audit.md`.
