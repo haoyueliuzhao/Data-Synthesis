@@ -209,9 +209,42 @@ request shape, body-size overlap, serializer lineage, Header-schema comparison, 
 unobservable factors, non-overclaiming, destructive controls, zero Provider calls, zero
 historical reclassification, zero repair/recovery, and zero downstream admission.
 
-Focused v26.190 tests pass 7/7. Focused PyCompile, Ruff check/format, and no-import-follow Mypy
-pass. Final source identities, adjacent regression counts, formal artifact identities, and byte
-geometry are recorded after source freeze and immutable formal construction.
+Focused v26.190 tests pass 7/7 and the v26.188-v26.190 adjacent regression passes 18/18. Focused
+PyCompile, Ruff check/format, and no-import-follow Mypy pass.
+
+The exact source-freeze commit is
+`ff58f124d5ed42abc638aea32a7df69c49b57b54` with Tree
+`024bcb87f271dfcfc586bd18c62c2a54b0c312b7`. The immutable formal directory contains fifteen
+files and 2,477,850 bytes. Its fourteen Manifest members contain 2,475,476 bytes. The formal
+Artifact Manifest is
+`finance_v26_190_route_root_cause_artifact_manifest:903dd9cf7c0dd3c8fe5c1fc55dc804f96dfc2cceafa62b235c724cd585a18175`
+and the Artifact Root is
+`finance_v26_190_route_root_cause_artifact_root:ec83bda6683adcce0ffa21df4af82563eef7072386e6038efba03f01f9635db5`.
+
+Authoritative identities are:
+
+- Report:
+  `finance_v26_190_root_cause_audit_report:f8e5798c9434bb3e8f9ec3ce4cd8e7816e78300679a666a83e9629f0fcc5b26b`;
+- operator Authorization:
+  `finance_v26_190_route_root_cause_operator_authorization:3dece18890baf2d6cad5cc7af6ec7cd1b6da26e74d74c0ff72dfa8351ad2f2d3`;
+- predecessor Freeze:
+  `finance_v26_190_predecessor_freeze:98edb57f37349b1d7687b214be9d021e2613eb13f0f8bf10b32ab5d518fa5864`;
+- v26.188 request Reconstruction Catalog:
+  `finance_v26_190_request_reconstruction_catalog:c25b6a2d6143b8603222f4b917378315e7390deb3f156749772fdcae8f961da0`;
+- historical HTTP-success Corpus:
+  `finance_v26_190_historical_success_corpus:45d5a99774d393081aff31dcc395fe4eaeabaff74d99bc1dd8462e04d2954de9`;
+- source request-surface Audit:
+  `finance_v26_190_source_request_surface_audit:cee8a4757c0856bb6b6afa55bb5b520eca260658cf8a280279c00521734ca159`;
+- request-contract comparison Audit:
+  `finance_v26_190_request_contract_comparison_audit:7869971e5f77535f7330dc8532fd4b8d5a36763b3da20ea568e67225bedb8c0e`;
+- root-cause localization Audit:
+  `finance_v26_190_root_cause_localization_audit:e34d367d35992666a830d60cef37470b3f0fbff3fd2b778311ddd4dc89de4ffe`;
+- destructive Audit:
+  `finance_v26_190_root_cause_destructive_audit:ec0b69fa829dc44387923998e7b325d57525a68bdad7939e53f73953d5f6c80a`;
+- static Audit:
+  `finance_v26_190_root_cause_static_audit:9cc6b49f901e5cf47cd1b6bc262202e64313d9e43e1523be28e33998bc4d1512`;
+- Transition:
+  `finance_v26_190_root_cause_transition:0b78af210c6ce9e04fcde45a5847cbce3b9998c481efb309435d0a3321713685`.
 
 ## Transition
 

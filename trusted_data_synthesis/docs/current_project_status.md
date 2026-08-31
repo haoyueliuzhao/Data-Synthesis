@@ -11436,3 +11436,63 @@ After consuming the exact independent-audit authorization, the current decision 
 `exact_route_http_400_request_contract_root_cause_audit_only` is retained only as a recommended
 subject for a future new audit decision; it is not currently authorized. See
 `docs/finance_v26_189_artifact_backed_online_postrun_independent_audit.md`.
+
+## v26.190 Exact-route HTTP 400 Request-contract Root-cause Audit
+
+The exact 9,199-byte v26.189 external review at SHA-256
+`92b26fcccaf79a13423a1f1c392c996227a60c8a9a15167bb20e98adeea297dc`
+retained `no_further_experiment_authorized_without_new_audit_decision` while naming
+`exact_route_http_400_request_contract_root_cause_audit_only` as its unique recommended next
+decision. The current operator instruction `参照审计开展后续实验` is persisted separately and
+consumed only as selection of that zero-Provider stage. Provider-client construction, credential
+reading, Stage 1 and Stage 2 Provider calls, old-Job rerun, RecoveryJob, request-route repair,
+Mapper, State, frequency, Contribution, VTDO, Student, training, release, and production counts
+are zero.
+
+The audit freezes the exact v26.188 online and v26.189 post-run source/artifact commits, validates
+the v26.189 Report and Artifact Root, and rehashes the immutable 1,350-file, 3,618,348-byte
+v26.188 directory before and after the comparison. Historical mutation and reclassification
+counts are zero.
+
+Every exact v26.188 Manifest Job is independently initialized through the frozen state-bound
+Runtime only to its first current Prompt. All 192 Prompt and canonical request bodies reconstruct
+with exact persisted certificate SHA-256, byte-count, field-set, request-kind, phase, and
+request-shape matches. Prompt sizes are 12,053--17,069 UTF-8 bytes and request bodies are
+13,418--18,770 bytes. Forbidden control-character and surrogate-codepoint counts are zero. All
+192 persisted events remain HTTP 400 before response Envelope, model identity, payload, Usage, or
+saved HTTP error body.
+
+The historical comparator binds every Provider Envelope from five complete exact-Flash online
+executions: 197 v26.134, 191 v26.138, 879 v26.151, 3,043 v26.154, and 2,919 v26.164 calls. All
+7,229 are HTTP 200 with admitted `response_model=deepseek-v4-flash`. Every request certificate has
+the same exact endpoint, model, 16,384-token bound, enabled Thinking value, JSON response format,
+seven-field body, model-config identity, Thinking binding, exact-route flag, fallback prohibition,
+and content-addressed request shape as v26.188.
+
+Historical successful request bodies range from 3,759 to 55,126 bytes, strictly containing the
+complete v26.188 interval; 1,811 historical HTTP-success requests fall inside that exact interval.
+The Stage 1 serializer and base Header/client sources are unchanged from the exact v26.188 source
+and predate all five success corpora. The nonsecret Header schema remains Authorization plus
+Content-Type with zero extra headers. Across all persisted comparable surfaces, deterministic
+fixed request-contract differences and Prompt/body encoding defects are both zero.
+
+The audit therefore does not identify a unique cause. The exact result is
+`not_localizable_from_persisted_artifacts`. The execution-time Authorization value or account
+route, Provider server-side contract/model availability, and omitted HTTP 400 body remain
+unevaluable. None is selected as the cause. Thirteen request-shape and evidence-visibility
+mutations reject, and all seventeen static Gates pass.
+
+The source-freeze commit is `ff58f124d5ed42abc638aea32a7df69c49b57b54` with Tree
+`024bcb87f271dfcfc586bd18c62c2a54b0c312b7`. The fifteen-file formal directory contains
+2,477,850 bytes. Its Artifact Root is
+`finance_v26_190_route_root_cause_artifact_root:ec83bda6683adcce0ffa21df4af82563eef7072386e6038efba03f01f9635db5`;
+Report is
+`finance_v26_190_root_cause_audit_report:f8e5798c9434bb3e8f9ec3ce4cd8e7816e78300679a666a83e9629f0fcc5b26b`.
+Focused tests pass 7/7 and the v26.188-v26.190 adjacent regression passes 18/18. Focused
+PyCompile, Ruff check/format, and no-import-follow Mypy pass.
+
+The current decision remains `no_further_experiment_authorized_without_new_audit_decision`.
+Because persisted evidence cannot localize the unique cause, only
+`fresh_identity_minimal_exact_route_diagnostic_contract_preflight_only` is recorded as a future
+recommended subject, not as a current authorization. See
+`docs/finance_v26_190_exact_route_http400_request_contract_root_cause_audit.md`.

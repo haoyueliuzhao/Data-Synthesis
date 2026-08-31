@@ -1,0 +1,313 @@
+# v26.189 最新实验审计
+
+## 总体判定
+
+$$
+\boxed{\text{v26.189 Post-run Independent Audit：PASS}}
+$$
+
+**在本轮声明范围内，没有发现 Blocking defect。**
+
+v26.189 正确消费了唯一获授权的：
+
+```text
+capability_observation_artifact_backed_192_job_postrun_independent_audit_only
+```
+
+审计路径没有读取凭证、构造 Provider 客户端、发起新调用、创建 Recovery Job，也没有进入 Mapper、State、Contribution、VTDO 或训练。
+
+---
+
+## 一、本轮核心命题成立
+
+v26.189 的任务不是修复 HTTP 400，也不是再次执行模型，而是回答：
+
+> v26.188 保存的在线结果是否真实、完整、可独立重放？
+> \(0/192\) 究竟表示端到端失败，还是模型语义能力为零？
+
+审计独立加载并验证了：
+
+* 192 个 Job record 和 checkpoint；
+* 192 个 Raw、192 个 Result；
+* 384 个 Raw/Result 字节绑定；
+* 192 个 Provider Envelope descriptor；
+* 192 个 public no-payload projection；
+* 192 个 Transport certificate；
+* 576 个 Provider/Projection/Transport 文件字节绑定；
+* 192 条完整 Job → Raw → Result → Trace → Outcome 父链；
+* 192 个 typed terminal projection。
+
+所有结果与 v26.188 一致，没有修改任何历史行、标签、终止类型或估计值。
+
+因此，v26.188 的执行完整性和证据权威性已经获得独立确认。
+
+---
+
+## 二、最重要的结果：两个 estimand 被正确分离
+
+### 1. 端到端系统成功率
+
+在冻结的 route、请求协议、模型配置、Runner 和资源条件共同构成的系统下：
+
+$$
+\widehat q_{\mathrm{first}}=0/192
+$$
+
+$$
+\widehat q_{\mathrm{bounded}}=0/192
+$$
+
+$$
+\widehat\Delta_{\mathrm{correction}}=0/192
+$$
+
+这是合法且应当保留的端到端实验结果。它意味着：
+
+> 精确冻结的系统在 192 个 Job 上没有产生一个 Qualified completion。
+
+### 2. 模型端点条件下的语义能力
+
+但本轮观测到：
+
+$$
+N_{\mathrm{HTTP-success\ model\ endpoint}}=0
+$$
+
+因此：
+
+$$
+\widehat q_{\mathrm{semantic}\mid\mathrm{model\ endpoint}}
+=
+\frac{0}{0}
+=
+\text{null}
+$$
+
+而不是零。
+
+v26.189 明确将 `q_semantic_given_model_endpoint` 标记为 `null`，并禁止把当前结果解释为模型的 D0–D3 能力、规划能力、纠正能力、工具选择能力或最终回答能力失败。
+
+这是本轮最关键、也最正确的科学解释。
+
+---
+
+## 三、HTTP 400 事件分解正确
+
+独立重放得到：
+
+```text
+Stage 1 requests                       192
+Stage 2 requests                         0
+HTTPError / HTTP 400              192 / 192
+HTTP success                             0
+response Envelope                        0
+model identity evaluable                 0
+observed wrong-model response            0
+public response payload                  0
+Usage observations / tokens            0 / 0
+provider_identity_failure              192
+actual responding model            unknown
+```
+
+
+
+因此，历史终止标签：
+
+```text
+provider_identity_failure
+```
+
+可以作为冻结 Registry 下的形式投影继续保留，但其因果解释必须收窄为：
+
+> HTTP 请求在 response Envelope 和 `response_model` 可观察之前被拒绝，因此模型身份不可判定。
+
+它不意味着观察到了另一个模型，也不意味着 DeepSeek Flash 实际回答后发生身份不匹配。HTTP 400 response body 没有被保存，所以服务端拒绝原因目前是未知的，不能根据状态码猜测。
+
+---
+
+## 四、Gate 判定
+
+| Gate                            | 状态                 | 解释                    |
+| ------------------------------- | ------------------ | --------------------- |
+| Job exact-set                   | **PASS**           | 192/192               |
+| Raw/Result completeness         | **PASS**           | 192/192 + 192/192     |
+| Artifact-byte authority         | **PASS**           | 384/384               |
+| Typed terminal totality         | **PASS**           | 192/192               |
+| Parent-chain reconstruction     | **PASS**           | 192/192               |
+| Frozen terminal admission       | **PASS**           | 历史 Registry 下可进入端到端分母 |
+| Provider request acceptance     | **FAIL**           | HTTP success 0/192    |
+| Model endpoint observability    | **UNINSTANTIATED** | 无 response Envelope   |
+| Semantic Capability measurement | **UNAVAILABLE**    | 条件分母为零                |
+| Mapper / State admission        | **NOT AUTHORIZED** | 没有 Qualified 模型轨迹     |
+
+报告没有把前六项证据层通过包装成“Capability Measurement Gate 通过”，而是明确把第一个阻塞点定位为：
+
+```text
+HTTP 400 before response Envelope and model endpoint
+```
+
+这是正确的首阻塞点。
+
+---
+
+## 五、历史 Content Root 的处理合理
+
+v26.188 曾记录：
+
+```text
+finance_v26_188_online_execution_content_root:c2aac4...
+```
+
+但没有保存该 Root 的精确定义前像。v26.189 没有事后假装能够复现同一个 Root，而是：
+
+1. 将旧值保留为历史 predecessor statement；
+2. 基于排序后的 `relative_path / sha256 / byte_count` 明确定义新的独立目录 Root；
+3. 不把两个前像不同的 Root 强行比较为同一对象。
+
+
+
+这属于正确的证据边界处理，不构成缺陷。
+
+---
+
+## 六、确定性与工件结果
+
+v26.189 报告记录：
+
+```text
+source commit     bca20b7857bdda89523c94ee40ea1fbc22fb7404
+source tree       4a39b83ceb5acf67fda52c084802f3c6763fb867
+formal files      14
+formal bytes      664,713
+focused tests     6/6
+adjacent tests    19/19
+```
+
+第二次空目录构建逐字节匹配，正式 Artifact Root 为：
+
+```text
+finance_v26_189_postrun_artifact_root:
+b47af81da69c929da1860d74a6360d8ce5f4fb7b401e7f525c24f1574a16b6b0
+```
+
+
+
+当前连接到的 GitHub 视图尚未返回 `bca20b...` 提交，因此这次回答没有完成该提交的独立源码级复跑；我的判断基于上传的正式报告与同步状态文件。它是证据可见性的限制，不是推翻 v26.189 结果的实验缺陷。
+
+---
+
+## 七、当前允许与禁止的科学结论
+
+### 允许
+
+现在可以正式声称：
+
+> v26.188 的 192-Job 在线结果通过了独立、无凭证、逐工件和逐父链的 post-run replay。
+
+可以声称：
+
+> 冻结端到端系统的 `q_first` 和 `q_bounded_correction` 均为 \(0/192\)。
+
+可以声称：
+
+> 192 次请求全部在 response Envelope 和模型端点形成之前返回 HTTP 400。
+
+### 禁止
+
+仍然不能声称：
+
+* DeepSeek Flash 的语义能力为零；
+* 模型不能完成 D0、D1、D2 或 D3；
+* 模型没有规划、纠正或工具选择能力；
+* 观察到了错误模型响应；
+* 当前轨迹可以进入 Mapper；
+* State frequency、Contribution 或 VTDO 可以开始；
+* 旧 192 个 Job 可以直接修好路由后重跑。
+
+---
+
+## 八、下一实验
+
+v26.189 的正式决定是：
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+报告仅将：
+
+```text
+exact_route_http_400_request_contract_root_cause_audit_only
+```
+
+登记为下一份新审计决策的推荐主题，当前尚未授权。
+
+这个推荐是合理的。下一阶段不需要再审计 Outcome Authority，也不应立即重跑 Provider。应只做一个**零 Provider 调用的 HTTP 400 请求合同根因审计**，比较：
+
+```text
+v26.188 实际序列化请求
+vs.
+历史同 Provider 的 HTTP-success 请求
+vs.
+当前冻结 exact-route Contract
+```
+
+重点检查：
+
+```text
+endpoint / URL
+model 字段
+Thinking 字段
+max completion tokens
+response-format 参数
+messages / prompt payload
+headers 与 Content-Type
+SDK 到 HTTP body 的序列化
+此前成功路由与当前 exact Flash route 的差异
+```
+
+由于错误响应 Body 没有持久化，该阶段可能只能定位确定性的请求差异，不能保证恢复服务端错误详情。若发现明确的请求合同错误，再建立新的 credential-free repair preflight；若现有工件不足以定位，才设计一个全新身份、极小分母的 route diagnostic。不能重跑或覆盖 v26.188 的历史 192 个 Job。
+
+---
+
+# 最终决定
+
+```text
+PRESERVE:
+    v26.188 immutable online directory
+    v26.189 independent post-run audit
+    q_first = 0/192
+    q_bounded_correction = 0/192
+    q_semantic_given_model_endpoint = null
+
+PASS:
+    evidence completeness
+    artifact authority
+    terminal totality
+    parent-chain reconstruction
+    estimand separation
+
+FIRST BLOCKER:
+    HTTP 400 before response Envelope and model endpoint
+
+BLOCKING DEFECT IN v26.189:
+    none found
+
+CURRENTLY AUTHORIZED:
+    no further experiment
+
+NEXT RECOMMENDED DECISION:
+    exact_route_http_400_request_contract_root_cause_audit_only
+```
+
+当前主线检查点应更新为：
+
+$$
+\boxed{
+\text{经验执行证据可信}
+\quad\land\quad
+\text{模型行为尚未被观测}
+\quad\land\quad
+\text{首阻塞点为请求级 HTTP 400}
+}
+$$
