@@ -127,10 +127,16 @@ def run_source_projected_audit(
             ),
             cwd=source_root,
             env=environment,
-            check=True,
+            check=False,
             capture_output=True,
             text=True,
         )
+        if result.returncode != 0:
+            raise RuntimeError(
+                "source-projected independent audit failed\n"
+                f"stdout:\n{result.stdout}\n"
+                f"stderr:\n{result.stderr}"
+            )
     return json.loads(result.stdout)
 
 
