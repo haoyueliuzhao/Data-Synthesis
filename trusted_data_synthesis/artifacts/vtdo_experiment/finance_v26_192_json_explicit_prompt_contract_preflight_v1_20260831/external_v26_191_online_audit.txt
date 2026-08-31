@@ -1,0 +1,343 @@
+# v26.191 最新在线测试审计
+
+## 总体判定
+
+$$
+\boxed{\text{v26.191 Minimal Exact-route Online Diagnostic：PASS}}
+$$
+
+**没有发现能够推翻本轮在线诊断结论的 Blocking defect。**
+
+本轮已经可信地定位了**当前时点、当前精确冻结 Prompt**的 HTTP 400 原因：
+
+$$
+\boxed{
+\texttt{response\_format=json\_object}
+\quad+\quad
+\text{Prompt 未显式要求 JSON}
+}
+$$
+
+更准确地说：
+
+```text
+当前 D4 请求的直接拒绝原因：
+    已定位
+
+v26.188 历史 192×HTTP 400 的高度可信解释：
+    同一 Prompt / response-format 不匹配
+
+v26.188 当时服务端返回的精确历史原因：
+    仍未恢复
+```
+
+这个边界与报告一致，没有把当前复现错误地包装成历史响应正文恢复。本次仍以 Git 树、不可变工件、脱敏恢复记录和服务器复核为实验依据。
+
+---
+
+## 一、在线诊断链条有效
+
+本轮使用全新的工程诊断身份，没有复用 v26.188 Job ID，也没有把诊断请求混入旧 192-Job Capability 分母。最终只执行 6 次 HTTP 请求、自动重试为零，旧 Job 重跑与 RecoveryJob 均为零。
+
+六步结果构成了很清楚的定位链：
+
+| 步骤                                 |  结果 | 排除或定位的因素                                    |
+| ---------------------------------- | --: | ------------------------------------------- |
+| D0 `GET /models`                   | 200 | 当前凭证可访问 API，目标 Flash ID 可见                  |
+| D1 官方 `/chat/completions` 最小请求     | 200 | 当前官方路由正常                                    |
+| D2 历史 `/v1/chat/completions` 同字节请求 | 200 | `/v1` 路径别名当前仍可用                             |
+| D3 完整七字段 + 最小 JSON Prompt          | 200 | model、Thinking、16K、JSON mode、sampling 组合可接受 |
+| D4 精确首个 v26.188 Prompt 和请求体        | 400 | 当前冻结 Prompt 触发请求合同拒绝                        |
+| D5 同 Prompt UTF-8 长度、显式要求 JSON     | 200 | 长 Prompt 与完整参数形状本身可接受                       |
+
+
+
+其中 D4 的正式 typed error 是：
+
+```text
+Prompt must contain the word 'json' in some form to use
+'response_format' of type 'json_object'.
+```
+
+该错误对象绑定了 HTTP 400、195 字节响应正文及其 SHA-256；没有保存未经检查的原始正文、Authorization、Cookie 或私有推理。
+
+DeepSeek 当前官方 JSON Output 文档也明确要求：设置 `response_format={"type":"json_object"}` 时，system 或 user Prompt 中必须包含 “json” 字样，并说明期望的 JSON 输出形式。([DeepSeek API Docs][1])
+
+因此，**当前 D4 的拒绝原因已经由 Provider typed error 直接给出，不只是从 D4/D5 的相关性推测出来的。**
+
+---
+
+## 二、D5 控制的解释需要保持准确
+
+D5 与 D4 并不是只相差一个单词的严格单变量反事实。D5 使用的是另一段安全合成文本，因此：
+
+* 它能排除“Prompt UTF-8 长度过长”；
+* 它能证明完整七字段请求形状与长 JSON-explicit Prompt 可以成功；
+* 它不能单独证明 D4 其余所有文本内容都无影响。
+
+但这不构成当前结论的缺陷，因为 D4 的服务端错误消息已经直接、具体地指出缺少 JSON 指令；D5 在这里承担的是**长度与完整参数组合的辅助控制**，而不是唯一的因果证据。报告也明确说明 D5 请求体因转义字符更少而短于 D4，没有把二者描述为完整请求字节等长。
+
+---
+
+## 三、历史解释边界处理正确
+
+v26.191 没有追溯修改 v26.188：
+
+```text
+q_job                           0/192
+q_semantic_given_model_endpoint null
+```
+
+也没有把 D0–D5 诊断行混入 Capability Outcome。
+
+报告对证据层级的区分是合理的：
+
+1. **当前直接观测**：精确首个冻结 Prompt 因缺少 JSON 指令被拒绝；
+2. **冻结源码事实**：报告记录所有 192 个首 Prompt 都存在相同词法缺失；
+3. **历史解释**：该共享缺失强烈支持 v26.188 全量 HTTP 400 的共同原因；
+4. **仍不可恢复**：v26.188 当时的原始 HTTP 400 response body，以及 Provider 服务端执行时状态是否与现在完全相同。
+
+因此，正式字段继续保持：
+
+```text
+historical_exact_cause_recovered = false
+```
+
+是正确的。
+
+换言之，当前允许说：
+
+> 现在可以用同一冻结请求内容稳定复现相同类型的拒绝，而且错误消息精确指向缺少 JSON 指令。
+
+但仍不应说：
+
+> 已经恢复了 2026 年 8 月 31 日 v26.188 每一个请求当时的原始服务端错误正文。
+
+---
+
+## 四、一个非阻塞的证据缺口：192-Prompt Census 未进入正式 Artifact Manifest
+
+报告和项目状态记录了：
+
+```text
+frozen Prompts                    192
+json token present                  0
+json token absent                 192
+```
+
+但当前 v26.191 的正式 Artifact Manifest 只包含：
+
+* 外部授权；
+* D0–D5 六条 Observation；
+* prepare audit；
+* transition；
+* report；
+* source identity。
+
+其中没有独立的：
+
+```text
+frozen_prompt_lexical_census.json
+```
+
+正式 `report.json` 也没有保存 192、0、192 这组三个 Census 计数。
+
+源码中的正式 prepare 路径只重建首个 `expected_job_id` 的 Prompt，而不是循环生成全部 192 个 Prompt。
+
+因此应把这项证据解释为：
+
+```text
+192-Prompt lexical census：
+    已记录在实验报告和项目状态中，
+    但尚未成为 v26.191 正式目录内的独立可重放 sidecar。
+```
+
+这**不阻断当前 D4 根因诊断**，因为 D4 自身的 typed error 已足够定位当前请求；但在下一阶段以“192 个 Prompt 全部需要统一修复”为正式人口事实时，应重新生成并持久化该 Census。
+
+无需修改或重建 v26.191 的在线 Observation。下一次 credential-free preflight 顺手物化 Census 即可。
+
+---
+
+## 五、另一个非阻塞的结构化字段问题
+
+正式 `report.json` 中：
+
+```text
+decision = prompt_specific_request_rejection
+localized_request_contract_field = null
+```
+
+这不影响人类可读结论，因为 D4 Observation 已保存完整的 typed error。但为了让后继阶段不依赖解析自然语言错误消息，建议新增或替换为明确的类型化对象：
+
+```text
+localized_prompt_contract_failure:
+    reason_code = prompt_missing_json_output_instruction
+    evidence_observation_id = <D4 observation ID>
+    response_format = json_object
+    prompt_json_token_present = false
+```
+
+这是**结果表示增强**，不是重跑在线测试的理由。
+
+---
+
+## 六、隐私与执行边界通过
+
+当前正式工件表明：
+
+* 成功响应正文和 `reasoning_content` 在计算 hash 与字节数后被丢弃；
+* D4 只保留类型化错误字段和脱敏消息；
+* Authorization 值、API Key hash、Cookie、完整 Headers、私有推理、未经检查的原始正文均未持久化；
+* 对正式文件执行当前凭证字节扫描，结果为零命中。
+
+GitHub 中也能确认：
+
+* 最终在线源码提交为 `662122f4db381ef936a91f985070f42ed6bca2a8`；
+* 对应 Tree 为 `834976a2ece966ef99e36db4127c9280d9ab8cee`；
+* 正式工件提交为 `a54681aaadb61589d20873646b15f608916262a7`。
+
+---
+
+## 七、Gate 判定
+
+| Gate                                 | 判定                   |
+| ------------------------------------ | -------------------- |
+| 外部在线诊断授权                             | **PASS**             |
+| Fresh diagnostic identity            | **PASS**             |
+| 请求数上限与零自动重试                          | **PASS**             |
+| 当前凭证与模型可见性                           | **PASS**             |
+| 官方路径健康                               | **PASS**             |
+| 历史 `/v1` 路径当前健康                      | **PASS**             |
+| 完整七字段请求参数组合                          | **PASS**             |
+| 当前精确冻结 Prompt 拒绝原因                   | **PASS：缺少 JSON 指令**  |
+| 长 Prompt / 完整参数控制                    | **PASS**             |
+| 安全错误正文投影                             | **PASS**             |
+| Credential 不持久化                      | **PASS**             |
+| 旧 Job 与历史 Outcome 不变                 | **PASS**             |
+| 192-Prompt Census 正式工件绑定             | **未闭合，但不阻断当前 D4 诊断** |
+| v26.188 历史精确服务端原因恢复                  | **FALSE / 未恢复**      |
+| Capability Measurement               | **未执行**              |
+| Mapper / State / Contribution / VTDO | **未授权**              |
+
+---
+
+# 八、下一实验不应再做路由诊断
+
+现在已经没有必要继续测试：
+
+* API Key 是否有效；
+* Flash 模型是否可见；
+* `/chat/completions` 是否工作；
+* `/v1/chat/completions` 是否工作；
+* Thinking 是否可用；
+* 16K 是否可用；
+* `response_format=json_object` 是否可用；
+* 长 Prompt 是否可用。
+
+这些问题都已经由 D0–D5 回答。
+
+下一项唯一合理的工作应是：
+
+```text
+fresh_identity_json_explicit_prompt_contract_
+and_development_population_preflight_only
+```
+
+## 只允许修改
+
+在所有使用：
+
+```json
+{"response_format": {"type": "json_object"}}
+```
+
+的模型可见 Prompt 中加入统一、明确的协议指令，例如：
+
+```text
+Return exactly one valid JSON object matching the response ABI.
+Do not return Markdown or surrounding prose.
+```
+
+这应当加在**共享 Provider-facing protocol envelope**，而不是改写金融任务问题文本。这样修复的是输出协议，不会改变任务语义。
+
+## 必须重新冻结
+
+由于 Prompt 字节和 Prompt identity 会变化，以下对象必须使用新身份：
+
+```text
+Prompt Schema / renderer version
+Prompt hash
+request-body hash
+generation profile binding
+Runner input package
+Job ID
+Raw / Result namespace
+Development Manifest
+```
+
+旧 v26.188 的 192 个 Job、Outcome 和 \(0/192\) 结果继续原样冻结，不能改名为修复后结果。
+
+## Credential-free preflight 应检查
+
+1. 全部 192 个首 Prompt 均包含明确 JSON 指令；
+2. 所有可到达的后续 Action、Correction 和 Final Prompt 同样满足该条件；
+3. `response_format=json_object` 与 JSON-visible instruction 始终成对出现；
+4. State、Candidate 顺序、Component Schedule、任务、答案、证据和 Validity 语义不变；
+5. scripted reference Runner 能走完整 Action→Observation→Final 链；
+6. Provider 调用为零；
+7. 独立物化 `prompt_json_contract_census.json`，进入正式 Artifact Manifest。
+
+这里不能只修第一个 Prompt。否则第一轮 Action 成功后，后续 Action 或 Final Prompt 仍可能因同一 JSON-output 合同再次被拒绝。
+
+---
+
+# 最终决定
+
+```text
+PRESERVE:
+    v26.191 six-request online diagnostic
+    D0-D3 and D5 HTTP-success observations
+    D4 typed HTTP-400 observation
+    prompt_specific_request_rejection decision
+    all historical v26.188 Outcomes and estimates
+
+PASS:
+    current exact-Prompt root-cause localization
+    route/model/parameter/length controls
+    privacy-safe online diagnostic execution
+
+NARROW:
+    the historical explanation is strongly supported,
+    not an exact recovery of the old HTTP-error bodies
+
+NON-BLOCKING GAP:
+    192-Prompt lexical census is documented
+    but not bound as a formal v26.191 artifact
+
+NEXT:
+    fresh_identity_json_explicit_prompt_contract_
+    and_development_population_preflight_only
+
+DO NOT AUTHORIZE YET:
+    repaired online Development execution
+    old-Job rerun
+    Capability estimate
+    Mapper / State / frequency
+    Contribution / VTDO / Student training
+```
+
+当前主线检查点应更新为：
+
+$$
+\boxed{
+\text{Outcome Authority 已闭合}
+\;\land\;
+\text{HTTP 路由健康}
+\;\land\;
+\text{JSON Prompt 合同缺失已定位}
+\;\land\;
+\text{修复后 fresh Population 尚未构造}
+}
+$$
+
+[1]: https://api-docs.deepseek.com/api/create-chat-completion/ "https://api-docs.deepseek.com/api/create-chat-completion/"

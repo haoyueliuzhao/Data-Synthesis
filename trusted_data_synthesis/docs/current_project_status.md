@@ -11546,3 +11546,55 @@ The current decision is `no_further_experiment_authorized_without_new_audit_deci
 JSON-explicit Prompt and any fresh Development Population or successor Job set require a new
 explicit audit decision. See
 `docs/finance_v26_191_minimal_exact_route_online_diagnostic.md`.
+
+## v26.192 JSON-explicit Prompt Contract And Development Population Preflight
+
+Finance v26.192 consumes only the exact 12,464-byte v26.191 external review at SHA-256
+`18ddfcb62a8401397204a46f997ca85c738701b41c3c0cfa790f79fac6df4ccf` and operator decision
+`参照审计报告修订` as
+`fresh_identity_json_explicit_prompt_contract_and_development_population_preflight_only`.
+It rehashes all twelve v26.191 files and preserves all six online Observations, every old Job, and
+every historical Outcome without mutation or reclassification. Credential reads, Provider calls,
+Stage 2 calls, Development model outcomes, Confirmation, Mapper, State, frequency, Contribution,
+VTDO, Student, training, release, and production counts are zero.
+
+One shared Provider-facing protocol envelope now requires exactly one valid JSON object matching
+the response ABI and forbids Markdown or surrounding prose. The old Action/Correction
+`public_prompt + response_abi` core and the old Final Prompt string remain exact children. Model,
+Thinking, Action and Final Grammars, bounded Policy, resource, Task, State, Candidate order,
+Component Schedule, answer, Evidence, and Validity parents do not change. Fresh Prompt Contract,
+Schema, generation Profile, 32 Runner Packages, 192 Jobs, 192 Raw namespaces, 192 Result
+namespaces, Manifest, and Runner identities close without overlap with their sources.
+
+The previously report-only lexical census is now a 1,089,133-byte formal Manifest member. Across
+192 first Action, 288 subsequent Action, 120 typed-rejection Correction, and 192 Final Prompt
+instances, all 792 successors contain an explicit JSON instruction and exact `json_object`
+pairing; all 792 old Prompt cores reconstruct byte for byte. The old first-Prompt surface remains
+0/192 with and 192/192 without the case-insensitive `json` token. Census identity is
+`prompt_json_contract_census:5b142b434c02de12d6eb7bd5a43012304f596cbbb638d7c70ce602fd5fa9017a`.
+
+The scripted Runner resolves 192/192 fresh Jobs, renders and parses 480 primary Actions, executes
+480 production steps, exercises 120 rejection-plus-reference-correction paths, renders and parses
+192 Finals, and closes 192/192 current Base-, Mechanism-, and Qualified-valid local controls.
+Provider calls and empirical rows are zero. Twelve JSON-protocol, Prompt-core, source-identity,
+namespace, and denominator mutations all reject; twenty noncompensatory Gates pass.
+
+A separate predecessor diagnostic is retained rather than hidden: current local reference Result
+IDs match the v26.179 saved scripted Outcome parent on 144/192 rows. The 48 differences are all
+Semantic Reconciliation and reproduce through the unchanged old `execute_trace` path, so they
+predate the JSON envelope and are not a Prompt Gate. All 48 retain current Base, Mechanism, and
+Qualified validity. No old identity or label is rewritten.
+
+The exact source commit is `281abb8a2eb12434a6ade981c2a6b35b5951d98a` with Tree
+`d1bf6b2f165875348e6e9bcdc54492ffa07cfc84`. The seventeen-file formal directory has sixteen
+Manifest members totaling 1,643,929 bytes. Artifact Root is
+`finance_v26_192_json_explicit_artifact_root:5e2970f0ec16feb9139a676e4c8277677f0fd77f259302d85a8c28629601746a`;
+Report is
+`finance_v26_192_json_explicit_preflight_report:63baffe7efb1c2cab3ebd217c1ee55a67e3277cb71fb1ad8f04677bafebf4d20`.
+Focused tests pass 7/7 with a byte-identical rebuild; the v26.191-v26.192 adjacent regression
+passes 14/14; focused PyCompile, Ruff, format, and Mypy pass.
+
+The current decision is `no_further_experiment_authorized_without_new_audit_decision`. The
+credential-free repaired Population is ready for independent review but does not self-authorize
+online Development execution. See
+`docs/finance_v26_192_json_explicit_prompt_contract_and_development_population_preflight.md`.
