@@ -1,0 +1,275 @@
+# v26.186 最新修订审计
+
+## 总体判定
+
+$$
+\boxed{\text{v26.186 Artifact-Backed Outcome Authority Preflight：PASS}}
+$$
+
+**在本轮授权范围内，没有发现 Blocking defect。**
+
+v26.186 正确结束了 QA Release Authority 支线，回到 VTDO 主实验线；它只消费 v26.182 授权的：
+
+```text
+artifact_backed_terminal_validity_factorization_and_
+failure_locus_reconstruction_preflight_only
+```
+
+本轮没有 Provider 调用、Development 模型结果、正式经验行或估计，也没有进入 Mapper、State、Contribution、VTDO 或训练。
+
+---
+
+## 一、本轮五个阻塞点均得到对应修复
+
+| v26.182 确认的阻塞点                                 | v26.186 修订                                                | 判定       |
+| ---------------------------------------------- | --------------------------------------------------------- | -------- |
+| mixed `completed_invalid` 状态被压缩为 `false/false` | Base、Mechanism 独立保存，Qualified 由二者合取派生                     | **PASS** |
+| diagnostic-only terminal 可进入经验分母               | 经验入口只接受 `registration_status=reachable`                   | **PASS** |
+| 伪造 FailureLocus 可在完整重哈希后存活                     | Locus 只由 Raw attempts 与 Result Final-Verifier evidence 重建 | **PASS** |
+| Raw/Result 只绑定路径，不绑定文件字节                       | Descriptor 绑定路径、SHA-256、字节数和 payload identity             | **PASS** |
+| Registry、Contract、Manifest 等父对象不重验证            | evaluator 入口重新执行普通 Pydantic validation                    | **PASS** |
+
+这五项正好对应 v26.182 冻结的五个失败 Gate，没有额外改变任务、模型、Manifest 或估计语义。
+
+### 1. Terminal validity factorization：PASS
+
+新 `TerminalValidityEvidence` 独立保存：
+
+```text
+final_base_valid
+final_mechanism_qualified
+final_qualified_valid
+```
+
+并强制：
+
+$$
+V_{\text{qualified}}
+=
+V_{\text{base}}
+\land
+Q_{\text{mechanism}}
+$$
+
+两种此前丢失的合法无效状态均被保留：
+
+```text
+Base=true,  Mechanism=false, Qualified=false
+Base=false, Mechanism=true,  Qualified=false
+```
+
+对应测试也明确要求重建后得到这两个不同组合，而不是统一变成 `false/false`。
+
+### 2. Diagnostic empirical admission：PASS
+
+生产验证入口现在明确执行：
+
+```python
+if (
+    expected_evidence_kind == "empirical_execution"
+    and policy.registration_status
+        != contract.empirical_admissible_registration_status
+):
+    raise ValueError(
+        "non-reachable terminal policy cannot enter empirical evidence"
+    )
+```
+
+因此：
+
+```text
+policy_horizon_exhausted
+measurement_support_exit
+```
+
+即使被重新标记为 empirical、重建 Result 文件并重新计算全部下游身份，也会在正式经验估计返回前被拒绝。
+
+这里尤其值得保留 v1→v2 的处理：初版 `policy_horizon_exhausted` 在更早的 validity 检查处失败，没有真正到达目标 Admission Gate；最终提交 `0cd043...` 调整了非完成态边界验证，并新增测试，要求两个控制都必须在精确的 non-reachable admission reason 上失败。这个修订避免了“虽然拒绝了，但拒绝在错误位置”的假通过。
+
+### 3. FailureLocus reconstruction：PASS
+
+FailureLocus 不再作为调用者可自由附加的权威对象，而是从：
+
+```text
+canonical Raw component attempts
++
+canonical Result Final-Verifier evidence
+```
+
+重新派生完整 tuple。随后生产入口比较重建的 Trace 和 Outcome row，而不是只检查传入对象内部是否自洽。
+
+两个完整重哈希控制——向 Qualified Result 添加虚假 Base failure，以及引用 attempt trace 中不存在的 Mechanism Component——均被拒绝。
+
+### 4. Raw/Result persisted-byte authority：PASS
+
+新的 Descriptor 同时绑定：
+
+```text
+artifact_relative_path
+artifact_sha256
+artifact_byte_count
+payload_id
+```
+
+Loader 要求目标是普通文件而非 symlink，读取实际字节后比较长度与 SHA-256，再解析 JSON、验证 canonical form 和 payload identity。代码中的实际字节检查已经存在：
+
+```python
+payload = path.read_bytes()
+if len(payload) != expected_byte_count \
+        or sha256_bytes(payload) != expected_sha256:
+    raise ValueError(
+        "artifact descriptor does not bind the actual file bytes"
+    )
+```
+
+脚本预检实际写入并重新加载：
+
+```text
+192 Raw files
+192 Result files
+384 total artifact files
+384 byte matches
+```
+
+Raw 和 Result 各一次文件字节替换控制均被拒绝。
+
+### 5. Authoritative parent revalidation：PASS
+
+入口通过 `_strict_revalidate()` 从普通 Python 数据重新验证：
+
+```text
+AuthoritativeTerminalRegistry
+ArtifactBackedOutcomeContract
+CapabilityDevelopmentJobManifest
+Manifest 内每个 Job
+JobBoundRunnerContract
+每个 Evidence Bundle
+```
+
+并进一步要求 Bundle 中的 Job 必须等于 Manifest 内对应的完整 Job 对象，而不只是 Job ID 相同。
+
+针对 Registry、Contract、Manifest、Job 和 Runner 的五个 `model_construct()` 注入控制均被拒绝；测试也明确检查五类父对象全部出现且拒绝数为 5。
+
+---
+
+## 二、正式预检结果成立
+
+权威 v2 使用源码提交：
+
+```text
+0cd043a101eeed39b6e4e92b351d9e42bbdd5355
+```
+
+从该提交到前一冻结检查点的变更面恰好是报告声明的七个文件：核心 Artifact-backed Outcome 模型、Preflight、模型定义、Source-projected Runner、测试和两份文档。
+
+正式结果为：
+
+```text
+Manifest Jobs                         192
+Raw files                             192
+Result files                          192
+scripted Outcome rows                 192
+negative controls                      11 / 11 rejected
+static Gates                           14 / 14 passed
+Provider calls                          0
+formal empirical rows                   0
+formal empirical estimates              0
+```
+
+两次独立 Source-projected build 得到相同 Archive SHA-256，398 个正式文件逐字节一致；聚焦测试为 7/7，邻接非重建回归为 21 tests。
+
+其中本地 192 条 Outcome 全部属于：
+
+```text
+scripted_preflight_control
+```
+
+并且 preflight evaluation 刻意不包含 \(q\) 的 numerator，不能被解释为：
+
+$$
+\widehat q_{\text{first}}
+\quad\text{或}\quad
+\widehat q_{\text{bounded}}
+$$
+
+的经验估计。
+
+---
+
+## 三、Gate 判定
+
+| Gate                                                    | 状态               |
+| ------------------------------------------------------- | ---------------- |
+| 历史 v26.181/v26.182 工件冻结                                 | **PASS**         |
+| 独立 Base/Mechanism factorization                         | **PASS**         |
+| Diagnostic terminal 经验隔离                                | **PASS**         |
+| FailureLocus source reconstruction                      | **PASS**         |
+| Raw/Result 文件字节绑定                                       | **PASS**         |
+| Registry/Contract/Manifest/Job/Runner 重验证               | **PASS**         |
+| 192-Job scripted Artifact DAG                           | **PASS**         |
+| v26.186 credential-free preflight                       | **PASS**         |
+| 独立审计                                                    | **尚未执行，下一阶段**    |
+| 192-Job online Development execution                    | **BLOCKED**      |
+| empirical \(q_{\text{first}}\) / \(q_{\text{bounded}}\) | **UNAVAILABLE**  |
+| Mapper / State / frequency                              | **UNAUTHORIZED** |
+| Contribution / VTDO / Student                           | **UNAUTHORIZED** |
+
+最新项目状态与正式报告一致：QA 支线冻结，VTDO 主线重新激活，五项修复已进入 v26.186；但 Provider、经验行、State 和训练计数仍为零。
+
+---
+
+## 四、允许与禁止的结论
+
+### 当前允许
+
+可以正式声称：
+
+> v26.186 在 credential-free scripted preflight 范围内，修复了 v26.182 确认的五个经验 Outcome 证据层缺陷，并建立了 Artifact-backed Job → Raw → Result → Trace → Outcome 的 prospective authority chain。
+
+### 当前仍然禁止
+
+不能声称：
+
+* 当前模型已经执行 192 个 Development Jobs；
+* v26.181 的历史失败结果被追溯修复；
+* 已经获得经验 Capability estimate；
+* 已经获得经验 \(q_{\text{first}}\) 或 \(q_{\text{bounded}}\)；
+* Quotient State Mapping 或条件频率可执行；
+* Contribution、VTDO 或 Student Training 已获得授权。
+
+---
+
+## 五、下一步
+
+v26.186 给出的下一 transition 合理且可以继续：
+
+```text
+artifact_backed_empirical_outcome_authority_independent_audit_only
+```
+
+下一阶段只应独立重建并攻击这套精确的 credential-free preflight，不调用 Provider，也不执行 192-Job Development denominator。正式报告同样明确将在线执行、经验估计和所有下游阶段继续冻结。
+
+## 最终决定
+
+```text
+PRESERVE:
+    v26.186 Artifact-Backed Outcome Authority Preflight
+
+GATE:
+    PASS within the declared prospective credential-free scope
+
+BLOCKING DEFECT:
+    none found
+
+NEXT:
+    artifact_backed_empirical_outcome_authority_independent_audit_only
+
+DO NOT AUTHORIZE:
+    Provider execution
+    192-Job online Development
+    empirical q
+    Mapper / State / frequency
+    Contribution / VTDO / Student training
+```
+
+本轮我核对了上传报告、最新项目状态、源提交差异和聚焦测试实现，但没有在当前环境重新运行约 1 GB 的 Source Archive 与双重 398 文件重建；因此这份结论是**修订代码与冻结证据审计**，不是替代下一阶段的正式独立实验审计。

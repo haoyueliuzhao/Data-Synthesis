@@ -11286,7 +11286,7 @@ The audit implementation independently reconstructs the v26.186 Git Archive and 
 directly reparses 192 Raw and 192 Result files, recomputes every payload, descriptor, Attempt,
 Trace, Outcome and parent-chain identity, and reruns thirteen negative controls. The two fully
 rehashed diagnostic 192-row attacks must reject at the exact non-reachable admission reason.
-Implementation checks pass 7/7 with all thirteen controls rejected. Preliminary v1 independently
+Implementation checks pass 8/8 with all thirteen controls rejected. Preliminary v1 independently
 rebuilds all 398 files and returns `PASSED_INDEPENDENT_AUDIT`, but its Report leaves the new audit
 Manifest parent null. The v1 directory remains immutable and is superseded for evidence authority;
 v2 makes that parent mandatory without changing any replay, attack, Gate, or decision count. Its
@@ -11295,7 +11295,30 @@ Archive absolute path entered a FileBinding. Preliminary v2 is therefore also su
 Authoritative v3 binds the same Archive bytes under one fixed logical path and adds an exact
 two-temporary-path equality regression.
 
-Until the authoritative v3 formal build completes, v26.186 remains the active checkpoint. The
-v26.187 pass boundary is `no_further_experiment_authorized_without_new_audit_decision`; online
-Development and every empirical or VTDO downstream stage remain blocked. See
+Authoritative v3 uses source commit `8d68eceaf6b9ad5a7109212082bb439e25cb50d7`, tree
+`bc2374d5ccebb1a2f46f271650f43614791e438b`, and a 1,021,143,040-byte Git Archive at SHA-256
+`04700fe0659f39577a2e6833d3f92ef7e0e28108d8a53dea0fba05c5bd891032`.
+Both complete builds independently recreate the same v26.186 1,016,115,200-byte Archive, all 398
+audited files, 192 Jobs, 384 Raw/Result artifacts, 480 Attempts, 192 Traces, 192 Outcomes, 192
+validity and FailureLocus projections, and 192 exact parent chains.
+
+All thirteen attacks reject and all fourteen static Gates pass. The two diagnostic 192-row
+attacks both reach the exact non-reachable empirical admission reason. The authoritative v3
+directory has twelve files and 34,318 bytes; a second source-projected build matches 12/12 files.
+Artifact Root is
+`finance_v26_artifact_backed_independent_artifact_root:ade98c651abc48ee95cb3853e50de0ebd1fbfbbe7015f92f2533c85d60f81ee3`;
+Report is
+`finance_v26_artifact_backed_independent_audit_report:c582fa19d88481136391f81910e4003b3187ae835f569b27450af2564b4f6d84`;
+decision is `PASSED_INDEPENDENT_AUDIT`.
+
+Focused tests pass 8/8 and the adjacent v26.181-v26.187 non-long-rebuild suite passes 29 tests
+with one historical rebuild deselected. Focused PyCompile, Ruff, format and Mypy pass; package-
+wide Ruff passes. Package-wide no-import-follow Mypy checks 604 source files, retains seven
+diagnostics in five historical files, and has zero v26.187 diagnostics.
+
+
+Provider, Development outcome, formal empirical row and estimate counts remain zero. This
+independent pass does not self-authorize online execution. The current transition is
+`no_further_experiment_authorized_without_new_audit_decision`; online Development and every
+empirical or VTDO downstream stage remain blocked. See
 `docs/finance_v26_187_artifact_backed_outcome_independent_audit.md`.
