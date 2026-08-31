@@ -11274,3 +11274,22 @@ Contribution, VTDO, Student, training, and release counts remain zero. The only 
 `artifact_backed_empirical_outcome_authority_independent_audit_only`; it does not authorize the
 192-Job online Development execution. See
 `docs/finance_v26_186_artifact_backed_outcome_preflight.md`.
+
+## v26.187 Artifact-Backed Outcome Authority Independent Audit
+
+The active successor consumes only the exact v26.186 independent-audit transition. It freezes
+the 398-file authoritative v2 directory and exact source commit `0cd043a1`, and introduces no
+Provider call, Development model outcome, formal empirical row or estimate, Mapper, State,
+frequency, Contribution, VTDO, Student, training, release, or production operation.
+
+The audit implementation independently reconstructs the v26.186 Git Archive and formal output,
+directly reparses 192 Raw and 192 Result files, recomputes every payload, descriptor, Attempt,
+Trace, Outcome and parent-chain identity, and reruns thirteen negative controls. The two fully
+rehashed diagnostic 192-row attacks must reject at the exact non-reachable admission reason.
+Implementation checks currently pass 7/7 with all thirteen controls rejected; final source-
+projected identities and deterministic results remain pending the exact implementation commit.
+
+Until that formal build completes, v26.186 remains the active authoritative checkpoint. The
+v26.187 pass boundary is `no_further_experiment_authorized_without_new_audit_decision`; online
+Development and every empirical or VTDO downstream stage remain blocked. See
+`docs/finance_v26_187_artifact_backed_outcome_independent_audit.md`.
