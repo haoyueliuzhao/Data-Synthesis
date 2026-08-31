@@ -179,7 +179,7 @@ pre-existing generalization-contract failures. Both failures point to
 revision. These facts are recorded as environmental/unrelated boundaries, not converted into a
 passing claim.
 
-+## Formal Full-Tree Result
+## Formal Full-Tree Result
 
 The formal successor is
 `qa_parent_authority_fully_rehashed_source_derived_bundle_independent_audit_only`.
@@ -222,8 +222,42 @@ remained zero.
 
 ## Authorization Boundary
 
-This successor can authorize only the deterministic, credential-free QA Release Authority and
-the Finance Pilot artifact-publication plumbing after its exact full-tree formal preflight passes.
-It does not authorize Provider generation, production data release, model training, online
-execution, Contribution, VTDO State changes, or any change to the frozen v26.181 empirical
-failure.
+This historical successor establishes a deterministic fixed-Fixture source-replay and
+immutable-publication smoke. It does not establish the general QA Release Authority or authorize
+an archive-backed Finance Pilot. It also does not authorize Provider generation, production data
+release, model training, online execution, Contribution, VTDO State changes, or any change to the
+frozen v26.181 empirical failure.
+
+## 2026-08-31 Independent Re-audit Reclassification
+
+The latest independent re-audit preserves the exact historical facts recorded above:
+
+- source commit `794a546aa2f934939425d7ce929b49f2ce2d1d73`;
+- exact 2-Fixture / 6-Record deterministic replay;
+- historical nine-file byte set;
+- historical 12/12 observed negative-control rejections;
+- zero Provider calls.
+
+It narrows the earlier Gate wording. The v26.183 formal interface accepted Archive, source root,
+Manifest, and tree-ID assertions separately; did not consume external audit bytes as a formal
+parent; accepted caller-chosen Fixture populations; did not cross-validate every sidecar and
+Report field; did not bind Markdown bytes; allowed a non-exact attack denominator; and recorded
+stages for ordinary validation exceptions from the expected stage supplied by the test.
+
+Therefore the precise historical result is:
+
+```text
+fixed-Fixture same-snapshot source replay          PASSED
+historical immutable publication                   PASSED
+general QA Release Authority                       NOT CLOSED
+external authorization parent                      ABSENT
+Archive -> executed Git tree formal projection     FAILED
+exact externally expected Release Population       FAILED
+cross-catalog Report/Markdown Envelope              FAILED
+exact attack set and independently observed stage  PARTIAL
+archive-backed Finance Pilot                       UNINSTANTIATED / BLOCKED
+```
+
+The successor that addresses these gaps is documented in
+`docs/finance_v26_184_qa_release_authority_envelope.md`. This addendum changes no v26.183
+artifact byte, Bundle identity, Selection identity, or v26.181 empirical result.

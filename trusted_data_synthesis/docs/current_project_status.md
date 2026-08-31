@@ -11092,7 +11092,54 @@ The 34,374-member source manifest has SHA-256
 The formal artifact root is
 `qa_release_authority_artifact_root:54ccb4378c1d8397e218f65dff4776c1c341d9a2d0341a8b9cc29d3faa482f77`.
 All 12 counted fully-rehashed attacks reject, the unrelated RuntimeError does not count, and an
-independent same-snapshot rebuild matches all nine files byte for byte. This passes the
-credential-free QA Release Authority Gate and authorizes the integrated deterministic Finance
-Pilot portfolio/artifact plumbing only; it does not authorize an archive-backed Pilot run in the
-current environment or any production action.
+independent same-snapshot rebuild matches all nine files byte for byte.
+
+The latest independent re-audit narrows this result to a fixed-Fixture same-snapshot source-replay
+and immutable-publication smoke. v26.183 does not formally bind the external audit, derive the
+executed root from its Archive inside the public contract, require an externally expected exact
+Population, authenticate every sidecar/Report/Markdown byte under one external anchor, or enforce
+an exact attack denominator with independently observed typed stages. The general QA Release
+Authority and archive-backed Finance Pilot therefore remain blocked.
+
+## v26.184 External Authorization, Exact Population, and Cross-Catalog Envelope
+
+v26.184 is the credential-free successor permitted by the latest v26.183 independent re-audit. It
+adds a new authority layer without modifying the frozen v26.183 nine-file directory:
+
+- exact external audit bytes become a content-addressed
+  `QAReleaseAuthorityAuthorization` parent;
+- the authorized predecessor, successor, transition, exact Git change-path set, and forbidden
+  operations are fail-closed;
+- one internally generated Git archive is safely extracted, manifested, converted back into Git
+  blob/tree identities, and used as the executing Python root;
+- `QAReleasePopulationManifest` freezes exact Fixture, SemanticInstance, task, BindingSnapshot,
+  package, and realization sets before outcome identity;
+- the Loader requires external expected Authorization, Population, and Envelope IDs;
+- Selection, Records, attacks, source manifest, Report, Markdown, and all other sidecars are
+  semantically cross-validated;
+- `QAReleaseAuthorityReport` is content-addressed and fully reconstructed from validated parents;
+- `QAReleaseAuthorityEnvelope` binds the Manifest, Report, Markdown hash, Bundle, Selection,
+  Records, Attack Audit, Runtime, Population, Projection, and Authorization;
+- the exact attack denominator is 23 IDs, all counted failures require an actual typed
+  `QAReleaseAuthorityError` exception type, reason code, and stage;
+- Python, Pydantic, installed distributions, dependency definitions, OS, kernel, libc, locale,
+  timezone, executable, and environment root form one runtime identity.
+
+The implementation-level test module currently passes 6 tests, including 23/23 exact typed
+negative controls, a wrong-validator same-text control that is not counted, exact source archive
+projection with symlink/executable coverage, full cross-catalog reload, and immutable publication.
+Provider calls remain zero.
+
+Formal source-projected execution and independent byte reproduction are pending the implementation
+source commit. Until that evidence is frozen:
+
+```text
+v26.184 formal Envelope Gate              NOT YET FROZEN
+archive-backed Finance Pilot              BLOCKED
+Provider generation                       BLOCKED
+production QA release                     BLOCKED
+training / Contribution / VTDO            BLOCKED
+v26.181 empirical Outcome Gate            FAILED (unchanged)
+```
+
+See `docs/finance_v26_184_qa_release_authority_envelope.md`.
