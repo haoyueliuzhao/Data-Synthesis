@@ -589,11 +589,11 @@ def _curl_transport(
     return RawTransportResult(status=int(status_bytes), headers=headers, body=response_body)
 
 
-def _load_credential(package_root: Path) -> str:
+def _load_credential(package_root: Path, credential_path: Path | None = None) -> str:
     existing = os.environ.get("DEEPSEEK_API_KEY")
     if existing:
         return existing
-    path = package_root / ".env"
+    path = credential_path or package_root / ".env"
     if not path.exists():
         raise ValueError("DEEPSEEK_API_KEY is absent and project .env is unavailable")
     if stat.S_IMODE(path.stat().st_mode) & 0o077:
@@ -663,12 +663,13 @@ def execute(
     *,
     prepared: PreparedDiagnostic,
     api_key: str | None = None,
+    credential_path: Path | None = None,
     urllib_transport: Transport = _urllib_transport,
     curl_transport: Transport = _curl_transport,
 ) -> dict[str, Any]:
     if prepared.output_dir.exists():
         raise FileExistsError(f"diagnostic output already exists: {prepared.output_dir}")
-    credential = api_key or _load_credential(prepared.package_root)
+    credential = api_key or _load_credential(prepared.package_root, credential_path)
     if not credential:
         raise ValueError("empty DeepSeek credential")
     prepared.output_dir.mkdir(parents=True, exist_ok=False)
@@ -929,6 +930,7 @@ def main() -> None:
     parser.add_argument("--package-root", type=Path, default=Path.cwd())
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--authorization", type=Path, required=True)
+    parser.add_argument("--credential-file", type=Path)
     parser.add_argument("--prepare-only", action="store_true")
     args = parser.parse_args()
     package_root = args.package_root.resolve()
@@ -943,7 +945,14 @@ def main() -> None:
     if args.prepare_only:
         print(_canonical_json(prepared.prepare_audit))
         return
-    print(_canonical_json(execute(prepared=prepared)))
+    print(
+        _canonical_json(
+            execute(
+                prepared=prepared,
+                credential_path=(args.credential_file.resolve() if args.credential_file else None),
+            )
+        )
+    )
 
 
 if __name__ == "__main__":

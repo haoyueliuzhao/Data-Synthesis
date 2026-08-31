@@ -220,3 +220,14 @@ def test_wrong_authorization_and_existing_output_fail_closed(
             prepared=_prepared(prepared_base, existing),
             api_key="test-secret",
         )
+
+
+def test_explicit_private_credential_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    private = tmp_path / ".env"
+    private.write_text("DEEPSEEK_API_KEY=test-secret\n")
+    private.chmod(0o600)
+    assert diagnostic._load_credential(tmp_path / "unused", private) == "test-secret"  # noqa: SLF001
+    private.chmod(0o644)
+    with pytest.raises(ValueError, match="must be private"):
+        diagnostic._load_credential(tmp_path / "unused", private)  # noqa: SLF001
