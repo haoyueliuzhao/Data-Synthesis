@@ -11286,10 +11286,12 @@ The audit implementation independently reconstructs the v26.186 Git Archive and 
 directly reparses 192 Raw and 192 Result files, recomputes every payload, descriptor, Attempt,
 Trace, Outcome and parent-chain identity, and reruns thirteen negative controls. The two fully
 rehashed diagnostic 192-row attacks must reject at the exact non-reachable admission reason.
-Implementation checks currently pass 7/7 with all thirteen controls rejected; final source-
-projected identities and deterministic results remain pending the exact implementation commit.
+Implementation checks pass 7/7 with all thirteen controls rejected. Preliminary v1 independently
+rebuilds all 398 files and returns `PASSED_INDEPENDENT_AUDIT`, but its Report leaves the new audit
+Manifest parent null. The v1 directory remains immutable and is superseded for evidence authority;
+v2 makes that parent mandatory without changing any replay, attack, Gate, or decision count.
 
-Until that formal build completes, v26.186 remains the active authoritative checkpoint. The
+Until the authoritative v2 formal build completes, v26.186 remains the active checkpoint. The
 v26.187 pass boundary is `no_further_experiment_authorized_without_new_audit_decision`; online
 Development and every empirical or VTDO downstream stage remain blocked. See
 `docs/finance_v26_187_artifact_backed_outcome_independent_audit.md`.

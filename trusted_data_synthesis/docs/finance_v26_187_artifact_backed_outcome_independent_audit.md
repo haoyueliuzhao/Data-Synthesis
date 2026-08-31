@@ -49,10 +49,16 @@ the 398 frozen files, 192 Bundles and 384 actual Raw/Result files; preserves bot
 completed-invalid validity states; and rejects all thirteen controls. Focused PyCompile, Ruff,
 format and no-import-follow Mypy pass.
 
-These are implementation checks before the source-projected formal build. Final Source Archive,
-artifact Root, Report, decision, deterministic rebuild and regression results are recorded only
-after the exact implementation commit has been frozen. Until then v26.186 remains the active
-checkpoint and online execution remains blocked.
+The preliminary v1 source-projected build from implementation commit `dac8fb5c` independently
+reconstructs all 398 v26.186 files, replays all 192 Jobs and 384 Raw/Result artifacts, rejects
+13/13 controls, and returns `PASSED_INDEPENDENT_AUDIT`. Its audit source Archive is
+1,021,143,040 bytes at SHA-256
+`347d2d926d39f54c41aabca863852e89cbad824c598e33e93abaff1905e4aa22`.
+
+The v1 directory is retained but superseded for top-level evidence authority because its Report
+left `artifact_manifest_id=null`. No Source, replay, attack, Gate, decision, or transition result
+changes. Authoritative v2 makes the Manifest parent mandatory and constructs it before the
+Report. Final v2 identities remain pending. Online execution remains blocked.
 
 ## Decision boundary
 

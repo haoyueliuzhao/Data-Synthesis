@@ -391,7 +391,7 @@ class IndependentAuditReport(FrozenModel):
     static_audit_id: str = Field(min_length=1)
     decision_id: str = Field(min_length=1)
     transition_id: str = Field(min_length=1)
-    artifact_manifest_id: str | None = None
+    artifact_manifest_id: str = Field(min_length=1)
     audited_report_id: str = Field(min_length=1)
     audited_artifact_root: str = Field(min_length=1)
     exact_artifact_count: Literal[398] = 398
