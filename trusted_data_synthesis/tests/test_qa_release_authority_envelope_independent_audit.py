@@ -27,6 +27,17 @@ def test_independent_catalog_reconstruction_passes(payloads: dict[str, bytes]) -
     assert result["provider_calls"] == 0
 
 
+def test_git_tree_reconstruction_treats_file_rows_as_leaves() -> None:
+    content = b"payload\n"
+    row = {
+        "path": "file.txt",
+        "kind": "file",
+        "executable": False,
+        "git_blob_id": audit._git_blob_id(content),
+    }
+    assert audit._git_tree_id((row,)) == "5c71942e43e4451d2770e34da7784705c90c63c1"
+
+
 def test_independent_external_anchor_rejects_fully_rehashed_envelope(
     payloads: dict[str, bytes],
 ) -> None:

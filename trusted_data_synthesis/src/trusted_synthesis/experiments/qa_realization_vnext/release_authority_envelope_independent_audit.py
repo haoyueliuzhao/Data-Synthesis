@@ -249,7 +249,7 @@ def _git_tree_id(rows: tuple[dict[str, Any], ...]) -> str:
         body = bytearray()
         for name in sorted(node, key=lambda item: item.encode()):
             value = node[name]
-            if isinstance(value, dict):
+            if isinstance(value, dict) and "path" not in value:
                 mode = "40000"
                 object_id = visit(value)
             else:
