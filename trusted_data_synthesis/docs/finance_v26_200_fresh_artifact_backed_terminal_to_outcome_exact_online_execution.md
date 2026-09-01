@@ -144,6 +144,43 @@ The postrun stage may independently read and reconstruct the frozen execution ar
 not call the Provider, replace or rerun a Job, launch recovery, estimate empirical quantities,
 integrate QA, or create Mapper, State, frequency, Contribution, or VTDO rows.
 
-The final execution source commit/tree, Run Start Receipt, terminal partition, Provider-call and
-Usage totals, exact artifact Root, and objective completion/failure facts are appended only after
-the one-shot authorization is durably consumed.
+## Actual One-Shot Execution Result
+
+The one-shot authorization was durably consumed at 2026-09-01 15:54:34 UTC. The exact execution
+source commit/tree are:
+
+```text
+e3d1b8d2922e44a5edde0d63433a8f3781edecef
+738c30f294cca2097baffed3a5e17e7c298fab80
+```
+
+The Run Start Receipt is
+`finance_v26_200_online_run_start_receipt:c0320a61e0103fcbe81a0678b4f6ad11d6e7d9f28d474da6f2b10403fa66145e`.
+The process exits successfully after all 192 Jobs produce one Raw, Result, Trace, Outcome, Job
+record, and checkpoint. Replacement, rerun, and recovery counts remain zero. Old
+`complete_job` calls and `fixture_complete` terminals remain zero.
+
+The execution makes 192 Stage 1 Provider calls and zero Stage 2 calls. All 192 return HTTP 200
+with exact requested/selected/response model `deepseek-v4-flash`, Thinking present, and complete
+Usage. Total Usage is 1,824,320 tokens. The terminal partition is:
+
+```text
+first_response_abi_invalid       188
+thinking_integrity_failure         4
+total                            192
+```
+
+The 188 public payloads are privacy-valid but none crosses the exact four-field Action ABI. Four
+HTTP-200 responses exhaust the Completion bound in reasoning and project typed
+`thinking_integrity_failure`. These are execution results, not a Capability estimate.
+
+Execution Summary identity is
+`finance_v26_200_online_execution_summary:efe14591ff3551b83cbcc4e4b39e396780b13e65f92ebe8e5903d51a3bbeb4ef`.
+The immutable execution directory contains 1,154 files and 4,304,518 bytes. Its 1,153-member
+Manifest is
+`finance_v26_200_execution_artifact_manifest:e50288c4c7e2bf1b13e89e1ecef3079ab3736521450ad243a9017f216606d1a6`;
+Artifact Root is
+`finance_v26_200_execution_artifact_root:e95f87d91231f1ab22df15742661c535052b87f5b4fbbc84c32337e0d4b023a5`.
+
+The only permitted transition remains the zero-Provider postrun independent audit recorded in
+`docs/finance_v26_201_fresh_artifact_backed_terminal_to_outcome_postrun_independent_audit.md`.
