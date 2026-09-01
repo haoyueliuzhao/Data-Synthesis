@@ -15,6 +15,32 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.195 Fresh Artifact-Backed Outcome Authority Preflight
+
+Finance v26.195 has consumed only `fresh_artifact_backed_outcome_authority_preflight_only`. It
+source-freezes all 22 v26.194 formal files and strictly revalidates the exact 32-Package,
+192-Job, Manifest, Runner, and Execution Contract chain. It materializes fresh Terminal Registry,
+Raw, Result, AttemptTrace, Outcome-row, and ExactEvidenceSet evaluator identities with zero
+v26.186 authority-ID reuse.
+
+The scripted control surface contains 192 typed Raw files, 192 typed Result files, 192 reconstructed
+Traces, and 192 reconstructed Outcome rows. All 384 actual file bytes, hashes, and canonical
+serializations match. The old `fixture_complete` shape is rejected. The v26.194 12/12 controls
+remain frozen and all 23 new Outcome attacks reject, eighteen with complete downstream rehash.
+Provider calls, Development outcomes, empirical rows/estimates, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain zero.
+
+The 403-file formal directory rebuilds byte for byte. Report identity is
+`finance_v26_195_fresh_outcome_preflight_report:ec2ae9613cd4110a41eb74de005a2ec0e4c6aa0e062dde76a7e6ff5f9eba5264`;
+sealed Root is
+`finance_v26_195_sealed_evidence_artifact_root:be910ff7aa14a082cf83c218968937a140c09a212761304f247d982ad2d0762c`;
+distribution Root is
+`finance_v26_195_distribution_artifact_root:ad4a020b60938855d730603033cfc62ba73d9498b69897f20410d4bcf56d1a77`.
+The only permitted successor is
+`fresh_artifact_backed_outcome_authority_preflight_independent_audit_only`; online execution
+remains blocked. See
+`docs/finance_v26_195_fresh_artifact_backed_outcome_authority_preflight.md`.
+
 ## Prospective Thinking-Mode Policy
 
 Effective 2026-08-21, every newly materialized Provider model call must explicitly request
