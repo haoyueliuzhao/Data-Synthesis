@@ -15,6 +15,59 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.197 Fresh Terminal-to-Outcome Integration Repair Preflight
+
+Finance v26.197 consumed only
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_only`. The exact
+10,305-byte external review is bound at SHA-256
+`079e1e5d7c98d2b7c54fae6d033ef76f47476fb9b6fe166ddc9e59854284ece9`. All thirteen v26.196
+formal files, the frozen v26.194 Catalog/Manifest/Runner/Execution chain, and the six v26.195
+Outcome authority identities revalidate with zero historical or QA mutation.
+
+A fresh successor integration identity now composes the actual frozen v26.194 `invoke` with a
+Kernel-owned terminal dispatcher and the exact v26.195 `FreshOutcomeArtifactWriter`. The frozen
+v26.194 `complete_job` remains unchanged historical evidence and still contains its old
+`fixture_complete` behavior; the successor `complete_job(job_id=...)` has no caller terminal
+parameter. Sixteen distinct exact Manifest Jobs each execute one local zero-Provider invocation.
+All sixteen Registry-reachable terminals are derived from observed payload or typed exception
+evidence and each produces exactly one terminal projection, typed Raw, typed Result,
+reconstructed Trace, and reconstructed Outcome. Raw-before-Result and all 32 actual artifact-byte
+matches pass; `fixture_complete`, exception escapes, Provider calls, Development outcomes, and
+empirical rows are zero.
+
+The two excluded names, `measurement_support_exit` and `policy_horizon_exhausted`, receive
+dispatcher-specific source-bound witnesses. The exact dispatcher and successor `invoke` contain
+zero branch tokens for either name, `complete_job` contains zero terminal parameter, and both
+enter zero empirical denominators. This is a concrete v26.197 Runner/dispatcher exclusion result,
+not a universal future unreachability claim.
+
+The successor Kernel constructor now validates the external authorization object and its exact
+bytes before any client or writer factory. A legal repair-preflight parent is admitted; missing,
+modified, self-declared, and cross-experiment parents reject with zero client constructions or
+credential lookups. The same legal parent with a Provider-execution request also rejects before
+credential lookup because this authorization is preflight-only. All thirteen destructive
+controls reject and all 28 noncompensatory Gates pass.
+
+The authoritative source commit is `2551fc331f5e1327a5b78054423223d158f08d6a` and source tree
+is `a5b1699e8e1de3622f2ddb567d6df2148a47f47e`. The 48-file, 285,781-byte formal directory
+rebuilds byte for byte. Focused tests pass 8/8; the adjacent v26.195-v26.197 suite passes 23/23;
+focused PyCompile, Ruff check/format, and Mypy pass; package-wide Ruff passes. Package-wide
+no-import-follow Mypy checks 626 source files and retains ten historical diagnostics in six
+pre-v26.197 files, with zero v26.197 diagnostics.
+
+Report identity is
+`finance_v26_197_terminal_outcome_repair_preflight_report:57692819ab14fc6f7f6a9fa90f7f6c9ddb887da77ce997286d0392aed5d07954`;
+sealed Root is
+`finance_v26_197_sealed_evidence_artifact_root:cc217ac3b877c74341070ad8cfb8298c6d232f5c1d6bb514aafc936fc1142598`;
+distribution Root is
+`finance_v26_197_distribution_artifact_root:4d9760be75c4dc3f1acdd79648cddfadab30e84e823aaef2d27874346131e6e2`.
+The only permitted successor is
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_independent_audit_only`.
+Online execution, the 192-Job run, empirical estimation, source/Manifest/Contract changes, QA
+integration, Mapper, State, frequency, Contribution, VTDO, training, release, and production
+remain forbidden. See
+`docs/finance_v26_197_fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight.md`.
+
 ## v26.196 Fresh Outcome Authority Independent Audit
 
 Finance v26.196 consumed only
