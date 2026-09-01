@@ -52,7 +52,7 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTe
 
 RUN_ID: Final = (
     "finance_v26_198_fresh_artifact_backed_terminal_to_outcome_integration_repair_"
-    "independent_audit_v1_20260901"
+    "independent_audit_v2_20260901"
 )
 OUTPUT_DIR: Final = f"artifacts/vtdo_experiment/{RUN_ID}"
 AUDITED_V197_DIR: Final = (
@@ -831,7 +831,7 @@ def _independent_decision(
 ) -> integration.TerminalDecision:
     terminal = _independent_terminal_kind(evidence)
     policies = {item.terminal_kind: item for item in registry.policies}
-    policy = policies[terminal]
+    policy = policies[cast(authority.TerminalKind, terminal)]
     if policy.registration_status != "reachable":
         _fail("reconstruct.decision", "independent dispatcher selected excluded policy")
     return cast(
@@ -1302,7 +1302,8 @@ def _independent_runtime_replay(
                 reconstructed.append(independent_bundle)
             kernel.assert_closed()
             try:
-                kernel.complete_job(
+                completion = cast(Any, kernel.complete_job)
+                completion(
                     job_id=jobs[0].job_id,
                     terminal_kind="completed_qualified",
                 )
