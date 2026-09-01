@@ -41,6 +41,54 @@ The only permitted successor is
 remains blocked. See
 `docs/finance_v26_195_fresh_artifact_backed_outcome_authority_preflight.md`.
 
+## Offline Future QA Candidate Population
+
+An operator-directed QA side path now runs independently of the frozen VTDO measurement
+condition. It first freezes a pre-outcome `future_QA_candidate_population` Manifest and only then
+executes local deterministic trajectories, QualityAssessment, ExecutionBinding, and diversity
+selection. No assessment or selection field enters the sixteen candidate identities.
+
+The exact source surface is four authorized `registered_cross_metric_comparison` semantic
+instances with four Renderer profiles each. All 16 local hard-Gate assessments pass; the
+downstream diversity projection selects eight candidates, exactly two per instance with `1/2`
+child weights. `temporal_peak_secondary_lookup` and `growth_filter_margin_rank` remain typed
+blocked Proposals because their Operation closures are incomplete; both produce zero Plan,
+RealizedTaskPackage, assessment, or Population member. Admission uses the authoritative Finance
+registered-pair set plus actual FinanceSemanticPolicy and Operation execution, not only the old
+task-type compatibility boolean.
+
+A read-only isolation receipt source-freezes five v26.194 files and confirms the unchanged 32
+Packages, 192 Jobs, 792 registered Prompt coordinates, and 192/192 Raw/Result namespaces. Frozen
+VTDO identities are excluded from every QA candidate byte and appear only in that explicit
+receipt. The QA branch imports zero VTDO experiment modules, writes zero VTDO artifacts, and
+creates zero Provider calls, GPU jobs, Development Jobs, empirical outcomes, QA Release
+Population, or production Release object. Resource values are engineering estimates only,
+not-yet Runner projected, and not online resource authority.
+
+The authoritative identities are:
+
+- pre-outcome Candidate Manifest:
+  `future_qa_preoutcome_candidate_manifest:18523303bb2fed9df208205bc7fb44e92cde6bff9d46dd179220b3a8af1990ad`;
+- local Assessment Catalog:
+  `future_qa_local_assessment_catalog:c6d2a45912ca92f5640102f44ee9e4088cf0686b909495ff6fcf2dfdc48c9a19`;
+- qualification report:
+  `future_qa_qualification_report:a5cbfd27e5b9b0bfe8c511de7131a5b8de28a1a5844b8512d0944be3dd48955b`;
+- VTDO isolation receipt:
+  `qa_vtdo_isolation_receipt:859b307646ffc623ce272744f4f968d3dd6601dfe4b54ab688fba74361a512ce`;
+- artifact Root:
+  `future_qa_candidate_artifact_root:9caf67aa43317415f0227b5ae6ea4f78dd5cf68a9fb0d1491436f13494081e04`.
+
+A preliminary v1 directory remains immutable but is superseded because package-wide Mypy found
+one local payload-union-to-Decimal diagnostic. Authoritative v2 adds explicit Decimal
+normalization; candidate semantics and IDs, outcomes, selection, blocked partition, and isolation
+receipt remain unchanged. Its eighteen-file, 1,233,274-byte formal directory rebuilds byte for
+byte. Focused and adjacent
+QA tests pass 18/18; focused PyCompile, Ruff check/format, and Mypy pass. This pool can only seed a
+later fresh QA experiment condition after separate Population, Package, Manifest, Prompt,
+Execution, Outcome-authority, preflight, and online authorization steps. It must not replace or
+extend the current v26.194 192-Job condition. See
+`docs/finance_qa_future_candidate_population.md`.
+
 ## Prospective Thinking-Mode Policy
 
 Effective 2026-08-21, every newly materialized Provider model call must explicitly request

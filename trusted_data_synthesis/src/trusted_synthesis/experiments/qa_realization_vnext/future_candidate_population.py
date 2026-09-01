@@ -880,7 +880,8 @@ def _cross_metric_bundle(
         "comparability_level": "xbrl_concept_level",
         "default_unit": "million USD",
     }
-    left = _metric_evidence(source, left_predicate, source.payload.value, shared_attributes)
+    left_value = Decimal(str(source.payload.value))
+    left = _metric_evidence(source, left_predicate, left_value, shared_attributes)
     right = _metric_evidence(source, right_predicate, right_value, shared_attributes)
     evidence = (left, right)
     bundle_id = strict_canonical_hash(

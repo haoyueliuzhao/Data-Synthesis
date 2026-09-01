@@ -163,20 +163,27 @@ The deterministic formal directory is:
 
 ```text
 trusted_data_synthesis/artifacts/qa_realization_vnext/
-  future_qa_candidate_population_v1_20260901
+  future_qa_candidate_population_v2_20260901
 ```
 
-It contains 18 files and 1,233,274 bytes. Authoritative identities are:
+A preliminary v1 directory remains immutable. Package-wide Mypy then exposed one local type
+diagnostic where the fixture payload union was passed to a Decimal-only helper. The authoritative
+v2 source explicitly normalizes that value through Decimal; candidate semantics, candidate IDs,
+all local assessment outcomes, diversity selection, blocked-Proposal partition, and the v26.194
+isolation receipt are unchanged. Only source-bound Manifest, Assessment, Qualification, source
+Root, and artifact Root identities are refreshed.
+
+The authoritative v2 directory contains 18 files and 1,233,274 bytes. Authoritative identities are:
 
 ```text
 pre-outcome Candidate Manifest
-  future_qa_preoutcome_candidate_manifest:d41cc931f5dc2b715327fd82dd3f0d76d3293e8ab1009d33253ca92e5d6b139b
+  future_qa_preoutcome_candidate_manifest:18523303bb2fed9df208205bc7fb44e92cde6bff9d46dd179220b3a8af1990ad
 
 local Assessment Catalog
-  future_qa_local_assessment_catalog:7f2bd2860ed3706042d89b2f49f00cfef01ad3449922f290547f23f5c8513220
+  future_qa_local_assessment_catalog:c6d2a45912ca92f5640102f44ee9e4088cf0686b909495ff6fcf2dfdc48c9a19
 
 qualification report
-  future_qa_qualification_report:9e8db3c525e463ca712aa37bc90a5869a7db3c590688572fc700133bbd1dab18
+  future_qa_qualification_report:a5cbfd27e5b9b0bfe8c511de7131a5b8de28a1a5844b8512d0944be3dd48955b
 
 diversity selection
   diversity_aware_release_selection:4f1377ddc1aeff75bebd24e245c3210301f3ade1dd58caea3da2264b9deb64bf
@@ -185,14 +192,17 @@ VTDO isolation receipt
   qa_vtdo_isolation_receipt:859b307646ffc623ce272744f4f968d3dd6601dfe4b54ab688fba74361a512ce
 
 source Root
-  future_qa_source_root:65ab129d158f09a94ae6a82f7406bda78fdc59316f1352f47f48bd6cee1acfd6
+  future_qa_source_root:dbd50d8b54a02dfcc5ffee67ef309a84fbbe3e0dba066efc98d605d3af5caa22
 
 artifact Root
-  future_qa_candidate_artifact_root:586d03b8dbfb3d8b342c8f54913b81c62bee03b6d935b642cf6594fd2acf6cb3
+  future_qa_candidate_artifact_root:9caf67aa43317415f0227b5ae6ea4f78dd5cf68a9fb0d1491436f13494081e04
 ```
 
 The focused and adjacent QA suite passes 18/18. Focused PyCompile, Ruff check/format, and Mypy
-are run separately. No credential lookup, Provider client, network generation, or GPU job occurs.
+pass. Package-wide Ruff passes. Package-wide no-import-follow Mypy checks 621 source files,
+retains the same 70 historical or environment-dependent diagnostics in 30 predecessor files, and
+reports zero diagnostics in the QA future-candidate module. No credential lookup, Provider client,
+network generation, or GPU job occurs.
 
 ## Claim boundary and next use
 

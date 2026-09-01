@@ -25,7 +25,7 @@ from trusted_synthesis.experiments.qa_realization_vnext.future_candidate_populat
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _FORMAL = (
     _REPO_ROOT / "trusted_data_synthesis/artifacts/qa_realization_vnext/"
-    "future_qa_candidate_population_v1_20260901"
+    "future_qa_candidate_population_v2_20260901"
 )
 _ISOLATION_FILENAME = "qa_vtdo_isolation_receipt.json"
 
