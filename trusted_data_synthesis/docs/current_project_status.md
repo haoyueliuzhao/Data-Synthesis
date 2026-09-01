@@ -15,6 +15,64 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.199 Fresh Terminal-to-Outcome Online Execution Authorization
+
+Finance v26.199 consumed only
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_online_execution_authorization_only`.
+The exact 11,446-byte external review is bound at SHA-256
+`ba183459a9e487b755d42ce6ee0403ac0c2b5dcb9801161987889b85361ddaac`. It accepts v26.198,
+requires no further integration repair, and permits only a separate narrow precredential online
+authorization decision.
+
+The authorization strictly revalidates all 48 v26.198 files over 275,894 bytes, the unchanged
+v26.194 32-Package, six-Replica, 192-Job, 792-invocation condition, its 192 unique Raw and Result
+namespaces, and the exact v26.192 model, Thinking, Action/Final Grammar, bounded Policy, Prompt,
+and resource parents. It separately binds the exact v26.197 successor integration source,
+four implementation files, fresh integration Contract, and six unchanged v26.195 Outcome
+authority identities. The frozen v26.194 Runner/Execution bytes remain unchanged historical
+preflight objects; v26.199 adds a separate authorization overlay and does not rewrite their false
+online flags.
+
+The content-addressed authorization grants only one execution of the exact 192-Job Manifest
+through the successor Kernel and fresh writer. It requires exact canonical authorization bytes
+before client, Kernel-writer, Outcome-writer, credential, or Provider access. One exact local
+control admits; nine missing, modified, self-declared, cross-parent, changed-Job/model/Thinking,
+QA, or absent-Provider-request controls reject before factories with zero credential lookups.
+All twenty fully rehashed parent, generation, authority, Job-set, and namespace attacks reject.
+All 28 noncompensatory Gates pass.
+
+The formal decision is
+`exact_frozen_192_job_online_execution_authorization_issued_not_consumed`. This authorization
+stage executes zero Manifest Jobs, makes zero Provider calls or credential lookups, writes zero
+Raw or Result files, and creates zero Development outcomes, empirical rows or estimates, QA
+changes, Mapper, State, frequency, Contribution, or VTDO rows. Authorization reuse, replacement
+rerun, recovery execution, source/Manifest/generation/authority changes, and QA integration are
+false.
+
+The authoritative source commit is `5a2bc619292de2192cd54b6e60bfc115347f3cd8` with tree
+`805b5a757a2e21e316ce2bd1f3cfa41947a356e6`. Its 16-file, 102,783-byte formal directory
+rebuilds byte for byte. Focused tests pass 8/8; the adjacent v26.198-v26.199 suite passes 16/16;
+focused PyCompile, Ruff check/format, and Mypy pass; package-wide Ruff passes. Package-wide
+no-import-follow Mypy checks 630 source files and retains ten historical diagnostics in six
+pre-v26.199 files, with zero v26.199 diagnostics.
+
+Authorization identity is
+`fresh_terminal_to_outcome_exact_online_execution_authorization:42aaca7f87e5766e7338c04a22d0eb49132a718e46506f4d1ca4459811cce600`;
+Report identity is
+`finance_v26_199_terminal_outcome_online_authorization_report:09fd76688a92e42efe0e7456283c4d3f09c42270e54f2aa0ee74143ea016892a`;
+sealed Root is
+`finance_v26_199_sealed_evidence_artifact_root:bf4aa942af3665fe16f7458637d639f4633722e071db794bf7a334c2f59e8f41`;
+distribution Root is
+`finance_v26_199_distribution_artifact_root:bb52c6f850face7adfeb949313d02f7f9de8b49d3f9d10393c65d4f74da36e43`.
+
+The only permitted successor is
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_exact_192_job_online_execution_only`.
+It may consume this authorization once, after exact precredential admission, to run only the
+frozen 192 Jobs through the successor integration. Replacement, rerun, recovery, QA integration,
+empirical estimation, Mapper, State, frequency, Contribution, VTDO, training, release, and
+production remain forbidden. See
+`docs/finance_v26_199_fresh_artifact_backed_terminal_to_outcome_online_authorization.md`.
+
 ## v26.198 Fresh Terminal-to-Outcome Integration Repair Independent Audit
 
 Finance v26.198 consumed only
