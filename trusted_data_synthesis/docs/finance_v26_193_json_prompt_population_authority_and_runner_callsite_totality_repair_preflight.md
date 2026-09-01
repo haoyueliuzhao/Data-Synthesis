@@ -152,7 +152,7 @@ This is an authoritative exact set for the 792 registered reference-plus-rejecti
 It is explicitly not described as an exhaustive enumeration of all model-reachable accepted
 prefixes.
 
-## Source-level Runner Callsite Totality
+## Credential-Free Adapter Callsite Totality
 
 The new `CredentialFreeExactFutureRunner` has one injected transport seam. Action, Correction,
 and Final each call the same private `_invoke` exactly once. AST and dynamic controls establish:
@@ -181,7 +181,11 @@ Candidate evaluations                     41,124
 ```
 
 It does not relabel 792 rows as 14,388 States and does not claim that all future model behavior
-was locally enumerated.
+was locally enumerated. The later external v26.193 audit further narrows this result: “every
+implemented Provider route” means every route inside this credential-free fixture adapter only.
+It does not cover the certified client, actual transport, resource/dynamic certificates,
+privacy-first journal, Raw/Result writers, recovery, or orphan blocking, and therefore is not an
+authoritative online Runner totality result.
 
 Runner Callsite Totality Audit:
 `finance_v26_193_runner_callsite_totality_audit:d8e880650f1762936bfd7c37ae5cc5c990e0e8c50e46078c92e2a0562b54d3c0`.
