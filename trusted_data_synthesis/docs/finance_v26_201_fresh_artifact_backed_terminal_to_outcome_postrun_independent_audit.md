@@ -20,7 +20,7 @@ response shapes and redacted telemetry.
 The decision accepts v26.200 as a complete execution with intact evidence. It does not claim
 Capability success: no response crossed the exact Action ABI, so no Job reached a model-owned
 accepted Action, correction, Final, or Qualified endpoint. No empirical Capability estimate is
-materialized.
+materialized within v26.201.
 
 ## Frozen v26.200 Execution
 
@@ -109,6 +109,11 @@ The formal Decision is
 `v26_200_exact_online_execution_accepted_as_complete`, with identity
 `finance_v26_201_postrun_independent_audit_decision:dbb4b76405df9b264679e987c9d75cce6d3375e0d82037323104e6b73b3587e9`.
 
+The following is a retrospective v26.202 interpretation note and does not alter the immutable
+v26.201 evidence artifacts. The v26.201 Markdown report is not a member of the eight-file formal
+evidence directory; its Artifact Manifest, Artifact Root, member bytes, and identities remain
+unchanged.
+
 This means the one-shot Manifest execution and its terminal-to-persistence evidence are complete
 and auditable. It does not mean the model passed the Action interface, completed a Program, or
 demonstrated post-ABI Capability. This v26.201 stage did not invoke an empirical evaluator and
@@ -131,8 +136,8 @@ Provider execution, replacement or rerun, recovery, Prompt/Grammar/model/policy 
 empirical estimation, QA integration, Mapper, State, frequency, Contribution, VTDO, training,
 release, and production are not authorized.
 
-This historical no-further-experiment boundary was later consumed only by the exact external
-v26.202 authorization for a zero-Provider empirical exact-set evaluation and first-response
+This historical no-further-experiment boundary was later consumed only by v26.202, under its exact
+external authorization, for a zero-Provider empirical exact-set evaluation and first-response
 interface localization. v26.202 does not authorize a Provider rerun or historical response
 adaptation. See
 `docs/finance_v26_202_exact_empirical_evaluation_and_first_response_interface_localization.md`.

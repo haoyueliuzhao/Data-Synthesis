@@ -162,9 +162,11 @@ empirical estimation, QA integration, Mapper, State, frequency, Contribution, VT
 release, and production require a new external audit decision. See
 `docs/finance_v26_201_fresh_artifact_backed_terminal_to_outcome_postrun_independent_audit.md`.
 
-That boundary was later consumed only by the external v26.202 zero-Provider exact-set evaluation
-and first-response localization above. No Provider execution, historical adaptation, recovery, or
-full rerun was authorized.
+That boundary was later consumed only by v26.202, under its exact external authorization, for the
+zero-Provider exact-set evaluation and first-response localization above. The v26.201 Markdown
+report is not a member of its eight-file formal evidence directory, so the retrospective v26.202
+interpretation annotation changes no v26.201 formal evidence byte, Manifest, Root, or identity.
+No Provider execution, historical adaptation, recovery, or full rerun was authorized.
 
 ## v26.200 Fresh Terminal-to-Outcome Exact 192-Job Online Execution
 
