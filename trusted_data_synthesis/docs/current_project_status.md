@@ -15,6 +15,104 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.203 Fresh First-Response Action-Interface Disambiguation Calibration Preflight
+
+Finance v26.203 consumed only
+`fresh_first_response_action_interface_disambiguation_and_stratified_calibration_population_preflight_only`.
+The exact 15,697-byte external review is bound at SHA-256
+`1c3009fc757fed7ea92aa8d522efb0bc9bf91ce3660d2da11e8d526c3c088795`. It accepts the
+v26.201 retrospective interpretation revision and authorizes only a fresh zero-Provider
+Action-interface calibration Population and protocol preflight.
+
+All eleven v26.202 formal files revalidate over 674,872 bytes. The frozen end-to-end estimates
+remain `q_first=0/192` and `q_bounded_correction=0/192`; the post-Action-ABI denominator remains
+zero and its conditional quantities remain null. No historical response, terminal, row,
+estimate, identity, or parent is modified, and no historical response shape is used to select
+the fresh Population.
+
+The actual frozen Action parser and Grammar compile to one exact four-field Contract over
+`state_id`, `action_id`, `decision_kind`, and `protocol`. Required and allowed fields are
+identical; extra properties and wrappers are forbidden. Parser relaxation and historical
+payload adaptation are false. The Repair arm exposes this complete Contract in one system
+message, keeps `grammar_id` Host-side, removes the old incomplete `response_abi` from the user
+message, and retains Answer/Operation semantics exactly once under metadata explicitly marked
+not to be a model response schema. The Control arm preserves the selected frozen first-Prompt
+bytes exactly.
+
+A zero-response census reconstructs all 192 frozen first Prompts. It forms four pre-response
+strata—comparison versus scalar-value Answer Schema crossed with lower D0-D1 versus higher D2-D3
+depth—and selects short, lower-median, and long Prompt rows within each by a frozen byte-count,
+Package, Replica, and Job ordering. The exact Population has twelve source cells, three per
+stratum. Selection reads zero response shape, outcome, or terminal field.
+
+Every cell creates one fresh Control and one fresh Repair Job. The 24 Job, Raw, Result,
+Observation, and request namespaces are unique; old v26.200 Job identities are source parents but
+are never reused. Each pair shares exact Task, State, ordered Candidate set, Candidate Action IDs,
+Schedule, model, Thinking, sampling, Completion, Policy, resource, privacy, and telemetry
+parents. Hash ordering yields six `C -> R` and six `R -> C` pairs. Planned bounds are one Stage 1
+call per Job, 24 total, zero Stage 2, zero retry, zero recovery, zero Correction, and zero Final.
+
+The separate prospective evidence chain is CalibrationJob -> FirstRequestDescriptor ->
+FirstResponseDescriptor -> FirstActionInterfaceObservation -> ExactPairedCalibrationEvaluation.
+Two scripted nonempirical parser fixtures pass, but empirical Response, Observation, and
+Evaluation counts remain zero. The future noncompensatory Gates require 24/24 evidence closure,
+zero paired semantic or parser changes, Repair ABI at least 9/12, Repair reference-plus-State
+validity at least 8/12, at least seven Repair-only paired ABI successes, at most one Control-only
+success, and zero adaptation, relaxation, retry, recovery, QA, Mapper, State, Contribution, or
+VTDO row.
+
+All six authorized control classes close: three Task/State/Candidate semantic-byte changes, one
+parser relaxation, one historical adaptation, three missing/duplicate/extra Job cases, two
+cross-arm evidence-parent cases, and four QA/old-ID/retry/recovery cases all reject. Fourteen
+concrete cases reject, accepted controls are zero, and Provider and credential counts are zero.
+
+Authoritative identities are:
+
+- external authorization:
+  `finance_v26_203_external_audit_authorization:d5103d7eac2e556fe88718b2d1f72331e4060696f23f004b5ba89f3b8f0b4403`;
+- v26.202 Freeze:
+  `finance_v26_203_v202_freeze:e516b9f54e6de1f2db228f41babaca9840e7e6620c545d36f2d8d71e1196cd48`;
+- exact Action-interface Contract:
+  `fresh_first_response_exact_action_interface_contract:a95252bf3ce3d3c510636034f151eb5c8f219ee42c6e09f0fd8848f58bd0ffc1`;
+- stratified Population:
+  `fresh_first_response_stratified_calibration_population:fd6ec4188bf67da6d80f7e186e10cf56b05f9713c3141a443e60f67a96804f0b`;
+- 24-Job Manifest:
+  `fresh_first_response_calibration_manifest:bfcc54e24f8abb48304b7f98a9265a085b545393c12b391d08b4259f063b145c`;
+- evidence Schema Audit:
+  `finance_v26_203_calibration_evidence_schema_audit:087cd064739be84827d3983ee6be67c592992fd12cb747d76d609a070b64d518`;
+- online Gate Contract:
+  `fresh_first_response_online_calibration_gate_contract:a997e5617585e79951524bdff3dbb6fb25d0e87f8203c7a25814e31bbe55c9e8`;
+- preflight Control Audit:
+  `finance_v26_203_preflight_control_audit:78ad82dad617b0104b3dbcf68699f52d3681c5610c021096a4291ab895a4f783`;
+- Decision:
+  `finance_v26_203_decision:94439fc523b8956d53f682dbe836c41416008aa7eb1c675d68f5b99829a79132`;
+- Transition:
+  `finance_v26_203_transition:6b2d408d70101e1da407084003574358e6276f2f67a2d13eee2de8874c9149d3`;
+- Artifact Manifest:
+  `finance_v26_203_artifact_manifest:d6a2c5a261758ac46343955d9f26206f8fb3e3565d5fd8aae4474c7707655c6a`;
+- Artifact Root:
+  `finance_v26_203_artifact_root:a9c21c4ed2a3276496ebb14c54d26dd3b3cb3700a93eee5aee630419564315b3`.
+
+The exact source commit/tree are `511b9603fe9cdced1b8ea49f5753515318c827e8` /
+`2ba56b284f3b7119cce41bff33d70c9bf231b86b`. The fifteen-file, 582,364-byte formal
+directory rebuilds byte for byte. Focused v26.203 tests pass 8/8; the adjacent v26.200-v26.203
+suite passes 27/27; focused PyCompile, Ruff check/format, and no-import-follow Mypy pass;
+package-wide Ruff passes.
+
+The current decision is:
+
+```text
+no_online_calibration_authorized_without_new_external_audit_decision
+```
+
+The planned online stage is
+`fresh_first_response_action_interface_disambiguation_paired_24_call_online_calibration_only`,
+but v26.203 does not authorize any Provider call. Full 192-Job repaired execution, interface
+factor decomposition, parser relaxation, historical adaptation, old Job rerun, recovery, QA,
+Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+See
+`docs/finance_v26_203_fresh_first_response_action_interface_disambiguation_calibration_preflight.md`.
+
 ## v26.202 Exact Empirical Evaluation And First-Response Interface Localization
 
 Finance v26.202 consumed only
@@ -99,6 +197,10 @@ training, release, and production require a new external audit decision. Any fut
 receive a fresh identity and should first undergo a fresh stratified small-scale Action-interface
 online calibration. See
 `docs/finance_v26_202_exact_empirical_evaluation_and_first_response_interface_localization.md`.
+
+That boundary was later consumed only by v26.203 under its exact external authorization for the
+zero-Provider stratified calibration-Population preflight above. v26.203 creates no empirical
+response or interface-effect estimate and does not authorize the planned 24-call online stage.
 
 ## v26.201 Fresh Terminal-to-Outcome Postrun Independent Audit
 

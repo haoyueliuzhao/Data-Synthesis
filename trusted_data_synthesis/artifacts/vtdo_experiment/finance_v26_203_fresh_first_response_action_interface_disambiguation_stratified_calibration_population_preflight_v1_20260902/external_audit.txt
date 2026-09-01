@@ -1,0 +1,541 @@
+# 一、本轮修订审计结论
+
+```text
+revision_scientific_consistency            PASS
+stage-local_estimate_wording               PASS
+retrospective_annotation_provenance        PASS
+historical_evidence_immutability            PASS
+v26.202_transition_description             PASS
+additional_v26.201_revision_required       NO
+```
+
+本轮修订可以正式接受，不需要继续修改 v26.201，也不需要再增加针对 v26.201 的证据攻击或重建实验。
+
+建议记录的审计决定为：
+
+```text
+v26_201_retrospective_interpretation_revision_accepted
+```
+
+## 1. 阶段内外的估计关系已经表述清楚
+
+你将：
+
+> No empirical Capability estimate is materialized.
+
+改成：
+
+> No empirical Capability estimate is materialized within v26.201.
+
+准确区分了：
+
+```text
+v26.201：
+没有调用经验 evaluator，因此该阶段没有物化估计
+
+v26.202：
+在保持 192 个 Manifest Jobs 为完整分母的情况下，
+正式物化 q_first = 0/192，
+q_bounded_correction = 0/192
+```
+
+与此同时，只有以 Action-ABI crossing 为条件的语义率和轨迹深度量仍然因为条件分母为零而保持 `null`。
+
+这已经消除了此前“没有跨过 ABI，所以端到端 estimand 不存在”的错误推论。
+
+## 2. 追溯性注释没有污染历史证据身份
+
+新增说明明确指出：
+
+* 这是 v26.202 之后添加的 retrospective interpretation note；
+* v26.201 Markdown 不属于八文件 formal evidence directory；
+* Artifact Manifest、Artifact Root、成员字节和正式身份均未改变；
+* v26.200 和 v26.201 的历史响应、terminal 和证据对象均未被重写。
+
+该说明与当前项目状态完全一致。
+
+因此不存在：
+
+```text
+修改历史正式工件却继续沿用旧 Root
+用新解释替换旧 Outcome
+将 v26.202 结果伪装成 v26.201 原始结果
+```
+
+的问题。
+
+## 3. Transition 的消费主体也已修正
+
+现在写成：
+
+> consumed only by v26.202, under its exact external authorization
+
+比“被 authorization 自身消费”更准确。它正确表达了：
+
+```text
+external authorization
+    -> 授权 v26.202
+
+v26.202
+    -> 消费 v26.201 的 no-further-experiment boundary
+    -> 执行零 Provider 的 exact-set evaluation 与 localization
+```
+
+本轮没有剩余文档阻塞项。最多可以把 retrospective note 单独设成一个三级标题以改善阅读，但这只是排版选择，不是审计要求。
+
+---
+
+# 二、现在真正需要检验的理论命题
+
+当前首个根本阻塞点已经不在证据持久化、Outcome 父绑定或 estimator exact-set，而在：
+
+```text
+model-visible first-response Action interface
+```
+
+现有证据表明：
+
+* parser 要求 `action_id / decision_kind / protocol / state_id` 四个字段；
+* 当前 `response_abi` 没有直接包含 `action_id`，却包含了额外的 `grammar_id`；
+* `action_id` 位于 Candidate 行；
+* `answer_fields` 和 `operator_output_fields` 作为竞争输出 Schema 出现在同一个 user message 中；
+* 167/188 个公开响应恰好匹配这些 Answer/Operation Schema，而不是 Action ABI。
+
+因此当前可支持的是：
+
+```text
+结构性 Prompt-interface ambiguity 已被确认
+```
+
+还不能支持：
+
+```text
+该结构性歧义因果导致了 188 个非 ABI 响应
+```
+
+下一实验应当直接检验这个因果缺口，而不是继续审计历史证据链，也不是立即重跑 192 Jobs。
+
+---
+
+# 三、建议的后续实验
+
+## Finance v26.203：Fresh First-Response Action-Interface Disambiguation Calibration
+
+### 建议的正式阶段名
+
+立即获授权的阶段应限定为：
+
+```text
+fresh_first_response_action_interface_disambiguation_
+and_stratified_calibration_population_preflight_only
+```
+
+这一阶段：
+
+```text
+Provider calls                  0
+historical response changes     0
+old Job reruns                  0
+parser relaxation               0
+QA integration                  0
+Mapper / State / frequency      0
+Contribution / VTDO             0
+```
+
+v26.202 已明确要求任何修复使用 fresh identity，并先经过 fresh、stratified、small-scale Action-interface online calibration，而不是直接进行新的 192-Job 完整实验。
+
+---
+
+## 1. 要检验的命题
+
+在冻结任务、状态、Candidate、模型、Thinking、采样策略、资源界限、Action parser 和 Runtime 语义的情况下，只改变模型可见的响应接口：
+
+> 将分散且相互竞争的输出说明，改为一个唯一、连续、权威、与 parser 完全同构的四字段 Action 合同，是否会提高首响应 Action-ABI crossing？
+
+对于第 \(i\) 个配对 source cell，定义：
+
+$$
+Y_i^{C}
+=
+\mathbf 1[
+\text{control response crosses exact Action ABI}
+]
+$$
+
+$$
+Y_i^{R}
+=
+\mathbf 1[
+\text{repaired response crosses exact Action ABI}
+]
+$$
+
+主要有限总体 estimand 为：
+
+$$
+\Delta_{\mathrm{ABI}}
+=
+\frac{1}{12}
+\sum_{i=1}^{12}
+\left(
+Y_i^{R}-Y_i^{C}
+\right)
+$$
+
+进一步定义：
+
+$$
+A_i^a
+=
+Y_i^a
+\cdot
+\mathbf 1[\text{action reference valid}]
+\cdot
+\mathbf 1[\text{state binding valid}]
+$$
+
+用于衡量是否真正得到一个 model-owned、当前状态可接受的首个 Action。
+
+这不是 `q_first`，也不是 Capability estimate；它只是一个独立的 **Action-interface calibration estimand**。
+
+---
+
+## 2. 两个实验臂
+
+为了避免过度实验，建议只做一个配对两臂实验，不再拆成多因素四臂设计。
+
+| 实验臂                                | 模型可见接口                         | 用途                      |
+| ---------------------------------- | ------------------------------ | ----------------------- |
+| `C`：contemporaneous control        | 精确复现所选 v26.200 first Prompt 接口 | 控制 Provider 时间变化和模型服务漂移 |
+| `R`：disambiguated Action interface | 唯一、连续、四字段 Action 合同            | 检验完整接口修复包的因果效果          |
+
+### Control 臂
+
+Control 使用所选 source Jobs 的历史 first Prompt 字节：
+
+```text
+one user message
+old response_abi
+action_id outside response_abi
+visible answer_fields
+visible operator_output_fields
+```
+
+但必须创建 fresh calibration Job 和 fresh persistence namespaces。它是**同期复现对照**，不是 v26.200 Job rerun、Recovery 或旧分母替换。
+
+### Repair 臂
+
+Repair 臂只允许改变模型可见输出接口：
+
+```text
+system message:
+  exact Action response contract
+
+user message:
+  exact frozen task
+  exact current public State
+  exact Candidate set and order
+  exact Schedule and task semantics
+```
+
+系统消息中的响应对象必须由实际 Action parser/Grammar 自动编译，而不是手写：
+
+```json
+{
+  "action_id": "<one exact current Candidate action_id>",
+  "decision_kind": "<exact grammar-defined value>",
+  "protocol": "<exact grammar-defined value>",
+  "state_id": "<exact current state_id>"
+}
+```
+
+必须同时满足：
+
+```text
+required fields                 exactly 4
+allowed fields                  exactly 4
+additional properties           forbidden
+grammar_id                      Host-side parent only
+parser                          unchanged
+Candidate action IDs            unchanged
+current state_id                unchanged
+```
+
+`answer_fields` 和 `operator_output_fields` 不删除其语义内容，但应移动或标记为：
+
+```text
+verifier/internal task metadata
+not a model response schema
+```
+
+旧的、缺少 `action_id` 的 `response_abi` 不得继续作为第二个响应合同留在 user message 中。
+
+需要明确记录：这是一个**复合接口修复包**。实验通过后，可以声称整个修复包对 ABI crossing 有因果效果，但不能进一步声称究竟是 system role、四字段连续呈现还是竞争 Schema 标记中的哪一项单独起作用。当前没有必要为拆解这些子机制再增加实验臂。
+
+---
+
+## 3. Calibration Population
+
+建议选取：
+
+```text
+source semantic cells          12
+arms per source cell            2
+fresh calibration Jobs         24
+maximum Provider calls         24
+Stage 2 calls                   0
+automatic retries               0
+recovery calls                  0
+```
+
+12 个 source cells 必须根据**运行前属性**分层选择，不能根据 v26.200 实际响应形状选样。
+
+建议使用四个 strata：
+
+```text
+comparison Answer Schema × lower depth
+comparison Answer Schema × higher depth
+scalar value Schema       × lower depth
+scalar value Schema       × higher depth
+```
+
+每个 stratum 选择三个 source cells，并在该 stratum 内覆盖：
+
+```text
+较短 first Prompt
+中位 first Prompt
+较长 first Prompt
+```
+
+或者使用 Candidate cardinality 的低、中、高位置。具体规则在读取任何新响应前冻结，并以 Package ID 作为最终确定性 tie-breaker。
+
+每个 source cell 的两个臂必须共享：
+
+```text
+public task bytes
+current State semantic projection
+state_id
+Candidate set and order
+Candidate action IDs
+Schedule
+model
+Thinking
+sampling parameters
+Completion bound
+privacy and telemetry policy
+```
+
+唯一允许的差异是 interface profile。
+
+---
+
+## 4. 在线执行协议
+
+在线阶段建议命名为：
+
+```text
+fresh_first_response_action_interface_disambiguation_
+paired_24_call_online_calibration_only
+```
+
+执行规则：
+
+1. 每个 Job 只调用一次 Stage 1。
+2. 收到第一响应后立即停止，不发 Correction，不继续 Program，不请求 Final。
+3. 对合法响应仅执行本地：
+
+   * JSON/ABI parse；
+   * Action reference validation；
+   * state binding validation；
+   * 可选的一次本地 `Runtime.step` 可提交性检查。
+4. 不因为 ABI 失败、Thinking exhaustion 或其他 typed terminal 重试。
+5. C/R 调用顺序根据 source cell ID 的哈希交错：
+
+   * 一半 `C -> R`；
+   * 一半 `R -> C`。
+6. 所有 typed Provider、Transport、Privacy、Resource、Thinking、Usage 失败保留在原 arm 的完整分母内。
+
+这样既能控制短时服务漂移，又不会把实验扩大成一次缩小版 Capability run。
+
+---
+
+## 5. 新的证据对象
+
+本实验不应调用 v26.195 Capability evaluator，也不应构造完整 `FreshOutcomeRow`。
+
+建议建立单独的校准链：
+
+```text
+CalibrationJob
+  -> FirstRequestDescriptor
+  -> FirstResponseDescriptor
+  -> FirstActionInterfaceObservation
+  -> ExactPairedCalibrationEvaluation
+```
+
+`FirstActionInterfaceObservation` 至少记录：
+
+```text
+job_id
+source_cell_id
+interface_arm
+request_hash
+response_hash
+typed outer terminal
+exact_json_object
+exact_four_field_abi_valid
+action_reference_valid | null
+state_binding_valid | null
+runtime_step_committed | null
+answer_schema_exact_match
+operation_output_schema_exact_match
+usage
+thinking telemetry
+```
+
+私有 reasoning content 继续不持久化。
+
+---
+
+## 6. Gate，而不是笼统成功率
+
+建议预注册以下不可补偿 Gate：
+
+```text
+G0  24/24 exact Jobs、Raw、Result 和 Observation 完整
+G1  两臂 task/state/Candidate semantic bytes 完全一致
+G2  Action parser、Grammar 和 Candidate legality 不变
+G3  Repair 臂 exact Action ABI >= 9/12
+G4  Repair 臂 reference + state valid >= 8/12
+G5  paired repair-only ABI successes >= 7
+G6  paired control-only ABI successes <= 1
+G7  old response adaptation / parser relaxation / retries = 0
+G8  QA、Mapper、State、Contribution、VTDO rows = 0
+```
+
+其中：
+
+```text
+paired repair-only ABI success:
+  Y_i^R = 1, Y_i^C = 0
+
+paired control-only ABI success:
+  Y_i^R = 0, Y_i^C = 1
+```
+
+可以附带报告 exact McNemar 检验和二项区间，但它们不能替代上述 Gate。
+
+### 通过条件
+
+若 G0–G8 全部通过：
+
+```text
+允许结论：
+  repaired interface package causally improves first-response
+  Action-ABI instantiation on the exact calibration population
+
+仍禁止结论：
+  full Program Capability
+  correction Capability
+  Final validity
+  trajectory-depth Capability
+  Mapper / State frequency
+  Contribution / VTDO
+```
+
+通过后唯一合理的下一步也不是立即跑 192 Jobs，而是：
+
+```text
+fresh_repaired_action_interface_full_condition_preflight_only
+```
+
+即以被选中的 interface profile 创建一套全新的 32-Package / 192-Job condition、Prompt evidence set、Manifest 和 Runner 身份，再单独决定是否进行完整在线执行。
+
+### 失败条件
+
+若 Repair 臂达不到 Gate：
+
+```text
+不建立完整 192-Job condition
+不放宽 parser
+不适配历史 Answer payload
+不把结果解释为模型缺乏规划能力
+```
+
+首个阻塞点应记录为：
+
+```text
+first_response_action_interface_repair_insufficient
+```
+
+后续才考虑更强的单一响应 Schema 隔离或 Provider-native structured-output 方案。
+
+---
+
+# 四、只需要保留的六类 preflight 控制
+
+为了避免再次陷入过度审计，v26.203 不需要几十种攻击。以下六类已经足够：
+
+1. Repair 臂修改了 Task、State 或 Candidate 字节，必须拒绝。
+2. Parser 被放宽为接受 `difference/higher_ref` 或 `value`，必须拒绝。
+3. 将历史公开响应适配成 Action，必须拒绝。
+4. Calibration Job 缺失、重复或多出，必须拒绝。
+5. C/R 的 request、response 或 Observation 跨臂换父，必须拒绝。
+6. 引入 QA parent、旧 v26.200 Job identity、retry 或 recovery，必须拒绝。
+
+这次不需要再次审计 v26.200 的 1,153 个文件，也不需要重复验证已经通过的 terminal-to-persistence 总链。新审计只应覆盖**新增加的 interface profile、24-Job calibration exact set 和新校准证据对象**。
+
+---
+
+# 五、本实验不要启用新的 QA 合成链路
+
+当前 offline future QA 分支虽然已形成 16 个本地候选并选出 8 个 diversity rows，但它仍然是：
+
+```text
+offline candidate pool
+deterministic engineering fixture
+no Provider generation
+no empirical Agent success
+no online resource authority
+```
+
+该分支与冻结的 v26.194 条件被明确隔离。
+
+这些 QA rows 只能用于未来一套 fresh QA experiment design；在接入 VTDO 前，仍需建立新的 Population、Package Catalog、Job Manifest、Prompt evidence、Execution Contract、Outcome authority、preflight 和 online authorization。它们不得插入或替换当前 v26.194 的 192-Job condition。
+
+更重要的是，在当前实验中同时更换：
+
+```text
+Prompt interface
++
+QA task population
+```
+
+会导致 ABI crossing 的变化无法归因。因此本轮必须继续使用冻结 source task/state/candidate 语义，只检验 Action-interface repair。
+
+---
+
+# 六、最终审计决定与唯一授权
+
+```text
+current_revision_decision
+  v26_201_retrospective_interpretation_revision_accepted
+
+first_root_blocker
+  model_visible_first_response_action_interface_not_yet_
+  empirically_instantiated
+
+only_authorized_successor
+  fresh_first_response_action_interface_disambiguation_
+  and_stratified_calibration_population_preflight_only
+
+immediate Provider calls
+  0
+
+planned online denominator after preflight authorization
+  12 paired source cells
+  24 Stage-1 calls
+  0 Stage-2 calls
+```
+
+这条后续链条足够直接：**不再审计已经闭合的历史证据，先用一个小型配对在线实验判断接口修复是否真的让模型跨过 Action ABI。**
