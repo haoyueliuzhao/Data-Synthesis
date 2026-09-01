@@ -125,7 +125,10 @@ Before authorization consumption, the following credential-free checks pass:
   Raw-before-Result persistence;
 - absence of any old `complete_job` or empirical-estimator call in v26.200;
 - focused Pytest 6/6;
-- focused PyCompile, Ruff check/format, and no-import-follow Mypy.
+- focused PyCompile and Ruff check/format;
+- the current configured no-import-follow Mypy reports two `unused-ignore` diagnostics in the
+  exact frozen execution source, at lines 1,071 and 1,244. They are retained rather than removed
+  because v26.200 executed from the already bound source commit and tree.
 
 These are source and local scripted controls. They make zero real Provider calls and are not
 online outcomes.

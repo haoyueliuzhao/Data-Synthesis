@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-09-01
+Audit date: 2026-09-02
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,103 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## v26.201 Fresh Terminal-to-Outcome Postrun Independent Audit
+
+Finance v26.201 consumed only
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_exact_192_job_online_execution_postrun_independent_audit_only`.
+It independently reads the immutable v26.200 directory and makes zero Provider calls. The exact
+1,154-file, 4,304,518-byte execution directory and its 1,153-member Manifest revalidate with
+1,153/1,153 path, SHA-256, and byte matches.
+
+Starting from actual fresh Raw and Result bytes, the audit independently reconstructs 192/192
+terminal kinds and 192/192 FailureLoci. Raw, Result, Trace, and Outcome layers each contain 192
+unique identities; actual Raw and Result byte matches are 192/192 each; Raw-before-Result checks
+are 192/192. Parent matches for Raw -> Result -> Trace -> Outcome are complete. Missing or
+duplicate Jobs, `fixture_complete` terminals, post-outcome exclusions, and exception escapes are
+zero.
+
+All 192 v26.200 calls returned HTTP 200 with exact requested, selected, and response model
+`deepseek-v4-flash`. Thinking presence, reasoning-token telemetry, and complete Usage are each
+192/192; total Usage is 1,824,320 tokens. The exact terminal partition is 188
+`first_response_abi_invalid` and four `thinking_integrity_failure`. All 188 privacy-valid public
+payloads fail the exact four-field Action ABI; 128 use the `difference|higher_ref` shape, 39 use
+only `value`, and 21 use nine other incomplete or extended shapes. The four Thinking terminals
+are HTTP-200 `ReasoningBudgetExhaustedError` rows. Private reasoning content is not persisted.
+
+The audit accepts v26.200 as a complete, auditable one-shot execution. It does not claim model
+Capability: exact Action ABI crossings, accepted Actions, corrections, Finals, completed Programs,
+Qualified endpoints, empirical estimates, Mapper, State, frequency, Contribution, and VTDO rows
+are zero.
+
+Authoritative identities are:
+
+- v26.200 Freeze:
+  `finance_v26_201_v200_execution_freeze:996e8de92c73c6fe2c828c504598f875d525a0b2385131de2555895549fd6f53`;
+- byte reconstruction Audit:
+  `finance_v26_201_byte_reconstruction_audit:f2d6057508fbca3dc6e0939ac15817fbbab40cf9d1c687724aa0867ad24595d5`;
+- response-interface Audit:
+  `finance_v26_201_response_interface_audit:afa82ffe7f7599a3a81dd98f6bff5836d3287ee006703415cc0f2262585d1690`;
+- Decision:
+  `finance_v26_201_postrun_independent_audit_decision:dbb4b76405df9b264679e987c9d75cce6d3375e0d82037323104e6b73b3587e9`;
+- Transition:
+  `finance_v26_201_transition:8371dba68906030321e7945fb32560f185f3ad41b7b518ac49f8862247d56277`;
+- Artifact Manifest:
+  `finance_v26_201_artifact_manifest:9c9e6d2adb452a24a07e549dc4f42aedae6305c7c0bc1d14891856bae272e73e`;
+- Artifact Root:
+  `finance_v26_201_artifact_root:c71a937d2c444ca1fbca14cc3fc1a989e83a16690c2ff6d5579cee80f57bcbe8`.
+
+The audit source commit is `42d071da62bfc538e555fbb4200c02627113913a` with tree
+`87ca269b075f629d9b36c21764536c5953a4ecb7`. Its eight-file, 285,649-byte formal directory
+rebuilds byte for byte. Focused v26.201 tests pass 6/6; the adjacent v26.200-v26.201 suite passes
+12/12; focused PyCompile, Ruff check/format, and Mypy pass; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+Provider execution, replacement or rerun, recovery, Prompt/Grammar/model/policy change,
+empirical estimation, QA integration, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production require a new external audit decision. See
+`docs/finance_v26_201_fresh_artifact_backed_terminal_to_outcome_postrun_independent_audit.md`.
+
+## v26.200 Fresh Terminal-to-Outcome Exact 192-Job Online Execution
+
+Finance v26.200 consumed the v26.199 authorization exactly once under
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_exact_192_job_online_execution_only`.
+The exact external review is 9,063 bytes at SHA-256
+`fa4e19aee7dd71342671e10f0e223d40b3a636e5f19f0028799afde063e9243e`.
+Precredential admission completed before the durable Run Start Receipt, credential lookup,
+writers, client construction, or Provider access.
+
+The exact v26.194 `invoke`, frozen multistep Runtime, v26.197 dispatcher, and v26.195 fresh writer
+execute all 192 exact Manifest Jobs. Every Job produces one empirical Raw, Result, typed Trace,
+Outcome, record, and checkpoint. Raw-before-Result is enforced. Old v26.194 `complete_job`,
+`fixture_complete`, caller terminal injection, replacement, rerun, and recovery counts are zero.
+
+The run makes 192 exact-model, Thinking-present, Usage-complete Stage 1 calls and zero Stage 2
+calls. The terminal partition is 188 `first_response_abi_invalid` and four
+`thinking_integrity_failure`; total Usage is 1,824,320 tokens. Empirical estimation, QA reads,
+Mapper, State, frequency, Contribution, and VTDO rows are zero.
+
+Execution source commit/tree are `e3d1b8d2922e44a5edde0d63433a8f3781edecef` /
+`738c30f294cca2097baffed3a5e17e7c298fab80`. Run Start Receipt is
+`finance_v26_200_online_run_start_receipt:c0320a61e0103fcbe81a0678b4f6ad11d6e7d9f28d474da6f2b10403fa66145e`;
+Summary is
+`finance_v26_200_online_execution_summary:efe14591ff3551b83cbcc4e4b39e396780b13e65f92ebe8e5903d51a3bbeb4ef`;
+Artifact Manifest is
+`finance_v26_200_execution_artifact_manifest:e50288c4c7e2bf1b13e89e1ecef3079ab3736521450ad243a9017f216606d1a6`;
+Artifact Root is
+`finance_v26_200_execution_artifact_root:e95f87d91231f1ab22df15742661c535052b87f5b4fbbc84c32337e0d4b023a5`.
+
+The 1,154-file, 4,304,518-byte execution directory is immutable. Focused PyCompile and Ruff
+check/format pass. The current configured no-import-follow Mypy retains two `unused-ignore`
+diagnostics at lines 1,071 and 1,244 of the exact frozen v26.200 execution source; they are
+recorded rather than removed because the online run binds that source commit and tree. The one
+permitted zero-Provider postrun audit has now been consumed by v26.201. See
+`docs/finance_v26_200_fresh_artifact_backed_terminal_to_outcome_exact_online_execution.md`.
 
 ## v26.199 Fresh Terminal-to-Outcome Online Execution Authorization
 

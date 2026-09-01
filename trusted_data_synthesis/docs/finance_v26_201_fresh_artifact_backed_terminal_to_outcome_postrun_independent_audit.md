@@ -126,5 +126,15 @@ Provider execution, replacement or rerun, recovery, Prompt/Grammar/model/policy 
 empirical estimation, QA integration, Mapper, State, frequency, Contribution, VTDO, training,
 release, and production are not authorized.
 
-The final v26.201 source commit/tree, formal file geometry, and Artifact Manifest/Root are appended
-after the audit implementation is source-frozen and the deterministic formal build completes.
+The exact v26.201 audit source commit/tree are:
+
+```text
+42d071da62bfc538e555fbb4200c02627113913a
+87ca269b075f629d9b36c21764536c5953a4ecb7
+```
+
+The deterministic formal directory contains eight files and 285,649 bytes. Artifact Manifest
+identity is
+`finance_v26_201_artifact_manifest:9c9e6d2adb452a24a07e549dc4f42aedae6305c7c0bc1d14891856bae272e73e`;
+Artifact Root is
+`finance_v26_201_artifact_root:c71a937d2c444ca1fbca14cc3fc1a989e83a16690c2ff6d5579cee80f57bcbe8`.
