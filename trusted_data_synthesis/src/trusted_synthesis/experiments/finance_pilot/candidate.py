@@ -141,7 +141,10 @@ class FinanceNumericCandidateGenerator:
                 "payload": item.payload.model_dump(mode="json", exclude_none=True),
                 "source_id": item.source.source_id,
             }
-        if task.task_type == "comparison" and len(evidence) == 2:
+        if (
+            task.task_type in {"comparison", "registered_cross_metric_comparison"}
+            and len(evidence) == 2
+        ):
             values = [_scalar_value(item) for item in evidence]
             higher = None
             if values[0] > values[1]:
@@ -285,7 +288,7 @@ def _operation_result(
     public_result: dict[str, object],
 ) -> dict[str, object]:
     """Remove presentation-only constants from the raw operator trace."""
-    if task.task_type == "comparison":
+    if task.task_type in {"comparison", "registered_cross_metric_comparison"}:
         return {
             key: value
             for key, value in public_result.items()
