@@ -15,6 +15,91 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.202 Exact Empirical Evaluation And First-Response Interface Localization
+
+Finance v26.202 consumed only
+`v26_200_exact_empirical_evidence_set_evaluation_and_first_response_interface_localization_only`.
+The exact 10,706-byte external review is bound at SHA-256
+`b534d14cf53d5ed6fbb65f59647f8e244e220f3ea160f85b74ac47da2724034e`. It accepts v26.200
+and the v26.201 evidence audit while correcting one v26.201 scientific interpretation. This stage
+makes zero Provider calls, reads no credential, changes no historical response, and creates zero
+replacement, rerun, recovery, Mapper, State, frequency, Contribution, or VTDO rows.
+
+The v26.201 statement that it did not materialize an empirical estimate remains true as a stage
+fact. Its further inference that zero Action-ABI crossings made the frozen end-to-end estimands
+unavailable is superseded. All 192 exact Manifest Jobs remain in both denominators, including the
+188 `first_response_abi_invalid` and four `thinking_integrity_failure` rows. The formal empirical
+results are:
+
+```text
+q_first                         0 / 192
+q_bounded_correction            0 / 192
+post-Action-ABI denominator       0
+conditional semantic rate         null
+trajectory-depth capability        null
+```
+
+v26.202 applies the frozen v26.195 parent validator and binds the exact v26.195 evaluator
+Contract. It explicitly records that the frozen public evaluator entry point remains
+preflight-only and rejects empirical evidence kinds. The new external authorization therefore
+supplies an empirical overlay that preserves exact-set, parent, actual-byte, unique-layer, and
+Manifest-denominator semantics while validating the v26.200 empirical Bundle types. It does not
+modify or falsely claim direct empirical compatibility for the v26.195 public function.
+
+All 192 first Prompts reconstruct through the exact v26.194 -> v26.192 -> frozen Runtime chain,
+and all 192 Prompt hashes match actual Provider `request_hash` telemetry. For the 188 rows with a
+persisted Kernel envelope, PreparedRequest and DynamicRequestCertificate identities match
+188/188. The four HTTP-200 `ReasoningBudgetExhaustedError` rows have Raw telemetry but no Kernel
+envelope; their Prompt hashes match and unavailable envelope identities are not fabricated.
+
+Every request uses one `user` message and zero `system` messages. In all 192 Prompts, the object
+named `response_abi` directly exposes `state_id`, `decision_kind`, and `protocol`, plus
+`grammar_id`, but not an explicit `action_id`; `action_id` is separate in Candidate rows. Public
+`answer_fields` and `operator_output_fields` also precede `response_abi` under canonical JSON.
+Of 188 public responses, exactly 167 match both the visible Answer Schema and an Operation-output
+Schema: 128 `difference|higher_ref` and 39 `value`. The other 21 use nine partial
+Action/Candidate/result shapes. Structural competing-Schema overlap is therefore confirmed, but
+causal attribution to that overlap is not claimed.
+
+All eight exact-set, denominator, terminal, Prompt, crossed-envelope, historical-adaptation, and
+authorization attacks reject. Authoritative identities are:
+
+- external authorization:
+  `finance_v26_202_external_audit_authorization:2e4154ff64423d630ff3ebd7225bd0d97a95aa7f515d6ca7c5611d0258708735`;
+- v26.201 Freeze:
+  `finance_v26_202_v201_audit_freeze:571208ecdf1aa3df5df966fb7420bff602b07da04c87cd765db3fb2c91b4a39a`;
+- exact empirical Evaluation:
+  `finance_v26_202_exact_empirical_evidence_set_evaluation:0c055496991bb3e37dba0f18bada7b87a3a60d857ce9652d677b785002864e23`;
+- first-response localization:
+  `finance_v26_202_first_response_interface_localization:45956f898d66005e6d8b49177b7bbf4b9ece7b9682c16d9e782d6c9cbce783ea`;
+- Decision:
+  `finance_v26_202_decision:79d4dc83e6aea9fce43ae2c5016a1f7ad5c5a66bb888281696b68ebc70d1a3aa`;
+- Transition:
+  `finance_v26_202_transition:e2eb5e4004d4bd744800e9c54222fd877aefe42b3fed85ececec38aa35595163`;
+- Artifact Manifest:
+  `finance_v26_202_artifact_manifest:6e80c2f33a92705d82e1dd6c4f9097db5103658dae487f26255af1a847fe3022`;
+- Artifact Root:
+  `finance_v26_202_artifact_root:1c41c278c4c879586160715822a48ed9e8a39deb4fe9ca8b950e871424245b87`.
+
+The exact source commit is `a4508dc1c896cb13533f2838d3d74d08d75a40ef` with tree
+`6fb1bf2ee025ed4db1a6910b5500626e1ac3d09f`. Its eleven-file, 674,872-byte formal directory
+rebuilds byte for byte. Focused v26.202 tests pass 7/7; the adjacent v26.200-v26.202 suite passes
+19/19; focused PyCompile, Ruff check/format, and no-import-follow Mypy pass; package-wide Ruff
+passes.
+
+The current decision is:
+
+```text
+no_further_experiment_authorized_without_new_audit_decision
+```
+
+Prompt/interface repair, parser relaxation, old-response adaptation, Provider execution,
+recovery, full 192-Job rerun, QA integration, Mapper, State, frequency, Contribution, VTDO,
+training, release, and production require a new external audit decision. Any future repair must
+receive a fresh identity and should first undergo a fresh stratified small-scale Action-interface
+online calibration. See
+`docs/finance_v26_202_exact_empirical_evaluation_and_first_response_interface_localization.md`.
+
 ## v26.201 Fresh Terminal-to-Outcome Postrun Independent Audit
 
 Finance v26.201 consumed only
@@ -38,10 +123,11 @@ payloads fail the exact four-field Action ABI; 128 use the `difference|higher_re
 only `value`, and 21 use nine other incomplete or extended shapes. The four Thinking terminals
 are HTTP-200 `ReasoningBudgetExhaustedError` rows. Private reasoning content is not persisted.
 
-The audit accepts v26.200 as a complete, auditable one-shot execution. It does not claim model
-Capability: exact Action ABI crossings, accepted Actions, corrections, Finals, completed Programs,
-Qualified endpoints, empirical estimates, Mapper, State, frequency, Contribution, and VTDO rows
-are zero.
+The audit accepts v26.200 as a complete, auditable one-shot execution. Within v26.201 it does not
+claim model Capability: exact Action ABI crossings, accepted Actions, corrections, Finals,
+completed Programs, Qualified endpoints, empirical estimates, Mapper, State, frequency,
+Contribution, and VTDO rows are zero. v26.202 later materializes only the frozen end-to-end
+`0/192` estimates; post-ABI conditional quantities remain null.
 
 Authoritative identities are:
 
@@ -75,6 +161,10 @@ Provider execution, replacement or rerun, recovery, Prompt/Grammar/model/policy 
 empirical estimation, QA integration, Mapper, State, frequency, Contribution, VTDO, training,
 release, and production require a new external audit decision. See
 `docs/finance_v26_201_fresh_artifact_backed_terminal_to_outcome_postrun_independent_audit.md`.
+
+That boundary was later consumed only by the external v26.202 zero-Provider exact-set evaluation
+and first-response localization above. No Provider execution, historical adaptation, recovery, or
+full rerun was authorized.
 
 ## v26.200 Fresh Terminal-to-Outcome Exact 192-Job Online Execution
 

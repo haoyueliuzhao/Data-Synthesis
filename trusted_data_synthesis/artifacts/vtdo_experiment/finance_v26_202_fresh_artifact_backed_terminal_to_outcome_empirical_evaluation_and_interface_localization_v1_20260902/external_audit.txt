@@ -1,0 +1,305 @@
+# 最新实验审计：v26.200 / v26.201
+
+## 总体判定
+
+**接受 v26.200 的一次性在线执行，也接受 v26.201 对执行证据完整性的独立审计；但 v26.201 关于 Capability estimand 的解释需要做一处关键收窄。**
+
+```text
+v26.200 one-shot online execution              PASS
+v26.201 artifact / parent reconstruction       PASS
+Empirical Raw→Result→Trace→Outcome evidence    CLOSED
+Provider request / model observability         PASS
+First Action ABI admission                     FAIL  0/192
+q_first / q_bounded                            IDENTIFIABLE_NOT_MATERIALIZED
+Post-ABI semantic capability                   UNINSTANTIATED
+Mapper / State / frequency / Contribution      BLOCKED
+VTDO / Student / training                      BLOCKED
+```
+
+因此本轮应定性为：
+
+> **权威经验 Outcome 证据层已经闭合，但冻结 Prompt–model–Action ABI 系统在第一次响应接口处发生全体失败。**
+
+不是执行失败，也不是证据失败，更不是 VTDO 已经得到检验。
+
+---
+
+## 一、v26.200 与 v26.201 的核心正面结果成立
+
+v26.201 对完整执行目录进行了独立校验：1,153 个 Manifest 成员全部匹配；192 个 Job 均具备唯一 Raw、Result、Trace 和 Outcome；实际字节、Raw-before-Result、终止类型、FailureLocus 以及完整父链均为 192/192，通过后不存在缺失、重复、`fixture_complete`、异常逃逸或事后排除。
+
+这意味着此前长期阻塞的：
+
+```text
+Manifest Job
+  -> Raw
+  -> Result
+  -> AttemptTrace
+  -> typed empirical Outcome
+```
+
+已经成为真实在线执行产生、可独立重建的经验对象。当前不再需要继续审计 Raw/Result 权威性、终止类型总性、父绑定或者一次性授权消费。
+
+v26.200 也确实完成了冻结的 192 个 Job，每个 Job 都持久化了一套经验对象，并且旧 `complete_job`、`fixture_complete`、替换、重跑和恢复均为零。
+
+---
+
+## 二、首个根本阻塞点已经明确改变
+
+所有 192 次调用均返回 HTTP 200，并观察到精确的请求模型、选择模型和响应模型 `deepseek-v4-flash`；Thinking 和 Usage 也全部可观察。因此本轮已经排除了此前的 HTTP 接受、模型身份和持久化证据问题。
+
+实际终止分布为：
+
+```text
+first_response_abi_invalid       188
+thinking_integrity_failure         4
+total                            192
+```
+
+其中 188 个公开 JSON payload 全部没有通过四字段 Action ABI；128 个采用 `difference|higher_ref`，39 个仅有 `value`，其余 21 个分布于九种其他形状。另有四个调用因 `ReasoningBudgetExhaustedError` 终止。
+
+所以第一失败 Gate 是：
+
+```text
+first_response_action_interface_admission
+0 / 192
+```
+
+准确解释是：
+
+> 在冻结的 Prompt、Action Grammar、模型、Thinking 和生成策略条件下，没有任何 Job 产生一个可被当前 Agent Runtime 接受的首次 Action。
+
+它不是：
+
+```text
+Provider transport failure
+模型身份未知
+Outcome evidence 不可信
+深层规划能力失败
+Correction 能力失败
+Final 能力失败
+```
+
+因为后四类行为根本没有机会被执行。没有 accepted Action、Commit 或 Observation，也就没有形成可供 Mapper 使用的模型轨迹状态分布。
+
+四个 Thinking 失败只是次级问题。当前不应先调整 Completion bound；188 个接口失败才是支配性阻塞点。
+
+---
+
+## 三、v26.201 唯一需要修正的解释
+
+v26.201 中以下两层陈述应当区分：
+
+### 正确陈述
+
+```text
+本阶段没有调用 exact-set estimator，
+因此没有正式 materialize Capability estimate。
+```
+
+这是阶段权限事实。
+
+### 需要修正的陈述
+
+```text
+因为 Action ABI crossing 为零，
+所以 Capability numerators 和 estimands 不可 materialize。
+```
+
+这个因果解释与冻结的 estimand 定义不一致。
+
+冻结定义明确是：
+
+```text
+q_first
+  = complete Qualified Jobs with zero corrections
+    / exact Manifest Jobs
+
+q_bounded_correction
+  = complete Qualified Jobs under the bounded correction policy
+    / exact Manifest Jobs
+```
+
+分母是全部 192 个 Manifest Jobs，而不是“通过 Action ABI 的 Job”。
+
+当前 192 个 Job 都已经得到权威经验终止，并且没有一个成为 complete Qualified Job。因此，在现有定义下：
+
+```text
+q_first numerator                0
+q_first denominator            192
+
+q_bounded_correction numerator   0
+q_bounded_correction denominator 192
+```
+
+也就是说：
+
+```text
+q_first              = 0 / 192
+q_bounded_correction = 0 / 192
+```
+
+它们是**端到端 Job 成功 estimand 的经验零值**，而不是 undefined。
+
+项目此前对全体提前终止的 v26.188 也采用了相同分离方式：端到端 `q_first` 和 `q_bounded_correction` 为 `0/192`，而条件于可观察模型语义端点的指标由于条件分母为零而取 `null`。 
+
+因此，本轮应采用如下三层解释：
+
+```text
+Action ABI crossing rate                    0 / 192
+
+end-to-end q_first                           0 / 192
+end-to-end q_bounded_correction              0 / 192
+
+post-ABI semantic success conditional rate      null
+post-ABI trajectory-depth capability             null
+```
+
+ABI-invalid 响应中的 Action 接受性和 Verifier 因子可以保持不可评估；但这不妨碍判断该 Job 没有完成 Qualified endpoint。中间因子 `null` 与复合成功事件为 `false` 并不矛盾。
+
+因此，对 v26.201 最合适的判定是：
+
+```text
+EVIDENCE AUDIT                              ACCEPT
+SCIENTIFIC INTERPRETATION                   ACCEPT_WITH_CORRECTION
+```
+
+不需要否定或重做 v26.200/v26.201。
+
+---
+
+## 四、当前结果揭示的是系统性接口问题
+
+188 个 ABI-invalid payload 中，167 个集中在两种稳定形状，即约 88.8%，而不是随机损坏 JSON。这**强烈提示但尚不能证明**：
+
+```text
+模型正在遵循某个任务答案 / Operation 输出 Schema，
+而不是 Agent Action Schema；
+或者多个模型可见 Schema 之间存在指令竞争与优先级歧义。
+```
+
+当前强 Action Grammar 的目标形状是四字段对象；项目此前将其定义为：
+
+```text
+state_id
+action_id
+decision_kind
+protocol
+```
+
+并明确禁止包装层、字段缺失、额外字段和 Host 补全。
+
+而 v26.192 的修复主要增加了“返回一个匹配 response ABI 的 JSON 对象”这一共享协议，同时保持原有 `public_prompt + response_abi` 核心不变。
+
+因此，v26.200 的新结果表明：**JSON lexical contract 已经解决，但 Action schema 的模型可读性或唯一显著性没有解决。**
+
+此时不能：
+
+* 将 `difference|higher_ref` 或 `value` 事后适配成 Action；
+* 放宽旧 parser 并重新解释 188 个历史响应；
+* 把这些响应映射到“最可能的 Candidate”；
+* 重跑或恢复 v26.200；
+* 直接将失败归因于模型普遍没有 Agent 能力。
+
+这些都会改变冻结测量条件或把 Host repair 混入模型行为。
+
+---
+
+## 五、唯一合理的下一实验
+
+建议签发一个单独、零 Provider 调用、只读的：
+
+```text
+v26_200_exact_empirical_evidence_set_evaluation_
+and_first_response_interface_localization_only
+```
+
+它只做两件事。
+
+### 1. 正式闭合当前端到端估计
+
+使用冻结的 v26.195 exact-set evaluator，读取已经通过 v26.201 审计的精确 192 行经验集合，正式物化：
+
+```text
+q_first                         0 / 192
+q_bounded_correction            0 / 192
+post_Action_ABI denominator       0
+conditional semantic estimand  null
+```
+
+不得删除四个 Thinking 行，也不得把 188 个 ABI-invalid 行排除出端到端分母。
+
+### 2. 做最小化的接口根因定位
+
+对 192 个精确 first Prompt 做只读重建，并生成一个字段来源矩阵：
+
+```text
+模型可见的全部输出 Schema
+每个 Schema 的字段名
+字段来自 Action ABI、Answer Schema、Operation 输出还是 Candidate 表示
+这些 Schema 在 Prompt 中的位置和指令优先级
+188 个实际 payload 与每类 Schema 的结构重合
+```
+
+重点验证：
+
+```text
+difference
+higher_ref
+value
+```
+
+是否确实来自模型可见的任务答案或 Operation 输出契约。
+
+如果确认存在竞争 Schema，后续才可以另建新身份进行 Prompt-interface repair；如果没有确认，则继续定位指令层级、候选表示和 ABI 展示方式。这个诊断不能把相关性直接升级为因果结论。
+
+---
+
+## 六、不需要继续做的工作
+
+当前不应再增加：
+
+```text
+新的 Raw/Result 哈希攻击
+新的终止总性 preflight
+新的授权消费测试
+新的 192-Job 重跑
+Thinking token 上限调优
+Parser 对旧 payload 的兼容适配
+QA candidate 集成
+Mapper / State / Contribution / VTDO
+```
+
+v26.201 已经规定，任何估计、Prompt/Grammar/model/policy 改动、QA 集成以及下游 VTDO 操作都需要新的外部审计决定。
+
+接口修复完成后，也不应立即再运行完整 192 Job；应先建立一个**fresh、分层抽样、小规模的 Action-interface online calibration**，验证 Action ABI crossing 不再为零，再决定是否授权新的完整实验条件。
+
+---
+
+# 最终审计决定
+
+```text
+v26.200 exact one-shot execution                   ACCEPT
+v26.201 independent evidence audit                 ACCEPT
+empirical Outcome evidence authority               PASSED
+first-response Action ABI Gate                     FAILED 0/192
+
+v26.201 “no estimate was materialized”             CORRECT
+v26.201 “zero ABI makes q estimands unavailable”   NOT SUPPORTED
+
+end-to-end q_first                                 IDENTIFIABLE AS 0/192
+end-to-end q_bounded_correction                    IDENTIFIABLE AS 0/192
+post-ABI conditional capability                    NULL / UNINSTANTIATED
+
+first fundamental blocker
+  frozen Prompt–model–Action-ABI interface admission
+
+unique next experiment
+  zero-Provider exact-set evaluation
+  + first-response schema-source localization
+
+rerun / recovery / historical adaptation           FORBIDDEN
+QA / Mapper / State / Contribution / VTDO           BLOCKED
+```
+
+**本轮不是“没有测到 Capability”，而是已经可信地测到：在当前冻结端到端条件下，完整成功率为零，且失败全部发生在首次 Action 接口之前。**下一步应关闭这个零值估计并定位竞争 Schema，而不是继续扩展证据审计或直接重跑模型。

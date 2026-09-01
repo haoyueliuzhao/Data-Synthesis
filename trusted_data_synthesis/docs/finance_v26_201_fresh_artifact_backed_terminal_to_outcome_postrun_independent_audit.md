@@ -111,8 +111,13 @@ The formal Decision is
 
 This means the one-shot Manifest execution and its terminal-to-persistence evidence are complete
 and auditable. It does not mean the model passed the Action interface, completed a Program, or
-demonstrated Capability. Because exact Action ABI crossings are zero, Capability numerators and
-estimands remain unmaterialized rather than being reported as empirical zero success rates.
+demonstrated post-ABI Capability. This v26.201 stage did not invoke an empirical evaluator and
+therefore did not materialize an estimate. Its original further inference that zero Action-ABI
+crossings made the end-to-end `q_first` and `q_bounded_correction` estimands unavailable is
+superseded by the external v26.202 review. Those frozen estimands use all 192 Manifest Jobs as
+their denominator, so v26.202 formally materializes both as `0/192`. The post-Action-ABI
+conditional semantic rate and trajectory-depth quantities remain null because their conditional
+denominator is zero. No v26.200 or v26.201 evidence byte or identity changes.
 
 The Transition identity is
 `finance_v26_201_transition:8371dba68906030321e7945fb32560f185f3ad41b7b518ac49f8862247d56277`.
@@ -125,6 +130,12 @@ no_further_experiment_authorized_without_new_audit_decision
 Provider execution, replacement or rerun, recovery, Prompt/Grammar/model/policy changes,
 empirical estimation, QA integration, Mapper, State, frequency, Contribution, VTDO, training,
 release, and production are not authorized.
+
+This historical no-further-experiment boundary was later consumed only by the exact external
+v26.202 authorization for a zero-Provider empirical exact-set evaluation and first-response
+interface localization. v26.202 does not authorize a Provider rerun or historical response
+adaptation. See
+`docs/finance_v26_202_exact_empirical_evaluation_and_first_response_interface_localization.md`.
 
 The exact v26.201 audit source commit/tree are:
 
