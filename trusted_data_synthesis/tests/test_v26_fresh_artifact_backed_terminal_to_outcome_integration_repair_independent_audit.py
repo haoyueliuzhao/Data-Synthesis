@@ -96,7 +96,7 @@ def test_16_actual_paths_are_independently_reconstructed_from_bytes(
     assert all(
         item["expected_terminal_kind"] == item["observed_terminal_kind"] for item in controls
     )
-    assert all(item["terminal_value_entered_harness_input"] is False for item in controls)
+    assert all(item["terminal_value_entered_production_interface"] is False for item in controls)
     assert report.independent_terminal_replay_count == 16
     assert report.independent_raw_result_byte_match_count == 32
 
@@ -127,6 +127,8 @@ def test_terminal_injection_and_authorization_ordering_fail_closed(
     assert injection["complete_job_terminal_parameter_count"] == 0
     assert injection["client_plan_terminal_field_count"] == 0
     assert injection["caller_supplied_terminal_rejection_count"] == 1
+    assert injection["expected_terminal_not_passed_to_production_interfaces"] is True
+    assert injection["production_terminal_injection_count"] == 0
     controls = {item["control_name"]: item for item in ordering["controls"]}
     assert controls["legal_preflight_parent"]["admitted"] is True
     for name, control in controls.items():

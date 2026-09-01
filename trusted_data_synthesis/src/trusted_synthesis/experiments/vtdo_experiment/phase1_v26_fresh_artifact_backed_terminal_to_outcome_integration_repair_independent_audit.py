@@ -52,7 +52,7 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTe
 
 RUN_ID: Final = (
     "finance_v26_198_fresh_artifact_backed_terminal_to_outcome_integration_repair_"
-    "independent_audit_v2_20260901"
+    "independent_audit_v3_20260901"
 )
 OUTPUT_DIR: Final = f"artifacts/vtdo_experiment/{RUN_ID}"
 AUDITED_V197_DIR: Final = (

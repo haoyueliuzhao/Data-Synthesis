@@ -161,7 +161,7 @@ class IndependentReplayControl(FrozenModel):
     independent_failure_locus_reconstructed: Literal[True] = True
     independent_trace_reconstructed: Literal[True] = True
     independent_outcome_reconstructed: Literal[True] = True
-    terminal_value_entered_harness_input: Literal[False] = False
+    terminal_value_entered_production_interface: Literal[False] = False
     exception_escape_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
     schema_version: str = SCHEMA_VERSION
@@ -267,8 +267,8 @@ class TerminalInjectionAudit(FrozenModel):
     client_plan_terminal_field_count: Literal[0] = 0
     caller_supplied_terminal_attempt_count: Literal[1] = 1
     caller_supplied_terminal_rejection_count: Literal[1] = 1
-    expected_terminal_postcomparison_only: Literal[True] = True
-    harness_terminal_injection_count: Literal[0] = 0
+    expected_terminal_not_passed_to_production_interfaces: Literal[True] = True
+    production_terminal_injection_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
     schema_version: str = SCHEMA_VERSION
 
