@@ -1,0 +1,236 @@
+# v26.194 独立审计结论
+
+## 总体判定
+
+$$
+\boxed{
+\begin{aligned}
+&\text{Execution Kernel 父绑定预检：PASS}\\
+&\text{独立审计：PASS}\\
+&\text{Fresh Outcome authority：尚未实例化，符合本轮边界}\\
+&\text{在线 Development：继续 BLOCKED}\\
+&\text{下一阶段：可授权 fresh Outcome authority preflight}
+\end{aligned}
+}
+$$
+
+建议将审计决定记录为：
+
+```text
+authoritative_execution_kernel_parent_binding_independent_audit_passed_
+fresh_artifact_backed_outcome_authority_preflight_only_authorized
+```
+
+本次只审计 v26.194 声明的 **execution-kernel parent binding**，不要求它提前完成 Outcome、Capability、Mapper、State 或 VTDO。审计依据仍限定为当前 Git tree、不可变工件和可重放检查，不把缺失聊天记录当作实验依据。
+
+---
+
+## 一、上一轮的核心阻塞点已经被正面修复
+
+### 1. v26.193 前驱锚定通过
+
+v26.194 将 v26.193 的 source commit/tree、Report、Artifact Manifest、Artifact Root，以及完整 12 文件的文件名、SHA-256 和字节数写成源码侧预期值；验证器不再从待审目录的 Report 中学习这些值。这已经修复上一轮“候选对象自行声明自己是谁”的问题。
+
+结论：
+
+```text
+externally_frozen_v26_193_predecessor_anchor = passed
+```
+
+---
+
+### 2. Runtime 漂移处理正确
+
+v26.194 明确选择 `option_b_current_runtime`，将当前 Runtime 视为新的实验条件，而不是继续尝试证明它与 v26.179 等价。48 个 Semantic Reconciliation Result 中：
+
+```text
+public event payload drift       48 / 48
+public effects drift              0 / 48
+validity / answer drift           0 / 48
+historical rewrite                0
+```
+
+因此同时记录：
+
+```text
+experiment_condition_changed = true
+semantic_equivalence_claimed  = false
+```
+
+这是正确的处理：既没有忽略事件身份变化，也没有因此否定当前 Runtime 作为一个新的 prospective condition。
+
+---
+
+### 3. Execution implementation 已进入 fresh 身份父链
+
+本轮已经把以下实现对象作为正式父对象绑定：
+
+```text
+current Runtime
+JSON renderer
+StageOne request builder / certificate
+certified client / transport
+privacy / resource / recovery / persistence
+authoritative kernel Runner
+```
+
+并据此重新生成 32 个 Runner Packages、192 个 Jobs、Manifest、Runner 和 Execution Contract，没有复用 v26.192/v26.193 的 Job、Manifest 或 Runner ID。 
+
+我抽查的源码 commit 也与文档记录一致：实现提交为 `2a5b8322a94e7be84065375dd6720e532bfe05cb`，新增了 Kernel、parent models、preflight 和对应测试。
+
+结论：
+
+```text
+execution_implementation_as_fresh_job_parent = passed
+```
+
+---
+
+### 4. Certified zero-call 路径通过
+
+当前 Kernel 的实际路径已经覆盖：
+
+```text
+render
+-> request body
+-> StageOne request certificate
+-> resource certificate
+-> dynamic Job/Runner/Manifest certificate
+-> certified-client-compatible seam
+-> privacy Envelope
+-> public Projection
+-> parse boundary
+```
+
+在冻结的注册控制面上完成了 792 次调用，并检查 request certificate、传输 body hash、privacy journal 顺序，以及 192 组 Raw-before-Result 写入。Provider calls 和 Development outcomes 均为零。
+
+源码也显示三类 Prompt 共用同一个 Kernel 调用入口，并在返回 payload 前完成 Envelope 和 Projection 写入；生产入口不存在 `fixture_response` 参数。
+
+这支持：
+
+```text
+credential_free_production_shaped_kernel_constructibility = passed
+```
+
+它仍不是模型行为或在线成功证据。
+
+---
+
+### 5. 注册的破坏控制足以覆盖本轮修复目标
+
+新增十二个控制覆盖了上一轮明确要求的风险面，包括：
+
+* Runner source 与 Runner ID 分离；
+* Job 在旧/新 Runtime 间替换；
+* transport 修改或忽略已认证 body；
+* renderer bypass；
+* request/resource certificate crossing；
+* privacy journal 顺序；
+* Result 绕过 Raw；
+* fixture 输入进入生产接口；
+* drift parent substitution；
+* source/Report/Artifact Root 联合替换。
+
+正式工件记录 12/12 reject、0 accepted，并保留 v26.193 的 14 项回归结果。
+
+不需要在这一轮继续扩展新的攻击分类；更广泛的 Outcome evidence 攻击属于下一层。
+
+---
+
+## 二、需要保留的窄化解释
+
+本轮通过的是：
+
+```text
+execution-kernel parent binding
++
+registered credential-free invocation constructibility
++
+persistence ordering
+```
+
+它不证明：
+
+```text
+在线 Provider 调用成功
+模型输出满足 Action / Final ABI
+所有模型可达 State 已被枚举
+经验 Outcome evidence set 已闭合
+Capability、frequency 或 VTDO 已可计算
+```
+
+特别是，792 次 local client 调用使用的是测试 payload 和零 token telemetry。因此，60K Prompt、21/23/24 调用和 1.12M token 等资源上限在本轮是**已绑定的合同条件**，不是经过在线或极限压力执行后得到的经验结论。这个窄化不构成当前 Gate 失败。资源合同本身确实保留了这些上限。
+
+---
+
+## 三、Fresh Outcome authority 缺失不是本轮缺陷
+
+v26.194 明确保留以下六层为空：
+
+```text
+fresh Terminal Registry binding
+fresh RawExecutionDescriptor Contract
+fresh JobResultDescriptor Contract
+fresh JobBoundAttemptTrace Contract
+fresh Outcome-row Contract
+fresh ExactEvidenceSet evaluator
+```
+
+本轮的 Raw/Result writer 只证明写入顺序与 orphan blocking，不能解释为经验描述符、Outcome row 或 estimator。这个边界处理是正确的。
+
+因此，不应因为 Outcome authority 尚未完成而否定 v26.194；否则就是把下一阶段要求错误地前移到本阶段。
+
+---
+
+## 四、Gate 状态
+
+| Gate                                           | 判定              | 允许解释                      |
+| ---------------------------------------------- | --------------- | ------------------------- |
+| v26.193 外部前驱锚定                                 | **PASS**        | exact 12-file predecessor |
+| Current Runtime 条件定义                           | **PASS**        | 新条件，不声称历史等价               |
+| Runtime/renderer/client/persistence 实现父绑定      | **PASS**        | 实现身份进入 fresh chain        |
+| Fresh 32 Package / 192 Job / Manifest / Runner | **PASS**        | 旧身份未复用                    |
+| 792 certified local invocation                 | **PASS**        | 注册控制面的构造性                 |
+| Privacy 与 Raw/Result 顺序                        | **PASS**        | 本地 persistence ordering   |
+| 十二个 execution-kernel controls                  | **PASS**        | 当前指定攻击面闭合                 |
+| Fresh Outcome authority                        | **ABSENT，符合预期** | 下一阶段对象                    |
+| Online Development                             | **BLOCKED**     | 不得调用 Provider             |
+| Capability / Mapper / State / VTDO             | **未授权**         | 不得越级                      |
+
+正式 Report、sealed evidence Root 和 distribution Root 已被持久化；文档记录 focused Pytest 5/5 和空目录 byte-identical rebuild。
+
+我本轮完成了文档、源码和 GitHub 工件的交叉检查，但没有在本地重新执行该 5/5 测试，因此测试数字仍属于已记录的可重放工件证据，不表述为我亲自重跑的结果。
+
+---
+
+# 五、唯一合理的下一阶段
+
+现在可以授权：
+
+```text
+fresh_artifact_backed_outcome_authority_preflight_only
+```
+
+该阶段应只针对 **v26.194 的 fresh 192 Job identities** 构造：
+
+```text
+Terminal Registry
+-> RawExecutionDescriptor
+-> JobResultDescriptor
+-> JobBoundAttemptTrace
+-> Outcome row
+-> ExactEvidenceSet evaluator
+```
+
+仍应保持：
+
+```text
+Provider calls                 0
+Development model outcomes     0
+empirical estimates            0
+Mapper / State / frequency     0
+Contribution / VTDO            0
+training                       0
+```
+
+不得直接复用旧 v26.186 的 Job-bound authority identities；可以复用其机制设计，但必须对 v26.194 Job、Runner、Manifest 和 Execution Contract 重新物化父关系。在线执行仍要等 fresh Outcome authority preflight 及其独立审计通过。v26.194 自身也明确把这一阶段列为独立审计通过后的唯一后继。
