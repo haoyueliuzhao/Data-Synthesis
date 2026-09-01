@@ -15,6 +15,64 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.198 Fresh Terminal-to-Outcome Integration Repair Independent Audit
+
+Finance v26.198 consumed only
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_independent_audit_only`.
+The exact 12,070-byte external review is bound at SHA-256
+`2069ec4b8d3297e062146bc44e1b154196fff365a5fe7165067ba1ad5439d32d`. It changes no v26.197,
+v26.194, v26.195, or QA artifact and makes zero Provider calls.
+
+A sparse detached checkout of exact v26.197 source commit
+`2551fc331f5e1327a5b78054423223d158f08d6a` and tree
+`a5b1699e8e1de3622f2ddb567d6df2148a47f47e` rebuilds all 48 v26.197 formal files. Path,
+SHA-256, byte-count, and actual-byte matches are each 48/48 over 285,781 bytes. Credential-like
+environment variables are absent and the candidate Report is not used as an outcome oracle.
+
+The independent runtime then runs sixteen distinct exact Manifest Jobs through actual frozen
+v26.194 `invoke`, the production successor dispatcher and `complete_job(job_id=...)`, and the
+exact v26.195 fresh writer. All sixteen reachable terminal kinds occur once. It writes sixteen
+Raw and sixteen Result files with 32/32 actual-byte matches and 32/32 byte matches to v26.197.
+Starting from actual Raw/Result bytes, an independent implementation reconstructs the terminal
+and FailureLocus field for all sixteen rows, including fifteen non-null FailureLoci, plus sixteen
+Traces and sixteen Outcomes with complete object equality. Old
+`fixture_complete`, old `complete_job` runtime calls, exception escapes, Provider calls,
+Development outcomes, and empirical rows remain zero.
+
+The exact dispatcher source, Registry, and actual replay output sets independently match the same
+sixteen-element reachable codomain. `measurement_support_exit` and `policy_horizon_exhausted`
+appear in none of the dispatcher or runtime outputs. Successor `invoke`, `complete_job`, and the
+credential-free client plan expose zero terminal fields; one caller-supplied terminal attempt
+rejects. Expected labels select each registered public-payload or typed-exception control shape,
+but no terminal value is passed to those production interfaces; expected-versus-observed equality
+is checked after persistence. Constructor AST and six actual authorization controls confirm that
+external admission precedes the client and both writer factories. All invalid parents and a legal
+parent requesting Provider execution produce zero factory calls and zero credential lookups.
+
+All 30 noncompensatory Gates pass. The authoritative v3 source commit is
+`16ea0c26fc8376f38101ed4784243e3ab2c5c059` with tree
+`db6e6697fd2832716ba0be6e1292cbb4527f5110`. Its 48-file, 275,894-byte formal directory
+rebuilds byte for byte. Focused tests pass 8/8; the adjacent v26.197-v26.198 suite passes 16/16;
+focused PyCompile, Ruff check/format, and Mypy pass; package-wide Ruff passes. Package-wide Mypy
+checks 628 files and retains ten historical diagnostics in six pre-v26.198 files, with zero
+v26.198 diagnostics. Preliminary v1 remains immutable and is superseded because package-wide
+Mypy found two local typing diagnostics. Type-complete v2 also remains immutable, but v3 narrows
+two evidence-field names so they state production-interface non-injection without incorrectly
+implying that expected labels were unused when selecting control evidence shapes.
+
+Report identity is
+`finance_v26_198_terminal_outcome_repair_independent_audit_report:e52160edb2883910ff2b91f81a3480e0af5e52867e76f4757a97fab6e4504131`;
+sealed Root is
+`finance_v26_198_sealed_evidence_artifact_root:eaca708da42a5e6ab4c477d6b8af65ae680dc52942c96e55ebb9e84acf55398b`;
+distribution Root is
+`finance_v26_198_distribution_artifact_root:8327c96e0c2ab0b79aa7d0a519a1e271c185827b8a8e86fe0a6c0eb716210faf`.
+The only permitted successor is
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_online_execution_authorization_only`.
+This stage may make a separate explicit authorization decision only; Provider execution, the
+192-Job run, empirical estimation, source/Manifest/authority changes, QA integration, Mapper,
+State, frequency, Contribution, VTDO, training, release, and production remain blocked. See
+`docs/finance_v26_198_fresh_artifact_backed_terminal_to_outcome_integration_repair_independent_audit.md`.
+
 ## v26.197 Fresh Terminal-to-Outcome Integration Repair Preflight
 
 Finance v26.197 consumed only

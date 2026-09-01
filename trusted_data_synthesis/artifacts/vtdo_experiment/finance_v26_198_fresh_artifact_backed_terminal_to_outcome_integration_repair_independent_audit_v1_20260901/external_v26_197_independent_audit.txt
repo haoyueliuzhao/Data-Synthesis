@@ -1,0 +1,312 @@
+# 最新实验审计结论
+
+## 总体判定
+
+**接受 v26.197，判定其在声明范围内通过。**
+
+更准确的状态是：
+
+```text
+v26.196 首个技术阻塞点       已在预检层修复
+Terminal → fresh Outcome     PREFLIGHT PASS
+外部授权前置入口              PREFLIGHT PASS
+独立审计                     PENDING
+192-Job 在线执行             BLOCKED
+经验 Capability / VTDO       UNINSTANTIATED
+```
+
+v26.197 没有发现新的实验条件问题，也没有必要继续扩展预检范围。它已经完成 v26.196 唯一授权的修复，并正确将下一步限定为独立审计，而不是直接在线执行。
+
+以下结论是对所提供正式报告和状态文件的证据链审计，不等同于对源代码与 48 个正式工件的独立重放；后者正是 v26.198 应执行的工作。
+
+---
+
+## 一、本轮检验的理论命题
+
+v26.197 检验的不是模型 Capability，而是一个更前置的测量基础设施命题：
+
+> 对冻结 v26.194 实验条件产生的一个实际终止证据，系统是否能够在没有调用方指定 terminal 的情况下，将其唯一地分派为注册终止类型，写入 fresh Raw/Result，并从实际工件字节重建 FailureLocus、AttemptTrace 和 Outcome。
+
+报告给出的实际链路是：
+
+```text
+外部授权字节
+→ PrecredentialAuthorizationGuard
+→ v26.194 actual invoke
+→ TerminalExecutionEvidence
+→ AuthoritativeTerminalDispatcher
+→ successor complete_job(job_id)
+→ v26.195 FreshOutcomeArtifactWriter
+→ Raw / Result
+→ FailureLocus / Trace / Outcome reconstruction
+```
+
+这里最关键的两个设计点是：
+
+1. `complete_job()` 只接收 `job_id`，不接收 terminal；
+2. 预期 terminal 只用于测试后的比较，不进入 `invoke`、dispatcher 或 `complete_job`。
+
+因此，本轮没有通过调用方注入“正确答案 terminal”来制造通过结果。
+
+---
+
+## 二、v26.196 的首个阻塞点已经被正确修复
+
+v26.196 的失败是：
+
+```text
+actual v26.194 invoke
+→ old complete_job
+→ fixture_complete
+```
+
+而不是 fresh writer 或 Outcome Schema 本身不可构造。
+
+v26.197 没有修改历史 v26.194 的 `complete_job()`，而是保留它作为负向历史证据，同时建立新的 successor integration identity。这比直接覆盖旧实现更正确，因为它避免把历史失败工件静默改写成成功工件。
+
+新的 16 个控制结果为：
+
+```text
+v26.194 invoke                         16
+dispatcher decisions                   16
+terminal projections                   16
+fresh Raw / Result calls            16 / 16
+actual Raw / Result files           16 / 16
+actual byte matches                    32
+reconstructed Trace / Outcome       16 / 16
+fixture_complete                        0
+exception escapes                       0
+Provider calls                          0
+```
+
+这正面关闭了 v26.196 的问题：实际 `invoke` 之后不再回到旧的 `fixture_complete` 路径，而是进入 dispatcher、fresh writer 和重建链。
+
+16 个 Registry-reachable terminal 均出现一次，包括 Final ABI、Action reference、Correction、Provider、Transport、Privacy、Resource、Instrument、模型身份、Thinking 和 Usage 等终止类型。
+
+因此可以保留如下窄结论：
+
+> **terminal-to-fresh-Outcome integration 已在 credential-free、production-shaped 控制条件下获得可信预检实例化。**
+
+---
+
+## 三、经验对象的实例化层级是正确的
+
+本轮已经实例化：
+
+```text
+successor integration identity
+authoritative dispatcher
+actual invoke controls
+actual Raw / Result bytes
+FailureLocus reconstruction
+AttemptTrace reconstruction
+Outcome reconstruction
+authorization guard
+dispatcher-specific exclusion witnesses
+```
+
+但没有实例化：
+
+```text
+真实 Provider response
+Development model outcome
+empirical Outcome row
+q_first
+q_bounded_correction
+Capability estimate
+Mapper / State
+frequency
+Contribution
+VTDO
+Student utility
+```
+
+报告明确把 16 个结果称为 branch and persistence controls，而不是经验模型结果，也没有估计任何 terminal 概率。
+
+这一证据层级划分是正确的，没有把机制预检越级解释为模型能力。
+
+---
+
+## 四、外部授权入口修复通过
+
+v26.196 的第二个问题是：合法的外部授权对象没有进入 production precredential path 的入口。
+
+v26.197 现在要求授权检查发生在以下操作之前：
+
+```text
+client_factory
+writer factories
+credential lookup
+Provider request
+```
+
+控制结果表明：
+
+* 合法 repair-preflight parent 可以进入；
+* 缺失、修改、自声明、跨实验 parent 均在 client construction 前拒绝；
+* 即使 parent 合法，只要请求 Provider execution，仍会在 credential lookup 前拒绝。
+
+这说明“具有合法父对象”和“获得在线权限”已经被正确分离。
+
+因此，当前不存在因预检 parent 被错误解释为在线授权而提前调用 Provider 的风险。
+
+---
+
+## 五、两个 excluded terminal 的处理基本成立
+
+以下两个 terminal：
+
+```text
+measurement_support_exit
+policy_horizon_exhausted
+```
+
+现在具有 dispatcher-specific witness，并且：
+
+* successor dispatcher 中没有对应分支；
+* successor `invoke` 中没有对应分支；
+* `complete_job()` 没有 caller-supplied terminal 参数；
+* 二者进入经验分母的数量为零。
+
+报告也正确限制了结论：这里只证明 **v26.197 的具体 Runner/dispatcher** 不拥有这些分支，不证明未来所有 Runner 都永远不可能拥有。
+
+这里是下一轮独立审计中最值得核实的一点：不应只依赖字符串或 branch-token 数量，还应从 dispatcher 的实际输出集合、分支条件和 Registry 映射确认其 codomain 确实只包含 16 个 reachable terminal。
+
+这不是当前预检失败，而是独立审计应完成的验证。
+
+---
+
+## 六、没有必要增加更多预检或攻击矩阵
+
+13 个本轮 integration-specific destructive controls全部拒绝，覆盖：
+
+* 调用方传入 terminal；
+* duplicate completion；
+* terminal decision crossing；
+* Raw/Result/Trace/Outcome parent crossing；
+* integration Contract crossing；
+* excluded terminal injection；
+* Result-before-Raw；
+* 旧 `fixture_complete`；
+* Raw terminal-parent drift。
+
+28 个非补偿 Gate 分别通过，没有使用总分或其他局部指标补偿某个失败 Gate。
+
+此时不建议再增加：
+
+* 新 terminal 分类；
+* 更大的静态攻击集合；
+* 另一轮 192-Job scripted Outcome；
+* 新 QA 任务；
+* Mapper 或 State dry run；
+* 与当前接缝无关的 source authority 层。
+
+v26.197 已明确指出，16 个控制是完整的 **Registry branch denominator**，而不是 192-Job empirical denominator。要求它在本阶段再生成 192 个本地 terminal 控制，会把“分支接缝预检”错误扩展为另一轮经验替代物。
+
+---
+
+## 七、当前 Gate 状态
+
+| Gate                            | 状态                 | 当前可解释范围                                |
+| ------------------------------- | ------------------ | -------------------------------------- |
+| v26.196 predecessor freeze      | **PASS**           | 历史负结论和 Roots 保持不变                      |
+| v26.194 实验输入冻结                  | **PASS**           | Catalog、Manifest、Runner、Execution 条件未改 |
+| 六个 v26.195 authority identities | **PASS**           | Registry 与五个下游 Contract 未改             |
+| Successor integration identity  | **PASS**           | 新接缝具有独立实现和 Contract 身份                 |
+| 16 reachable terminal dispatch  | **PREFLIGHT PASS** | 每类一个 production-shaped 控制              |
+| Fresh Raw/Result persistence    | **PREFLIGHT PASS** | 32 个实际工件字节匹配                           |
+| Trace/Outcome reconstruction    | **PREFLIGHT PASS** | 从实际 Raw 证据重新分派与重建                      |
+| `fixture_complete` elimination  | **PASS**           | successor 路径中数量为零                      |
+| 两个 excluded terminal            | **PREFLIGHT PASS** | 具体 dispatcher 下不进入分母                   |
+| External authorization ingress  | **PREFLIGHT PASS** | credential lookup 前 fail-closed        |
+| Independent audit               | **PENDING**        | 尚未独立重建和重放                              |
+| Online 192-Job execution        | **BLOCKED**        | 尚无独立审计授权                               |
+| Empirical Capability            | **UNINSTANTIATED** | 经验 Outcome 与估计均为零                      |
+| VTDO downstream                 | **UNAUTHORIZED**   | State、Contribution、更新和训练均未开放           |
+
+---
+
+## 八、当前允许与禁止的结论
+
+### 允许声明
+
+可以声明：
+
+> v26.197 在不改变冻结 v26.194 实验输入和六个 v26.195 Outcome authority identity 的条件下，预检关闭了 v26.196 发现的 terminal-to-fresh-Outcome 与 precredential authorization ingress 两个接缝。
+
+也可以声明：
+
+> 16 个 reachable terminal 均能通过实际 v26.194 `invoke`、successor dispatcher、fresh writer 和字节重建链产生唯一 typed Outcome 控制。
+
+### 仍然禁止声明
+
+不能声明：
+
+```text
+online execution ready
+192-Job Development result
+empirical q_first
+empirical q_bounded_correction
+model Capability
+terminal occurrence frequency
+State distribution
+Contribution
+VTDO effectiveness
+Student utility
+production readiness
+```
+
+尤其不能把 16 个控制中的 `completed_qualified` 数量解释成成功率。
+
+---
+
+## 九、唯一合理的下一实验
+
+下一步应严格执行：
+
+```text
+fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_
+independent_audit_only
+```
+
+该独立审计只需完成以下核心工作：
+
+1. 从精确 source commit `2551fc331f5e1327a5b78054423223d158f08d6a` 建立独立 checkout；
+2. 在无 credential 环境下重建 48 个正式文件并逐字节比较；
+3. 不使用候选 Report 作为结果 oracle，重新执行 16 条实际路径；
+4. 从实际 Raw/Result 字节独立重建 terminal、FailureLocus、Trace 和 Outcome；
+5. 确认 terminal 不能由 harness 或调用方注入；
+6. 确认两个 excluded terminal 在 dispatcher 的真实输出集合中不可达；
+7. 确认 authorization guard 始终先于 client、writer 和 credential lookup；
+8. 确认未来在线入口必须使用 successor kernel，不存在回落到旧 `fixture_complete` completion path 的旁路。
+
+报告的 48 文件、Roots、测试和静态检查为该独立审计提供了明确目标；package-wide Mypy 的十个历史诊断也被正确保留为历史边界，没有被错误包装成全包通过。
+
+若以上独立审计全部通过，下一决策就应是对冻结 192-Job Manifest 的**单独显式在线授权**，而不是继续设计新的预检层。
+
+---
+
+## 十、QA 合成链路的处理
+
+当前仍不应把新的 QA candidate population 接入 v26.194：
+
+```text
+QA side path          保持离线、隔离
+v26.194 192 Jobs      保持冻结
+v26.197 audit         不读取或改变 QA branch
+online run            仍只针对现有冻结条件
+```
+
+v26.197 明确记录 QA changes 为零，并禁止独立审计修改 QA branch。 
+
+## 最终意见
+
+**v26.197 可以通过，不需要追加新的修订预检。**
+
+当前第一个尚未关闭的 Gate 不是新的技术缺陷，而是：
+
+```text
+v26.197 successor integration 的独立审计尚未执行
+```
+
+因此唯一合理的动作是开展精确的 v26.197 independent audit；在该审计通过并产生单独在线授权之前，不执行 Provider 调用、192-Job run、QA integration、Mapper、State、Contribution、VTDO 或训练。
