@@ -1,0 +1,431 @@
+# v26.193 最新修订审计结论
+
+## 总体判定
+
+$$
+\boxed{
+\begin{aligned}
+&\text{792 行注册 Prompt exact-set：PASS}\\
+&\text{Package/Job 静态父绑定：PASS}\\
+&\text{分阶段 fully-rehashed controls：PASS}\\
+&\text{credential-free 调用适配器总性：PASS}\\
+&\text{权威在线执行 Kernel 总性：FAIL / 未实例化}\\
+&\text{Runtime Result 语义稳定性：UNKNOWN / BLOCKING}\\
+&\text{Fresh Outcome authority：ABSENT}\\
+&\text{在线 192-Job Development：继续 BLOCKED}
+\end{aligned}
+}
+$$
+
+建议将本次独立审计决定记录为：
+
+```text
+registered_prompt_exact_set_and_static_parent_authority_passed_but_
+authoritative_online_execution_kernel_and_fresh_outcome_authority_uninstantiated
+```
+
+**核心判断是：v26.193 确实修复了上一轮指出的大多数直接实现缺陷，不应再沿用 v26.192 的失败结论；但它修复的是“Prompt 注册集合与局部调用适配器”层，不是完整的在线执行 Kernel。当前最早的阻塞点已经后移到：**
+
+> **执行实现、Runtime 语义、认证客户端、传输、资源证书和持久化链尚未共同成为 fresh Job/Runner 的权威父对象。**
+
+因此，v26.193 的 `repair_preflight_gates_passed=true` 可以保留；`runner_callsite_totality_passed=true` 必须收窄解释，不能升级为 online Runner 总性。
+
+本轮仍按项目冻结的证据规则审计：只使用当前 Git 树、不可变实验工件、脱敏记录和可重放检查，不把缺失聊天内容作为实验依据。
+
+---
+
+# 一、上一轮三个直接缺陷已经得到实质修复
+
+## 1. 792 行已经不再只是 phase-count Census
+
+v26.193 新增了独立的 `PromptCoordinate` 和 `ExactPromptEvidenceSet`。当前集合精确包含：
+
+```text
+first Action                         192
+subsequent Action                    288
+typed-rejection Correction           120
+Final                                192
+total unique rows / coordinates      792 / 792
+```
+
+现在验证器会检查：
+
+* row 与 coordinate 唯一性；
+* 精确 fresh Job 集合；
+* 每个 Job 恰好一个 first Action 和一个 Final；
+* source/fresh Job 与 Runner Package 父关系；
+* Component、Schedule、State 和 Correction Receipt；
+* 完整 coordinate payload 与独立 Runtime 推导结果；
+* Prompt core、renderer envelope 和 canonical request body；
+* exact model、`thinking={"type":"enabled"}`、`json_object` 和单条 user message。
+
+这已经能够拒绝上一轮给出的“每个 phase 复制一行但保持总数不变”攻击。源码中的 expected-coordinate derivation 和实际 zero-call Runner materialization 是两个独立遍历，最终再做 exact-set equality，而不是只比较四个计数。
+
+所以这层可以正式记为：
+
+```text
+registered_reference_plus_rejection_prompt_exact_set = passed
+```
+
+但项目文档也正确地没有把 792 行冒充为全部模型可达 State；它只把它们定义为精确注册的 reference-plus-rejection invocation set。
+
+---
+
+## 2. Fresh Package/Job 静态父关系已经从源对象重建
+
+v26.193 不再只依靠 fresh 对象自己的 content hash。新的父验证器重新加载 source Jobs、source Runner Packages 和 Runtime Catalog，并逐项检查：
+
+```text
+Package -> source parent              32 / 32
+Package -> Schedule parent            32 / 32
+Job -> source Job parent             192 / 192
+Job -> fresh Package parent          192 / 192
+Job -> Schedule parent               192 / 192
+Job -> Raw/Result/seed namespaces    192 / 192
+exact source Job set                       true
+exact Package × Replica set                true
+Manifest / Runner parents             true / true
+```
+
+两个主要攻击也不再是 stale-hash 检查，而是保持分母不变的双向交换：交换 fresh Package parents，或者交换 source Job parents，然后重算 Job、namespace、Manifest 和 Runner 身份，最终由源重建验证器拒绝。
+
+所以这一层可以保留为：
+
+```text
+static_package_job_manifest_parent_authority = passed
+```
+
+这里的“static”很重要，后面还会解释为什么它尚不等于执行语义父绑定。
+
+---
+
+## 3. Action、Correction、Final 的真实阶段攻击已闭合
+
+上一版把 Correction 和 Final mutation 都送入 Action validator。v26.193 已改为使用真实的：
+
+```text
+prompt_kind = action
+prompt_kind = correction
+prompt_kind = final
+```
+
+三个分支，并记录：
+
+* expected/actual exception type；
+* expected/actual stage；
+* expected/actual reason；
+* `target_validator_reached=true`；
+* `fully_rehashed=true`。
+
+十四个攻击还覆盖了 duplicate-row、drop-and-replace Job、cross-Job Prompt、Package/source parent swap、Manifest/Runner replacement、body/envelope mismatch、扩展协议字段以及 source commit/tree injection。
+
+因此上一轮的“任意 `ValueError` 都可以冒充目标 Gate 拒绝”问题，在当前注册的十四个控制范围内已经修复。
+
+---
+
+# 二、调用点总性只在 credential-free 适配器范围内成立
+
+这是本轮最需要收窄的地方。
+
+## 2.1 新适配器自身的结构是合理的
+
+`CredentialFreeExactFutureRunner` 的三个入口：
+
+```text
+invoke_action
+invoke_correction
+invoke_final
+```
+
+都进入同一个 `_invoke`，并执行：
+
+```text
+render
+  -> make_stage_one_request_body
+  -> validate
+  -> transport sink
+```
+
+AST 与 792 次动态调用均支持这一局部顺序。`make_stage_one_request_body()` 自身还会检查 exact Flash model config、16K bound、Thinking enabled 和 `json_object`，所以这里并不存在“错误模型配置可以轻易越过 sink”的问题。
+
+因此可以保留：
+
+```text
+credential_free_prompt_invocation_adapter_totality = passed
+```
+
+---
+
+## 2.2 但它不是实际的 certified online Runner
+
+当前新类仍是 fixture-oriented adapter：
+
+* 方法接收调用方提供的 `fixture_response`；
+* transport 是一个通用注入接口；
+* 没有构造或消费 `StageOneRequestBindingCertificate`；
+* 没有调用实际的 `complete_json_certified()` 路径；
+* 没有绑定动态资源证书、单次调用授权和恢复计数；
+* 没有 privacy-first Envelope/Projection journal；
+* 没有 Raw/Result 写入、恢复与 orphan blocking；
+* 没有 Provider response、Usage、Thinking 和 terminal projection。
+
+实际 Stage 1 客户端的生产路径要求 pre-call request certificate，并在真实调用前重新核对 Prompt 和 canonical request bytes；这些对象目前没有进入新适配器。
+
+更关键的是，v26.193 明确保留了旧 v26.192 Runner ID；而该 Runner Contract 本身仍写着：
+
+```text
+scripted_reference_only = true
+provider_calls          = 0
+```
+
+新的 source SHA-256 只出现在一个旁路的 `RunnerCallsiteTotalityAudit` 中，并没有成为：
+
+```text
+Runner Contract
+Job
+Manifest
+Execution Contract
+```
+
+的内容地址父对象。正式工件确实记录了一个 runner source hash 和单一 `_invoke` 结构，但那只证明这个新文件的局部结构。
+
+因此当前：
+
+```text
+runner_callsite_totality_passed = true
+```
+
+只能解释为：
+
+```text
+credential_free_adapter_callsite_totality_passed = true
+```
+
+不能解释为：
+
+```text
+authoritative_online_runner_callsite_totality_passed = true
+```
+
+---
+
+# 三、48 个 Result drift 证明“执行 Kernel 父身份”尚未闭合
+
+v26.193 对 Result drift 的处理比上一版诚实得多。它从精确 v26.179 source snapshot 重放 192 个 Result，并得到：
+
+```text
+v26.179 snapshot -> immutable saved Result bytes     192 / 192
+v26.179 snapshot -> current Runtime Result bytes     144 / 192
+current identity match / drift                       144 / 48
+```
+
+48 个漂移全部来自 Semantic Reconciliation。每个 witness 有 11 个变化字段，包括：
+
+* Runtime event ID；
+* event output hash；
+* execution parent hash；
+* task/mechanism/qualified report IDs；
+* trace hash；
+* Result ID。
+
+最终 Base、Mechanism、Qualified 和 answer 值没有变化，但 event/output identity 发生了 48/48 漂移。v26.193 因而正确保持 `semantic_equivalence_claimed=false`。
+
+这里的理论含义不是“结果大致一样，所以没关系”，而是：
+
+> 同一套静态 Task、Component、Schedule、Package 和 Job 父身份，在两个 Runtime source snapshots 下能够生成不同的事件输出哈希和 Result identity。
+
+这表明当前 fresh Job/Runner 身份尚未显式区分：
+
+```text
+Runtime implementation identity
+step/finalize semantic version
+event/output hashing contract
+Result semantic projection contract
+```
+
+虽然 `SourceProjectionAudit` 在报告层绑定了源码，但未来真正执行 Job 的 Contract 还没有把该 source/runtime identity 作为不可替换的直接父对象。
+
+所以本轮正式的第一个阻塞点应定位为：
+
+```text
+authoritative_execution_kernel_parent_binding_uninstantiated
+```
+
+而不是继续停留在 Prompt Census。
+
+---
+
+# 四、Fresh artifact-backed Outcome authority 仍然完全缺失
+
+v26.193 对这一点没有越级，它明确保留了六个缺失层：
+
+```text
+fresh Terminal Registry binding
+fresh RawExecutionDescriptor Contract
+fresh JobResultDescriptor Contract
+fresh JobBoundAttemptTrace Contract
+fresh Outcome-row Contract
+fresh ExactEvidenceSet evaluator
+```
+
+其 `materialized_layers=()`、`empirical_rows=0`、`online_execution_authority=false`。
+
+这是正确的 fail-closed 处理。旧 v26.186 的 authority chain 绑定旧 Job IDs，不能直接套到 v26.192/v26.193 的 fresh Job IDs 上。
+
+不过它是**执行 Kernel 闭合之后**的下一层。当前不能跳过 Runtime/Runner 身份问题，直接开始写 fresh Outcome estimator。
+
+---
+
+# 五、当前工件还不是自认证的独立审计终点
+
+v26.193 的 source-projected build 记录了：
+
+```text
+source commit  b5b21ee90926713773d4028028ec67c7a7d40d4e
+source tree    9ce799b058750a397083e125ccbd58967642b54d
+Report         finance_v26_193_prompt_authority_repair_report:
+               b7d13fef2097d90cc6772320761608a79d556630fe96622f2d6ac2c884296ea3
+Artifact Root  finance_v26_193_artifact_root:
+               4eaebaec735f310ac55056c7ca57f50682dc3472f79f799a4a886531c7e627e0
+```
+
+
+
+但当前 source-projected outer runner仍接受 `source_commit` 参数，并通过“相对前驱恰好六条改动路径”选择当前源码；`ExternalAuditAuthorization` 本身没有冻结上述 current commit/tree。
+
+同时，正式 `report.json` 绑定各个语义 sidecar ID，但没有绑定 Artifact Manifest ID 或 Artifact Root；Artifact Manifest 是单向包含 Report 的，而不是由外部 expected identity 共同闭合。
+
+这不必否定 credential-free preflight，因为 v26.193 本来就要求下一步独立审计；但它意味着：
+
+```text
+formal_preflight_output = reproducible construction evidence
+formal_preflight_output ≠ independently anchored final authority
+```
+
+后继独立审计必须从外部冻结 exact source commit/tree、Report、Artifact Root 和 exact 12-file set，不能从候选目录自己的 Report 中学习这些期望值。
+
+我本轮核对了公开 Git commit、源码与持久化工件，但没有在当前工具环境中重跑文档所述的完整 681 秒 source-projected build。因此，`8/8` 和 `12/12 byte-identical` 保留为已有工件证据，不被我升级成“本轮亲自重复得到”的结果。
+
+---
+
+# 六、Gate Matrix
+
+| 理论对象                                  | 本轮判定               | 当前允许解释                                    |
+| ------------------------------------- | ------------------ | ----------------------------------------- |
+| v26.192 source/archive 与 17 文件重建      | **PASS（已有工件）**     | 精确前驱可以重放                                  |
+| Fresh Package/Job 静态父关系               | **PASS**           | source、Package、Schedule、namespace 闭合      |
+| 792 注册 Prompt exact set               | **PASS**           | reference-plus-rejection 注册集合完整           |
+| 全部 model-reachable State 枚举           | **未声称，正确**         | 不能把 792 当作 14,388 State                   |
+| Action/Correction/Final typed attacks | **PASS**           | 三类真实 phase Gate 已执行                       |
+| credential-free adapter 调用顺序          | **PASS**           | renderer → body → validate → fixture sink |
+| certified online Provider 路径          | **FAIL / 未实例化**    | 无实际 client/certificate/privacy/Raw 链      |
+| Runner implementation 作为 Job 父对象      | **FAIL / 未实例化**    | 新 source 只由 sidecar 绑定                    |
+| Runtime Result identity 稳定性           | **FAIL / UNKNOWN** | 48 个 event/output identity drift          |
+| Fresh Outcome authority               | **ABSENT**         | 六层全部未物化                                   |
+| Empirical Capability estimate         | **NULL**           | 不存在模型 endpoint 分母                         |
+| Mapper / State / frequency            | **禁止**             | 前置执行与 Outcome Gate 未通过                    |
+| Contribution / VTDO / Student         | **禁止**             | 不得越级                                      |
+| Online Development execution          | **BLOCKED**        | 当前结论正确                                    |
+
+---
+
+# 七、当前可以保留的科学结论
+
+可以保留：
+
+```text
+1. v26.192 的 phase-count Census 缺陷已被修复。
+2. 792 个注册 Prompt coordinate 构成 exact set。
+3. 静态 Package/Job/Manifest 父关系可由冻结源对象重建。
+4. 当前三个 Prompt phase 共享一个 JSON-explicit renderer。
+5. 新 credential-free adapter 内不存在第二个本地 Provider 路由。
+6. 48 个 Result drift 已获得字段级 witness。
+7. Prompt 修复不是 48 个 drift 的原因。
+8. Provider calls、Development outcomes 和 empirical rows 均为零。
+```
+
+仍然禁止：
+
+```text
+1. “实际在线 Runner 的所有调用点已经闭合”。
+2. “新的 Runner source 已经成为旧 Runner ID 的内容地址父对象”。
+3. “48 个 Semantic Reconciliation Result 在语义上等价”。
+4. “当前 192 个 Job 已拥有稳定的 execution-kernel identity”。
+5. 直接为这 192 个 Job复用旧 v26.186 Outcome authority。
+6. 在线 Development、Capability、Mapper、State、frequency。
+7. Contribution、VTDO、Student、training、release 或 production。
+```
+
+当前 Report 与 Transition 保持 `online_development_execution_authorized=false` 和 `independent_audit_required=true`，这一安全边界是正确的。
+
+---
+
+# 八、唯一合理的下一实验
+
+建议只授权零 Provider 调用的：
+
+```text
+json_explicit_authoritative_execution_kernel_parent_binding_preflight_only
+```
+
+它应当只修复当前第一个阻塞层，不提前物化 empirical Outcome。
+
+## 必须新增的权威父链
+
+```text
+externally expected v26.193 source/report/artifact root
+  -> Runtime Semantic Contract
+  -> exact initialize/render/step/finalize implementation binding
+  -> JSON-explicit renderer implementation binding
+  -> StageOne request builder and certificate implementation binding
+  -> certified client and transport invocation contract
+  -> privacy-first persistence and resource/recovery contract
+  -> fresh Runner Package
+  -> fresh Job
+  -> fresh Manifest
+  -> fresh Runner
+  -> fresh Execution Contract
+```
+
+由于新增了 Runtime 和 invocation implementation parents，**不得继续复用当前 v26.192 Manifest、Job 或 Runner IDs**。
+
+## 48 个 drift 的处理必须二选一并预先冻结
+
+### 方案 A：冻结 v26.179 Runtime snapshot
+
+在线 Runner 只能从 exact v26.179 Archive 加载 Runtime。所有 192 个本地 Result 必须与历史 snapshot 192/192 canonical-byte equal。
+
+### 方案 B：采用当前 Runtime
+
+需要：
+
+1. 为 current Runtime 生成新的 semantic/runtime identity；
+2. 重新物化全部 Job/Runner/Execution identities；
+3. 对 48 个 drift 比较完整 public event payload 与 effects，而不是只比较最终 validity；
+4. 如果 public effects 不完全相同，则明确视为实验条件变化，不能声称语义保持；
+5. 不修改任何历史 Result。
+
+## 必须执行的负向控制
+
+```text
+same Runner ID + changed Runner source
+same Job ID + old/current Runtime swap
+transport mutates request body after validation
+transport ignores validated body
+direct client route bypasses renderer
+missing or crossed StageOneRequestBindingCertificate
+wrong dynamic resource certificate
+privacy journal written after parsing
+Raw/Result writer bypass
+fixture_response entering production Runner input
+48-drift Result parent substitution
+Artifact Root / Report / source commit joint rehash
+```
+
+只有该 execution-kernel preflight 及其独立审计通过后，下一层才可以是：
+
+```text
+fresh_artifact_backed_outcome_authority_preflight_only
+```
+
+在这两层都闭合以前，192-Job online Development 仍不得执行。
