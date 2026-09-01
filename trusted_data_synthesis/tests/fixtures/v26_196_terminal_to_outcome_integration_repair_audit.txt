@@ -1,0 +1,256 @@
+# 最新实验审计结论
+
+## 总体判定
+
+**v26.196 是一次可信、必要且边界合理的负向独立审计。**
+
+需要明确区分两件事：
+
+```text
+独立审计是否可信执行             PASS
+生产 terminal → fresh Outcome   FAIL
+在线 Development 执行           BLOCKED
+```
+
+正式失败点是：
+
+```text
+production_terminal_to_fresh_outcome_totality
+v26_194_complete_job_emits_fixture_complete_without_terminal_dispatch
+```
+
+这不推翻 v26.194 的 Execution Kernel 预检，也不推翻 v26.195 对 fresh Outcome authority 的独立可构造性；它证明的是：**两套分别可构造的机制尚未接成一条真实生产路径。** 
+
+---
+
+## 一、v26.196 检验的理论命题是正确的
+
+本轮真正检验的是：
+
+```text
+v26.194 actual invoke
+  → authoritative terminal decision
+  → actual complete_job
+  → FreshOutcomeArtifactWriter
+  → typed Raw / Result bytes
+  → reconstructed FailureLocus / Trace / Outcome
+  → exact evidence-set evaluator
+```
+
+只有这条链闭合，未来在线执行产生的结果才能成为权威经验 Outcome，而不是“Runner 能运行”和“Outcome 对象能单独构造”两个互不相连的局部事实。
+
+v26.196 没有在审计脚本中手工拼接两条路径，而是直接调用冻结的 v26.194 `invoke` 和 `complete_job`，读取 `NoReplaceKernelJournalWriter` 实际写出的文件。这正是应当采用的生产接缝检验，而不是 another scripted happy path。
+
+---
+
+## 二、审计证据本身可信
+
+### 1. 前序冻结与独立重建通过
+
+v26.196 从精确 v26.195 source commit 建立 detached checkout，移除 Provider credential，并重新执行冻结 CLI。403 个正式文件在路径、SHA-256、字节数和实际字节上全部匹配；Provider 调用为零。
+
+因此，本次失败不是由错误 checkout、候选目录漂移或重建不一致造成的。
+
+### 2. 使用了真实生产入口，而不是审计专用桥
+
+审计为 Registry 声明的 16 个 reachable terminal 分配了 16 个不同的精确 Manifest Job，并逐个调用实际 v26.194 Kernel。结果没有 Python、Pydantic 或 `ValueError` 逃逸，但所有 Result 都是：
+
+```text
+terminal = fixture_complete
+```
+
+具体计数为：
+
+```text
+target terminal branches reached       0
+FreshOutcomeArtifactWriter calls        0
+fresh typed Raw / Result              0 / 0
+fresh Trace / Outcome                 0 / 0
+```
+
+所以“零异常”不能被误解释成 terminal totality 通过；请求的 terminal branch 根本没有被分派。
+
+### 3. 没有错误地使用 v26.195 scripted controls 补偿失败
+
+v26.195 的 192 个 scripted bundle 仍然是有效的构造证据，但它们直接调用 `build_scripted_bundle`，固定成功形态、空 FailureLoci 和零 correction；实际 v26.194 completion path 并不调用 fresh writer。v26.196 正确拒绝了“在审计 harness 中人工把两者接起来就算生产通过”的做法。
+
+这一点非常关键，也说明本轮没有陷入局部指标补偿。
+
+---
+
+## 三、首个根本阻塞点
+
+当前第一个本质阻塞点不是：
+
+* Terminal Registry 不完整；
+* fresh typed writer 不可构造；
+* Raw/Result schema 错误；
+* Trace/Outcome evaluator 错误；
+* Provider 或模型失败。
+
+而是：
+
+> **v26.194 的生产完成入口仍然停留在 fixture-only persistence 路径，没有一个由生产 Kernel 所有、能够把真实终止证据分派给 fresh Outcome writer 的权威 dispatcher。**
+
+因此当前实际结构是：
+
+```text
+v26.194 production execution
+  → old Raw / old fixture_complete Result
+  ×
+fresh typed writer
+  → typed Raw / Result / Trace / Outcome
+```
+
+这里的“×”就是当前唯一应修复的核心接缝。
+
+这也是为什么本轮结果不能说明模型 Capability 为零：没有 Provider 调用、没有 Development outcome，也没有任何经验 Outcome 行进入估计器。它只是说明**经验测量基础设施尚未连通**。
+
+---
+
+## 四、第二个失败 Gate 的解释
+
+外部独立审计授权本身是有效的；缺失、修改和自声明的授权父对象也都能在 credential lookup 前被拒绝。
+
+但是，冻结的 v26.194 Kernel constructor 和 v26.195 evaluator 都没有接收合法 online authorization parent 的生产入口。因此：
+
+```text
+legal parent valid for audit          true
+online precredential ingress         false
+legal parent admitted by guard       false
+```
+
+该问题位于第一个 terminal-to-persistence 阻塞点之后。报告将两者归为同一个 online ingress seam，并允许一次有界修复是合理的，不需要拆成两个新的大规模实验分支。
+
+---
+
+## 五、两个 not-applicable terminal 的结论不能扩大
+
+当前：
+
+```text
+measurement_support_exit
+policy_horizon_exhausted
+```
+
+都被 evaluator 拒绝进入经验分母，得到两次拒绝、零分母成员。这个 fail-closed 结果应当保留。
+
+但它目前只证明：
+
+> 冻结 evaluator 不接受这两个名称对应的行。
+
+它尚未证明：
+
+> 修复后的生产 dispatcher 在当前 Runner 下绝不可能产生这两个 terminal。
+
+v26.196 已经正确记录了这一边界：后续必须以**具体 dispatcher 的分支所有权和排除 witness**证明不可达，而不是继续依赖 Registry 中的名称分类。
+
+这是下一轮应保留的一个必要检查，但不需要由此扩展更多 terminal 设计。
+
+---
+
+## 六、当前 Gate 状态
+
+| 层级                               | 状态                       | 可解释范围                           |
+| -------------------------------- | ------------------------ | ------------------------------- |
+| v26.194 Execution Kernel 窄预检     | **RETAINED**             | 执行结构和旧 persistence ordering 可构造 |
+| v26.195 fresh Outcome authority  | **RETAINED / PASS**      | typed evidence DAG 可独立构造并重建     |
+| v26.196 独立审计完整性                  | **PASS**                 | 精确冻结、真实入口调用和失败定位可信              |
+| Production terminal dispatch     | **FAIL**                 | 实际只产生 `fixture_complete`        |
+| Fresh writer integration         | **FAIL**                 | 实际调用数为零                         |
+| External authorization ingress   | **FAIL**                 | 合法父对象没有生产入口                     |
+| Online Development execution     | **BLOCKED**              | 不得执行 192 Jobs                   |
+| Empirical Capability measurement | **UNINSTANTIATED**       | 经验行、估计均为零                       |
+| QA 合成支线                          | **UNCHANGED / ISOLATED** | 不参与本轮修复                         |
+
+14 个显式 Gate 中 12 个通过、2 个失败；两个失败分别就是 production terminal-to-fresh-Outcome totality 和 external online-authorization ingress。
+
+---
+
+## 七、允许与禁止的科学结论
+
+### 当前允许声明
+
+可以声明：
+
+> v26.195 的 fresh artifact-backed Outcome authority 可独立构造和逐字节重建，但尚未集成到冻结的 v26.194 production completion path。
+
+还可以声明：
+
+> v26.196 使用实际 Kernel 入口定位到第一个生产接缝：`complete_job()` 对所有控制仍写出 `fixture_complete`，没有执行 terminal dispatch、fresh writer 或 Trace/Outcome reconstruction。
+
+### 当前仍禁止声明
+
+不能声明：
+
+```text
+online execution ready
+production terminal totality
+empirical q_first
+empirical q_bounded_correction
+Capability estimate
+model semantic Capability
+Mapper / quotient State
+frequency
+Contribution
+VTDO update
+Student / training utility
+```
+
+也不能把这次失败表述为模型失败、任务失败或 VTDO 理论失败。
+
+---
+
+## 八、唯一合理的下一实验
+
+应严格执行报告授权的：
+
+```text
+fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_only
+```
+
+该修复只需要闭合以下五件事：
+
+1. **建立一个 production Kernel 所有的权威 terminal dispatcher。**
+   Terminal 必须由实际执行证据导出，不能由审计 harness 或调用方直接传入一个期望标签。
+
+2. **让 16 个 Registry-declared reachable local controls 全部经过同一条真实路径：**
+
+   ```text
+   invoke
+   → dispatcher
+   → FreshOutcomeArtifactWriter
+   → actual Raw
+   → actual Result
+   → reconstructed FailureLocus
+   → Trace
+   → Outcome
+   ```
+
+   每个 Job 必须得到且只得到一个 terminal projection；production path 中不能再回落到 `fixture_complete`。
+
+3. **为两个 excluded terminal 建立 dispatcher-specific witness。**
+   证明当前具体 Runner 没有相应分支，而不只是名称被 evaluator 拒绝。
+
+4. **在 credential lookup 前接入外部授权父对象。**
+   合法授权应通过；缺失、修改、自声明和跨实验授权应继续拒绝。
+
+5. **使用新的 successor integration identity。**
+   修复可以保持 Task、Component、Candidate、Schedule、模型、Grammar、Policy、resource 和 validity 等实验条件不变，但不能在旧 v26.194 implementation identity 下静默替换 `complete_job` 行为。
+
+这些要求与正式 successor 边界一致：它只允许改变 terminal-to-fresh-Outcome 和 external-authorization ingress seam，同时保留六个 v26.195 authority Contract 的语义及全部冻结实验输入。
+
+完成该预检后，只需要一次对应的独立审计；若 16 个实际分支、两项排除 witness 和授权入口全部通过，就应进入在线授权，而不是继续增加新的设计层或更大的攻击矩阵。
+
+## 最终意见
+
+**接受 v26.196 的负向结论，并按其唯一 successor 修复。**
+
+当前不应：
+
+* 执行 192-Job online run；
+* 扩大或接入新的 QA 合成任务；
+* 修改实验 Population 或模型条件；
+* 增加与该生产接缝无关的审计项目。
+
+现有 QA 候选支线继续保持离线冻结即可；v26.196 明确要求 QA branch 不变，后续修复也禁止 QA expansion 或 integration。
