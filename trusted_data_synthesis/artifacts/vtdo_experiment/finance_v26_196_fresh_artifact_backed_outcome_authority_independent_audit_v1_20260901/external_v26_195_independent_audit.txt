@@ -1,0 +1,214 @@
+# 最新实验修订审计结论
+
+## 总体判定
+
+**v26.195 在其声明的“无凭证 Outcome Authority 预检”范围内通过；在线执行仍应保持阻塞。**
+
+同时，新的 QA 合成支线也可以接受为一个**隔离的离线候选任务池实验**，不需要回滚，也不应接入当前 v26.194 的 192-Job 条件。
+
+当前状态应记录为：
+
+```text
+v26.194 Execution Kernel authority          PASSED
+v26.195 fresh Outcome authority preflight   PASSED
+full online terminal-to-outcome integration NOT YET INDEPENDENTLY AUDITED
+online Development execution                BLOCKED
+offline future QA candidate path            PASSED / ISOLATED
+```
+
+v26.195 自身也明确将结论限制为 credential-free constructibility：没有 Provider 调用、Development outcome、经验行或估计；唯一允许的后继仍是独立审计。
+
+---
+
+## 一、v26.195 已经可信闭合的部分
+
+### 1. v26.194 的执行条件没有被重新定义
+
+v26.195 没有从候选 Report 中“学习”前序身份，而是将 v26.194 的 source commit、tree、Report、sealed Root、distribution Root 和 22 个文件预期冻结在校验源中；当前 Package Catalog、Manifest、Runner、Execution Contract 和 Runtime 绑定也保持不变。 
+
+因此，当前实验对象仍然是：
+
+```text
+32 Packages
+192 Jobs
+792 registered Prompt coordinates
+exact v26.194 current-runtime condition
+```
+
+没有发生借 Outcome 修复偷偷更换 Population、Runtime 或任务语义的问题。
+
+### 2. 先前缺失的六层 Outcome authority 已经被重新实例化
+
+本次确实新建了：
+
+```text
+Terminal Registry
+RawExecutionDescriptor Contract
+JobResultDescriptor Contract
+JobBoundAttemptTrace Contract
+Outcome-row Contract
+ExactEvidenceSet evaluator Contract
+```
+
+而且这些身份与 v26.186 的旧 authority identity 零复用；生产 evaluator 入口会重新验证 Package Catalog、Manifest、192 个嵌套 Job、Runner、Execution Contract、Registry 和五个下游 Contract。
+
+这意味着当前第一个历史阻塞点——“精确 Job 索引不能推出权威 Job Outcome evidence set”——在**预检构造层**已经得到实质修复，而不再只是增加一层 wrapper hash。
+
+### 3. Raw/Result 已经从逻辑路径升级为实际字节证据
+
+新的 typed adapter：
+
+* 绑定了明确的源 commit、tree、完整源文件和写入方法；
+* 使用确定性 Raw/Result 路径；
+* 检查 writer 返回 digest 与实际文件字节；
+* 重新解析 canonical typed model；
+* 保持 Raw-before-Result 和 orphan closure；
+* 明确拒绝 v26.194 的旧 `fixture_complete` Result。
+
+192 个脚本控制进一步形成了完整的：
+
+```text
+Raw file
+-> Raw descriptor
+-> Result file
+-> Result descriptor
+-> Job-bound AttemptTrace
+-> Outcome row
+```
+
+384 个实际文件均通过 byte、SHA 和 canonical serialization 校验，Job、Raw、Result、Trace、Row 身份均为 192 个唯一值。
+
+### 4. 负向控制覆盖了本轮最关键的攻击面
+
+23 个新增攻击覆盖了：
+
+* 所有上游 authority parent 的 `model_construct()` 注入；
+* Raw/Result 文件漂移；
+* 跨 Job Raw 和跨 Raw Result；
+* 伪造 FailureLocus；
+* 跨 Trace Outcome；
+* Job 缩减、扩张和重复；
+* scripted evidence 冒充 empirical evidence；
+* 旧 fixture payload；
+* 非 canonical JSON。
+
+所有攻击均拒绝，且多数进行了完整下游重哈希。
+
+不需要在这一轮继续无限追加与当前因果问题无关的攻击。
+
+---
+
+## 二、唯一需要保留的实质审计项
+
+### 真实 Runner 的 terminal-to-persistence totality 尚未在报告中完整展示
+
+这是目前唯一值得在独立审计中重点验证的问题。
+
+v26.195 声明 Registry 中有 18 类 terminal，其中 16 类在当前 v26.194 kernel 下 reachable，另外两类明确为 not applicable。
+
+但是，本次精确 192-Job 控制全部是脚本生成的 `completed_qualified`：
+
+```text
+192 / 192 completed_qualified
+```
+
+报告没有逐类展示这 16 个 reachable terminal 是否都通过**真实生产路径**完成：
+
+```text
+Runner terminal branch
+-> terminal evidence
+-> typed writer adapter
+-> canonical Raw
+-> canonical Result
+-> reconstructed Trace
+-> reconstructed Outcome
+```
+
+也没有明确展示每个 terminal branch 都不存在 Python、Pydantic 或 `ValueError` escape。192 个 happy-path 控制足以证明正常路径的对象构造和 exact-set closure，但不能单独证明所有真实失败分支都已经接入新 adapter。
+
+这不应被判定为 v26.195 预检失败，因为 v26.195 本来就没有自称完成独立在线授权；但它必须成为下一次 independent audit 的核心，而不能只再做一次 403 文件的 byte-identical rebuild。
+
+还有一个与此相连的小问题需要一起确认：当前攻击会以 `empirical_evaluation_requires_independent_audit` 拒绝将 scripted chain 直接提升为 empirical evidence。这个 fail-closed 行为是正确的。下一次审计需要确认，未来独立审计授权能够作为明确、不可自我声明的外部父对象进入在线流程，而不是为了“打开 empirical 模式”再次修改 evaluator 或 Outcome semantics。
+
+---
+
+## 三、QA 合成支线审计
+
+QA 支线的处理是正确的，可以冻结保留。
+
+它明确不替换、不扩展、也不成为 v26.194 的 32-Package、192-Job、792-coordinate 条件的父对象；没有创建 VTDO Development Population、在线 Job Manifest、Raw/Result namespace、经验 Outcome 或生产 Release。
+
+当前支线只授权了 `registered_cross_metric_comparison`，另外两类 Operation closure 不完整的 Proposal 继续保持 blocked，并产生零候选成员。其底层证据也被明确标注为 deterministic engineering fixture，而不是 archive-grounded production QA。
+
+现有结果应只解释为：
+
+```text
+4 semantic instances
+x 4 renderer surfaces
+= 16 pre-outcome candidates
+
+16 local hard-Gate accepted
+8 diversity-selected
+2 children per instance
+1/2 weight per child
+```
+
+这些是离线、非经验的 pipeline constructibility 结果，不支持现实任务难度、模型可读性、在线成功率、训练收益或生产质量。 
+
+因此，**现在不需要继续审计 QA 支线，也不需要扩大 Operation 集**。将这 8 个候选冻结为未来实验输入即可。
+
+---
+
+## 四、当前允许与禁止的结论
+
+### 允许
+
+可以声明：
+
+> 在冻结的 v26.194 192-Job prospective condition 上，一套新的、与旧 v26.186 authority identity 分离的 artifact-backed Outcome authority 已经完成 credential-free 构造预检；其 happy-path 192-Job evidence DAG、实际 Raw/Result 文件字节、父绑定、exact Job set 和已注册负向控制均闭合。
+
+还可以声明：
+
+> 新 QA 合成链能够在不污染当前 VTDO 测量条件的情况下，构造一个经过本地质量评估和多样性筛选的未来候选池。
+
+### 仍然禁止
+
+不能声明：
+
+```text
+online execution ready
+empirical q_first
+empirical q_bounded_correction
+Capability estimate
+natural Agent trajectory distribution
+Mapper / quotient State
+frequency
+Contribution
+VTDO update
+Student or training utility
+QA production quality
+```
+
+v26.195 的授权边界也明确保留了这些禁止项。
+
+---
+
+## 五、唯一合理的下一实验
+
+继续执行文档已经给出的唯一后继：
+
+```text
+fresh_artifact_backed_outcome_authority_preflight_independent_audit_only
+```
+
+该独立审计不应修改 source Task、Component、Candidate、Schedule、presentation、model、Thinking、Grammar、Policy、Runtime、resource、validity、terminal policy、Manifest Job 或 Outcome semantics。
+
+审计内容压缩为三个必要检查即可：
+
+1. 从冻结的 v26.195 source commit 独立重建并验证 403 个正式文件及全部上游常量。
+2. 对 16 个 reachable terminal，使用实际 Runner terminal dispatcher 和实际 typed writer adapter，各完成至少一个 production-shaped Raw→Result→Trace→Outcome 控制；两类 not-applicable terminal 必须继续无法进入 empirical denominator。
+3. 验证 independent-audit/online-authorization 的外部父绑定：伪造、自声明或缺失授权继续拒绝，而合法授权不需要改写六个 Outcome authority Contract。
+
+其中应顺手覆盖 Provider/Transport/Privacy/Resource/Instrument/model identity/Thinking/Usage、Final ABI 和未知 Action reference 等真实终止分支的 Job-owned artifact parent；不需要再扩展到新的任务、QA Population、Mapper 或 VTDO。
+
+**若这三项通过，就应直接授权冻结 v26.194 192-Job 条件的在线 Development execution，不再增加另一轮设计型 preflight。若失败，只修复第一个真实的 terminal-to-Outcome 接缝。**

@@ -15,6 +15,47 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.196 Fresh Outcome Authority Independent Audit
+
+Finance v26.196 consumed only
+`fresh_artifact_backed_outcome_authority_preflight_independent_audit_only`. A detached checkout
+of exact v26.195 source commit `9c48c3bf308a93a908bfcea0dce2c3315044dd3d` rebuilds all
+403 formal files with 403/403 path, SHA-256, byte-count, and actual-byte matches. The directory
+contains nineteen root, 192 Raw, and 192 Result files, 402 canonical JSON files, and 2,300,542
+bytes. The v26.195 constructibility preflight therefore remains passed and unchanged.
+
+The production terminal-to-persistence Gate fails. Sixteen distinct exact Manifest Jobs each run
+one zero-Provider call through actual v26.194 `invoke` and `complete_job`. All sixteen write a
+canonical old Raw and Result in Raw-before-Result order, but every Result contains only
+`terminal=fixture_complete`. Target terminal dispatch, `FreshOutcomeArtifactWriter`, fresh typed
+Raw/Result, reconstructed Trace, and reconstructed Outcome counts are all zero. The first failed
+seam is `v26_194_complete_job_emits_fixture_complete_without_terminal_dispatch`.
+
+Both not-applicable Registry rows remain outside the empirical denominator. Missing, forged, and
+self-declared authorization parents reject before credential lookup or client construction. The
+exact external review is valid for v26.196, but the frozen Kernel and evaluator have no online
+precredential authorization ingress, so that Gate also fails. All six v26.195 authority Contract
+identities remain unchanged.
+
+The formal decision is
+`fresh_outcome_authority_independent_audit_failed_at_terminal_to_persistence_integration` and
+online execution remains blocked. Provider calls, Development outcomes, empirical rows or
+estimates, Mapper, State, frequency, Contribution, VTDO, QA changes, training, release, and
+production remain zero. Report identity is
+`finance_v26_196_fresh_outcome_independent_audit_report:5b3b8043bffe3b97a007ce60348860894a382f5fe8c7eb19b3a9b6c7a980741b`;
+sealed Root is
+`finance_v26_196_sealed_evidence_artifact_root:5859c971c2b9316d4250363552da38551ef433382c79f44dd1ef201534a0b3f9`;
+distribution Root is
+`finance_v26_196_distribution_artifact_root:e8d0770c063fc6847feb045e355ba7c9ba42f2d7740af6930ec4dd4c1b1d6b83`.
+
+The only permitted successor is
+`fresh_artifact_backed_terminal_to_outcome_integration_repair_preflight_only`. It may repair only
+the first terminal-to-fresh-Outcome and external-authorization ingress seam while preserving the
+frozen v26.194 experiment and all six v26.195 authority Contract semantics. Provider execution,
+the 192-Job online run, QA expansion or integration, and downstream empirical use remain
+forbidden. See
+`docs/finance_v26_196_fresh_artifact_backed_outcome_authority_independent_audit.md`.
+
 ## v26.195 Fresh Artifact-Backed Outcome Authority Preflight
 
 Finance v26.195 has consumed only `fresh_artifact_backed_outcome_authority_preflight_only`. It
