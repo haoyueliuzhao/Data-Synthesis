@@ -15,6 +15,135 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.210 Fresh Repaired Final Request Continuity Independent Audit
+
+Finance v26.210 consumed only
+`fresh_repaired_full_condition_executable_runner_final_request_contract_continuity_repair_preflight_independent_audit_only`.
+The exact 15,336-byte external review is bound at SHA-256
+`c826ba2618807789f2eb427ddadb54977ad0d8dea9c472ddeef8965ec8319ee3`.
+It accepts v26.209 as a scoped zero-Provider repair preflight with no formal mandatory revision
+and authorizes only its credential-free independent audit. The operator directive is separately
+bound at 30 UTF-8 bytes and SHA-256
+`8e30b645e46c5682c61a1e4ca820e51aa5c8b07bfa052274b665ebd20afd33fa`.
+Provider calls and credential lookups are zero.
+
+The review's one documentation erratum has been applied: the v26.209 dynamic nonreference
+control contains four Action dispatches, one Final dispatch, and five transport dispatches. No
+v26.209 formal byte or identity changed; its immutable JSON already contained `4 / 1 / 5`.
+
+The exact v26.209 source commit/tree
+`5809e9782515e55ee797b43730584d5d860aaa5c` /
+`b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf` is archived and run from a detached
+snapshot with zero credential-like environment keys. All 21 formal files and 44,916,386 bytes
+rebuild byte for byte. Path, SHA-256, byte-count, and actual-byte equality are each 21/21, and all
+twenty self-excluding Manifest members revalidate. The candidate Report, Gate, and continuity
+artifact are not used as outcome oracles.
+
+An independent join over the v26.194 Manifest, v26.193 exact Prompt evidence, and v26.206
+callsite census reconstructs:
+
+```text
+Jobs / unique coordinates                         192 / 792
+first / subsequent reference Action               192 / 288
+typed-rejection Correction side branches                120
+Final                                                   192
+Action plus Correction                                  600
+source-parent matches                              792 / 792
+single linear Provider trajectory claimed              false
+```
+
+A separately implemented controller and transport drive the actual v26.209
+`FinalContinuityRepairedFullConditionRunner`. All 192 reference main paths reach Final and are
+Qualified; all 120 registered Correction side-branch calls complete; 792 invocation records and
+792 transport dispatches are independently produced with 792/792 exact saved-record object
+matches and zero exception escape. Correction counts remain zero for 144 Jobs and one through
+four for twelve Jobs each.
+
+The request continuity audit does not call the v26.209 continuity helper. It binds Action and
+Correction rows to the 600 v26.206 source hashes and reconstructs all 192 Final messages and
+requests directly from v26.193 actual evidence:
+
+```text
+Action/Correction message / request matches       600 / 600
+Final message / request matches                   192 / 192
+Final actual message / request byte equality      192 / 192
+all message / request matches                     792 / 792
+missing / duplicate / extra coordinates             0 / 0 / 0
+maximum message / request bytes              34,404 / 34,565
+```
+
+The dynamic nonreference search independently reproduces the same changed successor State,
+second-call State binding, complete four-Action path, Final envelope, distinct Final request, and
+`4 / 1 / 5` dispatch counts. Five additional actual shared-route controls type invalid first
+Action ABI, unknown current Action, invalid Correction ABI, invalid Final ABI, and one outer
+`instrument_failure`; typed outcomes are 5/5 and exception escapes are zero. Empirical
+Outcome rows, estimand evaluations, online authorizations, QA, Mapper, State, frequency,
+Contribution, and VTDO rows remain zero.
+
+The exact noncompensatory partition is:
+
+```text
+A0 exact freeze and detached rebuild       PASS
+A1 independent callsite geometry           PASS
+A2 independent request continuity          PASS
+A3 independent executable replay           PASS
+A4 typed failures and boundary              PASS
+passed / failed                              5 / 0
+```
+
+Authoritative identities include:
+
+- external authorization:
+  `finance_v26_210_external_independent_audit_authorization:b202ccfaf683367188dae94c78aa79b8e01911abfa3cccd91a164e9977bbf724`;
+- v26.209 Freeze:
+  `finance_v26_210_v209_preflight_freeze:5618dd1111cb4b14711af8f61ebfb9868be7aafd7ccdf4cfb933cb7bd9959776`;
+- detached rebuild Audit:
+  `finance_v26_210_detached_rebuild_audit:9445a8464d4c3794994f6f62d6b93a543fa6065903b7ccbef798db20693441e3`;
+- callsite geometry Audit:
+  `finance_v26_210_independent_callsite_geometry_audit:2ea6b78b5a47cfb8688a1de7c60df83dd6f65f37e9295796e2bbe33ec0d1d13f`;
+- request continuity Audit:
+  `finance_v26_210_independent_request_continuity_audit:dd60bd4cc5caf859a855b93bc9a4491bb782e0239436f296c404583b87ffcae6`;
+- executable replay Audit:
+  `finance_v26_210_independent_executable_replay_audit:e3be58017222fbcddda36eae2afc08ad093dd375e8cccce4ee491f7c58439a12`;
+- failure/boundary Audit:
+  `finance_v26_210_independent_failure_boundary_audit:3848bcdc52fd75e080c67f23bc4320b66e8275702e3d03aa11f66e3b1b6ff2a2`;
+- Gate Evaluation:
+  `finance_v26_210_independent_audit_gate_evaluation:e5bd0015e0415da187ccd92781983bef7ad91bee23390cb2ad731fbdfb4386e6`;
+- Decision:
+  `finance_v26_210_independent_audit_decision:34bb55cf3347df67d3c274479152b56db6f087cae1d22cce070a55a06fefee7e`;
+- Transition:
+  `finance_v26_210_transition:06d58ef71b0c222aeba97f569f4a984d4fc29de14d29fe215ee274fb46c757db`;
+- report:
+  `finance_v26_210_independent_audit_report:7ec13842a2a34a47ba149042235c9b5c403a21aea33ba81a48b246101511d755`;
+- Artifact Manifest:
+  `finance_v26_210_artifact_manifest:d998d4852882453854c6eefe061f537f2234bcc5eb39bdb721ce61ca107a7870`;
+- Artifact Root:
+  `finance_v26_210_artifact_root:c51269937eb004da99a2fcef5b4209c27e9e36eb1a0f381981b727c7956f1c1a`.
+
+The exact v26.210 source commit/tree are
+`56238892be483da4bab0d188dcc1fe69287174bf` /
+`b0e329e53318f17b2d1930023c3bd872660bea64`. The fifteen-file,
+1,344,368-byte formal directory rebuilds byte for byte; its Manifest binds fourteen members and
+1,341,853 bytes. Focused v26.210 tests pass 8/8, including a complete second build. The adjacent
+v26.206-v26.210 suite passes 41/41. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+v26_209_final_request_continuity_repair_independent_audit_passed
+```
+
+This accepts v26.209 only at its zero-Provider preflight scope. It is not a model result,
+Capability estimate, online authorization, or Provider execution. The only permitted successor
+is `fresh_repaired_full_condition_exact_192_job_online_execution_authorization_only`, which may
+make a separate authorization decision but may not execute the run. Provider execution, the
+repaired 192-Job online run, source/Task/Component/Candidate/Schedule/presentation/Runtime/model/
+Thinking/Grammar/Policy/resource/correction-bound/validity/denominator/threshold/terminal-policy
+change, historical rewrite, QA, Mapper, State, frequency, Contribution, VTDO, training, release,
+and production remain forbidden. See
+`docs/finance_v26_210_fresh_repaired_full_condition_final_request_continuity_independent_audit.md`.
+
 ## v26.209 Fresh Repaired Final Request Contract Continuity Repair Preflight
 
 Finance v26.209 consumed only

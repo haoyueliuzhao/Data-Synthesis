@@ -1,0 +1,481 @@
+# 审计结论
+
+本轮 **Finance v26.209** 可以接受为一个**范围内有效的零 Provider 修复预检**。它已经针对 v26.208 的首个根本缺陷完成了实质修复，没有发现需要重新构造正式工件的阻塞性问题。
+
+```text
+AUDIT_RESULT
+  VALID_SCOPED_ZERO_PROVIDER_REPAIR_PREFLIGHT
+
+v26.208 frozen-history preservation                    PASS
+Final JSON-explicit request-envelope repair            PASS
+registered 792-call request continuity                 PASS
+Correction side-branch geometry                        PASS
+shared executable no-bypass route                      PASS
+dynamic nonreference-prefix Final construction         PASS
+typed failure and scientific boundary                  PASS
+
+mandatory formal revision                              NONE
+nonblocking documentation erratum                      ONE
+independent audit                                       PENDING
+online execution authorization                         NOT ISSUED
+Provider execution                                      FORBIDDEN
+```
+
+更精确的本轮判定是：
+
+```text
+v26_209_final_request_contract_continuity_repair_
+preflight_accepted_as_scoped_with_one_nonblocking_
+documentation_count_correction
+```
+
+v26.209 当前正式决定仍应保持：
+
+```text
+fresh_repaired_full_condition_executable_runner_
+final_request_contract_continuity_repair_preflight_
+passed_independent_audit_required_online_execution_blocked
+```
+
+唯一已授权后继仍是零 Provider 独立审计，而不是在线执行。
+
+---
+
+# 一、本轮确实修复了 v26.208 的首个阻塞点
+
+## 1. Final Provider 请求恢复了冻结的 JSON-explicit envelope
+
+v26.208 的错误路径是：
+
+```text
+raw Final Prompt
+  -> direct user message
+  -> request
+```
+
+v26.209 改为：
+
+```text
+current Runtime result
+  -> current raw Final Prompt
+  -> v26.192 JSON-explicit envelope
+       prompt_core
+       prompt_kind = final
+       provider_output_protocol
+  -> canonical user message
+  -> request
+  -> certificate
+  -> receipt
+  -> shared transport seam
+```
+
+并继续绑定冻结的 Prompt Contract、Prompt Schema、v26.193 evidence set 和 v26.206 callsite census。
+
+源码并非只在报告中声明修复。Final 编译器实际调用冻结的 `v192._render_prompt(...)`；新增测试也直接检查生成对象只有：
+
+```text
+prompt_core
+prompt_kind
+provider_output_protocol
+```
+
+并验证 `provider_output_protocol.contract_id` 等于冻结 Contract。
+
+因此，上轮的：
+
+```text
+frozen_final_provider_request_envelope_not_preserved
+```
+
+已经被直接关闭。
+
+---
+
+## 2. 连续性证据已经从最大字节数比较升级为逐行精确比较
+
+v26.209 的主要 Gate 不是“最大请求大小重新变成相同”，而是对 792 个注册调用逐行验证 canonical message/request：
+
+```text
+Action/Correction message matches       600 / 600
+Action/Correction request matches       600 / 600
+Final message matches                   192 / 192
+Final request matches                   192 / 192
+
+Final actual message bytes = v26.193     192 / 192
+Final actual request bytes = v26.193     192 / 192
+
+total message matches                   792 / 792
+total request matches                   792 / 792
+missing / duplicate / extra             0 / 0 / 0
+```
+
+最大值恢复到 `34,404 / 34,565` 只是辅助摘要，不再承担主要证明作用。
+
+源码中的 continuity validator 还会：
+
+* 将每个 v26.209 Job 映射回对应 v26.206 Job；
+* 比较完整的 `(Job, invocation_index)` exact set；
+* 对所有调用比较 phase、Candidate、message hash、request hash 和 byte count；
+* 对 192 个 Final 额外直接比较实际 canonical message/request bytes 与 v26.193 bytes；
+* 任何不一致立即 fail closed。
+
+这足以支持“**注册参考表面上的冻结 Provider 请求连续性已经在实际 Runner 路径中闭合**”。
+
+---
+
+# 二、Correction 几何修订是必要且正确的
+
+v26.209 进一步发现，v26.208 除了 Final envelope 缺失以外，还把原本属于诊断 side branch 的 120 个 typed rejection/Correction 当成了单条线性主轨迹的一部分。这造成了：
+
+```text
+phase                    match    mismatch
+first Action               192           0
+subsequent Action           216          72
+Correction                   48          72
+Final                         0         192
+```
+
+这并没有改变上轮“首个直接代码缺陷是 Final envelope”的判断，但说明 v26.208 的控制几何也需要恢复。
+
+v26.209 的实现方式是正确的：
+
+```text
+main state
+  -> reference Action
+  -> commit into main path
+
+copy of pre-Action state
+  -> registered invalid Action
+  -> typed rejection
+  -> reference Correction
+  -> commit only inside side branch
+```
+
+Correction branch 不再污染 reference main state，后续 reference Action 和 Final 因而重新与 v26.206/v26.193 完全一致。
+
+对应源码修改也清楚地把 `branch_origin = copy.deepcopy(state)` 放在主 Action 之前；主状态始终提交 reference Action，invalid Action 和 Correction 则仅在 `branch_origin` 上执行。
+
+此外，typed rejection 不再通过模糊的 `action_accepted` 属性猜测，而是要求实际返回 `PublicTypedRejectionObservation`。这是一个合理的窄修正。
+
+所以本轮的 792 次调用应解释为：
+
+```text
+192 条 reference main paths
++ 120 个注册 Correction side-branch calls
+= 792 个注册 callsites
+```
+
+而不是 192 条都实际经历了所有登记 rejection 的线性 Provider 轨迹。
+
+---
+
+# 三、动态非参考路径控制补足了“只会重放历史请求”的风险
+
+v26.209 不仅比较注册 reference 路径，还保留了一个非参考 accepted-prefix 控制：
+
+1. 从三候选 State 中选择一个当前合法、非 reference 的 Action；
+2. 得到不同于 reference successor 的下一 State；
+3. 下一次调用绑定新的非参考 State；
+4. 继续完成该动态路径；
+5. 从当前动态 Result 构造 Final JSON-explicit envelope；
+6. 动态 Final request 必须与同一 Job 的 reference Final request 不同。
+
+这说明 Runner 并不是简单读取历史 v26.193 Final request，而是根据当前 accepted prefix 动态重建合法 Final 请求。
+
+该控制只能证明：
+
+```text
+dynamic nonreference construction is executable
+```
+
+不能证明：
+
+```text
+all model-reachable prefixes have been exhaustively enumerated
+```
+
+v26.209 没有越过这条解释边界，因此这一控制的科学定位是恰当的。
+
+---
+
+# 四、共享执行路径的证据足以支持本阶段
+
+Action、Correction 和 Final 都通过：
+
+```text
+FinalContinuityRepairedFullConditionRunner._invoke_current_state
+```
+
+同一入口完成：
+
+```text
+current State
+  -> compile
+  -> request
+  -> certificate
+  -> receipt
+  -> injected transport
+  -> projection
+  -> parser
+  -> State/Candidate or Final-envelope validation
+  -> step/finalize
+  -> terminal dispatch
+```
+
+源码 AST 和 792 条动态记录共同确认 compiler、builder、validator、receipt、transport 的唯一调用和顺序；未发现旧 ABI 路径、未修复路径或直接 Provider/network 调用。
+
+这里可以支持的是：
+
+> v26.209 已构造出一个在注册表面上保持冻结请求、并对动态 accepted prefix 可重新编译的统一 executable Runner route。
+
+它仍然不是 Provider 在线执行证据。
+
+---
+
+# 五、唯一明确问题：Markdown 中动态调用数写错
+
+上传报告写道：
+
+> “The control uses two Action dispatches and one Final dispatch.”
+
+
+
+但正式 `dynamic_nonreference_branch_audit.json` 记录的是：
+
+```text
+diagnostic_action_dispatch_count = 4
+diagnostic_final_dispatch_count  = 1
+diagnostic_transport_dispatch_count = 5
+```
+
+这是因为所选 witness path 有四个 Action Component：第一个使用非参考 Action，后续三个继续完成当前动态路径，最后再发出一次 Final。
+
+因此建议只修改叙述性 Markdown：
+
+```diff
+- The control uses two Action dispatches and one Final dispatch
++ The control uses four Action dispatches and one Final dispatch
+```
+
+或者更不易再次产生歧义地写为：
+
+```text
+The control uses one nonreference first Action, all remaining
+current-prefix Action calls, and one Final call, for five
+transport dispatches in total.
+```
+
+该问题属于：
+
+```text
+DOCUMENTATION_ERRATUM
+```
+
+而不是：
+
+```text
+FORMAL_GATE_FAILURE
+```
+
+正式动态工件、Gate、identity、Manifest 和 Artifact Root 不应因此修改或重算。只需修正文档及可能复制了该句的状态摘要。
+
+---
+
+# 六、Gate 状态应如何解释
+
+| Gate                                 | 审计状态             | 精确解释                                                 |
+| ------------------------------------ | ---------------- | ---------------------------------------------------- |
+| R0 v26.208 freeze与当前条件               | PASS             | v26.208 历史字节保留；其错误解释被外部审计取代                          |
+| R1 fresh identity                    | PASS             | 新实现、新 Package、Job、Manifest、Runner、Execution Contract |
+| R2 no-bypass + request continuity    | PASS             | 792 条注册请求逐行闭合，Final 额外逐字节闭合                          |
+| R3 registered full-condition control | PASS             | 192 主路径 + 120 side branches；非模型结果                    |
+| R4 typed failures/boundary           | PASS             | 五类 terminal，零 Provider、零 empirical estimate          |
+| 独立重建                                 | PENDING          | 尚未由后继独立实现重建                                          |
+| 在线模型执行                               | NOT AUTHORIZED   | 不能由本轮本地控制替代                                          |
+| Capability / VTDO                    | NOT MATERIALIZED | 没有经验 Outcome 或估计                                     |
+
+本轮报告给出的 R0–R4 `5/0` 与正式 Gate 工件一致。
+
+---
+
+# 七、当前首个未闭合 Gate
+
+当前不再存在一个已观测的工程失败点。首个未闭合层应记录为：
+
+```text
+FIRST_UNCLOSED_GATE
+  independent_exact_source_artifact_and_request_continuity_reconstruction
+
+STATUS
+  PENDING / UNKNOWN
+  not FAILED
+```
+
+也就是说：
+
+* v26.209 本地预检已经通过；
+* 但本地 builder、测试和自生成 Gate 不能自行承担独立审计；
+* 在线 readiness 仍需下一阶段从冻结源与正式工件独立重建。
+
+报告记录的 source commit/tree：
+
+```text
+5809e9782515e55ee797b43730584d5d860aaa5c
+b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf
+```
+
+与 Git commit 对象中的 tree 配对一致。
+
+不过，本次审计没有在当前环境中重新执行完整的 44.9 MB、21 文件构建；这正是下一独立审计应完成的对象，而不应在当前阶段被假定为已经独立通过。
+
+---
+
+# 八、唯一合理的下一实验
+
+下一阶段应严格采用报告已经冻结的名称：
+
+```text
+fresh_repaired_full_condition_executable_runner_
+final_request_contract_continuity_repair_preflight_
+independent_audit_only
+```
+
+不应再开启新的 repair，也不应直接调用 Provider。
+
+## 独立审计的最小设计
+
+### A0：精确冻结与 detached rebuild
+
+从 exact commit/tree 构造隔离源码环境，删除 credential-like 环境变量，独立执行 builder，并验证：
+
+```text
+formal files                             21 / 21
+path matches                             21 / 21
+SHA-256 matches                          21 / 21
+byte-count matches                       21 / 21
+actual-byte matches                      21 / 21
+Provider / credential calls                 0 / 0
+```
+
+候选 `report.json`、Gate 或 continuity audit 不得作为结果 oracle。
+
+### A1：独立重建注册 callsite 几何
+
+从 v26.194 Runtime、v26.193 evidence set 和 v26.206 callsite census 独立导出：
+
+```text
+reference first Actions                        192
+reference subsequent Actions                   288
+Correction side branches                       120
+Finals                                         192
+total                                           792
+```
+
+必须明确验证：
+
+```text
+single_linear_provider_trajectory_claimed = false
+```
+
+### A2：独立请求连续性
+
+不调用 v26.209 `_frozen_request_continuity_audit`，独立计算：
+
+```text
+Action/Correction messages and requests       600 / 600
+Final messages and requests                   192 / 192
+Final actual bytes against v26.193             192 / 192
+exact coordinate-set equality                    true
+```
+
+### A3：独立 executable-route replay
+
+使用独立 scripted transport 经过实际 Runner：
+
+```text
+reference main paths                           192
+Correction side-branch calls                   120
+Qualified scripted main paths                  192
+shared-route invocation records                792
+exception escapes                                0
+```
+
+同时复现一个动态非参考 accepted prefix，并正确记录：
+
+```text
+Action dispatches     4
+Final dispatches      1
+total dispatches      5
+```
+
+### A4：失败与边界
+
+独立复现五类 typed failure，并确认：
+
+```text
+Provider calls                 0
+credential lookups             0
+empirical Outcome rows         0
+estimand evaluations           0
+QA / Mapper / State            0
+Contribution / VTDO            0
+```
+
+## 通过后的决定
+
+若上述 Gate 全部通过，合理决定应是：
+
+```text
+v26_209_final_request_continuity_repair_
+independent_audit_passed
+```
+
+其后应直接进入**单独的在线授权决策**，而不是继续做新的接口修复或更多同类预检。独立审计本身仍不应隐式调用 Provider。
+
+---
+
+# 最终审计判定
+
+```text
+latest_stage
+  Finance v26.209
+
+theoretical proposition tested
+  the frozen Provider-facing request condition is realized by
+  the actual executable Runner over the registered callsite surface
+
+Final request-envelope repair
+  passed
+
+registered request continuity
+  792 / 792 passed
+
+Correction geometry
+  correctly restored to registered side branches
+
+dynamic accepted-prefix constructibility
+  passed on one diagnostic witness
+
+model Capability evidence
+  none
+
+formal mandatory revision
+  none
+
+documentation correction
+  dynamic witness count: 2 Action -> 4 Action
+
+first unclosed Gate
+  independent exact-source and exact-artifact reconstruction
+
+only authorized successor
+  v26.209 independent zero-Provider audit
+
+online execution
+  still forbidden
+
+Mapper / State / frequency / Contribution / VTDO / training
+  still forbidden
+```
+
+因此，本轮不需要再次回到 Final interface 设计，也不需要扩大到新的攻击面。完成那一处非阻塞文档计数修正后，应直接开展 v26.209 的独立重建审计。
