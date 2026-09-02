@@ -1,0 +1,366 @@
+# 审计结论
+
+**Finance v26.204 在其声明的实验层级上通过，而且结果相当明确。** 本轮没有发现需要回滚实验、修改 Gate，或再做一轮 first-response 接口校准的实质性问题。
+
+建议正式判定为：
+
+```text
+v26_204_paired_online_calibration_scientific_result_accepted_as_scoped
+postrun_actual_artifact_independent_reconstruction_required
+```
+
+当前状态可概括为：
+
+| 审计对象                                     | 状态                 | 含义                                             |
+| ---------------------------------------- | ------------------ | ---------------------------------------------- |
+| 配对接口干预设计                                 | **PASS**           | C/R 除接口 profile 外保持冻结                          |
+| 24-Job 在线执行闭合                            | **PASS_IN_REPORT** | 24/24 Raw、Result、Observation、checkpoint 均已报告生成 |
+| G0–G8 预注册 Gate                           | **PASS**           | 不是事后调整阈值                                       |
+| Repair 对首响应 ABI 的作用                      | **SUPPORTED**      | 精确校准集合上 11/12 对显示 Repair-only 成功               |
+| 单个修复子机制归因                                | **NOT_IDENTIFIED** | 只能归因于整个复合 Repair package                       |
+| 执行工件独立权威性                                | **PENDING**        | 尚未从 108 个实际文件独立重建                              |
+| Program、Correction、Final、Capability      | **UNINSTANTIATED** | 这次实验在首响应后停止                                    |
+| Mapper、State frequency、Contribution、VTDO | **NOT_AUTHORIZED** | 不能由接口校准结果越级推出                                  |
+
+v26.204 的授权和报告边界本身是正确的：它只执行精确的 24-call 配对校准，没有授权完整 repaired 192-Job condition、Capability 估计、QA、Mapper、State、Contribution 或 VTDO；当前唯一 successor 也被限定为零 Provider 的 postrun independent audit。
+
+需要说明的是：我目前审计的是上传的 v26.204 报告与 `Current Project Status`。实际 108 文件执行目录没有随本轮材料上传，因此我不能声称已经独立重算其全部 SHA-256、Root 和父关系；这正是下一阶段必须完成的工作。
+
+---
+
+# 一、实验为什么可以通过
+
+## 1. 干预对象清楚，没有重新混入任务语义变化
+
+v26.204 没有重新选择 Population，也没有改变两臂定义。模型、Thinking、采样参数、资源、Candidate 顺序、Schedule 和请求体父对象均延续 v26.203。每个实际 canonical request body 在发出 HTTP 请求前都会与 v26.203 预提交的哈希比较。
+
+12 个 pair 相邻执行，顺序为：
+
+```text
+6 × C -> R
+6 × R -> C
+```
+
+并且是单线程执行，不存在自由重排或并发调度。 
+
+因此实验比较的是：
+
+```text
+同一个 source cell
++ 同一 Task / State / Candidate / model / policy
++ 不同的模型可见 Action-interface package
+```
+
+而不是旧任务和新任务、旧模型和新模型之间的混合比较。
+
+## 2. 结果不是“刚好踩线”，而是强配对反差
+
+实际首响应结果为：
+
+```text
+                         Control     Repair
+exact Action ABI           0/12       11/12
+reference + State valid    0/12       11/12
+
+Repair-only success                    11
+Control-only success                    0
+```
+
+所以预注册的配对净差为：
+
+$$
+\Delta_{\mathrm{ABI}}
+=
+\frac{11-0}{12}
+=
+0.9167
+$$
+
+即 **91.7 个百分点的配对净改善**。11 个 discordant pair 全部朝向 Repair，没有任何一个 pair 朝向 Control。
+
+v26.203 原本要求：
+
+```text
+Repair ABI                         >= 9/12
+Repair reference + State valid     >= 8/12
+Repair-only paired success         >= 7
+Control-only paired success        <= 1
+```
+
+这些阈值是在在线结果出现之前冻结的，不是看到 11/12 后重新制定的。
+
+实际结果分别为：
+
+```text
+11 >= 9
+11 >= 8
+11 >= 7
+ 0 <= 1
+```
+
+因此 G3–G6 的通过没有解释争议。报告中的双侧 exact McNemar 值也可直接复算为：
+
+$$
+2\left(\frac12\right)^{11}
+=
+0.0009765625
+$$
+
+与报告一致。不过，把它作为 supplementary 结果、而不是事后显著性阈值，也是正确的。
+
+## 3. 执行几何没有被补偿性成功掩盖
+
+报告记录：
+
+```text
+Jobs / Raw / Result / Observation / checkpoint
+24 / 24 / 24 / 24 / 24
+
+Stage 1 calls                 24
+Stage 2                       0
+retry / recovery              0 / 0
+Correction / Final            0 / 0
+HTTP success                 24 / 24
+model match                  24 / 24
+Thinking                     24 / 24
+complete Usage               24 / 24
+outer terminal                0
+```
+
+这意味着接口效果并非来自重试、失败样本排除、历史响应适配或只统计成功请求。
+
+## 4. 唯一 Repair 失败被正确保留
+
+12 个 Repair 响应都返回了四个 Action-named 顶层字段，但其中一个将：
+
+```text
+decision_kind = revise_selector
+```
+
+而不是冻结合同规定的 `execute_public_operation`。该行因此被判为 ABI-invalid，并且 downstream reference、State 和 Runtime 字段保持 null，没有被 Host 补写，也没有放宽 Parser。
+
+这是正确处理。**不要因为这一行去加入 `revise_selector`、放宽枚举或做响应适配。** 它目前只是 1/12 的剩余接口不服从，不是新的根本阻塞点，也不影响预注册的 package-level 结论。
+
+---
+
+# 二、当前真正成立的科学结论
+
+现在可以认为，v26.202 所定位的 first-response model-visible interface 是一个真实机制阻塞点，而且 v26.203 构造的复合 Repair package 在精确校准表面上显著改变了模型输出行为。
+
+最强允许表述仍应是：
+
+> 在精确的 12 个分层配对 source cells 和本次冻结的 24-call one-shot execution 上，复合 Repair interface 对首响应 Action-ABI instantiation 产生了预注册门槛以上的改善。
+
+这比“Prompt 看起来更清楚”更强，因为已经有在线反事实两臂证据；但它仍比“模型具备 Agent Capability”弱得多。
+
+报告对此边界处理得比较干净：它明确没有声称完整 Program、Correction、Final、新的历史 `q_first`、通用模型 ABI 能力、单个接口子机制效果、Capability、State frequency、Contribution 或 VTDO。
+
+---
+
+# 三、仍然禁止的解释
+
+以下结论目前仍然不能说：
+
+```text
+1. deepseek-v4-flash 一般情况下有 11/12 的 Action-ABI 能力。
+2. Repair 条件下完整 q_first 已经变为 11/12。
+3. v26.200 的 0/192 可以被 v26.204 替换、修订或合并。
+4. competing-Schema overlap 是历史失败的唯一原因。
+5. system role、四字段连续展示或 metadata 标记中的某一个单独有效。
+6. 这 11 个响应已经执行了 Runtime step 或完成了 Program。
+7. Correction、Final、trajectory-depth Capability 已经获得经验支持。
+8. 可以开始 Mapper、State frequency、Contribution、VTDO 或训练。
+```
+
+特别要区分三个量：
+
+```text
+exact Action ABI                    11/12
+Action reference + State binding    11/12
+Runtime transition / Program        未测量
+```
+
+v26.204 在第一次响应后立即停止。因此，`reference + State valid` 是进入 Runtime 的前置资格，不等于 Action 已提交，更不等于轨迹有效。
+
+另外，这 12 个 source cells 是预响应分层选取的工程校准集合，不是从原 192 Jobs 按自然比例随机抽样，所以 `11/12` 不应外推成原总体成功率。报告把 strata 限定为 engineering-calibration strata，是合理的。
+
+---
+
+# 四、当前首个阻塞点已经改变
+
+v26.204 之前的首个经验阻塞点是：
+
+```text
+model-visible first-response Action interface
+```
+
+现在它在精确校准条件上已经被经验越过。继续围绕 first-response Prompt 做更多局部改写、Parser 调整或重复 24-call 校准，已经没有理论必要。
+
+当前应区分两个新阻塞层：
+
+### 立即的证据阻塞点
+
+```text
+v26_204_actual_artifact_backed_postrun_independent_reconstruction
+```
+
+即：执行代码自己报告的 24/24、11/12 和 G0–G8，尚未由独立实现从实际文件字节重新得到。
+
+### 该 Gate 通过后的科学阻塞点
+
+```text
+post_first_action_model_owned_runtime_behavior_under_the_repaired_condition
+```
+
+也就是模型在产生合法首 Action 后，能否：
+
+```text
+提交 Runtime step
+-> 面对后续 State
+-> 再次选择 Action
+-> 使用 bounded correction
+-> 形成合法 Final
+-> 通过独立 Validity
+```
+
+这些才是下一阶段真正需要实例化的理论对象。
+
+---
+
+# 五、唯一合理的下一实验：v26.205 独立 postrun audit
+
+建议下一阶段严格命名为：
+
+```text
+Finance v26.205 Fresh First-Response Action-Interface
+Paired Online Calibration Postrun Independent Audit
+```
+
+只消费：
+
+```text
+fresh_first_response_action_interface_disambiguation_
+paired_24_call_online_calibration_postrun_independent_audit_only
+```
+
+这是 v26.204 已冻结的唯一 successor。
+
+## v26.205 必须独立完成的核心检查
+
+不需要再展开大规模攻击矩阵，闭合下面六项即可：
+
+1. **目录与 Manifest 权威性**
+   独立重算 108 个文件、107 个 Manifest members、字节数、SHA-256 和 Artifact Root。
+
+2. **请求身份与两臂隔离**
+   从 v26.203 的 Manifest 和 FirstRequestDescriptor 重建全部 24 个请求，确认真实请求 body、arm、source cell、pair 顺序和 canonical hash。
+
+3. **一调用语义**
+   从实际记录确认 24 次 Stage 1、零 Stage 2、零 retry、零 recovery、零 replacement，且授权只消费一次。
+
+4. **从实际 Raw response 独立重新解析**
+   不把 v26.204 的 Observation 或 Gate Evaluation 当作 oracle，直接对公开响应字节运行冻结 Parser，重建：
+
+   ```text
+   Control ABI        0/12
+   Repair ABI        11/12
+   reference+State   11/12
+   Repair-only       11
+   Control-only       0
+   ```
+
+5. **失败行语义**
+   独立确认 `decision_kind=revise_selector` 的 Repair 行确实 ABI-invalid，下游字段确实为 null，且没有适配或 Parser 放宽。
+
+6. **重新计算 G0–G8**
+   从独立重建的 24 个 Observation 重新生成 paired Evaluation、\(\Delta_{\mathrm{ABI}}\) 和全部 Gate，而不是仅比较 v26.204 保存的汇总数字。
+
+最小负向控制只需要覆盖：响应字节变更、跨 arm 父绑定、缺失或重复 Job，以及把 `revise_selector` 事后适配成合法 Action。没有必要重新发动与本次新证据面无关的大型历史攻击审计。
+
+## v26.205 的决策规则
+
+```text
+若实际字节、父关系、独立解析和 G0-G8 全部重建一致：
+    接受 v26.204 为完整、可审计的接口校准结果
+
+若任一项不一致：
+    冻结 v26.204
+    定位第一个不一致的证据层
+    不授权完整 repaired condition
+```
+
+---
+
+# 六、v26.205 通过之后该做什么
+
+通过独立审计后，下一步也不应直接在线跑 192 Jobs，而应先建立一个：
+
+```text
+fresh_repaired_action_interface_full_condition_
+integration_and_identity_preflight_only
+```
+
+这个零 Provider 预检应当：
+
+```text
+- 使用全新 Package / Job / Manifest / Runner / Execution identities；
+- 不复用或重标 v26.200 Job 与 Outcome；
+- 把复合 Repair profile 接入所有由 exact Action parser 消费的调用点；
+- 检查 first Action、subsequent Action 和 Correction 的合同一致性；
+- 保持 Final Grammar 与 Validity 语义不变；
+- 用本地 scripted trace 走通 Action -> State transition -> Final；
+- 建立新的完整 Outcome authority 和 exact evidence-set denominator；
+- 不接入 QA、Mapper、State frequency、Contribution 或 VTDO。
+```
+
+是否需要完整 192-Job 在线执行，应当在这个 preflight 完成后再作单独授权决定。
+
+当前没有必要做 Repair package 的因素分解。接口包已经足以解除主线的首个阻塞；现在拆 system role、schema contiguity 和 metadata marking，只会把主线重新拖回局部 Prompt 优化。
+
+---
+
+# 最终审计决定
+
+```text
+current_experiment
+  Finance v26.204
+
+audit_decision
+  PASS_AS_SCOPED
+
+result_strength
+  strong_paired_interface_effect
+
+paired_contrast
+  11 / 12
+
+report_revision_required
+  false
+
+first_response_interface_gate
+  empirically_passed_on_exact_calibration_surface
+
+independent_artifact_authority
+  pending
+
+current_first_blocker
+  v26_204_postrun_actual_byte_and_parent_chain_reconstruction
+
+only_authorized_successor
+  fresh_first_response_action_interface_disambiguation_
+  paired_24_call_online_calibration_postrun_independent_audit_only
+
+additional_first_response_online_calibration
+  not_needed
+
+parser_relaxation_or_revise_selector_adaptation
+  forbidden
+
+full_repaired_192_job_execution
+  not_authorized
+
+QA / Mapper / State / Contribution / VTDO
+  not_authorized
+```
+
+上传的 v26.204 正式报告和最新状态快照在执行规模、11/12 对 0/12 的配对结果、G0–G8、Artifact identities 及 successor boundary 上完全一致，没有发现两份材料之间的状态冲突。 

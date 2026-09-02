@@ -15,6 +15,112 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.205 Fresh First-Response Action-Interface Paired Calibration Postrun Independent Audit
+
+Finance v26.205 consumed only
+`fresh_first_response_action_interface_disambiguation_paired_24_call_online_calibration_postrun_independent_audit_only`.
+The exact 13,644-byte external review is bound at SHA-256
+`37c146cd27119983506520f1d5bbdabe3ca2003165d52510b184803eaa9a2d3d`. It accepts v26.204
+at its stated scientific scope and requires the actual 108-file execution directory to be
+independently reconstructed before any full repaired-condition integration preflight.
+
+This stage makes zero Provider calls and zero credential lookups. It does not call the v26.204
+response/Observation projector, paired-evaluation helper, or Gate helper. Saved Observation,
+paired Evaluation, Gate Evaluation, and Summary objects are used only as comparison targets after
+independent reconstruction from v26.203 frozen requests, v26.204 actual Raw bytes and telemetry,
+and the frozen exact Action Parser and Grammar.
+
+All 108 v26.204 files and 276,582 bytes are present. The self-excluding Manifest contains 107
+members and 261,434 bytes; path, SHA-256, and byte-count matches are each 107/107, with zero
+missing, unmanifested, or duplicate paths. The independently recomputed Artifact Root exactly
+matches
+`finance_v26_204_execution_artifact_root:10d7d5d17b518d2758c3e746a39a29f0a381cb5d3a267fb79e67e860093e8a3f`.
+The exact v26.204 execution source commit/tree also revalidate.
+
+All fifteen v26.203 formal files revalidate over 582,364 bytes. For all 24 Jobs, reconstructed
+request-body hashes, Raw and telemetry request hashes, Job/request/cell/arm parents, exact
+sequential ordinals, and Raw -> Result -> Response/Observation -> checkpoint chains match 24/24.
+The execution independently contains 24 Stage 1 calls and zero Stage 2, retry, recovery,
+Correction, or Final calls. HTTP success, exact requested/selected/response model, Thinking
+presence, and complete Usage are each 24/24; typed outer terminals and persisted private
+reasoning content are zero.
+
+Direct parsing of the actual Raw public response objects independently reconstructs:
+
+```text
+                                        Control   Repair
+exact Action ABI                         0 / 12   11 / 12
+Action reference plus State valid        0 / 12   11 / 12
+Answer-Schema exact shape               10 / 12    0 / 12
+Operation-output exact shape            10 / 12    0 / 12
+
+paired Repair-only ABI successes                 11
+paired Control-only ABI successes                 0
+paired net ABI contrast                       11 / 12
+```
+
+All twelve Repair responses contain the four Action-named fields. The one invalid row retains
+`decision_kind=revise_selector`; the frozen Parser rejects it, and reference, State, and Runtime
+fields remain null without adaptation or relaxation. The four pre-response strata reconstruct
+Repair reference-plus-State counts `3/3`, `2/3`, `3/3`, and `3/3`; Control is `0/3`
+in every stratum.
+
+All independently rebuilt Response and Observation objects match their saved v26.204 objects.
+G0-G8 independently pass with the exact frozen thresholds and no compensation. The supplementary
+two-sided exact McNemar value is again `0.0009765625`. Five minimal controls changing actual
+response bytes, crossing arm parents, removing or duplicating a Job, or adapting
+`revise_selector` all reject; accepted controls are zero.
+
+Authoritative identities are:
+
+- external postrun authorization:
+  `finance_v26_205_external_postrun_audit_authorization:a7521b50db5ba3c6d101312f640acfe2507491d6961ba307bbf805ad11f64f87`;
+- v26.204 Freeze:
+  `finance_v26_205_v204_execution_freeze:59f943b53ca794b45b220b7d9eed9eb00747e39e843abe898b2a3eb3e4c897a5`;
+- byte reconstruction Audit:
+  `finance_v26_205_artifact_byte_reconstruction_audit:0ac1669859ae035156ea51a87b857126d08e2a2e3c8918cc759b1da886f11b09`;
+- request identity Audit:
+  `finance_v26_205_request_identity_and_execution_geometry_audit:dbddf8ffa7e740d8f724194a9c017e91fa717b4805358b2eca7c588c69936d04`;
+- independent Observation Catalog:
+  `finance_v26_205_independent_observation_catalog:b265afda2b3dfa715bd3e5fe6253c36975a71721c04e677a7869a1caf1a63d2f`;
+- independent paired Evaluation:
+  `finance_v26_205_independent_paired_calibration_evaluation:64485aee4bb696995677ef53d012f75df0ff9158b02ce5c38af9e93bd5d184c1`;
+- independent Gate reconstruction:
+  `finance_v26_205_independent_online_gate_reconstruction:568f5fe85762543e673ae317d7cd391939de4792c3984b52d7c6e2f0f7840d8c`;
+- negative Control Audit:
+  `finance_v26_205_postrun_negative_control_audit:6ae000efd4b48158d0827ff64a5c001c4a8a66a88202a511f2660590423f7fa0`;
+- Decision:
+  `finance_v26_205_postrun_independent_audit_decision:57e8b22c82e563ebbbec053672606c8826c4499563579a14f4e3f9ebf0589854`;
+- Transition:
+  `finance_v26_205_transition:9953174cf80d6f73859b7829635e2fe5995968a71ae3b2229c5c389875ac0282`;
+- Artifact Manifest:
+  `finance_v26_205_artifact_manifest:34c2bfbe2fc0de3086114aef962d70b8fbeb33993df29697f198bb8f8b028c29`;
+- Artifact Root:
+  `finance_v26_205_artifact_root:375c7c75e2aab5c439ef97532c6005c2c22fc6a6638dd4e7eb718e07d0f1377b`.
+
+The exact audit source commit/tree are `76a2d00bc9b1517da659eda901b9dff8f3389aa0` /
+`c78ad15bf191a98f085cc76deaf0f35f68c2e9a9`. The fourteen-file, 91,230-byte formal
+directory rebuilds byte for byte; its Manifest binds thirteen members and 88,816 bytes. Focused
+v26.205 tests pass 8/8, including an empty-directory 14/14 rebuild. The adjacent
+v26.203-v26.205 suite passes 24/24. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+v26_204_paired_online_calibration_complete_auditable_
+and_scientific_result_accepted_as_scoped
+```
+
+The only permitted successor is
+`fresh_repaired_action_interface_full_condition_integration_and_identity_preflight_only`. It
+may create only a fresh full-condition identity chain and run credential-free scripted
+Action -> State -> Correction -> Final integration controls. Full repaired 192-Job Provider
+execution, additional interface calibration, Parser relaxation, historical adaptation,
+interface-factor decomposition, QA, Mapper, State frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_205_fresh_first_response_action_interface_disambiguation_paired_online_calibration_postrun_independent_audit.md`.
+
 ## v26.204 Fresh First-Response Action-Interface Paired Online Calibration
 
 Finance v26.204 consumed only
@@ -110,6 +216,12 @@ postrun audit of the exact v26.204 directory. Full repaired 192-Job preflight or
 interface-factor decomposition, parser relaxation, historical adaptation, QA, Mapper, State,
 frequency, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_204_fresh_first_response_action_interface_disambiguation_paired_online_calibration.md`.
+
+That boundary was consumed only by v26.205 under its exact zero-Provider external authorization.
+Every v26.204 byte and scoped online result remains immutable. v26.205 independently reconstructs
+the actual directory, request and evidence parents, Raw-only Action-interface observations, paired
+effect, and G0-G8, and accepts v26.204 as complete and auditable. The current transition is the
+fresh credential-free full repaired-condition integration and identity preflight recorded above.
 
 ## v26.203 Fresh First-Response Action-Interface Disambiguation Calibration Preflight
 
