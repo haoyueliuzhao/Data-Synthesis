@@ -717,6 +717,11 @@ class FrozenRequestContinuityAudit(FrozenModel):
     maximum_request_body_byte_count: Literal[34565] = 34_565
     v208_drifted_maximum_message_byte_count: Literal[29053] = 29_053
     v208_drifted_maximum_request_body_byte_count: Literal[29214] = 29_214
+    v208_first_action_message_request_match_count: Literal[192] = 192
+    v208_subsequent_action_message_request_match_count: Literal[216] = 216
+    v208_subsequent_action_message_request_mismatch_count: Literal[72] = 72
+    v208_correction_message_request_match_count: Literal[48] = 48
+    v208_correction_message_request_mismatch_count: Literal[72] = 72
     v208_final_message_mismatch_count: Literal[192] = 192
     v208_final_request_mismatch_count: Literal[192] = 192
     provider_calls: Literal[0] = 0

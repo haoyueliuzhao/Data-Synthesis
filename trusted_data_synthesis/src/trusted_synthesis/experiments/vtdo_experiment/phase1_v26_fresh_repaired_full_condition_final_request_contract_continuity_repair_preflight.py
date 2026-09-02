@@ -1610,9 +1610,7 @@ def _frozen_request_continuity_audit(
         )
 
     v208_jobs = {item.job_id: item for item in parents.v208_manifest.jobs}
-    v208_action_correction_matches = 0
-    v208_final_message_mismatches = 0
-    v208_final_request_mismatches = 0
+    v208_partition: Counter[tuple[str, str]] = Counter()
     for record in parents.v208_census.rows:
         job = v208_jobs[record.job_id]
         source = expected[(job.source_v206_job_id, record.invocation_index)]
@@ -1624,15 +1622,30 @@ def _frozen_request_continuity_audit(
             record.canonical_request_body_sha256 == source.canonical_request_body_sha256
             and record.canonical_request_body_byte_count == source.canonical_request_body_byte_count
         )
-        if record.phase == "final":
-            v208_final_message_mismatches += int(not message_match)
-            v208_final_request_mismatches += int(not request_match)
-        else:
-            v208_action_correction_matches += int(message_match and request_match)
+        v208_partition[
+            (record.phase, "message_match" if message_match else "message_mismatch")
+        ] += 1
+        v208_partition[
+            (record.phase, "request_match" if request_match else "request_mismatch")
+        ] += 1
+    expected_v208_partition = Counter(
+        {
+            ("first_action", "message_match"): 192,
+            ("first_action", "request_match"): 192,
+            ("subsequent_action", "message_match"): 216,
+            ("subsequent_action", "message_mismatch"): 72,
+            ("subsequent_action", "request_match"): 216,
+            ("subsequent_action", "request_mismatch"): 72,
+            ("correction", "message_match"): 48,
+            ("correction", "message_mismatch"): 72,
+            ("correction", "request_match"): 48,
+            ("correction", "request_mismatch"): 72,
+            ("final", "message_mismatch"): 192,
+            ("final", "request_mismatch"): 192,
+        }
+    )
     if (
-        v208_action_correction_matches != 600
-        or v208_final_message_mismatches != 192
-        or v208_final_request_mismatches != 192
+        v208_partition != expected_v208_partition
         or parents.v208_census.maximum_message_byte_count != 29_053
         or parents.v208_census.maximum_request_body_byte_count != 29_214
     ):
