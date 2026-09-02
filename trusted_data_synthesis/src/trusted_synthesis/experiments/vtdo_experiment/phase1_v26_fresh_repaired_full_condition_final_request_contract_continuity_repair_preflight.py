@@ -1385,7 +1385,7 @@ def _run_full_condition_control(
             if invalid is None:
                 continue
             rejected = step_runtime.step(branch_origin, invalid.action_id)
-            if getattr(rejected, "action_accepted", True):
+            if not isinstance(rejected, step_runtime.PublicTypedRejectionObservation):
                 _fail("execution.typed_rejection", "registered invalid Action did not reject")
             correction_prompt = step_runtime.render_next_prompt(branch_origin)
             correction_rows = frozen_runtime._candidate_dispositions(
