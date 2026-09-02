@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+import json
 from pathlib import Path
 
 import pytest
@@ -84,6 +85,33 @@ def test_source_has_one_shared_transport_route() -> None:
         assert len(subject._call_lines(wrapper, "_invoke_current_state")) == 1
 
 
+def test_final_compiler_uses_frozen_json_explicit_envelope() -> None:
+    authorization, _, _ = subject._authorization(_review_path())
+    parents = subject._predecessor_freeze(
+        repository_root=REPOSITORY_ROOT,
+        authorization_id=authorization.authorization_id,
+    )
+    messages = subject._compile_authoritative_messages(
+        phase="final",
+        prompt_core="dynamic Final core",
+        prompt_kind="final",
+        profile=parents.profile,
+        prompt_contract=parents.prompt_contract,
+        prompt_schema=parents.prompt_schema,
+    )
+    envelope = json.loads(messages[0]["content"])
+    assert tuple(sorted(envelope)) == (
+        "prompt_core",
+        "prompt_kind",
+        "provider_output_protocol",
+    )
+    assert envelope["prompt_core"] == "dynamic Final core"
+    assert envelope["prompt_kind"] == "final"
+    assert (
+        envelope["provider_output_protocol"]["contract_id"] == parents.prompt_contract.contract_id
+    )
+
+
 def test_formal_final_request_continuity_counts() -> None:
     if not FORMAL_ROOT.is_dir():
         pytest.skip("v26.209 formal directory has not been materialized")
@@ -104,6 +132,8 @@ def test_formal_final_request_continuity_counts() -> None:
     assert census.final_count == 192
     assert control.terminal_reference_path_count == 192
     assert control.correction_count == 120
+    assert control.registered_callsite_control
+    assert not control.single_linear_provider_trajectory_claimed
     assert no_bypass.gate_passed
     assert continuity.action_correction_message_match_count == 600
     assert continuity.action_correction_request_match_count == 600
@@ -113,6 +143,13 @@ def test_formal_final_request_continuity_counts() -> None:
     assert continuity.total_registered_request_match_count == 792
     assert continuity.maximum_message_byte_count == 34_404
     assert continuity.maximum_request_body_byte_count == 34_565
+    assert continuity.v208_first_action_message_request_match_count == 192
+    assert continuity.v208_subsequent_action_message_request_mismatch_count == 72
+    assert continuity.v208_correction_message_request_mismatch_count == 72
+    assert continuity.v208_final_message_mismatch_count == 192
+    assert continuity.v208_final_request_mismatch_count == 192
+    assert all(item.message_hash_match for item in continuity.rows)
+    assert all(item.request_hash_match for item in continuity.rows)
 
 
 def test_formal_failure_and_dynamic_branch_controls() -> None:
