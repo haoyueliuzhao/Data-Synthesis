@@ -15,7 +15,187 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.212 Fresh Repaired Online Consumer And Terminal Persistence Integration Preflight
+
+Finance v26.212 consumed only
+`fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_only`.
+The exact 14,475-byte review at SHA-256
+`400e1b6960df1d69ed71a9265bf084551abb465ad92b9718045132be4b7fd462`
+accepts v26.211 only as a scoped authorization-object preflight, blocks direct consumption, and
+requires the narrow executable ingress and persistence repair. The exact 24-byte operator
+directive `参照审计报告修订`, SHA-256
+`114f98b0f559b26885ce8c278d84bd0a5915947c285752bd1b04483458954c10`,
+authorizes only this zero-Provider repair preflight. Provider calls and credential lookups are
+zero.
+
+All seventeen v26.211 formal files and 137,306 bytes revalidate, including all sixteen
+self-excluding Manifest members. Its authorization-object, exact-byte admission, parent-attack,
+and zero-Provider results remain immutable. The exact v26.211 authorization
+`fresh_repaired_full_condition_exact_online_execution_authorization:aa52ba5fffbdb7236953d3a20dbf29ba739ce7e385123051ededc21454499bbe`
+is checked byte for byte but remains unconsumed.
+
+Four exact source files and eleven executable symbols bind the new consumer, durable consumption
+Receipt, Run Start Receipt, injected zero-Provider transport, complete terminal dispatcher,
+Raw/Result writer, and Trace/Outcome/checkpoint reconstructor. The executable order is:
+
+```text
+exact authorization bytes -> exact implementation parents
+  -> isolated durable no-replace preflight lease -> durable Run Start Receipt
+  -> zero-lookup credential boundary -> transport/writer factories
+  -> exact v26.209 current-State Runner -> complete terminal dispatch
+  -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+One legal path writes both receipts before the boundary and factories. Factory-before-consumption,
+factory-before-Run-Start, and second-consumption attacks reject; the first two reach zero boundary
+or factory probe, and the second consumption fails at exclusive durable creation.
+
+The actual v26.209 `FinalContinuityRepairedFullConditionRunner` is separately driven over all 192
+exact Jobs. The independently rebuilt v26.209 census and execution-control objects exactly match
+their saved targets:
+
+```text
+Jobs / transport instances                         192 / 192
+first / subsequent Action                          192 / 288
+registered Correction side branches                      120
+Final                                                     192
+invocations / injected transport dispatches         792 / 792
+```
+
+Every scripted Job then persists one source-bound
+Raw -> Result -> Trace -> Outcome -> checkpoint chain: 960 actual layer files, 192
+Raw-before-Result checks, and 960 actual-byte/hash matches. These are local deterministic
+integration controls, not model outcomes or empirical rows.
+
+The complete reachable terminal surface is taken from the exact v26.195 Registry. All sixteen
+reachable kinds each execute one source-bound dispatcher control and one five-layer persistence
+chain, yielding sixteen terminal projections and eighty files with zero exception escape. The two
+v26.195 not-applicable terminal kinds remain outside this denominator. These diagnostic controls
+do not claim actual Provider occurrences.
+
+Seven fully rehashed consumer/component-parent attacks each rebuild the downstream consumer and
+composition identities and reject before consumption, boundary probes, or factories. All seven
+noncompensatory Gates pass:
+
+```text
+R0 external scope and exact v26.211 Freeze       PASS
+R1 source-bound consumer and composition         PASS
+R2 durable consumption/Receipt/factory order     PASS
+R3 exact v26.209 Runner plus 192-Job persistence PASS
+R4 complete sixteen-terminal persistence         PASS
+R5 fully rehashed source-parent attacks          PASS
+R6 zero-Provider/credential/empirical boundary   PASS
+passed / failed                                   7 / 0
+```
+
+Authoritative identities include:
+
+- external repair authorization:
+  `finance_v26_212_external_repair_authorization:e3dd622418fafa539653bccdf571fd09a76d01238bdfc4b3b2225b2b234c7f92`;
+- v26.211 Freeze:
+  `finance_v26_212_v211_freeze:76f97b524b3f6389893a2669577861f89ed6502f435f019b8a8812a6f46aa00c`;
+- implementation / consumer / composition:
+  `fresh_repaired_online_consumer_terminal_persistence_implementation_binding:18323d3c4f804f56015c491851914a743235978f992de4698063d87dc1818639` /
+  `fresh_repaired_online_execution_consumer_implementation_binding:8f48150d53cb40540736ed62d607123b4d20bca376329a5a32a568f5b5273d4f` /
+  `fresh_repaired_online_consumer_terminal_persistence_composition_contract:5b3a0ea9f65241f417fe1edae6ca707565497c0f178e12e3d523ef7b3c4d690e`;
+- ingress / scripted persistence / terminal persistence Audits:
+  `finance_v26_212_ingress_order_audit:42be8527167dbdda52e87be2eb5de4b775d725c9f1e516b888723d4cf4713e02` /
+  `finance_v26_212_scripted_persistence_audit:d8e2654c19a10dd75988bccc0f06b17aae20b48d30b6c035bb86715abd3a0a89` /
+  `finance_v26_212_terminal_persistence_audit:ec4194e4adb6abf0bccb3be0a985fc057021134b11c674b74a5bc8015116358b`;
+- Gate / Decision / Transition:
+  `finance_v26_212_consumer_terminal_persistence_gate_evaluation:9ab724be30d017ba74d36e7fe45795c6eb65a1e9fec2fd0805241aaa38a2d914` /
+  `finance_v26_212_repair_decision:e09c2439bcce2599d9cd2a6d1d75db4fbbc55f61e0c5184a133e71f68cb3f5ca` /
+  `finance_v26_212_transition:791588dd7654f2903dda9b0a0db4c93ddc76af6d1fbb7268cd4bc74da3660ad1`;
+- report:
+  `finance_v26_212_consumer_terminal_persistence_report:5299f895742a7904340dedc5f011ecc34d673a05ef2b456c070e3f0432e194e9`;
+- Artifact Manifest / Root:
+  `finance_v26_212_artifact_manifest:4fb249edaa98f17838362d1420ab12273dcfa984efd5ae584ab1bc4c170d540e` /
+  `finance_v26_212_artifact_root:38bf8efc1d0b1e1ca55d91deef759b02974e26163d192be52897a3e1d79de3c2`.
+
+The exact source commit/tree are `9173b16cc1340449fa18b4030b8d2c7686fa3b5f` /
+`2b3562714d70b587c4ef1424e15885e5f1e92880`. The 1,067-file, 2,239,071-byte
+formal directory rebuilds byte for byte; its Manifest binds 1,066 members and 2,017,584 bytes.
+Focused tests pass 8/8, including a complete second build. Focused PyCompile, Ruff check/format,
+and no-import-follow Mypy pass; the adjacent v26.209-v26.212 suite passes 33/33 and package-wide
+Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_exact_online_consumer_terminal_persistence_
+preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_independent_audit_only`.
+That stage may only independently rebuild and audit this exact credential-free preflight. A
+passing audit must still be followed by a new online authorization that binds the repaired
+parents. Provider execution, online authorization, replacement, rerun, recovery, source or
+condition change, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO,
+training, release, and production remain forbidden. See
+`docs/finance_v26_212_fresh_repaired_full_condition_online_consumer_terminal_persistence_preflight.md`.
+
 ## v26.211 Fresh Repaired Full-Condition Exact 192-Job Online Execution Authorization
+
+### Post-review scope correction
+
+A subsequent exact 14,475-byte review at SHA-256
+`400e1b6960df1d69ed71a9265bf084551abb465ad92b9718045132be4b7fd462`
+classifies v26.211 as `VALID_SCOPED_ONLINE_AUTHORIZATION_OBJECT_PREFLIGHT` with
+`DIRECT_ONLINE_CONSUMPTION_BLOCKED` and one mandatory narrow execution-ingress repair. The later
+exact 24-byte directive `参照审计报告修订`, SHA-256
+`114f98b0f559b26885ce8c278d84bd0a5915947c285752bd1b04483458954c10`,
+authorizes only the mutable interpretation correction and the zero-Provider v26.212 repair
+preflight recorded above. It authorizes no Provider call.
+
+The review retains the v26.210 Freeze, v26.209 condition, exact 192-Job authorization object,
+byte admission, all parent attacks, zero-Provider boundary, and 17-file reproducibility. Every
+v26.211 formal byte and identity remains immutable. Its stored Decision, Transition, and thirty
+passed Gate rows remain historical self-evaluation objects, but their direct-consumability and
+online-readiness interpretation is superseded.
+
+The first unclosed seam is
+`executable_online_authorization_consumer_and_terminal_persistence_route_not_source_bound`.
+The prospective Composition declares:
+
+```text
+consume -> Run Start Receipt -> credential -> transport -> Runner
+  -> terminal -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+It does not bind an executable consumer, durable consumption/Receipt writers, credentialed
+transport, complete terminal Registry/dispatcher, empirical writers, reconstructor, or checkpoint
+writer. The existing terminal parent is only the five-control v26.209 typed-failure Audit, not a
+complete online terminal authority.
+
+The exact noncompensatory reinterpretation is:
+
+```text
+G0 external authority                         PASS
+G1 v26.210 immutable freeze                   PASS
+G2 frozen 192-Job condition                   PASS
+G3 exact authorization object                 PASS
+G4 exact-byte admission and parent attacks    PASS
+G5 executable durable consumption order       NOT MATERIALIZED
+G6 terminal-to-persistence composition        NOT MATERIALIZED
+```
+
+The current scoped decision is:
+
+```text
+exact_repaired_192_job_online_authorization_object_
+and_precredential_admission_preflight_passed_
+online_consumption_blocked_pending_executable_
+consumer_and_terminal_persistence_closure
+```
+
+The authorization remains unconsumed and must not be consumed. The only rational candidate was
+the separately reviewed, zero-Provider
+`fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_only`.
+That candidate has now been consumed only by v26.212. Its executable consumer and complete
+terminal-to-persistence controls pass locally, but they now require an independent audit and then
+a new authorization identity binding those implementations. Direct repaired 192-Job execution
+remains forbidden.
 
 Finance v26.211 consumed only
 `fresh_repaired_full_condition_exact_192_job_online_execution_authorization_only`. The exact
@@ -64,12 +244,13 @@ model failures must type-terminalize and cannot reopen authorization.
 One exact request passes the guard as an explicitly non-consuming probe. Twenty-eight invalid
 requests reject before the credential-boundary probe, transport factory, and every writer
 factory. Twenty fully rehashed authorization-parent attacks also reject with zero post-guard
-probe. All thirty noncompensatory Gates pass.
+probe. The immutable formal self-evaluation records thirty passed rows; the post-review
+correction above limits those passes to declared object/preflight evidence.
 
 ```text
 legal / invalid admission controls                 1 / 28
 fully rehashed attacks rejected                    20 / 20
-passed / failed Gates                               30 / 0
+immutable formal self-evaluation Gates              30 / 0
 authorization issued / consumed                      1 / 0
 Run Start Receipts / Manifest Job executions         0 / 0
 Provider calls / credential lookups                  0 / 0
@@ -111,19 +292,18 @@ The exact source commit/tree are `ed62189a162601e97a48b2ab91840c680abe7794` /
 49/49. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass; package-wide Ruff
 passes.
 
-The current decision is:
+The immutable formal Decision was:
 
 ```text
 exact_repaired_192_job_online_execution_authorization_issued_not_consumed
 ```
 
-The only permitted successor is
-`fresh_repaired_full_condition_exact_192_job_online_execution_only`. It may consume the exact
-authorization once, after exact-byte admission and durable consumption, to run only the frozen
-192 Jobs. This stage has not consumed the authorization. Replacement, failed-Job rerun, recovery,
-historical reuse, source/condition change, QA integration, Mapper, State, frequency,
-Contribution, VTDO, training, release, and production remain forbidden. After the exact online
-run, only a credential-free independent postrun audit is permitted. See
+The immutable Transition named
+`fresh_repaired_full_condition_exact_192_job_online_execution_only`, but the subsequent review
+blocks it before consumption. That current authorization remains unconsumed; the current boundary
+is v26.212's credential-free independent audit only. Replacement, failed-Job rerun, recovery, historical reuse,
+source/condition change, Provider execution, QA integration, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_211_fresh_repaired_full_condition_exact_online_execution_authorization.md`.
 
 ## v26.210 Fresh Repaired Final Request Continuity Independent Audit
@@ -254,6 +434,12 @@ Thinking/Grammar/Policy/resource/correction-bound/validity/denominator/threshold
 change, historical rewrite, QA, Mapper, State, frequency, Contribution, VTDO, training, release,
 and production remain forbidden. See
 `docs/finance_v26_210_fresh_repaired_full_condition_final_request_continuity_independent_audit.md`.
+
+That transition was consumed only by v26.211's zero-Provider authorization-object and
+precredential-admission preflight. The later exact review recorded in the v26.211 section retains
+all v26.210 results but blocks direct authorization consumption at the missing executable durable
+consumer and complete terminal-to-persistence implementation. Provider execution remains
+forbidden.
 
 ## v26.209 Fresh Repaired Final Request Contract Continuity Repair Preflight
 

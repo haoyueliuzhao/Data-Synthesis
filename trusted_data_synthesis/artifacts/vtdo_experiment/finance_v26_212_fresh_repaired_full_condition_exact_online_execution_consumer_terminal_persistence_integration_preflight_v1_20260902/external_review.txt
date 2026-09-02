@@ -1,0 +1,478 @@
+# 审计结论
+
+本轮 **Finance v26.211** 在“授权对象构造、冻结条件绑定和前凭证字节准入”这一窄范围内是有效的；但其当前最强结论——
+
+```text
+exact_repaired_192_job_online_execution_authorization_issued_not_consumed
+```
+
+**尚不能直接接受为可消费的在线执行授权。**
+
+更准确的审计判定是：
+
+```text
+AUDIT_RESULT
+  VALID_SCOPED_ONLINE_AUTHORIZATION_OBJECT_PREFLIGHT
+  DIRECT_ONLINE_CONSUMPTION_BLOCKED
+
+v26.210 authority freeze                         PASS
+v26.209 semantic/executable Runner condition     PASS
+exact 192-Job authorization object               PASS
+precredential exact-byte admission               PASS
+authorization-parent destructive controls        PASS
+
+executable authorization-consumer path           NOT CLOSED
+durable consume -> receipt -> credential order   NOT CLOSED
+terminal-to-persistence implementation binding   NOT CLOSED
+
+mandatory revision
+  ONE NARROW EXECUTION-INGRESS REPAIR
+```
+
+因此，本轮不需要推翻 v26.209、v26.210，也不需要重新做 Action-interface calibration；但**不能马上消费 v26.211 authorization 并执行 192 个在线 Job**。
+
+---
+
+# 一、已经可信闭合的部分
+
+## 1. v26.211 的阶段边界正确
+
+本轮确实只执行了：
+
+```text
+fresh_repaired_full_condition_exact_192_job_
+online_execution_authorization_only
+```
+
+没有执行 Job、消费授权、写 Run Start Receipt、读取凭证、构造真实 Provider client、写入经验 Raw/Result 或估计 Capability。唯一声明的后继是单独的在线执行阶段。
+
+这一点与实际范围统计一致：
+
+```text
+authorization issued / consumed             1 / 0
+Run Start Receipts / Job executions          0 / 0
+Provider calls / credential lookups          0 / 0
+Raw / Result / Trace / Outcome               0
+empirical estimates                          0
+QA / Mapper / State / VTDO                   0
+```
+
+## 2. v26.210 权威冻结通过
+
+完整 v26.210 目录的：
+
+```text
+15 files
+1,344,368 bytes
+14 Manifest members
+1,341,853 member bytes
+14/14 path/hash/byte matches
+```
+
+均被重新验证，原 Decision、Gate、Transition、Artifact Root 和 source commit/tree 保持不变。
+
+这部分没有发现重写历史或自证式读取问题。
+
+## 3. 冻结实验条件绑定充分
+
+v26.211 正确绑定了：
+
+```text
+32 Packages
+6 Replicas
+192 Jobs
+792 registered coordinates
+192 / 288 first/subsequent Actions
+120 registered Correction side branches
+192 Finals
+192 unique Raw/Result/Trace/Outcome namespaces
+```
+
+同时保持 Task、Component、Candidate、Schedule、presentation、Runtime、model、Thinking、sampling、Grammar、Policy、resource、correction bound、validity、denominator、threshold 和 terminal-policy 的声明变更数均为零。
+
+需要注意，792 是**冻结的 registered control geometry**，而不是声称未来模型一定产生 792 个实际调用；当前文本在这一点上没有越界。
+
+## 4. 授权字节和父对象攻击基本闭合
+
+授权对象绑定了完整 192-Job tuple、Job-set hash、792-coordinate hash、四组 namespace hash 和冻结父对象；28 个普通无效请求与 20 个完整重哈希父对象攻击均在后续探针之前拒绝。
+
+因此可以保留以下结论：
+
+> v26.211 已经构造出一个内容寻址、精确 Job-set、精确条件父绑定的授权对象，并证明不匹配的授权字节不能进入后续准入表面。
+
+---
+
+# 二、首个根本阻塞点
+
+## 授权描述了在线组合，但没有绑定这条组合的可执行实现
+
+v26.211 声明的未来链路是：
+
+```text
+authorization validation
+  -> precredential guard
+  -> consume exactly once
+  -> durable Run Start Receipt
+  -> credential lookup
+  -> Provider transport
+  -> v26.209 Runner
+  -> terminal dispatch
+  -> Raw-before-Result
+  -> Trace / Outcome
+  -> checkpoint
+```
+
+但报告同时明确说，本轮只是**记录该 composition，并未执行它**。
+
+这本身并不一定构成问题；授权阶段可以不做真实 Provider 调用。真正的问题是：当前 `OnlineExecutionCompositionContract` 只绑定了：
+
+```text
+exact_v26_209_runner_id
+exact_v26_209_implementation_id
+event_sequence
+一组 required=true / forbidden=true 布尔字段
+```
+
+它没有绑定下列实际执行父对象：
+
+```text
+authorization-consumer implementation/source
+durable authorization-consumption writer
+Run Start Receipt Contract/writer
+credential-bound Provider transport implementation
+authoritative terminal Registry/dispatcher
+Raw writer
+Result writer
+Trace/Outcome reconstruction implementation
+checkpoint writer
+```
+
+正式 composition JSON 可以直接看到，它只包含 v26.209 Runner/implementation ID 和对这些后继步骤的声明，没有相应实现身份。
+
+因此，现在证明的是：
+
+```text
+“未来执行必须满足这些要求”
+```
+
+而不是：
+
+```text
+“已经存在一条被源码冻结、能够强制满足这些要求的执行路径”
+```
+
+在当前 fail-closed 框架下，这两者不能互相替代。
+
+---
+
+# 三、为什么 v26.209 Runner 绑定不能自动补上这个缺口
+
+v26.209 的 implementation binding 只覆盖三个文件：
+
+```text
+v26.209 preflight implementation
+v26.209 models
+v26.209 tests
+```
+
+并记录一个 executable Runner、一个 injected transport seam 和一个 shared invocation entry。它不包含在线授权消费、真实 Provider transport、终止分发器或经验工件 writer 的实现绑定。
+
+v26.209 Execution Contract 也只是声明：
+
+```text
+raw_result_trace_outcome_required = true
+online_execution_authorized = false
+```
+
+它没有给出这些经验层对象的具体 Registry、Contract、dispatcher 或 writer 身份。
+
+所以当前权威链实际上停在：
+
+```text
+exact v26.209 current-State Runner
+  -> InvocationOutcome
+```
+
+而不是已经闭合到：
+
+```text
+exact v26.209 current-State Runner
+  -> authoritative terminal dispatch
+  -> actual Raw bytes
+  -> actual Result bytes
+  -> reconstructed Trace
+  -> reconstructed Outcome
+  -> checkpoint
+```
+
+这正是本轮第一个不能越级的执行证据层。
+
+---
+
+# 四、terminal-policy 父绑定也过窄
+
+`ExactOnlineExecutionAuthorization` 中的：
+
+```text
+terminal_policy_parent_id
+```
+
+实际指向：
+
+```text
+finance_v26_209_typed_failure_control_audit:
+97a487...
+```
+
+但这个对象只包含五个非经验 scripted controls：
+
+```text
+first_response_abi_invalid
+first_action_reference_invalid
+correction_response_abi_invalid
+final_response_abi_invalid
+instrument_failure
+```
+
+它不是完整的 authoritative terminal Registry，也不覆盖未来在线运行可能出现的：
+
+```text
+completed_qualified
+completed_invalid
+correction_action_reference_invalid
+correction_attempt_typed_invalid
+provider_failure_no_payload
+provider_transport_failure
+privacy_rejection
+resource_budget_exhausted
+provider_identity_failure
+thinking_integrity_failure
+usage_integrity_failure
+```
+
+所以把这个五控制 Audit 命名为 `terminal_policy_parent_id`，只能证明五个代表性 Runner 投影，不足以授权完整在线终止空间进入经验 Outcome 层。
+
+这不是要求增加无穷无尽的攻击测试；只需要把已有的完整 Terminal Registry、dispatcher 和 Outcome authority 明确绑定到授权消费路径即可。
+
+---
+
+# 五、非消费诊断 probe 证明的范围也应收窄
+
+正式 Admission 明确记录：
+
+```text
+admitted_before_authorization_consumption = true
+admitted_before_run_start_receipt = true
+diagnostic_probe_only = true
+authorization_consumed = false
+```
+
+同时，合法诊断控制在未消费授权的情况下，分别触发了一个模拟的：
+
+```text
+credential probe
+transport factory
+Raw writer factory
+Result writer factory
+Outcome writer factory
+checkpoint writer factory
+```
+
+但真实 credential lookup 和 Provider call 仍为零。
+
+这不是凭证泄漏，也不是本轮发生了违规 Provider 调用。它说明的是：
+
+> 当前控制证明了“精确授权可以通过 byte guard，并能到达模拟后继探针”，但没有证明真实执行路径会在所有真实 factory 之前完成持久化授权消费和 Run Start Receipt。
+
+因此，下面这个 Gate 目前只能是 prospective contract：
+
+```text
+consume -> receipt -> credential/factories
+```
+
+不能记录为已经被可执行路径证明。
+
+---
+
+# 六、30/30 Gates 的解释需要收窄
+
+当前 Static Audit 把：
+
+```text
+exact_online_execution_composition
+authorization_exactly_once_before_credentials
+durable_run_start_receipt_required
+raw_before_result_trace_outcome_checkpoint
+```
+
+全部判为 PASS。
+
+但这些 Gate 的 evidence object 是 `OnlineExecutionCompositionContract` 本身，而不是一条运行过的 source-bound execution route。
+
+也就是说，现有 Gate 实际证明：
+
+```text
+required fields were declared and content-addressed
+```
+
+没有证明：
+
+```text
+the future executor enforces those requirements
+```
+
+因此不应把 30/30 解读为“在线执行入口已完全闭合”。更合适的分层结果是：
+
+```text
+G0 external authority                         PASS
+G1 v26.210 immutable freeze                   PASS
+G2 frozen 192-Job condition                   PASS
+G3 exact authorization object                 PASS
+G4 exact-byte admission and parent attacks    PASS
+G5 executable durable consumption order       UNKNOWN / NOT MATERIALIZED
+G6 terminal-to-persistence composition        UNKNOWN / NOT MATERIALIZED
+```
+
+首个未闭合 Gate 是 G5；不必再向后过度审计真实模型行为。
+
+---
+
+# 七、当前允许与禁止的结论
+
+## 可以保留
+
+```text
+v26.211 formal directory reproducible
+v26.210 authority correctly frozen
+v26.209 repaired condition correctly frozen
+exact 192-Job authorization object constructed
+exact authorization bytes admitted
+invalid and rehashed bound-parent requests rejected
+authorization remains unconsumed
+Provider and credential activity remain zero
+```
+
+正式目录的 17 文件、137,306 字节，以及 16 个 Manifest members、134,503 字节和第二次逐字节重建，也可以保留。
+
+## 暂时不能保留
+
+```text
+the current authorization may now be safely consumed
+the exact online executor is already source-bound
+durable one-shot consumption is executable
+the complete terminal codomain is authorized
+Raw/Result/Trace/Outcome/checkpoint totality is closed
+the 192-Job Provider execution is ready
+```
+
+更准确的窄化决定应为：
+
+```text
+exact_repaired_192_job_online_authorization_object_
+and_precredential_admission_preflight_passed_
+online_consumption_blocked_pending_executable_
+consumer_and_terminal_persistence_closure
+```
+
+v26.211 的 17 个正式文件不应原地修改；应作为历史工件冻结，并由新审计决定覆盖其在线可消费解释。
+
+---
+
+# 八、唯一合理的下一实验
+
+建议下一阶段不是 Provider execution，而是一个合并后的零 Provider 修复预检：
+
+```text
+fresh_repaired_full_condition_exact_online_execution_
+consumer_and_terminal_persistence_integration_preflight_only
+```
+
+它只需要关闭当前一个本质缺口，不应重做已经通过的 Prompt、Action ABI、Final continuity 或 192-Job condition。
+
+## 必须实例化的实际路径
+
+```text
+exact v26.211 authorization bytes
+  -> exact-byte guard
+  -> durable no-replace authorization consumption
+  -> durable Run Start Receipt
+  -> credential-boundary probe
+  -> transport/writer factory construction
+  -> exact v26.209 current-State Runner
+  -> complete authoritative terminal dispatcher
+  -> Raw-before-Result writer
+  -> Trace/Outcome reconstruction
+  -> checkpoint
+```
+
+## 必须增加的新权威身份
+
+```text
+OnlineExecutionConsumerImplementationBinding
+AuthorizationConsumptionReceiptContract
+RunStartReceiptContract
+ProviderTransportImplementationBinding
+TerminalRegistry/DispatcherBinding
+RawResultWriterBinding
+TraceOutcomeCheckpointBinding
+```
+
+这些身份及其源码 SHA-256 必须进入新的 composition 和 authorization preimage，不能继续只由 `required=true` 表达。
+
+## 最小控制面
+
+不需要再扩张到新的模型校准。只需：
+
+1. 一个 exact authorization 能够在零凭证模式下完整经过消费、Receipt 和所有 factory 顺序；
+2. 一个第二次消费攻击必须在任何 credential/factory 前拒绝；
+3. credential/factory-before-consumption 和 before-Receipt 两个顺序攻击必须拒绝；
+4. exact v26.209 Runner 的 scripted 192-Job 路径能够真正写出 192 条 Raw→Result→Trace→Outcome→checkpoint；
+5. 完整 reachable terminal Registry 至少各有一个 source-bound terminal-to-persistence control；
+6. 修改 dispatcher、writer 或 consumer source 后完整重哈希，仍必须因未获授权的 implementation parent 而拒绝。
+
+该阶段仍应：
+
+```text
+Provider calls              0
+credential lookups          0
+empirical rows              0
+QA integration              0
+Mapper/State/VTDO           0
+```
+
+通过后再进行一次独立审计；独立审计通过后，应生成**新的**在线授权 identity，因为当前 v26.211 authorization preimage 没有绑定新增的 consumer、dispatcher 和 writer identities。
+
+---
+
+# 最终判定
+
+```text
+latest stage
+  Finance v26.211
+
+narrow artifact result
+  PASS
+
+authorization-object constructibility
+  PASS
+
+direct online consumability
+  FAIL-CLOSED / NOT YET AUTHORIZED
+
+first root blocker
+  authorized online consumer and
+  terminal-to-persistence implementation
+  are not source-bound or executable
+
+current authorization
+  MUST REMAIN UNCONSUMED
+
+QA integration
+  FORBIDDEN
+
+next experiment
+  zero-Provider online-consumer and
+  terminal-persistence integration preflight
+```
+
+本轮主要修订方向是正确的，也已经完成了大部分授权父绑定；问题集中在一个明确的层级：**把“未来必须这样执行”的 Contract，提前当成了“已经存在并强制这样执行”的机制证据。** 在这一层闭合之前，不应启动 repaired 192-Job 在线运行。

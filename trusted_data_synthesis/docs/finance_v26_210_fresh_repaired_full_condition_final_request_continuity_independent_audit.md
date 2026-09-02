@@ -244,3 +244,12 @@ Focused tests pass 8/8, including a second complete deterministic build. The adj
 v26.206-v26.210 suite passes as recorded in the current project status. Focused PyCompile, Ruff
 check/format, and no-import-follow Mypy pass. Package-wide Ruff passes. All checks are
 credential-free and make zero Provider calls.
+
+That exact transition was later consumed only by v26.211's zero-Provider authorization-object
+construction and precredential-admission preflight. A subsequent 14,475-byte review at SHA-256
+`400e1b6960df1d69ed71a9265bf084551abb465ad92b9718045132be4b7fd462`
+retains all v26.210 results but blocks direct consumption of the v26.211 authorization because
+the executable durable consumer and complete terminal-to-persistence implementation are not
+source-bound. That separately reviewed zero-Provider repair has now been implemented only by
+v26.212; it closes its local executable consumer and terminal-persistence controls but requires an
+independent audit and then a new online authorization. Provider execution remains forbidden.
