@@ -15,6 +15,124 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.207 Fresh Repaired Full-Condition Preflight Independent Audit
+
+Finance v26.207 consumed only
+`fresh_repaired_action_interface_full_condition_integration_preflight_independent_audit_only`.
+The exact 12,167-byte external review is bound at SHA-256
+`c305d4092220fd02344051690445f885ae3139c25134d61be1513cfeb826677f`. It accepts
+v26.206 at its stated scope, requires the credential-free independent audit, makes the executable
+repair/request/validation/transport no-bypass route its primary object, and authorizes neither an
+online-execution authorization nor Provider execution.
+
+The exact v26.206 source commit/tree are independently archived and revalidated. Exact-commit
+code rebuilds all 17 v26.206 formal files and 2,519,097 bytes; path, SHA-256, byte-count, and
+actual-byte equality are each 17/17. All sixteen self-excluding Manifest members also revalidate
+in the saved directory. Provider calls and credential lookups are zero.
+
+A separate implementation rematerializes the exact Repair Profile, 32-Package Catalog, 192-Job
+Manifest, Runner, and Execution Contract from the frozen parents. Package and Job object matches
+are 32/32 and 192/192; all 192 Package x Replica cells and 768 fresh evidence namespaces are
+unique, with zero predecessor collision.
+
+The independent lower-level Runtime replay reconstructs all 792 callsites:
+
+```text
+first / subsequent Action                         192 / 288
+typed-rejection Correction                              120
+Final                                                    192
+four-field Action compilations                           600
+saved row / Prompt / Request matches             792 / 792 / 792
+maximum message / request bytes              34,404 / 34,565
+```
+
+All 192 deterministic reference trajectories reach terminal State and pass the frozen Final,
+Base, Mechanism, and Qualified checks. First/subsequent Action parses are 192/288, typed
+rejection/Correction parses are 120/120, and 768 Raw/Result/Trace/Outcome identities are unique.
+All 192 independently rebuilt Integration rows and the complete Integration object match their
+saved v26.206 targets. Correction counts are zero for 144 Jobs and one through four for twelve
+Jobs each. Five parser/reference/outer-terminal controls each project one typed Outcome with zero
+exception escape. These are local scripted controls, not model outcomes or a Capability estimate.
+
+The primary source-level no-bypass Gate fails nonvacuously. Exact-source AST inspection confirms
+one repair compiler, one callsite builder, one request-builder call inside that builder, three
+callsite-builder uses in scripted integration, and 600/600 repaired registered Action/Correction
+callsites. It also finds zero direct Provider calls and zero old-ABI registered routes. However,
+v26.206 contains zero executable future online Runner definition, zero injected transport seam,
+and zero Action or Correction transport dispatch call. The first unclosed seam is
+`executable_future_runner_repair_request_validation_transport_route_absent`. A data Contract and
+scripted callsite builder do not prove that every future model-selected accepted-prefix response
+must traverse the repaired route.
+
+The exact Gate partition is:
+
+```text
+A0 authority/freeze                         PASS
+A1 detached source/artifact rebuild         PASS
+A2 independent parent reconstruction        PASS
+A3 future executable no-bypass route        FAIL
+A4 Runtime replay/failure controls          PASS
+A5 estimand/resource/zero-Provider boundary PASS
+passed / failed                              5 / 1
+```
+
+Authoritative identities include:
+
+- external authorization:
+  `finance_v26_207_external_independent_audit_authorization:15223184655ff83ddf22113840d65014ca192c24304a880f2ac9945456a11cb6`;
+- v26.206 Freeze:
+  `finance_v26_207_v206_preflight_freeze:a4d3115d52e369c1cca5ae29cf0ab1381f445ee63c4fa578730d46bbee45b842`;
+- detached rebuild Audit:
+  `finance_v26_207_detached_source_rebuild_audit:d5d0a087250bfe6801d7b641ee2cb938d4671776e71b42715f135f558bdcb72b`;
+- independent parent Audit:
+  `finance_v26_207_independent_parent_reconstruction_audit:9cca53c6173b35a7e5c44608011539655fdb8e956ce0f75142e2250f2ea74843`;
+- source-route Audit:
+  `finance_v26_207_source_route_no_bypass_audit:90fc22e5de8b7a2891825118661722ea59314a1accc50456de72bca747941fb9`;
+- independent callsite Audit:
+  `finance_v26_207_independent_callsite_reconstruction_audit:13ec8427b740fd914aacd1dd4bacb2fc46d1c48285a063d2d10aa88d07c3a117`;
+- independent replay Audit:
+  `finance_v26_207_independent_scripted_replay_audit:929e452b394d32a9f55cb7b08d94928db527ab46d56210cdfa4602c75e36f346`;
+- failure-control Audit:
+  `finance_v26_207_independent_failure_control_audit:de48841d6d1441eaab5db56af0d4add726175bdde41377a4f2370312826c4233`;
+- boundary Audit:
+  `finance_v26_207_estimand_resource_boundary_audit:ea298860cac7d351a73f59dd26621eb973f886212f4e51bd0b5f87ec74a302a0`;
+- Gate Evaluation:
+  `finance_v26_207_independent_audit_gate_evaluation:b4fa5df9edec6f78cda157a649ee043061bddb768e1149ccf7136a4bd66e56be`;
+- Decision:
+  `finance_v26_207_independent_audit_decision:a7340af66bc8112279aebc9224ea4700b41baf487e77085ed849f6325f7bcd66`;
+- blocked Transition:
+  `finance_v26_207_blocked_transition:4d6e10651925e53244e1616ac9146cf65877d2ef60a8cf2c5c84e49847c64997`;
+- report:
+  `finance_v26_207_independent_audit_report:563d89073ade0c7c98fee102141f6b0911b7e06b6b0598d0b43c72bf29e016c8`;
+- Artifact Manifest:
+  `finance_v26_207_artifact_manifest:19c802962e371cce2429fa853010589afeca42ab5da36520460d006fdd866fc0`;
+- Artifact Root:
+  `finance_v26_207_artifact_root:0d16fac465fea91dfed9f38e34b10894c0b99b2d5e4ca34231645d02e4e023fb`.
+
+The exact audit source commit/tree are `304d4a6f42b22524a34e76eda55c23235937acdb` /
+`40e503fc402d337b48038d65bf22ffd90b00ed21`. The sixteen-file, 1,408,911-byte formal
+directory rebuilds byte for byte; its Manifest binds fifteen members and 1,406,276 bytes. Focused
+v26.207 tests pass 8/8, including a complete second build. Focused PyCompile, Ruff check/format,
+and no-import-follow Mypy pass. The adjacent v26.203-v26.207 suite passes 40/40; package-wide
+Ruff passes.
+
+The current decision is:
+
+```text
+v26_206_independent_audit_failed_at_future_online_runner_
+repair_request_transport_no_bypass_closure
+```
+
+The Transition status is `BLOCKED_FAILED_INDEPENDENT_AUDIT` and `next_stage` is null. The named
+candidate `fresh_repaired_full_condition_executable_runner_route_closure_preflight_only` is a
+recommendation for a possible separately reviewed repair and is not authorized. A new external
+audit decision is required before any successor. Online-execution authorization, the full
+repaired 192-Job Provider run, interface-factor decomposition, Parser relaxation, historical
+adaptation, source/Task/Component/Candidate/Schedule/presentation/Runtime/model/Thinking/Grammar/
+Policy/resource/correction-bound/validity/denominator/threshold change, QA, Mapper, State
+frequency, Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_207_fresh_repaired_full_condition_preflight_independent_audit.md`.
+
 ## v26.206 Fresh Repaired Action-Interface Full-Condition Integration And Identity Preflight
 
 Finance v26.206 consumed only
@@ -145,6 +263,11 @@ Candidate/Schedule/presentation/Runtime/model/Thinking/Grammar/Policy/resource/c
 validity/denominator/threshold change, QA, Mapper, State frequency, Contribution, VTDO, training,
 release, and production remain forbidden. See
 `docs/finance_v26_206_fresh_repaired_action_interface_full_condition_integration_preflight.md`.
+
+That transition was consumed only by v26.207 with zero Provider calls. Every v26.206 byte and
+its scoped registered-callsite and scripted-Runtime result remain immutable. The independent
+audit reproduces those results but fails its stronger future executable Runner no-bypass Gate;
+the current blocked decision is recorded in the v26.207 section above.
 
 ## v26.205 Fresh First-Response Action-Interface Paired Calibration Postrun Independent Audit
 

@@ -1,0 +1,341 @@
+# 审计结论
+
+基于上传的 **Finance v26.206 正式报告**与同步的 **Current Project Status**，本轮修订可以判定为：
+
+```text
+PASS_AS_SCOPED
+NO_MANDATORY_REVISION
+INDEPENDENT_AUDIT_REQUIRED
+ONLINE_EXECUTION_STILL_BLOCKED
+```
+
+v26.206 可以保持冻结，不需要再增加一轮集成修复，也不需要重新做 Action-interface 小规模校准。它正确完成了 v26.205 唯一授权的零凭证全条件集成与身份预检，并明确把 192-Job Provider 执行留在授权边界之外。
+
+这一判断基于你上传的报告与状态文件；我没有直接在服务器上重新运行 v26.206 源码。
+
+---
+
+## 一、本轮修订解决了正确的问题
+
+v26.206 没有尝试直接把 v26.204 的 `11/12` 校准结果推广为完整 Capability，而是完成了从局部接口校准到完整实验条件之间的工程桥接：
+
+```text
+v26.194 frozen semantic condition
++ v26.193 registered callsite coordinates
++ v26.203 repaired Action Contract
+-> fresh repaired full-condition identities
+-> full callsite projection
+-> scripted Runtime integration
+-> prospective estimand contract
+```
+
+它保留了原来的 32 Packages、6 Replicas 和 192 个语义 Jobs，只修改 prospective Action-interface projection，并为 Package、Job、Manifest、Runner、Execution Contract、Prompt、Request 与证据链重新建立 fresh identities。没有复用 v26.200 或 v26.204 的 Job、Raw、Result、Prompt 或 request identity。 
+
+这符合实验身份原则：**语义 source population 保持相等，但实验条件因为接口变化而获得全新身份**。
+
+---
+
+## 二、Repair 已扩展到完整 Runtime 表面
+
+Repair 不再只覆盖 first Action，而是覆盖：
+
+```text
+first Action
+subsequent Action
+typed-rejection Correction
+```
+
+每个当前 State 都重新编译准确的：
+
+```text
+state_id
+ordered Candidate action_id set
+decision_kind
+protocol
+```
+
+Final interface 保持冻结；Parser 没有放宽；历史 response 没有被适配；旧的 `response_abi` 不再与完整四字段 Contract 竞争；Answer 和 Operation-output schemas 仍保留其任务语义，但被明确标记为非模型响应 Schema。
+
+这说明 v26.206 不是通过“接受更多错误格式”来提高通过率，而是把已由 v26.204 支持的复合接口修复正确投影到后续 Action 和 Correction 阶段。
+
+---
+
+## 三、计数与集成闭合，没有内部算术冲突
+
+完整注册表面为：
+
+```text
+first Action                     192
+subsequent Action                288
+typed-rejection Correction       120
+Final                            192
+total                            792
+```
+
+其中：
+
+```text
+Action/Correction Contract compilations
+= 192 + 288 + 120
+= 600
+```
+
+所有 792 行拥有独立的 row、Prompt 和 Request identity；600 个 Action/Correction callsites 都有非空 Candidate 集与当前 State，120 个 Correction callsites 都绑定 public rejection Receipt，192 个 Final callsites 保留冻结 Final Grammar。
+
+Scripted Runtime 结果也闭合：
+
+```text
+first Action parses              192
+subsequent Action parses         288
+typed-rejection branches         120
+Correction parses                120
+Final parses                     192
+terminal States                  192
+independent validity             192
+scripted Qualified               192
+exception escapes                  0
+empirical rows                     0
+```
+
+Correction 分布：
+
+```text
+0 Corrections    144 Jobs
+1 Correction      12 Jobs
+2 Corrections     12 Jobs
+3 Corrections     12 Jobs
+4 Corrections     12 Jobs
+```
+
+同时满足：
+
+$$
+144+12+12+12+12=192
+$$
+
+$$
+12(1+2+3+4)=120
+$$
+
+因此，“每个 reached Component 至多一次 Correction”与“单个 Job 可以有多次 Correction”之间没有冲突。Raw、Result、Trace、Outcome 四层各 192 个唯一身份，总计 \(4\times192=768\)，父链全部闭合。
+
+---
+
+## 四、失败路径与 estimand 定义基本正确
+
+五个最小失败控制覆盖了当前真正需要验证的终止面：
+
+```text
+invalid first Action ABI     -> first_response_abi_invalid
+unknown current Action       -> first_action_reference_invalid
+invalid Correction ABI       -> correction_response_abi_invalid
+invalid Final ABI            -> final_response_abi_invalid
+typed outer failure          -> instrument_failure
+```
+
+每个控制都产生一个 typed Outcome、没有异常逃逸、不调用任务 Verifier，并且不混入 192-Job scripted denominator 或未来 empirical denominator。该控制集合已经足够，不需要在本轮继续扩展为大型攻击矩阵。
+
+未来 estimand 也已被正确区分：
+
+$$
+q_{\mathrm{first}}^R
+=
+\frac{
+\#\{\text{zero-Component-Correction 且最终 Qualified 的 Jobs}\}
+}{
+192
+}
+$$
+
+$$
+q_{\mathrm{bounded\ correction}}^R
+=
+\frac{
+\#\{\text{每个 reached Component 至多一次 Correction 且最终 Qualified 的 Jobs}\}
+}{
+192
+}
+$$
+
+Pre-ABI terminal 与 outer terminal 都保留在 192-Job denominator 中；只有 post-ABI conditional quantity 在其条件分母为零时保持 null。目前 empirical rows、numerators、estimates、intervals 全部仍为零或 null，没有把 scripted success 错报成 Capability。
+
+---
+
+# 五、唯一需要在独立审计中重点确认的问题
+
+本轮没有发现需要立即修改 v26.206 的硬错误，但 **F2 的独立证据必须进一步收紧**。
+
+v26.206 的 792-row census 来自冻结的 reference-plus-rejection coordinates。此前 v26.193 已明确说明：
+
+> 这 792 行不是全部 model-reachable accepted prefixes 的穷举；未来状态的路由总量性应由 source-level no-bypass proof 提供，而不是由 792-row denominator 本身提供。
+
+v26.206 报告声称“Every Action-producing model call”都经过修复后的 Contract，但正式报告展示的直接证据主要是：
+
+1. 792 个注册参考坐标的重新渲染；
+2. 192 条 reference trajectories；
+3. 120 条已注册 typed-rejection branches。
+
+这些足以证明**注册参考表面的集成闭合**，但不能单独证明模型选择另一合法 Action、进入另一 accepted-prefix State 后，也一定无法绕过 repaired renderer 或动态 Contract compiler。
+
+因此，F2 当前应解释为：
+
+```text
+repaired registered-callsite surface       PASS
+fresh Runner source-level no-bypass        PENDING INDEPENDENT AUDIT
+all model-reachable states enumerated       NOT CLAIMED
+```
+
+这不是要求回退或重做 v26.206。它正好应由已经授权的下一阶段独立审计解决。只要下一阶段从源码证明所有 Action/Correction Provider routes 都必须经过同一个动态 repair compiler，就可以关闭该关注点。
+
+---
+
+## 六、当前 Gate 状态
+
+| Gate                                | 审计状态                           | 精确解释                                    |
+| ----------------------------------- | ------------------------------ | --------------------------------------- |
+| F0 外部授权与 v26.205 Freeze             | **PASS**                       | 前驱 14 文件、Manifest 和 Transition 闭合       |
+| F1 source equality 与 fresh identity | **PASS**                       | 32/32 Packages、192/192 Jobs，零身份碰撞       |
+| F2 repaired callsite totality       | **PASS AT PREFLIGHT SCOPE**    | 792 注册坐标闭合；source-level no-bypass 待独立重建 |
+| F3 Action→State→Correction→Final    | **PASS**                       | 192 条 scripted reference paths 闭合       |
+| F4 Raw→Result→Trace→Outcome         | **PASS FOR SCRIPTED CONTROLS** | 768 个身份闭合，但不是 empirical evidence        |
+| F5 禁止越界操作                           | **PASS**                       | Provider、credential、QA、Mapper、VTDO 均为零  |
+| 模型后续 Action/Correction/Final 行为     | **UNMEASURED**                 | 尚无 Provider execution                   |
+| repaired-condition Capability       | **UNMATERIALIZED**             | numerator 与 estimate 均为 null            |
+| State/frequency/Contribution/VTDO   | **NOT AUTHORIZED**             | 不得越级进入                                  |
+
+v26.206 自身也正确限制其结论：不支持 Flash Capability 值、不支持在线 terminal frequency、不支持后续 Action/Correction/Final 模型行为，也不支持 scripted trajectories 与模型轨迹的等价性。
+
+---
+
+## 七、形式工件与状态同步
+
+报告记录：
+
+```text
+source commit
+0266bfc027ee6ef74f4d8b3a8762ebf7cdeeccb2
+
+source tree
+98afacbad5b4af207dc00d851a9937d81ce0b9f5
+
+formal files                 17
+formal bytes          2,519,097
+Manifest members             16
+Manifest bytes        2,516,326
+focused tests               8/8
+adjacent suite             32/32
+```
+
+最大 repaired message 为 34,404 bytes，低于冻结的 60,000-byte Prompt bound；Provider、credential 与 transport invocation 均为零。
+
+Current Project Status 中的 Repair Profile、Package Catalog、Manifest、Runner、Execution Contract、Census、Integration、Failure Control、Estimand、Gate、Transition、Artifact Manifest、Artifact Root、source commit/tree、文件数和测试结果都与正式报告一致。没有发现状态同步冲突。
+
+---
+
+# 八、唯一合理的下一阶段：Finance v26.207
+
+下一阶段应严格为：
+
+```text
+fresh_repaired_action_interface_full_condition_integration_preflight_
+independent_audit_only
+```
+
+不需要再做新的 first-response calibration，也不应直接创建 online authorization。
+
+建议 v26.207 只保留六个独立审计 Gate：
+
+```text
+A0  exact v26.206 external authorization and predecessor freeze
+A1  detached exact-source rebuild and 17/17 artifact-byte equality
+A2  independent fresh Package/Job/Manifest/Runner parent reconstruction
+A3  source-level repaired-renderer and request-route no-bypass proof
+A4  independent 192-Job scripted replay plus five typed failure controls
+A5  estimand/resource/boundary reconstruction and zero Provider operation
+```
+
+其中 **A3 是首要审计对象**。它应验证：
+
+```text
+Action route
+Correction route
+future model-selected accepted-prefix route
+    -> dynamic current State reconstruction
+    -> repaired four-field Contract compilation
+    -> canonical request construction
+    -> request validation
+    -> injected transport seam
+```
+
+并确认：
+
+```text
+direct Provider constructor calls     0
+renderer bypass routes                0
+old response_abi routes               0
+unrepaired Action/Correction routes   0
+```
+
+A4 应从 actual source/runtime 重建 192 条 scripted paths 和五个失败控制，不能把保存的 Census、Integration Audit 或 Gate Audit 当作 outcome oracle。
+
+若 v26.207 全部通过，允许的后续 transition 也应只是：
+
+```text
+fresh_repaired_full_condition_online_execution_authorization_only
+```
+
+而不是在 v26.207 内直接执行 Provider calls。
+
+---
+
+# 最终决定
+
+```text
+latest_revision
+  Finance v26.206
+
+audit_result
+  PASS_AS_SCOPED
+
+mandatory_revision
+  none
+
+full_condition_identity_constructibility
+  passed
+
+registered_callsite_integration
+  passed
+
+scripted_runtime_closure
+  passed
+
+scripted_outcome_parent_closure
+  passed
+
+source_level_all_future_state_no_bypass
+  pending independent audit
+
+empirical_capability
+  unmaterialized
+
+full_192_job_provider_execution
+  not authorized
+
+additional_interface_calibration
+  not needed
+
+interface_factor_decomposition
+  not needed for the mainline
+
+QA_integration
+  not authorized
+
+Mapper_State_frequency_Contribution_VTDO
+  not authorized
+
+only_authorized_successor
+  fresh_repaired_action_interface_full_condition_
+  integration_preflight_independent_audit_only
+```
+
+因此，本轮不应继续修改 v26.206，也不应扩展审计范围。直接进入一次聚焦的 v26.207 独立源码、工件与 Runtime 重建即可。
