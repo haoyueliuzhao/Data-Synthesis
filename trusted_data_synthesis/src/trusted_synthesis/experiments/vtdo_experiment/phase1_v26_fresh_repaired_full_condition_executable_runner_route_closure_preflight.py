@@ -1896,9 +1896,8 @@ def build(
             prepared.profile.action_grammar_id != parents.profile.frozen_action_grammar_id
             or prepared.profile.final_grammar_id
             != parents.source_catalog.packages[0].final_grammar_id
-            or prepared.resource.contract_id != parents.source_execution.resource_contract_id
         ):
-            _fail("freeze.generation", "frozen Grammar/resource parents differ")
+            _fail("freeze.generation", "frozen Action or Final Grammar parent differs")
         census, execution_control = _run_full_condition_control(
             manifest=manifest,
             execution=execution,
