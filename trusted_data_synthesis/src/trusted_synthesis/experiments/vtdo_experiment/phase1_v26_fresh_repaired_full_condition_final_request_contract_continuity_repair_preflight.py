@@ -1555,7 +1555,14 @@ def _frozen_request_continuity_audit(
             or record.current_state_id != source.current_state_id
             or record.candidate_action_ids != source.candidate_action_ids
         ):
-            _fail("continuity.coordinate", "runtime/source callsite coordinate differs")
+            _fail(
+                "continuity.coordinate",
+                "runtime/source callsite coordinate differs:"
+                f"{job.source_v206_job_id}:{record.invocation_index}:"
+                f"phase={record.phase}/{source.phase}:"
+                f"state={record.current_state_id}/{source.current_state_id}:"
+                f"candidates={record.candidate_action_ids}/{source.candidate_action_ids}",
+            )
         source_evidence = evidence[source.source_v193_evidence_row_id]
         actual_message_bytes = record.canonical_messages_json.encode("utf-8")
         actual_request_bytes = record.canonical_request_body_json.encode("utf-8")
