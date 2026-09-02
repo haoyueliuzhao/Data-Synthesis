@@ -15,7 +15,176 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.209 Fresh Repaired Final Request Contract Continuity Repair Preflight
+
+Finance v26.209 consumed only
+`fresh_repaired_full_condition_executable_runner_final_request_contract_continuity_repair_preflight_only`.
+The exact 14,180-byte review at SHA-256
+`aca402146bae4afd780bf0ba06e5736744aefb787f9c2064071311b53ba13902`
+classifies v26.208 as a reproducible partial mechanism preflight that failed at frozen Final
+request continuity and requires a narrow revision. The later exact 18-byte operator directive
+`参照审计修订`, SHA-256
+`8a13fc4ca97304bb08362b5fbc22809e35375df599fa8866c93fb5eae69798e4`,
+authorizes only this credential-free repair preflight. Provider execution and online authorization
+remain unauthorized.
+
+All twenty v26.208 formal files and 2,596,518 bytes revalidate, including all nineteen Manifest
+members. Its stored five-pass Gate and original Decision remain immutable bytes, but their
+full-condition interpretation is superseded. The current retrospective classification is
+`REPRODUCIBLE_PARTIAL_MECHANISM_PREFLIGHT_BUT_FAILED_AT_FROZEN_FINAL_REQUEST_CONTINUITY`;
+the first blocker is `frozen_final_provider_request_envelope_not_preserved`.
+
+An exact comparison also reconstructs the downstream effect of v26.208 placing Correction history
+on its main scripted path:
+
+```text
+phase                       exact message/request match   mismatch
+first Action                                      192           0
+subsequent Action                                 216          72
+Correction                                         48          72
+Final                                               0         192
+```
+
+This does not move the first blocker away from Final source compilation. It records that the
+v26.208 full 792-call continuity claim was not established. Its shared executable route,
+nonreference State traversal, typed failure controls, zero-Provider boundary, build integrity,
+and artifact reproducibility remain retained at their narrow scopes.
+
+The v26.209 Final route now compiles the current dynamic raw Final Prompt through the exact frozen
+v26.192 three-field JSON-explicit envelope:
+
+```text
+prompt_core
+prompt_kind = final
+provider_output_protocol
+```
+
+It then builds and validates the canonical request, creates a certificate and pre-transport
+receipt, and dispatches through the same single injected transport seam. Action and Correction
+retain the v26.206 repaired four-field Contract. Final retains the frozen Final Grammar and Parser.
+
+The 792 registered-callsite control explicitly restores the authoritative v26.206 geometry. Its
+192 reference main paths commit reference Actions and reach Final; 120 registered Correction calls
+execute on copies of their pre-Action States after local typed rejection. They are side-branch
+route controls, not a claim that one model trajectory simultaneously chose both the reference and
+invalid Action. The exact result is:
+
+```text
+Jobs / injected-transport calls                         192 / 792
+first / subsequent reference Action                    192 / 288
+registered Correction side branches                          120
+Final                                                         192
+Action plus Correction calls                                  600
+reference main-path Base/Mechanism/Qualified          192 / 192 / 192
+unique Raw/Result/Trace/Outcome control identities             768
+exception escapes / empirical rows                           0 / 0
+```
+
+Every actual invocation persists canonical message and request JSON, SHA-256, and byte count.
+The primary continuity Gate is:
+
+```text
+Action/Correction message / request matches        600 / 600, 600 / 600
+Final message / request matches                    192 / 192, 192 / 192
+Final actual message / request byte equality       192 / 192, 192 / 192
+total registered message / request matches         792 / 792, 792 / 792
+missing / duplicate / extra coordinates                    0 / 0 / 0
+maximum message / request bytes                       34,404 / 34,565
+```
+
+The 192 Final actual-byte comparisons use the v26.193 canonical request bodies directly. The
+maximum returns to the v26.206 value under the same measurement definition but remains only a
+summary of the per-row checks.
+
+One separate nonreference control takes a current legal nonreference Action, observes a different
+next State, binds the second invocation to that State, completes the dynamic path, and sends a new
+Final request. Its Final message has exactly the frozen v26.192 envelope and its request identity
+differs from the registered reference Final. The two Action plus one Final diagnostic dispatches
+enter no Manifest or empirical denominator.
+
+Five shared-route controls retain typed terminals for invalid first Action ABI, unknown current
+Action, invalid Correction ABI, invalid Final ABI, and one outer `instrument_failure`, with zero
+exception escape. Numerators, estimates, intervals, empirical rows, credentials, Provider calls,
+online authorizations, QA, Mapper, State, frequency, Contribution, and VTDO remain zero.
+
+All noncompensatory v26.209 Gates pass:
+
+```text
+R0 exact v26.208 freeze and Provider-facing condition          PASS
+R1 fresh executable identity closure                            PASS
+R2 shared-entry no-bypass plus frozen request continuity        PASS
+R3 zero-Provider registered full-condition control              PASS
+R4 typed failures and Estimand/resource boundary                PASS
+passed / failed                                                   5 / 0
+```
+
+Authoritative identities include:
+
+- authorization:
+  `finance_v26_209_external_final_request_continuity_authorization:ecafe5959d8566cbe0258c21cded1056ca4680beca0205e32d3a57d463217915`;
+- v26.208 Freeze:
+  `finance_v26_209_v208_predecessor_freeze:ef7cf0790d7bd5a65b6a9115f5f4d3d37a450650f169345b749df5e27a893098`;
+- implementation Binding:
+  `fresh_repaired_final_continuity_executable_route_implementation_binding:12c518f9f8f839d6c65a67c432c4177bc8ef95cb0188036796a08fd31c1b65e7`;
+- Package Catalog / Manifest:
+  `fresh_repaired_final_continuity_executable_full_condition_package_catalog:078c9b261f2d05cf6c9b44de7e04372886cf6c5b1f3083439c56433694141993` /
+  `fresh_repaired_final_continuity_executable_full_condition_manifest:f73da35ef4bbc3cfb6c4782918985ef649d89b6d6d09831f35354154d23b9621`;
+- Runner / Execution Contract:
+  `fresh_repaired_final_continuity_executable_full_condition_runner:e58b8318667568b9becbb1fa946f1ac079937c9c744b6a2c4877661abebf0266` /
+  `fresh_repaired_final_continuity_executable_full_condition_execution_contract:fc10dce5cdb2a3f677c93ad0780b5aa2b2e22eb44d6a1bf3c1d43d11ac6540d4`;
+- invocation Census:
+  `finance_v26_209_executable_invocation_census:e93f0b9121399d37bf1ed32137437117d2aae989ab41682e09cdc0c489e72212`;
+- request Continuity Audit:
+  `finance_v26_209_frozen_request_continuity_audit:7c8bab5493eb123854b127c01594251c7c3099a86b952339eb3cd66567fba9f1`;
+- execution / no-bypass / failure / dynamic audits:
+  `finance_v26_209_full_condition_execution_control_audit:2ddb129a094d945e1a708c8ba888ac427aac5132cd7b0821865ad61ea0aac6eb` /
+  `finance_v26_209_source_dynamic_no_bypass_audit:b19caeb33244bebc3e5ec0c8dfd4e1e9a72bddd5ed70bed1e7f717f0501c262f` /
+  `finance_v26_209_typed_failure_control_audit:97a487a0e954a837b56e525075eab844d3006399cd498c52c8de8029c806822c` /
+  `finance_v26_209_dynamic_nonreference_branch_audit:19b20bada7acfdc9cba92f434e25701e79749d8ec086e22dfebe7fca5b285a73`;
+- Gate / Transition / report:
+  `finance_v26_209_final_request_continuity_gate_audit:1510a331b8895fe64d37fa06a2c3d2705c23fd39600352c1c370da95a26c2b61` /
+  `finance_v26_209_transition:7fe53c104d1b8c6be59399a54a5b204c3d9e9fd8edaa798d1d820feadd08138d` /
+  `finance_v26_209_final_request_contract_continuity_repair_preflight_report:20c805ed3991c1eeec9f11e09335359cd8b0a4788f097c9ff0ea4db1d6983e25`;
+- Artifact Manifest / Root:
+  `finance_v26_209_artifact_manifest:1ec5df9edc0fb7b89921bbe3c154856e72e362cbbaee58a191bf9f275fc0bcf9` /
+  `finance_v26_209_artifact_root:76ef4cdb9cc0703f6bee2fd76c9c8ea7cbce5277337ff882ffcb44f8085e4770`.
+
+The authoritative source commit/tree are `5809e9782515e55ee797b43730584d5d860aaa5c` /
+`b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf`. The 21-file, 44,916,386-byte formal
+directory rebuilds byte for byte; its Manifest binds twenty members and 44,912,918 bytes.
+Focused v26.209 tests pass 9/9, including an empty-directory rebuild. The adjacent
+v26.206-v26.209 suite passes 33/33. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes.
+
+The current v26.209 decision is:
+
+```text
+fresh_repaired_full_condition_executable_runner_final_request_contract_continuity_
+repair_preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_full_condition_executable_runner_final_request_contract_continuity_repair_preflight_independent_audit_only`.
+The full repaired 192-Job Provider execution, online authorization, additional calibration,
+interface-factor decomposition, Parser relaxation, historical adaptation, source or Runtime
+changes, QA, Mapper, State frequency, Contribution, VTDO, training, release, and production remain
+forbidden. See
+`docs/finance_v26_209_fresh_repaired_full_condition_final_request_contract_continuity_repair_preflight.md`.
+
 ## v26.208 Fresh Repaired Full-Condition Executable Runner Route-Closure Preflight
+
+### Post-review scope correction
+
+The subsequent exact 14,180-byte review at SHA-256
+`aca402146bae4afd780bf0ba06e5736744aefb787f9c2064071311b53ba13902`
+requires a narrow revision and classifies v26.208 as
+`REPRODUCIBLE_PARTIAL_MECHANISM_PREFLIGHT_BUT_FAILED_AT_FROZEN_FINAL_REQUEST_CONTINUITY`.
+Its first blocker is `frozen_final_provider_request_envelope_not_preserved`. The review preserves
+build integrity, fresh identities, shared-entry mechanics, nonreference traversal, typed controls,
+and the zero-Provider boundary, but rejects the exact frozen full-condition route-closure claim.
+No v26.208 formal byte, identity, stored Gate, Decision, or Transition is modified. The historical
+self-evaluation below is retained only as the immutable record that was audited; the v26.209
+section above is the current status.
 
 Finance v26.208 consumed only
 `fresh_repaired_full_condition_executable_runner_route_closure_preflight_only`. The exact
@@ -89,7 +258,9 @@ diagnostic Outcome with one injected dispatch and zero exception escape. Numerat
 intervals, empirical rows, online authorizations, QA, Mapper, State, frequency, Contribution, and
 VTDO remain unmaterialized.
 
-All noncompensatory Gates pass:
+The immutable v26.208 self-evaluation recorded the following five passes. The later audit
+supersedes R0, the frozen-condition part of R2, and the full-condition interpretation of R3; these
+stored values are not the current readiness decision:
 
 ```text
 R0 exact v26.207 authority/freeze and unchanged semantics     PASS
@@ -146,21 +317,26 @@ Focused v26.208 tests pass 8/8, including a complete 20/20 second build. The adj
 v26.206-v26.208 suite passes 24/24. Focused PyCompile, Ruff check/format, and no-import-follow
 Mypy pass; package-wide Ruff passes.
 
-The current decision is:
+The immutable v26.208 formal Decision was:
 
 ```text
 fresh_repaired_full_condition_executable_runner_route_closure_
 preflight_passed_independent_audit_required_online_execution_blocked
 ```
 
-The only permitted successor is
-`fresh_repaired_full_condition_executable_runner_route_closure_preflight_independent_audit_only`.
-Online-execution authorization, the full repaired 192-Job Provider execution, interface-factor
-decomposition, Parser relaxation, historical adaptation, source/Task/Component/Candidate/
-Schedule/presentation/Runtime/model/Thinking/Grammar/Policy/resource/correction-bound/validity/
-denominator/threshold change, QA, Mapper, State frequency, Contribution, VTDO, training, release,
-and production remain forbidden. See
-`docs/finance_v26_208_fresh_repaired_full_condition_executable_runner_route_closure_preflight.md`.
+The later review's scoped decision is:
+
+```text
+v26_208_route_closure_preflight_failed_at_
+frozen_final_provider_request_contract_continuity
+```
+
+The old independent-audit transition is superseded without Provider execution. The exact operator
+directive consumed only the narrow v26.209 Final request Contract continuity repair recorded
+above. Online execution remains blocked. See
+`docs/finance_v26_208_fresh_repaired_full_condition_executable_runner_route_closure_preflight.md`
+and
+`docs/finance_v26_209_fresh_repaired_full_condition_final_request_contract_continuity_repair_preflight.md`.
 
 ## v26.207 Fresh Repaired Full-Condition Preflight Independent Audit
 

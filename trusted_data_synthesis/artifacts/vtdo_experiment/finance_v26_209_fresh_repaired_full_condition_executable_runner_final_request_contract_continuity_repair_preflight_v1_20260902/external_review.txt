@@ -1,0 +1,435 @@
+# 审计结论
+
+本轮 **Finance v26.208** 不能按当前形式接受为“完整 Full-Condition Route Closure 通过”。更准确的判定是：
+
+```text
+AUDIT_RESULT
+  REPRODUCIBLE_PARTIAL_MECHANISM_PREFLIGHT
+  BUT_FAILED_AT_FROZEN_FINAL_REQUEST_CONTINUITY
+
+STAGE_BUILD_INTEGRITY                                      RETAINED
+R0 exact freeze and unchanged Provider-facing condition   FAIL
+R1 fresh executable identity chain                        PASS
+R2 shared-entry mechanical no-bypass                      PASS
+R2 frozen full-condition route closure                    FAIL
+R3 192-Job / 792-call control                             DIAGNOSTIC_ONLY
+R4 typed controls and zero-Provider boundary              PASS_AS_SCOPED
+
+FIRST_BLOCKER
+  frozen_final_provider_request_envelope_not_preserved
+
+MANDATORY_REVISION                                         YES, NARROW
+ONLINE_EXECUTION_AUTHORIZATION                             NOT_READY
+```
+
+建议将正式审计决定记为：
+
+```text
+v26_208_route_closure_preflight_failed_at_
+frozen_final_provider_request_contract_continuity
+```
+
+这不是对整个 v26.208 的否定。它已经修复了 v26.207 所指出的“没有可执行 Runner 路径”问题，但这条路径在 **Final 调用处连接到了一个发生漂移的 Provider-facing request surface**，因此尚不能声称冻结的完整实验条件已经闭合。
+
+---
+
+## 一、v26.208 已经真实修复了什么
+
+v26.208 不再只有数据型 Contract 或平行的 callsite builder。它创建了新的 `ExecutableRepairedFullConditionRunner`，Action、Correction、Final 三个 wrapper 都进入同一个 `_invoke_current_state`，并且只有该入口调用唯一的 `InjectedTransportSeam.send`。动态记录显示：
+
+```text
+first/subsequent Action       192 / 288
+Correction                          120
+Final                               192
+total                               792
+```
+
+同时，792 个调用都经过：
+
+```text
+current Runtime State
+  -> message compiler
+  -> request builder
+  -> validator/certificate
+  -> pre-transport receipt
+  -> injected transport
+  -> projection
+  -> parser
+  -> State/Candidate or Final-envelope validation
+  -> Runtime step/finalize
+```
+
+因此，**v26.207 的“可执行 future Runner 完全不存在”这一原始缺口确实已经被修复**。
+
+非参考分支控制也有真实价值：它选择了当前合法但非 reference 的 Action，产生了不同的下一 State，随后第二次调用绑定到该新 State。这排除了 Runner 只是重放预先编码 reference trajectory 的简单实现。
+
+五个失败控制也都经过同一共享路径，并得到相应的 typed terminal：
+
+```text
+invalid first Action ABI  -> first_response_abi_invalid
+unknown current Action    -> first_action_reference_invalid
+invalid Correction ABI    -> correction_response_abi_invalid
+invalid Final ABI         -> final_response_abi_invalid
+typed outer failure       -> instrument_failure
+```
+
+这一部分可以保留为可信的局部机制证据。
+
+---
+
+# 二、首个根本问题：Final Provider 请求发生了条件漂移
+
+## 1. 冻结的 Final Provider-facing Contract 是什么
+
+v26.192 冻结的 JSON-explicit Prompt Contract 要求每个 Provider-facing Prompt 都具有三个顶层字段：
+
+```text
+prompt_core
+prompt_kind
+provider_output_protocol
+```
+
+对于 Final，原始 Final Prompt 字符串并不是直接作为 message content 发出，而是作为 `prompt_core` 放入这个 JSON-explicit envelope；`provider_output_protocol` 同时携带明确的 JSON 输出要求。
+
+随后，v26.193 为 792 个注册调用建立了精确 Prompt evidence set。每一行不仅绑定 phase、State、Component 和 Prompt core，还绑定实际 canonical Provider request body；该证据集明确覆盖：
+
+```text
+first Action           192
+subsequent Action      288
+Correction             120
+Final                  192
+total                  792
+```
+
+并被定义为这 792 个注册调用的权威 exact set。
+
+v26.206 又明确规定：
+
+```text
+first Action             repaired
+subsequent Action        repaired
+Correction               repaired
+Final interface          unchanged
+```
+
+其 Final callsite 继续使用冻结的 v26.193 request body，而不是重新定义一个新的 Final presentation。
+
+## 2. v26.208 的实际源码行为
+
+精确源码比较显示：
+
+### v26.206 的 Final 分支
+
+v26.206 对 Final 调用执行的是：
+
+```python
+source_body = json.loads(source_row.request_body_canonical_json)
+messages = tuple(source_body["messages"])
+request_body = source_body
+```
+
+也就是直接采用 v26.193 冻结的 canonical Final Provider request。
+
+### v26.208 的 Final 分支
+
+v26.208 的 `_compile_authoritative_messages` 对 Final 执行的是：
+
+```python
+return ({"role": "user", "content": prompt_core},)
+```
+
+其中 `prompt_core` 是 `v188.render_final_prompt(...)` 返回的原始 Final Prompt 字符串。之后 `_build_canonical_request_body` 直接围绕这一条 message 重建 request body。
+
+因此，新路径实际是：
+
+```text
+raw Final Prompt string
+  -> one user message
+  -> request body
+```
+
+而不是冻结的：
+
+```text
+raw Final Prompt string
+  -> {
+       prompt_core,
+       prompt_kind,
+       provider_output_protocol
+     }
+  -> one user message
+  -> request body
+```
+
+Action 和 Correction 仍然调用 v26.206 的 `_repaired_messages`，因此它们大体保留了 repaired condition；发生漂移的是 **192 个 Final 调用**。
+
+---
+
+## 3. 请求大小变化进一步印证了该漂移
+
+v26.206 的注册 callsite census 是：
+
+```text
+maximum repaired message bytes       34,404
+maximum repaired request bytes       34,565
+```
+
+
+
+v26.208 则变为：
+
+```text
+maximum message bytes                 29,053
+maximum request bytes                 29,214
+```
+
+
+
+两者恰好都相差 **5,351 bytes**。结合源码中 Final 外层 JSON-explicit envelope 被移除，这不再只是“可能存在不同计量口径”，而是对 Provider 可见请求内容发生变化的直接旁证。
+
+如果把这个外层 envelope 排除在“presentation”之外，也无法解决问题：它是 Provider 实际接收的 message content，改变它就会改变 request hash，并可能改变模型行为。因此它属于实验条件的一部分，而不是无关的 Host-side 元数据。
+
+---
+
+# 三、Gate 应如何重新分类
+
+v26.208 报告当前给出 `R0–R4 = 5/0 PASS`，并声称冻结的 model、Grammar、Policy、Runtime、denominator 等保持不变。
+
+但在非补偿式 Gate 下，正确分类应为：
+
+## R0：FAIL
+
+R0 不能继续写成：
+
+```text
+exact v26.207 authority/freeze and unchanged semantics PASS
+```
+
+因为 Provider-facing Final presentation 没有保持冻结。即使 Final Grammar 和 Parser 没变，也不等于 Final request condition 没变。
+
+更准确的结果是：
+
+```text
+authority/frozen-parent identity                 PASS
+Action/Correction repaired presentation          PASS
+Final Grammar and Parser identity                PASS
+Final Provider-facing request presentation       FAIL
+R0 aggregate                                     FAIL
+```
+
+## R1：PASS
+
+v26.208 因 executable behavior 变化而创建了新的 implementation、Package、Job、Manifest、Runner、Execution Contract、Prompt、Request、Certificate 和 Receipt identity，而没有复用 v26.206 identity。这个处理是正确的。
+
+## R2：机械层 PASS，冻结条件层 FAIL
+
+可以保留：
+
+```text
+one shared executable entry
+one injected transport seam
+Action/Correction/Final wrappers enter shared entry
+no direct Provider/network call
+```
+
+但不能进一步推导：
+
+```text
+exact frozen full-condition route closed
+```
+
+因为 Final wrapper 虽然经过共享入口，却经过了错误的 Final message constructor。换言之：
+
+> **No-bypass 闭合了，但闭合的是一个发生条件漂移的 Final route。**
+
+## R3：降级为局部诊断证据
+
+192 个 Job、792 个调用、192 个 Qualified reference paths 的实际执行控制仍然成立，但它们不再是“冻结 full condition 下的完整 reference control”。
+
+应改写为：
+
+```text
+Action/Correction executable reference control       retained
+dynamic Runtime traversal                            retained
+Final parser/finalize local control                   retained
+exact frozen 792-call full-condition control          not established
+```
+
+192 个 Qualified 仍然只能解释为 scripted control，不能成为在线 Capability 证据。
+
+## R4：按窄范围保留
+
+五个 typed failure control、零 Provider、零 empirical row、零 estimator 调用均可保留。它们不能补偿 R0。
+
+---
+
+# 四、初步 resource 修正不是本轮阻塞点
+
+v26.208 的 preliminary source 曾错误要求：
+
+```text
+v188.prepare_execution adapter resource ID
+==
+v26.194 authoritative resource Contract ID
+```
+
+随后正式 commit 删除了这一跨层级错误等值断言，同时继续通过 v26.206 Execution Contract 绑定真正的 v26.194 resource parent。这个修订是合理的，没有证据表明它改变了资源边界或实验语义。
+
+因此无需在 resource identity 上继续扩大审计。
+
+---
+
+# 五、当前允许与禁止的结论
+
+## 当前允许
+
+可以报告：
+
+> v26.208 已经实现了一个统一的、可执行的 repaired Runner 调用入口；Action、Correction 和 Final 都可以经过唯一 injected transport seam，Action/Correction 的动态 State contract 可以重新编译，且非参考合法 Action 能够产生并绑定新的 accepted prefix。
+
+也可以报告：
+
+> v26.207 所发现的“完全缺少 executable future Runner route”已经从结构上得到修复。
+
+## 当前禁止
+
+不能报告：
+
+```text
+exact frozen full-condition route closure passed
+all 792 calls preserve the v26.206 condition
+online execution readiness
+full repaired 192-Job Provider run authorized
+q_first^R
+q_bounded_correction^R
+post-ABI semantic rates
+Mapper / State / frequency
+Contribution / VTDO
+Student / training utility
+```
+
+v26.208 自身也明确没有创建 empirical Outcome、numerator、estimate 或 online authorization；这一边界应继续保持。
+
+---
+
+# 六、唯一合理的窄修订
+
+不应修改或覆盖已有 v26.208 工件。应将其冻结为一次**部分通过、在 Final request continuity 处失败的 preflight**，然后建立新的 fresh successor，例如：
+
+```text
+fresh_repaired_full_condition_executable_runner_
+final_request_contract_continuity_repair_preflight_only
+```
+
+## 修订对象仅限 Final message compilation
+
+当前：
+
+```text
+Final raw Prompt
+  -> direct user message
+```
+
+应改为：
+
+```text
+current dynamic Final raw Prompt
+  -> exact v26.192 JSON-explicit envelope
+       prompt_core
+       prompt_kind = final
+       provider_output_protocol
+  -> canonical user message
+  -> canonical request
+  -> validation certificate
+  -> pre-transport receipt
+  -> same shared transport seam
+```
+
+不能简单地对所有未来 Final 直接读取历史 `source_row.request_body_canonical_json`，因为非参考 accepted prefix 可能产生新的 Final State。正确方式是：
+
+1. 使用当前动态 Runtime State 生成当前 Final Prompt；
+2. 按冻结的 v26.192 Prompt Contract 动态构造相同 envelope；
+3. 在 192 条 reference 路径上要求重建结果与 v26.193/v26.206 的历史 Final request **逐字节一致**；
+4. 在非参考路径上使用相同 Contract 动态生成新的、具有 fresh identity 的 Final request。
+
+## 必须增加的最小 Gate
+
+```text
+Action/Correction canonical-message match to v26.206      600 / 600
+Action/Correction request-body match to v26.206            600 / 600
+
+Final canonical-message match to v26.193/v26.206           192 / 192
+Final request-body match to v26.193/v26.206                192 / 192
+
+total registered message matches                            792 / 792
+total registered request matches                            792 / 792
+missing / duplicate / extra coordinates                       0 / 0 / 0
+```
+
+逐行 hash 和 byte-count equality 应作为主要 Gate；最大字节数只作为摘要。修复后，在相同计量定义下，最大值应与 v26.206 的 `34,404 / 34,565` 一致。
+
+原有以下控制应原样保留：
+
+```text
+single shared entry
+single transport seam
+dynamic nonreference accepted-prefix control
+five typed failure controls
+zero Provider calls
+zero empirical rows
+zero estimator calls
+```
+
+完成该窄修订后，唯一下一步仍应是一次独立零 Provider 审计，而不是直接签发 192-Job 在线执行授权。
+
+---
+
+# 最终决定
+
+```text
+latest_stage
+  Finance v26.208
+
+build_and_artifact_reproducibility
+  retained
+
+primary positive contribution
+  executable shared Runner route now exists
+
+first failed prerequisite
+  frozen Final Provider-facing request Contract continuity
+
+root cause
+  Final raw Prompt is sent directly as one user message,
+  bypassing the frozen v26.192 JSON-explicit Prompt envelope
+
+Action/Correction route
+  retained
+
+Final shared-entry mechanics
+  retained
+
+exact full-condition route closure
+  failed
+
+192-Job / 792-call result
+  retained only as a drifted-condition scripted mechanism control
+
+mandatory revision
+  narrow Final request-envelope repair
+
+repeat Action-interface calibration
+  unnecessary
+
+Provider execution
+  forbidden
+
+Mapper / State / frequency / Contribution / VTDO
+  forbidden
+
+only rational successor
+  fresh repaired Final request Contract continuity
+  zero-Provider preflight, followed by independent audit
+```
+
+本轮到此即可停止，不需要继续扩展到新的父链攻击、更多 terminal 类型或旧层级复审。首个本质问题已经精确定位在 **Final Provider request presentation continuity**。

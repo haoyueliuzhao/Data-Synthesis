@@ -2,6 +2,38 @@
 
 Audit date: 2026-09-02
 
+## Subsequent Audit Scope Correction
+
+The subsequent exact 14,180-byte review at SHA-256
+`aca402146bae4afd780bf0ba06e5736744aefb787f9c2064071311b53ba13902`
+does not accept v26.208 as complete frozen full-condition route closure. It classifies this stage
+as:
+
+```text
+REPRODUCIBLE_PARTIAL_MECHANISM_PREFLIGHT
+BUT_FAILED_AT_FROZEN_FINAL_REQUEST_CONTINUITY
+```
+
+The first blocker is `frozen_final_provider_request_envelope_not_preserved`. The source compiled
+the current raw Final Prompt directly into one user message instead of placing it inside the
+frozen v26.192 `prompt_core` / `prompt_kind` / `provider_output_protocol` envelope. Build and
+artifact reproducibility, the existence of the shared executable route, fresh identities,
+nonreference dynamic State traversal, five typed controls, and the zero-Provider boundary remain
+retained at their narrow scopes. R0, frozen-condition R2, and the complete full-condition meaning
+of R3 fail under the noncompensatory post-review Gate.
+
+No formal artifact, identity, stored Gate value, Decision, or Transition below is rewritten. They
+are preserved as the immutable self-evaluation that was audited. The authoritative post-review
+decision is:
+
+```text
+v26_208_route_closure_preflight_failed_at_
+frozen_final_provider_request_contract_continuity
+```
+
+The narrow repair was performed only under fresh v26.209 identities. See
+`docs/finance_v26_209_fresh_repaired_full_condition_final_request_contract_continuity_repair_preflight.md`.
+
 ## Decision
 
 Finance v26.208 consumed only
@@ -277,19 +309,19 @@ Focused v26.208 tests pass 8/8 in 17.80 seconds, including a complete second bui
 byte equality. The adjacent v26.206-v26.208 suite passes 24/24 in 108.34 seconds. Focused
 PyCompile, Ruff check/format, and no-import-follow Mypy pass. Package-wide Ruff passes.
 
-## Transition
+## Historical Transition And Supersession
 
-The only permitted successor is:
+The immutable stored Transition named:
 
 ```text
 fresh_repaired_full_condition_executable_runner_route_closure_preflight_
 independent_audit_only
 ```
 
-That successor may only independently rebuild and audit this exact zero-Provider executable
-route-closure preflight. It must treat the 792 invocations, 192 Qualified terminal paths, five
-typed failure rows, and dynamic nonreference branch as scripted controls rather than empirical
-model outcomes.
+The subsequent review superseded that transition before Provider execution. The exact operator
+directive `参照审计修订` authorized only the fresh v26.209 Final request Contract continuity
+repair preflight. Its reference main path and Correction side-branch geometry reconstruct all
+792 frozen messages and requests exactly; v26.208 remains immutable negative evidence.
 
 Online-execution authorization, the full repaired 192-Job Provider run, interface-factor
 decomposition, Parser relaxation, historical adaptation, source/Task/Component/Candidate/
