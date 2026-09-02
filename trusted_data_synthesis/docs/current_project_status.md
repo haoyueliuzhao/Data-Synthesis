@@ -99,8 +99,9 @@ summary of the per-row checks.
 One separate nonreference control takes a current legal nonreference Action, observes a different
 next State, binds the second invocation to that State, completes the dynamic path, and sends a new
 Final request. Its Final message has exactly the frozen v26.192 envelope and its request identity
-differs from the registered reference Final. The two Action plus one Final diagnostic dispatches
-enter no Manifest or empirical denominator.
+differs from the registered reference Final. The four Action plus one Final diagnostic dispatches,
+five transport dispatches in total, enter no Manifest or empirical denominator. This is a
+documentation-only correction; the immutable formal v26.209 audit already records `4 / 1 / 5`.
 
 Five shared-route controls retain typed terminals for invalid first Action ABI, unknown current
 Action, invalid Correction ABI, invalid Final ABI, and one outer `instrument_failure`, with zero

@@ -201,9 +201,10 @@ new State. The control then completes the current dynamic path and sends one Fin
 
 The dynamic Final message has exactly the frozen top-level fields, binds the exact v26.192 Contract,
 and requests `json_object`. Its request SHA-256 differs from the same Job's registered reference
-Final request because its accepted prefix and public observations differ. The control uses two
-Action dispatches and one Final dispatch, enters no Manifest or empirical denominator, and makes no
-Provider call.
+Final request because its accepted prefix and public observations differ. The control uses four
+Action dispatches and one Final dispatch, for five transport dispatches in total. It enters no
+Manifest or empirical denominator and makes no Provider call. This count corrects the narrative
+only; the immutable formal `dynamic_nonreference_branch_audit.json` already records `4 / 1 / 5`.
 
 ## Typed Failures And Boundary
 
