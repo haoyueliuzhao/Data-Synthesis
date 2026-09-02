@@ -1347,6 +1347,7 @@ def _run_full_condition_control(
         correction_count = 0
         while state.current_index < len(state.ordered_components):
             component_index = state.current_index
+            branch_origin = copy.deepcopy(state)
             prompt = step_runtime.render_next_prompt(state)
             dispositions = frozen_runtime._candidate_dispositions(state, prompt)
             reference = frozen_runtime._reference_selection(
@@ -1358,11 +1359,10 @@ def _run_full_condition_control(
                 (item for item in dispositions if not item.acceptance.accepted),
                 None,
             )
-            first_action_id = invalid.action_id if invalid is not None else reference.action_id
             transport.queue(
                 _action_payload(
                     state_id=prompt.state.state_token,
-                    action_id=first_action_id,
+                    action_id=reference.action_id,
                     profile=parents.profile,
                 )
             )
@@ -1380,16 +1380,19 @@ def _run_full_condition_control(
                 _fail(
                     "execution.action_terminal", f"reference control terminalized:{action.terminal}"
                 )
+            if action.record.action_accepted is not True:
+                _fail("execution.reference_action", "reference Action did not commit")
             if invalid is None:
-                if action.record.action_accepted is not True:
-                    _fail("execution.reference_action", "reference Action did not commit")
                 continue
-            if action.record.action_accepted is not False:
+            rejected = step_runtime.step(branch_origin, invalid.action_id)
+            if getattr(rejected, "action_accepted", True):
                 _fail("execution.typed_rejection", "registered invalid Action did not reject")
-            correction_prompt = step_runtime.render_next_prompt(state)
-            correction_rows = frozen_runtime._candidate_dispositions(state, correction_prompt)
+            correction_prompt = step_runtime.render_next_prompt(branch_origin)
+            correction_rows = frozen_runtime._candidate_dispositions(
+                branch_origin, correction_prompt
+            )
             corrected = frozen_runtime._reference_correction(
-                state,
+                branch_origin,
                 correction_prompt,
                 correction_rows,
                 component_index,
@@ -1407,7 +1410,7 @@ def _run_full_condition_control(
             correction = runner.invoke_correction(
                 job=job,
                 invocation_index=invocation_index,
-                state=state,
+                state=branch_origin,
             )
             invocation_index += 1
             correction_count += 1

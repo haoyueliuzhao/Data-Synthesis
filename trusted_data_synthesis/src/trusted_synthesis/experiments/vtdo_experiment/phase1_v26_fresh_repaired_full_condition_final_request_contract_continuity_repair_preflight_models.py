@@ -756,6 +756,8 @@ class ExecutableJobControlRow(FrozenModel):
     first_action_count: Literal[1] = 1
     subsequent_action_count: int = Field(ge=0, le=3)
     correction_count: int = Field(ge=0, le=4)
+    correction_calls_are_registered_side_branch_controls: Literal[True] = True
+    single_linear_provider_trajectory_claimed: Literal[False] = False
     final_count: Literal[1] = 1
     action_and_correction_count: int = Field(ge=1, le=8)
     terminal_reference_path: Literal[True] = True
@@ -818,6 +820,9 @@ class FullConditionExecutionControlAudit(FrozenModel):
     first_action_count: Literal[192] = 192
     subsequent_action_count: Literal[288] = 288
     correction_count: Literal[120] = 120
+    registered_callsite_control: Literal[True] = True
+    correction_side_branch_control_count: Literal[120] = 120
+    single_linear_provider_trajectory_claimed: Literal[False] = False
     final_count: Literal[192] = 192
     action_and_correction_count: Literal[600] = 600
     transport_dispatch_count: Literal[792] = 792
