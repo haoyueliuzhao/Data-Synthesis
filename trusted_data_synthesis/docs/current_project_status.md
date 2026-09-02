@@ -17,6 +17,16 @@ messages are not treated as experimental evidence.
 
 ## v26.207 Fresh Repaired Full-Condition Preflight Independent Audit
 
+### Post-review scope clarification
+
+A subsequent 13,410-byte review at SHA-256
+`4777e6e354b5bd114dcfa1fc549bb419be1ea5daed58e8e64ebaf263ab35b2f1`
+classifies v26.207 as `VALID_NEGATIVE_INDEPENDENT_AUDIT` with
+`MANDATORY_REVISION=NONE`. Stage integrity passes; online readiness fails only at the first
+missing executable future Runner route. This clarification changes no v26.206 or v26.207 formal
+artifact, identity, Gate result, Decision, or Transition. It authorizes neither v26.208 nor any
+Provider call.
+
 Finance v26.207 consumed only
 `fresh_repaired_action_interface_full_condition_integration_preflight_independent_audit_only`.
 The exact 12,167-byte external review is bound at SHA-256
@@ -116,14 +126,23 @@ v26.207 tests pass 8/8, including a complete second build. Focused PyCompile, Ru
 and no-import-follow Mypy pass. The adjacent v26.203-v26.207 suite passes 40/40; package-wide
 Ruff passes.
 
-The current decision is:
+The immutable formal decision remains:
 
 ```text
 v26_206_independent_audit_failed_at_future_online_runner_
 repair_request_transport_no_bypass_closure
 ```
 
-The Transition status is `BLOCKED_FAILED_INDEPENDENT_AUDIT` and `next_stage` is null. The named
+For mutable status summaries, the same scoped result is expressed more narrowly as:
+
+```text
+v26_206_scoped_preflight_results_retained_
+online_readiness_blocked_at_executable_future_runner_route_closure
+```
+
+`BLOCKED_FAILED_INDEPENDENT_AUDIT` remains the immutable Transition status; it denotes failure of
+the audited online-readiness Gate, not failure of the v26.207 audit implementation or withdrawal
+of v26.206's registered/scripted results. `next_stage` remains null. The named
 candidate `fresh_repaired_full_condition_executable_runner_route_closure_preflight_only` is a
 recommendation for a possible separately reviewed repair and is not authorized. A new external
 audit decision is required before any successor. Online-execution authorization, the full
