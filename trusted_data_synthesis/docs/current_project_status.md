@@ -15,6 +15,117 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.211 Fresh Repaired Full-Condition Exact 192-Job Online Execution Authorization
+
+Finance v26.211 consumed only
+`fresh_repaired_full_condition_exact_192_job_online_execution_authorization_only`. The exact
+12,940-byte review at SHA-256
+`6f620c16c86a10098691156500af98cd014810d63fe2fe4915b67ab850138b82`
+accepts v26.210 as `PASSED_AS_SCOPED`, requires no revision, observes no blocking defect, and
+names exact precredential online authorization as the first unclosed Gate. The later exact
+27-byte directive `参照审计，继续实验`, SHA-256
+`dbaf736d9a857237a3c762625b0b5368fb31f6863b3f0b02690314912e25650d`,
+authorizes only this zero-Provider decision stage.
+
+All fifteen v26.210 formal files and 1,344,368 bytes revalidate, including all fourteen
+self-excluding Manifest members and 1,341,853 member bytes. Its Report, passed Gate, Decision,
+Transition, Manifest, Root, and source commit/tree
+`56238892be483da4bab0d188dcc1fe69287174bf` /
+`b0e329e53318f17b2d1930023c3bd872660bea64` remain unchanged.
+
+The exact v26.209 repaired condition is frozen without creating new Package, Job, Manifest,
+Runner, or response-Contract identities:
+
+```text
+Runner Packages / Replicas                         32 / 6
+Manifest Jobs                                         192
+registered invocation coordinates                      792
+first / subsequent Action                        192 / 288
+registered Correction side branches                    120
+Final                                                   192
+unique Raw/Result/Trace/Outcome namespaces         192 each
+maximum Prompt / requests / Provider calls        60K / 21 / 23
+maximum transport invocations / rollout tokens    24 / 1,120,000
+```
+
+The bound parent set includes exact Task, Component, Candidate, Schedule, presentation, Runtime,
+model, Thinking, sampling, repaired Action Grammar, frozen Final Grammar, Policy, both resource
+Contracts, correction bound, validity, denominator, threshold, Estimand, and terminal-policy
+authority. Every corresponding change count is zero. Exact Package, Job, coordinate, and four
+evidence-namespace set hashes enter the authorization.
+
+The future composition is fixed as exact authorization-byte validation, precredential guard,
+one-time durable consumption, durable Run Start Receipt, credential lookup, Provider transport,
+the exact v26.209 current-State Runner loop, typed terminal dispatch, Raw-before-Result,
+Trace/Outcome reconstruction, and checkpoint. Caller terminal, historical response, reference
+Choice vector, and prefabricated Final are forbidden. Provider, Transport, Thinking, Usage, and
+model failures must type-terminalize and cannot reopen authorization.
+
+One exact request passes the guard as an explicitly non-consuming probe. Twenty-eight invalid
+requests reject before the credential-boundary probe, transport factory, and every writer
+factory. Twenty fully rehashed authorization-parent attacks also reject with zero post-guard
+probe. All thirty noncompensatory Gates pass.
+
+```text
+legal / invalid admission controls                 1 / 28
+fully rehashed attacks rejected                    20 / 20
+passed / failed Gates                               30 / 0
+authorization issued / consumed                      1 / 0
+Run Start Receipts / Manifest Job executions         0 / 0
+Provider calls / credential lookups                  0 / 0
+Raw/Result/Trace/Outcome/checkpoint rows                  0
+empirical estimates / QA/Mapper/State/frequency rows      0
+```
+
+Authoritative identities include:
+
+- external Decision:
+  `finance_v26_211_external_online_authorization_decision:2cda01ffd3e97fb9071d399b236ad02187130c685faa7c91a8657f6bd32fa9f8`;
+- v26.210 Freeze:
+  `finance_v26_211_v210_authority_freeze:6ad8f37945e3b8054369de8c2a730e85c470af8e2b3965a7b48bc3030cc3a412`;
+- frozen condition:
+  `finance_v26_211_frozen_execution_condition_binding:22ee77a0a7645e52b16eda513f2a44e8722b7979fa08141609e353073cf25e93`;
+- online Composition Contract:
+  `fresh_repaired_full_condition_online_execution_composition_contract:6627c904a5086cd806d0d715d6f3fd716582009aba7a515669b508a780b7d9f1`;
+- exact online Authorization:
+  `fresh_repaired_full_condition_exact_online_execution_authorization:aa52ba5fffbdb7236953d3a20dbf29ba739ce7e385123051ededc21454499bbe`;
+- diagnostic Admission:
+  `fresh_repaired_full_condition_online_authorization_admission:8ca3ebcba6d0bd40ea7ed82e0d994225ecac72f7ffca4f41656ed6b55b516ce1`;
+- admission / destructive / scope / static Audits:
+  `finance_v26_211_precredential_admission_audit:373b3c5eedba4d6ab040fab084b0ef63cd243b40004c9fe3d87328b24d9cc207` /
+  `finance_v26_211_authorization_destructive_audit:0023a408d62e152de2127975159913eaabe1d6e2832f01696da6700fb3ec9ccf` /
+  `finance_v26_211_scope_boundary_audit:52b8878c33a5f49bc112eb6e366309ef2071a89ae4abf0a93bd7ca9ce12fd33d` /
+  `finance_v26_211_online_authorization_static_audit:150f1d5506270cf75371766364785043b38b556d40134872e94685bcb66b2d13`;
+- Decision / Transition / report:
+  `finance_v26_211_online_authorization_decision:c1953caef65b6024d3421f8b668372f19bf355c586725286dcbbede506f3fb58` /
+  `finance_v26_211_transition:eae91c4c737849ed0b70f21019e3cfa7dcc62482adfa904faef8ca7de44c92df` /
+  `finance_v26_211_online_authorization_report:62428ff64e3dd061514d76fd7554696dcf1e6b50e64249c59c96e57aecb0675e`;
+- Artifact Manifest / Root:
+  `finance_v26_211_artifact_manifest:16526304647899aac835c40ac45f27fc5a7324e58687639502802bcb7c9314db` /
+  `finance_v26_211_artifact_root:0bc0193296e734cfdc5434b8872c00bda42162d2b5c13de6c3dffc207dc789b1`.
+
+The exact source commit/tree are `ed62189a162601e97a48b2ab91840c680abe7794` /
+`d35134034991a7b330b2214cc67036a60f4fa289`. The seventeen-file,
+137,306-byte formal directory rebuilds byte for byte; its Manifest binds sixteen members and
+134,503 bytes. Focused v26.211 tests pass 8/8, and the adjacent v26.206-v26.211 suite passes
+49/49. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass; package-wide Ruff
+passes.
+
+The current decision is:
+
+```text
+exact_repaired_192_job_online_execution_authorization_issued_not_consumed
+```
+
+The only permitted successor is
+`fresh_repaired_full_condition_exact_192_job_online_execution_only`. It may consume the exact
+authorization once, after exact-byte admission and durable consumption, to run only the frozen
+192 Jobs. This stage has not consumed the authorization. Replacement, failed-Job rerun, recovery,
+historical reuse, source/condition change, QA integration, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain forbidden. After the exact online
+run, only a credential-free independent postrun audit is permitted. See
+`docs/finance_v26_211_fresh_repaired_full_condition_exact_online_execution_authorization.md`.
+
 ## v26.210 Fresh Repaired Final Request Continuity Independent Audit
 
 Finance v26.210 consumed only
