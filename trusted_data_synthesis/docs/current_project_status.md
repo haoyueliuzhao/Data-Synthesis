@@ -15,6 +15,137 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.206 Fresh Repaired Action-Interface Full-Condition Integration And Identity Preflight
+
+Finance v26.206 consumed only
+`fresh_repaired_action_interface_full_condition_integration_and_identity_preflight_only`. The
+exact 14,288-byte external review is bound at SHA-256
+`b0ab58a19818e7a5086bbc0b7ffa03768d1148d9c441093407c43184c9c6fd59`. It accepts v26.205
+as scoped with no mandatory revision and authorizes only a credential-free full-condition
+integration and fresh-identity preflight. Provider calls and credential lookups are zero.
+
+All fourteen v26.205 formal files and 91,230 bytes revalidate, including all thirteen
+self-excluding Manifest members. The exact v26.194 32-Package, six-Replica, 192-Job semantic
+condition remains the immutable source. The v26.193 792-row Prompt evidence set and v26.203 exact
+four-field Action Contract are separately frozen as callsite and interface parents.
+
+The repaired full-condition Profile applies the exact `state_id`, `action_id`, `decision_kind`,
+and `protocol` Contract to first Action, subsequent Action, and typed-rejection Correction calls.
+Every current State recompiles its exact State ID and ordered Candidate Action IDs. `grammar_id`
+remains Host-side, the old model-visible `response_abi` is absent, and Answer/Operation Schemas
+remain verifier metadata marked not to be a model response schema. Final retains its frozen
+Grammar. Parser relaxation and historical adaptation are false.
+
+A wholly fresh identity chain contains 32 repaired Runner Packages, 192 repaired Jobs, one
+Manifest, Runner, Execution Contract, and 192 unique Raw, Result, Trace, and Outcome namespaces.
+Exact source Package and Job equality are 32/32 and 192/192. Fresh/predecessor identity
+collisions are zero.
+
+The complete repaired callsite census is:
+
+```text
+Jobs / callsites                                192 / 792
+first Action                                           192
+subsequent Action                                      288
+typed-rejection Correction                             120
+Final                                                  192
+four-field Action Contract compilations                600
+unique row / Prompt / Request identities     792 / 792 / 792
+maximum repaired message / request bytes    34,404 / 34,565
+Parser relaxation / historical adaptation            0 / 0
+```
+
+The credential-free scripted integration replays the actual frozen step Runtime for all 192
+Jobs. Every reference Action is parsed against the current four-field ABI, bound to a visible
+current Candidate and State, and committed. All 120 registered typed-rejection branches expose
+public Feedback and a Receipt, render the current Correction State, parse one exact Correction,
+and commit. The 192 primary paths reach terminal State, cross the frozen Final parser, and invoke
+independent Base, Mechanism, and Qualified validity. The exact local result is:
+
+```text
+first / subsequent Action parses                    192 / 288
+typed-rejection branches / Correction parses        120 / 120
+Final parses / terminal States                       192 / 192
+independent validity / scripted Qualified            192 / 192
+unique Raw/Result/Trace/Outcome identities                  768
+exception escapes / empirical rows                         0 / 0
+```
+
+Correction counts are zero for 144 Jobs and one, two, three, or four for twelve Jobs each. The
+bound is one Correction per reached Component, not one per Job. All 192 fresh
+Raw -> Result -> Trace -> Outcome chains close. These are deterministic reference controls, not
+model outcomes or a Capability estimate.
+
+Five failure controls independently type invalid first Action ABI, unknown Action reference,
+invalid Correction ABI, invalid Final ABI, and one outer `instrument_failure`; each produces one
+typed Outcome with zero exception escape and enters no empirical denominator.
+
+The prospective `q_first^R` and `q_bounded_correction^R` Contracts retain the exact 192-Job
+denominator. Pre-ABI and outer terminals remain in it; post-ABI conditionals are null when their
+denominator is zero. Numerators, estimates, intervals, and empirical rows remain unmaterialized.
+
+All noncompensatory Gates F0-F5 pass: authority/freeze, exact source equality plus fresh identity
+disjointness, Action-callsite totality, scripted Action -> State -> Correction -> Final closure,
+Raw -> Result -> Trace -> Outcome closure, and the zero Provider/credential/QA/Mapper/State/
+Contribution/VTDO boundary.
+
+Authoritative identities are:
+
+- external authorization:
+  `finance_v26_206_external_preflight_authorization:dd98e3faabfe5d4bd4ba2faf84e5ee693ac7a8e330e8c1bccc2655876ae2b319`;
+- predecessor Freeze:
+  `finance_v26_206_predecessor_freeze:f96d3e7e6fe2b0d0f5505d87e670d2f11d827f2af53ea9ebec6b8e901fa86d2d`;
+- Repair Profile:
+  `fresh_repaired_action_interface_full_condition_profile:b0be8d7e8166f0fd5dfce43edc0ab4150e02f4f59cd97b4310e6cd49df94ab52`;
+- Package Catalog:
+  `fresh_repaired_full_condition_package_catalog:fcbcecf455e7c67b374911938658721d265479b40e2e763a46d34611a1a44c04`;
+- Manifest:
+  `fresh_repaired_full_condition_manifest:10642f005f6756ac4540af6ff3c84aa6a45a90e228f59b767d8cb7aa0390d7cd`;
+- Runner:
+  `fresh_repaired_full_condition_runner:4e14d0fd0ed62bb34cf65fb4c0b49a418d76f19a207b166171a195587c4674fc`;
+- Execution Contract:
+  `fresh_repaired_full_condition_execution_contract:9cfaa9e6c7930b2deb8e0f61edea5e92587af6ad2029ffe3bb8e82ea309f2a25`;
+- callsite Census:
+  `finance_v26_206_repaired_callsite_census:b866df6946418db850369566f6c5857076c7b48d7747960bfd5faadbcbdadb4e`;
+- scripted Integration Audit:
+  `finance_v26_206_scripted_full_condition_integration_audit:aee3031c8b301001d0cbdb2dd3628e2cbb8330ef2e5ac058b2eec98af85d40c3`;
+- Failure Control Audit:
+  `finance_v26_206_failure_control_audit:1f5776177a8afade04a90c8b8a0180150d108bd446e41b4044d6943f66d47443`;
+- prospective Estimand Contract:
+  `fresh_repaired_full_condition_prospective_estimand_contract:4c415817c76c2bd0b6c050252ca32887512af450eeff57baabd6dc657b57982e`;
+- Gate Audit:
+  `finance_v26_206_full_condition_gate_audit:3b12d250e9f7940a29761d01cdc86b16219d7026a847e0ea25b4db0463a3c2d3`;
+- report:
+  `finance_v26_206_full_condition_preflight_report:4496a0160219c9598b27ccb791a1486bd52c675fa8ef29378a3e754cd5c6f929`;
+- Transition:
+  `finance_v26_206_transition:871c82f189a025342ac50496098515bba6fae6684148effd15b1558c5f00b967`;
+- Artifact Manifest:
+  `finance_v26_206_artifact_manifest:d0b1fa5c46b6ddedf8e6366c6e3efc878d3d5efbcfca12ee9539f99fcfc41d77`;
+- Artifact Root:
+  `finance_v26_206_artifact_root:3dde8a5c5ae90ad63447050c21ba964c5f2294ec1d1895d3d5fbe8cae3b7ee55`.
+
+The exact source commit/tree are `0266bfc027ee6ef74f4d8b3a8762ebf7cdeeccb2` /
+`98afacbad5b4af207dc00d851a9937d81ce0b9f5`. The seventeen-file, 2,519,097-byte formal
+directory rebuilds byte for byte; its Manifest binds sixteen members and 2,516,326 bytes.
+Focused v26.206 tests pass 8/8, including an empty-directory 17/17 rebuild. Focused PyCompile,
+Ruff check/format, and no-import-follow Mypy pass; the adjacent v26.203-v26.206 suite passes
+32/32 and package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_full_condition_integration_and_identity_preflight_passed_
+no_online_execution_authorized
+```
+
+The only permitted successor is a credential-free independent audit of the exact v26.206
+preflight. Full repaired 192-Job Provider execution, additional interface calibration,
+interface-factor decomposition, Parser relaxation, historical adaptation, source/Task/Component/
+Candidate/Schedule/presentation/Runtime/model/Thinking/Grammar/Policy/resource/correction-bound/
+validity/denominator/threshold change, QA, Mapper, State frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_206_fresh_repaired_action_interface_full_condition_integration_preflight.md`.
+
 ## v26.205 Fresh First-Response Action-Interface Paired Calibration Postrun Independent Audit
 
 Finance v26.205 consumed only
@@ -120,6 +251,12 @@ execution, additional interface calibration, Parser relaxation, historical adapt
 interface-factor decomposition, QA, Mapper, State frequency, Contribution, VTDO, training,
 release, and production remain forbidden. See
 `docs/finance_v26_205_fresh_first_response_action_interface_disambiguation_paired_online_calibration_postrun_independent_audit.md`.
+
+That boundary was consumed only by v26.206 under its exact zero-Provider external authorization.
+Every v26.205 byte and scoped result remains immutable. v26.206 creates only the fresh repaired
+full-condition identity chain, complete 792-callsite census, deterministic 192-Job integration
+controls, prospective estimands, and F0-F5 evidence recorded above. The current transition is the
+credential-free independent audit of the exact v26.206 preflight.
 
 ## v26.204 Fresh First-Response Action-Interface Paired Online Calibration
 
