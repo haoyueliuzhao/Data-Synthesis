@@ -1,0 +1,381 @@
+# 审计结论
+
+本轮 **Finance v26.207** 应判定为：
+
+```text
+AUDIT_RESULT                         VALID_NEGATIVE_INDEPENDENT_AUDIT
+MANDATORY_REVISION                   NONE
+V26.206_REGISTERED_SURFACE           RETAINED
+V26.206_SCRIPTED_RUNTIME_CLOSURE      RETAINED
+ONLINE_READINESS                     FAILED
+FIRST_BLOCKER
+  executable_future_runner_repair_request_validation_transport_route_absent
+FULL_192_JOB_PROVIDER_EXECUTION       NOT_AUTHORIZED
+```
+
+也就是说，**v26.207 自身审计成立，但审计对象没有获得在线执行准备资格**。这不是“实验整体失败”，而是一次正确定位首个生产阻塞点的负向结果。
+
+---
+
+## 一、v26.207 的负向结论可信
+
+v26.207 没有只读取 v26.206 的 Gate 结论，而是采用两条独立证据路径：
+
+1. 从精确 v26.206 commit 做 detached archive，重新生成全部 17 个正式文件；
+2. 用独立 v26.207 实现从冻结的 v26.194、v26.193、v26.203 父对象重新构造 Package、Job、Manifest、Runner、Execution Contract 和 Runtime replay。
+
+保存的 Census、Integration Audit、Failure Controls 与 Estimand 只在独立对象构造完成后作为比较目标，没有充当 outcome oracle。
+
+重建结果也足以支持审计实现本身：
+
+```text
+v26.206 detached output equality       17 / 17
+rebuilt Packages                       32 / 32
+rebuilt Jobs                          192 / 192
+Package object matches                 32 / 32
+Job object matches                    192 / 192
+fresh evidence namespaces                  768
+fresh/predecessor collisions                 0
+```
+
+同时，v26.207 自身的 16 文件正式目录可以字节级重建，两次完整构建输出一致，focused tests 为 8/8，邻接测试为 40/40。 
+
+因此没有证据表明 A3 失败来自审计实现漂移、父对象误绑或重建错误。
+
+---
+
+## 二、A3 失败是真实阻塞点，不属于过度审计
+
+v26.207 确认 v26.206 在**注册表面**上的 Repair 是完整的：
+
+```text
+repair compiler definitions                         1
+callsite builder definitions                         1
+request builder calls inside callsite builder        1
+scripted integration callsite-builder uses           3
+registered Action/Correction repaired          600 / 600
+old ABI registered routes                             0
+unrepaired registered routes                          0
+```
+
+但精确源码中同时存在：
+
+```text
+executable future online Runner definitions           0
+injected transport seams                              0
+Action transport dispatch calls                       0
+Correction transport dispatch calls                   0
+```
+
+所以当前存在的是：
+
+```text
+current State
+  -> repaired callsite data object
+  -> scripted reference parsing
+```
+
+而不是在线执行所需的：
+
+```text
+current Runtime State
+  -> repaired message compilation
+  -> canonical request construction
+  -> request validation/certificate
+  -> injected transport seam
+  -> observed model response
+  -> parse / State-Candidate validation
+  -> Runtime step
+```
+
+数据型 `RepairedRunnerContract` 和脚本型 `_callsite_row` 不能证明未来任意模型响应一定经过 repaired route。
+
+这不是过度审计，原因在于它没有要求：
+
+* 穷举所有 model-reachable States；
+* 再做一轮接口因子分解；
+* 再做一次 24-call calibration；
+* 提前获得 Capability 结果；
+* 实际调用 Provider。
+
+它只检查了**准备进行在线实验前必须真实存在的生产调用路径**。没有该路径时，所谓 no-bypass 只能因“没有可执行路径”而真空成立；v26.207 正确拒绝了这种解释。
+
+需要注意，问题也不是“源码中没有直接 Provider 调用”。零 Provider preflight 本就不应访问网络。真正缺少的是一个**可注入假 transport、将来可替换为真实 transport 的统一执行 seam**。
+
+---
+
+## 三、v26.206 已有窄结论不应被撤回
+
+v26.207 正确保留了以下结果：
+
+```text
+registered callsites                              792
+repaired Action/Correction callsites              600
+scripted full-condition Jobs                      192
+first Action parses                               192
+subsequent Action parses                          288
+typed rejection / Correction parses         120 / 120
+Final parses / terminal States              192 / 192
+scripted Qualified                                192
+Raw/Result/Trace/Outcome identities               768
+exception escapes                                   0
+empirical rows                                      0
+```
+
+独立 replay 还逐行匹配了 792 个保存的 row、Prompt 和 Request 对象，并匹配了 192 个 Integration rows。
+
+因此当前精确解释应是：
+
+```text
+v26.206 constructibility and identity closure        PASS
+v26.206 registered reference surface integration     PASS
+v26.206 deterministic Runtime reference replay       PASS
+future executable online route                       ABSENT
+full-condition online readiness                      FAIL
+```
+
+不能把 A3 失败扩展成“Repair 接口本身无效”。此前独立审计已经从实际 24-call Raw 响应重建出 Control `0/12`、Repair `11/12` 的 first-response ABI 结果，所以现在没有理由返回接口校准阶段。
+
+---
+
+## 四、当前允许与禁止的科学结论
+
+### 当前允许
+
+可以报告：
+
+> 复合 repaired Action interface 在冻结的小规模配对校准表面显著改善了 first-response Action ABI 实例化；在完整 192-Job 注册参考表面，它能够被确定性编译、解析并驱动 Runtime reference replay；但未来在线执行 Runner 尚未把动态 repaired request route 与 transport seam 组合成一条可执行生产路径。
+
+还可以报告：
+
+> 当前首个阻塞点位于执行机制层，而不是 Action Contract 本身、Package/Job 身份、注册 callsite 枚举、脚本 Runtime 或证据父链。
+
+### 当前仍禁止
+
+不能报告：
+
+```text
+repaired-condition Capability value
+online terminal frequency
+subsequent model Action/Correction/Final behavior
+q_first^R or q_bounded_correction^R
+online-execution readiness
+Mapper / State / frequency
+Contribution / VTDO
+Student or training utility
+```
+
+v26.207 保持了 192-Job prospective denominator，但 empirical rows、numerators、estimates 和 intervals 仍全部未实例化。
+
+---
+
+## 五、一个可选的表述收窄
+
+v26.207 当前正式 Decision 是：
+
+```text
+v26_206_independent_audit_failed_at_future_online_runner_
+repair_request_transport_no_bypass_closure
+```
+
+其正文已经明确说明 v26.206 的注册表面和 scripted results 不被撤回，因此不需要修改不可变工件。未来状态摘要中可以使用更不易误读的表述：
+
+```text
+v26_206_scoped_preflight_results_retained_
+online_readiness_blocked_at_executable_future_runner_route_closure
+```
+
+这只是状态语言优化，不构成新的实验修订。
+
+---
+
+# 六、唯一合理的后续实验：Finance v26.208
+
+当前 `next_stage=null`，下述名称只是 v26.207 给出的候选修复范围，尚未获得授权：
+
+```text
+fresh_repaired_full_condition_executable_runner_route_closure_preflight_only
+```
+
+任何实施必须先由新的外部审计决定明确授权。
+
+## 1. 实验问题
+
+v26.208 只回答一个问题：
+
+> 在不改变冻结语义条件和 repaired interface 的情况下，能否构造一个真实可执行、零 Provider 的 future Runner，使每个 Action、Correction 和 Final 请求都必须依次经过动态 State 重建、接口编译、请求构造、请求验证和唯一 injected transport seam？
+
+这仍然是工程机制 preflight，不是模型实验。
+
+## 2. 必须冻结的对象
+
+保持不变：
+
+```text
+v26.194 source Tasks / Components / Candidates / Schedules
+v26.194 Runtime semantics and step/finalize behavior
+v26.203 exact four-field Action Contract
+v26.206 Repair Profile semantics
+model / Thinking / sampling / Completion bound
+Action Grammar / Final Grammar
+Policy / resource / correction bound
+Validity semantics
+192-Job denominator and thresholds
+```
+
+v26.206、v26.207 的所有正式工件保持不可变。
+
+由于 Runner implementation 与 Execution Contract 会发生真实变化，v26.208 应创建新的：
+
+```text
+implementation binding
+Runner Package identities
+Development Job identities
+Manifest
+Runner
+Execution Contract
+Prompt / Request identities
+Raw / Result / Trace / Outcome control namespaces
+```
+
+不能直接给 v26.206 的 Runner 对象补一个方法后继续沿用旧身份。
+
+## 3. 最小生产路径
+
+建议只增加一个统一的执行入口，例如概念上的：
+
+```text
+ExecutableRepairedFullConditionRunner._invoke_current_state(...)
+```
+
+所有调用必须满足：
+
+```text
+Action / Correction / Final
+  -> read actual current Runtime State
+  -> compile phase-specific authoritative messages
+  -> build canonical request body
+  -> validate request body and certificates
+  -> emit pre-transport receipt
+  -> exactly one injected transport seam
+  -> receive public payload or typed exception
+  -> privacy/persistence projection
+  -> exact Parser
+  -> current State and Candidate validation
+  -> production Runtime step/finalize
+  -> terminal dispatcher
+  -> Raw -> Result -> Trace -> Outcome control chain
+```
+
+Action 与 Correction 使用 repaired four-field Contract；Final 继续使用冻结 Final Grammar，不得被误改成 Action ABI。
+
+重要的是：**Census 和 callsite evidence 应由该可执行路径产生，而不是再由一个平行的 evidence-only builder 代替生产 Runner。**
+
+## 4. 建议仅设置五个 Gate
+
+不需要扩大成新一轮大型审计矩阵。
+
+```text
+R0  exact v26.207 authority/freeze and unchanged semantic condition
+
+R1  fresh executable Runner/Manifest/Execution identity closure
+
+R2  source-level and dynamic no-bypass closure:
+      one shared invocation entry
+      one injected transport seam
+      Action/Correction/Final all route through it
+      repair -> request -> validation -> transport order exact
+      old ABI and unrepaired routes zero
+      direct Provider/network access zero
+
+R3  zero-Provider full-condition execution control:
+      192 Jobs
+      600 repaired Action/Correction invocations
+      192 frozen Final invocations
+      792 total injected-transport calls
+      192 terminal reference paths
+      zero exception escape
+
+R4  existing five typed failure controls plus boundary:
+      invalid first ABI
+      unknown current Action
+      invalid Correction ABI
+      invalid Final ABI
+      typed outer failure
+      empirical rows and estimates zero
+```
+
+可再加入一个非常窄的正向分支控制：选择一个当前 State 中存在两个合法 Candidate 的冻结 Job，让 injected transport 返回非 reference、但当前合法的 Action，确认 Runner 会从新 accepted prefix 动态渲染下一 State。该控制只用于排除“Runner 实际硬编码 reference trajectory”，不需要枚举所有可能状态。
+
+## 5. 通过条件
+
+v26.208 只有在以下条件同时满足时才可通过：
+
+```text
+executable future Runner definitions                 1
+injected transport seam definitions                  1
+Action transport route                               1
+Correction transport route                           1
+Final transport route                                1
+renderer/request/validator bypasses                   0
+direct Provider or network calls                      0
+dynamic registered invocations                     792
+completed scripted Jobs                             192
+exception escapes                                     0
+empirical rows / estimates                          0 / 0
+```
+
+建议通过后的 Decision 为：
+
+```text
+fresh_repaired_full_condition_executable_runner_route_closure_
+preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+即使 v26.208 通过，也只能进入对该新 Runner 的一次独立审计；不能在同一阶段签发 online authorization。
+
+---
+
+# 最终审计决定
+
+```text
+latest_stage
+  Finance v26.207
+
+stage_integrity
+  passed
+
+scientific_character
+  valid negative independent audit
+
+first_failed_theoretical/engineering prerequisite
+  executable future Runner route from repaired current-State request
+  compilation through validation to one injected transport seam
+
+v26.206 registered/scripted evidence
+  retained
+
+repair interface calibration
+  retained; no repeat calibration needed
+
+mandatory revision to v26.207
+  none
+
+online authorization
+  not ready
+
+Provider execution
+  forbidden
+
+QA / Mapper / State / Contribution / VTDO
+  forbidden
+
+only rational next experiment
+  fresh_repaired_full_condition_executable_runner_route_closure_
+  preflight_only
+
+authorization status of that experiment
+  not yet authorized; requires a new external audit decision
+```
+
+本轮应当停止继续审查已经通过的身份、Census、scripted validity 和 Outcome 父链，只修复 A3 指出的这一条缺失生产路径。

@@ -15,6 +15,153 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.208 Fresh Repaired Full-Condition Executable Runner Route-Closure Preflight
+
+Finance v26.208 consumed only
+`fresh_repaired_full_condition_executable_runner_route_closure_preflight_only`. The exact
+13,410-byte v26.207 review is bound at SHA-256
+`4777e6e354b5bd114dcfa1fc549bb419be1ea5daed58e8e64ebaf263ab35b2f1`. That review
+named v26.208 as the only rational successor but did not itself authorize it. The later exact
+46-byte operator directive `参照审计执行v26.208，你刚才缺漏了` is separately bound at
+SHA-256 `74a283edbb4efd8e0810f0b2f6295bba7d9a47270a48ded67f0d867473d6c07c`
+and explicitly authorizes only this zero-Provider route-closure preflight.
+
+All sixteen v26.207 formal files and 1,408,911 bytes revalidate, including all fifteen
+self-excluding Manifest members. Its valid negative audit, retained v26.206 scoped results,
+failed online-readiness Gate, and first missing executable-route seam remain unchanged. All
+seventeen v26.206 formal files and the exact Repair Profile, 32 Packages, 192 Jobs, Runner,
+Execution Contract, prospective Estimand, and v26.193 792-row Prompt evidence parent also
+revalidate. Historical mutation, credential lookup, and Provider calls are zero.
+
+Because the implementation and Execution Contract change, v26.208 creates one fresh
+implementation Binding, 32 fresh Runner Packages, 192 fresh Development Jobs, a fresh Manifest,
+Runner, and Execution Contract, 792 fresh Prompt/Request/validation-certificate/pre-transport-
+receipt identities, and 768 fresh Raw/Result/Trace/Outcome control namespaces. Collisions with
+v26.206 identities are zero.
+
+The executable `ExecutableRepairedFullConditionRunner` gives Action, Correction, and Final one
+wrapper each. Every wrapper calls exactly one shared `_invoke_current_state` entry, and only that
+entry calls the single injected `InjectedTransportSeam.send`. Its exact order is:
+
+```text
+actual current Runtime State
+  -> phase-specific authoritative message compilation
+  -> canonical request construction
+  -> request validation and certificate
+  -> pre-transport receipt
+  -> exactly one injected transport dispatch
+  -> public projection
+  -> exact Parser
+  -> current State/Candidate or Final-envelope validation
+  -> Runtime step/finalize
+  -> terminal/disposition dispatch
+```
+
+Source AST confirms one executable Runner, one injected seam, one shared entry, one dispatch call
+inside that entry, and one shared-entry call from each phase wrapper. Compiler, request builder,
+validator, receipt, and transport appear in exact order. Direct Provider/network calls, old-ABI
+routes, unrepaired routes, and renderer/request/validator bypasses are zero.
+
+The zero-Provider full-condition execution control runs all 192 Jobs through that actual path:
+
+```text
+Jobs / injected-transport calls                         192 / 792
+first / subsequent Action                              192 / 288
+typed-rejection Correction                                   120
+Final                                                         192
+repaired Action plus Correction calls                         600
+unique Prompt/Request/Certificate/Receipt        792 / 792 / 792 / 792
+maximum message / request bytes                    29,053 / 29,214
+terminal reference paths                                     192
+Base / Mechanism / Qualified                         192 / 192 / 192
+unique Raw/Result/Trace/Outcome identities                    768
+exception escapes / empirical rows                          0 / 0
+```
+
+Correction counts are zero for 144 Jobs and one through four for twelve Jobs each. One separate
+nonreference control chooses a current legal nonreference Action from a three-Candidate State,
+commits it, obtains a next State different from the reference prefix, and proves that the second
+invocation binds that new State. Its two calls enter no Manifest or empirical denominator.
+
+Five actual shared-route failure controls type invalid first ABI, unknown current Action, invalid
+Correction ABI, invalid Final ABI, and one outer `instrument_failure`. Each produces one typed
+diagnostic Outcome with one injected dispatch and zero exception escape. Numerators, estimates,
+intervals, empirical rows, online authorizations, QA, Mapper, State, frequency, Contribution, and
+VTDO remain unmaterialized.
+
+All noncompensatory Gates pass:
+
+```text
+R0 exact v26.207 authority/freeze and unchanged semantics     PASS
+R1 fresh executable identity closure                          PASS
+R2 source and dynamic no-bypass closure                       PASS
+R3 zero-Provider 192-Job executable execution control         PASS
+R4 typed failures and Estimand/resource boundary              PASS
+passed / failed                                                5 / 0
+```
+
+Authoritative identities include:
+
+- authorization:
+  `finance_v26_208_external_route_closure_authorization:a2c377c7f28f8c4f6978ad02efa9f1db6e049b878f8b7f3e4961a038f05d1127`;
+- v26.207 Freeze:
+  `finance_v26_208_v207_predecessor_freeze:675949792c4cbfdc476fe868d571d27afcf96b480feb90d2c923da76b6b8d1e6`;
+- implementation Binding:
+  `fresh_repaired_executable_route_implementation_binding:d7f1ca176279b9e9d9ac38a4af559c38acfb27a9ee1a0bb7e74800f8b14bfc56`;
+- Package Catalog:
+  `fresh_repaired_executable_full_condition_package_catalog:33e73ca633a7886b97d43ebe6432d93be89a7a835239a923ee6a9779db40fa6b`;
+- Manifest:
+  `fresh_repaired_executable_full_condition_manifest:300d8ab25c1774b6f50a7d46d3f0c4d91d30235b26d5ebfc7605e445db27cc12`;
+- Runner:
+  `fresh_repaired_executable_full_condition_runner:3a9c34f575b3074cd0d54061fdac8f62e22a4744de9cd4348785cec40db3fd24`;
+- Execution Contract:
+  `fresh_repaired_executable_full_condition_execution_contract:c99b959c5340b4c2e0fa3f86ec01ee7526a1c28a2834bd173585aae854f1c318`;
+- invocation Census:
+  `finance_v26_208_executable_invocation_census:bc99734e17f684c98070ccd990fc819578a0462283bff732f447a08ab7ca1c15`;
+- execution control:
+  `finance_v26_208_full_condition_execution_control_audit:d6e01ce7168527bb65d174c1e48dbf2b77c2ded43a28541f7a640706a0a8c19f`;
+- no-bypass Audit:
+  `finance_v26_208_source_dynamic_no_bypass_audit:83c0f1f652b680f75c5e7e3571a92464e5493591f354f81e75aa50826b358bf4`;
+- failure-control Audit:
+  `finance_v26_208_typed_failure_control_audit:38885daced7bc9feec901372ee9b78e955b8be460c9d669ef546108d8a69bfc0`;
+- dynamic branch Audit:
+  `finance_v26_208_dynamic_nonreference_branch_audit:2b18ae82598cc2f92343ad1f34847ce15c88fa6b8cb7b6268567bd93c2474f30`;
+- boundary Audit:
+  `finance_v26_208_estimand_resource_boundary_audit:938e60c3efbbf87a5df3cce29d46e7985a5986291f938b16855da3560e3f6743`;
+- Gate Audit:
+  `finance_v26_208_route_closure_gate_audit:d690ffbf31726a26a8de4e9dcb8a5acf7b3b7a963669352867dd0ac0a55aebe0`;
+- report:
+  `finance_v26_208_route_closure_preflight_report:896ea30f3bd62b1d2497e3266aaa0baa9657aed69eca063393fb8336c573b916`;
+- Transition:
+  `finance_v26_208_transition:bf27938113b52a68de8d6f47ca5472c1eed2e9ff56c173080b479d5ffa92b4f3`;
+- Artifact Manifest:
+  `finance_v26_208_artifact_manifest:2e8698e61e0d8b5d31b4034728e42f90d9ca97a8fdb2c18d65c86854403e8eea`;
+- Artifact Root:
+  `finance_v26_208_artifact_root:bf43e3178b3a7236e113400c138a7f4232ac9659b6a1be8387c8669d9a4b4587`.
+
+The authoritative source commit/tree are `f9f532ea449f786dd0058b60345f04091a6f77f5` /
+`3a9b1ef4e6d8c6903d903086e280e0a36ad16e52`. The twenty-file, 2,596,518-byte
+formal directory rebuilds byte for byte; its Manifest binds nineteen members and 2,593,272 bytes.
+Focused v26.208 tests pass 8/8, including a complete 20/20 second build. The adjacent
+v26.206-v26.208 suite passes 24/24. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_full_condition_executable_runner_route_closure_
+preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_full_condition_executable_runner_route_closure_preflight_independent_audit_only`.
+Online-execution authorization, the full repaired 192-Job Provider execution, interface-factor
+decomposition, Parser relaxation, historical adaptation, source/Task/Component/Candidate/
+Schedule/presentation/Runtime/model/Thinking/Grammar/Policy/resource/correction-bound/validity/
+denominator/threshold change, QA, Mapper, State frequency, Contribution, VTDO, training, release,
+and production remain forbidden. See
+`docs/finance_v26_208_fresh_repaired_full_condition_executable_runner_route_closure_preflight.md`.
+
 ## v26.207 Fresh Repaired Full-Condition Preflight Independent Audit
 
 ### Post-review scope clarification
@@ -24,8 +171,8 @@ A subsequent 13,410-byte review at SHA-256
 classifies v26.207 as `VALID_NEGATIVE_INDEPENDENT_AUDIT` with
 `MANDATORY_REVISION=NONE`. Stage integrity passes; online readiness fails only at the first
 missing executable future Runner route. This clarification changes no v26.206 or v26.207 formal
-artifact, identity, Gate result, Decision, or Transition. It authorizes neither v26.208 nor any
-Provider call.
+artifact, identity, Gate result, Decision, or Transition. By itself, it authorized neither
+v26.208 nor any Provider call; the later operator directive is recorded separately above.
 
 Finance v26.207 consumed only
 `fresh_repaired_action_interface_full_condition_integration_preflight_independent_audit_only`.
@@ -142,15 +289,20 @@ online_readiness_blocked_at_executable_future_runner_route_closure
 
 `BLOCKED_FAILED_INDEPENDENT_AUDIT` remains the immutable Transition status; it denotes failure of
 the audited online-readiness Gate, not failure of the v26.207 audit implementation or withdrawal
-of v26.206's registered/scripted results. `next_stage` remains null. The named
-candidate `fresh_repaired_full_condition_executable_runner_route_closure_preflight_only` is a
-recommendation for a possible separately reviewed repair and is not authorized. A new external
-audit decision is required before any successor. Online-execution authorization, the full
-repaired 192-Job Provider run, interface-factor decomposition, Parser relaxation, historical
+of v26.206's registered/scripted results. At v26.207 freeze time, `next_stage` was null and the
+named candidate `fresh_repaired_full_condition_executable_runner_route_closure_preflight_only`
+was not authorized by that review alone. The later explicit operator directive recorded in
+v26.208 separately authorized and consumed only that candidate. Online-execution authorization,
+the full repaired 192-Job Provider run, interface-factor decomposition, Parser relaxation,
+historical
 adaptation, source/Task/Component/Candidate/Schedule/presentation/Runtime/model/Thinking/Grammar/
 Policy/resource/correction-bound/validity/denominator/threshold change, QA, Mapper, State
 frequency, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_207_fresh_repaired_full_condition_preflight_independent_audit.md`.
+
+That blocked candidate boundary was consumed only by v26.208 with zero Provider calls and zero
+credential lookups. Every v26.207 byte and negative audit result remains immutable. v26.208 adds
+only the fresh executable route-closure identity chain and controls recorded above.
 
 ## v26.206 Fresh Repaired Action-Interface Full-Condition Integration And Identity Preflight
 
