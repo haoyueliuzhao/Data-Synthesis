@@ -1,0 +1,290 @@
+# 审计结论
+
+基于上传的 v26.203 正式报告及同日 `Current Project Status`，**本轮预检可以按声明范围通过**。没有发现需要回滚、修订 v26.203 正式结论，或再增加一轮零 Provider 科学预检的关键缺陷。
+
+```text
+v26_203_scientific_scope                    PASS
+frozen_parent_integrity                     PASS
+paired_intervention_constructibility        PASS
+source_population_selection_independence    PASS
+exact_24_job_identity_surface               PASS
+calibration_evidence_schema_preflight       PASS
+authorized_negative_controls                PASS
+empirical_interface_effect                   UNKNOWN
+Capability / VTDO authorization             NOT_AUTHORIZED
+additional_zero_provider_preflight_needed   NO
+```
+
+v26.203 实际完成的是一个 **12 个 source cells、24 个 fresh Jobs 的配对两臂校准实验预检**；Provider 调用、凭据读取以及经验 Response、Observation、Evaluation 均为零，因此它正确地把结论限定为设计与可构造性，而没有提前声称接口修复有效。
+
+这里的审计基于你提交的正式报告和状态快照；我没有直接访问服务器 Git tree 来独立重算其中列出的 commit、Root 和文件哈希。
+
+---
+
+# 一、各理论 Gate 的审计
+
+| 理论层级              | 状态           | 审计判断                                                                                  |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------- |
+| v26.202 科学父对象     | **PASS**     | `0/192` 两个端到端估计、零 post-ABI 分母及结构歧义诊断均被保留，历史字节和分类没有被改写                                 |
+| 实验问题定义            | **PASS**     | 明确只检验模型可见 Action 接口包对首响应 ABI crossing 的作用                                             |
+| Parser/Grammar 同构 | **PASS**     | 可见合同直接由实际 parser/Grammar 编译，严格要求四字段且禁止 wrapper、缺字段和额外字段                               |
+| 两臂干预隔离            | **PASS**     | C 为同期旧接口，R 为完整四字段系统合同；其余 Task、State、Candidate、模型与 Policy 父对象保持一致                      |
+| Population 选择     | **PASS**     | 使用运行前 Prompt 属性分层，未读取任何历史 response shape、terminal 或 success 字段                        |
+| Exact Manifest    | **PASS**     | 12 对、24 个 fresh Jobs，C/R 各 12 个，所有命名空间唯一且不复用 v26.200 Job                              |
+| 证据语言              | **PASS（预检）** | 单独建立 CalibrationJob 到 ExactPairedCalibrationEvaluation 的五层 DAG，不滥用 Capability Outcome |
+| 在线效果              | **UNKNOWN**  | G0–G8 已冻结，但尚未执行，因此一个在线 Gate 都不能标记为经验通过                                                |
+
+v26.203 正确保留了 v26.202 的结论：历史端到端 `q_first` 和 `q_bounded_correction` 仍为 `0/192`，结构性 competing-Schema overlap 已确认，但其因果作用尚未证明；旧分母没有被重新打开，历史 Answer/Operation payload 也没有被改造成 Action。
+
+## 1. 理论问题已经被准确实例化
+
+未来实验冻结 Task、State、Candidate、Schedule、模型、Thinking、采样参数、资源、Parser 与 Runtime，只改变模型可见接口。它还明确说明这是一个**复合接口包**，即使成功，也只能把效果归于整个包，不能分别归因于 system role、四字段连续展示或竞争 Schema 标记。
+
+这避免了两个常见越级结论：
+
+```text
+接口包有效
+≠ system message 单独有效
+
+接口包无效
+≠ competing-Schema overlap 不是真实原因
+```
+
+失败只能说明当前修复包没有达到预注册门槛，不能反向证明原结构歧义假设错误。
+
+## 2. Parser 与模型可见合同已经真正对齐
+
+修复合同不再手写第二套 schema，而是从实际 `ExactCanonicalActionPayload` 和 Grammar 编译，严格要求：
+
+```text
+state_id
+action_id
+decision_kind
+protocol
+```
+
+Required 与 allowed 集合一致；wrapper、额外字段、缺失字段、Answer/value payload 兼容、Host 补字段和历史响应适配都被禁止。
+
+这是本轮最重要的机制闭合：理论上所说的“唯一、权威、连续四字段 Action 合同”已经成为实际可执行对象，而不是报告中的自然语言描述。
+
+## 3. 两臂对照没有混入任务语义变化
+
+Control 保留旧 first Prompt；Repair 通过 system message 暴露完整合同，并移除旧的不完整 `response_abi` 和模型可见 `grammar_id`。Answer/Operation 字段仍保留其任务语义，但被放入明确标记为非响应 Schema 的 metadata 中。每一对的原始 Task、当前 State、Candidate 顺序、Schedule、模型配置、Thinking、Policy 和资源身份都保持一致。
+
+因此这里检验的是：
+
+```text
+同一任务语义下的 interface-profile intervention
+```
+
+而不是：
+
+```text
+旧任务 vs 新任务
+旧 Candidate set vs 新 Candidate set
+旧模型 vs 新模型
+```
+
+## 4. Population 选择没有结果泄漏
+
+12 个 source cells 来自四个预响应 strata：
+
+```text
+comparison × lower
+comparison × higher
+scalar_value × lower
+scalar_value × higher
+```
+
+每层选择三个 Prompt 排名位置，选择过程只依赖 first-Prompt 字节数、Package、Replica、Job 等运行前属性，没有读取 v26.200 的响应、terminal 或成功标签。
+
+这足以支持一个**分层工程校准集合**。它不需要代表原 192-Job population 的自然比例，因为当前目的不是估计原总体平均效果，而是判断接口包是否值得进入完整条件重建。
+
+## 5. 24-call 执行几何合理
+
+实验冻结为：
+
+```text
+source cells                 12
+fresh Jobs                   24
+calls per Job                 1
+maximum Stage 1 calls        24
+Stage 2 calls                 0
+retry                         0
+recovery                      0
+Correction                    0
+Final                         0
+```
+
+C/R 顺序以 source-cell hash 形成 6 个 `C→R` 和 6 个 `R→C`，请求在 Provider 授权前已被物化和哈希；模型、Thinking、温度、top-p 和 Completion bound 均被冻结。 
+
+这已经足够小，不应再缩成额外的 2-call、4-call 或 6-call 诊断。再继续拆分会重新滑向局部接口调参，而不能更好地回答当前理论问题。
+
+---
+
+# 二、证据链与 Gate 设计审计
+
+独立校准链为：
+
+```text
+CalibrationJob
+  -> FirstRequestDescriptor
+  -> FirstResponseDescriptor
+  -> FirstActionInterfaceObservation
+  -> ExactPairedCalibrationEvaluation
+```
+
+它不复用 v26.195 Capability evaluator。Response/Observation 还区分 outer terminal、公开 JSON、ABI validity、Action reference、State binding、可选 Runtime step、Usage 和 Thinking；ABI-invalid 行不能伪造下游有效性。
+
+在线 Gate 设计也是合理的：
+
+```text
+G3  Repair ABI                     >= 9/12
+G4  Repair reference + State valid >= 8/12
+G5  Repair-only paired successes   >= 7
+G6  Control-only paired successes  <= 1
+```
+
+G5 与 G6 意味着最弱通过情况下：
+
+$$
+\Delta_{\mathrm{ABI}}
+\geq \frac{7-1}{12}
+=0.5
+$$
+
+也就是说，实验不是用一两个偶然成功就宣布接口有效，而是要求至少 **50 个百分点的配对净提升**。
+
+一个需要保留的统计解释边界是：若最弱边界刚好为 `Repair-only=7`、`Control-only=1`，双侧 exact McNemar \(p\approx0.0703\)。因此这些 Gate 是**预注册效应量决策规则**，不是自动的传统显著性声明。报告已经把 McNemar 和区间明确降为 supplementary，所以这不是设计缺陷；后续只需避免把“Gate 通过”写成“统计显著性必然通过”。
+
+六类、十四个负向控制也恰好覆盖了当前新增攻击面，没有重复打开历史证据链。Task/State/Candidate 改写、Parser 放宽、历史响应适配、Job 集变化、跨臂父绑定和 QA/retry/recovery 污染均被拒绝。
+
+---
+
+# 三、本轮允许与禁止的科学结论
+
+## 当前允许
+
+```text
+1. v26.203 成功构造了一个 fresh、配对、分层的 24-Job 接口校准条件。
+2. Repair 接口与实际 Action parser/Grammar 严格同构。
+3. 两臂之间的非接口语义父对象保持冻结。
+4. Population 选择未使用历史响应结果。
+5. 该实验现在已经具备回答接口干预问题的经验对象。
+```
+
+## 当前仍禁止
+
+```text
+1. 修复接口提高了 ABI crossing。
+2. competing-Schema overlap 因果导致了 v26.200 的失败。
+3. deepseek-v4-flash 普遍不能或能够遵循 Action ABI。
+4. 模型完成了 Program、Correction 或 Final。
+5. q_first、Capability、Mapper、State frequency、Contribution 或 VTDO 得到新证据。
+6. 直接建立或执行完整 192-Job repaired condition。
+7. 接入新的 QA 合成链路。
+```
+
+v26.203 自身也明确规定：当前没有任何 Provider 调用授权，完整 192-Job repaired condition、接口因素分解、Parser 放宽、历史适配、QA、Mapper、State、Contribution 与 VTDO 均继续禁止。
+
+---
+
+# 四、唯一合理的后续实验
+
+本轮审计可以作为新的外部决定，**直接授权精确的 24-call 在线校准**。不需要再插入一个新的科学设计预检版本。
+
+建议采用的正式决定：
+
+```text
+v26_203_first_response_action_interface_calibration_preflight_accepted_
+exact_paired_24_call_online_calibration_only_authorized
+```
+
+唯一获授权的 successor：
+
+```text
+fresh_first_response_action_interface_disambiguation_
+paired_24_call_online_calibration_only
+```
+
+这正是 v26.203 已冻结的 planned online stage。
+
+## 在线执行必须保持的边界
+
+1. **精确消费 v26.203 的 24-Job Manifest、两个 Interface Profile、Action Contract、Evidence Schema 和 Gate Contract。**任何 Task、State、Candidate、顺序、模型、Thinking、Parser 或阈值变化都需要新身份。
+
+2. **授权必须在凭据读取和 Provider client 构造前一次性消费。**生成 durable Run Start Receipt；一旦消费，进程中断也不得重新开放授权。
+
+3. **严格按冻结的 Manifest 顺序执行。**6 个 `C→R` 和 6 个 `R→C` 的顺序语义不得被并发调度或自由排序破坏；否则当前的时间漂移平衡不再成立。
+
+4. **每个 Job 恰好一次 Stage 1，首响应后立即停止。**无 Stage 2、Correction、Final、retry、replacement 或 recovery。
+
+5. **所有 24 个 Job 必须保留在固定分母中。**HTTP/Provider/Thinking/Usage 等 typed outer terminal 也必须产生完整 descriptor 和 Observation；没有 exact ABI crossing 时：
+
+$$
+Y_i^a=0
+$$
+
+不得因没有公开 JSON 而排除、设为 null 或缩小分母。v26.203 已要求 outer terminal 进入 response/observation schema，并要求 24/24 evidence closure。
+
+6. **运行结束后只进入 postrun independent audit。**不得看到在线汇总后立即发起完整 192-Job repaired execution。
+
+---
+
+# 五、在线结果的 fail-closed 判定
+
+| 在线结果                                | 允许的解释                                                              | 下一步                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| G0–G2 或 G7–G8 任一失败                  | 校准证据或干预隔离失败，模型效应不可解释                                               | 只修复第一个证据/执行阻塞点                                                      |
+| 完整性 Gate 通过，但 G3–G6 未全过             | 当前复合接口包在 exact calibration population 上不足                          | 不建立完整 192-Job condition                                             |
+| G0–G8 全部通过                          | 在这 12 个配对 source cells、这一次冻结的 24-call 执行中，Repair 包产生了预注册级别的首响应接口改善 | 仅授权 `fresh_repaired_action_interface_full_condition_preflight_only` |
+| Control 与 Repair 都高通过，但配对差异不足       | 当前服务条件下旧接口也可被遵循，无法把改善归于 Repair                                     | 不能把两个 arm 合并为成功证据                                                   |
+| Repair 高通过但 reference/State Gate 失败 | 只解决了输出格式，没有解决可执行 Action admission                                  | 阻塞在 Action reference/State 层                                        |
+
+即使所有 Gate 通过，允许的最强结论也应写成：
+
+> The composite repaired interface materially improved first-response Action-ABI instantiation on the exact stratified paired calibration execution.
+
+而不是：
+
+> The model demonstrated Agent Capability.
+
+---
+
+# 六、最终决定
+
+```text
+current_experiment
+  Finance v26.203
+
+audit_decision
+  PASS_AS_SCOPED
+
+report_revision_required
+  false
+
+first_current_blocker
+  empirical_model_owned_first_response_under_the_repaired_interface_
+  has_not_yet_been_observed
+
+only_authorized_successor
+  fresh_first_response_action_interface_disambiguation_
+  paired_24_call_online_calibration_only
+
+maximum Provider calls
+  24
+
+Stage 2 / retries / recovery
+  0 / 0 / 0
+
+QA integration
+  forbidden
+
+full 192-Job execution
+  forbidden
+
+postrun transition
+  independent audit only
+```
+
+两份提交材料在 v26.203 的核心身份、15 文件正式目录、测试结果和当前禁止边界上相互一致，没有发现状态报告与正式实验报告之间的冲突。 

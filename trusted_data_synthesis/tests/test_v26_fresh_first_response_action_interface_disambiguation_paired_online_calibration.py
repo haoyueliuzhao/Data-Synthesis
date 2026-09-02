@@ -1,6 +1,7 @@
 # ruff: noqa: E501
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -22,9 +23,8 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig, ModelCallTe
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = PACKAGE_ROOT.parent
 V203_ROOT = PACKAGE_ROOT / experiment.V203_DIR
-AUDIT_PATH = Path(
-    "/home/zhuxinrui/.codex/attachments/6486eb6f-3ecc-4980-9630-7e973cd536da/pasted-text.txt"
-)
+FORMAL_ROOT = PACKAGE_ROOT / experiment.OUTPUT_DIR
+AUDIT_PATH = FORMAL_ROOT / "external_audit.txt"
 
 
 def _load(path: Path) -> Any:
@@ -270,3 +270,78 @@ def test_immutable_output_prevents_authorization_reuse(tmp_path: Path) -> None:
             source_identity=("5" * 40, "6" * 40),
         )
     assert called is False
+
+
+def test_authoritative_execution_artifact_bytes_and_parent_chain_close() -> None:
+    artifact = models.ExecutionArtifactManifest.model_validate(
+        _load(FORMAL_ROOT / "execution_artifact_manifest.json")
+    )
+    assert artifact.file_count == 107
+    assert artifact.total_byte_count == 261_434
+    assert artifact.artifact_root == (
+        "finance_v26_204_execution_artifact_root:"
+        "10d7d5d17b518d2758c3e746a39a29f0a381cb5d3a267fb79e67e860093e8a3f"
+    )
+    for member in artifact.members:
+        path = FORMAL_ROOT / member.relative_path
+        assert path.is_file()
+        assert path.stat().st_size == member.byte_count
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == member.sha256
+    assert len(tuple(path for path in FORMAL_ROOT.rglob("*") if path.is_file())) == 108
+    for ordinal in range(24):
+        raw = models.PublicProviderCallRaw.model_validate(
+            _load(FORMAL_ROOT / "raw" / f"job_{ordinal:03d}.json")
+        )
+        result = models.CalibrationJobResult.model_validate(
+            _load(FORMAL_ROOT / "results" / f"job_{ordinal:03d}.json")
+        )
+        observation = models.ObservationRecord.model_validate(
+            _load(FORMAL_ROOT / "observations" / f"job_{ordinal:03d}.json")
+        )
+        checkpoint = models.ExecutionCheckpoint.model_validate(
+            _load(FORMAL_ROOT / "checkpoints" / f"job_{ordinal:03d}.json")
+        )
+        assert raw.ordinal == result.ordinal == observation.ordinal == checkpoint.ordinal == ordinal
+        assert raw.job_id == result.job_id == observation.job_id == checkpoint.job_id
+        assert result.raw_id == observation.raw_id == checkpoint.raw_id == raw.raw_id
+        assert observation.result_id == checkpoint.result_id == result.result_id
+        assert checkpoint.observation_record_id == observation.record_id
+        assert result.response.response_id == observation.observation.response_id
+        assert raw.provider_call_count == 1
+        assert raw.telemetry.http_success is True
+        assert raw.telemetry.model_requested == "deepseek-v4-flash"
+        assert raw.telemetry.model_selected == "deepseek-v4-flash"
+        assert raw.telemetry.response_model == "deepseek-v4-flash"
+        assert raw.telemetry.reasoning_content_present is True
+        assert raw.telemetry.total_tokens is not None
+        assert raw.telemetry.reasoning_tokens is not None
+        assert raw.private_reasoning_content_persisted is False
+
+
+def test_authoritative_online_result_and_gate_counts_are_exact() -> None:
+    paired = v203_models.ExactPairedCalibrationEvaluation.model_validate(
+        _load(FORMAL_ROOT / "exact_paired_calibration_evaluation.json")
+    )
+    gates = models.OnlineGateEvaluation.model_validate(
+        _load(FORMAL_ROOT / "online_gate_evaluation.json")
+    )
+    summary = models.OnlineExecutionSummary.model_validate(
+        _load(FORMAL_ROOT / "execution_summary.json")
+    )
+    run_start = models.RunStartReceipt.model_validate(_load(FORMAL_ROOT / "run_start_receipt.json"))
+    assert run_start.execution_source_commit == "01924d88f9e57502cd981c9d3be16b298b2ad45c"
+    assert run_start.execution_source_tree == "70db179b44eb8834c5fc09d77a7ca89b56ce3d44"
+    assert paired.repair_abi_success_count == 11
+    assert paired.repair_reference_state_valid_count == 11
+    assert paired.paired_repair_only_abi_success_count == 11
+    assert paired.paired_control_only_abi_success_count == 0
+    assert paired.delta_abi_numerator == 11
+    assert paired.capability_estimate is None
+    assert gates.all_gates_passed is True
+    assert gates.exact_mcnemar_supplementary_two_sided_p == "0.0009765625"
+    assert summary.execution_status == "completed"
+    assert summary.provider_calls == summary.raw_count == summary.result_count == 24
+    assert summary.observation_count == 24
+    assert summary.total_usage_tokens == 224_104
+    assert summary.stage_two_calls == summary.retry_count == summary.recovery_call_count == 0
+    assert summary.full_192_job_execution_authorized is False

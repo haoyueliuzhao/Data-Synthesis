@@ -15,6 +15,102 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.204 Fresh First-Response Action-Interface Paired Online Calibration
+
+Finance v26.204 consumed only
+`fresh_first_response_action_interface_disambiguation_paired_24_call_online_calibration_only`.
+The exact 14,139-byte external review is bound at SHA-256
+`58ddefdbe073456a6bd462b50f59f7b3a1083bb6797dbca806dbbb9ed39ce7e8`. It accepts v26.203
+as scoped and directly authorizes only the exact paired 24-call calibration. The v26.203
+fifteen-file, 582,364-byte formal directory, exact twelve-cell Population, 24-Job Manifest, two
+Interface Profiles, Action Contract, evidence Schema, Gate Contract, model, Thinking, Policy,
+resource, Candidate, Schedule, and request-body parents all revalidate unchanged.
+
+Exact external admission is consumed before output creation, credential lookup, and Provider
+client construction. A durable Run Start Receipt binds source commit
+`01924d88f9e57502cd981c9d3be16b298b2ad45c` and tree
+`70db179b44eb8834c5fc09d77a7ca89b56ce3d44`. The twelve pairs execute strictly sequentially
+under their frozen within-pair order, split six `C -> R` and six `R -> C`. Every Job makes one
+Stage 1 call and stops after the first response. Stage 2, retry, recovery, Correction, and Final
+calls are zero.
+
+All 24 Jobs produce one content-addressed public Raw, empirical FirstResponseDescriptor, Job
+Result, FirstActionInterfaceObservation, and checkpoint. All 24 calls return HTTP success with
+exact requested, selected, and response model `deepseek-v4-flash`; Thinking presence and complete
+Usage are each 24/24. Typed outer terminals and persisted private reasoning content are zero.
+Total Usage is 224,104 tokens and estimated cost is USD `0.03545931200000000277`.
+
+The exact paired result is:
+
+```text
+                                        Control   Repair
+exact Action ABI                         0 / 12   11 / 12
+Action reference plus State valid        0 / 12   11 / 12
+Answer-Schema exact shape               10 / 12    0 / 12
+Operation-output exact shape            10 / 12    0 / 12
+
+paired Repair-only ABI successes                 11
+paired Control-only ABI successes                 0
+paired net ABI contrast                       11 / 12
+```
+
+All twelve Repair responses use four Action-named fields. Eleven cross the exact parser and bind
+a current visible Action and exact current State. One uses `decision_kind=revise_selector`, is
+ABI-invalid, and receives null downstream reference, State, and Runtime fields without adaptation.
+Control contains six `difference|higher_ref`, four `value`, one `choice_handle|state_id`, and one
+three-field partial Action response. The four registered pre-response strata have Repair
+reference-plus-State counts `3/3`, `2/3`, `3/3`, and `3/3`; Control is `0/3` in all four.
+
+All pre-registered noncompensatory Gates G0-G8 pass: closure is 24/24; semantic-parent,
+parser/Grammar/Candidate, adaptation/relaxation/retry, and QA/Mapper/State/Contribution/VTDO
+change counts are zero; Repair ABI and reference-plus-State are both 11/12; paired Repair-only is
+11 and Control-only is zero. The supplementary two-sided exact McNemar value is `0.0009765625`;
+the primary decision remains the frozen effect-size Gate rather than a retrospective significance
+threshold.
+
+Authoritative identities are:
+
+- online authorization:
+  `finance_v26_204_external_online_authorization:ed97a4df5f599157006bb0d02bc3c6d50535e4f86e6ee7d2ff955abe81eb993b`;
+- v26.203 Freeze:
+  `finance_v26_204_v203_freeze:5ecde2d6e479b671b742e87f489bc8557554f624daec152c027bf0adbc078d14`;
+- online preparation:
+  `finance_v26_204_online_execution_preparation:9c2968c88e7223af83d90d302aebdf68bbd8b3ce8f2138af25d48d5ac70d960b`;
+- authorization admission:
+  `finance_v26_204_online_authorization_admission:1a611f7d963ffd7312051cd78f6c71f43764f7da1916994ac0fe47768a33163f`;
+- Run Start Receipt:
+  `finance_v26_204_online_run_start_receipt:0ce21fe746b83fae8c62b084209ad2ab809f198224c3d3fc72d9153731ae6e06`;
+- paired Evaluation:
+  `fresh_first_response_exact_paired_calibration_evaluation:8e31638c2929c0d9c09853cac76c786f40f72704c9079646fd05246639942341`;
+- online Gate Evaluation:
+  `finance_v26_204_online_gate_evaluation:d629e49ceeb6c24a4391dede3b98927b1ae2eb952b7f3c7e3b0d85aba92984e1`;
+- execution Summary:
+  `finance_v26_204_online_execution_summary:bee66b004f5078509406559122bfe808e0ef933217b8f284118f2119bdb8b73b`;
+- Execution Artifact Manifest:
+  `finance_v26_204_execution_artifact_manifest:335f29b37782da4c7ac0803ce2cc3f6de4a6a4cf744c7a2433f6383a3a1290ec`;
+- Execution Artifact Root:
+  `finance_v26_204_execution_artifact_root:10d7d5d17b518d2758c3e746a39a29f0a381cb5d3a267fb79e67e860093e8a3f`.
+
+The immutable execution directory contains 108 files and 276,582 bytes; its self-excluding
+Manifest binds 107 members and 261,434 bytes. Focused v26.204 tests pass 8/8; the adjacent
+v26.203-v26.204 suite passes 16/16; focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+paired_24_call_online_calibration_completed_all_gates_passed_
+postrun_independent_audit_only
+```
+
+The permitted result is a material composite-interface improvement on the exact paired
+calibration execution. It is not a Capability estimate and does not attribute the effect to an
+individual Repair submechanism. The only permitted successor is a credential-free independent
+postrun audit of the exact v26.204 directory. Full repaired 192-Job preflight or execution,
+interface-factor decomposition, parser relaxation, historical adaptation, QA, Mapper, State,
+frequency, Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_204_fresh_first_response_action_interface_disambiguation_paired_online_calibration.md`.
+
 ## v26.203 Fresh First-Response Action-Interface Disambiguation Calibration Preflight
 
 Finance v26.203 consumed only
@@ -112,6 +208,11 @@ factor decomposition, parser relaxation, historical adaptation, old Job rerun, r
 Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
 See
 `docs/finance_v26_203_fresh_first_response_action_interface_disambiguation_calibration_preflight.md`.
+
+That boundary was later consumed only by v26.204 under its exact external online authorization.
+Every v26.203 byte and frozen design parent remains unchanged. v26.204 completed only the exact
+paired 24-call calibration and passed G0-G8; the current transition is the credential-free
+independent postrun audit recorded in the v26.204 section above.
 
 ## v26.202 Exact Empirical Evaluation And First-Response Interface Localization
 
