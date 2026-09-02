@@ -2,6 +2,36 @@
 
 Audit date: 2026-09-02
 
+## Post-Review Scope Correction
+
+The subsequent exact 16,582-byte review at SHA-256
+`941b3137f2d0823ef1ec681c4364ee6d6aca242d9edc9d35b1b3dfdbea8396a9` classifies v26.212 as
+`VALID_SCOPED_DURABLE_INGRESS_AND_PERSISTENCE_MECHANICS_PREFLIGHT` but failed at
+`AUTHORITATIVE_TERMINAL_PROVENANCE_AND_HANDOFF`. The first blocker is
+`caller_supplied_terminal_kind_replaces_observation_derived_terminal_dispatch`.
+
+The review retains the exact v26.211 Freeze, durable consumption and Run Start Receipt order,
+factory admission, actual v26.209 192-Job/792-invocation replay, and five-layer persistence
+mechanics. It narrows the sixteen terminal controls to label-serialization diagnostics because
+the dispatcher accepted a caller-supplied `terminal_kind` rather than deriving it from actual
+Runner, parser, verifier, or typed-exception evidence. The historical seven-pass Gate, Decision,
+Transition, and all formal v26.212 bytes remain immutable, but their full terminal-authority and
+single-consumer-path interpretation is superseded.
+
+The current scoped decision is:
+
+```text
+v26_212_component_level_ingress_and_persistence_controls_passed_
+but_authoritative_terminal_derivation_and_single_path_handoff_failed
+```
+
+The later exact 36-byte operator directive `参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`, authorizes and has
+been consumed only by the zero-Provider v26.213 observation-derived-terminal and
+single-consumer-path repair preflight. It authorizes no Provider call or online authorization.
+The v26.213 result is recorded in
+`docs/finance_v26_213_fresh_repaired_observation_derived_terminal_single_consumer_path_repair_preflight.md`.
+
 ## Decision And Scope
 
 Finance v26.212 consumed only:
@@ -19,19 +49,18 @@ repair. The exact 24-byte operator directive `参照审计报告修订`, SHA-256
 `114f98b0f559b26885ce8c278d84bd0a5915947c285752bd1b04483458954c10`,
 authorizes this zero-Provider repair preflight.
 
-The formal v26.212 decision is:
+The immutable historical v26.212 formal decision was:
 
 ```text
 fresh_repaired_exact_online_consumer_terminal_persistence_
 preflight_passed_independent_audit_required_online_execution_blocked
 ```
 
-This is an implementation and integration preflight. It is not an online authorization, Provider
-execution, model outcome, empirical Capability row, or Capability estimate. The exact v26.211
-online authorization remains unconsumed. The sole permitted successor is an independent
-credential-free audit of this exact preflight. Even if that audit passes, a new online
-authorization identity binding the repaired implementation parents is required before any
-Provider call.
+This was an implementation and integration preflight. It is not an online authorization,
+Provider execution, model outcome, empirical Capability row, or Capability estimate. The exact
+v26.211 online authorization remains unconsumed. The originally named independent-audit
+transition is superseded by the later review because authoritative terminal provenance was not
+closed.
 
 ## Frozen Parents
 
@@ -269,17 +298,18 @@ The adjacent v26.209-v26.212 suite passes 33/33. Focused PyCompile, Ruff check/f
 no-import-follow Mypy pass; package-wide Ruff passes. All controls are credential-free and make
 zero Provider calls.
 
-The only permitted successor is:
+At the v26.212 freeze boundary, the only permitted successor was:
 
 ```text
-fresh_repaired_full_condition_exact_online_execution_consumer_and_
-terminal_persistence_integration_preflight_independent_audit_only
+fresh_repaired_full_condition_observation_derived_terminal_
+single_consumer_path_repair_preflight_only
 ```
 
-That successor may only independently rebuild and audit this exact source and formal directory.
-It may not issue or consume an online authorization or make a Provider call. The current v26.211
-authorization remains permanently unconsumed at this boundary. After a passing independent audit,
-a separate new authorization stage must bind the repaired consumer, receipt, transport,
-dispatcher, writer, and reconstruction identities. Provider execution, replacement, rerun,
-recovery, source or frozen-condition change, empirical estimation, QA, Mapper, State, frequency,
-Contribution, VTDO, training, release, and production remain forbidden.
+That successor could only remove caller terminal-label injection, compose actual Runner evidence
+through one consumer call path, and run credential-free controls. The exact operator directive has
+now consumed it only through v26.213. Every v26.212 formal byte and retained component-level
+result remains immutable. The current permitted transition is v26.213's independent
+credential-free audit only. The v26.211 authorization remains permanently unconsumed; Provider
+execution, online authorization, replacement, rerun, recovery, source or frozen-condition
+change, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden.

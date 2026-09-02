@@ -1,0 +1,569 @@
+# 审计结论
+
+本轮 **Finance v26.212** 确实完成了大部分上一轮要求的工程修复：耐久消费顺序、Run Start Receipt、工厂准入、实际 v26.209 Runner 回放、五层文件持久化以及 16 类终止标签覆盖均已被实例化。
+
+但其核心目标——**“权威 terminal 到持久化的单一路径闭合”**——仍未通过。
+
+最终判定为：
+
+```text
+AUDIT_RESULT
+  VALID_SCOPED_DURABLE_INGRESS_AND_PERSISTENCE_MECHANICS_PREFLIGHT
+  FAILED_AT_AUTHORITATIVE_TERMINAL_PROVENANCE_AND_HANDOFF
+
+v26.211 exact Freeze                         PASS
+source-bound component identities            PASS
+durable consumption / Receipt / factory      PASS
+exact v26.209 192-Job Runner replay          PASS
+Raw -> Result -> Trace -> Outcome -> checkpoint
+                                              PASS
+sixteen terminal labels serializable         PASS_DIAGNOSTIC_ONLY
+Runner/exception evidence -> terminal derivation
+                                              FAIL
+
+online execution authorization ready         false
+Provider execution                           BLOCKED
+```
+
+因此，v26.212 不能被审计为：
+
+```text
+fresh_repaired_exact_online_consumer_terminal_persistence_
+preflight_passed
+```
+
+更准确的决定应是：
+
+```text
+v26_212_component_level_ingress_and_persistence_controls_passed_
+but_authoritative_terminal_derivation_and_single_path_handoff_failed
+```
+
+这轮修复不是白做，前半段已经实质闭合；当前阻塞点非常集中，不需要再扩大到 Prompt、模型、资源或 QA 侧重新审计。
+
+---
+
+# 一、可以保留的实验结果
+
+## 1. 阶段范围正确
+
+v26.212 只执行了零 Provider 的 consumer/persistence integration preflight。它没有消费 v26.211 在线授权，没有进行 credential lookup、Provider 调用、经验 Outcome 物化或 Capability 估计。报告也明确要求，即使后续独立审计通过，仍必须生成一个绑定修复后实现父对象的**新在线授权**。
+
+因此以下范围声明可以保留：
+
+```text
+current v26.211 authorization consumed     false
+Provider calls                                 0
+credential lookups                             0
+empirical rows                                 0
+Capability estimates                           0
+QA / Mapper / State / Contribution / VTDO      0
+```
+
+## 2. v26.211 冻结和实验条件没有被改写
+
+v26.212 重新验证了 v26.211 的 17 个正式文件，并保持原授权未消费；v26.209 的 32-Package、192-Job、792-coordinate 条件以及 Action、Correction、Final、模型、Thinking、Grammar、Policy 和资源条件均保持不变。
+
+这意味着本轮没有偷偷改变实验问题。
+
+## 3. 耐久入口顺序已经形成实际机制证据
+
+本轮不再只是声明：
+
+```text
+consume -> Run Start Receipt -> factories
+```
+
+而是实现了：
+
+```text
+exclusive consumption receipt
+  -> file fsync + directory fsync
+  -> exclusive Run Start Receipt
+  -> credential-boundary probe
+  -> transport / writer factory
+```
+
+三种顺序攻击也按预期拒绝：
+
+```text
+factory before consumption          rejected
+factory before Run Start Receipt    rejected
+second consumption                  rejected
+```
+
+并且攻击均未到达 Provider 或 credential lookup。
+
+所以原来的 `durable consumption -> receipt -> factory` 阻塞已经可以判定为 **PASS**。
+
+## 4. v26.209 Runner 回放本身成立
+
+源码确实实例化了实际的 `FinalContinuityRepairedFullConditionRunner`，不是用静态 callsite compiler 替代 Runner。192 个 Job 分别获得 transport，按照当前 Runtime State 一次生成一个 Prompt，并重建出：
+
+```text
+first Action                         192
+subsequent Action                    288
+Correction side branches             120
+Final                                192
+total invocation / dispatch          792
+Provider calls                         0
+exception escapes                      0
+```
+
+所有 192 条 reference main path 都到达 Final，并通过确定性的 Base、Mechanism 和 Qualified 检查。
+
+这一结论可以保留，但只能解释为 **scripted Runner mechanism evidence**。
+
+## 5. 五层文件持久化机制成立
+
+每个 Job 都确实写出了：
+
+```text
+Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+总计 960 个层文件，192 个 Raw-before-Result 顺序检查和 960 个实际文件字节/hash 匹配。
+
+因此可以保留：
+
+> 新 writer 与 reconstructor 能按指定顺序持久化一组内部一致的 scripted evidence objects。
+
+但还不能保留：
+
+> 被持久化的 terminal 是由实际 Runner 或 Provider 观察权威推导出来的。
+
+两者的差别正是本轮首个失败点。
+
+---
+
+# 二、首个根本阻塞点
+
+## terminal 由调用方直接指定，而不是由观察证据推导
+
+v26.211 冻结的在线组合明确规定：
+
+```text
+Caller terminal ... forbidden
+Provider/Transport/Thinking/Usage/model failure
+must produce a typed terminal
+```
+
+
+
+但是 v26.212 实际绑定的 `CompleteTerminalDispatcher.dispatch` 接口是：
+
+```python
+dispatch(
+    terminal_kind=...,
+    source_binding_id=...,
+    job_id=...,
+)
+```
+
+它直接接收 `terminal_kind`，在 Registry 中查找对应 policy，然后构造 terminal signal 和 decision。它没有接收或解析以下任何权威观察对象：
+
+```text
+actual Runner return
+actual public response
+Action / Correction / Final parser result
+typed Provider or Transport exception
+privacy/resource/identity/thinking/usage evidence
+Final Base / Mechanism verifier factors
+```
+
+也就是说，当前机制实际上是：
+
+```text
+caller-supplied terminal_kind
+  -> Registry lookup
+  -> terminal signal
+  -> terminal decision
+  -> Raw
+  -> Result
+  -> Trace
+  -> Outcome
+  -> checkpoint
+```
+
+而理论上需要的是：
+
+```text
+actual Runner result / public response / typed exception
+  -> authoritative evidence interpretation
+  -> independently derived terminal
+  -> Raw
+  -> Result
+  -> Trace
+  -> Outcome
+  -> checkpoint
+```
+
+这不是命名问题，而是 terminal authority 的来源发生了根本变化。
+
+---
+
+# 三、192-Job Runner 与持久化实际上仍是两个阶段
+
+源码中的 192-Job 控制按以下方式运行：
+
+1. `execute_exact_v209_runner()` 先完成 Runner 回放，并产生 v26.209 census 与 execution-control rows；
+2. `_scripted_persistence_audit()` 再遍历这些 rows；
+3. 对每个 Job 直接调用：
+
+```python
+dispatcher.dispatch(
+    terminal_kind="completed_qualified",
+    ...
+)
+```
+
+4. 随后将这个人为指定的 terminal 写入五层持久化链。
+
+换言之，`completed_qualified` 并不是从实际 `final.final_result` 经 dispatcher 推导出来的。Runner 结果只在前一阶段被检查为 Qualified；进入 terminal/persistence 阶段时，真正的 terminal 来源已经变成了硬编码字符串。
+
+所以报告中的：
+
+```text
+exact v26.209 Runner plus 192-Job persistence
+```
+
+必须拆成两个结论：
+
+```text
+exact v26.209 Runner replay                   PASS
+scripted five-layer persistence               PASS
+Runner output -> authoritative terminal       FAIL
+authoritative terminal -> persistence         NOT ESTABLISHED
+```
+
+前两个 PASS 不能补偿第三个 FAIL。
+
+---
+
+# 四、16 类 terminal 控制只是标签可写性，不是终止总性
+
+`_terminal_persistence_audit()` 的实现同样遍历预先知道的 16 个 `terminal_kind`，然后把每个 label 直接传给 dispatcher。它证明的是：
+
+```text
+每个 Registry label
+  都可以被映射成一个 policy ID
+  并写成五层文件
+```
+
+它没有证明：
+
+```text
+每一类实际 public payload 或 typed exception
+  都会被唯一、正确地识别为相应 terminal
+```
+
+源码绑定的 16 类包括 `completed_qualified`、`completed_invalid`、各类 ABI/reference failure，以及 Provider、Transport、Privacy、Resource、Identity、Thinking 和 Usage failure；但对应控制没有实际构造这些终止成立所需的正交证据，只构造了 terminal label 本身。
+
+因此 R4 应从：
+
+```text
+complete sixteen-terminal persistence PASS
+```
+
+窄化为：
+
+```text
+sixteen registered terminal labels can be persisted
+PASS_DIAGNOSTIC_ONLY
+```
+
+特别是：
+
+* `completed_invalid` 需要实际 Base/Mechanism factor，而不是一个字符串；
+* `first_response_abi_invalid` 需要实际 parser rejection；
+* `provider_identity_failure` 需要实际响应身份不可验证证据；
+* `thinking_integrity_failure` 和 `usage_integrity_failure` 也需要各自的 telemetry/exception 证据。
+
+当前 dispatcher 对这些条件一概不检查。
+
+---
+
+# 五、一个能够直接通过现有代码的反例
+
+由源码可以直接推出下面的完整重哈希攻击：
+
+```text
+取一个实际通过 v26.209 Qualified 检查的 Job
+  -> 保留相同 Job、invocation IDs 和 source-control row
+  -> 把 terminal_kind 从 completed_qualified
+     改成 provider_identity_failure
+  -> dispatcher 重新生成 signal/decision
+  -> writer 重新生成 Raw/Result
+  -> reconstructor 重新生成 Trace/Outcome/checkpoint
+```
+
+现有接口会接受它，因为：
+
+* `provider_identity_failure` 属于 16 个允许标签；
+* dispatcher 不读取 Runner 的 Final Result；
+* writer 只要求 terminal signal/decision 内部一致；
+* reconstructor 只验证实际 Raw/Result 字节和父 ID 一致；
+* 没有检查该 terminal 是否能够从该 Job 的实际执行证据重建。
+
+这会得到一条完全内容寻址、完整重哈希、五层字节一致，却与真实 Runner 结果语义冲突的链。
+
+现有测试只检查：
+
+```text
+16 labels all present
+80 files written
+zero exception escape
+192 records have five-layer order
+```
+
+没有注册“Runner 证据与 terminal label 冲突”或“caller terminal injection”控制。
+
+这是本轮足以阻断整体结论的单一根本缺陷。
+
+---
+
+# 六、Gate 应重新划分
+
+建议正式的非补偿性 Gate 结果改为：
+
+```text
+R0 external scope and exact v26.211 Freeze
+   PASS
+
+R1 implementation files and component-parent identities
+   PASS
+
+R2 durable consumption / Run Start / factory order
+   PASS
+
+R3a exact v26.209 Runner replay
+    PASS
+
+R3b actual Runner evidence -> authoritative terminal handoff
+    FAIL
+
+R4 sixteen terminal-label serialization coverage
+   PASS_DIAGNOSTIC_ONLY
+
+R5 fully rehashed component-parent attacks
+   PASS
+
+R6 zero-Provider / credential / empirical boundary
+   PASS
+```
+
+因此总体结论是：
+
+```text
+passed component mechanisms                  retained
+authoritative online terminal provenance     failed
+single online consumer composition           not closed
+online execution readiness                   false
+```
+
+报告当前的七个 Gate 全部通过，是因为它把“16 个 terminal label 均可进入 writer”当成了“16 类 terminal 均能从执行证据权威推导”。这两个 estimand 并不相同。当前 7/7 Gate 结果可以作为历史自评工件冻结，但不能继续授权在线执行。
+
+---
+
+# 七、当前允许和禁止的结论
+
+## 允许保留
+
+```text
+v26.211 formal authority revalidated
+v26.211 authorization remains unconsumed
+seven repair-parent identities materialized
+durable no-replace receipt mechanics work
+factory-before-receipt attacks reject
+actual v26.209 Runner replay completes 192 Jobs
+792 scripted transport dispatches reproduce
+five-layer file order and byte matching work
+sixteen Registry labels are serializable
+Provider/credential/empirical counts remain zero
+```
+
+v26.212 自己也明确规定当前只允许独立、零凭证审计；现有 v26.211 授权应永久保持未消费，Provider execution 仍然禁止。
+
+## 仍然禁止
+
+```text
+authoritative terminal dispatcher closed
+terminal-to-persistence totality closed
+production-shaped online consumer closed
+new online authorization issuance
+v26.211 authorization consumption
+192-Job Provider execution
+Capability estimation
+QA integration
+Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+---
+
+# 八、唯一合理的下一实验
+
+下一阶段不应做 Provider 调用，也不应再修改 Prompt、Action ABI、Final Grammar、模型或 192-Job 条件。
+
+建议唯一后继为：
+
+```text
+fresh_repaired_full_condition_observation_derived_terminal_
+single_consumer_path_repair_preflight_only
+```
+
+核心修复只有一个：**删除 terminal label 注入，闭合实际观察到 terminal 的单一数据流。**
+
+## 1. 建立唯一在线消费者入口
+
+新增一个源码绑定的实际入口，例如：
+
+```python
+RepairedOnlineExecutionConsumer.execute_job(...)
+```
+
+或：
+
+```python
+RepairedOnlineExecutionConsumer.execute_manifest(...)
+```
+
+该入口必须按一个函数调用链执行：
+
+```text
+authorization guard
+  -> durable consumption receipt
+  -> durable Run Start Receipt
+  -> credential/factory Gate
+  -> current-State Runner
+  -> collect actual result or typed exception
+  -> authoritative terminal derivation
+  -> Raw
+  -> Result
+  -> Trace
+  -> Outcome
+  -> checkpoint
+```
+
+不得再由 `build()` 分别调用 Runner audit、terminal audit 和 persistence audit 后在报告层拼接。
+
+## 2. dispatcher 不得接收 `terminal_kind`
+
+正式接口应改成类似：
+
+```python
+dispatch(observed_evidence)
+```
+
+其中 `observed_evidence` 必须是严格的正交联合类型，例如：
+
+```text
+CompletedRunnerEvidence
+ActionParserRejectionEvidence
+ActionReferenceFailureEvidence
+CorrectionFailureEvidence
+FinalParserRejectionEvidence
+ProviderNoPayloadEvidence
+TransportFailureEvidence
+PrivacyFailureEvidence
+ResourceFailureEvidence
+InstrumentFailureEvidence
+ModelIdentityEvidence
+ThinkingIntegrityEvidence
+UsageIntegrityEvidence
+```
+
+`terminal_kind` 只能是 dispatcher 的输出，不能是输入。
+
+## 3. 192 个 Qualified 控制必须使用真实 Final 证据
+
+对于 192 条 reference path，应当把实际：
+
+```text
+final.final_result
+Base validity
+Mechanism qualification
+Qualified validity
+actual invocation records
+```
+
+传入 dispatcher，由它推导 `completed_qualified`。
+
+不允许再写：
+
+```python
+terminal_kind="completed_qualified"
+```
+
+## 4. 16 类 terminal 控制必须由证据触发
+
+每个控制应构造一种 canonical public response、parser rejection、typed exception 或 verifier factor，而不是构造目标 label。
+
+预期 terminal 可以由测试保存用于**事后比较**，但不得传给：
+
+```text
+Runner
+dispatcher
+writer
+reconstructor
+```
+
+## 5. 最小负向控制
+
+只需要增加四类，不必扩张审计面：
+
+```text
+caller terminal argument
+  API absent or reject
+
+same Qualified Runner evidence relabeled as another terminal
+  reject after complete downstream rehash
+
+cross-Job terminal evidence / decision substitution
+  reject after complete downstream rehash
+
+completed-invalid factorization inconsistent with Final verifier
+  reject
+```
+
+通过后再做一次独立审计。只有该审计能够从实际 Raw/Result 或 typed evidence 独立重建 192 个 terminal，并与 persisted terminal 逐项一致，才可以进入新的在线授权阶段。
+
+---
+
+# 最终决定
+
+```text
+latest stage
+  Finance v26.212
+
+durable ingress repair
+  PASS
+
+v26.209 executable replay
+  PASS
+
+five-layer persistence mechanics
+  PASS
+
+complete terminal-label codomain
+  PASS_DIAGNOSTIC_ONLY
+
+authoritative terminal provenance
+  FAIL
+
+first root blocker
+  caller-supplied terminal_kind replaces
+  observation-derived terminal dispatch
+
+current v26.211 authorization
+  MUST REMAIN UNCONSUMED
+
+online Provider execution
+  NOT AUTHORIZED
+
+next experiment
+  zero-Provider observation-derived terminal
+  and single-consumer-path repair preflight
+```
+
+这轮真正需要修的只有一处：**把 terminal 从“调用方指定的标签”恢复为“实际 Runner、解析器、Verifier 或 typed exception 所决定的执行事实”。** 在这个 Gate 闭合后，当前已经完成的耐久顺序、Runner 回放和五层 writer 工作都可以直接复用，无需再开启新一轮大范围工程审计。

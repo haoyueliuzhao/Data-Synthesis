@@ -15,7 +15,181 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.213 Fresh Repaired Observation-Derived Terminal Single-Consumer-Path Preflight
+
+Finance v26.213 consumed only
+`fresh_repaired_full_condition_observation_derived_terminal_single_consumer_path_repair_preflight_only`.
+The exact 16,582-byte external review is bound at SHA-256
+`941b3137f2d0823ef1ec681c4364ee6d6aca242d9edc9d35b1b3dfdbea8396a9`.
+It retains v26.212 as a valid scoped durable-ingress and persistence-mechanics preflight but fails
+its stronger terminal-authority interpretation at
+`caller_supplied_terminal_kind_replaces_observation_derived_terminal_dispatch`. The exact
+36-byte operator directive `参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`, authorizes only this
+credential-free repair. Provider calls and credential lookups are zero.
+
+All 1,067 v26.212 formal files and 2,239,071 bytes revalidate, including all 1,066
+self-excluding Manifest members and 2,017,584 bound bytes. Its exact v26.211 Freeze, durable
+consumption and Run Start Receipt order, factory admission, actual v26.209 192-Job Runner replay,
+and five-layer persistence mechanics remain retained. The old sixteen controls are narrowed to
+label-serialization diagnostics. The v26.212 seven-pass self-evaluation remains immutable but its
+full terminal-provenance interpretation is superseded.
+
+The new dispatcher accepts only a strict union of thirteen observed-evidence classes:
+
+```text
+completed Runner evidence                                  1 class
+Action/Correction parser rejection                         1 class
+Final parser rejection                                     1 class
+first/Correction Action-reference failure                  1 class
+actual correction-bound terminal                           1 class
+typed Provider/Transport/Privacy/Resource/Instrument/
+Identity/Thinking/Usage exception evidence                 8 classes
+terminal label input                                            false
+```
+
+`CompletedRunnerEvidence` embeds the actual Final step-Runtime result, public Final payload,
+Base, Mechanism, and Qualified reports, and complete v26.209 invocation records. The dispatcher
+derives its terminal from those factors; the persistence pipeline reparses the evidence and
+independently rederives the same decision before any Raw write. The formal API is
+`dispatch(observed_evidence)` and exposes no `terminal_kind` argument.
+
+One source-bound `RepairedOnlineExecutionConsumer.execute_preflight` entry executes:
+
+```text
+exact authorization guard -> durable isolated consumption receipt
+  -> durable Run Start Receipt -> zero-lookup credential/factory Gate
+  -> exact v26.209 current-State Runner -> actual result or typed failure evidence
+  -> observation-derived terminal -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+The top-level build calls this consumer exactly once and performs zero separate Runner call,
+terminal audit join, or persistence join. All 192 exact Jobs traverse that path:
+
+```text
+Jobs / completed Runner evidence                       192 / 192
+actual Runner invocations / transport dispatches       792 / 792
+first / subsequent reference Action                    192 / 288
+registered Correction side branches                          120
+Final                                                         192
+derived completed_qualified terminals                         192
+persisted Raw/Result/Trace/Outcome/checkpoint files            960
+build-level terminal joins / caller terminal arguments      0 / 0
+exception escapes / empirical rows / Provider calls       0 / 0 / 0
+```
+
+The 192 Final results are Base-valid, Mechanism-qualified, and Qualified-valid deterministic
+reference controls. They are not model outcomes or Capability evidence. All five layers retain
+the complete observed evidence and authoritative derived decision.
+
+Sixteen additional controls trigger every reachable terminal from actual Runner results, parser
+rejections, current-State Action-reference failures, a public correction-bound terminal, or
+typed exception evidence. Expected terminal names are used only after dispatch:
+
+```text
+actual evidence controls / exact matches                16 / 16
+distinct evidence classes / reachable terminals         13 / 16
+persisted layer references                                   80
+label-only controls / caller-label inputs                 0 / 0
+```
+
+The completed-invalid row comes from an actual legal nonreference Runner path. The eight outer
+rows are typed diagnostic exception controls and are not Provider occurrence measurements.
+
+Four provenance attacks all reject: the caller terminal API is absent; a Qualified Runner result
+cannot be relabeled; a cross-Job decision cannot be substituted; and completed-invalid factors
+inconsistent with the actual Final result fail validation. The relabel and cross-Job attacks
+first create ten complete downstream rehashed layer identities and still reject before any Raw
+write. Accepted attacks are zero.
+
+The exact noncompensatory Gate partition is:
+
+```text
+R0 external scope and exact v26.212 Freeze                  PASS
+R1 source-bound observation union and no-label API           PASS
+R2 durable ingress mechanics retained                        PASS
+R3 exact v26.209 Runner replay                               PASS
+R4 Runner evidence -> authoritative terminal                 PASS
+R5 authoritative terminal -> persistence single path         PASS
+R6 evidence-triggered terminals and provenance controls      PASS
+R7 zero-Provider/credential/empirical boundary               PASS
+passed / failed                                              8 / 0
+```
+
+Authoritative identities include:
+
+- external revision authorization:
+  `finance_v26_213_external_revision_authorization:06d6672ad693e5b5738f280d9fa93fcca9dd7f33dec0a5b5e25affcd604ce496`;
+- v26.212 Freeze:
+  `finance_v26_213_v212_freeze:ecea5a50e7dec38fded0cf4df10e8fe141df95ed2cc71b7f5300cfb686b96d02`;
+- implementation / dispatcher / persistence Bindings:
+  `fresh_repaired_observation_derived_terminal_implementation_binding:171ff03d40b256076c9655868cf513e0787489cf0c6936cbcb001dafc82ba7cb` /
+  `fresh_repaired_observation_derived_terminal_dispatcher_binding:10a51ef2cc7f7ce20ad63918507c201f12112e34729e1088ab272da3820b209f` /
+  `fresh_repaired_observation_bound_persistence_binding:21f1608bceeb683c59c4421eb836404709e7136f01a2c34b634de1c95532eff9`;
+- single consumer / composition:
+  `fresh_repaired_single_online_consumer_implementation_binding:1c5923d5c9856c3c4d084ef2f05aaf88ab02cbcb3bc1b899988ee464eda7bcc2` /
+  `fresh_repaired_observation_derived_single_consumer_composition_contract:f27da41c720b6041e918b5018291403b15281b990975dd411acd9eff4a1a4644`;
+- execution / terminal / negative-control Audits:
+  `finance_v26_213_single_consumer_execution_audit:0ae5857573950e79227e14fb47561daa60626076cb834ec2d2a841d287fdeb83` /
+  `finance_v26_213_terminal_evidence_audit:0d5ad1563251c7fc4809bc5807ea66ac6575ee7b10900183fd9ca63e82fe3794` /
+  `finance_v26_213_terminal_provenance_negative_control_audit:ff0d187f9e5b28440702945ec9d34503b53fdc073a442364a6325424bc76800b`;
+- Gate / Decision / Transition:
+  `finance_v26_213_observation_terminal_gate_evaluation:fa996261fe1e546d89059906ad34bd08fcf0bba38ab74bf59bf981c7c184e536` /
+  `finance_v26_213_observation_terminal_decision:2890a3beeb41b9379bcfd70aeb385f3911dca15e03def85bfa886355a4c59afa` /
+  `finance_v26_213_transition:a62ea6bff46785dc9acbddba1690645b34f763b4f1e84ef5951ea78629022c3a`;
+- report:
+  `finance_v26_213_observation_terminal_report:2889dd181f71f5753018d87087af2e123b0991d72a7617a6be29938cb657d813`;
+- Artifact Manifest / Root:
+  `finance_v26_213_artifact_manifest:e3563bf59ba7aa8fc8d1d1cfb8a48c6e5b98f01725bc4a789f49752e9eea67bc` /
+  `finance_v26_213_artifact_root:b671d9cef0322b83ea6b815736d09f54c59671e2083042822928d2f79ece01f8`.
+
+The exact source commit/tree are `904577d81bcd83183d3aae0bab4e9f53c9907f0d` /
+`c2f2e7629b29f7dfbcc27153539a1aa5be1cdf23`. The 1,058-file, 58,565,824-byte
+formal directory rebuilds byte for byte; its Manifest binds 1,057 members and 58,336,116 bytes.
+Focused tests pass 8/8, including a complete second build. The adjacent v26.209-v26.213 suite
+passes 41/41. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass; package-wide
+Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_observation_derived_terminal_single_consumer_path_
+preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_full_condition_observation_derived_terminal_single_consumer_path_repair_preflight_independent_audit_only`.
+It may only independently rebuild and rederive the exact 192 persisted terminals and five-layer
+chains with zero Provider calls. It may not issue or consume an online authorization. The
+v26.211 authorization remains unconsumed. A passing audit must still be followed by a separate
+new online authorization binding all v26.213 repaired parents. Provider execution, the 192-Job
+online run, frozen-condition change, empirical estimation, QA, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_213_fresh_repaired_observation_derived_terminal_single_consumer_path_repair_preflight.md`.
+
 ## v26.212 Fresh Repaired Online Consumer And Terminal Persistence Integration Preflight
+
+### Post-review scope correction
+
+The subsequent exact 16,582-byte review at SHA-256
+`941b3137f2d0823ef1ec681c4364ee6d6aca242d9edc9d35b1b3dfdbea8396a9` retains v26.212 only as
+`VALID_SCOPED_DURABLE_INGRESS_AND_PERSISTENCE_MECHANICS_PREFLIGHT` and fails it at
+`AUTHORITATIVE_TERMINAL_PROVENANCE_AND_HANDOFF`. Durable receipt/factory order, actual v26.209
+Runner replay, and five-layer writer mechanics pass. The sixteen label controls are diagnostic
+serialization evidence only. The first blocker is
+`caller_supplied_terminal_kind_replaces_observation_derived_terminal_dispatch`.
+
+Every v26.212 formal byte, identity, seven-pass historical Gate, Decision, and Transition remains
+immutable. The current scoped decision is:
+
+```text
+v26_212_component_level_ingress_and_persistence_controls_passed_
+but_authoritative_terminal_derivation_and_single_path_handoff_failed
+```
+
+The later operator directive consumed only the zero-Provider v26.213 repair above. The current
+transition is v26.213's independent credential-free audit only; the v26.211 authorization remains
+unconsumed.
 
 Finance v26.212 consumed only
 `fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_only`.
@@ -119,20 +293,20 @@ Focused tests pass 8/8, including a complete second build. Focused PyCompile, Ru
 and no-import-follow Mypy pass; the adjacent v26.209-v26.212 suite passes 33/33 and package-wide
 Ruff passes.
 
-The current decision is:
+The immutable historical v26.212 decision was:
 
 ```text
 fresh_repaired_exact_online_consumer_terminal_persistence_
 preflight_passed_independent_audit_required_online_execution_blocked
 ```
 
-The only permitted successor is
-`fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_independent_audit_only`.
-That stage may only independently rebuild and audit this exact credential-free preflight. A
-passing audit must still be followed by a new online authorization that binds the repaired
-parents. Provider execution, online authorization, replacement, rerun, recovery, source or
-condition change, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO,
-training, release, and production remain forbidden. See
+The old independent-audit transition is superseded by the later review. Its only permitted repair
+candidate was
+`fresh_repaired_full_condition_observation_derived_terminal_single_consumer_path_repair_preflight_only`,
+which the operator directive consumed only through v26.213. Provider execution, online
+authorization, replacement, rerun, recovery, source or condition change, empirical estimation,
+QA, Mapper, State, frequency, Contribution, VTDO, training, release, and production remain
+forbidden. See
 `docs/finance_v26_212_fresh_repaired_full_condition_online_consumer_terminal_persistence_preflight.md`.
 
 ## v26.211 Fresh Repaired Full-Condition Exact 192-Job Online Execution Authorization
