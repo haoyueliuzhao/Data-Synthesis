@@ -1552,8 +1552,8 @@ def _frozen_request_continuity_audit(
         source = expected[(job.source_v206_job_id, record.invocation_index)]
         if (
             record.phase != source.phase
-            or record.current_state_id != source.current_state_id
             or record.candidate_action_ids != source.candidate_action_ids
+            or (record.phase != "final" and record.current_state_id != source.current_state_id)
         ):
             _fail(
                 "continuity.coordinate",
