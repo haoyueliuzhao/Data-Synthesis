@@ -2,6 +2,36 @@
 
 Audit date: 2026-09-02
 
+## Post-Review Scope Correction
+
+The subsequent exact 14,653-byte review at SHA-256
+`64c6b8c6bc2a62f8205ae7007169cedfc3d9fe184b2740b3d93b398c672339a7` retains v26.213 as
+`VALID_SCOPED_COMPLETED_AND_PARSER_TERMINAL_PREFLIGHT` but fails its stronger full-terminal
+claim at `OUTER_TYPED_EXCEPTION_EVIDENCE_AUTHENTICITY`. The explicit `terminal_kind` argument
+removal, all 192 completed Runner paths, parser/reference/correction-bound terminal derivation,
+and conditional terminal-to-five-layer persistence remain valid.
+
+The eight outer typed-exception evidence subclasses were not bound to
+`invocation_record.typed_terminal`, the actual caught exception class, or the actual exception
+reason. A caller could therefore wrap an instrument-failure record as provider-identity evidence,
+fully rehash the decision and five layers, and obtain a self-consistent but false terminal. The
+old eight outer rows and the old R4/R6 passes are retained only as immutable honest-constructor
+diagnostics. The current scoped decision is:
+
+```text
+v26_213_main_completed_and_parser_terminal_paths_passed_
+but_outer_typed_exception_evidence_can_be_reclassified_
+by_caller_selected_evidence_subtype
+```
+
+The exact 30-byte directive `参照审计继续实验修订` authorized only the zero-Provider v26.214
+repair. v26.214 now replaces the eight subtype authority with a Runner-owned failure observation,
+one generic evidence type, authority-bound dispatch, an in-consumer failure terminal branch, and
+four fully rehashed attacks. Every v26.213 formal byte and identity remains unchanged. The old
+independent-audit transition below is historical and superseded; the current transition is only
+v26.214's credential-free independent audit. See
+`docs/finance_v26_214_fresh_repaired_outer_typed_exception_observation_authenticity_preflight.md`.
+
 ## Decision And Scope
 
 Finance v26.213 consumed only:
@@ -296,3 +326,9 @@ v26.213 implementation, consumer, dispatcher, persistence, and composition paren
 execution, the 192-Job online run, source or frozen-condition change, replacement, rerun,
 recovery, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training,
 release, and production remain forbidden.
+
+The successor above is the immutable v26.213 historical transition. The later review blocks it
+at outer-exception authenticity. The only repair candidate was
+`fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_only`,
+which was consumed only by v26.214 with zero Provider calls. The current successor is v26.214's
+independent-audit-only transition; the v26.211 authorization remains unconsumed.

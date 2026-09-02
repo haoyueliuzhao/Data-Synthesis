@@ -1,0 +1,484 @@
+# Finance v26.213 本轮实验审计
+
+## 一、审计决定
+
+本轮修订**确实修复了 v26.212 的显式 `terminal_kind` 注入问题**：主路径已经变成实际 Runner Result → `ObservedEvidence` → 派生 terminal → 五层持久化，并且顶层 build 不再在 Runner 完成后另行拼接 terminal。v26.213 也正确地把自身限定为零 Provider 的工程预检，而非在线执行或 Capability 结果。
+
+但是，**完整的 terminal provenance 仍未闭合**。首个且足以阻断本轮整体通过的缺陷位于八类 outer typed exception：
+
+```text
+AUDIT_RESULT
+  VALID_SCOPED_COMPLETED_AND_PARSER_TERMINAL_PREFLIGHT
+  FAILED_AT_OUTER_TYPED_EXCEPTION_EVIDENCE_AUTHENTICITY
+
+explicit terminal_kind argument removed                    PASS
+192 completed Runner results -> derived terminal           PASS
+parser/reference/correction-bound terminal derivation      PASS
+derived terminal -> five-layer persistence                 PASS
+typed exception observation -> authoritative terminal      FAIL
+online authorization readiness                             false
+```
+
+更准确的正式决定应当是：
+
+```text
+v26_213_main_completed_and_parser_terminal_paths_passed_
+but_outer_typed_exception_evidence_can_be_reclassified_
+by_caller_selected_evidence_subtype
+```
+
+因此：
+
+```text
+v26.213 overall preflight                         FAIL
+v26.211 authorization consumption                 FORBIDDEN
+new online authorization                          NOT READY
+Provider execution                                BLOCKED
+```
+
+本轮不需要继续扩大审计范围。该首个失败点已经足以决定整体结论。
+
+---
+
+## 二、本轮可以保留的结果
+
+### 1. v26.212 的范围修订正确
+
+v26.213 正确保留了 v26.212 的窄层结果：
+
+```text
+v26.211 Freeze                                      PASS
+durable consumption / Run Start / factory order    PASS
+exact v26.209 Runner replay                         PASS
+five-layer persistence mechanics                    PASS
+sixteen label controls                              diagnostic only
+```
+
+并明确撤销了 v26.212 对 terminal authority 的过强解释。
+
+### 2. 显式 caller terminal 已被删除
+
+新的 dispatcher 形式是：
+
+```python
+dispatch(observed_evidence)
+```
+
+它不接收 `terminal_kind`、terminal policy 或 expected terminal。持久化入口还会重新解析 evidence、重新执行 dispatcher，并在任何 Raw 写入前检查派生 decision 的完整 canonical equality。
+
+源码与报告在这一点上一致：dispatcher 根据 evidence 类型和内部字段派生 terminal，而 persistence pipeline 不直接信任调用方传入的 decision。
+
+所以 v26.212 的原阻塞：
+
+```text
+caller_supplied_terminal_kind
+```
+
+已经在**显式 API 层**被修复。
+
+### 3. 192 条 completed main path 已形成真实单一路径
+
+192 个 Job 均在 `RepairedOnlineExecutionConsumer.execute_preflight` 内完成：
+
+```text
+actual v26.209 Runner
+  -> actual Final result
+  -> CompletedRunnerEvidence
+  -> completed_qualified
+  -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+共重建 792 个 Runner invocations、192 个 Final 和 960 个主路径持久化文件。
+
+源码也显示，`_execute_manifest_main_path` 在 `runner.invoke_final()` 得到实际 `final.final_result` 后立即构造 completed evidence、dispatch 并 persist，而不是返回 build 层再拼接 terminal。
+
+因此以下结论可以保留：
+
+> 对确定性 completed reference path，Runner Result → terminal → persistence 的单一路径已经被实例化。
+
+### 4. 非 outer 的 terminal 控制基本成立
+
+以下终止类型确实由相应的 Runner/parser/reference 结果约束：
+
+```text
+completed_qualified
+completed_invalid
+first_response_abi_invalid
+correction_response_abi_invalid
+first_action_reference_invalid
+correction_action_reference_invalid
+correction_attempt_typed_invalid
+final_response_abi_invalid
+```
+
+特别是 Action-reference evidence 会核验当前 State、Candidate 集合、实际 selected Action 以及该 Action 不属于当前 Candidate；Correction-bound evidence也会解析实际 `PublicCorrectionBoundTerminal`。
+
+这些路径暂未发现与本轮核心命题冲突的第一优先级缺陷。
+
+---
+
+## 三、首个根本阻塞点
+
+### outer terminal 仍由 evidence 子类决定，而不是由实际 exception observation 决定
+
+v26.213 将八类外层失败表示为八个 `TypedExceptionEvidenceBase` 子类：
+
+```text
+ProviderNoPayloadEvidence
+TransportFailureEvidence
+PrivacyFailureEvidence
+ResourceFailureEvidence
+InstrumentFailureEvidence
+ProviderIdentityFailureEvidence
+ThinkingIntegrityFailureEvidence
+UsageIntegrityFailureEvidence
+```
+
+问题是基类 validator 只检查：
+
+```text
+record.job_id
+record.public_response_sha256 is None
+record.exact_response_parsed is false
+record.runtime_step_or_finalize_completed is false
+evidence_id 正确
+```
+
+它**没有检查**：
+
+```text
+record.typed_terminal
+    == 当前 evidence 子类对应的 terminal
+
+record.typed_terminal
+    与 exception_type 的映射一致
+
+exception_reason_sha256
+    来自实际被捕获异常的 reason
+```
+
+而 v26.209 的 `ExecutableInvocationRecord` 明确包含：
+
+```python
+typed_terminal: str | None
+```
+
+实际 Runner 在捕获 `TypedTransportFailure` 时，也会把：
+
+```python
+typed_terminal = error.terminal
+```
+
+写入 invocation record。
+
+但 v26.213 没有利用这个已经存在的权威字段。dispatcher 只是通过：
+
+```python
+isinstance(evidence, ProviderIdentityFailureEvidence)
+```
+
+之类的类型判断直接选择 terminal。
+
+因此，原来的 caller terminal label 实际上只是从：
+
+```text
+terminal_kind 字符串
+```
+
+移动到了：
+
+```text
+evidence_kind / evidence subclass
+```
+
+理论上当前完成的是：
+
+```text
+decision = g(caller-chosen evidence subtype)
+```
+
+而要求完成的是：
+
+```text
+decision = g(actual caught exception + actual invocation record)
+```
+
+---
+
+## 四、当前代码可接受的完整重哈希反例
+
+这是一个可由现有源码直接推出的反例。
+
+先取得一个实际 `InstrumentEvidenceError` 控制产生的 invocation record：
+
+```text
+record.typed_terminal = instrument_failure
+record.public_response_sha256 = null
+record.exact_response_parsed = false
+record.runtime_step_or_finalize_completed = false
+```
+
+然后不修改该 record，只重新包装为：
+
+```python
+ProviderIdentityFailureEvidence(
+    job_id=record.job_id,
+    invocation_record=record,
+    exception_reason_sha256=<任意合法 64 hex>,
+)
+```
+
+该子类会自动携带：
+
+```text
+evidence_kind  = provider_identity_exception
+exception_type = ProviderIdentityError
+```
+
+当前基类 validator 不比较 `record.typed_terminal`，因此这条 evidence 可以通过验证并获得新的合法 `evidence_id`。
+
+dispatcher 随后只根据 evidence 子类派生：
+
+```text
+provider_identity_failure
+```
+
+persistence pipeline 再次解析同一个伪造 evidence，并重新得到同一个错误 terminal，因此它的“重新派生”检查也会通过，最终可以生成一套完整重哈希的：
+
+```text
+Raw
+Result
+Trace
+Outcome
+checkpoint
+```
+
+这说明当前机制只能证明：
+
+```text
+decision 与 evidence subtype 一致
+```
+
+不能证明：
+
+```text
+evidence subtype 与实际 Runner exception 一致
+```
+
+而后者才是 terminal provenance 的关键命题。
+
+---
+
+## 五、为什么现有负向控制没有发现它
+
+v26.213 当前只有四类 provenance 控制：
+
+```text
+caller terminal API absent
+Qualified evidence relabeled
+cross-Job decision substitution
+completed-invalid factor inconsistency
+```
+
+源码和测试也只覆盖这四类，没有覆盖：
+
+```text
+instrument_failure record
+  -> ProviderIdentityFailureEvidence
+
+transport_failure record
+  -> ResourceFailureEvidence
+
+same exception record
+  -> modified exception_reason_sha256
+```
+
+报告中的 16/16 evidence-triggered terminal matches 是由诚实构造器为每一种 terminal 选择正确 evidence 子类后得到的。它证明了正向构造可运行，但没有证明 evidence 子类不可被重新指定。
+
+---
+
+## 六、Gate 重判
+
+建议将本轮非补偿性 Gate 重判为：
+
+| Gate                                      | 审计结果                      | 解释                                             |
+| ----------------------------------------- | ------------------------- | ---------------------------------------------- |
+| R0 external scope / v26.212 Freeze        | **PASS**                  | 冻结范围和历史解释修订成立                                  |
+| R1 observation union / no-label API       | **PASS_INTERFACE_ONLY**   | 显式 terminal 参数已删除，但 subtype 仍可承担隐藏标签作用         |
+| R2 durable ingress                        | **PASS**                  | 可保留 v26.212 结果                                 |
+| R3 exact v26.209 Runner replay            | **PASS**                  | 192 Job、792 invocation 成立                      |
+| R4 Runner evidence → terminal             | **FAIL**                  | 八类 outer exception 未绑定 `record.typed_terminal` |
+| R5 terminal → persistence                 | **PASS_CONDITIONAL_ONLY** | 能保持 evidence/decision 一致，但不能修复伪造 evidence      |
+| R6 terminal coverage / provenance attacks | **FAIL**                  | 缺少 cross-subtype exception relabel attack      |
+| R7 zero-Provider boundary                 | **PASS**                  | 无在线或经验结果                                       |
+
+因此不能保留原来的：
+
+```text
+passed / failed = 8 / 0
+```
+
+最终的非补偿结论是：
+
+```text
+first failed theoretical proposition:
+  typed outer terminal must be a deterministic reconstruction
+  of the actual caught exception and invocation record
+
+status:
+  FAILED
+```
+
+---
+
+## 七、当前允许与禁止的科学结论
+
+### 允许保留
+
+```text
+v26.212 Freeze revalidated
+explicit terminal_kind API removed
+completed Runner evidence carries actual Final factors
+192 completed reference paths derive completed_qualified
+parser/reference/correction-bound controls execute
+five durable layers are written in order
+v26.211 authorization remains unconsumed
+Provider / credential / empirical counts remain zero
+```
+
+### 仍然禁止
+
+```text
+all sixteen terminals have authoritative provenance
+outer typed-exception terminal totality is closed
+single consumer is online-ready
+v26.213 independent audit can lead directly to authorization
+new online authorization
+v26.211 authorization consumption
+192-Job Provider execution
+Capability estimation
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+报告本身也正确承认当前阶段没有在线授权、Provider 结果或经验 Capability，并要求 v26.211 授权保持未消费。
+
+---
+
+## 八、唯一合理的下一实验
+
+建议下一阶段为：
+
+```text
+fresh_repaired_outer_typed_exception_observation_authenticity_
+and_single_consumer_failure_terminalization_preflight_only
+```
+
+仅进行零 Provider 的窄修复。
+
+### 1. 将实际异常变成 Runner-owned observation
+
+新增严格的内部对象，例如：
+
+```text
+TypedFailureObservation
+  invocation_id
+  job_id
+  caught_exception_class
+  caught_terminal_kind
+  exception_reason_sha256
+  request / transport parent IDs
+  source_runner_id
+```
+
+该对象必须在 Runner 捕获异常的位置构造，而不是在 Runner 返回后由调用方自由选择 evidence 子类。
+
+### 2. evidence 必须绑定实际 invocation record
+
+每个 outer evidence validator 至少要求：
+
+```python
+record.typed_terminal == expected_terminal_for_subclass
+record.invocation_id == failure_observation.invocation_id
+record.job_id == failure_observation.job_id
+exception_type == failure_observation.caught_exception_class
+exception_reason_sha256 == failure_observation.exception_reason_sha256
+record.event_sequence[-1] == "terminal_dispatch"
+```
+
+其中任一不一致都必须在 dispatcher 和 Raw 写入前拒绝。
+
+### 3. terminal 不应仅由 evidence subtype 产生
+
+推荐的派生方式是：
+
+```text
+actual typed failure observation
+  -> verify exception class / record.typed_terminal agreement
+  -> Registry policy lookup
+  -> DerivedTerminalDecision
+```
+
+evidence subtype可以用于反序列化，但不能独立决定 terminal。
+
+### 4. 将 typed-failure 分支放入实际 consumer Job 路径
+
+当前 192 主路径遇到 terminal 会直接报错，而八类 outer evidence 是在后续 diagnostic control 中单独构造的。修订后应在同一个 Job 执行路径中实现：
+
+```text
+InvocationOutcome.terminal is not None
+  -> construct Runner-owned TypedFailureObservation
+  -> validate evidence
+  -> dispatch
+  -> persist five layers
+  -> finish Job without exception escape
+```
+
+这样才能证明未来实际 Provider failure 不会绕开主 consumer。
+
+### 5. 最小负向控制
+
+不需要扩大到几十种攻击，增加以下四类即可：
+
+```text
+instrument record wrapped as provider-identity evidence      reject
+provider-identity record wrapped as transport evidence       reject
+actual exception reason hash replaced and fully rehashed     reject
+cross-Job failure observation substituted and fully rehashed reject
+```
+
+至少前两项应完整构造下游五层 identity，并证明在 Raw 写入前拒绝。
+
+---
+
+# 最终审计边界
+
+```text
+latest stage
+  Finance v26.213
+
+explicit caller terminal repair
+  PASS
+
+completed/parser/reference terminal paths
+  PASS
+
+outer typed exception authenticity
+  FAIL
+
+first root blocker
+  evidence subclass is not bound to
+  invocation_record.typed_terminal and actual exception identity
+
+v26.211 authorization
+  MUST REMAIN UNCONSUMED
+
+online execution
+  NOT AUTHORIZED
+
+next experiment
+  zero-Provider outer typed-exception observation-authenticity
+  and in-consumer failure-terminalization repair preflight
+```
+
+本轮不应退回修改 Prompt、模型、Grammar、192-Job 条件或持久化结构。只需修复这一处：**让 outer terminal 由 Runner 实际捕获的异常事实决定，而不是由调用方选择的 evidence 子类决定。**
