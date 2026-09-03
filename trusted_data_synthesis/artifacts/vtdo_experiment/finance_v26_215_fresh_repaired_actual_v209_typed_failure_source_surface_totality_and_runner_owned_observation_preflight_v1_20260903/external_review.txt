@@ -1,0 +1,454 @@
+# Finance v26.214 本轮修订审计
+
+## 一、审计决定
+
+本轮修订**不能按报告中的 `8/0 PASS` 整体接受**。更准确的分类是：
+
+```text
+AUDIT_RESULT
+
+VALID_SCOPED_DEDICATED_EXCEPTION_SUBCLASS_CONTROLS
+
+FAILED_AT
+ACTUAL_V209_TYPED_FAILURE_SOURCE_SURFACE_TOTALITY
+```
+
+建议正式决定改为：
+
+```text
+v26_214_dedicated_outer_exception_controls_passed_
+but_actual_v209_typed_failure_sources_do_not_totalize_
+into_runner_owned_observations
+```
+
+v26.214 确实修复了上一轮“调用方通过选择 evidence 子类间接选择 terminal”的问题，但它只在八个新建的、诚实注入的专用异常子类上完成了闭环。继承自 v26.209 的真实异常产生路径仍可能抛出基础 `TypedTransportFailure`，而该异常无法被当前观察模型接受，最终会在观察构造阶段发生异常逃逸。因此，报告中的 R1、R4 及整体 `8/0` 不成立。报告当前声称八个 Gate 全部通过，并把后继限定为独立审计；这一 Gate 结果需要被本次外部审计覆盖。
+
+---
+
+## 二、本轮已经真实修复的部分
+
+### 1. evidence 子类不再承担隐藏 terminal 标签
+
+v26.214 删除了八个 outer-specific evidence 子类，统一为：
+
+```text
+AuthenticatedTypedFailureEvidence
+  -> TypedFailureObservation
+```
+
+dispatcher 不再接受 `terminal_kind`、expected terminal、异常类型选择器或 policy 选择器。持久化前也会再次查询 Runner-owned authority，并重新派生 terminal。这个方向完全正确。
+
+源码也确实建立了以下链条：
+
+```text
+Runner catch
+  -> TypedFailureObservation
+  -> RunnerFailureObservationAuthority
+  -> AuthenticatedTypedFailureEvidence
+  -> dispatcher
+  -> persistence
+```
+
+authority 按 invocation ID no-replace 记录观察，dispatcher 和 persistence 都要求候选观察与 authority 中的对象 canonical-byte 一致。
+
+所以 v26.213 的原始漏洞：
+
+```text
+caller selects evidence subtype
+  -> subtype selects terminal
+```
+
+已经从当前八个正向控制中消失。
+
+### 2. 观察对象对 invocation record 的约束明显加强
+
+`TypedFailureObservation` 现在检查：
+
+```text
+record.typed_terminal
+Job ID
+invocation ID
+request ID
+certificate ID
+receipt ID
+transport seam ID
+public-response absence
+parser/runtime 状态
+terminal_dispatch 事件
+```
+
+并把完整 invocation record 纳入观察身份。
+
+这足以阻止上一轮那类“保留实际 invocation record，但换一个 evidence 子类”的直接重分类攻击。
+
+### 3. authority-byte attack 控制有效
+
+四类攻击中，尤其是 `exception_reason_hash_replaced`，虽然可以构造出内部自洽并完整重哈希的 observation、evidence、decision 和五层 prospective identity，但因为不匹配 Runner-owned authority，仍会在 Raw 写入前拒绝。这证明 authority equality 不是纯粹的字段自洽检查。
+
+这些结果可以保留。
+
+---
+
+## 三、首个根本阻塞点
+
+### v26.214 注册的是八个新建异常子类，但真实 v26.209 路径会抛出基础异常类
+
+v26.214 手工定义并注册了八个专用异常类：
+
+```text
+ProviderNoPayloadError
+ProviderTransportError
+PrivacyEvidenceError
+ResourceBudgetError
+InstrumentEvidenceError
+ProviderIdentityError
+ThinkingIntegrityError
+UsageIntegrityError
+```
+
+并以异常类名字符串建立一对一的 class → terminal 映射。
+
+然而，v26.214 保留并实际调用的 v26.209 公共投影函数并不抛出这些新子类。它在检测到私有 reasoning 字段时直接抛出：
+
+```python
+TypedTransportFailure(
+    "privacy_rejection",
+    ...
+)
+```
+
+在公共响应不是 JSON object 时也直接抛出：
+
+```python
+TypedTransportFailure(
+    "instrument_failure",
+    ...
+)
+```
+
+也就是说，同一个基础异常类依靠实例中的 `terminal` 字段表示多个不同 terminal。
+
+v26.209 的 `ScriptedTransport.send` 还会在 request/certificate/receipt 不一致或队列为空时，同样抛出基础：
+
+```python
+TypedTransportFailure("instrument_failure", ...)
+```
+
+而不是 v26.214 新建的 `InstrumentEvidenceError`。
+
+### v26.214 如何处理这些真实基础异常
+
+v26.214 的 catch 块执行：
+
+```python
+caught_exception_class = type(error).__name__
+caught_terminal_kind = error.terminal
+```
+
+因此，当真实 v26.209 投影路径抛出基础异常时：
+
+```text
+caught_exception_class = "TypedTransportFailure"
+caught_terminal_kind    = "privacy_rejection"
+```
+
+但 `TypedFailureObservation` 的 validator 随即执行：
+
+```python
+expected_terminal = EXCEPTION_TO_TERMINAL.get(
+    self.caught_exception_class
+)
+```
+
+当前映射中不存在 `"TypedTransportFailure"`，所以：
+
+```text
+expected_terminal = None
+```
+
+随后 observation 构造立即抛出：
+
+```text
+ValueError("Runner-owned typed failure observation differs")
+```
+
+这发生在：
+
+```python
+record_from_runner(observation)
+return InvocationOutcome(...)
+```
+
+之前。因此最终结果不是 `privacy_rejection` Outcome，而是 Host-side 异常逃逸。
+
+---
+
+## 四、可直接重放的反例
+
+只需要让当前 `ObservationAuthenticFullConditionRunner` 的 transport 返回一个包含 reasoning 字段的公共对象：
+
+```python
+transport.queue({
+    "reasoning_content": "must not enter public projection"
+})
+```
+
+实际执行链将是：
+
+```text
+transport.send
+  -> returns payload
+v209._project_public_payload
+  -> raises base TypedTransportFailure(
+       terminal="privacy_rejection"
+     )
+v26.214 catch
+  -> record.typed_terminal = privacy_rejection
+  -> caught_exception_class = TypedTransportFailure
+TypedFailureObservation validation
+  -> no mapping for TypedTransportFailure
+  -> ValueError escape
+RunnerFailureObservationAuthority.record_from_runner
+  -> not reached
+InvocationOutcome return
+  -> not reached
+consumer terminal branch
+  -> not reached
+Raw / Result / Trace / Outcome / checkpoint
+  -> zero
+```
+
+同样，使用一个没有排队响应的 `ScriptedTransport`，会从实际 `send()` 路径产生基础 `TypedTransportFailure("instrument_failure", ...)`，并在同一位置逃逸。
+
+因此，本轮没有证明：
+
+```text
+actual typed transport/projection exception
+  -> Runner-owned observation
+  -> typed terminal
+```
+
+它只证明了：
+
+```text
+one of eight newly introduced wrapper exception subclasses
+  -> Runner-owned observation
+  -> typed terminal
+```
+
+这两个命题不能等同。
+
+---
+
+## 五、为什么现有 8/8 控制没有发现问题
+
+当前 consumer 对八个 Job 执行的是：
+
+```python
+error = error_type()
+transport = factory.create_failure(error)
+```
+
+其中 `error_type` 来自 v26.214 自己定义的 `OUTER_ERROR_TYPES`。这些专用异常被 transport 直接抛出，因而不会触发 v26.209 `_project_public_payload` 的真实 privacy/instrument 异常产生逻辑。
+
+测试也只检查：
+
+```text
+8 个专用类
+8 个 terminal
+40 个持久化文件
+4 个后置 provenance attack
+```
+
+没有执行：
+
+```text
+v209._project_public_payload -> base TypedTransportFailure
+v209.ScriptedTransport empty queue -> base TypedTransportFailure
+unknown TypedTransportFailure subtype
+same-name but nonregistered exception class
+```
+
+所以当前测试证明的是诚实 wrapper controls 可以闭环，并没有证明继承的实际异常源集合具有 terminal totality。
+
+---
+
+## 六、Gate 重判
+
+| Gate                                     | 重判                        | 原因                                              |
+| ---------------------------------------- | ------------------------- | ----------------------------------------------- |
+| R0 external scope / v26.213 Freeze       | **PASS**                  | 历史冻结与范围修订成立                                     |
+| R1 Runner-owned catch observation        | **FAIL**                  | 实际基础 `TypedTransportFailure` 无法生成合法 observation |
+| R2 generic evidence / authority dispatch | **PASS_CONDITIONAL_ONLY** | observation 已成功生成时成立                            |
+| R3 durable ingress                       | **PASS**                  | 与本次缺陷无关                                         |
+| R4 actual failure branch in one consumer | **FAIL**                  | 只覆盖八个专用 wrapper，不覆盖实际 v26.209 exception sources |
+| R5 terminal → five-layer persistence     | **PASS_CONDITIONAL_ONLY** | 仅对已经进入 authority 的观察成立                          |
+| R6 four provenance attacks               | **PASS_DIAGNOSTIC_ONLY**  | 攻击有效，但缺少 actual-source-totality control         |
+| R7 zero-Provider boundary                | **PASS**                  | Provider、credential、empirical 均为零               |
+
+非补偿性结论为：
+
+```text
+first failed Gate:
+  R1 Runner-owned catch observation
+
+first root blocker:
+  hand-written exception-class-name registry does not cover
+  the actual v26.209 TypedTransportFailure source surface
+```
+
+因此，不能保留：
+
+```text
+passed / failed = 8 / 0
+```
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 允许保留
+
+```text
+caller-selected outer evidence subtype surface removed
+one generic authenticated evidence shape instantiated
+eight dedicated wrapper exceptions terminalize correctly
+record.typed_terminal and invocation parents are checked
+authority-byte mismatch rejects
+four existing fully rehashed attacks reject
+v26.211 authorization remains unconsumed
+Provider / credential / empirical counts remain zero
+```
+
+### 仍然禁止
+
+```text
+actual v26.209 outer exception source surface is total
+privacy projection failures are terminalized
+instrument failures from the actual transport are terminalized
+all outer terminals possess authoritative Runner provenance
+v26.214 is ready for a positive independent audit
+new online authorization
+192-Job Provider execution
+empirical estimation
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+报告保持 v26.211 未消费并禁止在线执行是正确的；该边界必须继续保留。
+
+由于 R1 已经失败，本轮没有必要继续向下审计 192-Job 完整在线组合或经验估计层。
+
+---
+
+## 八、唯一合理的下一实验
+
+下一阶段应改为零 Provider 的窄修复，而不是直接执行原计划中的正向独立审计：
+
+```text
+fresh_repaired_actual_v209_typed_failure_source_surface_
+totality_and_runner_owned_observation_preflight_only
+```
+
+### 修复原则
+
+不要继续把八个 terminal 强行建模为八个一对一异常类名。v26.209 已经表明：
+
+```text
+one exception class TypedTransportFailure
+  + terminal instance field
+  -> multiple semantic terminals
+```
+
+因此应采用：
+
+```text
+actual caught TypedTransportFailure
+  -> exact terminal attribute
+  -> exact failure origin/callsite
+  -> Registry admission
+  -> record.typed_terminal agreement
+  -> Runner-owned observation
+```
+
+建议观察对象至少绑定：
+
+```text
+exception_type_id
+  module + qualname，而非裸 __name__
+
+caught_terminal_kind
+  来自实际 error.terminal
+
+failure_origin
+  transport_send
+  public_projection
+  provider_response_validation
+  thinking_validation
+  usage_validation
+  ...
+
+exception_reason_sha256
+
+complete invocation record
+```
+
+terminal 的权威条件应是：
+
+```text
+error is a source-admitted typed failure
+caught_terminal_kind is Registry-reachable
+record.typed_terminal == caught_terminal_kind
+failure_origin permits that terminal
+```
+
+而不是：
+
+```text
+exception class name -> unique terminal
+```
+
+### 最小控制集
+
+本轮只需新增四个核心控制：
+
+```text
+actual v209 privacy projection failure
+  payload contains reasoning key
+  -> privacy_rejection Outcome
+
+actual v209 base instrument failure
+  empty transport queue or invalid dispatch chain
+  -> instrument_failure Outcome
+
+base TypedTransportFailure with unregistered terminal
+  -> typed rejection before Raw
+
+nonregistered class with registered bare class name
+  -> reject exact-class spoofing
+```
+
+同时保留当前四个 observation/authority 重哈希攻击即可，无需修改 Prompt、模型、Grammar、192-Job Manifest、Policy、资源界限、Validity 或 QA 支路。
+
+完成这项修复后，才应开展独立审计；独立审计通过之后，才能讨论完整单一 consumer 的在线授权准备。
+
+```text
+current stage
+  v26.214
+
+previous subtype-reclassification blocker
+  repaired on dedicated wrapper-control surface
+
+actual source-level exception totality
+  FAILED
+
+online execution
+  BLOCKED
+
+v26.211 authorization
+  MUST REMAIN UNCONSUMED
+
+next experiment
+  actual v26.209 typed-failure source-surface
+  totality repair preflight only
+```

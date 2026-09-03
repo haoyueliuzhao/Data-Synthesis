@@ -15,7 +15,185 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.215 Fresh Repaired Actual v26.209 Typed-Failure Source-Surface Totality Preflight
+
+Finance v26.215 consumed only
+`fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`.
+The exact 13,092-byte external review is bound at SHA-256
+`cc2740cbe68233493f3cd93a09298f7ee870042b1d6d4c28939118af34d8dce0`. It retains v26.214
+only as `VALID_SCOPED_DEDICATED_EXCEPTION_SUBCLASS_CONTROLS` but fails its full terminal
+authority at `ACTUAL_V209_TYPED_FAILURE_SOURCE_SURFACE_TOTALITY`: the four actual v26.209
+throws use the base `TypedTransportFailure` with an instance terminal, while v26.214 admitted
+eight dedicated subclasses through a bare-class-name-to-terminal map. The actual base class was
+absent from that map, so actual v26.209 failures could escape during observation validation. The
+exact 42-byte operator directive `参照审计报告开展后续实验修订`, SHA-256
+`e3adc8d65f07c54893d36828d8c12bdca9e83ab8a07fb94e40a259a2a18bcf73`, authorizes only
+this credential-free repair. Provider calls and credential lookups are zero.
+
+All 63 v26.214 formal files and 1,535,767 bytes revalidate, including all 62 self-excluding
+Manifest members and 1,523,563 bound bytes. Its generic evidence shape, removal of
+caller-selected evidence-subclass authority, eight dedicated subclass controls, and four
+authority attacks remain retained at their scoped meanings. Its eight-pass historical Gate,
+Decision, and Transition remain immutable; their actual-source-totality interpretation is
+superseded.
+
+The exact v26.209 source commit/tree and source-file SHA-256 are:
+
+```text
+commit  5809e9782515e55ee797b43730584d5d860aaa5c
+tree    b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf
+SHA-256 4529523fc737f26801118cc5cf78b682f2e510c5f887ed0d14a60a5bd26d9b35
+```
+
+One new `TypedFailureSourceContract` binds all four actual raise callsites, the exact exception
+type ID as module plus qualified name, the instance terminal, and an origin partition:
+
+```text
+ScriptedTransport.send / invalid dispatch chain  transport_send     instrument_failure
+ScriptedTransport.send / empty queue             transport_send     instrument_failure
+public projection / reasoning-like key           public_projection  privacy_rejection
+public projection / non-object response          public_projection  instrument_failure
+```
+
+Bare class names are not authority, and a class is not required to imply one terminal. The
+admitted exact type is the v26.209
+`...final_request_contract_continuity_repair_preflight:TypedTransportFailure`; terminal
+admission requires agreement among exact type ID, actual `error.terminal`, catch-site origin,
+v26.195 Registry, and `ExecutableInvocationRecord.typed_terminal`.
+
+`ActualSourceAuthenticRunner` preserves the exact v26.209 request and Runtime path but separates
+the transport call and public projection into two origin-specific catches. It constructs the
+observation from the actual caught instance, hashes the actual reason, binds the complete
+invocation record, and appends it to a no-replace Runner authority only after strict validation.
+The dispatcher remains `dispatch(evidence)` with no terminal or exception-type selector.
+Persistence reparses the evidence, requires byte equality with the Runner authority, and
+independently rederives the decision before Raw.
+
+One source-bound `ActualSourceFailureConsumer.execute_preflight` entry executes:
+
+```text
+exact authorization guard -> durable isolated preflight receipt
+  -> durable Run Start Receipt -> zero-lookup credential/factory Gate
+  -> actual v26.209 typed-failure source -> origin-specific Runner catch
+  -> Runner-owned observation -> consumer terminal branch
+  -> source/Registry dispatch -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+Four distinct exact v26.209 Manifest Jobs exercise the four actual throws:
+
+```text
+actual source callsites / base exception instances              4 / 4
+Runner observations / consumer terminal branches                4 / 4
+exact origin-terminal matches                                   4 / 4
+transport / projection origins                                  2 / 2
+instrument / privacy terminals                                  3 / 1
+persisted Raw/Result/Trace/Outcome/checkpoint files                  20
+exception escapes / empirical rows / Provider calls          0 / 0 / 0
+```
+
+Two new admission controls reject the exact base class with an unregistered terminal and a
+different class with the same bare name. Four retained full-rehash controls reject instrument to
+provider-identity reclassification, privacy to transport reclassification, reason-hash
+replacement, and cross-Job substitution. The retained attacks create twenty prospective layer
+identities before rejection:
+
+```text
+source-admission / retained authority attacks rejected          2 / 2, 4 / 4
+fully rehashed downstream layer identities                              20
+accepted attacks / attack Raw writes                             0 / 0
+```
+
+The exact noncompensatory Gate partition is:
+
+```text
+R0 external scope and exact v26.214 Freeze                              PASS
+R1 exact v26.209 typed-failure Source Contract                          PASS
+R2 exact type + instance terminal + origin observation                  PASS
+R3 durable ingress mechanics retained                                   PASS
+R4 four actual v26.209 source controls terminalize                      PASS
+R5 authentic source terminal -> five-layer persistence                  PASS
+R6 source admission + retained authority attacks reject                 PASS
+R7 zero-Provider/credential/empirical boundary                          PASS
+passed / failed                                                          8 / 0
+```
+
+Authoritative identities include:
+
+- external revision authorization / v26.214 Freeze:
+  `finance_v26_215_external_revision_authorization:25938853f34cf5855c7c8a7ad8f4c4a9bb505598ec9bda2a8b531e837b3dabcc` /
+  `finance_v26_215_v214_freeze:3bebc6b6af92fc32ea43f392c88bbb5b997d7c009af0f81b49c46cf12cb7a083`;
+- implementation / actual-source Contract:
+  `fresh_repaired_actual_typed_failure_source_totality_implementation_binding:0a7358a0c4871f0943e7a834a90fb261f7ff1d4cbb9ca46f6212cac593e33cdd` /
+  `fresh_repaired_actual_v209_typed_failure_source_contract:93af74abff1f7a646f86ea2d143da693e93324df589364138feb3429f1230403`;
+- Runner observation / dispatcher / persistence:
+  `fresh_repaired_actual_source_runner_observation_binding:bb77e63f604c9a4fbb0ed096790f595794954df56c0395cfae5f27eac63c5d1d` /
+  `fresh_repaired_actual_source_typed_failure_dispatcher_binding:ac34c98a34d14d44d17e23cb8b7b68e0ee0a808b1d447d61b458041d2716a914` /
+  `fresh_repaired_actual_source_typed_failure_persistence_binding:3df9c00763c8b96df29bb7311518fbe4fb86e86eea384329294a300edda1043a`;
+- consumer / composition:
+  `fresh_repaired_actual_source_failure_consumer_binding:611a80554500277a97471b6740b8998b9f2e5ec81a355f4297516d2850571629` /
+  `fresh_repaired_actual_source_failure_composition_contract:0cfe95aa031b46790cb0c505d32772616fe6e3faf8101a202c04ba11d9cfdc8c`;
+- execution / negative-control Audits:
+  `finance_v26_215_actual_source_surface_execution_audit:5ed58c72692fb3176b3200d479cfea94eb2847b1eeb22a1ca8c93c77c392e039` /
+  `finance_v26_215_source_totality_negative_control_audit:c4813c3c7ec97515153b528ef142bfebe8849e86072d54e90ac211aac241f1a6`;
+- Gate / Decision / Transition:
+  `finance_v26_215_gate_evaluation:9c9062c68fecf0cc06c2aa3ba22f3d9e91c2d69083fc3096338d91ed58f3b8c3` /
+  `finance_v26_215_source_totality_decision:04a21ca2b9760510052746725b4b931c8529c8b7eefc71a8bfe10c8e59e6afb4` /
+  `finance_v26_215_transition:cc943b0290310a0af7c7a910fbdda1aa31e4079a9cf1c9e3bd1187e68ac99d06`;
+- report:
+  `finance_v26_215_source_totality_report:7980c1c34a1b93ae48a950c15e4f27b26aeb65ee48f26de4856bed13700a946d`;
+- Artifact Manifest / Root:
+  `finance_v26_215_artifact_manifest:b8902f1e4fb9a4243d859c5da637e49ff94ebdf037decafb6ba08f74bd05a23b` /
+  `finance_v26_215_artifact_root:1b100d79097fa58d1a2db0e9c1d5302a176d4b3b9868a4ff84c7ceabc4db83b1`.
+
+The exact source commit/tree are `bae3bafbedeb3c18dd04b21ebabf6c4138c14ced` /
+`0740f9c5a56e107e5deb07fed7637b29c8a91ad9`. The 44-file, 785,750-byte formal
+directory rebuilds byte for byte; its Manifest binds 43 members and 777,701 bytes. Focused tests
+pass 8/8, including a complete second build. Focused PyCompile, Ruff check/format, and
+no-import-follow Mypy pass. The adjacent v26.209-v26.215 suite passes 57/57; package-wide Ruff
+passes.
+
+The current decision is:
+
+```text
+fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_
+observation_preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_independent_audit_only`.
+It may only independently rebuild the exact directory, source Contract, four actual-source
+observations and decisions, five-layer chains, and six attacks with zero Provider calls. It may
+not issue or consume an online authorization. The v26.211 authorization remains unconsumed. A
+passing audit must still be followed by a separate new online authorization binding all v26.215
+repaired parents. Provider execution, the 192-Job online run, frozen-condition change, empirical
+estimation, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and production
+remain forbidden. See
+`docs/finance_v26_215_fresh_repaired_actual_v209_typed_failure_source_surface_totality_preflight.md`.
+
 ## v26.214 Fresh Repaired Outer Typed-Exception Observation Authenticity Preflight
+
+### Post-review scope correction
+
+The subsequent exact 13,092-byte review at SHA-256
+`cc2740cbe68233493f3cd93a09298f7ee870042b1d6d4c28939118af34d8dce0` retains v26.214 only
+as `VALID_SCOPED_DEDICATED_EXCEPTION_SUBCLASS_CONTROLS` and fails it at
+`ACTUAL_V209_TYPED_FAILURE_SOURCE_SURFACE_TOTALITY`. Its one generic evidence shape, removal of
+caller-selected subtype authority, eight dedicated subclass controls, and four authority attacks
+remain valid at their scopes. The four actual v26.209 failure sources use the base
+`TypedTransportFailure` with instance terminals, which v26.214's bare-class-name map did not
+admit. Its actual source-totality and one-consumer terminalization claims therefore fail.
+
+Every v26.214 formal byte, identity, historical Gate, Decision, and Transition remains immutable.
+Its current scoped decision is:
+
+```text
+v26_214_dedicated_outer_exception_controls_passed_but_actual_v209_typed_failure_
+sources_do_not_totalize_into_runner_owned_observations
+```
+
+The later operator directive consumed only the zero-Provider v26.215 repair above. The current
+transition is v26.215's credential-free independent audit only; the v26.211 authorization
+remains unconsumed.
 
 Finance v26.214 consumed only
 `fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_only`.
@@ -138,14 +316,18 @@ tests pass 8/8, including a complete second build. Focused PyCompile, Ruff check
 no-import-follow Mypy pass. The adjacent v26.209-v26.214 suite passes 49/49; package-wide Ruff
 passes.
 
-The current decision is:
+The immutable historical v26.214 decision was:
 
 ```text
 fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_
 failure_terminalization_preflight_passed_independent_audit_required_online_execution_blocked
 ```
 
-The only permitted successor is
+The old independent-audit successor below is superseded by the later review. Its only permitted
+repair candidate was
+`fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`,
+which the operator directive consumed only through v26.215. The current transition is v26.215's
+credential-free independent audit only. The immutable old successor was
 `fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_independent_audit_only`.
 It may only independently rebuild and rederive the eight Runner-owned failure observations,
 terminal decisions, five-layer chains, and four attacks with zero Provider calls. It may not
@@ -178,9 +360,10 @@ but_outer_typed_exception_evidence_can_be_reclassified_
 by_caller_selected_evidence_subtype
 ```
 
-The later operator directive consumed only the zero-Provider v26.214 repair above. The current
-transition is v26.214's independent credential-free audit only; the v26.211 authorization
-remains unconsumed.
+The later operator directive consumed only the zero-Provider v26.214 repair above. Its later
+source-totality review authorized only the v26.215 repair now recorded at the top of this status.
+The current transition is v26.215's independent credential-free audit only; the v26.211
+authorization remains unconsumed.
 
 Finance v26.213 consumed only
 `fresh_repaired_full_condition_observation_derived_terminal_single_consumer_path_repair_preflight_only`.
@@ -354,9 +537,9 @@ v26_212_component_level_ingress_and_persistence_controls_passed_
 but_authoritative_terminal_derivation_and_single_path_handoff_failed
 ```
 
-The later operator directive consumed only the zero-Provider v26.213 repair above. The current
-transition is v26.213's independent credential-free audit only; the v26.211 authorization remains
-unconsumed.
+The later operator directive consumed only the zero-Provider v26.213 repair above. Subsequent
+reviews consumed only the v26.214 and v26.215 zero-Provider repairs. The current transition is
+v26.215's independent credential-free audit only; the v26.211 authorization remains unconsumed.
 
 Finance v26.212 consumed only
 `fresh_repaired_full_condition_exact_online_execution_consumer_and_terminal_persistence_integration_preflight_only`.
@@ -641,10 +824,10 @@ exact_repaired_192_job_online_execution_authorization_issued_not_consumed
 
 The immutable Transition named
 `fresh_repaired_full_condition_exact_192_job_online_execution_only`, but the subsequent review
-blocks it before consumption. That current authorization remains unconsumed; the current boundary
-is v26.212's credential-free independent audit only. Replacement, failed-Job rerun, recovery, historical reuse,
-source/condition change, Provider execution, QA integration, Mapper, State, frequency,
-Contribution, VTDO, training, release, and production remain forbidden. See
+blocks it before consumption. That authorization remains unconsumed. Replacement, failed-Job
+rerun, recovery, historical reuse, source/condition change, Provider execution, QA integration,
+Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+The current boundary is v26.215's credential-free independent audit only. See
 `docs/finance_v26_211_fresh_repaired_full_condition_exact_online_execution_authorization.md`.
 
 ## v26.210 Fresh Repaired Final Request Continuity Independent Audit

@@ -1,5 +1,33 @@
 # Finance v26.214 Fresh Repaired Outer Typed-Exception Observation Authenticity And Single-Consumer Failure Terminalization Preflight
 
+## Post-Review Scope Correction
+
+The subsequent exact 13,092-byte review at SHA-256
+`cc2740cbe68233493f3cd93a09298f7ee870042b1d6d4c28939118af34d8dce0` retains v26.214 only
+as `VALID_SCOPED_DEDICATED_EXCEPTION_SUBCLASS_CONTROLS` and fails its full terminal authority at
+`ACTUAL_V209_TYPED_FAILURE_SOURCE_SURFACE_TOTALITY`. The generic evidence shape, removal of
+caller-selected evidence-subclass terminal authority, dedicated exception controls, and four
+authority-byte attacks remain valid at their stated scopes.
+
+The stronger source-totality claim fails because the four actual v26.209 throws use the base
+`TypedTransportFailure` with an instance terminal, while v26.214 admits eight dedicated
+subclasses through a bare-class-name-to-terminal map. The actual base class is absent from that
+map, so actual transport-empty, invalid-chain, public-reasoning-key, and non-object paths can fail
+observation validation and escape before Runner-owned terminal persistence.
+
+Every v26.214 formal byte, identity, historical Gate, Decision, and Transition remains immutable.
+Its current scoped decision is:
+
+```text
+v26_214_dedicated_outer_exception_controls_passed_but_actual_v209_typed_failure_
+sources_do_not_totalize_into_runner_owned_observations
+```
+
+The later exact 42-byte operator directive `参照审计报告开展后续实验修订`, SHA-256
+`e3adc8d65f07c54893d36828d8c12bdca9e83ab8a07fb94e40a259a2a18bcf73`, authorizes only the
+credential-free v26.215 source-totality repair. It authorizes no Provider call or online
+authorization.
+
 ## Scope And Decision
 
 Finance v26.214 consumes only
@@ -41,7 +69,7 @@ v26.214 repairs only that first blocker. It does not change Prompt, model, Gramm
 192-Job condition, v26.209 request compilation, the v26.195 terminal Registry, or the five-layer
 persistence structure.
 
-The current decision is:
+The immutable historical decision was:
 
 ```text
 fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_
@@ -268,6 +296,12 @@ PyCompile, Ruff check/format, and no-import-follow Mypy pass. The adjacent v26.2
 passes 49/49, including all predecessor and v26.214 rebuild tests; package-wide Ruff passes.
 
 ## Boundary And Only Permitted Successor
+
+The transition below is the immutable historical v26.214 transition. The later review supersedes
+it with only
+`fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`,
+which the operator directive consumed through v26.215. The current boundary is v26.215's
+credential-free independent audit only.
 
 The only permitted successor is:
 
