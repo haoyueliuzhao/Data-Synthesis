@@ -375,7 +375,12 @@ def execute_replacement(
 ) -> models.ExecutionSummary:
     if workers < 1 or workers > 32:
         raise ValueError("replacement worker count must be in [1,32]")
-    _source = prior._git_identity(prepared.repository_root)  # noqa: SLF001
+    source = prior._git_identity(prepared.repository_root)  # noqa: SLF001
+    if source != (
+        prepared.preparation.repaired_source_commit,
+        prepared.preparation.repaired_source_tree,
+    ):
+        raise ValueError("replacement source changed after authorization")
     consumption, run_start = _consume(prepared)
     _write_ingress(prepared)
     prior._load_env_key(prepared.package_root, prepared.config.api_key_env)  # noqa: SLF001
