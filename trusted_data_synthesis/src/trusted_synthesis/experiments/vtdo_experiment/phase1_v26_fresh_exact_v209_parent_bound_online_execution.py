@@ -649,7 +649,7 @@ class ExactRequestBodyDeepSeekClient(StageOneProspectiveThinkingJsonClient):
             return ProviderResponse(
                 public_value=public,
                 telemetry=telemetry,
-                redacted_fields=redacted.model_dump(mode="json", warnings=False),
+                redacted_fields=dict(redacted),
             )
         except Exception as exc:
             if isinstance(exc, urllib.error.HTTPError):
@@ -675,9 +675,7 @@ class ExactRequestBodyDeepSeekClient(StageOneProspectiveThinkingJsonClient):
             failure = LLMClientError(
                 str(exc),
                 (telemetry,),
-                failure_artifact=(
-                    None if redacted is None else redacted.model_dump(mode="json", warnings=False)
-                ),
+                failure_artifact=(None if redacted is None else dict(redacted)),
             )
             raise failure from exc
 
@@ -1158,6 +1156,7 @@ def _persist_terminal_chain(
     records: tuple[v209_models.ExecutableInvocationRecord, ...],
     provider_calls: tuple[models.ProviderCallDescriptor, ...],
     failure_dispatcher: v217_runtime.ArtifactBackedExitDispatcher,
+    record_model: type[models.JobExecutionRecord] = models.JobExecutionRecord,
 ) -> models.JobExecutionRecord:
     if projection.terminal_source == "current_state_runner_observation":
         rederived = v213_runtime.ObservationDerivedTerminalDispatcher(
@@ -1353,7 +1352,7 @@ def _persist_terminal_chain(
         prefix="finance_v26_224_empirical_checkpoint_descriptor:",
     )
     return models.make_identity(
-        models.JobExecutionRecord,
+        record_model,
         {
             "run_start_receipt_id": run_start.receipt_id,
             "authorization_id": prepared.authorization.authorization_id,
@@ -1381,10 +1380,11 @@ def _failure_record(
     job_ordinal: int,
     error: BaseException,
     provider_calls: tuple[models.ProviderCallDescriptor, ...],
+    failure_record_model: type[models.JobFailureRecord] = models.JobFailureRecord,
 ) -> models.JobFailureRecord:
     provider_failed = any(item.status != "succeeded" for item in provider_calls)
     return models.make_identity(
-        models.JobFailureRecord,
+        failure_record_model,
         {
             "run_start_receipt_id": run_start.receipt_id,
             "authorization_id": prepared.authorization.authorization_id,
@@ -1408,6 +1408,8 @@ def _execute_job(
     job: v209_models.ExecutableDevelopmentJob,
     job_ordinal: int,
     client: ExactRequestBodyDeepSeekClient,
+    record_model: type[models.JobExecutionRecord] = models.JobExecutionRecord,
+    failure_record_model: type[models.JobFailureRecord] = models.JobFailureRecord,
 ) -> models.JobExecutionRecord | models.JobFailureRecord:
     transport: LiveV209Transport | None = None
     try:
@@ -1514,6 +1516,7 @@ def _execute_job(
             records=tuple(records),
             provider_calls=transport.provider_calls,
             failure_dispatcher=failure_dispatcher,
+            record_model=record_model,
         )
     except BaseException as error:
         if isinstance(error, (KeyboardInterrupt, SystemExit)):
@@ -1526,6 +1529,7 @@ def _execute_job(
             job_ordinal=job_ordinal,
             error=error,
             provider_calls=calls,
+            failure_record_model=failure_record_model,
         )
 
 
