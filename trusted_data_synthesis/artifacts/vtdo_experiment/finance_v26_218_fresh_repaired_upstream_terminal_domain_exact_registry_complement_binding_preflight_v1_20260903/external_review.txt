@@ -1,0 +1,474 @@
+# Finance v26.217 本轮实验审计
+
+## 一、审计结论
+
+v26.217 **实质性修复了 v26.216 的主要机制缺陷**：
+
+* `observe_failure` 不再接收 `terminal_kind`、`reason` 或 `source_event_id`；
+* E2 的 Observation 被限制为由一个固定的本地 instrument Event 派生；
+* Event、Event Descriptor、Observation、Observation Descriptor 均真实落盘；
+* 四对象链进入 E2 `SourceExitProof`、Runner Observation 和后续五层持久化；
+* 旧的 `completed_qualified` caller-minting 路径已经被关闭。
+
+因此，本轮绝不能被整体判为无效。v26.216 的回溯修订也准确纳入了上一轮审计结论。 v26.217 的授权范围仍严格限定为零 Provider、零凭据、零经验行的本地修复。
+
+但是，v26.217 的 **R2“其余十五个 v26.195 reachable terminal 的精确禁止集合”不成立**。正式 `forbidden_terminal_kinds` 中有两个名称写错，导致两个真实 Registry terminal 被遗漏。
+
+建议正式审计分类为：
+
+```text
+AUDIT_RESULT
+
+VALID_SCOPED_CALLER_LABEL_REMOVAL_AND_ARTIFACT_BACKED_E2_CHAIN
+
+FAILED_AT
+
+EXACT_V195_REACHABLE_TERMINAL_COMPLEMENT_BINDING
+```
+
+对应窄化后的决定建议为：
+
+```text
+v26_217_removes_caller_terminal_authority_and_materializes_the_e2_
+upstream_artifact_chain_but_its_formal_forbidden_terminal_set_is_not_
+the_exact_v26_195_reachable_complement
+```
+
+所以本轮不能保留：
+
+```text
+passed / failed = 8 / 0
+```
+
+应重判为：
+
+```text
+R2 FAIL
+overall Gate FAIL
+online execution remains blocked
+```
+
+---
+
+## 二、本轮声明的对象
+
+本轮只声称修复 v26.216 的 R2：
+
+```text
+caller-selected terminal/reason/source_event_id
+    -> in-memory observation
+```
+
+替换为：
+
+```text
+source-derived Event
+    -> persisted Event Descriptor
+    -> event-derived Observation
+    -> persisted Observation Descriptor
+    -> E2 SourceExitProof
+```
+
+同时把 E2 的终止域从 v26.195 的全部十六个 reachable terminals 缩小为：
+
+```text
+transport_instrument_failure
+    -> instrument_failure
+```
+
+报告明确将本轮限定为本地确定性 preflight，不声称 Provider failure occurrence、模型结果、Capability 或在线授权。
+
+这个审计对象是合理且足够窄的；本次不审计外部 Provider 的完整异常分类，也不扩展到生产级事件溯源。
+
+---
+
+## 三、已经正确完成的修复
+
+### 1. Caller terminal authority 已被移除
+
+正式接口变为：
+
+```python
+observe_failure(event: AuthenticatedUpstreamFailureEvent)
+```
+
+它不再暴露 terminal、reason、policy、expected result 或 source-event-ID 参数。事件类型、failure code、literal reason 和 terminal policy 均由绑定实现构造。
+
+源码也表明：
+
+```python
+ArtifactBackedUpstreamFailureObservation.terminal_kind:
+    Literal["instrument_failure"]
+```
+
+Observer 从唯一的 `admitted_event_terminal_policy_items[0]` 中取得 terminal，而不是读取 caller terminal。
+
+因此，上一轮最危险的：
+
+```python
+create_failure(
+    terminal_kind="completed_qualified",
+    ...
+)
+```
+
+已经不能通过现有 Observer API 实现。
+
+### 2. E2 四对象链已经真实落盘
+
+源码中存在真实的 no-replace 写入：
+
+```text
+upstream_events/<hash>.json
+upstream_event_descriptors/<hash>.json
+upstream_observations/<hash>.json
+upstream_observation_descriptors/<hash>.json
+```
+
+Event 和 Observation 均被重新读取并与 Descriptor 中的路径、SHA-256 和 byte count 比较。报告进一步记录 E2 Raw 嵌入完整四对象链，而不再只保存一个进程内 observation ID。
+
+### 3. E2 确实经过冻结的 `raise value`
+
+合法 E2 Event 在 `ExitTracingScriptedTransport.send` 内部、调用冻结 v26.209 `ScriptedTransport.send` 之前产生。事件与 Observation 文件完成写入后，派生的 exact base exception 才进入 queue，随后冻结方法执行 line 658：
+
+```python
+raise value
+```
+
+
+
+源码中的实际顺序也是：
+
+```python
+event = event_source.emit_instrument_failure(...)
+error = observer.observe_failure(event)
+self.queue(error)
+response = super().send(effective)
+```
+
+因此这不是跳过 v26.209 E2 源出口后直接制造 Outcome。
+
+### 4. Job 与 dispatch parent 绑定存在
+
+`SourceExitProof` 要求四对象链中 Event 的 request parent 等于实际 source-exit dispatch parent；Runner Observation 还要求 Event 的 source Job 等于当前 Runner Job。
+
+这关闭了简单的跨 Job 或跨 dispatch 链替换。
+
+---
+
+## 四、直接反例：正式禁止集合不是 Registry 精确补集
+
+### 1. v26.195 的真实 reachable terminal
+
+冻结的 v26.195 Registry 包含以下两个名称：
+
+```text
+provider_failure_no_payload
+resource_budget_exhausted
+```
+
+
+
+### 2. v26.217 正式对象中写入的名称
+
+实际持久化的 `upstream_event_source_binding.json` 却包含：
+
+```text
+provider_no_payload_failure
+resource_failure
+```
+
+而没有：
+
+```text
+provider_failure_no_payload
+resource_budget_exhausted
+```
+
+精确集合差为：
+
+```text
+expected_forbidden - persisted_forbidden
+
+{
+  "provider_failure_no_payload",
+  "resource_budget_exhausted"
+}
+```
+
+以及：
+
+```text
+persisted_forbidden - expected_forbidden
+
+{
+  "provider_no_payload_failure",
+  "resource_failure"
+}
+```
+
+所以虽然双方长度都是 15，但它们并不是同一个集合。
+
+### 3. 构造代码没有做 Registry 补集比较
+
+Preflight 确实加载了 v26.195 Registry，并检查 reachable 数量为 16；但是它只从 Registry 取出了 `instrument_failure` 的 policy：
+
+```python
+policy_by_terminal["instrument_failure"]
+```
+
+随后直接写入手工常量：
+
+```python
+"forbidden_terminal_kinds": models.FORBIDDEN_UPSTREAM_TERMINALS
+```
+
+没有检查：
+
+```python
+set(forbidden_terminal_kinds)
+==
+set(reachable_terminal_kinds) - {"instrument_failure"}
+```
+
+### 4. 现有测试是同源自洽检查
+
+当前测试只验证：
+
+```python
+set(source_binding["forbidden_terminal_kinds"])
+==
+set(models.FORBIDDEN_UPSTREAM_TERMINALS)
+```
+
+也就是“正式对象等于生成它的同一个手工常量”，并没有与 v26.195 Registry 比较。它另外只检查了 `completed_qualified` 在集合中，因此无法发现两个名称错误。
+
+这是一个确定性、可复现、无须 Provider 调用的直接反例。
+
+---
+
+## 五、缺陷严重性边界
+
+这个问题需要准确限定，不能夸大。
+
+### Blocking defect
+
+它直接推翻了本轮 R2 的以下明确声明：
+
+```text
+The E2 source domain explicitly forbids
+the other fifteen reachable terminals.
+```
+
+以及：
+
+```text
+forbidden reachable terminals = 15
+```
+
+因为正式对象中列出的 15 个名称并不是 v26.195 reachable set 除去 `instrument_failure` 后的精确补集。报告对该精确声明见 。
+
+因此，**R2 作为一个精确 Registry-domain Gate 必须失败**。
+
+### 不应过度推导的结论
+
+这个缺陷并未证明运行时能够输出那两个被遗漏的 terminal。
+
+事实上：
+
+* Event Schema 固定为 `transport_instrument_failure`；
+* Observation terminal 是 `Literal["instrument_failure"]`；
+* Observer 只读取一个 admitted mapping。
+
+所以当前源码仍然没有展示：
+
+```text
+E2 -> provider_failure_no_payload
+E2 -> resource_budget_exhausted
+```
+
+的可执行路径。
+
+也就是说：
+
+```text
+运行时 singleton terminal derivation        成立
+正式 exact forbidden-complement declaration  不成立
+```
+
+这不是要求重新设计整个 Event Authority，而是一个直接命中 R2 正式集合权威的窄缺陷。
+
+### Scope limitation
+
+报告已经正确声明，本轮不证明通用外部事件 taxonomy，只证明当前本地 instrument source 的机制。
+
+这一限制不构成本轮失败，也无需在本轮扩展 Provider、Transport、Privacy 等十五种真实事件源。
+
+---
+
+## 六、Gate 重判
+
+| Gate                                                 | 审计结果                              | 说明                                                        |
+| ---------------------------------------------------- | --------------------------------- | --------------------------------------------------------- |
+| R0 external scope / v26.216 Freeze                   | **PASS**                          | 上一轮结论与授权边界正确冻结                                            |
+| R1 exact v26.209 five-exit AST Contract              | **PASS**                          | 五出口结果未受影响                                                 |
+| R2 source-derived Event / restricted terminal domain | **FAIL**                          | singleton derivation 成立，但正式 forbidden set 不是 v26.195 精确补集 |
+| R3 durable Event/Observation artifact chain          | **PASS_SCOPED**                   | 四对象真实落盘并被重新读取                                             |
+| R4 five actual source-exit controls                  | **PASS_SCOPED**                   | 五个指定本地控制可保留                                               |
+| R5 artifact-backed terminal → persistence            | **PASS_SCOPED**                   | 对实际 `instrument_failure` E2 链成立                           |
+| R6 five registered attacks reject                    | **PASS_REGISTERED_CONTROLS_ONLY** | 已登记五个攻击结果可保留，但未检查 Registry 补集错误                           |
+| R7 zero-Provider boundary                            | **PASS**                          | Provider、凭据、经验行与新授权均为零                                    |
+
+非补偿性总体结论：
+
+```text
+first failed Gate:
+  R2 source-derived upstream Event and restricted terminal domain
+
+first blocking defect:
+  forbidden_terminal_kinds is not the exact complement of the
+  sixteen reachable v26.195 Registry terminals
+
+overall:
+  FAIL
+```
+
+R3–R7 的局部通过不能补偿 R2 的精确集合错误。
+
+---
+
+## 七、当前允许与禁止的科学结论
+
+### 允许保留
+
+```text
+v26.216 的 caller terminal/reason/source-event-ID 工厂已被移除
+E2 Observation terminal 由固定 Event kind 派生
+E2 terminal 在当前实现中固定为 instrument_failure
+Event / Descriptor / Observation / Descriptor 四对象真实持久化
+E2 proof 和 Raw 嵌入完整 upstream chain
+五个指定本地 source-exit controls 可以保留
+五个已登记负向控制的局部结果可以保留
+v26.211 authorization 仍未消费
+Provider / credential / empirical activity 均为零
+```
+
+### 当前禁止
+
+```text
+v26.217 已证明其 forbidden set 等于 v26.195 的精确十五项补集
+R2 PASS
+v26.217 overall 8 / 0 PASS
+v26.217 已完成独立审计
+新的在线授权
+直接消费现有 v26.211 authorization
+192-Job Provider execution
+经验估计
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+报告原本也明确要求：即使独立审计通过，仍必须另建绑定所有 v26.217 repaired parents 的新在线授权，现有 v26.211 不得直接消费。
+
+---
+
+## 八、唯一合理的下一修订
+
+不需要再开一轮大型 Event Authority 设计。下一步应是一个很窄的零 Provider 修复：
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_
+binding_preflight_only
+```
+
+### 1. 删除手写禁止集合
+
+不要再维护：
+
+```python
+FORBIDDEN_UPSTREAM_TERMINALS = (...)
+```
+
+改为从冻结 Registry 实际推导：
+
+```python
+reachable_terminal_kinds = {
+    policy.terminal_kind
+    for policy in registry.policies
+    if policy.registration_status == "reachable"
+}
+
+admitted_terminal_kinds = {"instrument_failure"}
+
+forbidden_terminal_kinds = tuple(
+    sorted(reachable_terminal_kinds - admitted_terminal_kinds)
+)
+```
+
+### 2. 增加非补偿性集合约束
+
+正式 Binding 必须验证：
+
+```python
+set(admitted_terminal_kinds) | set(forbidden_terminal_kinds)
+    == reachable_terminal_kinds
+
+set(admitted_terminal_kinds) & set(forbidden_terminal_kinds)
+    == set()
+
+len(admitted_terminal_kinds) == 1
+len(forbidden_terminal_kinds) == 15
+```
+
+并明确检查：
+
+```python
+"provider_failure_no_payload" in forbidden_terminal_kinds
+"resource_budget_exhausted" in forbidden_terminal_kinds
+
+"provider_no_payload_failure" not in forbidden_terminal_kinds
+"resource_failure" not in forbidden_terminal_kinds
+```
+
+### 3. 增加一个决定性完全重哈希控制
+
+只需一个直接攻击即可：
+
+```text
+保持 forbidden set 长度为 15
+将 provider_failure_no_payload 替换成 provider_no_payload_failure
+将 resource_budget_exhausted 替换成 resource_failure
+重哈希 Binding、Composition、Gate 和 Report
+=> 必须在 Registry-complement admission 处拒绝
+```
+
+无需再扩展新的 Provider failure taxonomy、生产事件源或更多异常类。
+
+### 4. 保持其他实现不变
+
+不得修改：
+
+```text
+Event kind
+instrument_failure mapping
+Event/Observation schemas
+四对象持久化顺序
+五个 source-exit controls
+Prompt / model / Thinking / Grammar / Policy
+32 Packages / 192 Jobs / 792 coordinates
+Runtime / validity / denominator
+QA / Mapper / State / Contribution / VTDO
+```
+
+v26.217 的历史正式字节和身份保持不变；修复应产生新的 Binding、Decision、Transition、Manifest 和 Root。
+
+修复后才执行：
+
+```text
+revised preflight
+  -> credential-free independent audit
+  -> separate fresh online authorization
+  -> possible future 192-Job execution
+```
+
+本次审计检查了用户提供的 v26.216 修订报告、v26.217 完整报告、v26.217 正式 `upstream_event_source_binding.json`、冻结 v26.195 Registry，以及 exact source commit `650911314b8a65d7c7480ae405f983ca6083e114` 中的模型、Runtime、Preflight 和测试代码。没有在用户服务器上重新运行报告所称的 `8/8` 与 `73/73` 测试；不过当前阻塞点是静态精确集合不相等，不依赖测试复跑。

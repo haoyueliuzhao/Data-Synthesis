@@ -1,5 +1,36 @@
 # Finance v26.217 Fresh Repaired Upstream Typed-Failure Event Authority And Artifact-Backing Preflight
 
+## Post-Review Scope Correction
+
+The subsequent exact 14,305-byte review at SHA-256
+`4af91cc69d550143fc21f8c8afd0adb61ac3377d6dc51fe0994db3dda397b21f` retains v26.217 as
+`VALID_SCOPED_CALLER_LABEL_REMOVAL_AND_ARTIFACT_BACKED_E2_CHAIN` but fails its exact-domain
+interpretation at `EXACT_V195_REACHABLE_TERMINAL_COMPLEMENT_BINDING`. Caller terminal authority
+remains removed; the executable Event and Observation schemas still derive only
+`instrument_failure`; and the durable four-object E2 chain, five source-exit controls, five-layer
+persistence, and five registered attacks remain valid at their scoped meanings.
+
+The formal `forbidden_terminal_kinds` is not the exact fifteen-item complement of the sixteen
+reachable v26.195 Registry terminals. It contains `provider_no_payload_failure` and
+`resource_failure` but omits the actual Registry names `provider_failure_no_payload` and
+`resource_budget_exhausted`. Equal length and equality with the same hand-written source tuple do
+not establish Registry equality. v26.217 R2 and its noncompensatory overall Gate therefore fail.
+
+Every v26.217 formal byte, identity, historical Gate, Decision, and Transition remains immutable.
+Its current scoped decision is:
+
+```text
+v26_217_removes_caller_terminal_authority_and_materializes_the_e2_
+upstream_artifact_chain_but_its_formal_forbidden_terminal_set_is_not_
+the_exact_v26_195_reachable_complement
+```
+
+The later operator directive consumed only the zero-Provider v26.218 repair. The current
+transition is v26.218's credential-free independent audit only. The v26.211 authorization remains
+unconsumed, and Provider execution remains forbidden. See
+`docs/finance_v26_218_fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight.md`.
+
+
 ## Scope And Decision
 
 Finance v26.217 consumes only
@@ -31,7 +62,7 @@ five-layer writer mechanics remain valid at their scoped meanings. Every v26.216
 identity, historical Gate, Decision, and Transition remains immutable. Their full E2 source
 authority and artifact-backing interpretation is superseded.
 
-The v26.217 decision is:
+The immutable historical v26.217 decision was:
 
 ```text
 fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_
@@ -334,9 +365,9 @@ check/format, and no-import-follow Mypy pass. The adjacent v26.209-v26.217 suite
 package-wide Ruff passes. All runtime
 controls are local and deterministic.
 
-## Boundary And Only Permitted Successor
+## Immutable Historical Boundary And Successor
 
-The only permitted successor is:
+The later review supersedes this transition. The immutable original successor was:
 
 ```text
 fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_

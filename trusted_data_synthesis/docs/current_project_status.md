@@ -15,7 +15,148 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.218 Fresh Repaired Upstream Terminal-Domain Exact Registry-Complement Binding Preflight
+
+Finance v26.218 consumed only
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_only`.
+The exact 14,305-byte external review is bound at SHA-256
+`4af91cc69d550143fc21f8c8afd0adb61ac3377d6dc51fe0994db3dda397b21f`. It retains v26.217
+as `VALID_SCOPED_CALLER_LABEL_REMOVAL_AND_ARTIFACT_BACKED_E2_CHAIN` but fails its exact terminal-
+domain claim at `EXACT_V195_REACHABLE_TERMINAL_COMPLEMENT_BINDING`: v26.217 serialized
+`provider_no_payload_failure` and `resource_failure`, while the actual frozen v26.195 Registry
+contains `provider_failure_no_payload` and `resource_budget_exhausted`. The exact 36-byte operator
+directive `参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`, authorizes only this
+credential-free repair. Provider calls and credential lookups are zero.
+
+All 59 v26.217 formal files and 1,075,394 bytes revalidate, including all 58 self-excluding
+Manifest members and 1,064,349 bound bytes. Its caller-label removal, singleton
+`transport_instrument_failure -> instrument_failure` derivation, durable Event/Descriptor/
+Observation/Descriptor chain, five actual source-exit controls, and five-layer persistence remain
+retained at their scoped meanings. Its historical eight-pass Gate, Decision, and Transition remain
+immutable; their exact-Registry-complement interpretation is superseded.
+
+The new `ExactRegistryComplementBinding` parses the actual frozen v26.195
+`FreshTerminalRegistry` at
+`fresh_kernel_terminal_registry:a9d3089011f34b114b4b8264c09eb6b4c5875dd6978de0a2c3fe316577203152`.
+It derives all sixteen reachable terminal-policy pairs, retains only `instrument_failure` as the
+admitted singleton, and calculates the sorted fifteen-item forbidden complement. A hand-written
+forbidden set is not authority. Binding construction and runtime admission independently require:
+
+```text
+reachable / admitted / forbidden                         16 / 1 / 15
+admitted union forbidden == reachable                            true
+admitted intersection forbidden == empty                         true
+provider_failure_no_payload / resource_budget_exhausted present  true
+provider_no_payload_failure / resource_failure absent            true
+```
+
+A new composition admits that exact partition before invoking the unchanged v26.217 single
+consumer. Its execution object exactly matches v26.217, and all 35 retained runtime files compare
+byte for byte: two ingress receipts, 25 Raw/Result/Trace/Outcome/checkpoint files, and eight
+upstream Event/Descriptor/Observation/Descriptor files. The five actual v26.209 source exits,
+positive E2 artifact chain, Runner observations, terminal decisions, and persistence outputs are
+unchanged. One v26.218-only lifetime adapter keeps caught exception objects alive until the old
+`id(error)`-keyed v26.217 in-memory proof authority completes; it is restored in `finally` and
+changes no persisted semantic object or byte.
+
+One decisive full-rehash control preserves a fifteen-element forbidden list, substitutes both old
+misspellings, and recomputes candidate Binding, Composition, Gate, and Report identities. It
+rejects at Registry-complement admission before consumer execution or output write:
+
+```text
+attacks / rejected / accepted                       1 / 1 / 0
+candidate forbidden count                                  15
+fully rehashed objects                                       4
+Provider calls / attack writes                           0 / 0
+```
+
+The exact noncompensatory Gate partition is:
+
+```text
+R0 external scope and exact v26.217 Freeze                              PASS
+R1 exact v26.195 reachable Registry snapshot                            PASS
+R2 exact reachable-complement partition                                 PASS
+R3 v26.217 Event/Observation artifact chain retained                    PASS
+R4 five actual v26.209 source-exit controls retained                    PASS
+R5 five-layer persistence bytes retained                                PASS
+R6 same-length misspelled-complement full-rehash attack rejects         PASS
+R7 zero-Provider/credential/empirical boundary                          PASS
+passed / failed                                                          8 / 0
+```
+
+Authoritative identities include:
+
+- authorization / v26.217 Freeze:
+  `finance_v26_218_external_revision_authorization:c33b4367d3a3cf45a84ff4de46b8f7c216e3e162daf4056fffc710f18c57ba7a` /
+  `finance_v26_218_v217_freeze:9e22d598e6834e4790784a79b689eff37f0aaf952f79212ba01c8c12a480adb3`;
+- implementation / exact complement / composition:
+  `fresh_repaired_upstream_terminal_domain_implementation_binding:c78d7b4f5a17ac6e370ffeaffbb18c6ebebe0c242aed8268ffb2b269eb4c2ffa` /
+  `fresh_repaired_exact_v195_registry_complement_binding:a2c8738171c7e37561835928a41f2ec59bf9b1c7d6d75b0a33df91dd7b236e34` /
+  `fresh_repaired_exact_registry_complement_composition_contract:f31228c225a52b0d89fba44a62c14e1e6f03084db8dba45b2b85fc949d063656`;
+- retained execution / negative control / scope:
+  `finance_v26_218_retained_execution_audit:a199d0145ea7fe0802ac1072d9fea8e5a9d93f607689ff3d2243c61b40f9e999` /
+  `finance_v26_218_registry_complement_negative_control_audit:3b7cf341b09a2bfd160ba50437da0b25605a13fb34d508b009a0f52892d31e07` /
+  `finance_v26_218_scope_boundary_audit:3d273110131d879ed2f6833ba1769112077ef8efe4858ac91ea1d55dbabed566`;
+- Gate / Decision / Transition:
+  `finance_v26_218_gate_evaluation:462995f955f0e47ff11cfbe0dcf16952569a99f7c0a3e304261a641ac264ecae` /
+  `finance_v26_218_registry_complement_decision:b086be873e0509689d3ebc733e5d790e28bb456a412f2b178ae191643521eea6` /
+  `finance_v26_218_transition:04ff36b08d531ad5419ce8da8dffe6fcde3447b192a971f2cce3b2da9e094edb`;
+- report:
+  `finance_v26_218_registry_complement_report:1f055b20f0f5492f69f821763ea415539cafd3f6b622ae4457689582037231b8`;
+- Artifact Manifest / Root:
+  `finance_v26_218_artifact_manifest:81b777673ed46c08fb6010ac3241f2fd87e087af4dc6f0c8266e4886dcb2276e` /
+  `finance_v26_218_artifact_root:b9b4524a734249133d34007af751537cd25e8a705a31657c66bde5bd9b7b34e1`.
+
+The exact source commit/tree are `6171fcc27a4a88693cb9daa1485b0d658b11a5a1` /
+`1de85c4ee2f69a360bc7b7c13704186042648064`. The 51-file, 1,054,511-byte formal directory
+rebuilds byte for byte; its Manifest binds 50 members and 1,044,590 bytes. Focused tests pass 8/8,
+including complete independent rebuilds. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass. The adjacent v26.209-v26.218 suite passes 81/81; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_
+preflight_passed_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_independent_audit_only`.
+It may only independently rebuild the exact directory, rederive the sixteen Registry rows and
+1/15 partition, verify all 35 retained runtime files, reconstruct the five terminal/persistence
+chains, and rerun the one attack with zero Provider calls. It may not issue or consume an online
+authorization. The v26.211 authorization remains unconsumed. A passing audit must still be
+followed by a separate new online authorization binding all v26.218 repaired parents. Provider
+execution, the 192-Job online run, frozen-condition change, empirical estimation, QA, Mapper,
+State, frequency, Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_218_fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight.md`.
+
 ## v26.217 Fresh Repaired Upstream Typed-Failure Event Authority And Artifact-Backing Preflight
+
+### Post-review scope correction
+
+The subsequent exact 14,305-byte review at SHA-256
+`4af91cc69d550143fc21f8c8afd0adb61ac3377d6dc51fe0994db3dda397b21f` retains v26.217 as
+`VALID_SCOPED_CALLER_LABEL_REMOVAL_AND_ARTIFACT_BACKED_E2_CHAIN` but fails its exact-domain
+interpretation at `EXACT_V195_REACHABLE_TERMINAL_COMPLEMENT_BINDING`. The executable singleton
+still derives only `instrument_failure`, and the four-object E2 chain and all five local
+source-exit controls remain valid at their scopes. The formal forbidden list, however, uses
+`provider_no_payload_failure` and `resource_failure` instead of the actual v26.195 Registry names
+`provider_failure_no_payload` and `resource_budget_exhausted`.
+
+Every v26.217 formal byte, identity, historical Gate, Decision, and Transition remains immutable.
+Its current scoped decision is:
+
+```text
+v26_217_removes_caller_terminal_authority_and_materializes_the_e2_
+upstream_artifact_chain_but_its_formal_forbidden_terminal_set_is_not_
+the_exact_v26_195_reachable_complement
+```
+
+The later operator directive consumed only the zero-Provider v26.218 exact-complement repair
+recorded above. The current transition is v26.218's credential-free independent audit only; the
+v26.211 authorization remains unconsumed.
 
 Finance v26.217 consumed only
 `fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_preflight_only`.
@@ -143,14 +284,15 @@ pass 8/8, including a complete second build. Focused PyCompile, Ruff check/forma
 no-import-follow Mypy pass. The adjacent v26.209-v26.217 suite passes 73/73; package-wide Ruff
 passes.
 
-The current decision is:
+The immutable historical v26.217 decision was:
 
 ```text
 fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_
 preflight_passed_independent_audit_required_online_execution_blocked
 ```
 
-The only permitted successor is
+The old independent-audit transition is superseded by the later review and v26.218 repair.
+Its immutable original successor was
 `fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_preflight_independent_audit_only`.
 It may only independently rebuild the exact directory, rederive the Event terminal domain, replay
 five exits, reconstruct the positive E2 four-file upstream chain and five terminal/persistence
@@ -184,7 +326,7 @@ and_not_artifact_backed
 ```
 
 The later operator directive consumed only the zero-Provider v26.217 repair above. The current
-transition is v26.217's credential-free independent audit only; the v26.211 authorization remains
+transition is v26.218's credential-free independent audit only; the v26.211 authorization remains
 unconsumed.
 
 Finance v26.216 consumed only
@@ -347,7 +489,7 @@ the_declared_source_contract
 ```
 
 The later operator directive consumed only the zero-Provider v26.216 exit-surface provenance
-repair recorded above. The current transition is v26.217's credential-free independent audit
+repair recorded above. The current transition is v26.218's credential-free independent audit
 only; the v26.211 authorization remains unconsumed.
 
 Finance v26.215 consumed only
@@ -495,8 +637,8 @@ observation_preflight_passed_independent_audit_required_online_execution_blocked
 The old independent-audit transition is superseded by the later review. Its only permitted repair
 candidate was
 `fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_provenance_preflight_only`,
-which the operator directive consumed only through v26.216. The current transition is v26.217's
-credential-free independent audit only. The v26.211 authorization remains unconsumed; Provider
+which the operator directive consumed only through v26.216. The current transition is
+v26.218's credential-free independent audit only. The v26.211 authorization remains unconsumed; Provider
 execution, the 192-Job online run, frozen-condition change, empirical estimation, QA, Mapper,
 State, frequency, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_215_fresh_repaired_actual_v209_typed_failure_source_surface_totality_preflight.md`
@@ -659,8 +801,7 @@ failure_terminalization_preflight_passed_independent_audit_required_online_execu
 The old independent-audit successor below is superseded by the later review. Its only permitted
 repair candidate was
 `fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`,
-which the operator directive consumed only through v26.215. The current transition is v26.217's
-credential-free independent audit only. The immutable old successor was
+which the operator directive consumed only through v26.215. The current transition is v26.218's credential-free independent audit only. The immutable old successor was
 `fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_independent_audit_only`.
 It may only independently rebuild and rederive the eight Runner-owned failure observations,
 terminal decisions, five-layer chains, and four attacks with zero Provider calls. It may not
@@ -695,7 +836,7 @@ by_caller_selected_evidence_subtype
 
 The later operator directive consumed only the zero-Provider v26.214 repair above. Its later
 source-totality review authorized only the v26.215 repair now recorded at the top of this status.
-The current transition is v26.217's independent credential-free audit only; the v26.211
+The current transition is v26.218's independent credential-free audit only; the v26.211
 authorization remains unconsumed.
 
 Finance v26.213 consumed only
@@ -1161,7 +1302,7 @@ The immutable Transition named
 blocks it before consumption. That authorization remains unconsumed. Replacement, failed-Job
 rerun, recovery, historical reuse, source/condition change, Provider execution, QA integration,
 Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
-The current boundary is v26.217's credential-free independent audit only. See
+The current boundary is v26.218's credential-free independent audit only. See
 `docs/finance_v26_211_fresh_repaired_full_condition_exact_online_execution_authorization.md`.
 
 ## v26.210 Fresh Repaired Final Request Continuity Independent Audit
