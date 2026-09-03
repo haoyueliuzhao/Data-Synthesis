@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass
@@ -29,11 +28,11 @@ from trusted_synthesis.runtime.agent.schema import AgentModelConfig
 
 RUN_ID: Final = (
     "finance_v26_226_fresh_exact_v209_parent_bound_postresponse_serializer_repair_"
-    "exact_192_job_replacement_online_execution_v1_20260903"
+    "exact_192_job_replacement_online_execution_v1_20260904"
 )
 PREFLIGHT_RUN_ID: Final = (
     "finance_v26_225_postrun_independent_audit_and_postresponse_serializer_"
-    "repair_preflight_v1_20260904"
+    "repair_preflight_v2_20260904"
 )
 PREFLIGHT_DIR: Final = f"trusted_data_synthesis/artifacts/vtdo_experiment/{PREFLIGHT_RUN_ID}"
 OUTPUT_DIR: Final = f"trusted_data_synthesis/artifacts/vtdo_experiment/{RUN_ID}"
@@ -400,6 +399,15 @@ class _FakeHttpResponse:
         ).encode("utf-8")
 
 
+class _CredentialFreeControlClient(prior.ExactRequestBodyDeepSeekClient):
+    """Exercises the exact call implementation without consulting an environment key."""
+
+    def __init__(self, config: AgentModelConfig) -> None:
+        require_stage_one_model_config(config)
+        self._config = config
+        self._api_key = "synthetic-control-key"
+
+
 def _canonical_file(path: Path, value: Any) -> bytes:
     payload = path.read_bytes()
     if payload != _encoded(value):
@@ -615,6 +623,40 @@ def _admit_prepared_authorization(prepared: PreparedReplacement) -> None:
         raise ValueError("replacement exact-byte Authorization Guard rejected")
 
 
+def _admit_refreshed_prepared(
+    prepared: PreparedReplacement,
+    refreshed: RepairPreflightObjects,
+) -> None:
+    repository_root = prepared.repository_root.resolve()
+    expected_package_root = (repository_root / "trusted_data_synthesis").resolve()
+    expected_output_dir = (repository_root / OUTPUT_DIR).resolve()
+    expected_ledger_path = (
+        repository_root
+        / LEDGER_DIR
+        / f"{_sha(refreshed.authorization.authorization_id.encode())}.json"
+    ).resolve()
+    loaded = refreshed.loaded
+    if (
+        prepared.repository_root != repository_root
+        or prepared.package_root.resolve() != expected_package_root
+        or prepared.output_dir.resolve() != expected_output_dir
+        or prepared.ledger_path.resolve() != expected_ledger_path
+        or refreshed.authorization != prepared.authorization
+        or refreshed.authorization_bytes != prepared.authorization_bytes
+        or refreshed.preparation != prepared.preparation
+        or refreshed.postrun_audit != prepared.postrun_audit
+        or refreshed.repair_control_audit != prepared.repair_control_audit
+        or prepared.catalog != loaded["catalog"]
+        or prepared.manifest != loaded["manifest"]
+        or prepared.implementation != loaded["implementation"]
+        or prepared.frozen_parents != loaded["parents"]
+        or prepared.runtime != loaded["runtime"]
+        or prepared.config != loaded["config"]
+        or prepared.bindings != loaded["bindings"]
+    ):
+        raise ValueError("replacement refreshed execution parent admission rejected")
+
+
 def _validate_record_files(output_dir: Path, record: models.JobExecutionRecord) -> None:
     descriptors: tuple[Any, ...] = (
         record.raw,
@@ -667,8 +709,6 @@ def _run_repair_controls(
     manifest = cast(v209_models.ExecutableDevelopmentManifest, loaded["manifest"])
     job = sorted(manifest.jobs, key=lambda item: item.job_id)[0]
     original_urlopen = prior.urllib.request.urlopen
-    previous_key = os.environ.get(config.api_key_env)
-    os.environ[config.api_key_env] = "synthetic-control-key"
     try:
         with TemporaryDirectory(prefix="v26_225_repair_control_") as directory:
             root = Path(directory)
@@ -721,7 +761,7 @@ def _run_repair_controls(
                         run_start=cast(Any, run_start),
                         job=job,
                         job_ordinal=0,
-                        client=prior.ExactRequestBodyDeepSeekClient(config),
+                        client=_CredentialFreeControlClient(config),
                         record_model=cast(Any, models.JobExecutionRecord),
                         failure_record_model=cast(Any, models.JobFailureRecord),
                         record_identity_prefix="finance_v26_226_replacement_job_record:",
@@ -778,10 +818,6 @@ def _run_repair_controls(
             )
     finally:
         prior.urllib.request.urlopen = original_urlopen
-        if previous_key is None:
-            os.environ.pop(config.api_key_env, None)
-        else:
-            os.environ[config.api_key_env] = previous_key
 
 
 def _authorization_attack_audit(
@@ -1056,7 +1092,10 @@ def prepare_replacement(*, repository_root: Path, output_dir: Path) -> PreparedR
 
 def _consume(
     prepared: PreparedReplacement,
+    *,
+    refreshed: RepairPreflightObjects,
 ) -> tuple[models.AuthorizationConsumptionReceipt, models.RunStartReceipt]:
+    _admit_refreshed_prepared(prepared, refreshed)
     _admit_prepared_authorization(prepared)
     consumption = models.make_identity(
         models.AuthorizationConsumptionReceipt,
@@ -1145,15 +1184,8 @@ def execute_replacement(
         repository_root=prepared.repository_root,
         runtime_output_dir=prepared.output_dir,
     )
-    if (
-        refreshed.authorization != prepared.authorization
-        or refreshed.authorization_bytes != prepared.authorization_bytes
-        or refreshed.preparation != prepared.preparation
-        or refreshed.postrun_audit != prepared.postrun_audit
-        or refreshed.repair_control_audit != prepared.repair_control_audit
-    ):
-        raise ValueError("replacement fixed preflight changed after preparation")
-    consumption, run_start = _consume(prepared)
+    _admit_refreshed_prepared(prepared, refreshed)
+    consumption, run_start = _consume(prepared, refreshed=refreshed)
     _write_ingress(prepared)
     prior._load_env_key(prepared.package_root, prepared.config.api_key_env)  # noqa: SLF001
     client = prior.ExactRequestBodyDeepSeekClient(prepared.config)

@@ -54,7 +54,7 @@ class FakeHttpResponse:
 
 
 @pytest.fixture(scope="module")
-def prepared() -> subject.PreparedReplacement:
+def preflight_objects() -> subject.RepairPreflightObjects:
     members = tuple(
         models.SourceMember(
             relative_path=path,
@@ -76,11 +76,18 @@ def prepared() -> subject.PreparedReplacement:
         field="source_id",
         prefix="finance_v26_225_repair_source_identity:",
     )
-    objects = subject._construct_preflight_objects(  # noqa: SLF001
+    return subject._construct_preflight_objects(  # noqa: SLF001
         repository_root=ROOT,
         runtime_output_dir=ROOT / subject.OUTPUT_DIR,
         source_identity=source,
     )
+
+
+@pytest.fixture(scope="module")
+def prepared(
+    preflight_objects: subject.RepairPreflightObjects,
+) -> subject.PreparedReplacement:
+    objects = preflight_objects
     loaded = objects.loaded
     authorization = objects.authorization
     return subject.PreparedReplacement(
@@ -264,6 +271,7 @@ def test_mock_http_response_drives_real_runner_and_closes_journal(
 
 def test_replacement_global_ledger_is_no_replace(
     prepared: subject.PreparedReplacement,
+    preflight_objects: subject.RepairPreflightObjects,
     tmp_path: Path,
 ) -> None:
     formal_authorization = (
@@ -274,22 +282,45 @@ def test_replacement_global_ledger_is_no_replace(
     isolated = replace(
         prepared,
         repository_root=tmp_path,
-        output_dir=tmp_path / "first",
+        package_root=tmp_path / "trusted_data_synthesis",
+        output_dir=tmp_path / subject.OUTPUT_DIR,
         ledger_path=(
             tmp_path
             / subject.LEDGER_DIR
             / f"{hashlib.sha256(prepared.authorization.authorization_id.encode()).hexdigest()}.json"
         ),
     )
-    subject._consume(isolated)  # noqa: SLF001
-    second = replace(isolated, output_dir=tmp_path / "second")
+    subject._consume(isolated, refreshed=preflight_objects)  # noqa: SLF001
     with pytest.raises(FileExistsError):
-        subject._consume(second)  # noqa: SLF001
-    assert not second.output_dir.exists()
+        subject._consume(isolated, refreshed=preflight_objects)  # noqa: SLF001
+    assert isolated.output_dir.is_dir()
+
+
+def test_refreshed_execution_parent_substitution_rejects_before_ledger(
+    prepared: subject.PreparedReplacement,
+    preflight_objects: subject.RepairPreflightObjects,
+) -> None:
+    changed_config = prepared.config.model_copy(update={"timeout_seconds": 999.0})
+    forged = replace(prepared, config=changed_config)
+    with pytest.raises(ValueError, match="refreshed execution parent"):
+        subject._admit_refreshed_prepared(forged, preflight_objects)  # noqa: SLF001
+    changed_manifest = prepared.manifest.model_copy(
+        update={"jobs": tuple(reversed(prepared.manifest.jobs))}
+    )
+    with pytest.raises(ValueError, match="refreshed execution parent"):
+        subject._admit_refreshed_prepared(  # noqa: SLF001
+            replace(prepared, manifest=changed_manifest), preflight_objects
+        )
+    with pytest.raises(ValueError, match="refreshed execution parent"):
+        subject._admit_refreshed_prepared(  # noqa: SLF001
+            replace(prepared, output_dir=prepared.output_dir.parent / "forged"),
+            preflight_objects,
+        )
 
 
 def test_fully_rehashed_authorization_rejects_before_ledger(
     prepared: subject.PreparedReplacement,
+    preflight_objects: subject.RepairPreflightObjects,
     tmp_path: Path,
 ) -> None:
     formal_authorization = (
@@ -332,14 +363,15 @@ def test_fully_rehashed_authorization_rejects_before_ledger(
     forged = replace(
         prepared,
         repository_root=tmp_path,
-        output_dir=tmp_path / "forged-output",
+        package_root=tmp_path / "trusted_data_synthesis",
+        output_dir=tmp_path / subject.OUTPUT_DIR,
         ledger_path=ledger,
         authorization=forged_authorization,
         authorization_bytes=forged_bytes,
         preparation=forged_preparation,
     )
-    with pytest.raises(ValueError, match="fixed formal Authorization bytes"):
-        subject._consume(forged)  # noqa: SLF001
+    with pytest.raises(ValueError, match="refreshed execution parent"):
+        subject._consume(forged, refreshed=preflight_objects)  # noqa: SLF001
     assert not ledger.exists()
     assert not forged.output_dir.exists()
 
