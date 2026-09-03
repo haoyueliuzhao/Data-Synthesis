@@ -244,6 +244,11 @@ def _implementation_binding(
         )
     symbol_values = (
         (
+            runtime.LifetimeStableSourceExitProofAuthority,
+            "LifetimeStableSourceExitProofAuthority",
+            RUNTIME_FILE,
+        ),
+        (
             runtime.ExactRegistryComplementAuthority.admit,
             "ExactRegistryComplementAuthority.admit",
             RUNTIME_FILE,

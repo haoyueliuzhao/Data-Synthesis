@@ -17,6 +17,9 @@ from trusted_synthesis.experiments.vtdo_experiment import (
     phase1_v26_fresh_repaired_upstream_terminal_domain_exact_registry_complement_preflight as subject,
 )
 from trusted_synthesis.experiments.vtdo_experiment import (
+    phase1_v26_fresh_repaired_upstream_terminal_domain_exact_registry_complement_runtime as runtime,
+)
+from trusted_synthesis.experiments.vtdo_experiment import (
     phase1_v26_fresh_repaired_upstream_typed_failure_event_authority_models as v217_models,
 )
 
@@ -148,6 +151,13 @@ def test_v217_execution_and_35_runtime_files_are_retained_byte_exact(
 ) -> None:
     repository, output, _ = built
     retained = _load(output / "retained_execution_audit.json")
+    assert issubclass(
+        runtime.LifetimeStableSourceExitProofAuthority,
+        subject.v217_runtime.SourceExitProofAuthority,
+    )
+    adapter_source = inspect.getsource(runtime.ExactComplementFailureConsumer.execute_preflight)
+    assert "LifetimeStableSourceExitProofAuthority" in adapter_source
+    assert "finally:" in adapter_source
     v217_root = repository / subject.V217_DIR
     v217_execution = _load(v217_root / "exit_surface_execution_audit.json")
     assert retained["v217_execution"] == v217_execution

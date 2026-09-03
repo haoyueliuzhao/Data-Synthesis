@@ -14,6 +14,24 @@ from trusted_synthesis.experiments.vtdo_experiment import (
 from trusted_synthesis.hashing import canonical_hash
 
 
+class LifetimeStableSourceExitProofAuthority(v217_runtime.SourceExitProofAuthority):
+    """Preserves exception identities for the lifetime of the v26.217 authority."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._retained_error_objects: list[Any] = []
+
+    def record_transport_exit(self, *, error: Any, exit_code: str, dispatch: Any) -> Any:
+        proof = super().record_transport_exit(error=error, exit_code=exit_code, dispatch=dispatch)
+        self._retained_error_objects.append(error)
+        return proof
+
+    def record_projection_exit(self, *, error: Any, response: Any) -> Any:
+        proof = super().record_projection_exit(error=error, response=response)
+        self._retained_error_objects.append(error)
+        return proof
+
+
 class ExactRegistryComplementAuthority:
     """Admits a terminal partition only against the actual frozen Registry object."""
 
@@ -108,7 +126,13 @@ class ExactComplementFailureConsumer:
     def execute_preflight(self, **kwargs: Any) -> v217_runtime.PreflightExecution:
         self._guard.admit(self._binding, self._composition)
         self._authority.admit(self._binding)
-        return self._v217_consumer.execute_preflight(**kwargs)
+        module = cast(Any, v217_runtime)
+        original = module.SourceExitProofAuthority
+        module.SourceExitProofAuthority = LifetimeStableSourceExitProofAuthority
+        try:
+            return self._v217_consumer.execute_preflight(**kwargs)
+        finally:
+            module.SourceExitProofAuthority = original
 
 
 def _candidate_identity(values: dict[str, Any], prefix: str) -> str:
