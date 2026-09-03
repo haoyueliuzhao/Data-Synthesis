@@ -15,7 +15,61 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-## v26.225 Postrun Independent Audit And Post-Response Serializer Repair Preflight
+## v26.225 v2 Postrun Audit And Post-Response Serializer Repair Preflight
+
+The first v26.225 formal directory remains immutable but failed subsequent independent review.
+Its local controls accessed the configured credential environment key before consumption, and its
+live refresh did not bind caller-held Catalog, Manifest, implementation, parents, Runtime, model
+configuration, bindings, or paths at the consumption boundary. The review also found inconsistent
+HTTP-error classification and corrected the v1 claim that import-following Mypy passed. The v1
+authorization was never consumed and is permanently superseded.
+
+The authoritative v2 implementation commit/tree are
+`4df1dc598a0b73484eff8c5cfa082d86834bf2b4` /
+`0e688f2d2cadddf8edf2665b93292b996c98bf17`. Pre-consumption controls now use a literal synthetic
+header without reading or changing the process credential environment. HTTP statuses and relation
+projection use one classification rule. The consumer reconstructs the fixed formal preflight and
+requires exact equality for authorization, preparation, both Audits, Catalog, Manifest,
+implementation, frozen parents, Runtime, model configuration, bindings, package root, output
+directory, and derived ledger path before writing the global ledger.
+
+The v2 formal directory has twelve files and 67,886 bytes; its self-excluding Manifest binds
+eleven members and 65,831 bytes. Principal identities are:
+
+- source / authorization / preparation:
+  `finance_v26_225_repair_source_identity:7748431ea9fb7971ddd8b8a3c267a5f286c847c6e7a8374571cc5db2befd4f8c` /
+  `finance_v26_225_repaired_replacement_execution_authorization:b4d43c2c0ee8c747003a0bd1c5a7f48bfb994d9d47181a88597546517ab6b282` /
+  `finance_v26_225_repair_preparation:909d37530a55664be9a67988b00fa4460daf38b7f6f9493d978acad844b15df0`;
+- Gate / Decision / Transition:
+  `finance_v26_225_repair_gate_evaluation:524dd53bd6d931c8e82343d166f48a2574b66845a50fc313a3c10b718f72d182` /
+  `finance_v26_225_repair_decision:e3b09b50d5d502e257026d04a17e2cc67fd654d2354f0656992dc27a190ec0d8` /
+  `finance_v26_225_repair_transition:31eecaf65aa001ada19a4ac9877bbc0c9fd66042ab0c729ec8bf06608d5f0147`;
+- Manifest / Root:
+  `finance_v26_225_repair_artifact_manifest:97e6fc5cf87fd8528fe60bf649a3c838a74ad6d4ff5e7bc0ccb49d5773dc00f3` /
+  `finance_v26_225_repair_artifact_root:83bdade0b60d41e14701c36a213d77059f4a3db5a144a121ee417bafc0697c98`.
+
+The exact authorization is 30,219 bytes at SHA-256
+`5ca3a89da4a50b31ce9170241f17a2380cdc21e12e0e1940fcd72d52d272c7e7`.
+Focused repair tests pass 9/9; the adjacent v26.221-v26.225 partition passes 52/52. PyCompile,
+Ruff, package-wide Ruff, and no-import-follow Mypy pass. Historical import-following diagnostics
+are recorded and are not described as passing.
+
+The current decision is:
+
+```text
+v26_225_v2_repair_preflight_materialized_independent_audit_required_
+online_replacement_execution_blocked
+```
+
+No v26.226 output or v2 consumption ledger exists. A passing independent audit of the exact
+committed v2 directory is required before the already operator-authorized one-shot 192-Job
+replacement may begin. See
+`docs/finance_v26_225_postrun_independent_audit_and_postresponse_serializer_repair_preflight.md`.
+
+## v26.225 v1 Postrun Repair Preflight (Superseded)
+
+The following section retains the first formal directory's historical self-evaluation. Its
+authorization and passing interpretation are not current authority.
 
 Finance v26.225 independently revalidates the immutable 398-file, 680,947-byte v26.224 failed
 execution. All 192 exact Jobs have one request intent and the same Host failure digest
