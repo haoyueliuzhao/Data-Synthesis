@@ -132,6 +132,10 @@ def test_registry_complement_is_independently_derived(built: Path) -> None:
     admitted = set(audit.admitted_terminal_kinds)
     forbidden = set(audit.forbidden_terminal_kinds)
     assert audit.exact_v195_registry_id == models.REGISTRY_ID
+    assert audit.v217_event_source_binding_id == models.V217_EVENT_SOURCE_BINDING_ID
+    assert audit.admitted_mapping_derived_from_v217_source_binding
+    assert audit.candidate_admitted_mapping_match
+    assert audit.admitted_event_terminal_policy_items[0][1] == "instrument_failure"
     assert (audit.reachable_count, audit.admitted_count, audit.forbidden_count) == (16, 1, 15)
     assert admitted == {"instrument_failure"}
     assert admitted | forbidden == reachable
@@ -177,6 +181,11 @@ def test_five_source_exit_persistence_chains_are_independently_reconstructed(
         "privacy_rejection",
         "instrument_failure",
     )
+    assert audit.exact_source_contract_id == models.V217_SOURCE_CONTRACT_ID
+    assert audit.source_contract_exit_count == 5
+    assert audit.source_contract_row_match_count == 5
+    assert all(row.source_contract_match for row in audit.rows)
+    assert audit.e2_upstream_artifact_file_integrity_count == 4
     assert audit.source_exit_count == audit.distinct_source_exit_count == 5
     assert (audit.instrument_terminal_count, audit.privacy_terminal_count) == (4, 1)
     assert audit.five_layer_file_count == 25

@@ -34,6 +34,14 @@ REGISTRY_ID: Final = (
     "fresh_kernel_terminal_registry:"
     "a9d3089011f34b114b4b8264c09eb6b4c5875dd6978de0a2c3fe316577203152"
 )
+V217_EVENT_SOURCE_BINDING_ID: Final = (
+    "fresh_repaired_upstream_failure_event_source_binding:"
+    "16427f8aa014cc406c469e17519afd488b32a8af52f378d455b94bf35d384f68"
+)
+V217_SOURCE_CONTRACT_ID: Final = (
+    "fresh_repaired_actual_v209_typed_failure_exit_surface_contract:"
+    "ed3f99ef045982412db30a21d3d8b5bd4e03e8039908a6176a4c0637bd331742"
+)
 
 
 class FrozenModel(BaseModel):
@@ -221,6 +229,10 @@ class IndependentRegistryComplementAudit(FrozenModel):
         "a9d3089011f34b114b4b8264c09eb6b4c5875dd6978de0a2c3fe316577203152"
     ] = REGISTRY_ID
     exact_v195_registry_file_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    v217_event_source_binding_id: Literal[
+        "fresh_repaired_upstream_failure_event_source_binding:"
+        "16427f8aa014cc406c469e17519afd488b32a8af52f378d455b94bf35d384f68"
+    ] = V217_EVENT_SOURCE_BINDING_ID
     candidate_binding_id: str = Field(min_length=1)
     reachable_terminal_policy_items: tuple[tuple[str, str], ...] = Field(
         min_length=16, max_length=16
@@ -237,6 +249,8 @@ class IndependentRegistryComplementAudit(FrozenModel):
     intersection_is_empty: Literal[True] = True
     correct_registry_names_present: Literal[2] = 2
     old_misspellings_present: Literal[0] = 0
+    admitted_mapping_derived_from_v217_source_binding: Literal[True] = True
+    candidate_admitted_mapping_match: Literal[True] = True
     candidate_binding_actual_byte_match: Literal[True] = True
     candidate_helper_calls: Literal[0] = 0
     provider_calls: Literal[0] = 0
@@ -322,6 +336,7 @@ class IndependentSourceExitChainRow(FrozenModel):
     raw_result_trace_outcome_checkpoint_bytes_match_v217: Literal[5] = 5
     detached_layer_bytes_match: Literal[5] = 5
     content_identity_match_count: Literal[5] = 5
+    source_contract_match: Literal[True] = True
     terminal_and_parent_chain_match: Literal[True] = True
     e2_upstream_artifact_chain_present: bool
     formal_empirical_row: Literal[False] = False
@@ -351,6 +366,10 @@ class IndependentSourceExitChainRow(FrozenModel):
 class IndependentSourceExitPersistenceAudit(FrozenModel):
     audit_id: str = Field(min_length=1)
     freeze_id: str = Field(min_length=1)
+    exact_source_contract_id: Literal[
+        "fresh_repaired_actual_v209_typed_failure_exit_surface_contract:"
+        "ed3f99ef045982412db30a21d3d8b5bd4e03e8039908a6176a4c0637bd331742"
+    ] = V217_SOURCE_CONTRACT_ID
     rows: tuple[IndependentSourceExitChainRow, ...] = Field(min_length=5, max_length=5)
     source_exit_count: Literal[5] = 5
     distinct_source_exit_count: Literal[5] = 5
@@ -360,7 +379,10 @@ class IndependentSourceExitPersistenceAudit(FrozenModel):
     v217_layer_actual_byte_match_count: Literal[25] = 25
     detached_layer_actual_byte_match_count: Literal[25] = 25
     content_identity_match_count: Literal[25] = 25
+    source_contract_exit_count: Literal[5] = 5
+    source_contract_row_match_count: Literal[5] = 5
     e2_upstream_chain_count: Literal[1] = 1
+    e2_upstream_artifact_file_integrity_count: Literal[4] = 4
     exception_escape_count: Literal[0] = 0
     empirical_row_count: Literal[0] = 0
     provider_calls: Literal[0] = 0

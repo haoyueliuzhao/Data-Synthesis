@@ -474,10 +474,27 @@ def _independent_registry_complement(
     registry = cast(dict[str, Any], json.loads(registry_bytes))
     if registry.get("registry_id") != models.REGISTRY_ID:
         _fail("A2.registry_identity", "v26.195 Registry identity differs")
+    event_source_path = repository_root / V217_DIR / "upstream_event_source_binding.json"
+    event_source = cast(dict[str, Any], _load(event_source_path))
+    if (
+        event_source.get("binding_id") != models.V217_EVENT_SOURCE_BINDING_ID
+        or not _identity_matches(
+            event_source,
+            "binding_id",
+            "fresh_repaired_upstream_failure_event_source_binding:",
+        )
+        or event_source.get("source_v195_terminal_registry_id") != models.REGISTRY_ID
+        or event_source.get("terminal_argument_allowed") is not False
+        or event_source.get("reason_argument_allowed") is not False
+        or event_source.get("source_event_id_argument_allowed") is not False
+        or event_source.get("provider_calls") != 0
+        or saved.complement.get("v217_event_source_binding_id") != event_source.get("binding_id")
+    ):
+        _fail("A2.event_source", "v26.217 admitted Event-source Binding differs")
     reachable_pairs = _registry_pairs(registry)
     admitted_mapping = tuple(
         tuple(str(value) for value in item)
-        for item in cast(list[list[Any]], saved.complement["admitted_event_terminal_policy_items"])
+        for item in cast(list[list[Any]], event_source["admitted_event_terminal_policy_items"])
     )
     admitted = tuple(sorted({item[1] for item in admitted_mapping}))
     reachable = {item[0] for item in reachable_pairs}
@@ -492,6 +509,7 @@ def _independent_registry_complement(
             "forbidden_terminal_kinds": list(forbidden),
         }
     )
+    policy_by_terminal = dict(reachable_pairs)
     if (
         len(reachable_pairs) != 16
         or admitted != ("instrument_failure",)
@@ -502,6 +520,14 @@ def _independent_registry_complement(
         or "resource_budget_exhausted" not in forbidden
         or "provider_no_payload_failure" in forbidden
         or "resource_failure" in forbidden
+        or admitted_mapping
+        != (
+            (
+                "transport_instrument_failure",
+                "instrument_failure",
+                policy_by_terminal["instrument_failure"],
+            ),
+        )
         or models.canonical_bytes(independent_projection) != models.canonical_bytes(expected)
     ):
         _fail("A2.complement", "independent Registry complement differs")
@@ -512,6 +538,7 @@ def _independent_registry_complement(
             {
                 "freeze_id": freeze_id,
                 "exact_v195_registry_file_sha256": _sha(registry_bytes),
+                "v217_event_source_binding_id": event_source["binding_id"],
                 "candidate_binding_id": saved.complement["binding_id"],
                 "reachable_terminal_policy_items": reachable_pairs,
                 "admitted_event_terminal_policy_items": admitted_mapping,
@@ -581,6 +608,8 @@ def _validate_e2_artifacts(root: Path, chain: dict[str, Any]) -> None:
     event_descriptor = cast(dict[str, Any], chain["event_descriptor"])
     observation = cast(dict[str, Any], chain["observation"])
     observation_descriptor = cast(dict[str, Any], chain["observation_descriptor"])
+    event_bytes = _bytes(event)
+    observation_bytes = _bytes(observation)
     expected = (
         (str(event_descriptor["relative_path"]), event),
         (_descriptor_relative(event_descriptor, "upstream_event_descriptors"), event_descriptor),
@@ -590,7 +619,56 @@ def _validate_e2_artifacts(root: Path, chain: dict[str, Any]) -> None:
             observation_descriptor,
         ),
     )
-    if any((root / name).read_bytes() != _bytes(value) for name, value in expected):
+    if (
+        any((root / name).read_bytes() != _bytes(value) for name, value in expected)
+        or not _identity_matches(
+            event,
+            "event_id",
+            "fresh_repaired_authenticated_upstream_failure_event:",
+        )
+        or not _identity_matches(
+            observation,
+            "observation_id",
+            "fresh_repaired_artifact_backed_upstream_failure_observation:",
+        )
+        or not _identity_matches(
+            event_descriptor,
+            "descriptor_id",
+            "fresh_repaired_upstream_artifact_descriptor:",
+        )
+        or not _identity_matches(
+            observation_descriptor,
+            "descriptor_id",
+            "fresh_repaired_upstream_artifact_descriptor:",
+        )
+        or not _identity_matches(
+            chain,
+            "chain_id",
+            "fresh_repaired_upstream_failure_artifact_chain:",
+        )
+        or event_descriptor["object_id"] != event["event_id"]
+        or event_descriptor["sha256"] != _sha(event_bytes)
+        or event_descriptor["byte_count"] != len(event_bytes)
+        or event_descriptor["parent_descriptor_id"] is not None
+        or observation_descriptor["object_id"] != observation["observation_id"]
+        or observation_descriptor["sha256"] != _sha(observation_bytes)
+        or observation_descriptor["byte_count"] != len(observation_bytes)
+        or observation_descriptor["parent_descriptor_id"] != event_descriptor["descriptor_id"]
+        or observation["event_id"] != event["event_id"]
+        or observation["event_descriptor_id"] != event_descriptor["descriptor_id"]
+        or observation["source_job_id"] != event["source_job_id"]
+        or chain["persistence_sequence"]
+        != ["event", "event_descriptor", "observation", "observation_descriptor"]
+        or any(
+            value.get("provider_calls") != 0
+            for value in (event, event_descriptor, observation, observation_descriptor, chain)
+        )
+        or any(
+            descriptor.get("durable_no_replace") is not True
+            or descriptor.get("actual_byte_match") is not True
+            for descriptor in (event_descriptor, observation_descriptor)
+        )
+    ):
         _fail("A4.e2_artifacts", "E2 upstream artifact bytes differ")
 
 
@@ -602,6 +680,24 @@ def _independent_source_exit_persistence(
     rebuilt: Path,
 ) -> models.IndependentSourceExitPersistenceAudit:
     v217_root = repository_root / V217_DIR
+    contract = cast(dict[str, Any], _load(v217_root / "typed_failure_exit_surface_contract.json"))
+    declarations = {
+        str(item["exit_code"]): cast(dict[str, Any], item)
+        for item in cast(list[dict[str, Any]], contract["exits"])
+    }
+    if (
+        contract.get("contract_id") != models.V217_SOURCE_CONTRACT_ID
+        or not _identity_matches(
+            contract,
+            "contract_id",
+            "fresh_repaired_actual_v209_typed_failure_exit_surface_contract:",
+        )
+        or contract.get("typed_failure_exit_count") != 5
+        or contract.get("direct_constructor_exit_count") != 4
+        or contract.get("authenticated_rethrow_exit_count") != 1
+        or tuple(declarations) != EXIT_ORDER
+    ):
+        _fail("A4.source_contract", "v26.217 five-exit source Contract differs")
     raw_root = saved.root / "exit_surface_controls/raw"
     by_exit: dict[str, models.IndependentSourceExitChainRow] = {}
     common = (
@@ -633,12 +729,38 @@ def _independent_source_exit_persistence(
         terminal = str(raw["terminal_kind"])
         if exit_code not in EXIT_ORDER or exit_code in by_exit:
             _fail("A4.exit_set", "source-exit set differs")
+        declaration = declarations[exit_code]
+        direct = declaration["source_exit_kind"] == "direct_constructor"
         if (
             evidence["failure_observation"] != observation
             or decision["terminal_kind"] != terminal
             or observation["caught_terminal_kind"] != terminal
             or observation["invocation_record"]["typed_terminal"] != terminal
             or proof["terminal_kind"] != terminal
+            or proof["source_contract_id"] != contract["contract_id"]
+            or observation["source_contract_id"] != contract["contract_id"]
+            or proof["source_exit_id"] != declaration["source_exit_id"]
+            or proof["source_symbol_id"] != declaration["source_symbol_id"]
+            or proof["source_exit_kind"] != declaration["source_exit_kind"]
+            or proof["failure_origin"] != declaration["failure_origin"]
+            or proof["exception_type_id"] != observation["exception_type_id"]
+            or proof["exception_reason_sha256"] != observation["exception_reason_sha256"]
+            or (
+                direct
+                and (
+                    declaration["direct_terminal_kind"] != terminal
+                    or declaration["direct_reason_sha256"] != observation["exception_reason_sha256"]
+                    or declaration["upstream_authority_required"] is not False
+                )
+            )
+            or (
+                not direct
+                and (
+                    declaration["direct_terminal_kind"] is not None
+                    or declaration["direct_reason_sha256"] is not None
+                    or declaration["upstream_authority_required"] is not True
+                )
+            )
             or any(
                 any(layer[key] != raw[key] for key in common) for layer in layer_by_name.values()
             )
@@ -700,7 +822,11 @@ def _independent_source_exit_persistence(
         models.IndependentSourceExitPersistenceAudit,
         models.make_identity(
             models.IndependentSourceExitPersistenceAudit,
-            {"freeze_id": freeze_id, "rows": rows},
+            {
+                "freeze_id": freeze_id,
+                "exact_source_contract_id": contract["contract_id"],
+                "rows": rows,
+            },
             field="audit_id",
             prefix="finance_v26_219_independent_source_exit_persistence_audit:",
         ),
