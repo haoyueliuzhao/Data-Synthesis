@@ -772,8 +772,6 @@ def _run_repair_controls(
                     "postrun_repair_audit_id": audit.audit_id,
                     "repaired_online_source_sha256": online_source_sha,
                     "repaired_models_source_sha256": models_source_sha,
-                    "success_record_id": success_record.record_id,
-                    "error_record_id": error_record.record_id,
                 },
                 field="audit_id",
                 prefix="finance_v26_225_repair_control_audit:",

@@ -142,8 +142,6 @@ class RepairControlAudit(FrozenModel):
     postrun_repair_audit_id: str = Field(min_length=1)
     repaired_online_source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     repaired_models_source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    success_record_id: str = Field(min_length=1)
-    error_record_id: str = Field(min_length=1)
     success_terminal_kind: Literal["first_response_abi_invalid"] = "first_response_abi_invalid"
     success_mock_http_calls: Literal[1] = 1
     error_mock_http_calls: Literal[1] = 1
