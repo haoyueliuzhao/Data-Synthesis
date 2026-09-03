@@ -833,7 +833,7 @@ class ProviderJournal:
                 )
             )
             response_sha = None
-            status = "provider_error" if telemetry.http_success else "transport_error"
+            status = "provider_error" if telemetry.http_status is not None else "transport_error"
         usage = {
             "provider_call_id": provider_call_id,
             "telemetry": telemetry.model_dump(mode="json", warnings=False),
@@ -1157,6 +1157,7 @@ def _persist_terminal_chain(
     provider_calls: tuple[models.ProviderCallDescriptor, ...],
     failure_dispatcher: v217_runtime.ArtifactBackedExitDispatcher,
     record_model: type[models.JobExecutionRecord] = models.JobExecutionRecord,
+    record_identity_prefix: str = "finance_v26_224_online_job_execution_record:",
 ) -> models.JobExecutionRecord:
     if projection.terminal_source == "current_state_runner_observation":
         rederived = v213_runtime.ObservationDerivedTerminalDispatcher(
@@ -1368,7 +1369,7 @@ def _persist_terminal_chain(
             "checkpoint": checkpoint,
         },
         field="record_id",
-        prefix="finance_v26_224_online_job_execution_record:",
+        prefix=record_identity_prefix,
     )
 
 
@@ -1381,6 +1382,7 @@ def _failure_record(
     error: BaseException,
     provider_calls: tuple[models.ProviderCallDescriptor, ...],
     failure_record_model: type[models.JobFailureRecord] = models.JobFailureRecord,
+    failure_identity_prefix: str = "finance_v26_224_job_failure_record:",
 ) -> models.JobFailureRecord:
     provider_failed = any(item.status != "succeeded" for item in provider_calls)
     return models.make_identity(
@@ -1397,7 +1399,7 @@ def _failure_record(
             "provider_calls": provider_calls,
         },
         field="record_id",
-        prefix="finance_v26_224_job_failure_record:",
+        prefix=failure_identity_prefix,
     )
 
 
@@ -1410,6 +1412,8 @@ def _execute_job(
     client: ExactRequestBodyDeepSeekClient,
     record_model: type[models.JobExecutionRecord] = models.JobExecutionRecord,
     failure_record_model: type[models.JobFailureRecord] = models.JobFailureRecord,
+    record_identity_prefix: str = "finance_v26_224_online_job_execution_record:",
+    failure_identity_prefix: str = "finance_v26_224_job_failure_record:",
 ) -> models.JobExecutionRecord | models.JobFailureRecord:
     transport: LiveV209Transport | None = None
     try:
@@ -1517,6 +1521,7 @@ def _execute_job(
             provider_calls=transport.provider_calls,
             failure_dispatcher=failure_dispatcher,
             record_model=record_model,
+            record_identity_prefix=record_identity_prefix,
         )
     except BaseException as error:
         if isinstance(error, (KeyboardInterrupt, SystemExit)):
@@ -1530,6 +1535,7 @@ def _execute_job(
             error=error,
             provider_calls=calls,
             failure_record_model=failure_record_model,
+            failure_identity_prefix=failure_identity_prefix,
         )
 
 

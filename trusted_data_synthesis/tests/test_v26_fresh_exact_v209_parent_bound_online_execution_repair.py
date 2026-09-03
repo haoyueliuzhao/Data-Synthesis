@@ -55,15 +55,56 @@ class FakeHttpResponse:
 
 @pytest.fixture(scope="module")
 def prepared() -> subject.PreparedReplacement:
-    original = prior._git_identity  # noqa: SLF001
-    prior._git_identity = lambda _root: ("1" * 40, "2" * 40)  # type: ignore[assignment]  # noqa: SLF001
-    try:
-        return subject.prepare_replacement(
-            repository_root=ROOT,
-            output_dir=ROOT / subject.OUTPUT_DIR,
+    members = tuple(
+        models.SourceMember(
+            relative_path=path,
+            sha256=hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
+            byte_count=len((ROOT / path).read_bytes()),
         )
-    finally:
-        prior._git_identity = original  # type: ignore[assignment]  # noqa: SLF001
+        for path in sorted(subject.IMPLEMENTATION_PATHS)
+    )
+    source = models.make_identity(
+        models.RepairPreflightSourceIdentity,
+        {
+            "source_commit": "1" * 40,
+            "source_tree": "2" * 40,
+            "implementation_members": members,
+            "implementation_member_set_sha256": models.canonical_sha256(
+                tuple(item.model_dump(mode="json", warnings=False) for item in members)
+            ),
+        },
+        field="source_id",
+        prefix="finance_v26_225_repair_source_identity:",
+    )
+    objects = subject._construct_preflight_objects(  # noqa: SLF001
+        repository_root=ROOT,
+        runtime_output_dir=ROOT / subject.OUTPUT_DIR,
+        source_identity=source,
+    )
+    loaded = objects.loaded
+    authorization = objects.authorization
+    return subject.PreparedReplacement(
+        repository_root=ROOT,
+        package_root=ROOT / "trusted_data_synthesis",
+        output_dir=ROOT / subject.OUTPUT_DIR,
+        ledger_path=(
+            ROOT
+            / subject.LEDGER_DIR
+            / f"{hashlib.sha256(authorization.authorization_id.encode()).hexdigest()}.json"
+        ),
+        postrun_audit=objects.postrun_audit,
+        repair_control_audit=objects.repair_control_audit,
+        authorization=authorization,
+        authorization_bytes=objects.authorization_bytes,
+        preparation=objects.preparation,
+        catalog=loaded["catalog"],
+        manifest=loaded["manifest"],
+        implementation=loaded["implementation"],
+        frozen_parents=loaded["parents"],
+        runtime=loaded["runtime"],
+        config=loaded["config"],
+        bindings=loaded["bindings"],
+    )
 
 
 def test_independent_v224_failure_reconstruction() -> None:
@@ -86,6 +127,21 @@ def test_conditional_replacement_authorization_is_fresh(
     assert prepared.authorization.per_job_selective_rerun_authorized is False
     assert models.canonical_sha256(prepared.authorization.exact_job_ids) == (
         prior.models.EXACT_JOB_SET_SHA256
+    )
+    assert (
+        prepared.preparation.repair_control_audit_id
+        == prepared.repair_control_audit.audit_id
+        == prepared.authorization.repair_control_audit_id
+    )
+    assert prepared.repair_control_audit.success_mock_http_calls == 1
+    assert prepared.repair_control_audit.error_mock_http_calls == 1
+    assert prepared.repair_control_audit.success_journal_files == 4
+    assert prepared.repair_control_audit.error_journal_files == 4
+    assert prepared.repair_control_audit.success_five_layer_files == 5
+    assert prepared.repair_control_audit.real_provider_calls == 0
+    assert (
+        prepared.preparation.authorization_sha256
+        == hashlib.sha256(prepared.authorization_bytes).hexdigest()
     )
 
 
@@ -165,6 +221,8 @@ def test_mock_http_response_drives_real_runner_and_closes_journal(
         client=client,
         record_model=models.JobExecutionRecord,
         failure_record_model=models.JobFailureRecord,
+        record_identity_prefix="finance_v26_226_replacement_job_record:",
+        failure_identity_prefix="finance_v26_226_replacement_job_failure:",
     )
     assert isinstance(result, models.JobExecutionRecord)
     assert result.terminal_kind == "first_response_abi_invalid"
@@ -187,23 +245,103 @@ def test_mock_http_response_drives_real_runner_and_closes_journal(
             result.checkpoint,
         )
     )
+    projection = subject._provider_relation_projection(  # noqa: SLF001
+        output_dir=isolated.output_dir,
+        authorization_id=prepared.authorization.authorization_id,
+        run_start_receipt_id=run_start.receipt_id,
+    )
+    assert projection["relation_closed"] is True
+    descriptor_path = next((isolated.output_dir / "provider_calls").rglob("*_descriptor.json"))
+    descriptor_path.unlink()
+    orphaned = subject._provider_relation_projection(  # noqa: SLF001
+        output_dir=isolated.output_dir,
+        authorization_id=prepared.authorization.authorization_id,
+        run_start_receipt_id=run_start.receipt_id,
+    )
+    assert orphaned["relation_closed"] is False
+    assert orphaned["orphan_request_intent_count"] == 1
 
 
 def test_replacement_global_ledger_is_no_replace(
     prepared: subject.PreparedReplacement,
     tmp_path: Path,
 ) -> None:
+    formal_authorization = (
+        tmp_path / subject.PREFLIGHT_DIR / "conditional_replacement_authorization.json"
+    )
+    formal_authorization.parent.mkdir(parents=True)
+    formal_authorization.write_bytes(prepared.authorization_bytes)
     isolated = replace(
         prepared,
         repository_root=tmp_path,
         output_dir=tmp_path / "first",
-        ledger_path=tmp_path / "ledger" / "authorization.json",
+        ledger_path=(
+            tmp_path
+            / subject.LEDGER_DIR
+            / f"{hashlib.sha256(prepared.authorization.authorization_id.encode()).hexdigest()}.json"
+        ),
     )
     subject._consume(isolated)  # noqa: SLF001
     second = replace(isolated, output_dir=tmp_path / "second")
     with pytest.raises(FileExistsError):
         subject._consume(second)  # noqa: SLF001
     assert not second.output_dir.exists()
+
+
+def test_fully_rehashed_authorization_rejects_before_ledger(
+    prepared: subject.PreparedReplacement,
+    tmp_path: Path,
+) -> None:
+    formal_authorization = (
+        tmp_path / subject.PREFLIGHT_DIR / "conditional_replacement_authorization.json"
+    )
+    formal_authorization.parent.mkdir(parents=True)
+    formal_authorization.write_bytes(prepared.authorization_bytes)
+    values = prepared.authorization.model_dump(
+        mode="json", exclude={"authorization_id"}, warnings=False
+    )
+    values["repaired_source_commit"] = "f" * 40
+    forged_authorization = models.make_identity(
+        models.ConditionalReplacementAuthorization,
+        values,
+        field="authorization_id",
+        prefix="finance_v26_225_repaired_replacement_execution_authorization:",
+    )
+    forged_bytes = subject._encoded(forged_authorization)  # noqa: SLF001
+    preparation_values = prepared.preparation.model_dump(
+        mode="json", exclude={"preparation_id"}, warnings=False
+    )
+    preparation_values.update(
+        {
+            "authorization_id": forged_authorization.authorization_id,
+            "authorization_sha256": hashlib.sha256(forged_bytes).hexdigest(),
+            "repaired_source_commit": "f" * 40,
+        }
+    )
+    forged_preparation = models.make_identity(
+        models.ReplacementPreparation,
+        preparation_values,
+        field="preparation_id",
+        prefix="finance_v26_225_repair_preparation:",
+    )
+    ledger = (
+        tmp_path
+        / subject.LEDGER_DIR
+        / f"{hashlib.sha256(forged_authorization.authorization_id.encode()).hexdigest()}.json"
+    )
+    forged = replace(
+        prepared,
+        repository_root=tmp_path,
+        output_dir=tmp_path / "forged-output",
+        ledger_path=ledger,
+        authorization=forged_authorization,
+        authorization_bytes=forged_bytes,
+        preparation=forged_preparation,
+    )
+    with pytest.raises(ValueError, match="fixed formal Authorization bytes"):
+        subject._consume(forged)  # noqa: SLF001
+    assert not ledger.exists()
+    assert not forged.output_dir.exists()
 
 
 def test_repair_directive_hashes_are_exact() -> None:
