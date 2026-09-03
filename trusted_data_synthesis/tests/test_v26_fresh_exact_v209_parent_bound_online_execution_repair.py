@@ -273,6 +273,7 @@ def test_replacement_global_ledger_is_no_replace(
     prepared: subject.PreparedReplacement,
     preflight_objects: subject.RepairPreflightObjects,
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     formal_authorization = (
         tmp_path / subject.PREFLIGHT_DIR / "conditional_replacement_authorization.json"
@@ -290,9 +291,14 @@ def test_replacement_global_ledger_is_no_replace(
             / f"{hashlib.sha256(prepared.authorization.authorization_id.encode()).hexdigest()}.json"
         ),
     )
-    subject._consume(isolated, refreshed=preflight_objects)  # noqa: SLF001
+    monkeypatch.setattr(
+        subject,
+        "_load_fixed_preflight",
+        lambda **_kwargs: preflight_objects,
+    )
+    subject._consume(isolated)  # noqa: SLF001
     with pytest.raises(FileExistsError):
-        subject._consume(isolated, refreshed=preflight_objects)  # noqa: SLF001
+        subject._consume(isolated)  # noqa: SLF001
     assert isolated.output_dir.is_dir()
 
 
@@ -322,6 +328,7 @@ def test_fully_rehashed_authorization_rejects_before_ledger(
     prepared: subject.PreparedReplacement,
     preflight_objects: subject.RepairPreflightObjects,
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     formal_authorization = (
         tmp_path / subject.PREFLIGHT_DIR / "conditional_replacement_authorization.json"
@@ -370,9 +377,47 @@ def test_fully_rehashed_authorization_rejects_before_ledger(
         authorization_bytes=forged_bytes,
         preparation=forged_preparation,
     )
+    monkeypatch.setattr(
+        subject,
+        "_load_fixed_preflight",
+        lambda **_kwargs: preflight_objects,
+    )
     with pytest.raises(ValueError, match="refreshed execution parent"):
-        subject._consume(forged, refreshed=preflight_objects)  # noqa: SLF001
+        subject._consume(forged)  # noqa: SLF001
     assert not ledger.exists()
+    assert not forged.output_dir.exists()
+
+
+def test_consume_reloads_fixed_preflight_internally(
+    prepared: subject.PreparedReplacement,
+    preflight_objects: subject.RepairPreflightObjects,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+
+    def load_fixed(**_kwargs: object) -> subject.RepairPreflightObjects:
+        nonlocal calls
+        calls += 1
+        return preflight_objects
+
+    monkeypatch.setattr(subject, "_load_fixed_preflight", load_fixed)
+    forged = replace(
+        prepared,
+        repository_root=tmp_path,
+        package_root=tmp_path / "trusted_data_synthesis",
+        output_dir=tmp_path / subject.OUTPUT_DIR,
+        ledger_path=(
+            tmp_path
+            / subject.LEDGER_DIR
+            / f"{hashlib.sha256(prepared.authorization.authorization_id.encode()).hexdigest()}.json"
+        ),
+        config=prepared.config.model_copy(update={"timeout_seconds": 999.0}),
+    )
+    with pytest.raises(ValueError, match="refreshed execution parent"):
+        subject._consume(forged)  # noqa: SLF001
+    assert calls == 1
+    assert not forged.ledger_path.exists()
     assert not forged.output_dir.exists()
 
 

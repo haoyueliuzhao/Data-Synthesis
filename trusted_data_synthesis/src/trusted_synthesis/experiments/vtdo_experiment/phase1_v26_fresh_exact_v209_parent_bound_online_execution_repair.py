@@ -32,7 +32,7 @@ RUN_ID: Final = (
 )
 PREFLIGHT_RUN_ID: Final = (
     "finance_v26_225_postrun_independent_audit_and_postresponse_serializer_"
-    "repair_preflight_v2_20260904"
+    "repair_preflight_v3_20260904"
 )
 PREFLIGHT_DIR: Final = f"trusted_data_synthesis/artifacts/vtdo_experiment/{PREFLIGHT_RUN_ID}"
 OUTPUT_DIR: Final = f"trusted_data_synthesis/artifacts/vtdo_experiment/{RUN_ID}"
@@ -1092,9 +1092,11 @@ def prepare_replacement(*, repository_root: Path, output_dir: Path) -> PreparedR
 
 def _consume(
     prepared: PreparedReplacement,
-    *,
-    refreshed: RepairPreflightObjects,
 ) -> tuple[models.AuthorizationConsumptionReceipt, models.RunStartReceipt]:
+    refreshed = _load_fixed_preflight(
+        repository_root=prepared.repository_root,
+        runtime_output_dir=prepared.output_dir,
+    )
     _admit_refreshed_prepared(prepared, refreshed)
     _admit_prepared_authorization(prepared)
     consumption = models.make_identity(
@@ -1185,7 +1187,7 @@ def execute_replacement(
         runtime_output_dir=prepared.output_dir,
     )
     _admit_refreshed_prepared(prepared, refreshed)
-    consumption, run_start = _consume(prepared, refreshed=refreshed)
+    consumption, run_start = _consume(prepared)
     _write_ingress(prepared)
     prior._load_env_key(prepared.package_root, prepared.config.api_key_env)  # noqa: SLF001
     client = prior.ExactRequestBodyDeepSeekClient(prepared.config)
