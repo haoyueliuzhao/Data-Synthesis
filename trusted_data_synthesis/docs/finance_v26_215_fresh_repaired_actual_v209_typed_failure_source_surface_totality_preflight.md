@@ -1,5 +1,41 @@
 # Finance v26.215 Fresh Repaired Actual v26.209 Typed-Failure Source-Surface Totality And Runner-Owned Observation Preflight
 
+## Post-Review Scope Correction
+
+The subsequent exact 12,959-byte review at SHA-256
+`b80e8d540bb8c643045c71a075e7d154c52fe9a1b33d506191655cfb929fcc23` retains v26.215 only
+as `VALID_SCOPED_FOUR_DIRECT_CONSTRUCTOR_RAISE_CONTROLS` and fails its full source-totality
+interpretation at `ACTUAL_V209_TYPED_FAILURE_EXIT_SURFACE_PROVENANCE_CLOSURE`. Its four direct
+constructor controls, actual instance terminal capture, origin-specific catches, Runner authority,
+five-layer persistence, and four fully rehashed attacks remain valid at their scoped meanings.
+
+The frozen v26.209 `ScriptedTransport.send` has a fifth typed-failure exit:
+
+```python
+if isinstance(value, TypedTransportFailure):
+    raise value
+```
+
+v26.215 counted only four `raise TypedTransportFailure(...)` constructor strings. It therefore
+did not bind the queued rethrow to a source-exit identity or upstream failure observation. An
+exact base exception carrying a registered terminal and arbitrary reason could pass its old
+admission surface. Every v26.215 formal artifact, identity, Gate, Decision, and Transition remains
+immutable; the stronger source-totality interpretation is superseded.
+
+The current scoped v26.215 decision is:
+
+```text
+v26_215_four_direct_typed_failure_constructor_paths_terminalize_
+but_scripted_transport_queued_exception_rethrow_is_outside_
+the_declared_source_contract
+```
+
+The later exact 36-byte directive `参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`, authorizes only the
+credential-free v26.216 exit-surface callsite and rethrow-provenance repair. It authorizes no
+Provider call or online authorization. See
+`finance_v26_216_fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_provenance_preflight.md`.
+
 ## Scope And Decision
 
 Finance v26.215 consumes only
@@ -35,7 +71,7 @@ Action or Final Grammar, Policy, resource Contract, 32-Package or 192-Job Manife
 validity definition, denominator, QA object, Mapper, State, frequency, Contribution, or VTDO
 object.
 
-The current decision is:
+The immutable historical v26.215 decision was:
 
 ```text
 fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_
@@ -272,20 +308,18 @@ passes 57/57; package-wide Ruff passes.
 
 ## Boundary And Only Permitted Successor
 
-The only permitted successor is:
+The old independent-audit successor below is superseded by the later review. Its only permitted
+repair candidate was:
 
 ```text
-fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_
-observation_preflight_independent_audit_only
+fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_
+provenance_preflight_only
 ```
 
-That audit may independently rebuild the exact v26.215 directory, rederive the exact v26.209
-source Contract, execute and reconstruct the four actual-source observations, terminal decisions,
-and five-layer chains, and reproduce all six attacks with zero Provider calls. It may not issue
-or consume an online authorization.
-
-The v26.211 authorization remains unconsumed. Even after a passing independent audit, a separate
-new online authorization must bind all v26.215 Source Contract, Runner-observation, dispatcher,
-persistence, consumer, and composition parents. Direct v26.211 consumption, Provider execution,
-the repaired 192-Job online run, frozen-condition change, empirical estimation, QA, Mapper,
-State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+That repair candidate was consumed only by v26.216 with zero Provider calls and zero credential
+lookups. The current transition is the credential-free independent audit of the exact v26.216
+preflight. The v26.211 authorization remains unconsumed. A later online execution would still
+require a separate new authorization binding the complete v26.216 repaired parent set. Direct
+v26.211 consumption, Provider execution, the repaired 192-Job online run, frozen-condition
+change, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden.

@@ -1,0 +1,453 @@
+# Finance v26.215 本轮修订审计
+
+## 一、审计结论
+
+本轮修订**确实修复了 v26.214 的直接问题**：四个显式构造并抛出的基础 `TypedTransportFailure` 已经可以从真实 v26.209 路径进入 Runner-owned observation、dispatcher 和五层持久化。
+
+但当前报告把这一结果进一步解释为：
+
+```text
+actual v26.209 typed-failure source-surface totality
+```
+
+仍然过强。更准确的审计决定是：
+
+```text
+AUDIT_RESULT
+
+VALID_SCOPED_FOUR_DIRECT_CONSTRUCTOR_RAISE_CONTROLS
+
+FAILED_AT
+
+ACTUAL_V209_TYPED_FAILURE_EXIT_SURFACE_PROVENANCE_CLOSURE
+```
+
+建议将正式决定改为：
+
+```text
+v26_215_four_direct_typed_failure_constructor_paths_terminalize_
+but_scripted_transport_queued_exception_rethrow_is_outside_
+the_declared_source_contract
+```
+
+因此，当前 `R1-R7 全部通过、8/0` 的结论不能整体保留；**在线执行继续阻塞，v26.211 authorization 必须保持未消费**。
+
+---
+
+## 二、本轮已经真实修复的内容
+
+### 1. v26.214 的基础异常遗漏已经被正面处理
+
+报告正确识别出 v26.209 的四个显式：
+
+```python
+raise TypedTransportFailure(...)
+```
+
+构造点：
+
+```text
+ScriptedTransport.send   invalid dispatch chain   instrument_failure
+ScriptedTransport.send   empty queue              instrument_failure
+_project_public_payload  reasoning-like key       privacy_rejection
+_project_public_payload  non-object response      instrument_failure
+```
+
+并且不再通过八个手工异常子类推导 terminal，而是从实际捕获对象读取 `error.terminal`。
+
+### 2. transport 与 projection 的异常来源已经分离
+
+新 Runner 分别捕获：
+
+```text
+transport.send(...)               -> transport_send
+_project_public_payload(response) -> public_projection
+```
+
+随后从实际异常实例构造 invocation record、exception type ID、terminal、reason hash 和 observation。这个修复方向是正确的。
+
+源码也确实将两个 catch 分开，并在 `_terminalize_actual_failure()` 中使用实际 `error` 构造观察，而不是由外层调用者传入 terminal。
+
+### 3. 四个直接构造点的局部控制有效
+
+四个控制分别触发：
+
+```text
+invalid dispatch chain
+empty queue
+reasoning-like public key
+non-object response
+```
+
+并得到 4 个 Runner-owned observations、4 个 consumer terminal branches 和 20 个五层持久化文件。对于“这四个直接构造点能否闭环”这一窄命题，结果成立。
+
+### 4. 原有 authority-byte 攻击仍然有效
+
+异常 terminal 重分类、reason hash 替换和跨 Job observation 替换都会在 Raw 写入前被拒绝。这说明 Runner-owned authority 的 byte equality 不是装饰性检查。
+
+---
+
+## 三、首个根本阻塞点：源表面并不只有四个 typed-failure 出口
+
+### 1. 当前 Source Contract 只统计了构造表达式
+
+v26.215 的 Source Contract 使用：
+
+```python
+send_source.count("raise TypedTransportFailure(") == 2
+projection_source.count("raise TypedTransportFailure(") == 2
+```
+
+由此声明：
+
+```text
+total_raise_callsite_count = 4
+```
+
+这只能统计“现场构造异常并立即抛出”的语法形式，不能枚举所有能够让 `TypedTransportFailure` 离开函数的执行路径。
+
+### 2. `ScriptedTransport.send` 还有一个 `raise value`
+
+冻结的 v26.209 `ScriptedTransport.send` 还包含：
+
+```python
+value = self._queue.popleft()
+
+if isinstance(value, TypedTransportFailure):
+    raise value
+```
+
+这不是第五个：
+
+```python
+raise TypedTransportFailure(...)
+```
+
+构造点，却是**第五个真实 typed-failure exit path**。而且它能够抛出任意预先放入 queue 的 `TypedTransportFailure` 实例。
+
+这条路径并非纯理论可能性。v26.215 自己的：
+
+```python
+ActualSourceTransportFactory.create_error(error)
+```
+
+正是把异常对象放进 `ScriptedTransport` queue，再依靠 `raise value` 抛出。两个 source-admission negative controls 都实际经过这条路径。
+
+所以当前实现同时出现了一个直接矛盾：
+
+```text
+Source Contract:
+  实际 typed-failure source surface = 4
+
+实际测试实现:
+  还通过 raise value 执行了另外的 typed-failure 路径
+```
+
+---
+
+## 四、当前验证器会接受一个未绑定到四个 callsite 的异常
+
+考虑下面这个零 Provider 控制：
+
+```python
+error = v209.TypedTransportFailure(
+    "instrument_failure",
+    "arbitrary caller-created reason",
+)
+
+transport.queue(error)
+```
+
+它会走：
+
+```text
+ScriptedTransport.send
+  -> raise value
+Runner catch
+  -> failure_origin = transport_send
+```
+
+随后当前 observation validator 看到：
+
+```text
+exception type ID   = 精确的 v26.209 TypedTransportFailure
+terminal            = instrument_failure
+failure origin      = transport_send
+record terminal     = instrument_failure
+```
+
+这些条件全部满足。
+
+`exception_reason_sha256` 虽然被记录，但 Source Contract 没有注册四个直接 callsite 各自的 reason hash，也没有检查这个异常究竟来自：
+
+```text
+invalid dispatch-chain constructor site
+empty-queue constructor site
+queued-error rethrow
+```
+
+dispatcher 只检查 type、宽粒度 origin、terminal、Registry 和 invocation record，并不验证具体 source-exit identity。
+
+因此，上述由调用方预先构造、reason 任意但 terminal 合法的基础异常会被：
+
+```text
+接受为 actual_source_admitted
+写入 Runner authority
+派生 terminal
+持久化为 Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+尽管它没有来自报告绑定的四个直接构造点中的任何一个。
+
+这意味着当前证明的是：
+
+```text
+四个指定直接构造点可以闭环
+```
+
+而不是：
+
+```text
+只有被 Source Contract 认证的 v26.209 源出口才能闭环
+```
+
+---
+
+## 五、为什么现有 8/8 测试没有发现
+
+现有测试主要检查：
+
+```text
+Source Contract 声明 total_raise_callsite_count = 4
+四个预定正向控制闭环
+未注册 terminal 被拒绝
+不同 module+qualname 的同名类被拒绝
+四个后置 authority attack 被拒绝
+```
+
+但没有加入最关键的控制：
+
+```text
+exact base class
++ registered terminal
++ transport_send origin
++ arbitrary reason
++ raise value path
+```
+
+该控制不会触发现有两个 source-admission 拒绝条件：
+
+* 它不是未注册 terminal；
+* 它不是不同 exception type ID。
+
+所以当前测试集完整覆盖了预先声明的四个直接构造点，却没有审计“声明之外但同样存在于精确源代码中的 typed-failure 出口”。
+
+---
+
+## 六、Gate 重判
+
+| Gate                                      | 审计结果                              | 解释                                                      |
+| ----------------------------------------- | --------------------------------- | ------------------------------------------------------- |
+| R0 external scope / v26.214 Freeze        | **PASS**                          | 冻结与范围继承成立                                               |
+| R1 exact v26.209 Source Contract          | **FAIL**                          | 只枚举四个直接构造点，遗漏 `raise value` typed-failure exit          |
+| R2 type + terminal + origin observation   | **PASS_CONDITIONAL**              | 对当前 admitted observation 成立，但 origin 不能证明具体 source exit |
+| R3 durable ingress                        | **PASS**                          | 与本次阻塞无关                                                 |
+| R4 four actual controls terminalize       | **PASS_SCOPED**                   | 仅证明四个指定直接构造点                                            |
+| R5 source terminal → five layers          | **PASS_CONDITIONAL**              | admission 正确时成立                                         |
+| R6 registered negative controls           | **PASS_REGISTERED_CONTROLS_ONLY** | 六个现有攻击均有效，但缺少允许 terminal 的 `raise value` 攻击             |
+| R7 zero Provider / credential / empirical | **PASS**                          | 边界保持正确                                                  |
+
+非补偿性结论：
+
+```text
+first failed Gate:
+  R1 exact v26.209 typed-failure Source Contract
+
+first root blocker:
+  source surface was defined by constructor syntax,
+  not by complete typed-failure control-flow exits
+```
+
+所以不能保留：
+
+```text
+passed / failed = 8 / 0
+```
+
+更合理的是：
+
+```text
+direct-constructor-path controls             passed
+complete typed-failure exit-surface closure  failed
+online readiness                             blocked
+```
+
+---
+
+## 七、当前允许与禁止的科学结论
+
+### 可以保留
+
+```text
+v26.214 的手工子类 terminal-authority 问题已被移除
+四个显式 TypedTransportFailure 构造点均可 terminalize
+实际 error.terminal 和 invocation record 已进入 observation
+Runner-owned authority byte matching有效
+四个既有完全重哈希 authority attacks 拒绝
+Provider / credential / empirical counts 均为零
+v26.211 authorization 未消费
+```
+
+### 仍然禁止
+
+```text
+v26.209 完整 typed-failure source surface 已闭合
+所有 transport_send typed failures 都具有 callsite authority
+v26.215 已准备好进行正向独立审计
+新的 online authorization
+直接消费 v26.211
+192-Job Provider execution
+empirical estimation
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+报告当前坚持在线执行阻塞、要求独立阶段且保持 v26.211 未消费，这一边界本身是正确的，必须继续保留。
+
+---
+
+## 八、唯一合理的下一实验
+
+不建议直接执行当前声明的“v26.215 positive independent audit”。独立重建只会再次复现一个不完整的 Source Contract。
+
+下一阶段应是一个非常窄的零 Provider 修复：
+
+```text
+fresh_repaired_actual_v209_typed_failure_exit_surface_
+callsite_and_rethrow_provenance_preflight_only
+```
+
+### 1. 用 AST/控制流枚举 source exit，而不是字符串计数
+
+冻结对象应明确列出：
+
+```text
+E0 ScriptedTransport.send
+   invalid dispatch chain
+   direct constructor raise
+
+E1 ScriptedTransport.send
+   empty queue
+   direct constructor raise
+
+E2 ScriptedTransport.send
+   queued TypedTransportFailure
+   raise value / rethrow
+
+E3 _project_public_payload
+   reasoning-like key
+   direct constructor raise
+
+E4 _project_public_payload
+   non-object response
+   direct constructor raise
+```
+
+Source Contract 应声明：
+
+```text
+typed-failure exits = 5
+direct constructor exits = 4
+rethrow exits = 1
+```
+
+### 2. Observation 绑定 `source_exit_id`
+
+不能只保存：
+
+```text
+failure_origin = transport_send
+```
+
+至少要保存：
+
+```text
+source_symbol_id
+source_exit_id
+source_exit_kind = direct_constructor | authenticated_rethrow
+exception_type_id
+terminal
+reason_sha256
+dispatch_or_response_parent
+```
+
+宽粒度 `transport_send` 可以继续保留作分类字段，但不能承担 source authority。
+
+### 3. `raise value` 必须单独处理
+
+对于 queued rethrow，只允许两种结果：
+
+```text
+有上游权威 failure observation
+  -> 绑定该 observation 后 terminalize
+
+没有上游权威 failure observation
+  -> 在 authority append 和 Raw 写入前拒绝
+```
+
+不能仅凭：
+
+```text
+exact base class + allowed terminal
+```
+
+就把调用方构造的异常当作实际 v26.209 source evidence。
+
+### 4. 新增决定性控制
+
+必须加入：
+
+```python
+TypedTransportFailure(
+    "instrument_failure",
+    "arbitrary but registered-terminal reason",
+)
+```
+
+经 `queue -> raise value` 后，若没有上游 source authority：
+
+```text
+Runner authority append = 0
+Raw write                = 0
+result                    = rejected
+```
+
+同时保留：
+
+```text
+四个直接构造点正向控制
+一个有权威父对象的合法 rethrow 控制
+未注册 terminal
+同名非注册 class
+四个既有完全重哈希 authority attacks
+```
+
+### 5. 后续顺序
+
+```text
+v26.215 source-exit repair preflight
+  -> independent credential-free audit
+  -> fresh online authorization preflight
+  -> only then consider 192-Job execution
+```
+
+全程保持：
+
+```text
+Provider calls              0
+credential lookups          0
+empirical rows              0
+v26.211 authorization use   0
+```
+
+本结论基于已上传正式报告与 exact Git commit `bae3bafbedeb3c18dd04b21ebabf6c4138c14ced` 的源码审计；报告中的 8/8、57/57 测试结果作为已有工件事实保留，但我没有在你的服务器环境中重新执行这些测试。
