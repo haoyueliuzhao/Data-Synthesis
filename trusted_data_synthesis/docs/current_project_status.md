@@ -15,6 +15,97 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## Offline QA Semantic-Type Coverage And Program-Depth Closure Preflight
+
+The independent QA side-path consumed only
+`offline_qa_semantic_type_coverage_and_program_depth_closure_preflight_only`. The exact
+19,325-byte review, SHA-256
+`c6efa19fd1c5ad9df0d7ebb2916ed66f57e4f5921fcdc8a9f1578ef5c225f16d`, and exact
+51-byte directive `参照审计报告给出的方案逐项修订优化`, SHA-256
+`7f441e43f03a244a1ecab4ec08cca9e8572d874bafb8c8cc31c5ff32badc83c5`, authorize
+only phases A-C of the proposed credential-free repair. Phase D and its new argmax,
+selected-period, entity-table filter/intersection, and rank Operations remain deferred. Provider
+calls, credential lookups, GPU Jobs, Development Jobs, empirical rows, and VTDO writes are zero.
+
+Phase A revalidates the immutable eighteen-file, 1,233,274-byte existing future QA pool and all
+seventeen self-excluding Manifest members. Its four semantic instances, sixteen renderer children,
+eight selected surfaces, one task type, one topology, one Answer Schema, four of six registered
+comparison pairs, depth-one-only support, and zero non-null ProgramExecution rows are frozen under
+`baseline_qa_semantic_census:0d6fc5b4dbefe3193336c465e41e36fb46ed2591d92dda88bd8a2cf606588808`.
+The old 16/8 pool remains an immutable single-type surface-realization control.
+
+Phase B adds the generic `PublicPlanCandidateExecutor`. It binds exact Evidence IDs, versions, and
+source records from `BindingSnapshot`; resolves public evidence roles; reconstructs the public
+Program skeleton; requires exact source Program identity; maps every actual node and edge to the
+`CanonicalSemanticPlan`; executes every Registry node topologically; persists one nodewise
+TrajectoryStep per node; independently replays all outputs through verifier implementations; and
+uses public data-driven result projection before citation binding. It does not read the hidden
+Oracle Program as a behavior source and contains no task-type-specific result branch. Its Contract
+is
+`public_plan_candidate_executor_contract:640a06e87c2251ff76aa3eb6e9f77fad36aa6f182ae6e760d3924ab6e04683ea`.
+
+Phase C materializes all eight existing Finance Pattern types. The semantic denominator is thirteen
+BindingSnapshot-level instances because `registered_cross_metric_comparison` contributes all six
+registered pairs; exactly two renderer controls per instance yield 26 separate surfaces:
+
+```text
+task types registered / materialized                         8 / 8
+semantic instances / renderer controls                    13 / 26
+Program topologies / parameterized Programs                 8 / 13
+Answer Schema identities                                         7
+semantic depth distribution                         {1: 8, 2: 4, 3: 1}
+Program node distribution                           {1: 8, 3: 3, 4: 1, 7: 1}
+non-null ProgramExecution                               13 / 13
+exact Plan-to-trajectory matches                        13 / 13
+independently replayed executions                       13 / 13
+existing quality Gate accepted                          13 / 13
+registered comparison pairs                               6 / 6
+```
+
+Seven Answer Schema identities are observed because ordinary and registered comparisons share the
+same public result shape. The seven-node `derived_growth_comparison` provides the depth-three row.
+Every instance exposes `evidence.search`; the calculating types also expose `calculator`. This is
+resolved retrieval and plan-given constructive evidence, not autonomous open retrieval.
+
+Missing Evidence, cross-version substitution, missing `registered_compare`, and public-plan
+parameter substitution all reject before formal output or Provider activity: 4/4 rejected and zero
+accepted. All ten noncompensatory Gates pass. Authoritative identities include:
+
+- authorization / Coverage Census:
+  `offline_qa_semantic_coverage_revision_authorization:2883176c87a40718b625cb130f24290ba52f8b4d9ed4671f61ffc53b4dbb0851` /
+  `offline_qa_semantic_coverage_census:548857ac3a09a94a6368197e1693af5ccee297ae2aa8908495a94b6bb217c539`;
+- negative Audit / Gate:
+  `offline_qa_semantic_negative_control_audit:e505ab3c9209eef4a46fe81a502bc3618e8e65f3e48b1401bd497eda7b33683e` /
+  `offline_qa_semantic_coverage_gate_evaluation:327a6ff24e4c821c11f483de4e85f9101474c74c9eb82ecbffa2d801289ec8ff`;
+- Decision / Transition:
+  `offline_qa_semantic_coverage_decision:e6f4acc8524c0407bb48901c4866b77df046249b7e3b2343a569f2949b0b09ea` /
+  `offline_qa_semantic_coverage_transition:54ea86b216fe7caf4875b1eb955592ae0442ee2eccd8fa81a7eac752b2a4c955`;
+- Report / Manifest / Root:
+  `offline_qa_semantic_coverage_preflight_report:8beb3aff5720514d91d3b0c903725d164cd70d25b945b5fda322383544ebb653` /
+  `offline_qa_semantic_coverage_artifact_manifest:b5b83ba05cc59ad723620ec7ff672e069f9eb938ce3d53eb611faea2b091ca6b` /
+  `offline_qa_semantic_coverage_artifact_root:a34e87e38ccdf06e1a4eb9941eaae91d96ccc522f963626d90f1b5ad6758f8ba`.
+
+The exact source commit/tree are `530a700eae1aa33fddb41f4f48bd99bd17798bd7` /
+`070595f1293b18fc282246d7e9542ba572a0914b`. The seventeen-file, 810,715-byte
+formal directory rebuilds byte for byte; its Manifest binds sixteen members and 808,285 bytes.
+Focused tests pass 8/8; the adjacent candidate, Finance Pattern, QA realization, and prior future-QA
+suite passes 51/51. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass;
+package-wide Ruff passes.
+
+The current scoped decision is:
+
+```text
+offline_qa_existing_finance_pattern_catalog_semantic_type_coverage_and_
+program_depth_closure_preflight_passed
+```
+
+The only permitted QA successor is
+`offline_qa_semantic_type_coverage_and_program_depth_closure_preflight_independent_audit_only`.
+It may independently rebuild and rederive this exact local result but may not add Operations or
+make Provider calls. Real-world benchmark-distribution coverage remains unmeasured. The separate
+v26.223 authorization remains unconsumed and is neither used nor modified by this QA side-path.
+See `docs/finance_qa_semantic_type_coverage_and_program_depth_closure_preflight.md`.
+
 ## v26.223 Fresh Exact v26.209 Parent-Bound Online Execution Authorization
 
 Finance v26.223 consumed only
