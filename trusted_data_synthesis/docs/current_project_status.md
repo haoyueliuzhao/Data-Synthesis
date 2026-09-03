@@ -15,7 +15,135 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.221 Fresh Exact v26.209 Execution-Condition Parent-Authority Repair Preflight
+
+Finance v26.221 consumed only
+`fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight_only`.
+The exact 13,510-byte external review is bound at SHA-256
+`fbf49cf53f7612b260c1e1b2ec6f66747c5335c168ac133bcef510ea628ac605`.
+It retains v26.220 only as `VALID_SCOPED_AUTHORIZATION_OBJECT_CONSTRUCTION` and fails its online
+authority at `EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED`. The exact 36-byte
+directive `参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`,
+authorizes only this credential-free repair. Provider calls and credential lookups are zero.
+
+All 18 v26.220 formal files and 126,513 bytes revalidate, including all seventeen Manifest
+members and 123,577 bound bytes. Its v26.219/v26.218 freezes, unconsumed authorization-object
+construction, local expected-byte guard, negative controls, and zero-Provider boundary remain
+retained. Its exact-v26.209 G2, eight-pass overall Gate, authorization-consumability, and direct
+online Transition interpretations are superseded. The v26.220 authorization remains unconsumed
+and is now explicitly non-reusable.
+
+Before reading any condition object, v26.221 admits the complete v26.209 formal directory:
+
+```text
+formal files / bytes                              21 / 44,916,386
+Manifest members / bytes                         20 / 44,912,918
+fixed Manifest  finance_v26_209_artifact_manifest:1ec5df9e...fc0bcf9
+fixed Root      finance_v26_209_artifact_root:76ef4cdb...85e4770
+path / SHA-256 / byte-count / actual-byte matches 20 / 20 / 20 / 20
+```
+
+Only after exact Manifest/Root/member admission does it strictly parse the Catalog, 32 Packages,
+Manifest, 192 Jobs, Runner, Execution Contract, Census, 792 invocation records, implementation,
+source identity, and Artifact Manifest. All 1,024 content identities revalidate. The exact source
+commit/tree `5809e9782515e55ee797b43730584d5d860aaa5c` /
+`b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf` resolve locally, and all three bound source files
+match their commit bytes.
+
+An independent relation audit closes:
+
+```text
+Manifest / Census distinct Jobs                  192 / 192
+Census Job set == Manifest Job set                     true
+Census-row Job membership                        792 / 792
+Job Package membership                           192 / 192
+Package x Replica cells                          192 / 192
+namespace owner derivations                      768 / 768
+unique namespace values                            192 each
+Runner/Execution/Census parent matches             12 / 12
+unique coordinates                               792 / 792
+```
+
+The new condition Binding carries the fixed v26.209 Artifact Manifest, Root, complete member-set
+hash, all seven condition-object identities, relation Audit, exact Package/Job identities, and
+coordinate/namespace hashes. A fresh repair Composition replaces the unclosed v26.220 condition
+parent but creates no online authorization.
+
+Four equal-cardinality upstream controls change one Job ID or one Raw namespace. Two retain the
+old formal Manifest and reject at member admission. Two additionally recompute a complete
+candidate v26.209 Manifest/Root and reject against the fixed historical identities. Every attack
+also calculates prospective condition, Composition, and authorization identities:
+
+```text
+attacks / rejected / accepted                           4 / 4 / 0
+Job-ID / namespace attacks                              2 / 2
+candidate formal Manifest/Root rehashes                     2
+prospective downstream identities                          12
+authoritative conditions / online authorizations created  0 / 0
+attack writes / Provider calls                          0 / 0
+```
+
+All eight noncompensatory repair Gates pass. Authoritative identities include:
+
+- authorization / v26.220 Freeze:
+  `finance_v26_221_external_repair_authorization:706a1858508a5d5839d78b4dbafeb71a134c94a9c4f17a43d16c781e8cb1a4ec` /
+  `finance_v26_221_v220_freeze:5ed2d3d89e8f9466580054fc01ae45d99d2676914cb1b940d3b57dadac951ef2`;
+- v26.209 formal Freeze / relation Audit:
+  `finance_v26_221_v209_formal_authority_freeze:3b86d17fbfb9fa5eaf352f186d5564616cf9c68246348f3f68874287cb267cf7` /
+  `finance_v26_221_v209_relation_closure_audit:e949ea0535d7f5c16ef4282d39c4b66a477e763cc31c865efe8b7f5623b5960a`;
+- repaired condition / Composition:
+  `fresh_exact_v209_execution_condition_authoritative_parent_binding:226ac1cb40bb988af48eb740a3b4bb607afe802c933a37dc8b34868977327858` /
+  `fresh_exact_v209_parent_authority_repaired_composition_contract:3945fea378cc05bc2108b950b61669152924e191aa0b562d14904ed94e77e813`;
+- tamper / scope / Gate:
+  `finance_v26_221_upstream_tamper_audit:6306cd29f2589166599e88b6d386229fbd4af7ced0f6f7105c2c8f0f6d29f2a8` /
+  `finance_v26_221_scope_boundary_audit:cea13e27a965b456f60e6d99bd89567fbe6cde6d1db68c77c95cbb8b325dce9c` /
+  `finance_v26_221_gate_evaluation:ed9933daa4f86ef0a00760b59ab4ef8a28d8d6b8ba415500d03672e27d6adf41`;
+- Decision / Transition / report:
+  `finance_v26_221_parent_authority_decision:81788bd2cc588939d669a21a2ab441ae0b2f6dfabc5edfdc33d9f2e507f03f5f` /
+  `finance_v26_221_transition:0748ae1619cd2868225ff139c78d3ff18589df5d3ad5b45f5e097071684fea85` /
+  `finance_v26_221_parent_authority_report:f541f48e181f9321b65199cde12ab64164a51b0f39b71adf8cdccb1e6672a18c`;
+- Artifact Manifest / Root:
+  `finance_v26_221_artifact_manifest:c52e6edea3d097f7ac3797fcdc0cbc704a99174b7514b09e62265784ed6c189a` /
+  `finance_v26_221_artifact_root:5782f2689c74fe1388f9f8b1f600e7b01ece3296a7abfc39265bb44b64cdb5f4`.
+
+The exact source commit/tree are `dbd9d15b6d44577725ef8d8a6c1fcca730120d5d` /
+`06f23ef0847e39b03fae9b19155cb3e7b22fbdf7`. The 17-file, 112,607-byte formal directory
+rebuilds byte for byte; its Manifest binds sixteen members and 109,876 bytes. Focused tests pass
+8/8. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass. The process-isolated
+adjacent v26.209-v26.221 partition passes 105/105; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_
+preflight_passed_independent_audit_required_online_authorization_blocked
+```
+
+The only permitted successor is
+`fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight_independent_audit_only`.
+It may independently verify only this credential-free repair and may not issue an online
+authorization. A passing audit must still be followed by a separate new external decision and a
+fresh authorization identity. The v26.220 authorization cannot be patched or consumed. Provider
+execution, the 192-Job run, replacement/rerun/recovery, empirical estimation, QA, Mapper, State,
+frequency, Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_221_fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight.md`.
+
 ## v26.220 Fresh Registry-Complement-Bound Online Execution Authorization
+
+### Post-review scope correction
+
+The subsequent exact 13,510-byte review at SHA-256
+`fbf49cf53f7612b260c1e1b2ec6f66747c5335c168ac133bcef510ea628ac605` retains v26.220 only
+as `VALID_SCOPED_AUTHORIZATION_OBJECT_CONSTRUCTION` and fails it at
+`EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED`. Its v26.219/v26.218 freezes,
+unconsumed authorization object, local expected-byte guard, negative controls, and zero-Provider
+boundary remain valid. Its G2, overall eight-pass Gate, online consumability, and direct-execution
+Transition do not. Every v26.220 formal byte and historical identity remains immutable.
+
+The later operator directive consumed only the zero-Provider v26.221 parent-authority repair
+recorded above. The v26.220 authorization remains unconsumed and is non-reusable. The current
+transition is v26.221's credential-free independent audit only.
 
 Finance v26.220 consumed only
 `fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_online_execution_authorization_only`.
@@ -107,14 +235,14 @@ rebuilds byte for byte; its Manifest binds seventeen members and 123,577 bytes. 
 pass 8/8. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass. The
 process-isolated adjacent v26.209-v26.220 partition passes 97/97; package-wide Ruff passes.
 
-The current decision is:
+The immutable historical v26.220 decision was:
 
 ```text
 fresh_repaired_registry_complement_bound_exact_192_job_online_execution_
 authorization_issued_not_consumed
 ```
 
-The only permitted successor is
+The immutable original v26.220 successor was
 `fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_exact_192_job_online_execution_only`.
 It must present the exact v26.220 authorization, consume it exactly once before credentials, and
 persist both durable receipts before Provider construction. The old v26.211 authorization remains

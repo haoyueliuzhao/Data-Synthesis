@@ -1,0 +1,374 @@
+已忽略上一份报告。本轮仅审计新附件中的 **Finance v26.220**，并对照其绑定的源码提交 `4276d29f39a77f933f470fafd590020698fe9931` 进行核查。
+
+# 一、总体结论
+
+```text
+AUDIT_RESULT        FAIL
+RETAINED_SCOPE      VALID_SCOPED_AUTHORIZATION_OBJECT_CONSTRUCTION
+BLOCKING_DEFECT     EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED
+FIRST_FAILED_GATE   G2_EXACT_V209_192_JOB_CONDITION
+MANDATORY_REVISION  REQUIRED
+CURRENT_AUTH        MUST_REMAIN_UNCONSUMED
+ONLINE_EXECUTION    NOT AUTHORIZED
+```
+
+本轮确实生成了一个新的、尚未消费的授权对象，也正确保持了零 Provider 调用、零凭据读取和零 Job 执行。但它**没有权威冻结自己声称绑定的“exact v26.209 192-Job execution condition”**。
+
+因此，v26.220 可以保留为：
+
+```text
+已构造未消费授权对象的局部工程结果
+```
+
+但不能保留为：
+
+```text
+可被下一阶段安全消费的精确在线执行授权
+```
+
+建议的追溯分类是：
+
+```text
+v26_220_materializes_an_unconsumed_fresh_authorization_object_but_
+does_not_authoritatively_bind_the_exact_v26_209_execution_condition
+```
+
+---
+
+# 二、本轮明确声明的命题
+
+v26.220 声称自己只执行授权签发阶段：
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_
+online_execution_authorization_only
+```
+
+并声称：
+
+```text
+fresh_repaired_registry_complement_bound_exact_192_job_online_execution_
+authorization_issued_not_consumed
+```
+
+即签发一个绑定 v26.219、v26.218、v26.209 精确条件和未来组合路径的新授权，但不在本轮消费，不调用 Provider，也不创建 Run Start Receipt。
+
+其中与本次缺陷直接相关的声明是：
+
+> v26.220 从 v26.209 直接重构精确 32-Package、192-Job、792-coordinate 条件及四类 evidence namespace，而不是复用旧 v26.211 授权。
+
+报告据此给出了新的 condition Binding 和 authorization identity。
+
+这是一个明确的、可审计的权威父绑定命题，不只是“计数正确”命题。
+
+---
+
+# 三、实现状态
+
+## 1. v26.219 和 v26.218 冻结基本完成
+
+实现对 v26.219 与 v26.218 调用了完整目录验证逻辑，包括：
+
+* 固定文件数量和总字节数；
+* Manifest 成员集合；
+* 每个成员的实际 SHA-256；
+* 每个成员的实际字节数；
+* 固定 Manifest ID 和 Artifact Root；
+* 固定 Report、Gate、Decision、Transition 等身份。
+
+因此，本轮关于 v26.219 独立审计父级和 v26.218 Registry-complement repair 父级的冻结，可以在当前范围内保留。
+
+## 2. v26.209 条件没有经过同等父权威验证
+
+问题出现在 `_execution_condition()`。
+
+该函数直接从当前仓库目录读取：
+
+```text
+executable_development_manifest.json
+executable_runner_package_catalog.json
+executable_invocation_census.json
+executable_execution_contract.json
+implementation_binding.json
+source_identity.json
+```
+
+随后只检查：
+
+```text
+source commit/tree 字符串
+部分对象之间的 ID 相等
+32 / 6 / 192 / 792 数量
+四类 phase 计数
+coordinate 唯一性
+四类 namespace 各有 192 个唯一值
+Job.provider_calls == 0
+```
+
+然后直接从这些读入值重新计算新的 Job-set、coordinate-set 和 namespace-set 哈希。
+
+但是它没有：
+
+```text
+调用 _verify_formal_directory(v26.209)
+读取或验证 v26.209 artifact_manifest.json
+绑定固定的 v26.209 Artifact Manifest ID
+绑定固定的 v26.209 Artifact Root
+检查六个所读文件的实际 bytes 是否属于冻结 Manifest
+严格重建各 v26.209 对象的 content identity
+检查 Census 中的 Job 集合是否等于 Manifest Job 集合
+检查 Job 的 Package 父是否属于精确 Package Catalog
+检查 namespace 是否由精确 Job 身份推导
+```
+
+这不是额外的生产级要求，而是直接属于本轮 G2 所声称的：
+
+```text
+exact v26.209 192-Job condition
+```
+
+尤其是，v26.209 已经存在明确的 formal Manifest 和 Artifact Root，其中记录了上述 Manifest、Catalog、Census、Contract 和 implementation 文件的实际哈希：
+
+```text
+Manifest:
+finance_v26_209_artifact_manifest:
+1ec5df9edc0fb7b89921bbe3c154856e72e362cbbaee58a191bf9f275fc0bcf9
+
+Root:
+finance_v26_209_artifact_root:
+76ef4cdb9cc0703f6bee2fd76c9c8ea7cbce5277337ff882ffcb44f8085e4770
+```
+
+但 v26.220 的 `_execution_condition()` 没有使用这一现成权威。
+
+## 3. 下游 guard 无法弥补这个上游缺陷
+
+`ExactExecutionConditionBinding` 的 validator 只验证：
+
+* Package ID 列表排序、唯一、哈希自洽；
+* Job ID 列表排序、唯一、哈希自洽；
+* condition Binding 自身 identity 自洽。
+
+它没有把 Job、coordinate 或 namespace 哈希与外部冻结的 v26.209 Manifest/Root 比较。
+
+随后，`PrecredentialAuthorizationGuard` 的 `expected_authorization` 正是由这些刚刚读取的 v26.209 当前目录值构造出来的。它能拒绝“与该 expected authorization 不同”的候选授权，但不能判断这个 expected authorization 本身是否来自未经改变的 v26.209 formal evidence。
+
+因此，现有 guard 证明的是：
+
+```text
+presented authorization
+    == builder 本轮刚生成的 expected authorization
+```
+
+而不是：
+
+```text
+presented authorization
+    == 由冻结 v26.209 Artifact Manifest/Root 唯一决定的 authorization
+```
+
+现有十二个 fully-rehashed attack 也都发生在 authorization/composition 已经构造之后，攻击的是下游父字段，没有攻击 `_execution_condition()` 所读取的 v26.209 上游文件。
+
+---
+
+# 四、直接反例
+
+下面是能够直接推翻 G2 的源码级可复现反例。
+
+## 反例构造
+
+在 v26.220 build 前，复制 v26.209 formal 目录，然后仅修改：
+
+```text
+executable_development_manifest.json
+```
+
+把其中一个 Job 的 `job_id` 改成一个新的唯一字符串，同时保持：
+
+```text
+Job 总数                         192
+Job ID 唯一数                    192
+Package 数                        32
+Replica 数                         6
+四类 namespace 唯一数            192
+每个 Job provider_calls             0
+Census 行数                       792
+各 phase 计数       192 / 288 / 120 / 192
+Census coordinate 唯一数          792
+manifest_id 字段                   不变
+```
+
+无需修改 v26.209 的 `artifact_manifest.json`，因为 v26.220 根本不会验证它。
+
+## 为什么现有实现会接受
+
+当前 `_execution_condition()`：
+
+1. 不校验 `executable_development_manifest.json` 的实际字节哈希；
+2. 不校验它是否仍属于 v26.209 Artifact Manifest；
+3. 不校验 Manifest Job 集合是否等于 Census coordinate 中的 Job 集合；
+4. 只要求新读出的 192 个 Job ID 唯一；
+5. 根据被修改后的 Job ID 自动计算新的 `exact_job_set_sha256`；
+6. 自动构造新的 condition、composition 和 authorization identity；
+7. 再把这个新 authorization 作为 guard 的 expected authorization。
+
+因此，该改变不会在现有 G2 检查中失败，反而会被重新包装成一个内部完全自洽的新授权。
+
+同样地，仅替换一个 Raw、Result、Trace 或 Outcome namespace，并保持 192 个值唯一，也可以通过当前检查。
+
+这是一个**直接针对本轮 exact-v26.209-condition 声明的反例**。它不依赖 Provider、不依赖并发、不依赖生产环境，也不要求破解哈希。
+
+本次审计没有在用户服务器上实际执行该篡改测试；结论来自绑定提交中确定性的源码路径。现有测试也没有覆盖这种“先修改 v26.209 输入，再让 builder 重新生成 expected authorization”的攻击；测试覆盖的是构造完成后的授权字段替换。
+
+---
+
+# 五、Gate 判定
+
+```text
+G0 external scope and v26.219 Freeze             PASS
+G1 complete v26.218 repaired parent set           PASS
+G2 exact v26.209 192-Job condition                FAIL
+G3 source-bound single-consumer composition       NOT_AUTHORIZING_AFTER_G2
+G4 fresh exact online authorization               NOT_AUTHORIZING_AFTER_G2
+G5 precredential admission / old-v26.211 reject   PASS_LOCAL_MECHANICS
+G6 fully rehashed downstream attacks reject       PASS_LOCAL_MECHANICS
+G7 zero-Provider/credential/empirical boundary    PASS
+
+OVERALL                                               FAIL
+```
+
+报告原本记录了八个 Gate 全部通过。
+
+但这些 Gate 是非补偿式的。G5 和 G6 能证明下游 guard 对其自身生成的 expected authorization 工作正常，不能补偿 G2 缺失的上游父权威。
+
+**首个本质阻塞点就是 G2，审计在此停止，不继续把未审计的后续问题升级为新的阻塞项。**
+
+---
+
+# 六、发现分级
+
+## Blocking defect
+
+```text
+EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED
+```
+
+v26.220 从可变目录内容生成“期望授权”，但没有先证明这些目录内容就是冻结的 v26.209 formal evidence。其结果是：
+
+```text
+内容自洽 ≠ exact v26.209 condition
+```
+
+该缺陷直接推翻 G2 及当前在线授权可消费性。
+
+## Scope limitation
+
+本轮没有执行 Provider、没有消费授权、没有生成经验行。这些都是正确且符合声明的阶段边界，不构成缺陷。报告明确记录了授权未消费以及零 Provider、零凭据、零 Run Start Receipt。
+
+## Future hardening
+
+不在本轮继续审计以下问题：
+
+```text
+实际 Provider 行为
+完整在线异常发生率
+十类 terminal source partition 是否覆盖未来所有运行故障
+postrun evidence reconstruction
+经验 Capability、Mapper、State、Contribution、VTDO
+```
+
+它们位于 G2 之后，当前不应被提升为第二个 Blocking defect。
+
+---
+
+# 七、当前允许保留的结论
+
+可以保留：
+
+```text
+1. v26.219 formal directory 被完整冻结。
+2. v26.218 repaired parent set 和 16/1/15 Registry partition 被重新绑定。
+3. 一个新的 content-addressed authorization 对象已经被物化。
+4. 该 authorization 对象尚未消费。
+5. 旧 v26.211 authorization 没有被消费或作为授权父级使用。
+6. 当前 guard 能拒绝相对于其 expected authorization 的字段或字节变化。
+7. 本轮 Provider calls、credential lookups、Manifest Job executions 和 empirical rows 均为零。
+```
+
+报告给出的源码提交、18 文件 formal directory 和 97/97 进程隔离测试结果，可以保留为本轮实现与复现记录；这些结果本身不弥补 G2 的缺失测试维度。
+
+---
+
+# 八、当前禁止的结论
+
+不能声明：
+
+```text
+v26.220 已权威绑定 exact v26.209 192-Job condition
+v26.220 authorization 已满足在线消费条件
+当前 exact 192-Job online execution 可以启动
+G2 或整体 noncompensatory Gate 为 PASS
+当前 authorization 可以通过补充说明后继续使用
+Provider 执行、经验估计或后续 VTDO 已获得授权
+```
+
+当前授权必须保持：
+
+```text
+authorization_consumed = false
+```
+
+---
+
+# 九、原先声明的在线下一步能否继续
+
+**不能。**
+
+附件原本把以下阶段作为唯一 successor：
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_
+exact_192_job_online_execution_only
+```
+
+并要求消费 v26.220 授权后执行 192 Jobs。
+
+由于 G2 失败，这一在线阶段当前不得启动。
+
+唯一合理的下一实验应改为零 Provider 修复预检：
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_binding_
+repair_preflight_only
+```
+
+该实验只需完成以下最小修复：
+
+1. 在读取任何 v26.209 条件对象前，验证完整 v26.209 formal directory、固定 Manifest ID、固定 Artifact Root，以及每个成员的实际路径、SHA-256 和字节数。
+2. 严格解析并重建 v26.209 Package Catalog、Manifest、Runner、Execution Contract、Census、implementation 和 source identities。
+3. 把 v26.209 Artifact Manifest ID、Artifact Root 和完整父集合哈希写入新的 condition Binding 与 authorization。
+4. 验证关系闭包：
+
+   ```text
+   Census Job set == Manifest Job set
+   every Job.package_id ∈ exact Package Catalog
+   namespace owner == exact Job
+   four namespace sets are exact and unique
+   Runner / Contract / Census parents all agree
+   ```
+5. 增加一个决定性负向控制：修改一个 Job ID或 namespace，保持所有数量不变，并完整重算 condition、composition 和 authorization；必须在 authorization 创建前拒绝。
+6. 保持零 Provider、零凭据、零授权消费；不得消费当前 v26.220 authorization。
+7. 修复预检通过后，再进行独立审计；只有独立审计通过，才可签发一个绑定新父级的**全新授权**。当前 v26.220 authorization 不得补丁式复用。
+
+最终判定：
+
+```text
+Finance v26.220                         FAIL
+First fundamental blocker              G2
+v26.219 / v26.218 parent freeze         RETAINED
+Fresh authorization object creation     RETAINED_AS_LOCAL_FACT
+Exact v26.209 condition authority        NOT ESTABLISHED
+Current authorization consumption        FORBIDDEN
+192-Job online execution                 BLOCKED
+Next experiment                          V209 PARENT-AUTHORITY REPAIR PREFLIGHT ONLY
+```

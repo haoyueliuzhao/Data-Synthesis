@@ -1,5 +1,28 @@
 # Finance v26.220 Fresh Repaired Upstream Terminal-Domain Exact Registry-Complement Bound Online Execution Authorization
 
+## Post-Review Scope Correction
+
+The subsequent exact 13,510-byte review at SHA-256
+`fbf49cf53f7612b260c1e1b2ec6f66747c5335c168ac133bcef510ea628ac605` classifies v26.220 as
+`VALID_SCOPED_AUTHORIZATION_OBJECT_CONSTRUCTION` but fails it at
+`EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED`. The v26.219/v26.218 freezes,
+unconsumed authorization-object construction, local expected-byte guard, negative controls, and
+zero-Provider boundary remain valid at their stated scopes. The exact-v26.209 G2, overall
+eight-pass Gate, online consumability, and direct-execution Transition do not.
+
+Every v26.220 formal byte and historical identity remains immutable. Its current scoped decision
+is:
+
+```text
+v26_220_materializes_an_unconsumed_fresh_authorization_object_but_
+does_not_authoritatively_bind_the_exact_v26_209_execution_condition
+```
+
+The later operator directive consumed only the zero-Provider v26.221 parent-authority repair.
+The v26.220 authorization remains unconsumed, cannot be reused, and does not authorize the 192-Job
+run. The current transition is v26.221's credential-free independent audit only. See
+`docs/finance_v26_221_fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight.md`.
+
 ## Scope And Decision
 
 Finance v26.220 consumes only
@@ -288,9 +311,9 @@ exact path and byte equality. Focused PyCompile, Ruff check/format, and no-impor
 The process-isolated adjacent v26.209-v26.220 partition passes 97/97: the main process passes
 89/89 with v26.217 excluded, and an isolated v26.217 process passes 8/8. Package-wide Ruff passes.
 
-## Transition And Prohibitions
+## Immutable Original Transition And Prohibitions
 
-The fresh authorization exists but remains unconsumed. The only permitted successor is:
+The fresh authorization exists but remains unconsumed. The immutable original v26.220 successor was:
 
 ```text
 fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_
