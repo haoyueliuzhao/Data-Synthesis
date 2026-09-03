@@ -1,0 +1,386 @@
+# Finance v26.219 本轮实验审计
+
+## 一、总体结论
+
+```text
+AUDIT_RESULT          PASSED_AS_SCOPED
+BLOCKING_DEFECT       NONE_FOUND
+MANDATORY_REVISION    NONE
+SCOPE_LIMITATION      PROCESS-ISOLATED / LOCAL-DETERMINISTIC ONLY
+OVERALL_GATE          PASS
+ONLINE_EXECUTION      NOT AUTHORIZED
+```
+
+**v26.219 可以按本轮声明范围通过。**
+
+本轮确实完成了对 v26.218 的独立审计：没有发现能够直接推翻“v26.218 已修复精确 Registry 补集绑定错误”这一声明的具体反例。七个非补偿 Gate 的 `7 / 0` 结果可以保留。
+
+最强允许结论是：
+
+```text
+v26.218 exact Registry-complement binding preflight
+has passed its credential-free independent audit
+```
+
+这仍然不是 Provider 执行、模型结果、Capability 估计或 192-Job 在线执行授权。v26.219 自身明确保持 Provider、凭据读取、经验行、QA、Mapper、State、frequency、Contribution 和 VTDO 数量为零。
+
+---
+
+## 二、本轮实际检验的理论与工程命题
+
+v26.219 本轮只需回答：
+
+> v26.218 是否真正从冻结的 v26.195 Registry 和 v26.217 Event-source Binding 独立推导出 `16 / 1 / 15` 的精确终止域分区，并且能否拒绝上一轮那个保持集合大小、重新计算所有下游身份的错拼补集反例？
+
+这里不需要重新审计完整 Agent Runtime、Provider 行为、所有未来异常来源或 VTDO 理论。
+
+本轮证据对象包括：
+
+```text
+v26.218 exact formal directory
+v26.195 reachable terminal-policy Registry
+v26.217 admitted Event-source Binding
+v26.217 retained five-exit artifact chain
+same-length misspelled-complement full-rehash attack
+```
+
+这个范围与 v26.219 声明一致，没有越级扩大为在线系统完备性证明。
+
+---
+
+## 三、实现是否真实完成了独立审计
+
+### 1. v26.218 冻结与脱离源码重建：成立
+
+v26.219 首先冻结完整 v26.218 目录：
+
+```text
+saved files / bytes       51 / 1,054,511
+Manifest members               50
+Manifest member bytes     1,044,590
+```
+
+随后从精确 v26.218 commit 归档 `trusted_data_synthesis/src`，在仅包含 `PATH`、detached `PYTHONPATH`、`PYTHONDONTWRITEBYTECODE` 和 `LC_ALL` 的子进程环境中重新执行 v26.218 builder。
+
+重建结果为：
+
+```text
+saved / rebuilt files             51 / 51
+saved / rebuilt bytes     1,054,511 / 1,054,511
+path matches                       51 / 51
+SHA-256 matches                    51 / 51
+byte-count matches                 51 / 51
+actual-byte matches                51 / 51
+Provider calls                           0
+credential lookups                       0
+```
+
+
+
+源码中也确实使用 `git archive` 获取精确 v26.218 commit 的源码，从 detached `PYTHONPATH` 执行 builder，再比较全部 51 个输出文件的路径、哈希、长度和实际字节；candidate Report、Gate 和 complement Audit 没有被用来替代这些比较。
+
+因此 A1 不是“调用当前 v26.218 helper 后相信其返回值”，而是一次真实的精确源码重建。
+
+---
+
+### 2. admitted singleton 已经从 v26.217 source Binding 独立推导：成立
+
+这是本轮最关键的独立性要求。
+
+当前最终源码 commit `40a7f6aa6fe5dac3a0b2f0865418bc384d4e6252` 不再从 v26.218 candidate complement 复制：
+
+```text
+admitted_event_terminal_policy_items
+```
+
+而是直接读取冻结的：
+
+```text
+v26.217/upstream_event_source_binding.json
+```
+
+并检查：
+
+```text
+binding identity
+exact v26.195 Registry parent
+terminal_argument_allowed = false
+reason_argument_allowed = false
+source_event_id_argument_allowed = false
+provider_calls = 0
+```
+
+然后才从该 source Binding 推导 admitted Event-to-terminal-to-policy mapping。该最终提交还补强了 E2 四对象链和五出口 Contract 的独立验证。
+
+独立推导出的唯一 admitted mapping 是：
+
+```text
+transport_instrument_failure
+  -> instrument_failure
+  -> exact v26.195 instrument_failure policy
+```
+
+由此得到：
+
+```text
+reachable terminal-policy pairs     16
+admitted terminals                    1
+forbidden complement                 15
+union == reachable                  true
+intersection == empty               true
+```
+
+而且正确包含：
+
+```text
+provider_failure_no_payload
+resource_budget_exhausted
+```
+
+正确排除：
+
+```text
+provider_no_payload_failure
+resource_failure
+```
+
+ 
+
+因此，v26.219 没有循环地从 v26.218 candidate 获取“应该被独立验证”的 admitted singleton。
+
+---
+
+### 3. retained runtime 没有被补集修复悄然改写：成立
+
+v26.219 没有依赖 candidate 的 retained-execution 汇总作为路径枚举来源，而是从实际路径域重新枚举 35 个 retained runtime 文件，并进行两组独立比较：
+
+```text
+v26.218 -> v26.217 actual bytes       35 / 35
+detached rebuild -> v26.218 bytes     35 / 35
+v26.217 execution object match           true
+```
+
+这 35 个文件包括：
+
+```text
+consumer ingress receipts                         2
+Raw/Result/Trace/Outcome/checkpoint files         25
+Event/Descriptor/Observation/Descriptor files      8
+```
+
+
+
+所以 v26.218 修复的是 Registry complement authority，而不是通过改变既有 E2 执行或持久化字节来制造通过结果。
+
+---
+
+### 4. 五个 source exits 的持久化链确实被独立重构：成立
+
+v26.219 从五个实际 Raw 文件出发，重新解析：
+
+```text
+authenticated evidence
+Runner observation
+source-exit proof
+derived terminal decision
+complete invocation record
+```
+
+随后逐层跟随：
+
+```text
+Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+并对每层重新计算 content identity。
+
+重构结果为：
+
+```text
+E0 invalid dispatch chain         instrument_failure
+E1 empty queue                    instrument_failure
+E2 authenticated queued rethrow  instrument_failure
+E3 reasoning-like key             privacy_rejection
+E4 non-object response            instrument_failure
+
+source exits / distinct exits        5 / 5
+content identities recomputed       25 / 25
+v26.217 actual-byte matches         25 / 25
+detached actual-byte matches        25 / 25
+source-Contract rows matched          5 / 5
+E2 artifact integrity matches         4 / 4
+```
+
+
+
+源码不仅比较终止名称，还检查每个 exit 对应的：
+
+```text
+source Contract ID
+source exit ID
+source symbol ID
+exit kind
+failure origin
+exception type
+reason hash
+direct terminal
+E2 upstream-authority requirement
+```
+
+E2 进一步检查 Event、Event Descriptor、Observation 和 Observation Descriptor 的内容身份、实际字节、hash、byte count、父关系以及 no-replace 状态。
+
+这足以支持本轮所声称的“独立持久化证据重构”。它不需要再在线触发五种异常。
+
+---
+
+## 四、决定性直接反例检查
+
+上一轮最关键的攻击是：
+
+```text
+保持 forbidden count = 15
+
+provider_failure_no_payload
+  -> provider_no_payload_failure
+
+resource_budget_exhausted
+  -> resource_failure
+
+并重新计算：
+Binding
+Composition
+Gate
+Report
+```
+
+v26.219 没有调用 v26.218 的 `run_same_length_full_rehash_attack`，而是：
+
+1. 从自己独立推导的精确 complement 出发；
+2. 注入两个旧错拼；
+3. 独立计算四个候选身份；
+4. 确认四个身份与 v26.218 保存的攻击候选完全相同；
+5. 通过独立 Registry-complement admission 判定。
+
+结果为：
+
+```text
+attacks / rejected / accepted       1 / 1 / 0
+candidate forbidden count                  15
+independently rehashed objects               4
+saved candidate identity matches         4 / 4
+candidate attack-helper calls                 0
+attack output writes / Provider calls     0 / 0
+```
+
+ 
+
+**没有发现这个错拼补集在保持 cardinality 和全部下游 content hash 自洽后仍能通过的路径。**
+
+这正面关闭了 v26.217 的首个本质阻塞点。没有必要继续追加与本轮声明无关的任意终止类型排列、生产网络攻击或全系统形式验证。
+
+---
+
+## 五、Gate 判定
+
+| Gate                                                       |     审计结果 | 解释                                         |
+| ---------------------------------------------------------- | -------: | ------------------------------------------ |
+| A0 external scope and exact v26.218 Freeze                 | **PASS** | 精确冻结 predecessor、目录和授权范围                   |
+| A1 detached exact-directory rebuild                        | **PASS** | 51/51 路径、哈希、长度和实际字节相同                      |
+| A2 independent exact Registry-complement derivation        | **PASS** | Registry 与 admitted source 分别推导，得到 16/1/15 |
+| A3 independent retained-runtime byte comparison            | **PASS** | 35/35 retained runtime 字节保持                |
+| A4 independent five-source-exit persistence reconstruction | **PASS** | 五出口、25 层、E2 四对象链闭合                         |
+| A5 independent same-length full-rehash attack rejection    | **PASS** | 决定性错拼反例独立拒绝                                |
+| A6 zero-Provider/credential/empirical boundary             | **PASS** | 没有越过授权层级                                   |
+
+总体：
+
+```text
+passed / failed = 7 / 0
+```
+
+
+
+正式 `report.json` 中记录的 Decision、各独立 Audit identity、`provider_calls=0`、`empirical_rows=0` 和未消费 v26.211 authorization，也与报告一致。
+
+---
+
+## 六、发现分类
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现能够直接推翻本轮独立审计声明的实现缺陷。
+
+### Scope limitation
+
+有两个需要维持边界、但不阻断本轮的限制：
+
+第一，A1 是“**精确 v26.218 实现源码的 detached rebuild，读取 canonical repository 中已冻结的 evidence parents**”，不是完整依赖环境、操作系统和整个仓库的 hermetic rebuild。报告已经明确说明 canonical repository 只作为 frozen evidence root，因此没有构成措辞欺骗。
+
+第二，A4 是对既有五出口持久化证据的独立重构，不是重新执行五个 source exits。这与其 `persistence reconstruction` 声明一致，不影响本轮结论。
+
+### Future hardening
+
+v26.217 历史实现仍存在 `id(error)` 依赖对象地址的生命周期问题：在一个大型单进程 adjacent test run 中，v26.217 的八个测试会因地址复用而在 fixture setup 停止；独立进程执行则为 `8/8`。v26.219 已如实区分单进程结果和进程隔离结果，没有把它误报为统一的 `89/89` 单进程通过。
+
+这是历史 v26.217 的可维护性问题。它已由 v26.218 的窄 lifetime adapter 隔离，不是 v26.219 Registry-complement 独立审计的 Blocking defect，也不应因此再开启一轮强制修订。
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 允许
+
+```text
+v26.218 已从实际冻结 Registry 派生精确 reachable complement
+admitted / forbidden 分区为 1 / 15
+两个旧错拼已从 authority 中移除
+同长度、四对象全重哈希攻击被独立拒绝
+v26.218 的 51 文件可由精确源码重建
+35 个 retained runtime 文件没有被修复过程改写
+五个 source exits 的 25 层持久化链可独立重构
+v26.218 credential-free preflight independent audit passed
+```
+
+### 仍禁止
+
+```text
+把本轮解释为模型 Capability 结果
+把五个本地 source-exit controls 解释为 Provider failure occurrence
+直接消费旧 v26.211 authorization
+直接执行 192-Job Provider run
+replacement / rerun / recovery
+修改冻结实验条件
+经验估计
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+---
+
+## 八、后续实验判定
+
+原先授权的下一步——**v26.218 credential-free independent audit**——已经由 v26.219 完成，可以结束这条修复审计链，不需要 v26.220 再做一次同类机制修订。
+
+唯一合理的后续候选是：
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_
+online_execution_authorization_only
+```
+
+但它目前只是 **prospective candidate**：
+
+```text
+next_stage_authorized             false
+separate_external_decision_needed true
+online_authorization_created      false
+provider_execution_authorized     false
+```
+
+因此，下一轮应当只作一个新的外部授权决策，并在新的 authorization identity 中绑定完整 v26.218 repaired parent set。它不能复用或消费旧 v26.211 authorization，也不能在同一轮直接发起 Provider 调用。
+
+**最终判定：v26.219 本轮 PASS；没有强制修订；可以结束 Registry-complement preflight 审计，但在线执行仍须经过一轮独立的新授权决策。**

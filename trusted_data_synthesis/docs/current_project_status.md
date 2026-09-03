@@ -15,7 +15,125 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.220 Fresh Registry-Complement-Bound Online Execution Authorization
+
+Finance v26.220 consumed only
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_online_execution_authorization_only`.
+The exact 13,007-byte external review is bound at SHA-256
+`8a8ac1155fee931a4da4ae6c5ecbeab57fafdd4132d3a0626e42b471ba8fe459`.
+It accepts v26.219 as `PASSED_AS_SCOPED`, finds no blocking defect, requires no mandatory
+revision, and identifies only a fresh authorization-only decision as the next rational stage.
+The exact 24-byte directive `参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`,
+authorizes only that zero-Provider decision. Provider calls and credential lookups are zero.
+
+The complete 17-file, 46,670-byte v26.219 directory and all sixteen self-excluding Manifest
+members revalidate. Its Report, seven-pass Gate, Decision, Transition, six component Audits,
+source commit/tree, process-isolated 89-pass adjacent result, and unconsumed v26.211 state are
+frozen in a new v26.220 authority object.
+
+v26.220 separately revalidates all 51 v26.218 files and binds 22 exact repaired-parent
+identities, including its Manifest/Root/Report/Gate/Decision/Transition, implementation and three
+Audits, exact Registry/complement/Composition, and the transitive v26.217 source Contract,
+Event/Observation/Runner/dispatcher/persistence/consumer/Composition chain. The sorted parent-set
+hash is `fe694575a42d52275d8c63208bf9d8ed17a1d6d438ae8afdb0a83865ae4351ed`.
+The 16/1/15 exact Registry partition is rechecked, with the two corrected names present and both
+old misspellings absent.
+
+The frozen 192-Job execution condition is reconstructed directly from v26.209 rather than copied
+from the old v26.211 authorization:
+
+```text
+Packages / Replicas                              32 / 6
+Manifest Jobs                                      192
+registered invocation coordinates                  792
+first / subsequent Action                     192 / 288
+Correction side branches / Final               120 / 192
+unique Raw/Result/Trace/Outcome namespaces         192 each
+maximum Prompt / requests / Provider calls   60K / 21 / 23
+maximum transport invocations / rollout tokens  24 / 1,120,000
+source-condition changes / Provider calls          0 / 0
+```
+
+One explicit future Composition binds the v26.213 single consumer only for eight completed,
+parser, reference, and correction terminal kinds, and binds the v26.218 repaired source chain for
+the actual v26.209 `instrument_failure` and `privacy_rejection` exits. Unbound terminal sources
+fail closed. Registry membership alone is not treated as source authority. The exact future order
+is fresh authorization validation, precredential parent/scope admission, single durable
+consumption, durable Run Start Receipt, credential and factory construction, exact v26.209 Runner,
+source-bound terminal derivation, exact Registry-policy admission, and Raw-before-Result through
+checkpoint persistence.
+
+One exact request passes as a nonconsuming diagnostic probe. Twenty-three invalid requests reject
+before every post-guard probe, including old-v26.211 presentation, modified bytes, changed repaired
+parent/condition/Job/coordinate sets, replacement/rerun/recovery/QA expansion, caller terminal,
+historical response, reference vector, and prebuilt Final. Twelve attacks each recompute both a
+mutated Composition identity and a mutated Authorization identity; all twelve reject:
+
+```text
+legal / invalid admission controls                    1 / 23
+fully rehashed parent attacks / rejected / accepted 12 / 12 / 0
+fully rehashed candidate objects                          24
+post-guard probes / credential lookups / Provider calls   0 / 0 / 0
+```
+
+All eight noncompensatory Gates pass. Authoritative identities include:
+
+- external decision / v26.219 Freeze:
+  `finance_v26_220_external_online_authorization_decision:4fc2807d76eb3bb29ea39de5ab9217734400ae120e5206ac0bad5701db6398f8` /
+  `finance_v26_220_v219_independent_audit_freeze:6a9e19c77eb141f0033de6186a0ac943116fbb4491b346be6ab6e24f3ee88c3a`;
+- v26.218 parent set / exact condition:
+  `fresh_repaired_v218_complete_parent_set_binding:846e8dfe38552fdde9763e4cfbb17a4170b3a1dd9bca9e20693b21238dd2f20c` /
+  `fresh_repaired_registry_complement_bound_execution_condition:f0103b199abc812a12e08acf3f387c00f8ad486b1b50331489cd3b53ad138c48`;
+- Composition / fresh Authorization:
+  `fresh_repaired_registry_complement_bound_online_execution_composition_contract:579cf8ede4d94d06f9dede5fad578a353d48f1bd733a2e8ac536a1924fea24c3` /
+  `fresh_repaired_registry_complement_bound_exact_online_execution_authorization:ea1c906e3f9f8302bb2624defbf258f2601edd91e6256ae4ddec48be32517b5a`;
+- admission / parent-attack / scope Audits:
+  `finance_v26_220_precredential_admission_audit:2db4551982d7bac36e6fa9cc40183ff6c1bea12645b11328b6414d65cee47087` /
+  `finance_v26_220_parent_attack_audit:e92b2da30105aa2b83952ffadf1c304ed4e379385583492f8d833c2ee7a409b7` /
+  `finance_v26_220_scope_boundary_audit:afb4cb1ccf1cee7f24531867f9daf7c703e2c252b64257daf405b35bbde1a165`;
+- Gate / Decision / Transition:
+  `finance_v26_220_gate_evaluation:0ee3a7ad611975c9a42126975b1ebb7567cba072c2a1b77cfeeab635e74915a3` /
+  `finance_v26_220_online_authorization_decision:fa540ccc6f281ede4e163f30a062e41b11dbba40878ea82353b9e0aac0f3437c` /
+  `finance_v26_220_transition:d8a9e318ef38508907390a9a71abf1509f1841836db7fe0df354edf75bb33935`;
+- report / Artifact Manifest / Root:
+  `finance_v26_220_online_authorization_report:4560dd33351074bfa183c839e3908a224e5d3e34542a00f918c63235817c8d15` /
+  `finance_v26_220_artifact_manifest:b2fc48d72a545fd2964fcad2437ced2bcd026d631dfbeef484e2221636bb269d` /
+  `finance_v26_220_artifact_root:959b8f0afeec330e744e6fe33d20904037c3466bf782d1644ba885b5b630f213`.
+
+The exact source commit/tree are `4276d29f39a77f933f470fafd590020698fe9931` /
+`9f9cfab48ad7de93b7eec8b58382fc780d5b15fd`. The 18-file, 126,513-byte formal directory
+rebuilds byte for byte; its Manifest binds seventeen members and 123,577 bytes. Focused tests
+pass 8/8. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass. The
+process-isolated adjacent v26.209-v26.220 partition passes 97/97; package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_repaired_registry_complement_bound_exact_192_job_online_execution_
+authorization_issued_not_consumed
+```
+
+The only permitted successor is
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_exact_192_job_online_execution_only`.
+It must present the exact v26.220 authorization, consume it exactly once before credentials, and
+persist both durable receipts before Provider construction. The old v26.211 authorization remains
+unconsumed and is forbidden. Replacement, rerun, recovery, frozen-condition change, empirical
+estimation during authorization, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_220_fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_online_execution_authorization.md`.
+
 ## v26.219 Fresh Repaired Upstream Terminal-Domain Exact Registry-Complement Independent Audit
+
+### Subsequent authorization-only decision
+
+v26.220 later consumes the prospective candidate under a separate exact external review and
+operator directive. It freezes every v26.219 byte and result, binds the complete v26.218 repaired
+parent set, independently reconstructs the v26.209 192-Job condition, and issues one fresh
+authorization without consuming it or making a Provider call. The old v26.211 authorization
+remains unconsumed. The current transition is the exact v26.220 one-shot online execution only;
+the historical v26.219 statement that its candidate was not yet authorized remains true at the
+v26.219 freeze.
 
 Finance v26.219 consumed only
 `fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_independent_audit_only`.
