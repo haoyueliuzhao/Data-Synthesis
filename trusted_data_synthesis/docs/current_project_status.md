@@ -15,7 +15,121 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.222 Fresh Exact v26.209 Execution-Condition Parent-Authority Repair Independent Audit
+
+Finance v26.222 consumed only
+`fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight_independent_audit_only`.
+The exact 14,613-byte external review is bound at SHA-256
+`3c687f46977a555a3f71d6759e6cd1c1de1117b7ea9e99e3d22e52e7afa1e318`. It classifies
+v26.221 as `PASSED_AS_SCOPED`, finds no blocking defect, requires no mandatory revision, and
+authorizes only this credential-free audit. The exact 36-byte directive
+`参照审计报告继续实验修订`, SHA-256
+`dc2b598ec3667bd0e26354d1dac1ca447fa87acea50bd30a5fc245a9c35374e9`, consumes only
+that transition. Provider calls, client constructions, credential lookups, Manifest Job
+executions, authorization consumptions, and new online authorizations are zero.
+
+The complete 17-file, 112,607-byte v26.221 directory and its sixteen self-excluding Manifest
+members revalidate. A detached archive of the exact v26.221 source commit/tree
+`dbd9d15b6d44577725ef8d8a6c1fcca730120d5d` /
+`06f23ef0847e39b03fae9b19155cb3e7b22fbdf7` contains 681 source files. It rebuilds all
+17 files and 112,607 bytes with 17/17 path, SHA-256, byte-count, and actual-byte matches and
+16/16 Manifest member revalidations. The subprocess environment contains no credential-like key.
+The candidate Report, Gate, formal Freeze, relation Audit, and tamper Audit are not outcome
+oracles.
+
+Starting from the raw v26.209 canonical JSON rather than the candidate helpers or historical
+result models, the audit independently validates the exact 21-file, 44,916,386-byte directory,
+the fixed 20-member Manifest and Root, all member hashes and bytes, the exact commit/tree, and
+three bound source files. It recomputes 1,024 content identities:
+
+```text
+Artifact Manifest                                               1
+Implementation Binding / Source Identity                    1 / 1
+Package Catalog / Packages                                  1 / 32
+Development Manifest / Jobs                                1 / 192
+Runner / Execution Contract                                  1 / 1
+Invocation Census / invocation records                    1 / 792
+```
+
+The independent relation closure reconstructs all 192 Jobs, 792 Census rows, 192 Package
+memberships and Package x Replica cells, 768 namespace owners, twelve Runner/Execution/Census
+parent links, and 792 unique coordinates. Raw, Result, Trace, and Outcome namespace sets each
+contain 192 distinct exact values. Seventeen condition-projection and sixteen relation-projection
+fields match v26.221 only after independent derivation; candidate helper calls are zero.
+
+The audit also independently recreates the same four equal-cardinality attacks: one Job ID or one
+Raw namespace is changed under either the stale formal Manifest or a fully rehashed replacement
+Manifest/Root. All candidates retain 192 unique Job IDs and 192 unique Raw namespaces. The stale
+controls reject at exact member admission; the fully rehashed controls reject at fixed historical
+Manifest/Root admission. All candidate Manifest/Root values, prospective condition/Composition/
+authorization identities, cardinalities, and rejection stages match the v26.221 controls after
+independent rejection:
+
+```text
+attacks / rejected / accepted                              4 / 4 / 0
+candidate-control projection matches                       4 / 4
+condition objects / online authorizations created          0 / 0
+attack writes / Provider calls                              0 / 0
+```
+
+The six noncompensatory audit Gates pass. Authoritative identities include:
+
+- authorization / v26.221 Freeze:
+  `finance_v26_222_external_independent_audit_authorization:b21e33ee9ecefe588e425199589778d0a05bd2544bd0a9deb6c45b8e944926c8` /
+  `finance_v26_222_v221_freeze:c1106f099b6e5a957a363961bafa63fbc46f6eef81172a27622fdf3602b63e9b`;
+- detached rebuild / v26.209 authority / relation:
+  `finance_v26_222_detached_rebuild_audit:94ef57868bca147d54324ed417ee37ae8c43197c207f1643672f1c151b17eebc` /
+  `finance_v26_222_independent_v209_authority_audit:5f75ee8ce701f7fe7d28e545b09f6b39bb58a55823293efb66a359d61b66f7bb` /
+  `finance_v26_222_independent_relation_closure_audit:f2bc75b5794d9ce6d0697723f9acd5f29056e856eac360fb6d2ae939a1d06fb5`;
+- attack / scope / Gate:
+  `finance_v26_222_independent_upstream_attack_audit:ee78d02eba4a5361a19bf2c165ecdaf479f03fe18d82194349a60bdc198dfc8d` /
+  `finance_v26_222_scope_boundary_audit:47ae6046afd843c12e7045c8007cfd335f4ec480f76317cbcf6bd95fd80aa051` /
+  `finance_v26_222_gate_evaluation:a82020070a552f8abf4f1361d6efe72f90104b4aa0bafc14529cab33a629f42f`;
+- Decision / Transition / report:
+  `finance_v26_222_independent_audit_decision:96846998c5507d42113cdf10372312d1228f590266fe685d431be018cb24e2e8` /
+  `finance_v26_222_transition:641c3cdf58c006b6e131770c42377600e16b5e82c5dd3238db6d5505df10f329` /
+  `finance_v26_222_independent_audit_report:b72380e5f70cb9f2ce30118a371f916fed3877e5fed066c50fdd938be7479163`;
+- Artifact Manifest / Root:
+  `finance_v26_222_artifact_manifest:ecfe64ef313d5950bbcab3d296c31f05a2b5838b667d1d43375f07cc78a98688` /
+  `finance_v26_222_artifact_root:f6cf3c042a7ee130feb537d5b3eff3f0109e81a72fb429ad32b8f41d8772400d`.
+
+The exact source commit/tree are `b95981668173eb1ed73a2581564fed6a0b280cfb` /
+`e9cfdb35518727452a73cca6f7d9dedab15588fb`. The 16-file, 74,784-byte formal directory
+rebuilds byte for byte; its Manifest binds fifteen members and 72,169 bytes. Focused tests pass
+8/8. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass. The process-isolated
+adjacent v26.209-v26.222 partition passes 113/113: 105/105 in the main process with v26.217
+excluded, plus 8/8 in an isolated v26.217 process. Package-wide Ruff passes.
+
+The current decision is:
+
+```text
+v26_221_exact_v209_execution_condition_parent_authority_repair_
+preflight_independent_audit_passed
+```
+
+The prospective candidate is
+`fresh_exact_v209_execution_condition_authoritative_parent_bound_online_execution_authorization_only`.
+It is not authorized by v26.222 and requires a separate new external audit decision. If later
+authorized, it may only decide whether to issue a fresh authorization binding the complete
+repaired parent chain. The v26.220 authorization remains unconsumed and forbidden as future
+authority. Provider execution, the 192-Job run, replacement/rerun/recovery, frozen-condition
+change, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_222_fresh_exact_v209_execution_condition_parent_authority_repair_preflight_independent_audit.md`.
+
 ## v26.221 Fresh Exact v26.209 Execution-Condition Parent-Authority Repair Preflight
+
+### Subsequent independent audit
+
+The exact 14,613-byte review at SHA-256
+`3c687f46977a555a3f71d6759e6cd1c1de1117b7ea9e99e3d22e52e7afa1e318` accepts v26.221
+as `PASSED_AS_SCOPED` with no blocking defect or mandatory revision. The later directive consumed
+only the zero-Provider v26.222 audit recorded above. That audit independently rebuilds the exact
+v26.221 directory, rederives the v26.209 formal authority and relation closure, and reproduces all
+four attacks without calling the candidate helpers. Its six Gates pass. Every v26.221 formal byte
+and historical identity remains immutable. The current transition is a separately decided fresh
+online-authorization stage only; it is not authorized by v26.222, and the v26.220 authorization
+remains forbidden.
 
 Finance v26.221 consumed only
 `fresh_exact_v209_execution_condition_authoritative_parent_binding_repair_preflight_only`.

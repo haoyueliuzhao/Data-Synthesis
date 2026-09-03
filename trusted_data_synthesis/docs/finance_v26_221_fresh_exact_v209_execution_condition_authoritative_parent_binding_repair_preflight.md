@@ -1,5 +1,27 @@
 # Finance v26.221 Fresh Exact v26.209 Execution-Condition Authoritative Parent-Binding Repair Preflight
 
+## Subsequent Independent Audit
+
+The subsequent exact 14,613-byte review at SHA-256
+`3c687f46977a555a3f71d6759e6cd1c1de1117b7ea9e99e3d22e52e7afa1e318` classifies
+v26.221 as `PASSED_AS_SCOPED`, finds no blocking defect, and requires no mandatory revision. The
+later operator directive consumes only the credential-free v26.222 independent audit. That audit
+rebuilds all 17 v26.221 formal files byte for byte from the detached exact source, independently
+rederives all 1,024 v26.209 identities and the complete relation closure, and independently
+reproduces and rejects the four equal-cardinality attacks. Its six noncompensatory Gates pass.
+
+Every v26.221 formal byte and historical identity remains immutable. The independent decision is:
+
+```text
+v26_221_exact_v209_execution_condition_parent_authority_repair_
+preflight_independent_audit_passed
+```
+
+The prospective fresh online-authorization decision stage is not authorized by v26.222. The
+v26.220 authorization remains unconsumed and forbidden as future authority. Provider execution
+and the 192-Job run remain blocked. See
+`docs/finance_v26_222_fresh_exact_v209_execution_condition_parent_authority_repair_preflight_independent_audit.md`.
+
 ## Scope And Decision
 
 Finance v26.221 consumes only

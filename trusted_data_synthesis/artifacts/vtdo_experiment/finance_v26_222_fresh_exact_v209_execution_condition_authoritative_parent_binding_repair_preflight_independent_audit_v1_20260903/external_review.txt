@@ -1,0 +1,446 @@
+# Finance v26.221 修订审计
+
+## 一、审计结论
+
+```text
+AUDIT_RESULT        PASSED_AS_SCOPED
+BLOCKING_DEFECT     NONE_FOUND
+FIRST_FAILED_GATE   NONE
+MANDATORY_REVISION  NONE
+
+REPAIRED_OBJECT
+  EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY
+
+V220_AUTHORIZATION
+  UNCONSUMED
+  FORBIDDEN_AS_FUTURE_AUTHORITY
+
+NEW_ONLINE_AUTHORIZATION
+  NOT_CREATED
+
+ONLINE_EXECUTION
+  STILL_BLOCKED
+
+NEXT_STEP
+  INDEPENDENT_AUDIT_ONLY
+```
+
+**v26.221 已经实质性修复上一轮发现的 G2 缺陷。**
+
+本轮修复不再从未经权威准入的 v26.209 当前目录内容直接构造“expected condition”，而是先固定并验证完整 v26.209 Artifact Manifest、Artifact Root、成员路径、成员哈希与实际字节，之后才解析条件对象、重建关系闭包并物化新的 Condition Binding。上一轮能够通过的 Job-ID/namespace 等基数替换反例，现在会在 Condition 构造前失败。
+
+因此：
+
+```text
+v26.221 repair preflight              PASS
+v26.221 independent audit             PENDING
+fresh online authorization            NOT YET AUTHORIZED
+192-Job Provider execution             NOT AUTHORIZED
+```
+
+v26.221 本身明确限定为零凭据、零 Provider、零在线授权的修复预检，这与本轮实际范围一致。
+
+---
+
+# 二、本轮声明的准确对象
+
+本轮唯一需要判断的命题是：
+
+> v26.220 的 `EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED` 是否已经被修复。
+
+不是重新证明：
+
+* v26.209 的全部 Runtime 语义；
+* v26.218 的完整 terminal-domain 理论；
+* 未来在线执行一定成功；
+* Provider 的实际故障总类；
+* Capability、State、Contribution 或 VTDO；
+* 整个系统的生产级不可篡改性。
+
+v26.221 对 v26.220 的处理也是正确的：它保留 v26.220 的 v26.219/v26.218 冻结、授权对象构造和零 Provider 事实，但撤销其 G2、整体八 Gate、授权可消费性和直接在线 Transition 的解释。
+
+这一范围没有发生越级扩张。
+
+---
+
+# 三、实现是否真正修复了上一轮缺陷
+
+## 1. 权威建立顺序已经修正
+
+这是本轮最关键的变化。
+
+源码中的实际 `build()` 顺序是：
+
+```text
+external authorization
+  -> exact v26.220 Freeze
+  -> _v209_authority()
+       -> complete directory geometry
+       -> _admit_exact_v209_files()
+       -> only then parse v26.209 condition objects
+  -> formal Freeze
+  -> relation closure
+  -> authoritative Condition Binding
+  -> repaired Composition
+  -> tamper controls
+  -> Gate / Decision / Transition
+```
+
+也就是说，`_v209_authority()` 在解析 Package Catalog、Development Manifest、Runner、Execution Contract 和 Census 之前，先调用 `_admit_exact_v209_files()`。该准入函数要求：
+
+```text
+Artifact Manifest ID == 固定历史 ID
+Artifact Root        == 固定历史 Root
+Manifest member set  == 实际目录文件集合（除 Manifest 自身）
+每个成员 byte_count  == 实际文件长度
+每个成员 SHA-256     == 实际文件 SHA-256
+```
+
+只有这些条件全部成立，后续历史 Pydantic 对象才会被解析。
+
+这与 v26.220 的错误顺序有本质区别：
+
+```text
+v26.220:
+candidate directory
+  -> derive new hashes
+  -> build expected authorization
+  -> guard compares candidate with itself
+
+v26.221:
+candidate directory
+  -> compare against fixed historical Manifest/Root/member bytes
+  -> reject or admit
+  -> only admitted historical bytes may form Condition
+```
+
+因此不再存在“攻击者修改上游文件后，由 builder 自动给攻击结果重新签发 expected authority”的循环。
+
+## 2. 完整 v26.209 formal authority 已进入新父链
+
+v26.221 固定的 v26.209 authority 包括：
+
+```text
+source commit          5809e9782515e55ee797b43730584d5d860aaa5c
+source tree            b2272bc1766a2d9b8c6562cb0b9f2f47151ad7cf
+formal files           21
+formal bytes           44,916,386
+Manifest members       20
+member bytes           44,912,918
+Artifact Manifest      finance_v26_209_artifact_manifest:1ec5...
+Artifact Root          finance_v26_209_artifact_root:76ef...
+```
+
+20 个 Manifest 成员的路径、SHA-256、字节数和实际字节检查均为 `20/20`。
+
+持久化的 `v209_formal_authority_freeze.json` 也实际包含这 20 个成员的逐文件路径、哈希与字节数，而不是只在 Markdown 中描述。
+
+## 3. 历史对象身份被严格重新验证
+
+正式准入后，代码使用 v26.209 的历史模型重新验证：
+
+```text
+Artifact Manifest                          1
+Implementation Binding / Source Identity   1 / 1
+Package Catalog / Packages                 1 / 32
+Development Manifest / Jobs                1 / 192
+Runner / Execution Contract                1 / 1
+Invocation Census / Invocation records     1 / 792
+
+identity-bearing objects total             1,024
+```
+
+同时，v26.209 commit 会被解析到固定 tree，Implementation Binding 中的三个源文件会从该 commit 直接读取并核验路径、哈希和字节数。
+
+历史 `ExecutableDevelopmentJob` 模型本身还会重新计算四类 namespace、deterministic seed 和 Job identity；Manifest 模型检查 192 个 Job、预期 Job 集合、Package × Replica 单元以及四类 namespace 唯一性。因此这里并非只验证最外层 JSON ID。
+
+## 4. 新增的关系闭包不是简单计数检查
+
+独立关系闭包进一步检查：
+
+```text
+Census distinct Job set == Manifest Job set
+792 Census rows all belong to exact Manifest Jobs
+192 Jobs all refer to exact Package Catalog members
+192 Package × Replica cells unique
+768 namespace owners independently rederived
+Raw/Result/Trace/Outcome each exactly 192 unique values
+Runner / Execution / Census parent agreements 12/12
+Manifest expected Job set == actual Job set
+792 registered coordinates unique
+```
+
+namespace 不是只检查“是否唯一”，而是重新从：
+
+```text
+source_v206_job_id
+package_id
+implementation_id
+repair_profile_id
+replica_index
+```
+
+计算所有四个 namespace。
+
+对应源码也明确以四个固定前缀重新执行 `canonical_hash(namespace_parent)`，并在任何一个 owner、父关系或集合关系不匹配时直接失败。
+
+这正好补上了上一轮指出的：
+
+```text
+unique namespace ≠ authoritative namespace
+```
+
+---
+
+# 四、上一轮直接反例是否仍然成立
+
+## 旧反例
+
+上一轮的决定性反例是：
+
+```text
+修改一个 Job ID 或一个 Raw namespace
+保持：
+  Job 数量 = 192
+  唯一 Job 数量 = 192
+  namespace 数量 = 192
+  唯一 namespace 数量 = 192
+然后让 builder 自动重算新的 condition/composition/authorization
+```
+
+v26.220 会接受这种候选，因为它先从候选内容生成自己的 expected authorization。
+
+## v26.221 下的结果
+
+v26.221 实际注册了四个对应控制：
+
+```text
+1. Job ID 改变，保留旧 Artifact Manifest
+2. Job ID 改变，重算候选 Artifact Manifest/Root
+3. Raw namespace 改变，保留旧 Artifact Manifest
+4. Raw namespace 改变，重算候选 Artifact Manifest/Root
+```
+
+所有攻击均保持：
+
+```text
+candidate_job_count               192
+candidate_unique_job_count        192
+candidate_namespace_count         192
+candidate_unique_namespace_count  192
+```
+
+结果是：
+
+```text
+旧 Manifest：
+  exact_v209_member_admission 拒绝
+  原因：实际成员字节与冻结成员 SHA-256 不一致
+
+重算候选 Manifest/Root：
+  exact_v209_manifest_root_admission 拒绝
+  原因：候选 Manifest ID / Root 与固定历史权威不一致
+```
+
+四个攻击全部在 Condition 构造前失败：
+
+```text
+attacks / rejected / accepted        4 / 4 / 0
+authoritative conditions created             0
+online authorizations created                0
+attack writes / Provider calls           0 / 0
+```
+
+
+
+持久化的 `upstream_tamper_audit.json` 也记录了四个具体候选 Manifest ID、Artifact Root、prospective downstream identities 和实际 rejection stage，并非只有聚合布尔值。
+
+**所以，上轮直接推翻 G2 的反例已经失效。**
+
+目前没有发现另一个能够在保持固定 v26.209 Manifest/Root/member bytes 的同时，改变 Job 或 namespace 条件并进入新 Condition Binding 的具体反例。
+
+---
+
+# 五、Gate 判定
+
+```text
+R0 external scope and exact v26.220 Freeze                    PASS
+R1 exact v26.209 formal Manifest/Root/member bytes            PASS
+R2 strict v26.209 object-identity revalidation                PASS
+R3 v26.209 Job/Package/namespace/Census relation closure      PASS
+R4 authoritative condition and repaired Composition           PASS
+R5 equal-cardinality upstream tamper attacks reject           PASS
+R6 v26.220 authorization unconsumed / no new authorization    PASS
+R7 zero-Provider/credential/empirical boundary                PASS
+
+OVERALL                                                       PASS_AS_SCOPED
+```
+
+报告中的八个 Gate 与源码实际执行链一致，不存在用 R4/R5 的下游哈希结果补偿 R1–R3 的情况。
+
+---
+
+# 六、发现分级
+
+## Blocking defect
+
+```text
+NONE_FOUND
+```
+
+在本轮明确声明的父权威修复范围内，没有发现能够直接推翻修复声明的缺陷。
+
+## Scope limitation
+
+### 1. 仍然只是 repair preflight
+
+v26.221 没有完成独立审计，也没有签发新的在线授权。它证明的是：
+
+```text
+修复机制已被本地确定性实例化
+```
+
+而不是：
+
+```text
+修复后的父链已获得独立权威
+或
+192-Job 在线执行已经获准
+```
+
+### 2. “v26.220 authorization permanently non-reusable”的准确解释
+
+该表述应理解为：
+
+```text
+v26.220 authorization 不得作为 v26.221 及其授权 successor 的权威父级
+```
+
+而不是说历史 v26.220 JSON 字节本身被修改或删除。报告已经明确历史字节保持不变、新链不携带旧 authorization，并要求未来必须签发全新 identity，因此不构成本轮阻塞项。
+
+如需更严谨，可将文档中的：
+
+```text
+becomes permanently non-reusable
+```
+
+非强制性地改成：
+
+```text
+is permanently forbidden as an authority parent in the v26.221 successor chain
+```
+
+这是文字边界优化，不是 mandatory revision。
+
+## Future hardening
+
+独立审计应从 exact v26.221 source 和 formal artifacts 独立重建，不应直接调用：
+
+```text
+_admit_exact_v209_files
+_relation_closure
+_upstream_tamper_audit
+```
+
+作为结果 oracle。
+
+这属于下一阶段应完成的独立性要求，不影响本轮 preflight 通过。
+
+---
+
+# 七、当前允许的结论
+
+现在可以声明：
+
+```text
+1. v26.220 的原始 G2 解释已被正式撤销。
+2. v26.220 authorization 保持未消费，并不得进入后续权威链。
+3. 完整 v26.209 formal directory 在条件解析前通过固定 Manifest/Root/member-byte 准入。
+4. 1,024 个历史身份对象已经通过历史 Pydantic 模型重新验证。
+5. v26.209 Job、Package、Census、coordinate 和 namespace 关系闭包已经实例化。
+6. 新 AuthoritativeExecutionConditionBinding 已绑定：
+     - exact v26.209 Manifest ID
+     - exact Artifact Root
+     - twenty-member set
+     - seven condition-object identities
+     - 32 Packages
+     - 192 Jobs
+     - 792 coordinates
+     - four namespace-set hashes
+7. 上一轮 Job-ID/namespace 等基数直接反例已在 Condition 构造前被拒绝。
+8. v26.221 repair preflight 可以按当前范围判定为 PASS。
+```
+
+新 Condition 和 Composition 的正式身份已经进入实际持久化报告，而不是只存在于说明文本中。
+
+---
+
+# 八、当前仍禁止的结论
+
+仍不能声明：
+
+```text
+v26.221 已通过独立审计
+新的在线授权已经签发
+v26.220 authorization 可以补丁式恢复或继续消费
+192-Job Provider run 可以启动
+未来在线 consumer 已经实际消费 repaired Condition
+Provider terminal occurrence 已被测量
+Capability estimate 已经产生
+QA / Mapper / State / frequency / Contribution / VTDO 已获授权
+```
+
+附件也明确规定：当前唯一 successor 是独立审计；只有该审计通过并获得之后的另一个外部决定，才允许另行签发新授权。
+
+---
+
+# 九、下一实验设计
+
+下一阶段可以继续，但只能执行：
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_binding_
+repair_preflight_independent_audit_only
+```
+
+建议将独立审计严格限制为以下五层，不再扩张：
+
+```text
+A0  exact v26.221 source / 17-file artifact Freeze
+A1  detached rebuild of complete v26.221 formal directory
+A2  independent exact v26.209 Manifest/Root/member/object admission
+A3  independent relation-closure reconstruction
+A4  independent reproduction of the same four upstream attacks
+A5  zero-Provider / zero-authorization / scope boundary
+```
+
+具体要求：
+
+1. 从 exact commit `dbd9d15b6d44577725ef8d8a6c1fcca730120d5d` 建立隔离源快照，重建全部 17 个 v26.221 formal files，并比较路径、SHA-256、字节数和实际字节。附件记录的源 tree 为 `06f23ef0847e39b03fae9b19155cb3e7b22fbdf7`。
+2. 独立读取 v26.209 21-file directory，不使用 v26.221 Report、Gate、formal Freeze 或 relation Audit 作为结果 oracle。
+3. 独立计算固定 v26.209 Manifest/Root、20 个成员及 1,024 个身份对象。
+4. 独立重建 32/192/792 和四类 namespace 关系，不调用候选 `_relation_closure()`。
+5. 独立重现同样四个 Job-ID/Raw-namespace 攻击，不调用候选攻击 helper。
+6. 保持：
+
+   ```text
+   Provider calls                  0
+   credential lookups              0
+   authorization consumptions      0
+   new online authorizations       0
+   Manifest Job executions         0
+   ```
+7. 独立审计通过后，只能建议一个后续的**全新在线授权决策阶段**；不能从独立审计直接进入 Provider 执行。
+
+最终判定：
+
+```text
+Finance v26.221                         PASSED_AS_SCOPED
+Previous first blocker                  CLOSED_IN_PREFLIGHT
+Direct prior counterexample             REJECTED
+Blocking defect                         NONE_FOUND
+Mandatory revision                      NONE
+Independent audit                       AUTHORIZED_AS_NEXT_STAGE
+Fresh online authorization              STILL BLOCKED
+192-Job online execution                STILL BLOCKED
+```
