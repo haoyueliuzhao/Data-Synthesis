@@ -1,0 +1,244 @@
+# Finance v26.218 本轮实验审计
+
+## 一、结论
+
+```text
+AUDIT_RESULT          PASSED_AS_SCOPED
+BLOCKING_DEFECT       NONE_FOUND
+MANDATORY_REVISION    NONE
+OVERALL_GATE          PASS
+NEXT_STEP             v26.218 credential-free independent audit only
+ONLINE_EXECUTION      NOT AUTHORIZED
+```
+
+**v26.218 已经在本轮声明范围内修复了 v26.217 的精确 Registry 补集绑定错误。** 没有发现能够直接推翻本轮声明的具体反例，报告中的 `8 / 0` Gate 结果可以保留。
+
+本轮的结论应严格限定为：
+
+```text
+v26.218 exact Registry-complement binding preflight passed as scoped
+```
+
+它不是独立审计完成、在线授权、Provider 执行结果或 Capability 证据。v26.218 自身也明确限定为零 Provider、零凭据读取、零经验行和零新在线授权的本地修复。
+
+---
+
+## 二、本轮明确检验的对象
+
+本轮只修复一个问题：
+
+```text
+v26.217 手写的 15 项 forbidden_terminal_kinds
+不是冻结 v26.195 reachable terminal 集合的精确补集
+```
+
+具体而言，v26.217 使用了两个错误名称：
+
+```text
+正确 Registry 名称                  v26.217 错误名称
+
+provider_failure_no_payload         provider_no_payload_failure
+resource_budget_exhausted           resource_failure
+```
+
+v26.218 没有重新设计 E2 Event、Observation、五个 source exits 或五层持久化链，而是保留 v26.217 已成立的 caller-label 移除和 artifact-backed E2 链，只修复 exact-set 声明。
+
+这个范围界定是准确的，没有扩大成完整终止体系或生产级事件权威审计。
+
+---
+
+## 三、实现状态
+
+### 1. 补集现在确实由实际 Registry 派生
+
+构造逻辑已经变为：
+
+```python
+reachable = {
+    policy.terminal_kind
+    for policy in registry.policies
+    if policy.registration_status == "reachable"
+}
+
+admitted = {"instrument_failure"}
+forbidden = tuple(sorted(reachable - admitted))
+```
+
+并要求：
+
+```text
+admitted ∪ forbidden = exact reachable set
+admitted ∩ forbidden = ∅
+reachable / admitted / forbidden = 16 / 1 / 15
+```
+
+
+
+提交源码中的 `_complement_binding` 确实从解析后的 `FreshTerminalRegistry` 读取全部 reachable `(terminal_kind, policy_id)`，再从 v26.217 的实际 admitted mapping 推导 singleton 和补集，而没有继续调用旧的 `FORBIDDEN_UPSTREAM_TERMINALS` 手写常量。
+
+### 2. 不只是构造正确，运行时 admission 也独立重算
+
+`ExactRegistryComplementAuthority.admit(candidate)` 会：
+
+* 重新验证 candidate；
+* 从持有的实际 Registry 对象重新提取 reachable terminal-policy pairs；
+* 重新计算 `actual_kinds - admitted`；
+* 比较 Registry identity；
+* 比较全部 terminal-policy pairs；
+* 比较精确 forbidden complement；
+* 检查 union 与 intersection；
+* 要求 candidate 与预期 Binding 字节完全一致。
+
+因此，长度为 15 或重新计算 content ID 本身不再足以获得授权。
+
+### 3. 正式产物中的集合已经正确
+
+实际持久化的 `exact_registry_complement_binding.json` 包含：
+
+```text
+reachable = 16
+admitted  = {instrument_failure}
+forbidden = 15
+```
+
+其中正确包含：
+
+```text
+provider_failure_no_payload
+resource_budget_exhausted
+```
+
+并且不再包含两个旧拼写。正式产物还保存了全部十六个 terminal-policy pairs，而不仅是一组名称。
+
+这直接关闭了上一轮的阻塞点。
+
+---
+
+## 四、直接反例检查
+
+上一轮最直接的反例是：
+
+```text
+保持 forbidden 元素数量为 15
+把两个真实 Registry terminal 换成两个旧错误名称
+重新计算 Binding、Composition、Gate 和 Report identity
+```
+
+v26.218 已按这个结构实现了一个四层完全重哈希控制。候选对象虽然：
+
+* 仍然有 15 个 forbidden elements；
+* 拥有新的 Binding identity；
+* 拥有新的 Composition、Gate 和 Report identity；
+
+但在 `registry_complement_admission` 阶段被拒绝，consumer 未执行，也没有产生攻击输出文件：
+
+```text
+rejected / accepted        1 / 0
+fully rehashed objects         4
+attack output writes           0
+Provider calls                 0
+```
+
+
+
+正式 negative-control artifact 也记录了正确的 missing terminals、注入的旧拼写、四个重哈希对象以及 `rejected=true`。
+
+**没有发现能够让错误的十五项集合穿过当前 `admit(candidate)` 入口的直接反例。** 对于本轮唯一阻塞点，这个反例测试已经足够，不需要继续追加不相关的 Provider 异常类型、并发攻击或完整生产事件 taxonomy。
+
+---
+
+## 五、关于 lifetime adapter
+
+v26.218 新增了一个很窄的 `LifetimeStableSourceExitProofAuthority`，用于保留已经记录的 Python exception objects，避免 v26.217 使用 `id(error)` 作为进程内键时因对象释放和地址复用产生非确定性重复。
+
+该 adapter：
+
+* 只包围 retained v26.217 consumer 调用；
+* 在 `finally` 中恢复原类；
+* 不改变 exception、Event、Observation、proof、decision 或持久化字节；
+* 最终生成的 35 个 retained runtime files 与 v26.217 保持字节一致。
+
+
+
+这是一个已披露的本地重放稳定化措施，不构成本轮语义范围扩张，也不推翻 Registry-complement 修复。
+
+---
+
+## 六、Gate 判定
+
+| Gate                                        | 判定              | 审计解释                                       |
+| ------------------------------------------- | --------------- | ------------------------------------------ |
+| R0：外部范围与 v26.217 Freeze                     | **PASS**        | 修订范围与历史结论正确冻结                              |
+| R1：v26.195 reachable Registry snapshot      | **PASS**        | 实际解析 Registry，并保存十六个 terminal-policy pairs |
+| R2：精确 reachable-complement partition        | **PASS**        | 16/1/15、union、intersection 和正确名称均闭合        |
+| R3：v26.217 Event/Observation chain retained | **PASS_SCOPED** | 作为 retained byte/object check，不是重新证明更强性质   |
+| R4：五个 source-exit controls retained         | **PASS_SCOPED** | 五个既有控制保持                                   |
+| R5：五层 persistence bytes retained            | **PASS_SCOPED** | 25 个既有层级文件保持                               |
+| R6：旧错拼 full-rehash attack rejects           | **PASS**        | 直接命中上一轮阻塞点                                 |
+| R7：零 Provider/credential/empirical boundary | **PASS**        | 未越过本轮授权层级                                  |
+
+总体结果：
+
+```text
+passed / failed = 8 / 0
+```
+
+与本轮正式 Gate partition 一致。
+
+---
+
+## 七、允许与禁止的结论
+
+### 当前允许
+
+```text
+v26.217 的两个错误 forbidden 名称已经被纠正
+v26.218 的新 complement authority 不再依赖手写 forbidden 集合
+reachable / admitted / forbidden 的精确分区为 16 / 1 / 15
+实际 terminal-policy pairs 与冻结 v26.195 Registry 一致
+旧错拼、同元素数量、四层重哈希攻击被拒绝
+v26.217 的既有 E2 artifact chain 和持久化结果保持不变
+v26.218 preflight passed as scoped
+```
+
+### 当前仍禁止
+
+```text
+声称 v26.217 历史 R2 已经通过
+声称 v26.218 已完成程序化独立重建审计
+直接使用旧 v26.211 authorization
+Provider execution
+192-Job online run
+经验估计
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+v26.217 的历史 R2 和总体 Gate 失败仍然保持；v26.218 是新的 successor authority，并没有修改历史证据。v26.211 authorization 仍未消费，也不能代替未来绑定 v26.218 parents 的新授权。
+
+---
+
+## 八、下一步
+
+原先授权的下一步可以继续，而且只应继续这一步：
+
+```text
+fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_
+preflight_independent_audit_only
+```
+
+该独立审计只需：
+
+```text
+重建 v26.218 正式目录
+从冻结 v26.195 Registry 重新推导 16 个 reachable pairs
+核验 1 / 15 exact partition
+比较 35 个 retained v26.217 runtime files
+重放五个 source-exit / persistence chains
+重放一个同元素数量、旧错拼、四层重哈希攻击
+确认 Provider calls = 0
+```
+
+不需要再增加一轮机制修订。独立审计通过后，仍应另建一个绑定全部 v26.218 repaired parents 的新在线授权，不能直接消费旧 v26.211 authorization。
+
+本次审计核对了 v26.218 报告、提交源码 `6171fcc27a4a88693cb9daa1485b0d658b11a5a1`、正式 Registry-complement Binding 和负向控制产物；未在用户服务器上重新执行报告所称的 `8/8`、`81/81` 或完整字节重建。这些复现性检查正是下一轮独立审计的对象，不构成本轮 preflight 声明的反例。

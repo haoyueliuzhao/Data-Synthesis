@@ -15,7 +15,152 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.219 Fresh Repaired Upstream Terminal-Domain Exact Registry-Complement Independent Audit
+
+Finance v26.219 consumed only
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_independent_audit_only`.
+The exact 9,045-byte external review is bound at SHA-256
+`a631683b8532ff22cc015317fb31116a6d72179f682fcba0a94f93cd2d1ae56e`. It classifies
+v26.218 as `PASSED_AS_SCOPED`, finds no blocking defect, requires no mandatory revision, and
+authorizes only the credential-free independent audit. The exact 30-byte operator directive
+`参照审计报告继续实验`, SHA-256
+`2310d8996483f5f0d431940d98cbfc56a53e23aca61b59306de2d9bf61b9ec1a`, consumes only
+that transition. Provider calls, credential lookups, empirical rows, new online authorizations,
+and v26.211 authorization consumption are zero.
+
+The exact v26.218 source commit/tree
+`6171fcc27a4a88693cb9daa1485b0d658b11a5a1` /
+`1de85c4ee2f69a360bc7b7c13704186042648064` are archived and executed from a detached
+snapshot. All 51 saved files and 1,054,511 bytes rebuild byte for byte. Path, SHA-256,
+byte-count, and actual-byte matches are each 51/51; all fifty self-excluding Manifest members
+revalidate. The detached environment contains zero credential-like keys. The candidate Report,
+Gate, and complement Audit are not used as outcome oracles.
+
+A separate implementation parses the actual frozen v26.195 Registry and independently derives
+all sixteen reachable terminal-policy pairs. It calls no v26.218 complement helper or authority.
+
+It separately recomputes the exact v26.217 Event-source Binding and derives the admitted mapping
+from that source object rather than the v26.218 candidate complement. The source Binding retains
+the exact Registry parent and exposes no terminal, reason, or source-Event-ID caller argument.
+Only the independently completed projection is compared with v26.218.
+
+```text
+reachable / admitted / forbidden                         16 / 1 / 15
+admitted union forbidden == reachable                            true
+admitted intersection forbidden == empty                         true
+admitted mapping derived from v26.217 source Binding              true
+candidate admitted mapping match                                  true
+candidate Binding actual-byte match                              true
+provider_failure_no_payload / resource_budget_exhausted present  2 / 2
+provider_no_payload_failure / resource_failure present           0 / 2
+```
+
+The admitted mapping remains exactly
+`transport_instrument_failure -> instrument_failure ->` the v26.195 instrument policy. The
+independently sorted forbidden complement contains the other fifteen actual Registry names.
+
+The audit enumerates retained runtime paths independently of the candidate retained-execution
+Audit. All 35 files match v26.217 and the detached v26.218 rebuild byte for byte: two ingress
+receipts, 25 Raw/Result/Trace/Outcome/checkpoint files, and eight upstream Event/Descriptor/
+Observation/Descriptor files. The v26.217 execution object also matches exactly.
+
+Starting from the five actual Raw files, it reparses and reconstructs the complete source-exit
+proof, observation, decision, invocation, and five-layer parent chain. All 25 content identities
+recompute, all 25 files match v26.217 and the detached rebuild, and the E2 Raw independently
+binds one actual four-object upstream chain:
+
+```text
+source exits / distinct exits                                  5 / 5
+instrument / privacy terminals                                 4 / 1
+content identities / v26.217 / detached byte matches      25 / 25 / 25
+exact five-exit source-Contract rows matched                    5 / 5
+positive E2 upstream artifact chains                               1
+E2 Event/Descriptor/Observation/Descriptor integrity           4 / 4
+candidate execution helper calls                                   0
+exception escapes / empirical rows / Provider calls            0 / 0 / 0
+```
+
+The same-length misspelling attack is independently rebuilt without the candidate helper. It
+preserves fifteen forbidden entries, substitutes both old names, and recomputes candidate
+Binding, Composition, Gate, and Report identities. All four match the saved candidate identities
+but reject at independent Registry-complement admission before any write:
+
+```text
+attacks / rejected / accepted                              1 / 1 / 0
+independently rehashed objects / saved identity matches     4 / 4
+attack writes / Provider calls                              0 / 0
+```
+
+The exact noncompensatory audit partition is:
+
+```text
+A0 external scope and exact v26.218 Freeze                         PASS
+A1 detached exact-directory rebuild                                PASS
+A2 independent exact Registry-complement derivation                PASS
+A3 independent retained-runtime byte comparison                    PASS
+A4 independent five-source-exit persistence reconstruction         PASS
+A5 independent same-length full-rehash attack rejection            PASS
+A6 zero-Provider/credential/empirical boundary                      PASS
+passed / failed                                                     7 / 0
+```
+
+Authoritative identities include:
+
+- authorization / v26.218 Freeze:
+  `finance_v26_219_external_independent_audit_authorization:05cfe51bf4efe45864ab6aa9d54d8e849cdc25ff230226284beb6474375d8ddc` /
+  `finance_v26_219_v218_freeze:8ed487331d4bba776e5c8289134689cb80ca77d35b71b3ffc9625350e07cf110`;
+- rebuild / complement / retained runtime:
+  `finance_v26_219_detached_rebuild_audit:2471ad04683aef41d4f0378321a978cc41d5b16a8cced67cf7f7979ce97cf30c` /
+  `finance_v26_219_independent_registry_complement_audit:9830d6b974533937a3d95c947b1e7a3865aa9dceac58c4c395d2200cdcb0160c` /
+  `finance_v26_219_independent_retained_runtime_audit:a0eb45bf1fdce6471a8ce7786dd7b265ea6a1ee721291d087820b9643a7843a5`;
+- source-exit / attack Audits:
+  `finance_v26_219_independent_source_exit_persistence_audit:aa979bdedb711d73fd10790f442853f134db8f831c8d2a688cd91d67ae46d3e2` /
+  `finance_v26_219_independent_full_rehash_attack_audit:e4d362e10368382cfaef89452be907c541393d8f4daa5708ca2cdaf120ea86c5`;
+- Gate / Decision / Transition:
+  `finance_v26_219_gate_evaluation:d59db6154ee07b74b763b455c3d643ef56aaae47a7cabe2ac6a52baff682946d` /
+  `finance_v26_219_independent_audit_decision:396ba40f0ab00eff72872f3e6d2fc176114e1a2ad52b3d2b73efc8d0fbf359f3` /
+  `finance_v26_219_transition:b54346c061e3b7ed06ff88632784cedb4298f0b0eacc8d9453ff860e8039b341`;
+- report / Artifact Manifest / Root:
+  `finance_v26_219_independent_audit_report:baa4a1897d4abc8939160332da260d94925bc3bbc234452b76e57f99d0c6070f` /
+  `finance_v26_219_artifact_manifest:14f2db99329b76781a46060868328ec6adc4f34a4016495632070067409990ed` /
+  `finance_v26_219_artifact_root:c55ae394df7fc02b7db9c80c0a129531e200bf0ec44a1562e87d026ebb67e658`.
+
+The exact source commit/tree are `40a7f6aa6fe5dac3a0b2f0865418bc384d4e6252` /
+`3cc72c2d7721d4212dc68787ccf19c29e8f36c19`. The 17-file, 46,670-byte formal directory
+rebuilds byte for byte; its Manifest binds sixteen members and 43,862 bytes. Focused tests pass
+8/8, including a complete second build. Focused PyCompile, Ruff check/format, and no-import-follow
+Mypy pass; package-wide Ruff passes. The process-isolated adjacent v26.209-v26.219 partition
+passes 89/89. A monolithic eleven-file process records 81 passes plus eight v26.217 fixture
+setup errors from its frozen `id(error)` address-reuse guard; the isolated v26.217 suite passes
+8/8, and no v26.219 test fails.
+
+The current decision is:
+
+```text
+v26_218_upstream_terminal_domain_exact_registry_complement_binding_
+preflight_independent_audit_passed
+```
+
+The prospective candidate is
+`fresh_repaired_upstream_terminal_domain_exact_registry_complement_bound_online_execution_authorization_only`,
+but v26.219 does not authorize it. A separate new external decision is required before that stage
+may decide whether to issue a fresh authorization binding all v26.218 repaired parents. The old
+v26.211 authorization remains unconsumed and may not be reused. Provider execution, the 192-Job
+online run, frozen-condition change, empirical estimation, QA, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_219_fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_independent_audit.md`.
+
 ## v26.218 Fresh Repaired Upstream Terminal-Domain Exact Registry-Complement Binding Preflight
+
+### Subsequent independent audit
+
+v26.219 independently rebuilds all 51 files, rederives the exact 16/1/15 Registry partition,
+verifies all 35 retained runtime bytes, reconstructs all five source-exit persistence chains, and
+reproduces the decisive four-object full-rehash attack with zero Provider calls. It accepts
+v26.218 at its scoped credential-free preflight meaning with no mandatory revision. Every
+v26.218 byte, identity, Gate, Decision, and Transition remains immutable. The old independent-
+audit transition has been consumed only by v26.219; the current boundary is the unapproved fresh
+online-authorization candidate described in the v26.219 section.
 
 Finance v26.218 consumed only
 `fresh_repaired_upstream_terminal_domain_exact_registry_complement_binding_preflight_only`.
@@ -155,8 +300,9 @@ the_exact_v26_195_reachable_complement
 ```
 
 The later operator directive consumed only the zero-Provider v26.218 exact-complement repair
-recorded above. The current transition is v26.218's credential-free independent audit only; the
-v26.211 authorization remains unconsumed.
+recorded above. That independent-audit transition was consumed only by v26.219. The current
+boundary is the unapproved fresh online-authorization candidate; the v26.211 authorization remains
+unconsumed.
 
 Finance v26.217 consumed only
 `fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_preflight_only`.
@@ -325,9 +471,10 @@ terminalize_but_e2_upstream_failure_observation_remains_caller_mintable_
 and_not_artifact_backed
 ```
 
-The later operator directive consumed only the zero-Provider v26.217 repair above. The current
-transition is v26.218's credential-free independent audit only; the v26.211 authorization remains
-unconsumed.
+The later operator directive consumed only the zero-Provider v26.217 repair above.
+That later audit transition was consumed only by v26.219.
+The fresh online-authorization
+candidate remains unauthorized, and the v26.211 authorization remains unconsumed.
 
 Finance v26.216 consumed only
 `fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_provenance_preflight_only`.
@@ -489,8 +636,10 @@ the_declared_source_contract
 ```
 
 The later operator directive consumed only the zero-Provider v26.216 exit-surface provenance
-repair recorded above. The current transition is v26.218's credential-free independent audit
-only; the v26.211 authorization remains unconsumed.
+repair recorded above.
+That later audit transition was consumed only by v26.219.
+The fresh online-authorization
+candidate remains unauthorized, and the v26.211 authorization remains unconsumed.
 
 Finance v26.215 consumed only
 `fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`.
@@ -637,8 +786,10 @@ observation_preflight_passed_independent_audit_required_online_execution_blocked
 The old independent-audit transition is superseded by the later review. Its only permitted repair
 candidate was
 `fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_provenance_preflight_only`,
-which the operator directive consumed only through v26.216. The current transition is
-v26.218's credential-free independent audit only. The v26.211 authorization remains unconsumed; Provider
+which the operator directive consumed only through v26.216.
+That later audit transition was consumed only by v26.219.
+The fresh online-authorization
+candidate remains unauthorized; the v26.211 authorization remains unconsumed; Provider
 execution, the 192-Job online run, frozen-condition change, empirical estimation, QA, Mapper,
 State, frequency, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_215_fresh_repaired_actual_v209_typed_failure_source_surface_totality_preflight.md`
@@ -801,7 +952,10 @@ failure_terminalization_preflight_passed_independent_audit_required_online_execu
 The old independent-audit successor below is superseded by the later review. Its only permitted
 repair candidate was
 `fresh_repaired_actual_v209_typed_failure_source_surface_totality_and_runner_owned_observation_preflight_only`,
-which the operator directive consumed only through v26.215. The current transition is v26.218's credential-free independent audit only. The immutable old successor was
+which the operator directive consumed only through v26.215.
+That later audit transition was consumed only by v26.219.
+The fresh online-authorization candidate
+remains unauthorized. The immutable old successor was
 `fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_independent_audit_only`.
 It may only independently rebuild and rederive the eight Runner-owned failure observations,
 terminal decisions, five-layer chains, and four attacks with zero Provider calls. It may not
@@ -836,8 +990,9 @@ by_caller_selected_evidence_subtype
 
 The later operator directive consumed only the zero-Provider v26.214 repair above. Its later
 source-totality review authorized only the v26.215 repair now recorded at the top of this status.
-The current transition is v26.218's independent credential-free audit only; the v26.211
-authorization remains unconsumed.
+That later audit transition was consumed only by v26.219.
+The fresh online-authorization
+candidate remains unauthorized, and the v26.211 authorization remains unconsumed.
 
 Finance v26.213 consumed only
 `fresh_repaired_full_condition_observation_derived_terminal_single_consumer_path_repair_preflight_only`.
@@ -982,8 +1137,10 @@ preflight_passed_independent_audit_required_online_execution_blocked
 The old independent-audit transition is superseded by the later review. Its only permitted
 repair candidate was
 `fresh_repaired_outer_typed_exception_observation_authenticity_and_single_consumer_failure_terminalization_preflight_only`,
-which the operator directive consumed only through v26.214. The current transition is the
-credential-free independent audit of v26.214. The v26.211 authorization remains unconsumed;
+which the operator directive consumed only through v26.214.
+That later audit transition was consumed through v26.219.
+The fresh online-authorization candidate
+remains unauthorized; the v26.211 authorization remains unconsumed;
 Provider execution, the 192-Job online run, frozen-condition change, empirical estimation, QA,
 Mapper, State, frequency, Contribution, VTDO, training, release, and production remain
 forbidden. See
@@ -1302,7 +1459,7 @@ The immutable Transition named
 blocks it before consumption. That authorization remains unconsumed. Replacement, failed-Job
 rerun, recovery, historical reuse, source/condition change, Provider execution, QA integration,
 Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
-The current boundary is v26.218's credential-free independent audit only. See
+The current boundary is v26.219's unapproved fresh online-authorization candidate. See
 `docs/finance_v26_211_fresh_repaired_full_condition_exact_online_execution_authorization.md`.
 
 ## v26.210 Fresh Repaired Final Request Continuity Independent Audit
