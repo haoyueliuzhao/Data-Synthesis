@@ -46,14 +46,26 @@ eleven members and 65,831 bytes, and the Manifest file SHA-256 is
 Focused repair tests pass 10/10 and the adjacent v26.221-v26.225 partition passes 53/53.
 PyCompile, Ruff check/format, and focused no-import-follow Mypy pass.
 
-The v3 candidate is unconsumed and awaits another independent review. Its record-point decision
-is:
+Two independent credential-free reviews now pass. The first independently rebuilt all twelve
+formal files, eleven Manifest members, nine object identities, the complete v26.224 lineage,
+both mock execution routes, and the 192-Job authorization set. The second re-ran the former joint
+substitution and broader combined substitutions through the actual `_consume` entry. Changed
+configuration, Manifest, Runtime, bindings, authorization/bytes, package path, output path, and
+ledger path all reject before the ledger; the removed caller-refreshed interface rejects at the
+Python call boundary. Both reviews confirm zero credential lookup and zero real network call.
+
+The independent decision is:
 
 ```text
 v26_225_v1_and_v2_authorizations_superseded_unconsumed_
-v26_225_v3_internal_authority_reload_preflight_materialized_
-independent_audit_required_online_replacement_execution_blocked
+v26_225_v3_postrun_repair_preflight_independent_audit_passed_
+replacement_online_execution_authorization_issued_not_consumed
 ```
+
+The v3 authorization may now be consumed only once by the exact whole-condition v26.226
+replacement execution. Consumption and Run Start receipts must be durable before the credential
+boundary. Any v26.226 result remains blocked from downstream use pending a new credential-free
+postrun independent audit.
 
 ## Superseded v2 Correction And Historical Boundary
 

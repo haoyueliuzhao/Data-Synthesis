@@ -47,15 +47,18 @@ Gate / Decision / Transition are
 `finance_v26_225_repair_transition:e11dd64e56caf82ea69ed62f6d8c454f7b03099e71cd3c5b24f27add672b7004`.
 
 Focused repair tests pass 10/10; the adjacent v26.221-v26.225 partition passes 53/53. PyCompile,
-Ruff, and focused no-import-follow Mypy pass. The current decision is:
+Ruff, and focused no-import-follow Mypy pass. Two independent credential-free reviews rebuild the
+formal/v26.224 evidence and repeat the full combined-substitution attack surface. Both pass; all
+changed execution objects and paths reject before the ledger, and fixed-preflight loading performs
+zero credential lookup and zero real network call. The current decision is:
 
 ```text
-v26_225_v3_internal_authority_reload_preflight_materialized_
-independent_audit_required_online_replacement_execution_blocked
+v26_225_v3_postrun_repair_preflight_independent_audit_passed_
+replacement_online_execution_authorization_issued_not_consumed
 ```
 
-The v3 ledger and v26.226 output do not exist. Only a new passing independent audit may activate
-the operator-authorized one-shot replacement. See
+The v3 ledger and v26.226 output do not exist. The exact operator-authorized one-shot replacement
+may now consume v3 once; downstream use remains blocked pending a postrun independent audit. See
 `docs/finance_v26_225_postrun_independent_audit_and_postresponse_serializer_repair_preflight.md`.
 
 ## v26.225 v2 Postrun Repair Preflight (Superseded)
