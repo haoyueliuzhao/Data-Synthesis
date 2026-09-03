@@ -1,0 +1,508 @@
+# Finance v26.223 本轮实验审计
+
+## 一、最终判定
+
+```text
+AUDIT_RESULT                    PASSED_AS_SCOPED
+BLOCKING_DEFECT                 NONE_FOUND
+FIRST_FAILED_GATE               NONE
+MANDATORY_REVISION              NONE
+
+CURRENT_OBJECT
+  FRESH EXACT V26.209 PARENT-BOUND
+  ONLINE EXECUTION AUTHORIZATION
+
+AUTHORIZATION
+  ISSUED
+  NOT_CONSUMED
+
+OLD V26.220 AUTHORIZATION
+  UNCONSUMED
+  FORBIDDEN_AS_FUTURE_AUTHORITY
+
+PROVIDER EXECUTION
+  NOT_PERFORMED_IN_V26.223
+
+NEXT_STEP
+  EXACT 192-JOB ONLINE EXECUTION
+  AUTHORIZED
+```
+
+**v26.223 可以按本轮声明范围判定为通过。**
+
+本轮只负责签发一个绑定修复后 v26.209 条件的新在线授权，不负责实际消费授权或执行 Provider。报告中的正式结果确实是：
+
+```text
+fresh_exact_v209_authoritative_parent_bound_exact_192_job_online_execution_
+authorization_issued_not_consumed
+```
+
+并记录新授权签发数为 1、消费数为 0，Provider、凭据、Job、Receipt 和经验持久化活动均为零。
+
+---
+
+## 二、本轮明确检验的对象
+
+v26.223 需要回答的不是“模型是否已经具备 Capability”，而是：
+
+> 在 v26.221 已修复 exact v26.209 execution-condition 父权威之后，能否签发一个只绑定该修复条件、不能被旧 v26.220 授权或等基数替换对象冒充、且尚未被消费的新在线授权？
+
+其证据链为：
+
+```text
+exact v26.222 independent-audit authority
+  -> complete v26.221 repaired parent binding
+  -> reconstructed v26.209 Condition
+  -> reconstructed repaired Composition
+  -> exact Package / Job / coordinate / namespace sets
+  -> fresh exact authorization
+  -> precredential exact-byte Guard
+  -> authorized-not-consumed Transition
+```
+
+这就是本轮应审计到的边界。实际 Provider 行为、模型成功率和 postrun 证据都属于下一阶段。
+
+---
+
+# 三、实现状态
+
+## 1. v26.222 外部审计与授权输入：PASS
+
+v26.223 固定了：
+
+```text
+external review bytes     16,856
+external review SHA-256   b40d6ada...
+operator directive bytes  24
+operator directive        参照审计继续实验
+```
+
+外部审计明确把 v26.222 判定为：
+
+```text
+PASSED_AS_SCOPED
+BLOCKING_DEFECT = NONE_FOUND
+MANDATORY_REVISION = NONE
+NEXT_STAGE = AUTHORIZATION-DECISION ONLY
+```
+
+正式 Artifact Manifest 也包含 exact `external_review.txt` 和 24 字节的 `operator_authorization.txt`，二者的 SHA-256 与报告一致。
+
+**判定：PASS。**
+
+---
+
+## 2. v26.222 独立审计冻结：PASS
+
+v26.223 在签发授权前固定并验证了 v26.222 的完整正式目录：
+
+```text
+formal files / bytes  16 / 74,784
+Manifest members      15
+member bytes          72,169
+```
+
+并要求 Report、Gate、Decision、Transition、A0–A5 审计身份、source commit/tree、`6/0` Gate、零新授权和零 Provider 状态全部一致。缺文件、增文件、哈希变化、字节数变化、身份变化或范围扩张都会在授权构造前拒绝。
+
+**判定：PASS。**
+
+---
+
+## 3. v26.221 修复父绑定：PASS
+
+这是本轮最重要的实现点。
+
+v26.223 没有只接受 v26.221 保存的 Condition 和 Composition 身份，而是重新读取：
+
+```text
+v26.221 complete formal directory
+v26.209 complete formal directory
+v26.220 retained formal directory
+```
+
+然后从实际 v26.209：
+
+```text
+Catalog
+Manifest
+Invocation Census
+Runner
+Execution Contract
+Implementation
+Source Identity
+```
+
+重新构造 Condition 和 Composition。结果为：
+
+```text
+Condition fields / matches     33 / 33
+Composition fields / matches   16 / 16
+Condition actual-byte match       true
+Composition actual-byte match     true
+repaired parent identities           19
+```
+
+这正好关闭了 v26.222 所保留的非阻断 hardening 项：Composition 不再仅靠保存的 Artifact 身份冻结，而是进入完整字段重建。
+
+源码也实际构造 `expected_condition` 和 `expected_composition`，重新计算其内容身份，然后分别与持久化对象做完整对象比较；不匹配会在 `parent.condition_reconstruction` 或 `parent.composition_reconstruction` 处失败。
+
+**判定：PASS。**
+
+---
+
+## 4. exact v26.209 执行条件集合：PASS
+
+本轮重新枚举并冻结：
+
+```text
+Packages                              32
+Jobs                                 192
+registered invocation coordinates    792
+Package × Replica cells              192
+Raw namespaces                       192
+Result namespaces                    192
+Trace namespaces                     192
+Outcome namespaces                   192
+```
+
+Package、Job、coordinate 和四种 namespace 均有独立集合哈希。授权对象还直接包含排序后的 32 个 Package ID 和 192 个 Job ID，而不仅是计数。
+
+因此，以下替换不能依赖“数量仍然相等”穿过本轮：
+
+```text
+192 Jobs -> 另一个 192 Jobs
+192 namespaces -> 另一个 192 namespaces
+792 coordinates -> 另一个 792 coordinates
+```
+
+报告明确声明不接受 equal-cardinality replacement。
+
+**判定：PASS。**
+
+---
+
+## 5. 新授权对象：PASS
+
+正式签发的新授权是：
+
+```text
+fresh_exact_v209_parent_bound_exact_online_execution_authorization:
+72627e0352682a0737407d7ceb88ea17e9d087077895c1288aa41f670ca2d33b
+```
+
+它绑定：
+
+```text
+v26.222 Freeze
+v26.221 nineteen-parent repaired binding
+authoritative Condition
+repaired Composition
+v26.218 parent set
+v26.209 Manifest / Artifact Root
+32 exact Packages
+192 exact Jobs
+792 exact coordinates
+four exact namespace sets
+```
+
+持久化的授权对象明确记录：
+
+```text
+authorization_issued        = true
+authorization_consumed      = false
+maximum consumptions        = 1
+provider execution here     = false
+provider execution successor= true
+replacement/rerun/recovery  = false
+```
+
+正式 Artifact 中的授权 ID、阶段和未消费状态均与报告一致。
+
+**判定：PASS。**
+
+---
+
+## 6. Precredential Guard：PASS_AS_SCOPED
+
+本轮 Guard 要证明的是：
+
+> 只有 exact v26.223 授权字节与 exact 请求父集合能够进入后续消费边界。
+
+结果为：
+
+```text
+legal diagnostic probe    1
+invalid controls         33
+invalid post-guard probes 0
+authorization consumed    0
+Run Start Receipts        0
+credential lookups        0
+Provider calls            0
+```
+
+直接检查的拒绝面包括：
+
+* 缺失或修改授权对象；
+* 修改授权实际字节；
+* 提交 v26.220 授权；
+* 改变 v26.222 Freeze 或 v26.221 parent；
+* 改变 Condition 或任一 Composition；
+* 改变 Manifest、Runner、Execution Contract；
+* 改变 Package、Job、coordinate 或 namespace 集；
+* 未声明 Provider execution intent；
+* 请求 replacement、rerun、recovery 或 condition change；
+* 请求 QA integration；
+* 注入 caller terminal、历史 response、reference vector 或 prebuilt Final。
+
+正式审计对象显示 exact probe 被接纳、v26.220 与其他非法请求均在零 credential、零 Provider、零 post-guard probe 状态下拒绝。
+
+这里的 legal probe 是**非消费诊断**。它没有证明真正的 durable consumption 已发生，也不需要证明；真正消费属于下一阶段。
+
+**判定：PASS_AS_SCOPED。**
+
+---
+
+## 7. 全重哈希父替换攻击：PASS
+
+15 个攻击分别替换：
+
+```text
+v26.222 parent
+v26.221 parent
+authoritative Condition
+repaired Composition
+v26.218 parent
+v26.209 Manifest / Root
+Package set
+Job set
+coordinate set
+Raw / Result / Trace / Outcome namespace set
+```
+
+攻击者随后重新计算自洽的 authorization ID，而不是保留陈旧哈希。
+
+结果为：
+
+```text
+attacks              15
+fully rehashed       15
+rejected             15
+accepted              0
+post-guard probes     0
+Provider calls        0
+```
+
+这直接排除了“修改父对象后把所有下游身份一起重算即可绕过 Guard”的本轮核心反例。
+
+**判定：PASS。**
+
+---
+
+## 8. Artifact 与 source identity：PASS
+
+正式目录 Manifest 实际记录：
+
+```text
+Manifest members       16
+member bytes       133,829
+Manifest bytes       2,761
+total formal bytes 136,590
+```
+
+其 Manifest ID 与 Artifact Root 和报告完全一致。
+
+源码身份为：
+
+```text
+commit  5eed1e0bb56757e3046391a8d25d522dea577975
+tree    119c4b0af09d958b34548933d55512bee5e5ac9b
+```
+
+GitHub 上该 commit 实际解析到同一 tree，提交内容也正是 v26.223 authorization implementation、models 和 tests。
+
+测试源码包含八项直接测试，分别覆盖外部授权与 Freeze、完整 Condition/Composition 重建、新授权、precredential 拒绝、全重哈希攻击、Gate/Decision/Transition、Manifest 以及第二次空目录字节级重建。
+
+我没有在当前运行环境中重新执行这 121 个 adjacent tests；这里确认的是保存的测试结果、确切测试源码、Git commit/tree 和正式 Artifact 的一致性。该限制不直接推翻本轮授权签发声明。
+
+---
+
+# 四、直接反例检查
+
+| 直接反例                                   | 当前结果                                     | 是否推翻本轮声明 |
+| -------------------------------------- | ---------------------------------------- | -------: |
+| 用 v26.220 授权代替 v26.223                 | Guard 拒绝                                 |        否 |
+| 修改一个 Job，但保持 192 个 Job                 | exact ID tuple/set hash 拒绝               |        否 |
+| 修改 namespace，但保持 192 个 namespace       | exact namespace hash 拒绝                  |        否 |
+| 修改 Condition 并重算其身份                    | expected authorization bytes 拒绝          |        否 |
+| 修改 Composition 并重算所有下游身份               | 15/15 全重哈希攻击拒绝                           |        否 |
+| 在 authorization stage 读取凭据或调用 Provider | 实际计数为零                                   |        否 |
+| 把 diagnostic probe 当作授权消费              | `authorization_consumed=false`，无 Receipt |        否 |
+| 在本轮插入 QA、更换任务或改变 frozen condition      | Guard/authorization 明确禁止                 |        否 |
+
+没有发现一个具体反例能够同时做到：
+
+```text
+改变 exact v26.209 condition 或 repaired parent
+保留一个自洽的新 authorization identity
+穿过 exact-byte precredential Guard
+并仍被解释为当前 v26.223 授权
+```
+
+---
+
+# 五、Gate 判定
+
+```text
+G0 external scope and exact v26.222 Freeze          PASS
+G1 complete v26.221 repaired parent binding         PASS
+G2 complete Condition/Composition reconstruction    PASS
+G3 exact v26.209 condition sets and relations       PASS
+G4 fresh exact online authorization                 PASS
+G5 precredential admission and v26.220 rejection    PASS
+G6 fully rehashed parent attacks reject             PASS
+G7 zero Provider/credential/empirical boundary      PASS
+
+PASSED / FAILED                                      8 / 0
+```
+
+持久化 Gate 对象也记录 `all_gates_passed=true`、`authorization_issued=true`、`authorization_consumed=false` 和 `provider_calls=0`。
+
+## 本轮首个本质阻塞点
+
+```text
+NONE_WITHIN_V26_223_DECLARED_SCOPE
+```
+
+上一轮剩余的完整 Condition/Composition 重建 hardening 已在本轮完成，没有出现新的、能够直接推翻授权签发命题的缺陷。
+
+---
+
+# 六、当前允许与禁止的结论
+
+## 允许结论
+
+可以声明：
+
+1. v26.222 的通过状态和无强制修订状态已被精确冻结。
+2. v26.221 repaired Condition 与 Composition 已在签发授权前完整重建并匹配。
+3. exact 32-Package、192-Job、792-coordinate 和四类 namespace 条件已进入新授权。
+4. 新授权已签发且尚未消费。
+5. v26.220 授权不能作为未来执行 authority。
+6. 本轮没有 Provider、凭据、Job 执行或经验结果。
+7. 原先授权的 exact online successor 可以继续。
+
+## 仍禁止的结论
+
+不能声明：
+
+```text
+192 Jobs 已经执行
+授权已经被消费
+durable consumption 已在线验证
+Provider transport 已成功
+模型获得 Capability
+q_first 或 q_bounded_correction 已更新
+State / frequency / Contribution / VTDO 已获得授权
+Student 或训练效用已获得验证
+```
+
+---
+
+# 七、未评估范围
+
+以下属于 **Scope limitation**，不是本轮 Blocking defect：
+
+### 1. 真正的授权消费尚未发生
+
+v26.223 只验证非消费 Guard。以下顺序尚未成为实际在线事实：
+
+```text
+consume authorization
+  -> durable consumption Receipt
+  -> durable Run Start Receipt
+  -> credential lookup
+  -> Provider client
+```
+
+这是下一阶段的直接实验对象，而不是要求 v26.223 重新证明的前置 Gate。
+
+### 2. Provider 与 postrun 证据尚未观察
+
+真实响应、终止分布、Raw/Result/Trace/Outcome 完整性和经验 estimand 都尚未产生。
+
+### 3. QA 类型覆盖与深度问题不属于本轮
+
+此前识别出的 QA 合成链路类型覆盖和程序深度不足仍然成立，但 v26.223 明确冻结 exact v26.209 条件并禁止 QA integration。它既没有修复 QA，也没有声称修复 QA。
+
+因此：
+
+> QA 问题不能被用来否定本轮授权；同样，也不能在本次已授权的 192-Job 执行前把新 QA 候选插入 frozen condition。
+
+QA 扩展必须保留为独立 fresh 实验链，而不是修改本次授权对象。
+
+---
+
+# 八、是否可以继续原先授权的下一步
+
+## 判定：可以继续
+
+不需要新增另一轮 authorization preflight，也不需要因为 QA 覆盖问题重新打开 v26.209 条件。
+
+唯一允许的下一阶段是：
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_bound_
+exact_192_job_online_execution_only
+```
+
+正式 Transition 已记录：
+
+```text
+status                              AUTHORIZED_NOT_CONSUMED
+exact fresh authorization required true
+v26.220 authorization forbidden    true
+Provider execution here            false
+Provider execution in successor    true
+postrun independent audit required true
+```
+
+该执行必须严格满足：
+
+```text
+1. 提交 exact v26.223 authorization bytes
+2. 通过 precredential Guard
+3. 在凭据读取前恰好消费一次
+4. 持久化 consumption Receipt
+5. 持久化 Run Start Receipt
+6. 只执行 exact 192 Jobs
+7. 禁止 replacement、failed-Job rerun 和 recovery
+8. 禁止 QA、condition 或历史 response 注入
+9. 执行结束后仅进入独立 postrun audit
+```
+
+## 最终记录
+
+```text
+V26.223
+  PASS_AS_SCOPED
+
+BLOCKING_DEFECT
+  NONE_FOUND
+
+MANDATORY_REVISION
+  NONE
+
+AUTHORIZATION_ID
+  fresh_exact_v209_parent_bound_exact_online_execution_authorization:
+  72627e0352682a0737407d7ceb88ea17e9d087077895c1288aa41f670ca2d33b
+
+AUTHORIZATION_STATE
+  ISSUED_NOT_CONSUMED
+
+NEXT_EXPERIMENT
+  EXACT_192_JOB_ONLINE_EXECUTION
+
+QA_EXPANSION
+  SEPARATE_FRESH_BRANCH
+  NOT_A_PRECONDITION_OF_THIS_RUN
+```

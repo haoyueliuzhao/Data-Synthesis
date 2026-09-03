@@ -15,6 +15,64 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.224 Fresh Exact v26.209 Parent-Bound Exact 192-Job Online Execution
+
+Finance v26.224 consumed the exact v26.223 authorization once under
+`fresh_exact_v209_execution_condition_authoritative_parent_bound_exact_192_job_online_execution_only`.
+The 15,248-byte external review at SHA-256
+`10733a734b94693194eb85ac4ab0ee4fe475b48cf2cca5724c936308ed91cbb0` and the
+33-byte directive `参照审计，并行开展实验` authorized only this one-shot execution. The source
+commit/tree were `ef0c34ea2eedf305311fa27e3e9187239307e874` /
+`697492c60255aafef727c0bd8ba45b31bfef442a`.
+
+The global no-replace ledger and Run Start Receipt were durably written before credential lookup.
+Their identities are
+`finance_v26_224_authorization_consumption_receipt:e784a94f87f8b275d50fdea51b9373c503753ae661a05349431a8d2cf6621aea`
+and
+`finance_v26_224_run_start_receipt:00ae0af03a4fd89a840b9ac2fa39c7b38e9c63a2c95740d7dd69570ff13e3629`.
+The v26.223 authorization is consumed and cannot authorize a replacement, rerun, or recovery.
+
+All 192 exact Jobs wrote one pre-call request intent and received a response far enough to enter
+the redacted-response path, but every Job then failed at the same Host defect:
+
+```text
+error digest  651fb4b608ea3f399df980361cfa585307bf865e2a24eb03dbf00fbbcfa0aa6a
+exact error   builtins:AttributeError:'dict' object has no attribute 'model_dump'
+```
+
+`capture_redacted_provider_response_fields` returns a `TypedDict`; the frozen v26.224 client
+incorrectly calls `.model_dump()` on it in both its return and exception paths. The result is:
+
+```text
+Jobs / request intents / failure records               192 / 192 / 192
+valid Job records                                             0
+response/Usage/error metadata / call descriptors        0 / 0 / 0 / 0
+terminal evidence / five-layer evidence                     0 / 0
+Raw/Result/Trace/Outcome/checkpoint                      0 / 0 / 0 / 0 / 0
+replacement/rerun/recovery Jobs                             0 / 0 / 0
+```
+
+The frozen Summary's `provider_call_count=0` counts only completed descriptors and is not a valid
+claim that no Provider interaction occurred. Exact HTTP/model/Thinking/Usage/token/cost fields
+were not persisted and must not be guessed. No model response, terminal, or Capability inference
+is admitted.
+
+The immutable directory contains 398 files and 680,947 bytes. Its 397-member Manifest binds
+609,062 bytes. Summary / Transition / Manifest / Root are:
+
+- `finance_v26_224_execution_summary:8b88cb6cc97d9a0f57fcf3e0ab805510e960d1c80e6e7beef67fbea5f54f58b5`;
+- `finance_v26_224_transition:1670d9b380a87d2c178a48a5b3dc9b543611b092d7d27ce7af2cffdde1e00b73`;
+- `finance_v26_224_artifact_manifest:16f18a3fca68d190327d9d81f39e4251a817c97f2bb573e07018846424003c59`;
+- `finance_v26_224_artifact_root:71435d07e0f486d01a4654007231ace5381465796d165f02f2e67e55ea602925`.
+
+The current decision is
+`v26_224_exact_192_job_online_execution_incomplete_at_post_response_redacted_typed_dict_serialization`.
+The immediate successor is an independent credential-free postrun audit and fresh-identity repair
+preflight. Any replacement run must use the later explicit conditional operator authorization,
+fresh execution authorization and ledger, and must first pass the repaired HTTP-success/error
+tests. See
+`docs/finance_v26_224_fresh_exact_v209_parent_bound_exact_192_job_online_execution.md`.
+
 ## Offline QA Semantic-Type Coverage And Program-Depth Closure Preflight
 
 The independent QA side-path consumed only
