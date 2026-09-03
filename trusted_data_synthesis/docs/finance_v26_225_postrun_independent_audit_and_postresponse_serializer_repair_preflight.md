@@ -1,6 +1,64 @@
 # Finance v26.225 Postrun Independent Audit And Post-Response Serializer Repair Preflight
 
-## Authoritative v2 Correction And Current Boundary
+## Authoritative v3 Correction And Current Boundary
+
+The v2 directory is immutable and unconsumed, but a second independent attack review found that
+the private consumption boundary still accepted a caller-supplied `RepairPreflightObjects` value.
+Although the CLI first loaded the genuine formal directory, a direct caller could jointly replace
+`prepared.config` and `refreshed.loaded["config"]`; those two forged values then agreed and
+`_consume` wrote a temporary test ledger and Run Start Receipt. No credential or Provider was
+used in that control, and no repository execution artifact was written. This fails a composable
+authorization boundary, so v2 is permanently superseded and cannot authorize v26.226.
+
+The v3 `_consume(prepared)` interface accepts no refreshed authority argument. It independently
+calls `_load_fixed_preflight` from the fixed repository/formal path inside the consumption
+function, then applies the complete execution-parent and path equality checks before the formal
+authorization-byte Guard and before any ledger write. The outer execution entry repeats the load
+and admission, so the consumption boundary is independently closed even when invoked directly.
+
+The authoritative v3 source freeze is:
+
+```text
+commit  a52df3e215f681a855bfdc94aafe9d699f08a59c
+tree    6600c26140eafe5581f3ca727281638df07b5d14
+```
+
+Principal v3 identities are:
+
+- source / authorization / preparation:
+  `finance_v26_225_repair_source_identity:2d98337043c5ff095767bbf8469f52f1cf38a7d89d8fcfe26803c5f89f3740e5` /
+  `finance_v26_225_repaired_replacement_execution_authorization:819e35f1d63d05a32aa0cfefc55ce750a92330b2788ab19b23833aa0ebab51c7` /
+  `finance_v26_225_repair_preparation:eedcd02b71ee1d1cd49ad11bc669a1f61560da13280c4a7a75e67e242dbdc53c`;
+- attack / Gate / Decision / Transition:
+  `finance_v26_225_authorization_attack_audit:80e246a45e51579b7306d2247ed7479a1feb19161463df8502718f4bb1cc386e` /
+  `finance_v26_225_repair_gate_evaluation:a69e37f039a73c9a03ee3ee535c0fe4f3fac070ab5ab1759ad16f258d7edd013` /
+  `finance_v26_225_repair_decision:43583059590d7c64224f3d7d299bd2fab8035631450e9bbdfa3f80cd3f62105f` /
+  `finance_v26_225_repair_transition:e11dd64e56caf82ea69ed62f6d8c454f7b03099e71cd3c5b24f27add672b7004`;
+- Manifest / Root:
+  `finance_v26_225_repair_artifact_manifest:f2b23e929c92d4da20d17c2cd3dd58c4cc608d5d8a7fa644d5c0009828e1a332` /
+  `finance_v26_225_repair_artifact_root:acb4ad97e24fb129abea3f4ad939717b5e61fab5bf9625aca32484ba93e6043f`.
+
+The v3 authorization is 30,219 newline-terminated bytes at SHA-256
+`a5832b12d20e1dd63be31d544463e2c5b2566658b4bcc5859843e06ad3089c7a`.
+Its formal directory contains twelve files and 67,886 bytes; the self-excluding Manifest binds
+eleven members and 65,831 bytes, and the Manifest file SHA-256 is
+`cf6beca29e32b61c537dc61ad5265e9b95e0d1762f25874939e3d32b4a9624fe`.
+Focused repair tests pass 10/10 and the adjacent v26.221-v26.225 partition passes 53/53.
+PyCompile, Ruff check/format, and focused no-import-follow Mypy pass.
+
+The v3 candidate is unconsumed and awaits another independent review. Its record-point decision
+is:
+
+```text
+v26_225_v1_and_v2_authorizations_superseded_unconsumed_
+v26_225_v3_internal_authority_reload_preflight_materialized_
+independent_audit_required_online_replacement_execution_blocked
+```
+
+## Superseded v2 Correction And Historical Boundary
+
+The v2 section below records its state before the joint prepared-plus-refreshed substitution was
+found. All v2 passing, current-decision, and successor language is superseded by v3 above.
 
 The first formal v26.225 directory remains immutable, but a subsequent independent review failed
 it before authorization consumption. That review found three execution-boundary defects and one

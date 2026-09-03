@@ -15,7 +15,53 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
-## v26.225 v2 Postrun Audit And Post-Response Serializer Repair Preflight
+## v26.225 v3 Postrun Audit And Post-Response Serializer Repair Preflight
+
+The unconsumed v2 preflight is now superseded. A second independent attack found that its private
+`_consume(prepared, refreshed=...)` boundary trusted a caller-supplied refreshed object. Jointly
+replacing a prepared model configuration and the matching `refreshed.loaded` value could make the
+forgeries agree and write a temporary control ledger and Run Start Receipt. The normal CLI loaded
+the genuine formal directory first, but the consumption function itself was not a closed
+authority boundary. The control used no credential or Provider and wrote no repository artifact.
+
+The v3 consumer accepts no refreshed authority argument. It reloads the exact formal preflight
+inside `_consume`, checks every execution-bearing object and fixed path against that independent
+reconstruction, and only then admits exact authorization bytes and writes the global ledger. The
+outer executor repeats the fixed load and admission. Both v1 and v2 authorization objects remain
+unconsumed and are permanently inadmissible.
+
+The v3 implementation commit/tree are
+`a52df3e215f681a855bfdc94aafe9d699f08a59c` /
+`6600c26140eafe5581f3ca727281638df07b5d14`. Its fresh authorization is
+`finance_v26_225_repaired_replacement_execution_authorization:819e35f1d63d05a32aa0cfefc55ce750a92330b2788ab19b23833aa0ebab51c7`,
+30,219 bytes at SHA-256
+`a5832b12d20e1dd63be31d544463e2c5b2566658b4bcc5859843e06ad3089c7a`.
+
+The v3 formal directory contains twelve files and 67,886 bytes; its Manifest binds eleven members
+and 65,831 bytes. Manifest / Root are
+`finance_v26_225_repair_artifact_manifest:f2b23e929c92d4da20d17c2cd3dd58c4cc608d5d8a7fa644d5c0009828e1a332` /
+`finance_v26_225_repair_artifact_root:acb4ad97e24fb129abea3f4ad939717b5e61fab5bf9625aca32484ba93e6043f`.
+Gate / Decision / Transition are
+`finance_v26_225_repair_gate_evaluation:a69e37f039a73c9a03ee3ee535c0fe4f3fac070ab5ab1759ad16f258d7edd013` /
+`finance_v26_225_repair_decision:43583059590d7c64224f3d7d299bd2fab8035631450e9bbdfa3f80cd3f62105f` /
+`finance_v26_225_repair_transition:e11dd64e56caf82ea69ed62f6d8c454f7b03099e71cd3c5b24f27add672b7004`.
+
+Focused repair tests pass 10/10; the adjacent v26.221-v26.225 partition passes 53/53. PyCompile,
+Ruff, and focused no-import-follow Mypy pass. The current decision is:
+
+```text
+v26_225_v3_internal_authority_reload_preflight_materialized_
+independent_audit_required_online_replacement_execution_blocked
+```
+
+The v3 ledger and v26.226 output do not exist. Only a new passing independent audit may activate
+the operator-authorized one-shot replacement. See
+`docs/finance_v26_225_postrun_independent_audit_and_postresponse_serializer_repair_preflight.md`.
+
+## v26.225 v2 Postrun Repair Preflight (Superseded)
+
+The following v2 section predates discovery of the joint prepared-plus-refreshed substitution.
+Its authorization and passing interpretation are not current authority.
 
 The first v26.225 formal directory remains immutable but failed subsequent independent review.
 Its local controls accessed the configured credential environment key before consumption, and its
