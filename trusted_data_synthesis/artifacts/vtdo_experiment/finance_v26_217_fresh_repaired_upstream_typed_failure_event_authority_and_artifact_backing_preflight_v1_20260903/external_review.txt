@@ -1,0 +1,438 @@
+# Finance v26.216 本轮实验审计
+
+## 一、总体结论
+
+v26.216 **正确修复了上一轮遗漏 `raise value` 的问题**，五个 v26.209 显式异常出口已经被 AST 枚举并分别执行。因此，本轮不是无效修订。
+
+但它尚未完成所声明的 **E2 authenticated rethrow provenance closure**。当前所谓的“上游权威 observation”仍然可以由调用方通过参数直接铸造，而且没有作为独立字节工件进入持久化证据链。
+
+建议正式审计结论为：
+
+```text
+AUDIT_RESULT
+
+VALID_SCOPED_FIVE_EXIT_AST_ENUMERATION_AND_FIXED_CONTROL_EXECUTION
+
+FAILED_AT
+
+UPSTREAM_FAILURE_OBSERVATION_SOURCE_AUTHORITY_AND_ARTIFACT_BACKING
+```
+
+对应的窄化决定建议写成：
+
+```text
+v26_216_five_v209_typed_failure_exits_are_enumerated_and_fixed_controls_
+terminalize_but_e2_upstream_failure_observation_remains_caller_mintable_
+and_not_artifact_backed
+```
+
+因此：
+
+```text
+当前声明的 8 / 0 Gate 不能整体保留
+当前 positive independent-audit successor 不应直接按“预期通过”执行
+v26.211 authorization 必须继续保持未消费
+在线 192-Job 执行继续阻塞
+```
+
+---
+
+## 二、本轮已经成立的修复
+
+### 1. 五出口 AST Contract 成立
+
+v26.216 不再使用：
+
+```python
+source.count("raise TypedTransportFailure(")
+```
+
+而是从冻结的 v26.209 源文件 AST 中枚举两个目标函数内的五个 `raise`：
+
+```text
+E0  ScriptedTransport.send     direct constructor
+E1  ScriptedTransport.send     direct constructor
+E2  ScriptedTransport.send     raise value
+E3  _project_public_payload    direct constructor
+E4  _project_public_payload    direct constructor
+```
+
+四个直接构造出口绑定了 terminal、literal reason、源码坐标和 AST 节点；E2 被单独标记为 authenticated rethrow。这一修复直接覆盖了 v26.215 的首个缺陷。
+
+源码实现也确实从冻结 v26.209 字节构造 AST，要求五个 `ast.Raise` 的数量、行号、符号和节点形态与预期完全一致，而不是继续依赖构造器字符串计数。
+
+因此，当前 R1 可以保留为：
+
+```text
+R1 exact five-exit AST Source Contract  PASS
+```
+
+### 2. 五个指定控制确实覆盖了五个出口
+
+本轮分别执行了：
+
+```text
+E0 invalid dispatch chain
+E1 empty queue
+E2 fixed authenticated rethrow
+E3 reasoning-like key
+E4 non-object response
+```
+
+并形成五个 Runner-owned observations、五个 consumer terminal branches 和二十五个五层文件。报告也正确把这些结果限定为本地确定性控制，而不是 Provider failure frequency、模型结果或 Capability estimate。
+
+### 3. “没有任何 upstream observation”的 E2 攻击被有效拒绝
+
+新的决定性攻击使用：
+
+```python
+TypedTransportFailure(
+    "instrument_failure",
+    "arbitrary but registered-terminal reason",
+)
+```
+
+将其直接放入 queue。它虽然经过真实 `raise value`，但因为不存在 upstream observation，最终在 Runner authority append 和 Raw 写入前失败。这个控制准确修复了 v26.215 已发现的具体漏洞。
+
+### 4. 边界控制仍然正确
+
+本轮没有 Provider 调用、credential lookup、empirical row 或新在线授权，并且明确保持 v26.211 未消费。这个边界应完整保留。
+
+---
+
+## 三、首个根本阻塞点：上游 observation 仍由调用方铸造
+
+### 1. Producer 的公开输入仍包含 terminal
+
+实际实现是：
+
+```python
+def create_failure(
+    self,
+    *,
+    terminal_kind: str,
+    reason: str,
+    source_event_id: str,
+) -> TypedTransportFailure:
+```
+
+其行为只是：
+
+```text
+读取调用方提供的 terminal_kind
+    -> 在 Registry 中查找 policy
+读取调用方提供的 reason
+读取调用方提供的 source_event_id
+    -> 构造 TypedTransportFailure
+    -> 构造 UpstreamFailureObservation
+    -> 写入内存 authority
+```
+
+也就是说，producer 并没有从一个已经存在的、独立形成的 upstream event 中**推导** terminal；它只是把调用方输入的 terminal 和 reason 转换成带内容哈希的 observation。
+
+`UpstreamFailureObservation` 对 `source_event_id` 只要求非空字符串，对 `terminal_kind` 也只要求非空；没有嵌入或重建一个实际 source event。所谓 `created_by_bound_producer=true` 是常量字段，并不能证明 observation 的事实来源。
+
+因此，当前链条本质上是：
+
+```text
+caller-selected terminal / reason / event-id
+    -> bound producer
+    -> self-consistent observation
+    -> authenticated rethrow
+```
+
+而不是：
+
+```text
+actual upstream event
+    -> independently derived terminal
+    -> authoritative observation
+    -> authenticated rethrow
+```
+
+把一个 terminal factory 的源码绑定起来，并不会自动使它的调用方输入成为 observation。
+
+---
+
+## 四、存在一个更强的确定性攻击：E2 可以被铸造成完成态 terminal
+
+v26.216 将 v26.195 中全部十六个 `reachable` terminal-policy pairs 都交给 producer，而不是只交给真实 upstream typed-failure terminal。
+
+因此，按照当前源码，可以构造：
+
+```python
+error = producer.create_failure(
+    terminal_kind="completed_qualified",
+    reason="caller selected completed terminal",
+    source_event_id="arbitrary-source-event",
+)
+transport.queue(error)
+```
+
+这个对象会满足现有 E2 检查：
+
+```text
+exact TypedTransportFailure class                  true
+upstream observation exists                        true
+observation terminal == error.terminal              true
+reason hash matches                                 true
+terminal policy exists in the 16-row Registry       true
+raise value actually executed                       true
+```
+
+随后 Runner 构造的 invocation record 仍然是：
+
+```text
+public response absent
+exact response parsed = false
+Runtime completed = false
+typed_terminal = completed_qualified
+```
+
+但当前 observation 和 dispatcher 验证只要求 `record.typed_terminal` 与 observation 一致，并没有禁止“未执行 Runtime 的异常 observation”映射到 `completed_qualified`。dispatcher 最后只检查该 terminal 是否存在于十六项 policy map 中。
+
+所以在现有源级语义下，一个无响应、未解析、未执行 Runtime 的异常对象，可以经 producer 获得 `completed_qualified` 权威并进入 E2。
+
+这不是边缘问题，而是过去已经反复出现的同一类根本缺陷：
+
+```text
+terminal label authority 被从 dispatcher 挪到了 upstream producer，
+但并未真正消除。
+```
+
+当前七个负向控制没有覆盖这一情况。它们只覆盖：
+
+```text
+没有 upstream observation
+未注册 terminal
+错误的 exception class
+后置 terminal/reason/Job 重写
+```
+
+没有覆盖：
+
+```text
+由合法 producer 创建
+但 source event 是伪造的
+且 terminal 在 Registry 中合法、在该 source 语义下不可能
+```
+
+现有测试同样只断言上述七个已登记攻击，没有测试 producer-issued impossible terminal 或伪造 source event。
+
+---
+
+## 五、同一阻塞点的持久化缺口
+
+即使暂时忽略 caller-minting，E2 的 upstream observation 也没有形成独立、可重放的 artifact-backed parent。
+
+当前 `SourceExitProof` 仅保存：
+
+```text
+upstream_failure_observation_id
+```
+
+并不嵌入：
+
+```text
+UpstreamFailureObservation bytes
+actual upstream event bytes
+event descriptor
+event SHA-256 / byte count / path
+event -> observation parent relation
+```
+
+Raw 虽然嵌入 `failure_observation`、`authenticated_evidence` 和 `derived_terminal_decision`，但这些对象仍然只携带 upstream observation ID。实际 dispatcher 需要依赖进程内的 `UpstreamFailureAuthority` 字典，才能根据该 ID 找回 observation。
+
+正式根目录也只写出了：
+
+```text
+upstream_failure_producer_binding.json
+```
+
+没有写出一次 E2 实际 observation 或 upstream source event 的独立文件。
+
+所以后续审计可以通过**重新执行固定控制**得到同样的对象，却不能仅从本轮已经持久化的实际字节证明：
+
+```text
+这个 E2 proof 所引用的 upstream observation
+确实存在于本次执行中并来自某个权威 source event。
+```
+
+对于局部确定性 smoke control，这可以作为可复现性证据；但不足以支持本轮更强的“artifact-backed upstream provenance closure”。
+
+---
+
+## 六、Gate 重判
+
+| Gate                                        | 审计结果                              | 说明                                                                |
+| ------------------------------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| R0 external scope / v26.215 Freeze          | **PASS**                          | 冻结与授权边界成立                                                         |
+| R1 exact five-exit AST Contract             | **PASS**                          | 五个 `raise` 出口已被准确枚举                                               |
+| R2 source-exit proof and upstream authority | **FAIL**                          | upstream observation 可由 caller 参数化铸造，且没有实际 source-event authority |
+| R3 durable ingress mechanics                | **PASS**                          | receipt/factory 顺序与本阻塞无关                                          |
+| R4 five source-exit controls terminalize    | **PASS_SCOPED**                   | 五个指定 honest controls 成立；E2 只证明固定控制可运行                             |
+| R5 authentic exit → five-layer persistence  | **PASS_DIRECT / CONDITIONAL_E2**  | E0/E1/E3/E4 可保留；E2 缺少权威 upstream artifact parent                  |
+| R6 negative controls reject                 | **PASS_REGISTERED_CONTROLS_ONLY** | 七个登记攻击成立，但未覆盖 producer-issued forged event/terminal               |
+| R7 zero Provider / credential / empirical   | **PASS**                          | 边界正确                                                              |
+
+非补偿性结论为：
+
+```text
+first failed Gate:
+  R2 source-exit proof and upstream-authority observation
+
+first root blocker:
+  upstream producer converts caller labels into authority
+  without an independently authenticated and persisted source event
+```
+
+因此不能保留：
+
+```text
+passed / failed = 8 / 0
+```
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 可以保留
+
+```text
+v26.215 的第五出口遗漏已修复
+冻结 v26.209 两个目标符号内共有五个 raise 出口
+四个 direct constructor exits 已精确绑定
+固定 instrument_failure E2 控制可完成 rethrow -> Runner -> persistence
+无 upstream observation 的 registered-terminal rethrow 会拒绝
+四个既有完全重哈希 authority attacks 继续拒绝
+Provider / credential / empirical / online authorization 均为零
+v26.211 authorization 未消费
+```
+
+### 仍然禁止
+
+```text
+E2 upstream observation 已具有来源权威
+任意 producer-issued observation 都代表实际 upstream failure
+五出口 provenance 已完整 artifact-backed
+完整 typed-failure terminal authority 已闭合
+v26.216 已准备好按 positive independent audit 通过
+新的在线授权
+直接消费 v26.211
+192-Job Provider execution
+empirical estimation
+QA / Mapper / State / frequency / Contribution / VTDO
+training / release / production
+```
+
+报告继续阻止在线执行这一决定本身是正确的，必须保持。
+
+---
+
+## 八、唯一合理的下一实验
+
+建议下一阶段仅修复这一条权威链：
+
+```text
+fresh_repaired_upstream_typed_failure_event_authority_
+and_artifact_backing_preflight_only
+```
+
+### 1. Producer 不再接收 terminal authority
+
+删除类似接口：
+
+```python
+create_failure(
+    terminal_kind: str,
+    reason: str,
+    source_event_id: str,
+)
+```
+
+改为：
+
+```python
+observe_failure(
+    event: AuthenticatedUpstreamFailureEvent,
+)
+```
+
+terminal、reason 和 policy 必须从 `event` 的严格类型及实际内容派生，不能由调用方分别传入。
+
+### 2. 限制 E2 可接受的 terminal 域
+
+至少必须排除：
+
+```text
+completed_qualified
+completed_invalid
+first_response_abi_invalid
+correction_response_abi_invalid
+first_action_reference_invalid
+correction_action_reference_invalid
+correction_attempt_typed_invalid
+final_response_abi_invalid
+```
+
+这些不是 upstream transport failure event 可以产生的 terminal。
+
+可接受集合必须从实际 upstream source classes/callsites 推导，而不是简单复制全部十六个 Registry-reachable terminal。
+
+### 3. 持久化 upstream parent
+
+在 E2 SourceExitProof 之前形成：
+
+```text
+actual UpstreamFailureEvent bytes
+  -> event descriptor(path, SHA-256, byte count, event identity)
+  -> derived UpstreamFailureObservation
+  -> observation descriptor
+  -> E2 SourceExitProof
+  -> Runner observation
+  -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+Raw 至少应嵌入或严格引用 observation descriptor，而不能只保存一个无法从实际文件解析的 observation ID。
+
+### 4. 只增加决定性控制
+
+下一轮无需继续扩张大量攻击矩阵，只需增加几项直接命中首个阻塞点的控制：
+
+```text
+completed_qualified producer mint attempt                  REJECT
+registered but event-incompatible outer terminal           REJECT
+caller-forged source_event_id with full rehash             REJECT
+missing upstream event artifact                            REJECT
+cross-event / cross-Job upstream observation substitution REJECT
+valid source-derived instrument event -> E2                PASS
+```
+
+其中最关键的控制是：
+
+```text
+一个在 v26.195 Registry 中合法、
+但在 upstream failure source 中不可能的 terminal，
+不得因为 producer 能查到 policy 就成为权威 observation。
+```
+
+### 5. 后续顺序
+
+```text
+upstream event-authority and artifact-backing repair
+  -> credential-free independent audit
+  -> fresh online authorization binding all repaired parents
+  -> only then consider the 192-Job execution
+```
+
+全程继续保持：
+
+```text
+Provider calls             0
+credential lookups         0
+empirical rows             0
+new online authorizations  0
+v26.211 consumption        0
+```
+
+本次审计基于上传的 v26.216 正式报告、当前状态，以及报告记录的 exact source commit `a3e6589a71cbf40b0c93488343e406641f0d017a` 的实现源码；源码 commit 与报告记录一致。  我没有在用户服务器环境中重新执行报告所述的 8/8 与 65/65 测试。

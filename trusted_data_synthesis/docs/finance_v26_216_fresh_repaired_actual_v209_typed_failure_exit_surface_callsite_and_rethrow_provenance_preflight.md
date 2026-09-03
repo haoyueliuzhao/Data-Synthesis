@@ -1,5 +1,36 @@
 # Finance v26.216 Fresh Repaired Actual v26.209 Typed-Failure Exit-Surface Callsite And Rethrow Provenance Preflight
 
+## Post-Review Scope Correction
+
+The subsequent exact 14,940-byte review at SHA-256
+`b63396f5321a6c99cf6fade8fd501a8387a7e172470250b2e931413afc4ba871` retains v26.216 only
+as `VALID_SCOPED_FIVE_EXIT_AST_ENUMERATION_AND_FIXED_CONTROL_EXECUTION` and fails its stronger
+E2 provenance interpretation at
+`UPSTREAM_FAILURE_OBSERVATION_SOURCE_AUTHORITY_AND_ARTIFACT_BACKING`.
+
+The five-exit AST enumeration, four direct-constructor controls, fixed honest E2 execution,
+missing-upstream-observation rejection, exact Runner route, and conditional five-layer mechanics
+remain valid at their scoped meanings. However, v26.216's producer accepts caller-supplied
+`terminal_kind`, `reason`, and `source_event_id`, admits all sixteen Registry-reachable terminals,
+and stores its upstream observation only in an in-memory map. A producer-issued
+`completed_qualified` exception can therefore be internally self-consistent despite absent public
+response, parser completion, and Runtime completion. The E2 proof also contains no independently
+persisted Event/Descriptor/Observation/Descriptor bytes.
+
+Every v26.216 formal artifact, identity, historical eight-pass Gate, Decision, and Transition
+remains immutable. Its current scoped decision is:
+
+```text
+v26_216_five_v209_typed_failure_exits_are_enumerated_and_fixed_controls_
+terminalize_but_e2_upstream_failure_observation_remains_caller_mintable_
+and_not_artifact_backed
+```
+
+The later exact directive consumed only the zero-Provider v26.217 upstream Event-authority and
+artifact-backing repair. The current boundary is v26.217's credential-free independent audit;
+v26.211 remains unconsumed and Provider execution remains forbidden. See
+`docs/finance_v26_217_fresh_repaired_upstream_typed_failure_event_authority_and_artifact_backing_preflight.md`.
+
 ## Scope And Decision
 
 Finance v26.216 consumes only
@@ -292,9 +323,9 @@ check/format, and no-import-follow Mypy pass. The adjacent v26.209-v26.216 suite
 All executions in this stage are local deterministic controls; Provider and credential activity
 remain zero.
 
-## Boundary And Only Permitted Successor
+## Immutable Historical Boundary And Superseded Successor
 
-The only permitted successor is:
+The immutable historical successor was:
 
 ```text
 fresh_repaired_actual_v209_typed_failure_exit_surface_callsite_and_rethrow_
@@ -311,3 +342,7 @@ new online authorization must bind all v26.216 exit-surface, upstream-producer, 
 dispatcher, persistence, consumer, and composition parents. Direct v26.211 consumption, Provider
 execution, the 192-Job online run, frozen-condition change, empirical estimation, QA, Mapper,
 State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+
+The review recorded in the Post-Review Scope Correction supersedes that successor. The only
+current successor is the credential-free independent audit of v26.217; Provider execution and
+v26.211 consumption remain blocked.
