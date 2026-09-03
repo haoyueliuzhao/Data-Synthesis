@@ -1,0 +1,565 @@
+# Finance v26.222 实验审计
+
+## 一、最终判定
+
+```text
+AUDIT_RESULT                    PASSED_AS_SCOPED
+BLOCKING_DEFECT                 NONE_FOUND
+FIRST_FAILED_GATE               NONE
+MANDATORY_REVISION              NONE
+
+AUDITED_OBJECT
+  V26.221 EXACT V26.209 EXECUTION-CONDITION
+  PARENT-AUTHORITY REPAIR PREFLIGHT
+
+PREVIOUS_BLOCKER
+  EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY
+  CLOSED_BY_INDEPENDENT_AUDIT
+
+V220_AUTHORIZATION
+  UNCONSUMED
+  FORBIDDEN_AS_FUTURE_AUTHORITY
+
+NEW_ONLINE_AUTHORIZATION
+  NOT_CREATED_BY_V26.222
+
+192-JOB PROVIDER EXECUTION
+  NOT_AUTHORIZED
+
+NEXT_STAGE
+  AUTHORIZATION-DECISION ONLY
+```
+
+**v26.222 可以按本轮明确范围判定为通过。**
+
+本轮真实执行的是对 v26.221 父权威修复预检的独立审计，而不是在线授权或模型实验。附件明确记录：六个非补偿 Gate 全部通过，同时新在线授权、授权消费、Manifest Job 执行、Provider 调用、凭据读取和经验行均为零。
+
+---
+
+## 二、本轮理论命题与授权范围
+
+本轮唯一需要验证的命题是：
+
+> v26.221 是否真实解决了 v26.220 中
+> `EXACT_V209_EXECUTION_CONDITION_PARENT_AUTHORITY_NOT_CLOSED`
+> 这一首个本质阻塞点，并且该修复能否由独立实现复现和验证。
+
+v26.221 原先只授权其后继执行：
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_binding_
+repair_preflight_independent_audit_only
+```
+
+该后继允许检查：
+
+```text
+v26.209 21-file directory
+fixed Manifest / Artifact Root
+1,024 strict identities
+relation closure
+repaired condition / Composition
+four upstream attacks
+zero Provider boundary
+```
+
+而不得签发在线授权。
+
+v26.222 实际消耗的正是这个独立审计阶段，没有改动 Prompt、Runtime、模型、Thinking、Grammar、Policy、资源合同、192-Job 条件、Validity、Estimator 或 VTDO 对象。因此不存在授权越界。
+
+---
+
+# 三、实现状态与 Gate 审计
+
+## A0：精确冻结 v26.221 源码与正式目录
+
+**判定：PASS**
+
+v26.222 在读取 v26.221 的语义对象之前，先验证完整自排除 Artifact Manifest：
+
+```text
+source commit          dbd9d15b6d44577725ef8d8a6c1fcca730120d5d
+source tree            06f23ef0847e39b03fae9b19155cb3e7b22fbdf7
+formal files / bytes   17 / 112,607
+Manifest members       16
+member bytes           109,876
+```
+
+并固定：
+
+```text
+Manifest
+  finance_v26_221_artifact_manifest:
+  c52e6edea3d097f7ac3797fcdc0cbc704a99174b7514b09e62265784ed6c189a
+
+Artifact Root
+  finance_v26_221_artifact_root:
+  5782f2689c74fe1388f9f8b1f600e7b01ece3296a7abfc39265bb44b64cdb5f4
+```
+
+附件明确说明缺失、额外、哈希不匹配、字节数不匹配、身份不匹配或范围扩张的输入，会在产生独立结论之前失败。
+
+源码实际完成了目录几何、成员路径集合、成员 SHA-256、成员字节数、Artifact Root、Manifest ID、固定 Report/Gate/Decision/Transition/Condition/Composition/Tamper-Audit 身份以及 Git commit-to-tree 关系的验证。
+
+GitHub 上的 exact commit 也确实解析到报告记录的 tree：
+
+```text
+commit b95981668173eb1ed73a2581564fed6a0b280cfb
+tree   e9cfdb35518727452a73cca6f7d9dedab15588fb
+```
+
+---
+
+## A1：Detached exact-source rebuild
+
+**判定：PASS**
+
+v26.222 从 exact v26.221 commit 只归档 `trusted_data_synthesis/src`，在隔离环境中执行原 v26.221 builder。子进程环境限制为：
+
+```text
+PATH
+detached PYTHONPATH
+PYTHONDONTWRITEBYTECODE
+LC_ALL
+```
+
+并将 canonical repository 仅作为冻结证据根。重建结果为：
+
+```text
+archived source files       681
+saved / rebuilt files       17 / 17
+saved / rebuilt bytes       112,607 / 112,607
+path matches                17 / 17
+SHA-256 matches             17 / 17
+byte-count matches          17 / 17
+actual-byte matches         17 / 17
+Manifest members            16 / 16
+credential-like keys        0
+credential lookups          0
+Provider calls              0
+```
+
+
+
+源码中，完整重建完成后才将生成目录与保存目录比较；候选 Report、Gate、formal Freeze、relation Audit 和 tamper Audit 不参与“重建是否成功”的判断。
+
+持久化审计对象与报告一致，确实记录了 `17/17` 的路径、哈希、字节数和实际字节匹配。
+
+---
+
+## A2：独立重建 exact v26.209 parent authority
+
+**判定：PASS**
+
+这一层没有调用：
+
+```text
+v26.221._admit_exact_v209_files
+```
+
+也没有导入历史 v26.209 Pydantic 结果模型，而是从原始 canonical JSON 独立实现：
+
+```text
+fixed Manifest / Root admission
+member-byte validation
+canonical content identity
+nested Job and invocation semantics
+namespace and seed derivation
+source commit / tree / source-file validation
+```
+
+结果为：
+
+```text
+formal files / bytes                   21 / 44,916,386
+Manifest members / bytes               20 / 44,912,918
+member path/hash/bytes/actual bytes    20 / 20 / 20 / 20
+independent content identities         1,024
+source commit/tree match               true
+source implementation files            3 / 3
+condition projection fields            17 / 17
+candidate helper calls                 0
+```
+
+ 
+
+代码实际重新计算了：
+
+* 32 个 Package 身份；
+* 192 个 Job 身份；
+* 每个 Job 的四类 namespace 和 deterministic seed；
+* 792 个 Invocation 的 canonical messages/request bytes、SHA-256、字节数、十一阶段事件序列及 Invocation 身份；
+* Catalog、Manifest、Runner、Execution Contract、Census、Implementation、Source Identity 等顶层身份；
+* exact Git commit/tree 和三个 implementation source file。
+
+只有这些检查全部通过后，才把十七个独立投影字段与 v26.221 Condition Binding 比较。
+
+正式工件也确实记录了 `1,024` 个身份匹配、20 个实际成员字节匹配和 17 个 Condition 投影匹配。
+
+---
+
+## A3：独立关系闭包
+
+**判定：PASS**
+
+v26.222 没有调用候选的：
+
+```text
+v26.221._relation_closure
+```
+
+而是重新连接 Package、Job、namespace、Runner、Execution 和 Census：
+
+```text
+Manifest Jobs / Census Jobs                   192 / 192
+Census Job set == Manifest Job set                 true
+Census-row membership                         792 / 792
+Job Package membership                        192 / 192
+Package × Replica cells                       192 / 192
+namespace owner derivations                   768 / 768
+Raw/Result/Trace/Outcome uniqueness             192 each
+Runner/Execution/Census parent matches          12 / 12
+expected Job set == actual Job set                  true
+unique invocation coordinates                 792 / 792
+```
+
+
+
+独立重建出的 Job、coordinate 和四类 namespace 集合哈希均与 v26.221 保存值相同；十六个 relation projection 字段全部匹配，而且候选 relation helper 调用数为零。
+
+源码也确实重新推导 namespace owner、十二组父关系、Job/Census 集合、Package membership 和 coordinate uniqueness，而不是只检查几个聚合计数。
+
+---
+
+## A4：独立重现上一轮决定性反例
+
+**判定：PASS**
+
+上一轮的直接反例是：
+
+```text
+修改一个 Job ID 或一个 Raw namespace
+同时保持：
+  192 Jobs
+  192 unique Job IDs
+  192 Raw namespaces
+  192 unique Raw namespaces
+然后重新计算下游身份
+```
+
+v26.222 独立构造了四个控制：
+
+```text
+Job ID changed
+  ├─ stale Artifact Manifest
+  └─ rehashed Artifact Manifest / Root
+
+Raw namespace changed
+  ├─ stale Artifact Manifest
+  └─ rehashed Artifact Manifest / Root
+```
+
+结果：
+
+```text
+attacks / rejected / accepted       4 / 4 / 0
+candidate projection matches        4 / 4
+Condition objects created           0
+online authorizations created       0
+candidate attack helper calls       0
+attack writes                       0
+Provider calls                      0
+```
+
+
+
+拒绝位置也与修复机制一致：
+
+```text
+stale Manifest
+  -> independent_exact_v209_member_admission
+
+rehashed replacement Manifest/Root
+  -> independent_exact_v209_manifest_root_admission
+```
+
+正式攻击工件逐项保存了四个候选 Manifest、Root、prospective Condition/Composition/Authorization 身份和实际 rejection stage。
+
+因此，上一轮能够直接推翻 G2 的等基数替换反例已不能穿过 v26.222 独立实现。
+
+---
+
+## A5：零 Provider、零授权与零经验边界
+
+**判定：PASS**
+
+正式范围对象记录：
+
+```text
+v26.220 authorization consumptions    0
+new online authorizations             0
+Manifest Job executions               0
+Provider calls                        0
+Provider-client constructions         0
+credential lookups                    0
+empirical rows / estimates            0 / 0
+QA reads                              0
+Mapper/State/frequency/
+Contribution/VTDO rows                0
+```
+
+`build()` 在完成 A0–A4 后只构造审计、Decision、Transition 和 formal artifact；没有授权消费者、Provider client 或 Manifest Job 执行入口。
+
+---
+
+# 四、直接反例检查结论
+
+我没有发现能够同时满足以下条件的具体反例：
+
+```text
+保留 fixed historical v26.209 Manifest/Root
+改变 exact Job、Package、namespace 或 Census condition
+仍进入 v26.221 authoritative Condition Binding
+并让 v26.222 A2-A4 通过
+```
+
+原因是当前路径已经变为：
+
+```text
+candidate v26.209 directory
+  -> fixed historical Manifest/Root admission
+  -> exact member-byte admission
+  -> independent object identities
+  -> independent relation closure
+  -> Condition projection comparison
+```
+
+而不是：
+
+```text
+candidate directory
+  -> 从 candidate 自身生成 expected authority
+  -> candidate 与自身比较
+```
+
+同时，A2–A4 的独立实现没有调用候选的三个决定性 helper。测试源码也对候选 helper 调用和候选模块 import 进行了 AST 检查。
+
+---
+
+# 五、发现分级
+
+## Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现能够直接推翻本轮“v26.221 父权威修复已经通过独立审计”这一声明的反例。
+
+---
+
+## Scope limitation
+
+### 1. Condition 的核心投影被独立重建，但 Composition 没有被完整独立重构
+
+v26.222 独立重建了：
+
+* 17 个 Condition 中的 v26.209 权威投影字段；
+* 16 个 relation projection 字段；
+* 四个决定性攻击。
+
+但完整 `RepairedCompositionContract` 主要通过 A0 的固定 Artifact bytes/ID 被冻结，没有由第二套实现逐字段重新构造。
+
+这不阻断当前首个问题，因为：
+
+1. 本轮要关闭的是 exact v26.209 execution-condition parent authority；
+2. Condition 的相关权威投影和关系已经独立重建；
+3. 保存的 Composition 实际绑定了新的 Condition、fixed Manifest/Root、v26.218 parent set，并明确禁止 v26.220 authorization。
+4. v26.222 没有签发在线授权，因此尚不存在由 Composition 未独立重构导致的 Provider 执行越权。
+
+但当前结论不应扩大成：
+
+```text
+v26.221 Composition 的每一个字段都已由第二实现独立重新推导
+```
+
+---
+
+### 2. 测试通过数没有在本次审计环境中重新执行
+
+附件报告：
+
+```text
+focused tests                     8 / 8
+adjacent process-isolated tests   113 / 113
+PyCompile / Ruff / Mypy           PASS
+```
+
+
+
+我核对了对应测试源码与正式 artifacts，但没有在当前环境重新运行该仓库测试。因此，具体测试计数属于已绑定的实验运行记录，而不是本次外部审计重新执行所得的结果。
+
+核心 Gate 判定不依赖这一点，因为父权威建立顺序、独立关系重建和四个攻击路径可以直接从源码与持久化工件核对。
+
+---
+
+## Future hardening
+
+两个非阻塞增强值得保留：
+
+1. 后续授权阶段可额外独立重构完整 `AuthoritativeExecutionConditionBinding` 和 `RepairedCompositionContract`，特别是：
+
+   ```text
+   v220_freeze_id
+   v209_formal_freeze_id
+   relation_closure_audit_id
+   previous_v220_condition_binding_id
+   v218_parent_set_binding_id
+   retained_v220_composition_contract_id
+   ```
+
+   这会把目前的“精确冻结 + 核心字段独立重建”提升为完整对象独立重建。
+
+2. 测试 fixture 在正式目录不存在时允许使用 `"1"*40 / "2"*40` sentinel source identity，并跳过 Git commit/tree 验证。当前正式工件没有使用该路径，其 source identity 是真实的 `b959… / e9cf…`，因此不影响本轮结果；后续可将该机制改为显式 `test_mode`，避免测试产物与正式产物外形过于接近。
+
+以上都不是 mandatory revision。
+
+---
+
+# 六、Gate 总结
+
+| Gate | 审计对象                                           |   判定 |
+| ---- | ---------------------------------------------- | ---: |
+| A0   | exact v26.221 source 与 formal Freeze           | PASS |
+| A1   | detached exact-source directory rebuild        | PASS |
+| A2   | independent exact v26.209 parent authority     | PASS |
+| A3   | independent relation closure                   | PASS |
+| A4   | four upstream attacks independently reject     | PASS |
+| A5   | zero Provider/authorization/empirical boundary | PASS |
+
+```text
+PASSED / FAILED = 6 / 0
+OVERALL         = PASSED_AS_SCOPED
+```
+
+正式 Gate 工件与该分区一致，并明确记录 `online_authorization_issued=false`。
+
+---
+
+# 七、当前获授权与仍禁止的结论
+
+## 现在可以声明
+
+```text
+1. v26.221 的 exact v26.209 parent-authority repair 已通过独立审计。
+2. v26.209 的固定 Manifest/Root 和 20 个成员字节已独立准入。
+3. 1,024 个身份对象已由独立实现重新计算并匹配。
+4. 32 Packages、192 Jobs、792 coordinates 和四类 namespace 已独立闭包。
+5. 上一轮 Job-ID/Raw-namespace 等基数反例已由独立实现重现并拒绝。
+6. v26.220 authorization 保持未消费，并禁止作为后续权威父级。
+7. v26.222 没有签发新在线授权，也没有执行 Provider 或 Manifest Job。
+```
+
+## 仍然不能声明
+
+```text
+新的在线授权已经存在
+v26.220 authorization 可以修补、替换或消费
+192-Job Provider run 已获准
+修复后的在线 consumer 已实际运行
+Provider terminal occurrence 已被观察
+Capability estimate 已产生
+Mapper / State / frequency / Contribution / VTDO 已获授权
+```
+
+---
+
+# 八、下一阶段是否可以继续
+
+## 判定：可以，但仅限授权决策阶段
+
+本次外部审计支持将以下阶段作为唯一获授权的下一实验：
+
+```text
+fresh_exact_v209_execution_condition_authoritative_parent_bound_
+online_execution_authorization_only
+```
+
+v26.222 自身只把它登记为 prospective successor，明确记录：
+
+```text
+next_stage_authorized          false
+online_authorization_created   false
+provider_execution_authorized  false
+separate_external_decision     required
+v220 authorization             forbidden
+```
+
+**本次审计即构成所需的外部通过决定，因此该 authorization-only 阶段可以继续。**
+
+该阶段必须：
+
+```text
+1. 冻结 exact v26.222：
+     source commit/tree
+     16-file / 74,784-byte formal directory
+     15-member / 72,169-byte Manifest
+     Report / Gate / Decision / Transition
+     A0-A5 audit identities
+
+2. 绑定 exact v26.221 repaired parents：
+     authoritative Condition Binding
+     repaired Composition
+     v26.209 Manifest / Root
+     32-Package set
+     192-Job set
+     792-coordinate set
+     four namespace sets
+
+3. 创建一个全新的、content-addressed、未消费在线授权。
+
+4. 永久禁止：
+     v26.220 authorization reuse
+     authorization patch/substitution
+     same-stage authorization consumption
+     Provider calls
+     credential lookups
+     Manifest Job execution
+     empirical writes
+```
+
+v26.222 附件也明确限定：下一阶段只能决定是否签发新的授权，不能执行 Job 或接触 Provider。
+
+---
+
+## 最终审计记录
+
+```text
+FINANCE V26.222
+  PASSED_AS_SCOPED
+
+DECLARED CLAIM
+  IMPLEMENTED
+
+DIRECT PRIOR COUNTEREXAMPLE
+  REPRODUCED_AND_REJECTED
+
+BLOCKING DEFECT
+  NONE_FOUND
+
+SCOPE LIMITATION
+  FULL COMPOSITION OBJECT NOT SECOND-IMPLEMENTATION-RECONSTRUCTED
+
+MANDATORY REVISION
+  NONE
+
+PREVIOUS FIRST BLOCKER
+  CLOSED_BY_INDEPENDENT_AUDIT
+
+AUTHORIZED NEXT STAGE
+  fresh_exact_v209_execution_condition_authoritative_parent_bound_
+  online_execution_authorization_only
+
+PROVIDER EXECUTION
+  STILL_FORBIDDEN
+```

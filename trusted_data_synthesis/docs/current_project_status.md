@@ -15,6 +15,117 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.223 Fresh Exact v26.209 Parent-Bound Online Execution Authorization
+
+Finance v26.223 consumed only
+`fresh_exact_v209_execution_condition_authoritative_parent_bound_online_execution_authorization_only`.
+The exact 16,856-byte external review is bound at SHA-256
+`b40d6ada5e463411741f49e99d957f3dc6dc65e53b7852151a43f75c9dccb98a`. It accepts
+v26.222 as `PASSED_AS_SCOPED`, finds no blocking defect or mandatory revision, and authorizes only
+the new authorization decision. The exact 24-byte directive `参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`, consumes only
+that decision stage. Provider calls, credential lookups, clients, Manifest Job executions,
+authorization consumptions, receipts, persistence writes, and empirical rows are zero.
+
+The complete 16-file, 74,784-byte v26.222 directory and all fifteen self-excluding Manifest
+members revalidate. Its exact source commit/tree
+`b95981668173eb1ed73a2581564fed6a0b280cfb` /
+`e9cfdb35518727452a73cca6f7d9dedab15588fb`, Report, six-pass Gate, Decision, Transition,
+and A0-A5 evidence identities are frozen. The Freeze confirms that v26.222 issued no online
+authorization, consumed no v26.220 authorization, and admitted only a prospective separately
+decided authorization stage.
+
+v26.223 then validates the complete v26.221, v26.220, and v26.209 directories before constructing
+the new authority. It independently reconstructs the complete v26.221 repaired objects rather
+than relying only on their stored identities:
+
+```text
+Condition fields / matches                         33 / 33
+Composition fields / matches                       16 / 16
+Condition / Composition actual-byte matches       true / true
+exact repaired parent identities                          19
+v26.220 authorization consumed / reusable              0 / 0
+```
+
+The repaired parent binding admits the fixed v26.209 twenty-member Manifest/Root first, rereads
+the actual Package Catalog, 192-Job Manifest, 792-row Census, Runner, Execution Contract,
+implementation and source, and reconstructs all Package, Job, coordinate, and namespace sets:
+
+```text
+Packages / Jobs                                   32 / 192
+registered invocation coordinates                      792
+Raw/Result/Trace/Outcome namespaces                 192 each
+exact Package/Job/coordinate/namespace set matches      true
+```
+
+The new parent-bound Composition retains the exact v26.220 execution order and the split between
+the eight completed/parser/reference/correction terminals and the two actual v26.209 source-bound
+failure terminals. It replaces the superseded v26.220 condition authority with the exact v26.221
+repaired Condition and Composition. Caller terminal, unbound terminal source, historical response,
+reference Choice vector, and prebuilt Final inputs remain forbidden.
+
+One fresh authorization is issued:
+
+`fresh_exact_v209_parent_bound_exact_online_execution_authorization:72627e0352682a0737407d7ceb88ea17e9d087077895c1288aa41f670ca2d33b`.
+
+It binds the v26.222 Freeze, nineteen-parent v26.221 set, exact v26.209 Manifest/Root, 32 Packages,
+192 Jobs, 792 coordinates, four namespace sets, and repaired Composition. It is not consumed.
+One diagnostic non-consuming request admits; 33 invalid requests reject before any post-Guard
+probe. Fifteen fully rehashed replacements of the Freeze, repaired parents, Condition,
+Composition, v26.209 Manifest/Root, Package/Job/coordinate, or namespace sets also reject:
+
+```text
+legal / invalid admission controls                 1 / 33
+fully rehashed attacks rejected                    15 / 15
+fresh authorizations issued / consumed               1 / 0
+post-Guard probes / Provider calls                   0 / 0
+```
+
+All eight noncompensatory Gates pass. Authoritative identities include:
+
+- external decision / v26.222 Freeze:
+  `finance_v26_223_external_online_authorization_decision:b68bd2ac182381a5d6999937da677dc666f79a251d0dac96dabdedf3f7193f9a` /
+  `finance_v26_223_v222_independent_audit_freeze:cab86c45ab4bacbb07c69ebaf10c3f3e959314b2e8b3eb9e38c6844c0850ffc3`;
+- parent binding / Composition:
+  `fresh_v221_complete_repaired_parent_binding:d052e3bea4d8827068cb0cd4266a178c21cbc8022ea7508e582f79e024263da9` /
+  `fresh_exact_v209_parent_bound_online_execution_composition_contract:094e822857be7937a814dbe0465c9145a9249daeeb8e874869f06928502d357c`;
+- admission / attack / scope:
+  `finance_v26_223_precredential_admission_audit:245c8444732ff52797ca42ed2321f1410a4ca23fbd8759bbf0b45dbd098666ef` /
+  `finance_v26_223_parent_attack_audit:78e9f00dc0677fac1d6fef4fff616e3af2a109b21db58ada7c7eec341e5c2993` /
+  `finance_v26_223_scope_boundary_audit:70c71c56de2846a15ae66ccb458a61879f9df8f43d3f8e5bab408ea0b6227e4e`;
+- Gate / Decision / Transition:
+  `finance_v26_223_gate_evaluation:2af334315b609226b6cbb045605415cf31eda9f01894a600a5e7273220fabb28` /
+  `finance_v26_223_online_authorization_decision:510309fed22a245aa825aad21855e0416ab70d1f96eb1609dfa4db16df17ba5b` /
+  `finance_v26_223_transition:18286175e530c071a50e6bbb5d715b4456691531ddaea1b692ae974f11f6186e`;
+- Report / Manifest / Root:
+  `finance_v26_223_online_authorization_report:72bfdfc293738c25b2b76236507f02a635de6af0b19fc16afadb11e1bba454ea` /
+  `finance_v26_223_artifact_manifest:7d08829ff3fb4c4e021b3c24b1b4186e3519e93afe04b8be34c71d2e97dab8f4` /
+  `finance_v26_223_artifact_root:2ce7768c33de5416bccb403877ffa21d7d91a08d8cd8487582db12869a6c5c8e`.
+
+The exact source commit/tree are `5eed1e0bb56757e3046391a8d25d522dea577975` /
+`119c4b0af09d958b34548933d55512bee5e5ac9b`. The 17-file, 136,590-byte formal
+directory rebuilds byte for byte; its Manifest binds sixteen members and 133,829 bytes. Focused
+tests pass 8/8. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass. The
+process-isolated adjacent v26.209-v26.223 partition passes 121/121: 113/113 in the main process
+with v26.217 excluded, plus 8/8 in an isolated v26.217 process. Package-wide Ruff passes.
+
+The current decision is:
+
+```text
+fresh_exact_v209_authoritative_parent_bound_exact_192_job_online_execution_
+authorization_issued_not_consumed
+```
+
+The only permitted successor is
+`fresh_exact_v209_execution_condition_authoritative_parent_bound_exact_192_job_online_execution_only`.
+It must admit the exact v26.223 authorization bytes, consume them exactly once, durably write the
+consumption and Run Start Receipts, and only then cross the credential boundary. The v26.220
+authorization and patched or substituted v26.223 authorizations are forbidden. Replacement,
+failed-Job rerun, recovery, condition change, historical reuse, caller terminal injection, QA,
+Mapper, State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+Any future execution requires an independent postrun audit before downstream use. See
+`docs/finance_v26_223_fresh_exact_v209_parent_bound_online_execution_authorization.md`.
+
 ## v26.222 Fresh Exact v26.209 Execution-Condition Parent-Authority Repair Independent Audit
 
 Finance v26.222 consumed only
