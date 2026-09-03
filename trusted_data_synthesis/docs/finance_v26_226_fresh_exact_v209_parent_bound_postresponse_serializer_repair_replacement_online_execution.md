@@ -146,7 +146,12 @@ Thirty-three Jobs end as `unbound_provider_failure`. Their Job-level failure dig
 one exact digest,
 `bf06dd05d7431b80d5a218229dd0c1b6251b7e801ba4ade9e745d4a61ae3ca2f`,
 while the Provider Journal retains three typed error digests corresponding to the 31 reasoning
-budget exits and two JSON decode exits described above.
+budget exits and two JSON decode exits described above. Independent reconstruction confirms that
+all 33 Job hashes bind the exact fail-closed exception
+`UnboundExecutionFailure: Provider failure has no admitted v26.209 source terminal`. This is not
+missing Journal evidence: each failed call has a complete request/error/Usage/descriptor chain.
+The two JSON response texts were deliberately not persisted, so their precise syntax defects
+cannot be reconstructed and are not guessed.
 
 Three Jobs end as `host_failure` after two or three successful Provider calls. Their persisted
 failure digest partition is:
@@ -156,9 +161,23 @@ cb7d691ac6f6cae0152642ce267c69106719c43b812d6860ecd57955785e4ee2  2
 62b6b9b098a85e0666673231c87d0f60f4197e44279869843dc01151e077726c  1
 ```
 
-The execution record intentionally stores only these one-way exception digests. Their semantic
-causes are not asserted here; a separate local replay is required before naming them. No missing
-error text is guessed and no historical terminal is assigned to a failed Job.
+The execution record intentionally stores only these one-way exception digests. The postrun audit
+replayed the saved public projections through the exact v26.209 Runner without a Provider call and
+reproduced the full exception hashes:
+
+```text
+ordinals 6 and 22
+  UnboundExecutionFailure:
+  v26.213 parser evidence cannot bind a subsequent_action record
+
+ordinal 149
+  UnboundExecutionFailure:
+  v26.213 reference evidence cannot bind a subsequent_action record
+```
+
+The deterministic Host blocker is therefore
+`SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED`. No historical terminal is
+assigned to these three failed Jobs.
 
 ## Artifact Geometry And Identities
 
@@ -181,17 +200,49 @@ The Manifest file itself is 718,010 bytes at SHA-256
 The 3,611,241-byte Summary is SHA-256
 `337b5156fc86f5159a1c7081c9978105351dfc5217b12e7254669c37d6728122`.
 
+## Independent Postrun Audit
+
+Two independent, credential-free audits read the immutable record commit `bb70da41` and did not
+use the saved Census, Summary, or Transition as outcome oracles. Both return:
+
+```text
+SCOPED_ARTIFACT_COMPLETENESS       PASS
+EXACT_192_JOB_EXECUTION_COMPLETION FAIL / INCOMPLETE
+```
+
+The audits independently establish:
+
+- all 3,427 Manifest members and all 3,426 JSON-file canonical encodings match actual bytes;
+- authorization, source, global ledger, consumption Receipt, Run Start Receipt, and ingress are
+  exact, with filesystem order ledger/Receipt -> Run Start -> first Provider intent;
+- all 611 Provider relationships reconstruct with exact paths, Jobs, ordinals, request hashes,
+  token parents, artifact identities, and descriptor identities, and every descriptor is
+  referenced by exactly one Job record;
+- all 192 authorization Jobs and ordinals occur once, split 156 execution and 36 failure records;
+- all 780 Raw/Result/Trace/Outcome/checkpoint files have exact content identities, paths,
+  persisted sequences, embedded parent links, terminal joins, and actual write order;
+- the four Raw/Result/Trace/Outcome namespace sets remain unique; and
+- independently rebuilt Census, Summary, Transition, Manifest, and Root match the saved objects
+  byte for byte only after the underlying checks pass.
+
+The first blocking seam is the subsequent-Action evidence-domain gap above. The second incomplete
+partition is 33 fail-closed Provider response errors with no admitted v26.209 source terminal.
+Neither permits downstream estimation. The audit makes zero Provider calls, reads no credential,
+and writes no experiment artifact.
+
 ## Transition And Prohibitions
 
-The exact Transition is `INCOMPLETE_AWAITING_POSTRUN_INDEPENDENT_AUDIT`. Its only named next stage
-is:
+The immutable execution Transition is `INCOMPLETE_AWAITING_POSTRUN_INDEPENDENT_AUDIT` and named:
 
 ```text
 fresh_exact_v209_parent_bound_replacement_execution_
 postrun_independent_audit_only
 ```
 
-That stage may only read and independently reconstruct the frozen v26.226 directory. It may not
-call the Provider, issue an authorization, replace or rerun any Job, recover a failed Job, change
-the condition, or materialize downstream estimates. Replacement, rerun, recovery, QA, Mapper,
-State, frequency, Contribution, VTDO, training, release, and production remain forbidden.
+That read-only transition has now been consumed by the two audits above. Their current decision is
+`v26_226_artifact_complete_execution_incomplete_at_subsequent_action_evidence_domain_and_unbound_provider_response_failures`.
+No successor is authorized. Any repair of the subsequent-Action composition, or any fresh
+recovery Population for the 33 Provider failures, requires a separate external audit decision,
+fresh identities, preflight, independent audit, and authorization. Replacement, rerun, recovery,
+empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and
+production remain forbidden.

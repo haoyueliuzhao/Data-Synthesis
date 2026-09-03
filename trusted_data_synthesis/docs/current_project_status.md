@@ -41,9 +41,16 @@ replacement / rerun / recovery Jobs                  192 / 0 / 0
 empirical estimates                                           0
 ```
 
-The three Host failures contain only two one-way error digests, with counts two and one; their
-semantic causes are not guessed before independent local replay. The 126 qualified terminals are
-descriptive outcomes inside an incomplete denominator, not a Capability estimate.
+Two credential-free postrun audits independently rebuild the directory, every Provider relation,
+all 192 Job rows, and all 780 five-layer files. Artifact completeness passes, but exact 192-Job
+completion fails. Public-projection replay through the exact Runner reproduces all three Host
+hashes: ordinals 6 and 22 fail because v26.213 parser evidence cannot bind a
+`subsequent_action` record, while ordinal 149 fails because v26.213 reference evidence cannot bind
+a `subsequent_action` record. The exact blocker is
+`SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED`. All 33 Provider-failure Job
+hashes bind the separate fail-closed condition that Provider failures have no admitted v26.209
+source terminal. The 126 qualified terminals remain descriptive outcomes inside an incomplete
+denominator, not a Capability estimate.
 
 The immutable directory contains 3,428 files and 99,765,014 bytes. Its self-excluding Manifest
 binds 3,427 members and 99,047,004 bytes. Summary / Census / Transition / Manifest / Root are:
@@ -55,11 +62,11 @@ binds 3,427 members and 99,047,004 bytes. Summary / Census / Transition / Manife
   `finance_v26_226_artifact_root:7ac11713bf70dbd57297b6d87db0e6982ce5ad8222849e3a4826020904f95280`.
 
 The current decision is
-`v26_226_whole_condition_replacement_execution_incomplete_postrun_independent_audit_required`.
-The consumed authorization cannot be reused. The only permitted successor is a zero-Provider,
-read-only independent postrun audit of the exact directory. Replacement, rerun, recovery,
-empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and
-production remain forbidden. See
+`v26_226_artifact_complete_execution_incomplete_at_subsequent_action_evidence_domain_and_unbound_provider_response_failures`.
+The consumed authorization cannot be reused, and the read-only postrun audit transition is now
+complete. No successor is authorized. Repair or recovery requires a new external audit decision
+and fresh identity chain. Replacement, rerun, recovery, empirical estimation, QA, Mapper, State,
+frequency, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_v26_226_fresh_exact_v209_parent_bound_postresponse_serializer_repair_replacement_online_execution.md`.
 
 ## v26.225 v3 Postrun Audit And Post-Response Serializer Repair Preflight
