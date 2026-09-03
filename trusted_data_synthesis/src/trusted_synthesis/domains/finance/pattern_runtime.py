@@ -249,6 +249,17 @@ class FinanceTaskPatternRuntime:
                 "allowed_payload_fields": sorted(
                     item.payload.model_dump(mode="json", exclude_none=False)
                 ),
+                "result_projection": {
+                    "mode": "merge",
+                    "fields": {
+                        "source_id": {
+                            "kind": "evidence_role",
+                            "role_id": "fact",
+                            "role_position": 0,
+                            "selector": "source.source_id",
+                        }
+                    },
+                },
             }
         elif pattern.task_type == "comparison":
             left = evidence_by_role["left"][0]
@@ -281,6 +292,62 @@ class FinanceTaskPatternRuntime:
                 ],
                 "growth_unit": "percent",
                 "difference_unit": "percentage_points",
+                "result_projection": {
+                    "mode": "replace",
+                    "fields": {
+                        "selected_entity_id": {
+                            "kind": "operation_reference_choice",
+                            "node_id": "result",
+                            "selector": "higher_ref",
+                            "choices": {
+                                "left_growth": left_earlier.subject.subject_id,
+                                "right_growth": right_earlier.subject.subject_id,
+                            },
+                            "default": None,
+                        },
+                        "selected_entity_name": {
+                            "kind": "operation_reference_choice",
+                            "node_id": "result",
+                            "selector": "higher_ref",
+                            "choices": {
+                                "left_growth": left_earlier.subject.name,
+                                "right_growth": right_earlier.subject.name,
+                            },
+                            "default": None,
+                        },
+                        "left_entity_id": {
+                            "kind": "literal",
+                            "value": left_earlier.subject.subject_id,
+                        },
+                        "left_entity_name": {
+                            "kind": "literal",
+                            "value": left_earlier.subject.name,
+                        },
+                        "left_growth_pct": {
+                            "kind": "node_output",
+                            "node_id": "left_growth",
+                            "selector": "value",
+                        },
+                        "right_entity_id": {
+                            "kind": "literal",
+                            "value": right_earlier.subject.subject_id,
+                        },
+                        "right_entity_name": {
+                            "kind": "literal",
+                            "value": right_earlier.subject.name,
+                        },
+                        "right_growth_pct": {
+                            "kind": "node_output",
+                            "node_id": "right_growth",
+                            "selector": "value",
+                        },
+                        "difference_percentage_points": {
+                            "kind": "node_output",
+                            "node_id": "result",
+                            "selector": "difference",
+                        },
+                    },
+                },
             }
         elif pattern.task_type == "temporal_average":
             series = evidence_by_role["series"]
