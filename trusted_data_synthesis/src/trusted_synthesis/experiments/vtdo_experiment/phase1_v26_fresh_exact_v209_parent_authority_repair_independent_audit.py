@@ -575,7 +575,7 @@ def _independent_v209_authority(
     phase_counts = {
         name: 0 for name in ("first_action", "subsequent_action", "correction", "final")
     }
-    uniqueness_fields = {
+    uniqueness_fields: dict[str, set[str]] = {
         name: set()
         for name in (
             "invocation_id",
@@ -859,7 +859,7 @@ def _rehash_candidate_artifact(files: dict[str, bytes]) -> tuple[dict[str, bytes
         if name != "artifact_manifest.json"
     )
     root = canonical_hash(members, prefix="finance_v26_209_artifact_root:")
-    artifact = {
+    artifact: dict[str, Any] = {
         "artifact_root": root,
         "file_count": len(members),
         "manifest_id": "pending",
