@@ -15,6 +15,53 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.226 Parent-Bound Serializer-Repair 192-Job Replacement Online Execution
+
+After two independent credential-free reviews passed v26.225 v3, Finance v26.226 consumed its
+fresh authorization exactly once. The global ledger, output consumption Receipt, and Run Start
+Receipt were durable before `.env` credential loading and client construction. The execution
+source commit/tree are `a52df3e215f681a855bfdc94aafe9d699f08a59c` /
+`6600c26140eafe5581f3ca727281638df07b5d14`.
+
+All 192 exact v26.209 Jobs were attempted under eight workers. The Provider evidence relation is
+closed over 611 calls: 611 request intents, descriptors, and Usage rows; 578 response and 33 error
+rows; zero orphan or invalid relations. All calls are HTTP-200, exact-model, Thinking-present rows.
+The typed Provider error partition is 31 `ReasoningBudgetExhaustedError` and two `JSONDecodeError`.
+Persisted totals are 3,585,599 Prompt, 3,480,837 Completion, 3,422,511 reasoning, and 7,066,436
+total tokens; summed estimated cost is USD `1.33152428080000012119`.
+
+The run closes 156 complete five-layer Job records and 36 failure records:
+
+```text
+completed_qualified / final_response_abi_invalid       126 / 26
+completed_invalid / first_response_abi_invalid           2 / 2
+unbound_provider_failure / host_failure                  33 / 3
+Raw/Result/Trace/Outcome/checkpoint                    156 each
+replacement / rerun / recovery Jobs                  192 / 0 / 0
+empirical estimates                                           0
+```
+
+The three Host failures contain only two one-way error digests, with counts two and one; their
+semantic causes are not guessed before independent local replay. The 126 qualified terminals are
+descriptive outcomes inside an incomplete denominator, not a Capability estimate.
+
+The immutable directory contains 3,428 files and 99,765,014 bytes. Its self-excluding Manifest
+binds 3,427 members and 99,047,004 bytes. Summary / Census / Transition / Manifest / Root are:
+
+- `finance_v26_226_execution_summary:459c05325e7d8b1201b4ee9c5cca903876c8bd70f331b97db5d3245b59d82bbd`;
+- `finance_v26_226_provider_intent_census:bc758841db428bcd89d8b3f0a91adf83c5716b13d2529c2bafcd1ebfe5e45024`;
+- `finance_v26_226_transition:e5b3a3b173cf91c5bf6150c3279fa053608c09d2f3d4679084d54cc4f32207b7`;
+- `finance_v26_226_artifact_manifest:19cef807ae34c71c13d526c09c385163d1b30b2ced05322e3ec7e6f0e803d217` /
+  `finance_v26_226_artifact_root:7ac11713bf70dbd57297b6d87db0e6982ce5ad8222849e3a4826020904f95280`.
+
+The current decision is
+`v26_226_whole_condition_replacement_execution_incomplete_postrun_independent_audit_required`.
+The consumed authorization cannot be reused. The only permitted successor is a zero-Provider,
+read-only independent postrun audit of the exact directory. Replacement, rerun, recovery,
+empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and
+production remain forbidden. See
+`docs/finance_v26_226_fresh_exact_v209_parent_bound_postresponse_serializer_repair_replacement_online_execution.md`.
+
 ## v26.225 v3 Postrun Audit And Post-Response Serializer Repair Preflight
 
 The unconsumed v2 preflight is now superseded. A second independent attack found that its private
