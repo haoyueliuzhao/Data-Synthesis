@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-09-03
+Audit date: 2026-09-04
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,84 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+## v26.225 Postrun Independent Audit And Post-Response Serializer Repair Preflight
+
+Finance v26.225 independently revalidates the immutable 398-file, 680,947-byte v26.224 failed
+execution. All 192 exact Jobs have one request intent and the same Host failure digest
+`651fb4b608ea3f399df980361cfa585307bf865e2a24eb03dbf00fbbcfa0aa6a`;
+response/error/Usage metadata, Provider descriptors, terminal evidence, and five-layer evidence
+are all zero. The v26.224 Summary's zero Provider-call field counts completed descriptors only
+and is not interpreted as proof of zero HTTP interaction. Missing response/Usage/token/cost data
+remain unavailable and are not guessed.
+
+The repaired source replaces both invalid `TypedDict.model_dump()` calls with `dict(redacted)`.
+The formal preflight executes two credential-free controls through the actual exact-model client,
+Provider journal, transport, and v26.209 Runner route. A local HTTP-success response produces one
+closed request/response/Usage/descriptor journal, `first_response_abi_invalid`, and one complete
+Raw -> Result -> Trace -> Outcome -> checkpoint chain. A local `URLError` produces one closed
+request/error/Usage/descriptor journal, an unbound-Provider failure record, and zero terminal
+layers:
+
+```text
+mock HTTP success / error calls                         1 / 1
+closed Provider descriptors success / error            1 / 1
+journal files success / error                          4 / 4
+five-layer files success / error                       5 / 0
+real Provider calls / credential lookups               0 / 0
+```
+
+Every journal relation is rederived from actual bytes: canonical path, Job, ordinal, intent hash,
+Provider-call identity, response-or-error exclusivity, Usage request hash/token counts, artifact
+SHA-256 and byte count. The replacement census now records descriptor count as the conservative
+call-attempt lower bound and request-intent count as the upper bound until a closed execution
+makes them equal. The fresh Job/Summary identities use v26.226 prefixes, and all eight missing
+Raw/Result/Trace/Outcome/checkpoint parent relations are enforced.
+
+The exact implementation source commit/tree are
+`2e7c7cc488af42e10b6bb998b7fd47bdeb96551c` /
+`3983bf1ce99a0fe5ced8a3e067ee86ed3635b7f7`. The fixed authorization is read from
+formal evidence rather than minted by live preparation:
+
+- source / postrun / repair-control Audits:
+  `finance_v26_225_repair_source_identity:a44806c7041015d58f9d71de6e7da3e5f1582585087b1c0e9de3c286c8bcd6b3` /
+  `finance_v26_225_postrun_repair_audit:7fc06cabbaccd9726741d7dd04725733b8b0991834aa5f2ff6a237f9c223ef42` /
+  `finance_v26_225_repair_control_audit:308e8a4db1954706055202f9e46e065e86cf94873e2d2f2137f14569d8796498`;
+- authorization / preparation:
+  `finance_v26_225_repaired_replacement_execution_authorization:0b616131fe08f060bce25f179978ccc516a148bd8bad707b8aa28807a954f9f3` /
+  `finance_v26_225_repair_preparation:e8a43f7168a06850a582fa70a374c5006bc3ec73d2604dc823d92448f61b4f4e`;
+- attack / Gate / Decision / Transition:
+  `finance_v26_225_authorization_attack_audit:b4bd117e42fd7132760ab02441a9f4cce514b8219cffca20fa1da8ff04806be2` /
+  `finance_v26_225_repair_gate_evaluation:b29e8ce67fc96f7ee1b45494298fc41b533e4ce38f3b8c212af946c3f50db46e` /
+  `finance_v26_225_repair_decision:2136a6748cdcf4c2031a5149df9289dc7a35e257b2f3c2f57546102992ee2280` /
+  `finance_v26_225_repair_transition:a393e48ca45e59f3f3bf78c5f9475667143410f7617f801625f29e7607851563`;
+- Manifest / Root:
+  `finance_v26_225_repair_artifact_manifest:f927f642ad737569aedb83a1ee511f2af7b0193801521a012335d08102f297da` /
+  `finance_v26_225_repair_artifact_root:656e2faaac619e4f6034ea711ef7e17597ebefebdd910e6bdba8a2e8f2c56467`.
+
+The newline-terminated authorization is 30,219 bytes at SHA-256
+`8f509454dc8e617070aac201feda9036d3446dbc68df1cac891e117dd8659caa`.
+Eight fully rehashed but wrong-parent candidate authorizations reject against its expected bytes
+before any post-Guard probe. All seven noncompensatory Gates pass. The twelve-file, 67,886-byte
+formal directory rebuilds byte for byte; its Manifest binds eleven members and 65,831 bytes.
+Focused original-plus-repair tests pass 27/27; PyCompile, Ruff check/format, package-wide Ruff,
+no-import-follow and import-following Mypy pass.
+
+The current decision is:
+
+```text
+postresponse_serializer_repair_independent_audit_passed_
+replacement_online_execution_authorization_issued_not_consumed
+```
+
+The only permitted successor is the whole-condition fresh-identity v26.226 replacement execution.
+It must repeat the formal/source Guard, consume this authorization exactly once in a fresh global
+ledger, persist consumption and Run Start receipts before credential lookup, then execute all 192
+Jobs. Selective failed-Job recovery, historical-response reuse, condition change, caller terminal
+injection, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and production
+remain forbidden. Any v26.226 result requires a separate credential-free postrun independent
+audit. See
+`docs/finance_v26_225_postrun_independent_audit_and_postresponse_serializer_repair_preflight.md`.
 
 ## v26.224 Fresh Exact v26.209 Parent-Bound Exact 192-Job Online Execution
 
