@@ -1170,6 +1170,12 @@ def _scope(
     imported_modules = {
         node.module or "" for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
     }
+    imported_names = {
+        alias.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
     called_names = {
         node.func.attr if isinstance(node.func, ast.Attribute) else node.func.id
         for node in ast.walk(tree)
@@ -1190,6 +1196,7 @@ def _scope(
     }
     if (
         any(name.endswith(forbidden_import) for name in imported_modules)
+        or forbidden_import in imported_names
         or called_names & forbidden_calls
     ):
         _fail("scope.implementation", "external-execution or candidate-helper boundary differs")
