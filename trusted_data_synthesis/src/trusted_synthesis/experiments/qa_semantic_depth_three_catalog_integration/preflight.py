@@ -343,7 +343,11 @@ def _negative_controls(
 
     tasks = tuple(dict(row) for row in descriptor["task_registrations"])
     operations = tuple(dict(row) for row in descriptor["operation_registrations"])
-    reject("task_type_alias", lambda: catalog.resolve("registered_margin_gap"))
+
+    def resolve_alias() -> None:
+        catalog.resolve("registered_margin_gap")
+
+    reject("task_type_alias", resolve_alias)
     reject(
         "missing_task_registration",
         lambda: validate_catalog_rows(

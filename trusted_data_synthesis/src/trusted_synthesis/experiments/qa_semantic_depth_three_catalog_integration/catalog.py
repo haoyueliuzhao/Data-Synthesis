@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, NoReturn
@@ -383,6 +384,4 @@ class RegisteredFinanceQACatalog:
 
 
 def catalog_manifest_sha256(descriptor: dict[str, Any]) -> str:
-    return strict_canonical_hash(
-        canonical_json_bytes(descriptor), prefix="finance_qa_registered_catalog_bytes:"
-    )
+    return hashlib.sha256(canonical_json_bytes(descriptor)).hexdigest()
