@@ -164,7 +164,14 @@ def test_writer_is_reproducible_and_manifest_is_self_excluding(
     left = tmp_path / "left"
     right = tmp_path / "right"
     write_artifacts(products, left)
-    write_artifacts(products, right)
+    commit = _git("rev-parse", "HEAD^{commit}")
+    rebuilt = build_independent_audit(
+        repo_root=ROOT,
+        external_audit_path=REVIEW,
+        source_commit=commit,
+        source_tree=_git("rev-parse", f"{commit}^{{tree}}"),
+    )
+    write_artifacts(rebuilt, right)
     assert _files(left) == _files(right)
     summary = validate_written_artifacts(left)
     files = _files(left)

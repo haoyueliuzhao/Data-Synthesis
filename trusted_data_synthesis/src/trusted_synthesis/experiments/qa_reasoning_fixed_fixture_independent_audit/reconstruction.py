@@ -1003,7 +1003,10 @@ def interventions_and_attacks(
                         "name": name,
                         "rejected": True,
                         "stage": getattr(error, "stage", "missing_source_parent"),
-                        "reason_sha256": _sha(str(error).encode()),
+                        "reason_sha256": _sha(
+                            f"{getattr(error, 'stage', 'missing_source_parent')}|"
+                            f"{type(error).__name__}".encode()
+                        ),
                     }
                 )
             else:
@@ -1072,7 +1075,10 @@ def interventions_and_attacks(
                     "name": name,
                     "rejected": True,
                     "stage": getattr(error, "stage", "os.open.O_EXCL"),
-                    "reason_sha256": _sha(str(error).encode()),
+                    "reason_sha256": _sha(
+                        f"{getattr(error, 'stage', 'os.open.O_EXCL')}|"
+                        f"{type(error).__name__}".encode()
+                    ),
                     "callback_calls": 0,
                 }
             )
