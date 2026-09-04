@@ -1,0 +1,424 @@
+# Finance v26.227 本轮实验审计
+
+## 一、总体结论
+
+```text
+CURRENT_CLAIM
+  close the subsequent-Action parser/reference evidence domain
+  for exactly three v26.226 Host failures
+
+IMPLEMENTATION_STATUS
+  IMPLEMENTED_AS_DECLARED
+
+DIRECT_COUNTEREXAMPLE
+  NONE_FOUND_WITHIN_DECLARED_SCOPE
+
+GATE
+  PASS_AS_SCOPED
+
+BLOCKING_DEFECT
+  NONE_FOUND
+
+MANDATORY_REVISION
+  NONE
+
+NEXT_STEP
+  exact credential-free independent audit only
+
+ONLINE_EXECUTION
+  BLOCKED
+
+EMPIRICAL_ESTIMATION / MAPPER / STATE / FREQUENCY /
+CONTRIBUTION / VTDO
+  BLOCKED
+```
+
+本轮可以判定为 **`PASS_AS_SCOPED`**。v26.227 确实只修复 v26.226 中三个因 `subsequent_action` 证据域缺失而形成的 Host failure，没有把它们回填为历史经验 Outcome，也没有越权处理其余 33 个 Provider failure。其正式范围和决定与实现基本一致。
+
+**原先授权的下一步可以继续：是，但只能执行 v26.227 的独立、零 Provider 审计。当前不需要先修订 v26.227，也不能进入在线重跑。**
+
+---
+
+## 二、本轮实际检验的命题
+
+本轮不是重新检验模型能力，也不是补全 v26.226 的 192-Job 经验分母。它检验的是一个更窄的工程命题：
+
+> 对 v26.226 中 Job ordinal 6、22、149，能否把已经持久化的公开响应投影重新送入 exact v26.209 current-State Runner，并根据真实的 `subsequent_action` 解析或引用失败，构造无 caller terminal 输入的证据、终止决定和五层非经验工件。
+
+这个问题确实是 v26.226 的首个阻塞点。v26.226 的 192 个 Job 中只有 156 个形成完整终止工件，另外 36 个失败；其中三个 Host failure 的可重放异常分别是：
+
+```text
+ordinals 6、22
+  v26.213 parser evidence cannot bind a subsequent_action record
+
+ordinal 149
+  v26.213 reference evidence cannot bind a subsequent_action record
+```
+
+因此此前首先失败的是 `SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED`，而不是这三个 Job 的 Provider 响应不存在。 
+
+本轮对象选择正确，没有跳到第二个阻塞点。
+
+---
+
+## 三、实现状态审计
+
+### 1. v26.226 来源集合绑定：通过
+
+v26.227 在构造新证据前重新验证：
+
+```text
+v26.226 formal files               3,428
+Manifest members                   3,427
+exact Jobs                           192
+complete Jobs                        156
+failure records                       36
+Host failures                          3
+unbound Provider failures             33
+```
+
+三个 Host failure 被固定为 ordinal 6、22、149，并形成独立 source-set hash；其余 33 条形成单独的 exclusion-set hash。Provider failure 不能作为三条 Host row 的替代输入。v26.225 v3 授权仍保持 consumed、non-reusable，v26.227 没有生成新的在线授权。
+
+这足以支持本轮的 **exact three-row source population**，没有分母漂移或混入其他失败记录。
+
+### 2. v1 遗留的请求父绑定缺口：v2 已实际修复
+
+v1 只证明相同公开 payload 序列能够被重放，但没有逐调用要求重建请求与冻结 v26.226 Provider descriptor 的请求一致。
+
+v2 新增了实际检查：
+
+```python
+provider_call.status == "succeeded"
+
+invocation.canonical_request_body_sha256
+    == provider_call.request_sha256
+
+invocation.public_response_sha256
+    == provider_call.response_sha256
+```
+
+并按冻结的 Provider-call 顺序逐条比较，数量、顺序、请求 hash、响应 hash 或成功状态任一不一致都会在 Evidence 构造前失败。代码中确实存在这一检查，不只是报告文字修订。
+
+正式结果为：
+
+```text
+complete invocation records       8
+request-hash matches            8/8
+response-hash matches           8/8
+```
+
+
+
+因此，上一轮可能直接推翻 v1 source relation 的反例已被本轮 v2 关闭。
+
+### 3. 完整 invocation prefix：通过
+
+新的 Evidence 不只保存最后一条失败 invocation，而是保存完整前缀，并要求：
+
+```text
+invocation_index 从 0 开始且连续
+所有 invocation 属于同一 exact Job
+第一条 phase = first_action
+最后一条 phase = subsequent_action
+末条之前不存在 terminal
+末条之前的响应均完成 parser、State/Candidate envelope 和 Runtime
+最后一条绑定当前 State 与当前有序 Candidate Action IDs
+```
+
+实际重放几何为：
+
+| Job ordinal | invocation records | Evidence 类型                           | 派生 terminal                      |
+| ----------: | -----------------: | ------------------------------------- | -------------------------------- |
+|           6 |                  3 | `subsequent_action_parser_rejection`  | `first_response_abi_invalid`     |
+|          22 |                  3 | `subsequent_action_parser_rejection`  | `first_response_abi_invalid`     |
+|         149 |                  2 | `subsequent_action_reference_failure` | `first_action_reference_invalid` |
+
+
+
+这与 v26.226 的“两个三调用 Host failure、一个两调用 Host failure”完全对应。
+
+### 4. Parser 与 reference 两类证据域：通过
+
+Parser Evidence 要求末条记录：
+
+```text
+phase                         subsequent_action
+exact_response_parsed         false
+current-State envelope valid  false
+Runtime completed             false
+typed terminal                first_response_abi_invalid
+```
+
+并重新调用 exact Action parser，确认 payload 确实属于指定的四字段 Grammar 拒绝类型。
+
+Reference Evidence 则要求：
+
+```text
+phase                         subsequent_action
+exact_response_parsed         true
+current-State/reference valid false
+Runtime completed             false
+observed state                当前 state
+observed action               不属于当前 Candidate Action IDs
+typed terminal                first_action_reference_invalid
+```
+
+两种 Evidence 都绑定当前末条 invocation 的 State 和 Candidates，而不是任意较早状态。源代码中的两个 Pydantic validator 确实执行了这些条件。
+
+### 5. Dispatcher terminal authority：通过
+
+Dispatcher 的正式接口仍是：
+
+```python
+dispatch(evidence)
+```
+
+不存在以下调用者输入：
+
+```text
+phase
+terminal_kind
+terminal_policy
+expected terminal
+```
+
+Dispatcher 首先要求 Evidence 与 replay-owned authority 中保存的精确 bytes 相等，然后根据 Evidence variant 和实际记录谓词派生 terminal 与 Registry policy。
+
+因此，本轮没有重新引入早期实验中出现过的 caller-selected terminal 问题。
+
+### 6. 五层非经验工件：通过
+
+每个控制生成：
+
+```text
+Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+三条控制共形成：
+
+```text
+Raw / Result / Trace / Outcome / checkpoint   3 each
+five-layer artifacts                              15
+empirical rows                                     0
+Provider calls                                     0
+```
+
+各层共享 exact Job、Host source row、Evidence、Dispatcher decision、terminal、policy、source identity 和 v26.226 Freeze，并通过 parent artifact ID 串联。Raw 与 Result 的实际创建顺序也满足 Raw 在前。 
+
+这些是 **nonempirical replay artifacts**，不是对 v26.226 历史目录的 Outcome backfill，边界表述正确。
+
+---
+
+## 四、直接反例检查
+
+本轮注册了八类攻击：
+
+```text
+1. 将实际 subsequent_action phase 换成其他 phase
+2. parser/reference Evidence 类型互换
+3. 跨 Job invocation substitution
+4. 截断 invocation prefix
+5. 使用旧 State
+6. 使用旧 Candidate set
+7. Evidence 与全部五层工件一起重哈希
+8. 用 33 条 Provider failure 中的一条替换 Host failure
+```
+
+结果为：
+
+```text
+attacks / rejected / accepted       8 / 8 / 0
+rejected before Raw                 8 / 8
+fully rehashed candidate layers           5
+```
+
+尤其是第七项先为伪造 Evidence 构造了五个内部一致的新层身份，再在 `dispatch()` 的 exact replay authority 比较处拒绝。这说明单纯重哈希不能替代真实 replay-owned Evidence。
+
+在本轮声明范围内，我没有发现下列可复现反例：
+
+* 改变末条 phase 后仍能通过；
+* parser Evidence 被重解释为 reference Evidence；
+* 跨 Job 或截断 prefix 后仍被接受；
+* stale State/Candidate 被当成当前父对象；
+* 完整重哈希后绕过 replay authority；
+* Provider failure 被混入三条 Host failure；
+* caller 直接指定 terminal；
+* v2 重放请求与历史请求不一致而仍然通过。
+
+因此不存在足以推翻本轮核心命题的 **Blocking defect**。
+
+---
+
+## 五、`first_*` terminal 名称是否构成错误
+
+不构成当前阻塞。
+
+实际失败 phase 是 `subsequent_action`，但 exact v26.209 Runner 对所有非-Correction Action parser/reference failure 使用冻结的：
+
+```text
+first_response_abi_invalid
+first_action_reference_invalid
+```
+
+而 Correction 有自己单独的 terminal 名称。v26.227 没有修改这套 v26.195/v26.209 taxonomy，而是把真实 phase 独立保存为 `subsequent_action`。报告也明确说明 terminal 名称不是对 phase 的断言。
+
+所以这里应解释为：
+
+```text
+terminal_kind = 冻结的非-Correction Action 失败类别
+phase         = 实际发生失败的 Runner 阶段
+```
+
+不能要求本轮新建 `subsequent_action_response_abi_invalid` terminal，否则反而会改变冻结 Registry 和实验条件。
+
+后续消费者必须保留 phase 字段，不能只根据 `first_*` 字符串推断失败发生在第一次 Action；这是解释边界，不是本轮修复缺陷。
+
+---
+
+## 六、Gate 判定
+
+| Gate                                    | 审计判断                 |
+| --------------------------------------- | -------------------- |
+| G0 external scope 与 v26.226 Freeze      | **PASS**             |
+| G1 exact 三条 Host failure source rows    | **PASS**             |
+| G2 完整 invocation-prefix 与历史请求/响应绑定      | **PASS**             |
+| G3 subsequent-Action parser Evidence    | **PASS**             |
+| G4 subsequent-Action reference Evidence | **PASS**             |
+| G5 派生 terminal 与五层非经验闭包                 | **PASS**             |
+| G6 八类直接负控                               | **PASS AS DECLARED** |
+| G7 zero-Provider、zero-empirical 边界      | **PASS**             |
+
+```text
+passed / failed = 8 / 0
+```
+
+该 Gate 划分与本轮命题一致，不需要再增加新的生产级、密码学式或全系统 Gate。
+
+---
+
+## 七、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+### Scope limitation
+
+第一，v26.227 只证明三条 Host failure 的本地、非经验 Evidence-domain constructibility。v26.226 历史状态仍是：
+
+```text
+156 complete
+36 failed
+exact 192-Job execution incomplete
+```
+
+第二，33 条 `unbound_provider_failure` 没有被本轮 replay、terminalize 或转化为经验行。它们仍是完成 192-Job evidence set 的下一个独立阻塞集合。
+
+第三，当前报告中的第二次构建是 empty-directory same-source build，不是本轮已经完成的 detached independent audit。报告已正确把 detached reconstruction 留给下一阶段，而没有把当前结果说成独立审计通过。
+
+第四，v26.217 的历史 `id(error)` authority 测试存在 allocator-address reuse，分别出现 7/8 和 0/8；v26.227 已将其单独报告，没有伪装成完整 adjacent-suite pass。该问题不参与本轮三个 parser/reference Host failure 的直接调用链，因此不阻断当前 Gate。
+
+### Future hardening
+
+当前负控按“是否发生拒绝”计数，没有为八项攻击逐项冻结实际异常 type、stage 和 reason。由于本轮只声明这些攻击未被接受，而没有声明原因级攻击归因完备，这不构成强制修订。下一轮独立审计可以独立记录实际拒绝位置，以增强诊断性，但不应据此推翻本轮结果。
+
+---
+
+## 八、当前允许与禁止的结论
+
+### 允许结论
+
+可以声明：
+
+> exact v26.226 ordinals 6、22、149 的公开响应序列能够在零 Provider 条件下，通过 exact v26.209 current-State 路径重放，并分别形成两个 subsequent-Action parser-rejection Evidence 和一个 subsequent-Action reference-failure Evidence；三者均可派生冻结 Registry terminal，并形成独立的五层非经验工件。
+
+可以继续声明：
+
+> v1 未明确绑定 replay request hash 与冻结 Provider descriptor request hash 的缺口，已在 v2 中关闭。
+
+### 仍然禁止
+
+不能声明：
+
+```text
+v26.226 已成为完整 192-Job 经验执行
+三个历史 Host failure 已被回填为 v26.226 Outcome
+33 个 Provider failure 已获得 source authority
+126 个 completed_qualified 可以进入经验估计
+q_first 或 q_bounded_correction 已可估计
+允许选择性 rerun、recovery 或再次 replacement
+允许 QA、Mapper、State、frequency、Contribution 或 VTDO
+允许在线执行、训练、发布或生产
+```
+
+---
+
+## 九、后续实验设计
+
+唯一合理的下一实验保持报告已经给出的范围：
+
+```text
+fresh_exact_v209_subsequent_action_parser_reference_
+evidence_domain_closure_independent_audit_only
+```
+
+### 独立审计应完成的最小证据链
+
+```text
+A0  Freeze
+    独立验证 v26.227 的 38 个文件、37 个 Manifest members、
+    3,715,790 bytes、Artifact Root、Decision 与 Transition
+
+A1  Detached source reconstruction
+    从 commit 78bd5edf524d899a16809c793af7cfa6c333683a
+    和 tree ea4ac2e38582144c03855e6991ce9fe49d0f3a3a
+    创建隔离源码快照并重建全部 38 个工件
+    不使用当前工作区代码作为结果 oracle
+
+A2  Independent source-row reconstruction
+    从 v26.226 实际文件独立重建 ordinals 6、22、149
+    并独立重建 33-row exclusion set
+    exact set equality，不读 v26.227 ControlAudit 作为真值
+
+A3  Independent eight-call replay
+    独立重建 8 个 request body
+    检验 request hash 8/8、response hash 8/8、
+    call order、success status、State 和 Candidate parents
+
+A4  Independent evidence and terminal derivation
+    重新调用 exact parser/reference validation
+    得到 parser/reference = 2/1
+    derived terminal = 3/3
+    phase = subsequent_action = 3/3
+
+A5  Independent five-layer reconstruction
+    重建三条 Raw -> Result -> Trace -> Outcome -> checkpoint
+    与保存的 15 个工件逐字节比较
+
+A6  Direct attacks and scope
+    重新执行八类攻击
+    accepted = 0
+    Provider calls、credential reads、empirical rows、
+    QA/Mapper/State/Contribution/VTDO = 0
+```
+
+### 通过后的边界
+
+即使该独立审计全部通过，结论也只能升级为：
+
+```text
+v26.227 exact three-Host-failure evidence-domain closure
+independently confirmed
+```
+
+仍然不能直接在线执行。随后第一个未闭合对象才变为：
+
+```text
+33 unbound Provider failures
+  -> source-authoritative typed failure interpretation
+  -> fresh recovery-population decision
+```
+
+该工作必须另起新的外部审计决定和新身份，不能把当前三个 Host failure 的修复扩展为对 33 条 Provider failure 的隐式授权。报告对这一边界的处理是正确的。
