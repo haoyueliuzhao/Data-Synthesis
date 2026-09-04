@@ -849,6 +849,105 @@ fresh execution authorization and ledger, and must first pass the repaired HTTP-
 tests. See
 `docs/finance_v26_224_fresh_exact_v209_parent_bound_exact_192_job_online_execution.md`.
 
+## Offline QA Semantic-Operation Depth-Three-Plus Constructibility And Coverage Preflight
+
+This QA side path consumed only
+`qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_only`. The exact
+16,720-byte external review is bound at SHA-256
+`944de938075e6cfd68caed049264f77ea096f6db6717b377cae114e1bbddc373`. It passes the
+predecessor source-authority/depth audit at its scoped meaning and identifies genuine semantic-
+depth-three constructibility as the next scientific gap. The exact 41-byte directive
+`参照审计，继续优化修订QA链路`, SHA-256
+`4b434b8f9fe07ff38b84d57726ace75e87b619bc2b539e9d5ac0e642b9976263`, consumes only
+this credential-free preflight.
+
+The decision is:
+
+```text
+qa_semantic_operation_depth_three_plus_constructibility_and_two_topology_
+coverage_preflight_passed_independent_audit_required
+```
+
+The 21-file, 99,487-byte predecessor and its 20-member, 96,276-byte Manifest revalidate. Its
+fixed-Fixture semantic-depth distribution `{0:1, 1:6, 2:1}`, maximum two, and zero depth-three-
+plus rows remain immutable. The new Freeze is
+`qa_semantic_depth_three_plus_predecessor_freeze:db271522b05893ddda674e5862c3fecfb3244e39e65690b9e70026f3d71d97c0`.
+
+Two experimental task types are constructed without modifying the registered eight-type Finance
+catalog. One serial Program computes a registered gross-margin ratio, converts it to percent, and
+derives its signed target gap. One branch-and-merge Program computes revenue and operating-income
+growth independently, merges them into a signed gap, and derives its absolute magnitude:
+
+```text
+case / topology                    nodes / edges   structural / semantic / workflow
+serial_margin_target_gap              6 / 5              4 / 3 / 5
+branch_merge_growth_gap                8 / 7              4 / 3 / 5
+
+semantic-depth distribution                           {3: 2}
+serial / branch-and-merge topology                       1 / 1
+output dependency closure                                2 / 2
+```
+
+The isolated Registry adds exactly `scale_ratio_percent`,
+`signed_percentage_point_gap`, and `absolute_percentage_point_gap`; each is semantic and has
+distinct executor and Oracle implementations. Its exact Binding is
+`qa_semantic_depth_three_plus_registry_binding:dd2f326284eee0540ab06f74bba098477fd5e2a5905c07dfc950b0869c0a1e01`.
+Both Programs reconstruct from their public skeleton, execute every node, pass independent Oracle
+replay, answer/schema/citation verification, and `CandidateQualityEvaluator` acceptance:
+
+```text
+source Programs / complete executions                  2 / 2
+independent node replays                                2 / 2
+answer schema / answer / citation correctness           2 / 2 / 2
+evaluator accepted / insufficient capability            2 / 0
+Provider calls / GPU Jobs                                0 / 0
+```
+
+Seven controls reject irrelevant lookup inflation, two semantic bypasses, cross-topology
+substitution, cross-metric Evidence substitution, a fully rehashed wrong answer and forged
+citation, and operation-role laundering. Attacks / rejected / accepted are `7 / 7 / 0`; all
+eight noncompensatory Gates pass.
+
+Principal identities are:
+
+- authorization / source / Registry:
+  `qa_semantic_depth_three_plus_authorization:b32091a966ed7988cc8052bfb31c6d505357601f79363665fdacdadb39edde48` /
+  `qa_semantic_depth_three_plus_source_binding:607405fd772bd0faad8ed6db9b5dcdd290c512681bbba304362d903f5e43e590` /
+  `qa_semantic_depth_three_plus_registry_binding:dd2f326284eee0540ab06f74bba098477fd5e2a5905c07dfc950b0869c0a1e01`;
+- coverage / negative / scope:
+  `qa_semantic_depth_three_plus_coverage_audit:7f182138bc361310abeb4f514d3e3f110d4812778b2545c871f5bb619219a7ad` /
+  `qa_semantic_depth_three_plus_negative_audit:5547ba2585819d27ebeef5a463505fbbb9e98af6aa2e7518b151dde5b5860eb9` /
+  `qa_semantic_depth_three_plus_scope_audit:f19a26ccef838caf747351a298d74ab331d30e5b901ca3df47783d692ee524fb`;
+- Gate / Decision / Transition / Report:
+  `qa_semantic_depth_three_plus_gate:1b04b36efc7f7488734414bc3ee72f9d47f7d75333c49b4a3d49fd9e94cc6289` /
+  `qa_semantic_depth_three_plus_decision:c9ff6528cc4ac7a6fcb6279d0a741dffbeac8b4a6fc3f1936cc073566f3dccff` /
+  `qa_semantic_depth_three_plus_transition:227a42807358b765fa3a9e00e575a9e3398b63e398b8dd63c9ad50f1f19a5dc4` /
+  `qa_semantic_depth_three_plus_report:ad6f07ab2d45e3ecc621c387596a091710308bcaef8bee4170d6a120e44521bc`;
+- Manifest / Root:
+  `qa_semantic_depth_three_plus_artifact_manifest:6a3e8126d2052cf0db8f39f0bba8bde65b5a5627222b864ad648f960514d36b0` /
+  `qa_semantic_depth_three_plus_artifact_root:7c7593cf2547588bebbff188e5df4c0816155f6ac1a13c9403cfcfc02f9b77ee`.
+
+The authoritative source commit/tree are `2267de7f59f1ee5ea36377f016c82ae8829697cf` /
+`b926794c0d1f196156603240c11fcf0b4e6618b8`. All five Git Blob and current-byte checks
+pass. The authoritative directory contains 21 files and 162,669 bytes; its Manifest binds twenty
+members and 159,547 bytes. A second build matches byte for byte. Focused tests pass 10/10, the
+selected adjacent QA partition passes 51/51, and focused PyCompile, Ruff check/format,
+no-import-follow Mypy, and package-wide Ruff pass.
+
+Preliminary v1 remains immutable but is superseded because focused Mypy found two local inference
+diagnostics. Authoritative v2 adds only explicit role-binding typing and direct payload-byte
+summation; all EvidenceBundle, Package, execution, verification, assessment, and depth bytes are
+unchanged.
+
+This proves deterministic depth-three constructibility for two exact topologies only. It does not
+establish Archive grounding, within-type parameter coverage, realistic difficulty, Benchmark
+distribution agreement, model-generated QA quality, or Release/training eligibility. The only
+permitted successor is
+`qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_independent_audit_only`.
+Provider/GPU execution, Archive selection, Benchmark estimation, online generation, catalog
+promotion, QA Release, VTDO, training, release, and production remain forbidden. See
+`docs/finance_qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight.md`.
+
 ## Offline QA Generator Source Authority And Depth-Metric Repair Preflight Independent Audit
 
 This QA side-path consumed only
