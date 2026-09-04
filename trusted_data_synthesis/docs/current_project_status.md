@@ -16,6 +16,110 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Reasoning-Bearing Fixed-Fixture Constructibility Preflight
+
+The exact 14,144-byte review at SHA-256
+`5a4462286fcaa14fac1e3c27bf4993a191780655286b94da4bd1f78e25785e4b` classifies the
+preceding Contract independent audit as `PASS_AS_SCOPED` and newly authorizes only
+`finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight_only`. The exact
+24-byte directive `参照审计继续实验` is bound at SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`. The old independent-
+audit Transition remains immutable at `next_stage_authorized=false`; the new review is a separate
+external-decision parent and is accurately described as a report-consistency audit rather than a
+new byte-level rebuild.
+
+The preflight freezes the 21-file, 81,938-byte independent audit and the 24-file, 784,989-byte
+Archive-grounding experiment. It then applies the already pre-registered selection rule before
+any reasoning outcome exists: F1 is the smallest `row_id` among the three constructible
+`mixed_sign` branch rows, and F2 is the distinct smallest `row_id` among the two
+`near_equal_growth` rows. The selected exact cases are HII 2014 Q2-to-Q4 at row
+`qa_archive_parameter_case_row:4fba9ca1c78dad48c2967342be05775c8da6ae4ed1544aba5d8c4e8fbedd1e62`
+and HII 2014 Q1-to-Q3 at row
+`qa_archive_parameter_case_row:08615e003521da447a78d55af5ac14f1b0cfc69e72eb650cfcb5c87deddcf39e`.
+No new Archive source is scanned and no saved trajectory outcome participates in selection.
+
+Each Fixture binds its exact EvidenceBundle, BindingSnapshot, Task, Answer Oracle Program,
+saved execution/verification/assessment parents, and its own five-obligation Critical Decision
+Graph:
+
+```text
+D0 -> D1 --\
+              -> D3 -> D4
+D0 -> D2 --/
+```
+
+For all ten steps the actual final-directory order is State, Envelope no-replace write, Envelope
+file fsync, directory fsync, durable content-addressed Receipt write and both Receipt fsyncs,
+disk reread/admission, Action dispatch, ActionExecution, Observation, Update, and next State.
+The dispatcher calls no Action before the exact Envelope and Receipt bytes and observed event
+order pass. There are 10/10 no-replace Envelopes, 10/10 file and directory fsync pairs, and 10/10
+dispatches after durable Receipt.
+
+D0 checks the exact entity, period, definition, unit, currency, and source relations. D1/D2
+compute the bound Decimal growth branches, D3 applies the source-Program sign and absolute-gap
+semantics, and D4 runs `PublicPlanCandidateExecutor`, the independent workflow verifier, and the
+quality evaluator after its preaction guard. All sixteen Program nodes execute and replay. The
+new execution/verification/assessment objects match the frozen source objects byte for byte,
+and both tasks pass answer schema, answer, citation, evaluator, QA-valid, trajectory-valid, and
+qualified admission.
+
+The directly derived per-Fixture metrics are:
+
+```text
+semantic operation / reasoning / Evidence integration depth  3 / 4 / 4
+correction depth / critical-decision coverage                  0 / 1.0
+```
+
+Reasoning depth is the longest Critical Decision Graph path; Evidence integration is the maximum
+number of distinct source Evidence leaves supporting an output-critical Claim. Neither tokens nor
+text length is used. Ten registered interventions and nine runtime/source/lineage/final-output
+attacks all reject, including missing commit, post-Action backfill, O_EXCL overwrite, fully
+rehashed Envelope/Receipt substitution, cross-Fixture Envelope, Action mismatch, future Evidence,
+Observation/next-State crossing, and invalid Final/citation. Attack Action callback calls and
+attack output writes are zero.
+
+The noncompensatory Gate passes 10/0. The decision is:
+
+```text
+finance_qa_vnext_two_frozen_archive_grounded_branch_fixtures_produce_
+durably_preaction_committed_observation_responsive_qualified_reasoning_
+trajectories_independent_audit_required
+```
+
+Principal identities are:
+
+- source / selection:
+  `qa_reasoning_fixed_fixture_source_binding:b8ddfa99934f0c9ae0105a1fffa3db3ad39f49ca1f1800e4069da37ba6ca41b7` /
+  `qa_reasoning_fixed_fixture_selection_contract:4e29a601937fd4a6fb7a51ad11eab73caafa3a4c4109841b92c9e2e9fd697560`;
+- execution / durable commitment:
+  `qa_reasoning_fixed_fixture_execution_audit:e78bc6a3d3e5d3ed825576e7a6989f5767934d5bc3e3a5cc6936e633ed20e2a9` /
+  `qa_reasoning_fixed_fixture_durable_commit_audit:6c5a82dee3b90941c4b2b340dd0b85c2c9c11a95fc6c29f4f46eed4d8a95300b`;
+- Gate / Decision / Transition:
+  `qa_reasoning_fixed_fixture_gate:25dd9ae4ba2f89950bdf0aa0bd337495d1d828ac89ccbdf66cc273d84c248e0c` /
+  `qa_reasoning_fixed_fixture_decision:8b8e45c6be8708b4d6f126d9c041a541b3878a3244ae20160aec5a511c01361a` /
+  `qa_reasoning_fixed_fixture_transition:f1752745d8d8220877cb9edbf2e19cb03626501795ca936613dc544d08ea1503`;
+- Report / Manifest / Root:
+  `qa_reasoning_fixed_fixture_report:ef716f415f93b5e7b310e01fea7cb437fdfa98b89be1a5d2913dee154aed2fdb` /
+  `qa_reasoning_fixed_fixture_artifact_manifest:1f8f7bd9223999e62509b312579e41eb244d247bf7c49a99f9b3e79e469450f2` /
+  `qa_reasoning_fixed_fixture_artifact_root:318c439475eab4876768088b1e0c9c73458cfb3707fd2be2b7f653b61a529f43`.
+
+The exact source commit/tree are `56142a0c04bbd1f6391958bd58355cd61edf9290` /
+`b3b833c2c342c6ed5702d203d5558d387ed9fd6b`. The 88-file, 217,567-byte formal directory
+binds 87 Manifest members and 201,416 bytes and reproduces byte for byte in a second complete
+build. Focused tests pass 7/7; the selected adjacent QA partition passes 78/78. Focused
+PyCompile, Ruff check/format, and no-import-follow Mypy pass. Package-wide Ruff retains one
+pre-existing import-order diagnostic in an unrelated v26 Provider-recovery model.
+
+This proves only two deterministic, different fixed-task trajectories. Model Envelope generation,
+same-task multi-trajectory quotient diversity, task/depth distribution coverage, QA Release, and
+training utility remain unmeasured. The only prospective successor is the exact credential-free
+fixed-Fixture independent audit, but `next_stage_authorized=false`; it requires a new external
+decision. Provider/GPU work, Archive expansion, task/Operation registration, same-task
+multi-trajectory construction, old-mainline restoration, Mapper, State, Contribution, VTDO,
+training, release, and production remain forbidden. See
+`docs/finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight.md`.
+
+
 ## QA vNext Reasoning-Bearing Contract Freeze Independent Audit
 
 The only authorized successor to the scientific-object Contract freeze is complete. The exact
@@ -54,10 +158,11 @@ rebuilds byte for byte; its Manifest binds twenty members and 78,675 bytes. Focu
 plus audit tests pass 22/22, and the adjacent QA partition passes 112/112.
 
 This remains synthetic Schema-conformance evidence, not a real QA trajectory or Runtime durable
-pre-action commitment. The prospective fixed-Fixture experiment is not authorized:
-`next_stage_authorized=false`. Archive Evidence, Provider/GPU, online calibration, old-mainline
-restoration, QA Release, Mapper, State, Contribution, VTDO, training, release, and production
-remain forbidden. See
+pre-action commitment. Its historical Transition remains immutable at
+`next_stage_authorized=false`; a later external decision authorized and the section above completed
+the separate fixed-Fixture preflight. Provider/GPU, online calibration, old-mainline restoration,
+QA Release, Mapper, State, Contribution, VTDO, training, release, and production remain forbidden.
+See
 `docs/finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_independent_audit.md`.
 
 

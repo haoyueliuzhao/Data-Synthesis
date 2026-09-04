@@ -1,0 +1,454 @@
+# 本轮 QA 链路实验审计结论
+
+```text
+AUDIT_OBJECT
+  = Finance QA vNext Reasoning-Bearing Scientific Object
+    And Contract Freeze Independent Audit
+
+AUDIT_DECISION
+  = PASS_AS_SCOPED
+
+REPORTED_GATE
+  = 8 PASS / 0 FAIL
+
+BLOCKING_DEFECT
+  = NONE_FOUND
+
+MANDATORY_REVISION
+  = NONE
+
+FIRST_UNCLOSED_SCIENTIFIC_OBJECT
+  = REAL_FIXED_FIXTURE_REASONING_TRAJECTORY_AND_RUNTIME_PREACTION_COMMITMENT
+
+OLD_MAINLINE
+  = REMAINS_PAUSED
+
+AUTHORIZED_SUCCESSOR
+  = finance_qa_vnext_reasoning_bearing_fixed_fixture_
+    constructibility_preflight_only
+```
+
+本轮独立审计可以按声明范围通过。它已经完成上一轮要求的源码、工件、Contract、科学对象、父关系、语义派生和直接反例的独立确认，没有发现能够直接推翻本轮声明的具体反例。与此同时，它没有把 Schema 一致性越级解释为真实金融推理轨迹，这一边界处理是正确的。
+
+本次附件提供的是实验报告，而不是对应源码与 21 文件形式工件目录。因此，我这里完成的是**实验声明与报告证据的一致性审计**，没有在本会话中第二次实际执行 Git detached rebuild 或重算所有哈希。这个证据访问边界不构成本轮实验的 Blocking defect，但不能将我的审计再表述成一次新的字节级复验。
+
+---
+
+## 一、本轮明确检验的命题
+
+本轮不是继续设计 Contract，也不是执行真实 QA，而是在检验：
+
+> 前一轮冻结的十个 reasoning-bearing Contract、十三个科学对象、公开推理父链、Validity 分解、Target authority、深度定义和 A1–A10 反例，能否脱离候选自评 helper，从精确源码与 primitive synthetic inputs 中独立重建并复现。
+
+这个命题被正确限制在：
+
+```text
+scientific-object definition
+synthetic Schema conformance
+parent-relation conformance
+direct counterexample rejection
+candidate self-audit non-oracle
+```
+
+不包含：
+
+```text
+真实金融 QA 推理
+Runtime 持久化时序
+模型生成能力
+同一任务多轨迹
+QA Release
+VTDO State
+```
+
+报告明确保持了这些限制，并记录 Provider、Archive Evidence、fixed-Fixture execution、模型响应和经验行均为零。
+
+---
+
+## 二、实现是否真实完成了本轮对象
+
+### 1. 候选目录与前驱负结果冻结：通过
+
+报告记录：
+
+```text
+candidate files / bytes       30 / 77,840
+Manifest members / bytes      29 / 73,415
+path / SHA-256 / bytes        全部匹配
+candidate source members      4 / 4
+```
+
+同时，前驱 Archive constructibility 负结果保持为：
+
+```text
+Gate      7 PASS / 1 FAIL
+blocker   authoritative_gross_margin_target_evidence_absent
+```
+
+此前的三个范围澄清也没有被修改：
+
+* target 缺失只限于当前 FinQA table-cell adapter 域；
+* G6 coverage 只限于九个 branch cases；
+* semantic-operation depth 不是 reasoning depth。
+
+因此，本轮没有通过重写前驱负结果来制造正结论。
+
+### 2. Detached rebuild：通过
+
+候选构建器从精确 commit 的 detached `trusted_data_synthesis/src` 快照执行，环境只保留运行所需变量；保存目录与重建目录在路径、SHA-256、字节数和实际字节上均为 30/30，且没有凭据访问或 Provider 调用。Detached builder 只用于可复现性，不提供独立语义 Gate 的结果。
+
+### 3. 独立实现与候选自评隔离：通过
+
+独立审计实现绑定了六个自身源码成员，并报告：
+
+```text
+candidate helper imports   0
+candidate semantic calls   0
+candidate oracle calls     0
+```
+
+它拒绝从候选 reasoning-contract package 导入可执行逻辑；候选包只作为 detached rebuild 的目标出现。
+
+这里需要准确理解“独立”：
+
+* 它仍然读取候选 `models.py`，因为该文件正是被审计的 Contract 定义；
+* 它不调用候选 builder、candidate Conformance Audit 或攻击 helper 来决定结果。
+
+因此，这是**相对于候选自评逻辑的独立审计**，而不是脱离被审 Contract 的外部规范充分性证明。这个限制与本轮命题一致，不构成缺陷。
+
+### 4. 十个 Contract 与十三个对象：通过
+
+十个 Contract descriptor 均由候选源码字段域与独立声明的科学不变量重新构造，10/10 的 canonical bytes 和 identities 匹配。报告同时确认：
+
+* Answer Oracle 不规定唯一 reasoning route；
+* Critical Decision obligations 要求直接 intervention；
+* 不要求或持久化 private chain-of-thought；
+* coverage matrix 不是实际覆盖分布。
+
+十三个科学对象也被按精确分母重新构造，13/13 匹配。Target authority 和 coverage matrix 被正确作为 Contract-level inputs，而没有虚增到十三个对象分母中。
+
+### 5. 推理父链：通过，但仅限对象层
+
+独立确认的父链为：
+
+```text
+PublicReasoningState_t
+  -> ReasoningActionEnvelope_t
+  -> ActionExecution_t
+  -> PublicObservation_t
+  -> ObservationUpdate_t
+  -> PublicReasoningState_(t+1)
+```
+
+它检查了 State、可见 Evidence/Claim references、selected/inner Action、执行父对象、Observation hash、Claim support、next-State 和 required-decision coverage。
+
+报告也明确没有声称：
+
+```text
+Envelope 已经以文件形式持久化
+fsync 已经发生
+持久化发生在真实 Action dispatch 之前
+```
+
+因此，本轮只证明 **Schema parent order**，没有偷换成 **Runtime temporal commitment**。
+
+---
+
+## 三、Validity、Target 和深度审计
+
+Validity 仍是不可补偿的：
+
+$$
+V_{\mathrm{QA}}
+=
+V_{\mathrm{source}}
+\land V_{\mathrm{answer}}
+\land V_{\mathrm{citation}},
+$$
+
+$$
+V_{\mathrm{trajectory}}
+=
+V_{\mathrm{preaction}}
+\land V_{\mathrm{grounding}}
+\land V_{\mathrm{reasoning\text{-}action}}
+\land V_{\mathrm{observation\text{-}update}}
+\land V_{\mathrm{critical\ coverage}},
+$$
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{QA}}\land V_{\mathrm{trajectory}}.
+$$
+
+合成 conformance row 的 `true / true / true` 被正确标记为 Schema value，而非测得的 QA outcome。
+
+Target modality 仍然严格分为：
+
+```text
+allowed:
+  management_target
+  company_guidance
+
+forbidden:
+  observed_actual
+  analyst_consensus
+  peer_benchmark
+  arbitrary_constant
+  derived_margin
+```
+
+没有把 observed actual 重新标记成 target。
+
+五个深度/覆盖值也保持非互换：
+
+```text
+semantic_operation_depth       3
+reasoning_depth                 1
+evidence_integration_depth      2
+correction_depth                0
+critical_decision_coverage    1.0
+```
+
+其中 `semantic_operation_depth=3` 仍只是合成 Answer-Program primitive；reasoning depth 由 Critical Decision Graph 重新派生，token 数和文本长度没有被当成深度 authority。Coverage matrix 仍为未来设计，`coverage_measured=false`。
+
+这一部分没有越级结论。
+
+---
+
+## 四、直接反例检查
+
+独立实现重新构造并重哈希了十个攻击：
+
+```text
+A1   post-action reasoning backfill
+A2   generic rationale without Evidence
+A3   cross-State reasoning
+A4   selected/executed Action mismatch
+A5   future Evidence reference
+A6   Observation/Claim update mismatch
+A7   actual margin relabelled as target
+A8   correct Final with missing decision obligation
+A9   valid reasoning with invalid Final/citation
+A10  paraphrase-only quotient duplication
+```
+
+结果为：
+
+```text
+attacks / rejected / accepted       10 / 10 / 0
+rehashes                                   10
+candidate name/stage matches          10 / 10
+Provider calls                              0
+```
+
+且只有在独立拒绝完成之后，才与候选攻击名称和拒绝阶段比较。
+
+在报告证据范围内，没有发现以下直接反例：
+
+* Action 完成后仍能补写合法 reasoning parent；
+* reasoning 选择的 Action 与实际 Action 不一致但仍通过；
+* 当前 State 可以引用未来 Evidence；
+* 正确答案可以补偿缺失的关键决策；
+* 有效 reasoning 可以补偿错误答案或引用；
+* 只改自然语言措辞可以形成新 quotient State；
+* 候选自评结果被直接拿来作为独立结果。
+
+因此：
+
+```text
+BLOCKING_DEFECT = NONE_FOUND
+```
+
+是合理判定。
+
+---
+
+## 五、Gate 判定
+
+本轮八个非补偿 Gate 为：
+
+```text
+A0 exact authority and scope Freeze                         PASS
+A1 detached exact-source and directory reproducibility      PASS
+A2 ten Contract descriptors independently reconstructed     PASS
+A3 thirteen conformance objects independently reconstructed PASS
+A4 exact parent order and cross-object relations            PASS
+A5 validity, target, depth, coverage derivation              PASS
+A6 A1-A10 independently reject                              PASS
+A7 candidate self-audit non-oracle and zero external scope  PASS
+```
+
+总结果：
+
+```text
+passed / failed = 8 / 0
+```
+
+而且候选 Conformance、Gate、Report、Decision 和 Transition 只在独立对象与攻击完成后用于最终比较，没有作为结果 Oracle。
+
+所以本轮正式判定应为：
+
+```text
+PASS_AS_SCOPED
+```
+
+不需要回写或重做当前实验。
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有证据要求修改本轮 Contract、对象定义、Gate、Decision、Manifest 或 Root。
+
+### Scope limitation
+
+只有以下三项，而且报告已经主动限定：
+
+1. **Synthetic-only**：只确认合成 Schema conformance，没有真实金融任务。
+2. **Parent-order-only**：没有 durable commit-before-dispatch 的 Runtime 证据。
+3. **Declared source authority**：候选四源码成员的 authority 没有被解释为完整 transitive import 或 Runtime environment closure。
+
+这些问题保持未评估即可，不能反向否定本轮。
+
+### Future hardening
+
+唯一当前相关的 hardening 是把已确认的对象 Contract 放到真实固定 Fixture 中，检验其是否能形成真正的、时间有序的公开推理轨迹。无需再增加新 Contract，也不应先扩展到在线模型、多轨迹或 VTDO。
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 允许
+
+```text
+十个 reasoning-bearing Contract 已被独立重建
+十三个科学对象及其精确分母已被独立重建
+Answer Oracle 与 Critical Decision Graph 已分离
+公开 reasoning 被规定为 pre-action object
+Observation 必须支持 Claim update 与 next State
+QA validity 与 trajectory validity 不可补偿
+Program depth 与 reasoning depth 已明确分离
+A1-A10 在独立实现中全部拒绝
+候选 Contract freeze 的 synthetic Schema scope 已关闭
+```
+
+### 禁止
+
+```text
+已经得到真实金融 reasoning-bearing trajectory
+已经证明 Runtime 在 Action 前持久化 reasoning
+模型能够生成 ReasoningActionEnvelope
+reasoning_depth=1 代表真实任务推理深度
+两个有效非同构轨迹已经存在
+同一任务的 pi(z | x) 已非退化
+QA 类型覆盖已经充分
+可以恢复旧实验主链
+可以进入 Mapper / State / Contribution / VTDO
+```
+
+---
+
+# 八、后续实验授权
+
+本轮报告自身记录的：
+
+```text
+next_stage_authorized=false
+```
+
+是其生成时的历史状态，不应修改。它要求新的外部审计决定后，才可进入：
+
+```text
+finance_qa_vnext_reasoning_bearing_fixed_fixture_
+constructibility_preflight_only
+```
+
+
+
+本次外部审计判定为 `PASS_AS_SCOPED`，因此**可以新授权这一唯一后继实验**。形式实现时，应把本次审计文本作为新的 external-decision parent，而不是改写当前独立审计的 Transition。
+
+## 授权范围
+
+```text
+AUTHORIZED
+  finance_qa_vnext_reasoning_bearing_fixed_fixture_
+  constructibility_preflight_only
+
+Provider calls            0
+credential lookups        0
+GPU Jobs                  0
+new task registrations    0
+new Operation registrations 0
+Archive expansion         0
+same-task multitrajectory 0
+QA Release                0
+VTDO rows                 0
+```
+
+该实验只能：
+
+1. 从已经冻结并验证的 branch cases 中，按预注册规则选择两个 exact Fixtures；
+2. 绑定其 exact Evidence、Task、Answer Oracle、Program 和 Critical Decision Graph；
+3. 实际实例化
+   `State -> Envelope -> Action -> Observation -> Update -> State`；
+4. 提供可重放的 **durable pre-action commitment** 证据，即 Envelope 必须在 Action dispatch 前完成不可替换的持久化；
+5. 独立派生 `V_QA`、`V_trajectory`、`V_qualified` 与五个深度/覆盖指标；
+6. 运行与真实 Fixture 直接相关的最小反例；
+7. 最多得出“两个固定 Fixture 的 deterministic reasoning-bearing trajectory constructibility”结论。
+
+不得在这一步：
+
+* 修复或扩展 `registered_margin_target_gap`；
+* 扫描新的 Archive source；
+* 引入 Provider 模型；
+* 构造同一任务的两条 quotient trajectories；
+* 恢复旧主链；
+* 推进 VTDO。
+
+---
+
+# 九、最终审计决定
+
+```text
+CURRENT CLAIM
+  = independent confirmation of reasoning-bearing Contract freeze
+
+IMPLEMENTATION STATUS
+  = COMPLETED AS REPORTED
+
+DIRECT COUNTEREXAMPLE
+  = NONE FOUND
+
+GATE
+  = PASS, 8 / 0
+
+BLOCKING DEFECT
+  = NONE
+
+MANDATORY REVISION
+  = NONE
+
+AUTHORIZED CONCLUSION
+  = scientific-object and synthetic Schema-conformance closure
+
+UNEVALUATED SCOPE
+  = real Fixture, durable Runtime ordering, model reachability,
+    same-x multitrajectory, QA Release, VTDO
+
+NEXT STEP
+  = fixed-Fixture constructibility preflight MAY PROCEED
+    under a new narrow external authorization
+
+OLD MAINLINE
+  = REMAINS PAUSED
+```
+
+当前不需要继续修改 Contract freeze。真正的首个未闭合点已经从“是否有合理的推理对象定义”推进到了“这些对象能否在真实固定金融任务上形成先于行动持久化、受 Observation 驱动且最终有效的轨迹”。这正是下一轮应当单独检验的对象。
