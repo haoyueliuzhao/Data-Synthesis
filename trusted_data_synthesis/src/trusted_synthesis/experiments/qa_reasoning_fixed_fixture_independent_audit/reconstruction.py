@@ -349,6 +349,116 @@ def _final_admission(
         _fail("replay.final_answer_citation", "Final answer or citation differs")
 
 
+def _admit_branch_merge(
+    row: Mapping[str, Any],
+    branch: Mapping[str, Decimal],
+    signed_gap: Decimal,
+    absolute_gap: Decimal,
+) -> None:
+    expected_signed = branch["revenue_growth"] - branch["income_growth"]
+    if (
+        signed_gap != expected_signed
+        or absolute_gap != abs(expected_signed)
+        or absolute_gap != Decimal(str(row["absolute_growth_spread"]))
+    ):
+        _fail("admission.branch_merge", "branch merge result differs")
+
+
+def _admit_preaction_candidate(
+    expected_envelope: Mapping[str, Any],
+    expected_receipt: Mapping[str, Any],
+    candidate_envelope: Mapping[str, Any],
+    candidate_receipt: Mapping[str, Any],
+) -> None:
+    required_receipt_fields = {
+        "envelope_file_fsync_event",
+        "envelope_directory_fsync_event",
+        "receipt_file_fsync_event",
+        "receipt_directory_fsync_event",
+        "dispatch_event",
+        "preaction_commit_sequence",
+        "execution_sequence",
+        "envelope_id",
+        "envelope_sha256",
+        "envelope_byte_count",
+        "receipt_id",
+    }
+    if not required_receipt_fields <= set(candidate_receipt):
+        _fail("admission.durable_receipt", "durable Receipt is absent or incomplete")
+    events = (
+        candidate_receipt["envelope_file_fsync_event"],
+        candidate_receipt["envelope_directory_fsync_event"],
+        candidate_receipt["receipt_file_fsync_event"],
+        candidate_receipt["receipt_directory_fsync_event"],
+        candidate_receipt["dispatch_event"],
+    )
+    if (
+        tuple(sorted(events)) != events
+        or candidate_receipt["preaction_commit_sequence"] >= candidate_receipt["execution_sequence"]
+    ):
+        _fail("admission.preaction_order", "candidate is not durably pre-Action")
+    envelope_bytes = canonical_json_bytes(candidate_envelope)
+    if (
+        candidate_receipt["envelope_id"] != candidate_envelope["envelope_id"]
+        or candidate_receipt["envelope_sha256"] != _sha(envelope_bytes)
+        or candidate_receipt["envelope_byte_count"] != len(envelope_bytes)
+        or candidate_receipt["receipt_id"]
+        != strict_canonical_hash(
+            {key: value for key, value in candidate_receipt.items() if key != "receipt_id"},
+            prefix="durable_preaction_commit_receipt:",
+        )
+    ):
+        _fail("admission.preaction_identity", "candidate Envelope or Receipt identity differs")
+    if canonical_json_bytes(candidate_envelope) != canonical_json_bytes(
+        expected_envelope
+    ) or canonical_json_bytes(candidate_receipt) != canonical_json_bytes(expected_receipt):
+        _fail("admission.replay_owned_bytes", "candidate pre-Action bytes differ")
+
+
+def _admit_grounding(state: Mapping[str, Any], envelope: Mapping[str, Any]) -> None:
+    if (
+        envelope["state_id"] != state["state_id"]
+        or envelope["selected_action_id"] not in state["available_action_ids"]
+        or not set(envelope["evidence_refs"]) <= set(state["available_evidence_refs"])
+        or not set(envelope["claim_refs"]) <= set(state["verified_claim_refs"])
+    ):
+        _fail("admission.current_state_grounding", "Envelope is not grounded in current State")
+
+
+def _admit_action_lineage(
+    state: Mapping[str, Any],
+    envelope: Mapping[str, Any],
+    execution: Mapping[str, Any],
+) -> None:
+    _admit_grounding(state, envelope)
+    if (
+        execution["task_instance_id"] != state["task_instance_id"]
+        or execution["parent_envelope_id"] != envelope["envelope_id"]
+        or execution["state_id"] != state["state_id"]
+        or execution["action_id"] != envelope["selected_action_id"]
+    ):
+        _fail("admission.action_lineage", "selected and executed Action differ")
+
+
+def _admit_observation_update_lineage(
+    execution: Mapping[str, Any],
+    observation: Mapping[str, Any],
+    update: Mapping[str, Any],
+    next_state: Mapping[str, Any],
+) -> None:
+    if (
+        observation["task_instance_id"] != execution["task_instance_id"]
+        or observation["parent_execution_id"] != execution["execution_id"]
+        or observation["state_id"] != execution["state_id"]
+        or update["task_instance_id"] != execution["task_instance_id"]
+        or update["action_execution_id"] != execution["execution_id"]
+        or update["observation_id"] != observation["observation_id"]
+        or update["next_state_id"] != next_state["state_id"]
+        or next_state["task_instance_id"] != execution["task_instance_id"]
+    ):
+        _fail("admission.observation_update_lineage", "Observation, Update, or State crosses")
+
+
 def _runtime_object(
     candidate_files: Mapping[str, bytes], relative: str, expected: Mapping[str, Any]
 ) -> dict[str, Any]:
@@ -1027,13 +1137,30 @@ def interventions_and_attacks(
             models.INTERVENTION_NAMES[1],
             partial(missing.__getitem__, "revenue_later"),
         )
+        valid_branch = {
+            "revenue_growth": _growth(role_items["revenue_earlier"], role_items["revenue_later"]),
+            "income_growth": _growth(role_items["income_earlier"], role_items["income_later"]),
+        }
+        expected_signed = valid_branch["revenue_growth"] - valid_branch["income_growth"]
         intervention(
             models.INTERVENTION_NAMES[2],
-            partial(_fail, "intervention.missing_income_branch", "income Claim absent"),
+            partial(
+                _admit_branch_merge,
+                fixture["row"],
+                {"revenue_growth": valid_branch["revenue_growth"]},
+                expected_signed,
+                abs(expected_signed),
+            ),
         )
         intervention(
             models.INTERVENTION_NAMES[3],
-            partial(_fail, "intervention.branch_sign", "branch sign changes output"),
+            partial(
+                _admit_branch_merge,
+                fixture["row"],
+                valid_branch,
+                -expected_signed,
+                abs(expected_signed),
+            ),
         )
         final = fixture["core"]["execution"].trajectory.final_answer
         intervention(
@@ -1087,17 +1214,30 @@ def interventions_and_attacks(
 
     envelope = first["envelopes"][0]
     receipt = first["receipts"][0]
+    state = first["states"][0]
+    execution = first["executions"][0]
+    observation = first["observations"][0]
+    update = first["updates"][0]
 
-    def admit_disk(envelope_bytes: bytes, receipt_bytes: bytes) -> None:
-        if envelope_bytes != canonical_json_bytes(envelope):
-            _fail("attack.expected_envelope_bytes", "Envelope disk bytes differ")
-        if receipt_bytes != canonical_json_bytes(receipt):
-            _fail("attack.expected_receipt_bytes", "Receipt disk bytes differ")
-
-    attack(models.ATTACK_NAMES[0], lambda: admit_disk(b"", b""))
+    attack(
+        models.ATTACK_NAMES[0],
+        partial(_admit_preaction_candidate, envelope, receipt, envelope, {}),
+    )
+    late_receipt = dict(receipt)
+    late_receipt["preaction_commit_sequence"] = late_receipt["execution_sequence"]
+    late_receipt["receipt_id"] = strict_canonical_hash(
+        {key: value for key, value in late_receipt.items() if key != "receipt_id"},
+        prefix="durable_preaction_commit_receipt:",
+    )
     attack(
         models.ATTACK_NAMES[1],
-        lambda: _fail("attack.preaction_sequence", "reasoning commit is post-Action"),
+        partial(
+            _admit_preaction_candidate,
+            envelope,
+            receipt,
+            envelope,
+            late_receipt,
+        ),
     )
     with TemporaryDirectory(prefix="qa-fixed-fixture-negative-") as temporary:
         path = Path(temporary) / "envelope.json"
@@ -1136,33 +1276,58 @@ def interventions_and_attacks(
     )
     attack(
         models.ATTACK_NAMES[3],
-        lambda: admit_disk(
-            canonical_json_bytes(forged_envelope), canonical_json_bytes(forged_receipt)
+        partial(
+            _admit_preaction_candidate,
+            envelope,
+            receipt,
+            forged_envelope,
+            forged_receipt,
         ),
     )
     attack(
         models.ATTACK_NAMES[4],
-        lambda: (
-            _fail("attack.cross_fixture", "cross-Fixture Envelope differs")
-            if second["envelopes"][0] != envelope
-            else None
+        partial(
+            _admit_preaction_candidate,
+            envelope,
+            receipt,
+            second["envelopes"][0],
+            second["receipts"][0],
         ),
+    )
+    mismatched_execution = dict(execution)
+    mismatched_execution["action_id"] = envelope["candidate_action_ids"][1]
+    mismatched_execution["execution_id"] = strict_canonical_hash(
+        {key: value for key, value in mismatched_execution.items() if key != "execution_id"},
+        prefix="reasoning_action_execution:",
     )
     attack(
         models.ATTACK_NAMES[5],
-        lambda: _fail("attack.action_mismatch", "selected and executed Action differ"),
+        partial(_admit_action_lineage, state, envelope, mismatched_execution),
+    )
+    future_envelope = dict(envelope)
+    future_envelope["evidence_refs"] = (*future_envelope["evidence_refs"], "evidence:future")
+    future_envelope["envelope_id"] = strict_canonical_hash(
+        {key: value for key, value in future_envelope.items() if key != "envelope_id"},
+        prefix="reasoning_action_envelope:",
     )
     attack(
         models.ATTACK_NAMES[6],
-        lambda: _fail("attack.visible_evidence", "future Evidence is not visible"),
+        partial(_admit_grounding, state, future_envelope),
     )
     attack(
         models.ATTACK_NAMES[7],
-        lambda: _fail("attack.observation_state", "Observation and next State cross"),
+        partial(
+            _admit_observation_update_lineage,
+            execution,
+            observation,
+            update,
+            second["states"][1],
+        ),
     )
     attack(
         models.ATTACK_NAMES[8],
-        lambda: _final_admission(
+        partial(
+            _final_admission,
             {"value": "0", "unit": "percentage_points"},
             ("evidence:wrong",),
             first["row"],
