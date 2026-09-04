@@ -15,6 +15,60 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.234 Exact 33-Job Recovery Online Execution Postrun Independent Audit
+
+Finance v26.234 consumed only the newly authorized zero-Provider postrun independent audit. The
+exact 17,401-byte v26.233 review is bound at SHA-256
+`f9331fb9310c5b29f5af5df488c10d682b8f6725c29b035eb01d744c0e08c9c0`; the 42-byte
+directive `参照审计报告开展后续实验修订` is bound at SHA-256
+`e3adc8d65f07c54893d36828d8c12bdca9e83ab8a07fb94e40a259a2a18bcf73`. The decision is:
+
+```text
+v26_233_exact_33_job_recovery_attempt_execution_independently_confirmed_
+terminal_evidence_set_incomplete
+```
+
+The audit resolves the exact v26.233 source commit/tree and its two committed/current source
+members, then verifies the actual 80,483-byte execution Manifest and all 380 members byte for
+byte. It independently reconstructs the 33 v26.229 source rows, 55 local historical public
+projections, and 33 captured failed-request handoffs. The first fresh request hash, byte count,
+validation certificate, and pre-transport receipt match for all 33 Jobs; historical-prefix
+Provider reissues remain zero.
+
+All 64 fresh Provider descriptors and 192 metadata artifacts are independently parsed from the
+actual files. The partition is 47 successes and seventeen Provider errors, with 464,481 input and
+637,076 output tokens and zero orphan files. The audit independently derives eight
+`completed_qualified`, one `completed_invalid`, and seven `final_response_abi_invalid` Decisions
+from strict Evidence plus the actual v26.195 Registry, and reconstructs all eighty Raw/Result/
+Trace/Outcome/checkpoint bytes, namespaces, and parents. The remaining seventeen records end at
+their last fresh Provider call with no later descriptor: sixteen
+`ReasoningBudgetExhaustedError` and one `JSONDecodeError`. They remain nonterminal
+`unbound_provider_failure` evidence with zero five-layer or empirical admission.
+
+Only after those independent reconstructions does v26.234 rebuild the v26.233 Summary and
+Transition; both match the saved bytes. The noncompensatory Gate passes 7/0. Provider calls,
+credential lookups, retries, v26.226 writes, historical terminal backfills, empirical rows and
+estimates are zero. The authoritative Decision / Report / Manifest / Root are:
+
+- `finance_v26_234_postrun_independent_audit_decision:972e0e0a46b38508eb0e7528a796724a5f204b60ca4bcd53aed2d5fc6d209818`;
+- `finance_v26_234_postrun_independent_audit_report:e73e4477310135c6244f980166875dd50e0120cd9ddf6e7f0642ff198e3901fd`;
+- `finance_v26_234_artifact_manifest:290028fd3341c3b1800c1f08ccb8b62a203a860707c0ee87e0aad72f18d1bcfb`;
+- `finance_v26_234_artifact_root:0739bc9fa30e25b34d5a089b9ddb3ae0a0f4303a201598a04702152bb5198537`.
+
+The source commit/tree are `515324a0ed38fea288ba934725a0671062b663ff` /
+`8b22a4e8d9251c894af2daac61f69e8a17a7ddf7`. The sixteen-file, 215,941-byte formal
+directory rebuilds byte for byte; its Manifest binds fifteen members and 213,237 bytes. Focused
+tests pass 9/9, and the adjacent v26.229-v26.234 partition passes 56/56. Focused PyCompile, Ruff
+check/format, and no-import-follow Mypy pass. Package-wide Ruff retains one pre-existing import-
+order diagnostic in the immutable v26.233 model source, which v26.234 does not rewrite.
+
+The attempted Recovery population is accepted as closed, but the terminalized scientific
+denominator remains incomplete at 16/33. No further experiment is authorized without a new audit
+decision. Provider execution, failed-Job retry, another Recovery run, historical mutation or
+backfill, empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_234_fresh_exact_v209_unbound_provider_failure_recovery_online_execution_postrun_independent_audit.md`.
+
 ## v26.233 Exact 33-Job Provider-Failure Recovery Online Execution
 
 Finance v26.233 consumed the exact v26.232 authorization once and executed only the frozen

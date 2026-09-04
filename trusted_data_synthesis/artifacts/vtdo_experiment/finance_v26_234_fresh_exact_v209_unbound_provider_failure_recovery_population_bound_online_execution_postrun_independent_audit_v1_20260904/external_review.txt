@@ -1,0 +1,458 @@
+# Finance v26.233 主链实验审计结论
+
+```text
+AUDIT_DECISION                         = PASS_AS_SCOPED
+BLOCKING_DEFECT                        = NONE_FOUND
+MANDATORY_REVISION                     = NONE
+
+RECOVERY_EXECUTION_ATTEMPT_POPULATION  = CLOSED_33_OF_33
+RECOVERY_TERMINAL_EVIDENCE_SET         = INCOMPLETE_16_OF_33
+RECOVERY_FAILURE_RECORDS               = 17_OF_33
+HISTORICAL_PREFIX_PROVIDER_REISSUES    = 0
+CAPTURED_FAILED_REQUEST_REISSUES       = 33_OF_33_EXACTLY_ONCE
+HISTORICAL_BACKFILL                    = 0
+EMPIRICAL_ESTIMATE                     = NOT_MATERIALIZED
+
+CURRENT_GATE                           = PASS_FOR_POSTRUN_AUDIT_ADMISSION
+SCIENTIFIC_DENOMINATOR_STATUS          = INCOMPLETE
+NEXT_UNCLOSED_GATE                     = POSTRUN_INDEPENDENT_AUDIT
+```
+
+**本轮可以按其声明范围通过。**
+
+但必须准确区分两个结论：
+
+> **通过的是“33 个 Recovery Job 均被一次性执行并被完整分流为 terminal record 或 failure record”。**
+
+而不是：
+
+> **“33 个 Recovery Job 均已产生终止证据，或原 192-Job 经验分母已经闭合”。**
+
+v26.233 的 `execution_status=incomplete` 是正确状态，不应因进程正常结束、33/33 均被调度，或其中出现 8 个 `completed_qualified` 而改写为经验测量完成。
+
+---
+
+## 一、本轮声明的对象
+
+本轮实际检验的是：
+
+```text
+exact v26.232 one-time authorization
+  -> exact 33-Job Recovery Population
+  -> local replay of 55 successful historical projections
+  -> exact captured failed request as first fresh Provider request
+  -> unchanged v26.209 Runtime continuation
+  -> either:
+       source-derived terminal + five-layer evidence
+     or
+       fresh unbound-provider-failure record
+  -> no retry / no backfill / no estimator
+```
+
+这与上一轮授权链一致。v26.232 的关键修复是先校验 predecessor Manifest 自身的实际字节长度和 SHA-256，再解析 Manifest 并校验所有成员；它只签发一个新的、尚未消费的 Recovery 授权，且当时没有 Provider 调用或 Recovery 执行。 
+
+因此，本轮没有重新打开整个 192-Job 条件，也没有获得任意重跑权；它只消费已经冻结的 33-Job Recovery Population。
+
+---
+
+## 二、实现是否真实实例化了该对象
+
+### 1. 一次性授权消费与 Run Start 顺序成立
+
+实际消费 Receipt 记录：
+
+```text
+prior_consumption_count       = 0
+consumption_ordinal           = 1
+resulting_consumption_count   = 1
+authorization_reusable        = false
+credential_lookups            = 0
+provider_calls                = 0
+durable_before_credentials    = true
+```
+
+紧接着形成的 Run Start Receipt 又绑定了：
+
+```text
+exact_job_count                    = 33
+successful_prefix_projection_count = 55
+execution source commit/tree
+recovery_job_set_sha256
+credential_lookups_at_receipt      = 0
+provider_calls_at_receipt          = 0
+```
+
+其时间晚于消费 Receipt，且仍处在 credential/Provider 边界之前。
+
+源码的实际顺序也是：
+
+```text
+write global no-replace ledger
+  -> create output directory
+  -> copy consumption Receipt
+  -> write Run Start Receipt
+  -> write ingress objects
+  -> load credential
+  -> construct client
+  -> execute Jobs
+```
+
+**判定：授权消费与入口顺序 PASS。**
+
+---
+
+### 2. Historical prefix 是本地 replay，不是 Provider 重发
+
+`RecoveryTransport.send()` 对历史成功前缀逐次要求：
+
+```text
+request SHA-256
+request byte count
+validation certificate
+pre-transport receipt
+phase
+```
+
+全部与 v26.229 replay row 和 v26.226 Provider descriptor 一致。通过后，它只把已持久化的公开 projection 放入本地 scripted transport，不进入 Provider client。
+
+到达历史失败位置时，代码才要求当前请求与冻结失败请求在以下字段上完全相等：
+
+```text
+failed request SHA-256
+failed request byte count
+certificate ID
+pre-transport receipt ID
+phase
+```
+
+然后只允许该失败请求被重新发出一次；计数超过一立即拒绝。
+
+这支持报告中的窄结论：
+
+```text
+historical successful projections replayed locally = 55
+historical successful Provider reissues             = 0
+captured failed requests reissued                    = 33
+```
+
+它不是从 Job 起点重新运行，也不是把整个历史调用前缀重新提交给 Provider。
+
+**判定：Recovery handoff 语义 PASS。**
+
+---
+
+### 3. 33 个 Job 确实只调度一次
+
+执行器按 `job_ordinal` 排序后，将每个 Recovery Job 仅提交一次。一个 Future 完成后才提交下一个尚未提交的 Job；代码中没有失败 Future 的二次 `submit()`，也没有 failed-Job resubmission 分支。
+
+执行结束还要求：
+
+```text
+sorted(actual output ordinals) == exact expected 33 ordinals
+```
+
+每个 ordinal 最终只能对应：
+
+```text
+RecoveryJobRecord
+或
+RecoveryFailureRecord
+```
+
+`ExecutionSummary` 模型进一步要求：
+
+* terminal records 与 failure records 合计恰为 33；
+* ordinal 集合无重复；
+* Provider call、token、terminal、failure 和 phase 分区均从嵌入记录重算；
+* phase 分区必须精确为 `3 / 25 / 5`；
+* 只要存在 failure，`execution_status` 就必须是 `incomplete`。
+
+实际 Summary 记录了：
+
+```text
+attempted_job_count            = 33
+exact_failed_request_reissues  = 33
+terminal_record_count          = 16
+failure_record_count           = 17
+execution_status               = incomplete
+host_failure                   = 0
+unbound_provider_failure       = 17
+```
+
+**判定：33/33 一次性调度与结果分流 PASS。**
+
+---
+
+### 4. 多个 fresh call 是 Runtime continuation，不是同一请求重试
+
+每个 Recovery Job 的第一条 fresh call 必须是冻结的失败请求。若该请求成功并推进 Runtime，后续 fresh call 来自新的 Runtime State、下一 Component 或 Final 阶段；这些请求不是对第一条失败请求的自动重试。
+
+代表性失败记录 `job_009` 实际包含：
+
+```text
+call_00  succeeded
+call_01  succeeded
+call_02  provider error
+```
+
+三个 call ordinal 连续，且最后一次才产生 `unbound_provider_failure`。该记录没有被转换成 terminal，也没有 five-layer evidence。
+
+这直接支持报告中的解释：
+
+> 某个 Recovery Job 可以在恢复点之后成功推进多个阶段，再于更后的调用失败；这是同一 Runtime continuation，而不是对某次失败请求反复 retry。
+
+基础 Provider client 也只执行一次 `urlopen`，遇到异常后写入错误与 Usage 元数据并向上传播，不包含自动重试循环。
+
+**判定：continuation 与 retry 的区分成立。**
+
+---
+
+### 5. 16 个 terminal record 确实形成独立五层链
+
+对于产生 source-derived terminal 的 Job，代码先从实际 Runner outcome、最后公开 payload 和完整 invocation records 推导 Evidence 与 Decision；随后在 persistence 前再次独立派生 Decision，并要求 canonical bytes 完全一致。
+
+持久化顺序是：
+
+```text
+Raw
+  -> Result
+  -> Trace
+  -> Outcome
+  -> checkpoint
+```
+
+每层具有新 Recovery namespace、实际 payload SHA-256、byte count、Provider-call descriptor parents 和严格序号。
+
+代表性的 `job_016` 记录：
+
+```text
+terminal_kind               = final_response_abi_invalid
+failed_request_phase        = final
+exact_failed_request_reissue= 1
+invocation_record_count     = 3
+layers                      = raw/result/trace/outcome/checkpoint
+historical_job_reclassified = false
+empirical_estimate_admitted = false
+```
+
+其五个 descriptor 的 parent 关系和持久化序号均明确存在。
+
+因此：
+
+```text
+16 terminal Jobs × 5 layers = 80 fresh layer files
+```
+
+是有效的执行工件结论。
+
+**判定：16 个 terminal record 的五层物化 PASS_AS_EXECUTION_RECORD。**
+
+---
+
+### 6. 17 个 Provider failure 没有被伪装成 model terminal
+
+Provider failure 只有在以下条件成立时才能形成 `RecoveryFailureRecord`：
+
+1. 冻结失败请求已精确重发一次；
+2. 至少存在一个实际 fresh Provider descriptor；
+3. Provider descriptor 中至少一个状态不是 `succeeded`。
+
+否则执行不会把它包装成合法 Recovery failure，而是升级成 Host-side execution failure。
+
+失败记录显式保持：
+
+```text
+terminal_evidence_admitted = false
+five_layer_evidence_admitted = false
+empirical_estimate_admitted = false
+historical_job_reclassified = false
+```
+
+实际错误元数据也保留了真实区分。例如一个 `ReasoningBudgetExhaustedError` 记录为：
+
+```text
+HTTP status              = 200
+finish_reason            = length
+completion tokens        = 16384
+reasoning tokens         = 16384
+public content length    = 0
+response model           = deepseek-v4-flash
+private reasoning stored = false
+```
+
+所以这些行可以称为：
+
+```text
+fresh observed Provider-call failures
+```
+
+但不能称为：
+
+```text
+thinking_integrity_failure terminals
+resource_budget_exhausted terminals
+completed_invalid
+或其他已经进入 terminal Registry 的结果
+```
+
+**判定：failure 保留与不插补语义 PASS。**
+
+---
+
+## 三、直接反例检查
+
+| 直接反例                                       | 实际防线                                                        |           判定 |
+| ------------------------------------------ | ----------------------------------------------------------- | -----------: |
+| 将历史成功前缀重新发给 Provider                       | prefix 分支只进入本地 scripted transport                           | **REJECTED** |
+| 用不同请求替换冻结失败请求                              | hash、bytes、certificate、receipt、phase 全部要求一致                 | **REJECTED** |
+| 同一冻结失败请求重发两次                               | `exact_failed_request_reissue_count != 1` 拒绝                | **REJECTED** |
+| failed Job 自动重新调度                          | scheduler 没有 resubmit 路径                                    | **REJECTED** |
+| Provider error 被当作 source-derived terminal | 单独形成 FailureRecord，terminal/five-layer admission 为 false    | **REJECTED** |
+| 成功若干 fresh calls 后的后续失败被误称为 retry          | call ordinal 与 Runtime continuation 保留在同一 Job record        | **REJECTED** |
+| caller 直接指定 subsequent-Action terminal     | terminal 从最后 invocation record、payload、State 和 Candidate 重建 | **REJECTED** |
+| 把 Recovery 结果回填至 v26.226                   | 所有新写入使用 v26.233 Recovery namespace，历史 mutation 字段为 false    | **REJECTED** |
+| 直接计算 Capability estimate                   | Summary 和 Transition 均固定 estimate count 为 0                 | **REJECTED** |
+
+未发现可以在保持当前 exact v26.232 authorization、33-Job set、v26.229 replay authority 和 v26.209 Runtime 不变的情况下，直接推翻本轮一次性 Recovery 执行声明的具体反例。
+
+---
+
+## 四、Gate 判定
+
+| Gate | 检验对象                                            |                           结果 |
+| ---- | ----------------------------------------------- | ---------------------------: |
+| M0   | 外部范围与 v26.232 repaired authorization            |                     **PASS** |
+| M1   | 一次性消费及 Run Start 先于 credential                  |                     **PASS** |
+| M2   | exact 33-Job set、33/33 一次调度                     |                     **PASS** |
+| M3   | 55 个前缀本地 replay、0 次 Provider 重发                 |                     **PASS** |
+| M4   | 33 个冻结失败请求作为 first fresh call                   |                     **PASS** |
+| M5   | 64 个 fresh call 的 journal 与分区形成                 | **PASS_AS_EXECUTION_RECORD** |
+| M6   | 16 个 terminal chain 与 17 个 failure record 非补偿分流 | **PASS_AS_EXECUTION_RECORD** |
+| M7   | 无 retry、backfill、estimate，Transition 保持窄边界      |                     **PASS** |
+
+```text
+CURRENT_GATE = PASS_FOR_POSTRUN_INDEPENDENT_AUDIT_ADMISSION
+```
+
+这里的 `PASS` 不代表 33 个 Job 都已 terminalize，也不代表完整经验分母通过。
+
+---
+
+## 五、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现需要在进入 postrun independent audit 之前修订 v26.233 执行工件的直接缺陷。
+
+### Scope limitation
+
+仍然未闭合的是：
+
+1. 380 个 Manifest member 是否由独立实现逐一重新验证；
+2. 64 个 Provider call 是否全部从实际请求、响应/错误和 Usage 文件独立重建；
+3. 33 个 first fresh requests 是否全部独立匹配 v26.229 captured failed request；
+4. 16 个 terminal 是否全部从实际 invocation records 和 public projections 独立重建；
+5. 80 个五层文件的实际字节、父关系和 namespace 是否全部独立复核；
+6. 17 个 failure record 是否都以最后一个 fresh call failure 结束，且之后没有调用；
+7. Recovery evidence 是否可以进入某个未来的完整 192-Job empirical evidence set；
+8. `completed_qualified=8` 对任何冻结 estimand 的贡献。
+
+这些属于下一阶段的正式 postrun audit 或更后续 evidence-set integration，不是否定本轮执行。
+
+### Future hardening
+
+```text
+NONE_REQUIRED_BEFORE_POSTRUN_INDEPENDENT_AUDIT
+```
+
+不应在本轮追加新的模型、Prompt、预算、重试策略、生产安全证明或大规模攻击矩阵。
+
+唯一非强制的文字优化是始终把：
+
+```text
+execution completed
+```
+
+写成：
+
+```text
+33/33 attempted Recovery execution completed;
+terminalized evidence set remains incomplete
+```
+
+当前报告已经表达了这一含义，因此不构成 mandatory revision。
+
+---
+
+## 六、当前允许与禁止的科学结论
+
+### 允许
+
+可以声称：
+
+> 在 exact v26.232 一次性授权下，冻结的 33 个 v26.229 Recovery Job 均被调度一次。55 个历史成功公开 projection 仅在本地重放，33 个冻结失败请求分别作为各 Job 的第一条 fresh Provider 请求精确重发一次。最终 16 个 Job 形成 source-derived terminal 及五层 Recovery 证据，17 个 Job形成新的 unbound-provider-failure record；没有 failed-Job retry、历史回填或经验估计。
+
+### 禁止
+
+仍不能声称：
+
+* 33 个 Recovery Job 已全部成功恢复；
+* Recovery terminalized denominator 已完整；
+* 原 192-Job empirical evidence set 已闭合；
+* `8 completed_qualified` 可以直接加入任何历史 numerator；
+* `16/33` 是 Capability、success rate 或 recovery rate 的正式估计；
+* `ReasoningBudgetExhaustedError` 已被授权映射成某个 Registry terminal；
+* 16K 条件是模型失败的唯一原因或普遍原因；
+* 可以继续重试余下 17 个失败 Job；
+* 可以修改 Prompt、模型、Thinking、Grammar、Policy 或资源上限；
+* 可以进入 Mapper、State、frequency、Contribution、VTDO 或训练。
+
+---
+
+## 七、后续实验
+
+原先声明的下一步**可以继续，但必须由新的外部决定单独授权**。v26.233 自身的 Transition 仍正确记录：
+
+```text
+execution_status               = incomplete
+status                         = INCOMPLETE_AWAITING_POSTRUN_INDEPENDENT_AUDIT
+next_stage_authorized          = false
+further_provider_calls_forbidden = true
+failed_job_retry_forbidden       = true
+historical_backfill_forbidden    = true
+empirical_estimation_forbidden   = true
+```
+
+唯一合理的下一阶段是：
+
+```text
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_
+online_execution_postrun_independent_audit_only
+```
+
+该阶段应保持零 Provider 调用，并只完成以下最小证据链：
+
+```text
+exact v26.233 source commit/tree
+  -> actual execution Manifest bytes
+  -> all 380 Manifest members
+  -> exact 33 Recovery source rows
+  -> 55 local-prefix projections
+  -> 33 captured-failed-request handoffs
+  -> 64 fresh Provider descriptors
+  -> 16 independently reconstructed terminals
+  -> 80 independently reconstructed layer files
+  -> 17 independently reconstructed failure records
+  -> exact 33-record partition
+  -> no historical mutation / no estimate
+```
+
+当前执行源身份确实绑定两个实现成员和 commit/tree `0c10e93a... / 379083e1...`。 当前自排除 Manifest 则记录 380 个成员，并保留报告所披露的历史 v26.224 serializer identity 前缀。 独立审计应从实际文件重建这些结果，而不能把 `execution_summary.json` 直接作为 outcome oracle。
+
+## 最终判定
+
+> **Finance v26.233 按其窄声明通过。它可信完成了 exact 33-Job Recovery Population 的一次性 attempted execution，并正确保留了 16 个 source-derived terminal chain 与 17 个 fresh unbound-provider-failure record 的非补偿分区。当前科学状态仍是 terminalized denominator incomplete；不得重试、回填或估计。首个未闭合 Gate 已前移到零 Provider 的 postrun independent audit。**
