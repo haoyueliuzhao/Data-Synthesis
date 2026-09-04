@@ -15,6 +15,104 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+
+## v26.229 Unbound Provider-Failure Source Authority And Recovery-Population Preflight
+
+Finance v26.229 consumed only
+`fresh_exact_v209_unbound_provider_failure_source_authority_and_recovery_population_preflight_only`.
+The exact 10,739-byte external review is bound at SHA-256
+`0b63d855ddd8e8707f3c0bdc2ddd4231b6a16fdaa986f7acb8e092f1491b58c2`; the 24-byte
+operator directive is bound at
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`.
+
+The decision is:
+
+```text
+v26_226_exact_33_unbound_provider_failure_source_authority_and_fresh_
+recovery_population_preflight_passed
+```
+
+The complete 17-file v26.228 and 3,428-file v26.226 directories revalidate. Selection starts
+from all 36 actual v26.226 failure files and derives the exact 33
+`unbound_provider_failure` rows at source-projection SHA-256
+`d9243f618f547da83cae5e6698d3155030b3065058cf5372b8171bf013d3d3f0`.
+Host ordinals 6, 22, and 149 remain excluded. v26.226 remains `incomplete`, with 156 complete
+Jobs and 36 failure records; no predecessor byte or terminal changes.
+
+The selected authority covers 385 files and 1,014,433 bytes: 33 failure files, 88 Provider
+descriptors, 88 request records, 55 successful response projections, 33 error records, and 88
+Usage records. It binds 88 contiguous calls: 55 successful-prefix calls and 33 final
+`provider_error` calls, with zero orphan or invalid Journal relations. Raw requests, raw
+Provider responses, credential content, and private reasoning bodies are absent.
+
+Using only the 55 persisted public prefixes, the exact v26.209 current-State Runner locally
+reconstructs every request. A capture transport stops each failed call after the request,
+certificate, and pre-transport Receipt and before any response projection. It supplies no failed
+response and creates no failed-call invocation or historical terminal record.
+
+```text
+request hash / byte-count matches                      88 / 88
+certificate / pre-transport Receipt matches            88 / 88
+successful public projection matches                   55 / 55
+failed phase: first / subsequent / Final               3 / 25 / 5
+Provider calls / credential lookups                          0 / 0
+```
+
+The persisted response-diagnostic partition is 31 `ReasoningBudgetExhaustedError` and two
+`JSONDecodeError` rows. The 31 client-normalized public strings are exactly empty; 28 use
+16,384 completion/reasoning tokens and three use 16,383/16,383. This does not establish whether
+the original Provider content field was null or empty. JSON ordinals 62 and 139 retain only
+normalized hashes and lengths 110 and 3,200; exact response text or syntax bytes are not
+reconstructed or guessed.
+
+One fresh, nonexecuted Recovery Job is bound to each source row and exact failed request. All 33
+fresh identities are disjoint from historical Job, failure, Provider-call, and descriptor
+identities; historical identities are parents only. Twelve genuinely mutated and rehashed
+candidate controls all reject before any candidate or Recovery Job write.
+
+```text
+A0 exact v26.228 Freeze                                      PASS
+A1 exact v26.226 source authority                            PASS
+A2 Provider Journal relation closure                        PASS
+A3 exact prefix and failed-request reconstruction            PASS
+A4 identifiability and fresh Recovery Population             PASS
+A5 direct negative controls and zero scope                   PASS
+passed / failed                                               6 / 0
+```
+
+Authoritative identities include:
+
+- source / Journal / replay:
+  `finance_v26_229_v226_source_authority_audit:66acdec328cb7bab260601eba8f8360707a5b518d442f551cd8afeac813a92d3` /
+  `finance_v26_229_provider_journal_authority:afd0bc6cb9e1ebdb283ef4e69a92fda307b3806aebe5e8a26f0900c33e086334` /
+  `finance_v26_229_request_replay_audit:5373177519eb09f98fdf5de74e452511dfc6fd8bfaf072ea1afcd09e84029ecf`;
+- identifiability / Contract / Population:
+  `finance_v26_229_identifiability_audit:43fd7b63182487b200fcd7345cd325c14c7f25a75e85cf739c9e9a0dd458a65a` /
+  `finance_v26_229_recovery_contract:5313f77c0284420e5ee8a23d34f418a52b517ffb8fcf24d1efb49608dda81202` /
+  `finance_v26_229_recovery_population:f7b9e21a46abd8efbace595d10ef4d479973eb5631542ee80f5a191e48979821`;
+- Gate / Decision / Transition:
+  `finance_v26_229_gate_evaluation:107717707d461d1d4be979ba7b7f3739d1fde755d854eb51370462fc3cefeb96` /
+  `finance_v26_229_decision:a81ff8a964d8c58bd7b444c71fc4c910c02938d0f0ce7d07f7c85bc297650e23` /
+  `finance_v26_229_transition:2e2160e5568d140141aad37da5133d8904395de5c4ff284666500cba289eae80`;
+- Report / Manifest / Root:
+  `finance_v26_229_preflight_report:bec3dbbf526d38dd566c57cb10c14235d21c21636b4c81fd8f1dd2a088d83ecc` /
+  `finance_v26_229_artifact_manifest:968a9b5adee2a0c5011c753ec777de8bc91a768745f09943ea676cd2e9e2f863` /
+  `finance_v26_229_artifact_root:0e99bbf37aff7faeb3f5adef51eeccd086d3cc760c09de6ecf236de914b6abe1`.
+
+The exact source commit/tree are `60b17abebae106477089df365d3ddafb2dac3174` /
+`040f3831fcf6bd08a9f7b9385321cfb78808acf2`. The 117-file, 1,105,367-byte formal directory
+rebuilds byte for byte; its Manifest binds 116 members and 1,088,415 bytes. Focused tests pass
+15/15 and the adjacent v26.226-v26.229 partition passes 50/50. Focused PyCompile, Ruff
+check/format, no-import-follow Mypy, and package-wide Ruff pass.
+
+The only permitted successor is
+`fresh_exact_v209_unbound_provider_failure_source_authority_and_recovery_population_preflight_independent_audit_only`.
+Recovery or Provider execution, failed-Job rerun, historical mutation/backfill, empirical
+estimation, online authorization, QA, Mapper, State, frequency, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_v26_229_fresh_exact_v209_unbound_provider_failure_source_authority_and_recovery_population_preflight.md`.
+
+
 ## v26.228 Subsequent-Action Evidence-Domain Closure Preflight Independent Audit
 
 Finance v26.228 consumed only

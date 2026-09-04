@@ -1,0 +1,262 @@
+# Finance v26.228 本轮实验审计
+
+## 一、审计结论
+
+```text
+AUDIT_DECISION        = PASS_AS_SCOPED
+BLOCKING_DEFECT       = NONE_FOUND
+MANDATORY_REVISION    = NONE
+
+CONFIRMED_OBJECT
+  = v26.227 对三个精确 v26.226 Host failure
+    的 subsequent-Action parser/reference
+    evidence-domain closure
+
+V26.226_192_JOB_STATUS
+  = STILL_INCOMPLETE
+
+UNRESOLVED_POPULATION
+  = 33 unbound_provider_failure rows
+
+ONLINE_EXECUTION
+  = NOT_AUTHORIZED
+
+AUTHORIZED_NEXT_STAGE
+  = fresh_exact_v209_unbound_provider_failure_source_authority_and_
+    recovery_population_preflight_only
+```
+
+本轮可以通过。没有发现能够直接推翻“**三个 Host failure 的局部、非经验 evidence-domain closure 已被独立确认**”这一声明的反例。
+
+这里的通过范围必须保持很窄：v26.228 只确认 Job ordinal `6、22、149`，不补写 v26.226 历史 Outcome，不把三条记录变成经验样本，也不处理另外 33 条 Provider failure。报告自身对此边界表达准确。
+
+---
+
+## 二、本轮声明与实现是否对应
+
+### 1. 当前声明
+
+v26.228 声称独立检查：
+
+```text
+实际 v26.226 failure records
+  -> 精确 3 / 33 failure partition
+  -> 三个 Host Job 的八次 public-response replay
+  -> subsequent_action parser/reference Evidence
+  -> Registry-derived terminal decision
+  -> Raw / Result / Trace / Outcome / checkpoint reconstruction
+```
+
+这与 v26.227 原先待审计的对象一致。v26.227 修复的正是：旧 v26.213 Evidence 不能接受终止于 `subsequent_action` 的 parser/reference observation；其声明范围从来没有包括 33 条 Provider failure。
+
+### 2. 实现状态
+
+本轮没有只加载 v26.227 的三条成功控制然后再次宣布成功，而是完成了以下独立路径：
+
+| 审计层                      | 实际状态                                                                    | 判断   |
+| ------------------------ | ----------------------------------------------------------------------- | ---- |
+| v26.227 工件冻结             | 38/38 文件、路径、哈希和实际字节一致                                                   | PASS |
+| detached rebuild         | exact v26.227 commit 中的 694 个源文件重建 38/38 工件                             | PASS |
+| v26.226 source partition | 从实际 36 条 failure record 导出 3 Host + 33 Provider                         | PASS |
+| Runner replay            | 三个 Job 共 8 次调用，request/response、call ID、ordinal 全部匹配                    | PASS |
+| Evidence derivation      | 2 parser rejection + 1 reference failure                                | PASS |
+| Terminal derivation      | 2 个 `first_response_abi_invalid` + 1 个 `first_action_reference_invalid` | PASS |
+| 五层重建                     | 3 × 5 = 15 个对象与 saved、detached 两套字节一致                                   | PASS |
+| 攻击检查                     | 8/8 拒绝，0 Raw write                                                      | PASS |
+
+v26.227 的完整 38 文件、3,715,790 字节目录由 detached source 重建后逐字节一致；该重建环境仅保留最小环境变量且没有 Provider 调用。
+
+三个正样本也不是由 ordinal 硬选后直接赋予结果。审计从实际 v26.226 `ExecutionSummary` 和独立 failure 文件重新分类，得到 ordinal `6、22、149`，并验证 Host 集与 33 条排除集的精确集合哈希。
+
+源码层面与报告相符：source partition 重新读取并规范解析每个 v26.226 failure record；Replay 使用持久化 public projection 驱动 v26.209 Runner；Evidence admission 最终要求候选字节与独立 replay authority 完全相等，而不是只要求候选对象重新哈希后自洽。
+
+---
+
+## 三、直接反例检查
+
+本轮最重要的反例不是普通字段篡改，而是：
+
+```text
+伪造新的 terminal invocation
+  -> 重算 Evidence
+  -> 重算 Dispatcher Decision
+  -> 重算 Raw / Result / Trace / Outcome / checkpoint
+  -> 试图以完整新身份通过
+```
+
+该控制确实构造了：
+
+```text
+1 个重哈希 invocation
+1 个重哈希 Evidence
+1 个重哈希 Decision
+5 个重哈希 layer identity
+```
+
+这些对象可通过各自内部结构检查，但最终在：
+
+```text
+admission.replay_owned_bytes
+```
+
+被拒绝，说明“完整重新哈希”不能替代独立 replay 所拥有的权威 Evidence 字节。其他七个控制覆盖 phase 替换、Evidence variant 替换、跨 Job prefix、prefix 截断、旧 State、旧 Candidate set，以及 Provider-failure 越界替换；全部在 Raw 写入前失败。
+
+已经提交的正式 `negative_control_audit.json` 与报告一致：8 次攻击、8 次拒绝、0 次接受，完整重哈希控制在 `admission.replay_owned_bytes` 失败。
+
+因此本轮未发现以下可复现反例：
+
+```text
+错误 phase 被承认为 subsequent_action
+parser/reference Evidence 相互冒充
+不同 Job 的 invocation prefix 被接受
+不完整 prefix 被接受
+旧 State 或旧 Candidate 被接受
+完整重哈希伪证据被接受
+33 条 Provider failure 混入三条正样本
+```
+
+---
+
+## 四、Gate 判定
+
+```text
+A0 exact v26.227 Freeze                         PASS
+A1 detached exact-source rebuild                PASS
+A2 independent v26.226 source partition         PASS
+A3 independent eight-call replay                PASS
+A4 independent Evidence/terminal derivation     PASS
+A5 independent five-layer reconstruction        PASS
+A6 direct attacks and scope boundary            PASS
+
+passed / failed                                 7 / 0
+```
+
+正式 Gate 工件也记录为非补偿式 `7/0`，各 Gate 均绑定相应审计对象，而不是以总分覆盖局部失败。
+
+**本轮 Gate：PASS。**
+
+---
+
+## 五、当前允许的科学结论
+
+现在可以保留并使用以下窄结论：
+
+> 对 v26.226 中 ordinal `6、22、149` 的三个精确 Host failure，v26.227 所新增的 subsequent-Action parser/reference Evidence domain 已经由独立实现确认：它能够从实际 v26.226 failure records 和持久化 public projections 出发，重放完整调用前缀，导出两条 parser Evidence、一条 reference Evidence及相应 Registry terminal，并重建三套完整的本地非经验五层证据链。
+
+更具体地说：
+
+```text
+ordinal 6
+  subsequent_action_parser_rejection
+  -> first_response_abi_invalid
+
+ordinal 22
+  subsequent_action_parser_rejection
+  -> first_response_abi_invalid
+
+ordinal 149
+  subsequent_action_reference_failure
+  -> first_action_reference_invalid
+```
+
+三条路径都终止于真实的 `subsequent_action` phase；terminal 名称是冻结 Registry 中通用于非-Correction Action 的类别名，不应反向解释成失败发生在首次 Action。八次请求和响应的 replay、descriptor 与 metadata 关系全部匹配。
+
+---
+
+## 六、仍然禁止的结论
+
+### 1. v26.226 不能改写为完整执行
+
+v26.226 的历史状态仍然是：
+
+```text
+complete Job records    156
+failure records          36
+```
+
+其中三个 Host failure 现在只有**局部非经验重放 closure**，没有被回填成历史经验 Outcome。另有 33 条 `unbound_provider_failure` 仍未解决。
+
+所以不能写成：
+
+```text
+159 empirical complete Jobs
+192-Job exact evidence set closed
+three historical Outcomes recovered
+```
+
+### 2. 不能进行经验估计
+
+当前仍无权计算或更新：
+
+```text
+q_first
+q_bounded_correction
+Capability estimate
+confidence interval
+Mapper / State / frequency
+Contribution / VTDO
+```
+
+v26.228 明确重建的是三套 `formal_empirical_row=false` 的本地证据链；经验行和 Provider 调用均为零。
+
+### 3. 不能直接恢复或重跑
+
+33 条 Provider failure 中包含 31 条 `ReasoningBudgetExhaustedError` 和两条 `JSONDecodeError`；它们已有完整 request/error/Usage/descriptor 链，但两条 JSON 错误的原始响应文本没有持久化，因此不能事后臆造精确语法缺陷或历史 terminal。 
+
+---
+
+## 七、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现直接推翻本轮三条 Host-row 独立确认结论的实现缺陷。
+
+### Scope limitation
+
+```text
+33 unbound_provider_failure rows remain unresolved
+historical v26.226 evidence set remains incomplete
+three reconstructed chains are nonempirical
+no Provider/model behavior is newly observed
+```
+
+这些限制已经由报告明确声明，不构成本轮失败。
+
+### Future hardening
+
+v26.228 已绑定自身 audit/model 两个主模块，并记录完整 Git commit/tree。后续可选地再物化一份审计执行的 transitive import manifest，或让独立审计自身也从 detached source 启动，以减少对工作树加载路径的解释空间。这不是本轮必改项：当前核心 v26.209/v26.226 Runner、model 与 parser 文件在冻结提交和 v26.228 提交中的 blob 内容保持一致，而且三个实际结果还受八次 request/response 与 replay-owned byte equality 双重约束。
+
+---
+
+## 八、后续实验授权
+
+v26.227 原先授权的独立审计阶段已经完成，可以停止继续审计这三个 Host failure。没有理由再围绕相同三条记录开启新的修复循环。
+
+本次外部审计授权且仅授权：
+
+```text
+fresh_exact_v209_unbound_provider_failure_source_authority_and_
+recovery_population_preflight_only
+```
+
+该阶段应保持：
+
+```text
+Provider calls                 0
+credential lookups             0
+recovery execution             0
+failed-Job reruns              0
+historical v26.226 mutation    0
+empirical rows                 0
+online authorization           0
+```
+
+它只应从实际 33 条 `unbound_provider_failure` 记录及其 Provider journal 出发，建立其 source authority、可识别/不可识别分区和**全新身份的 recovery Population**。不得历史回填，不得把缺失的原始响应内容猜出来，也不得在该 preflight 中调用 Provider。
+
+v26.228 自身的 Transition 把这一阶段列为唯一 prospective successor，同时明确记录 `next_stage_authorized=false`、需要新的外部审计决定且 online execution 仍为 false；本次审计即给出上述限域 preflight 授权，不授权其后的真实 Recovery 执行。
+
+**最终判断：本轮按声明范围通过；三个 Host failure 的 evidence-domain 阻塞点可以关闭，研究主线应转向剩余 33 条 Provider failure 的 source-authority 与 fresh recovery-population preflight，不应继续反复加固已经通过的三条 Host 路径。**
