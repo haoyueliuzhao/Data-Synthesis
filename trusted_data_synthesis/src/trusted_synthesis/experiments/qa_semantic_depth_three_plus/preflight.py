@@ -593,7 +593,7 @@ def _negative_controls(
             branch_bundle.evidence[3],
         ),
     )
-    crossed_roles = {
+    crossed_roles: dict[str, tuple[str, ...]] = {
         "revenue_earlier": (crossed_bundle.evidence[0].evidence_id,),
         "revenue_later": (crossed_bundle.evidence[1].evidence_id,),
         "income_earlier": (crossed_bundle.evidence[2].evidence_id,),
@@ -933,7 +933,7 @@ def write_qa_semantic_depth_three_plus_artifacts(
     manifest_body = {
         "members": members,
         "file_count": len(members),
-        "member_bytes": sum(int(item["byte_count"]) for item in members),
+        "member_bytes": sum(len(payload) for payload in payloads.values()),
         "artifact_root": strict_canonical_hash(
             members, prefix="qa_semantic_depth_three_plus_artifact_root:"
         ),
