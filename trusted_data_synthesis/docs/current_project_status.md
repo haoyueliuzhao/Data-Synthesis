@@ -738,6 +738,189 @@ fresh execution authorization and ledger, and must first pass the repaired HTTP-
 tests. See
 `docs/finance_v26_224_fresh_exact_v209_parent_bound_exact_192_job_online_execution.md`.
 
+## Offline QA Generator Source Authority And Depth-Metric Repair Preflight Independent Audit
+
+This QA side-path consumed only
+`qa_generator_source_commit_tree_member_authority_repair_preflight_independent_audit_only`.
+The exact 12,251-byte external review is bound at SHA-256
+`d9bf1fa44fb1901b0dde5b32a40c1827fc1bce915e521364059ea59a953a076e`.
+It classifies the repair as `PASS_AS_SCOPED`, reports no blocking defect or mandatory revision,
+and authorizes only this credential-free independent audit. The exact 30-byte directive
+`参照审计报告开展实验`, SHA-256
+`a76f3f3a79633a2d775212ad2b1daf5c6b1543bb9aa47d03897aa3bb361169d8`, consumes only
+that transition.
+
+The independent decision is:
+
+```text
+qa_generator_source_commit_tree_member_authority_repair_preflight_
+independently_confirmed
+```
+
+The audit revalidates the complete saved repair directory without using its Report, Gate, or
+Depth Audit as an outcome oracle:
+
+```text
+candidate formal files / bytes              24 / 463,886
+Manifest members / member bytes             23 / 460,263
+path / SHA-256 / byte-count matches         24 / 24 / 24
+actual-byte matches                              24 / 24
+Manifest members revalidated                    23 / 23
+```
+
+The candidate Manifest and Root remain
+`qa_generator_source_authority_artifact_manifest:6df4b52442396600fc7112f9af7598cb3d1c8cea08532156614288da7e7bec4b`
+and
+`qa_generator_source_authority_artifact_root:307fd8ef9563e619f8e8f3815e5b754ccd01bfd872af72bd094e9244cbe85d4b`.
+The 3,623-byte Manifest file has SHA-256
+`fb59acf615a30dc0e45eee95e0c2521e999888b8e0d1b510bfd19986a114f531`.
+A detached archive contains 703 exact repair-source files. Running the candidate builder in a
+reduced environment reconstructs all 24 paths and 463,886 bytes exactly, including all 23
+Manifest members. Credential-like environment keys, credential lookups, Provider calls, and GPU
+Jobs are zero.
+
+Both Git authorities are independently resolved rather than copied from the candidate Bindings.
+For each group the audit resolves the commit object and tree, rereads every Git Blob and committed
+byte sequence, compares current bytes, reconstructs the candidate Binding, and only then compares
+its saved bytes:
+
+```text
+generator/verifier commit  dba5d949a743dd625e5fe0e10b0f4809ac9f87ad
+generator/verifier tree    d706531377e5303265cd2dcee3e355c6642c466b
+members / committed / current matches             14 / 14 / 14
+
+repair commit              f26e30c0c6488e5b14b2004bd776e23f23dbc77d
+repair tree                7917ca2e0172394d2779d0186d1046bda872555c
+members / committed / current matches                5 / 5 / 5
+
+source groups / total members                         2 / 19
+commit-object / commit-tree matches                    2 / 2
+candidate Binding actual-byte matches                  2 / 2
+candidate source-helper calls                              0
+```
+
+The aggregate authority is
+`qa_generator_independent_git_source_authority_audit:14db084df4f6d8cac5f94b2b247a7aad100b55e5304b7356f8e0d5f865b7efb0`.
+The generator and repair groups are
+`qa_generator_independent_git_source_group_audit:afdfb658a6e64c883d6c307675b11b4a49f95cebab658f6425d5ca4e95226cc0`
+and
+`qa_generator_independent_git_source_group_audit:429ac652d7bfcd222acd43c22cce247bf28e309a693c81aebe2703503bac4519`.
+This closes only the declared fourteen-plus-five member domain; complete transitive import and
+runtime-environment closure is not claimed.
+
+The legacy fake-label counterexample is independently reproduced. Its nonexistent commit
+`0000000000000000000000000000000000000000` and unrelated tree
+`1111111111111111111111111111111111111111` pass the old self-declared G2 but reject at the
+repaired `git_commit_resolution` boundary. Five direct source attacks reject at their expected
+commit-resolution, commit-tree, committed-member, or current-worktree boundaries:
+
+```text
+legacy counterexample reproduced / repaired rejection    1 / 1
+source attacks / rejected / accepted                      5 / 5 / 0
+candidate attack-helper calls / output writes             0 / 0
+```
+
+The audit reparses all six eight-row domains: Evidence bundles, realized Packages, public-Plan
+executions, final candidate Trajectories, verification reports, and quality assessments. It
+validates their schemas and identities, keeps the embedded `public_plan_candidate_trajectory`
+separate from the final `candidate_workflow`, independently executes every Program node through
+the Finance Registry, reruns nodewise Oracle verification, and rechecks answer, schema, citation,
+and evaluator results:
+
+```text
+registered types / generator successes                 8 / 8
+exact Program executions / independent node replays    8 / 8
+operation / answer-schema / answer correctness          8 / 8 / 8
+citation correctness / evaluator acceptance             8 / 8
+candidate object matches                         48 / 48
+insufficient-capability rows                              0
+```
+
+These remain one deterministic canonical Fixture per registered type. They do not establish
+Archive grounding, realistic difficulty, model behavior, task-frequency coverage, or Release
+Population fitness.
+
+Starting from the eight exact public Programs, actual dependency edges, and Registry
+`program_role` values, the audit independently derives all four noninterchangeable depth metrics
+without calling the candidate depth helper:
+
+```text
+node count                    {1: 3, 3: 3, 4: 1, 7: 1}
+structural dependency depth   {1: 3, 2: 4, 3: 1}
+semantic operation depth      {0: 1, 1: 6, 2: 1}
+workflow interaction depth    {2: 1, 3: 6, 4: 1}
+maximum structural / semantic depth                    3 / 2
+output closure / exact-source admission                8 / 8
+semantic-depth-3-plus rows                                  0
+```
+
+Three independent depth attacks retain the same final-answer bytes but delete a required
+semantic dependency, bypass the derived semantic chain, or add an output-irrelevant lookup. The
+first two reject at `exact_source_program_admission`; the third rejects at
+`output_dependency_closure`. Attacks / rejected / accepted are `3 / 3 / 0`, with zero attack
+writes, Provider calls, or GPU Jobs.
+
+The exact noncompensatory Gate partition is:
+
+```text
+A0 exact external scope and candidate Freeze                 PASS
+A1 detached exact-directory rebuild                          PASS
+A2 independent Git source authority                          PASS
+A3 legacy counterexample and source attacks                  PASS
+A4 independent eight-Fixture reconstruction                  PASS
+A5 independent four-depth-metric derivation                  PASS
+A6 independent depth attacks                                 PASS
+A7 zero external-execution scope                             PASS
+passed / failed                                               8 / 0
+```
+
+The authoritative v2 implementation is bound at source commit/tree
+`0263871339e6b17e367faab0831e94177a676928` /
+`d1583ebcfc752d190a6b38449919aebdf86c06e8`. Its three exact source members are the package
+`__init__.py`, strict models, and audit implementation; all three Git Blob, committed-byte, and
+current-byte comparisons pass. Their member-set SHA-256 is
+`b648d17620cde532765af0b8a7eefeae67b99efd10530fec38f7aca3f2de4a2e`.
+Static inspection finds zero candidate helper or outcome-oracle calls. Preliminary v1 remains
+immutable but is superseded because its source boundary bound only the audit file rather than the
+complete three-member implementation package; v2 retains the independently reconstructed
+candidate, Git, Fixture, depth, and attack results.
+
+Principal independent identities are:
+
+- authorization / candidate Freeze / detached rebuild:
+  `qa_generator_source_authority_independent_audit_authorization:c05f5cfdec1ee78dcd1870fe58ce14856d8afc53c29ee86366d3bdad1d93ff1e` /
+  `qa_generator_source_authority_candidate_freeze_audit:9ce08f894faa1fa782575064944fb7834e88a11163e95facecfb14e953d9bab1` /
+  `qa_generator_source_authority_detached_rebuild_audit:7908f8f0e2d83be269ba6184c2ffbac48f63fec1d22e92fdc2bea68b24f167d7`;
+- legacy / source-negative / Fixture / depth / depth-negative Audits:
+  `qa_generator_independent_legacy_counterexample_audit:c650db65b439ebd7a02096a543da246e40a3b5f03bf20f068216e2d21ee52b96` /
+  `qa_generator_independent_source_attack_audit:7036f625123e3e4d59916ea55ea83b884fd54c0988c49b5c8694bac7f721bdd8` /
+  `qa_generator_independent_fixture_audit:9f50d24977b9274aeedf23d4ed320c764f2a9dae10a9fadd5574110554b79541` /
+  `qa_generator_independent_depth_metric_audit:6d0a238dbcf8c7a3006c7bdd34b80f6b6a2da6733a97132605f0a5aa09bb4593` /
+  `qa_generator_independent_depth_attack_audit:246b0112cc84d95280761f1eec63cfcdbc7bf39dfacda3a5d55390b4bae9b855`;
+- scope / Gate:
+  `qa_generator_source_authority_independent_scope_audit:e1ad82c45b0c0da2a237921e2df0cea34eb2ca6b72f6e7af7c4fc057474bf63c` /
+  `qa_generator_source_authority_independent_gate:140ab919112f2cac4ec7ce5a185cdea03797dc184cbeffedadd11b249688cee3`;
+- Decision / Transition / Report:
+  `qa_generator_source_authority_independent_decision:681055cfa397321d48dc0e422e50f907cbd36bd71f6312e27ec7e1a655b51d0d` /
+  `qa_generator_source_authority_independent_transition:78c7d60d2b8572b45baf4ab7649a9d47fb0cda3503f3b725177287bd0e7a7f8e` /
+  `qa_generator_source_authority_independent_report:98f5e0d25f190e4e00ac48610a2c6b9bf0b2c789c312f2766c1bdb623264be2b`;
+- Artifact Manifest / Root:
+  `qa_generator_source_authority_independent_artifact_manifest:3dfccec74ea6dc0e15bac876a2dcddeb7b54e9cbbe70cd6367b17938b4deb701` /
+  `qa_generator_source_authority_independent_artifact_root:32fae37a0129739b07b816c3d22a7001ff4745cfcd8bf9b8e79dfae39dee65a6`.
+
+The authoritative v2 formal directory contains 21 files and 99,487 bytes. Its self-excluding
+Manifest binds 20 members and 96,276 bytes. Provider calls, credential lookups, GPU Jobs, online
+Job Manifests, empirical rows, QA Release objects, Archive-grounding rows,
+Benchmark-distribution rows, semantic-depth expansion rows, VTDO, training, and production rows
+are all zero.
+
+The only prospective successor is
+`qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_only`. This
+stage is not authorized by the independent audit: `next_stage_authorized=false` and a separate
+external audit decision is required. Any future successor must add genuinely output-critical
+semantic paths of depth at least three; lookup nodes, fixed PLAN/ANSWER templates, or unrelated
+nodes may not inflate the semantic-depth denominator.
+
 ## Offline QA Generator Source Authority And Depth-Metric Repair Preflight
 
 This QA side-path consumed only

@@ -1,0 +1,333 @@
+# QA 合成链路本轮修订审计
+
+## 一、最终结论
+
+```text
+AUDIT_DECISION         = PASS_AS_SCOPED
+BLOCKING_DEFECT        = NONE_FOUND
+MANDATORY_REVISION     = NONE
+
+CURRENT_CLAIM
+  = QA generator 的 Git commit/tree/member authority 已修复
+    + 原先混用的深度指标已拆分并可重算
+    + 八类注册任务的固定 Fixture 可构造性仍然成立
+
+QA_COVERAGE_STATUS
+  = MECHANICALLY_TOTAL_BUT_SCIENTIFICALLY_SHALLOW
+
+SEMANTIC_DEPTH
+  = {0: 1, 1: 6, 2: 1}
+  maximum = 2
+  depth >= 3 = 0
+
+ONLINE_QA_GENERATION   = NOT_AUTHORIZED
+QA_RELEASE             = NOT_AUTHORIZED
+
+NEXT_AUTHORIZED_STAGE
+  = qa_generator_source_commit_tree_member_authority_repair_
+    preflight_independent_audit_only
+```
+
+**本轮修订可以按声明范围通过。**
+
+但必须把两个结论分开：
+
+1. **修订成功了**：源码权威关系和深度测量定义已经得到实际实现。
+2. **QA 链路仍然不够深**：本轮没有扩充深问题，只是终于准确测出了当前八类 Fixture 的真实深度上限。
+
+因此，你此前关于“调整后问题类型覆盖与程序深度仍有不足”的判断是正确的。该不足不是本轮修订失败，而是修订完成后得到的正式负向覆盖结论。
+
+---
+
+## 二、本轮真正检验的命题
+
+本轮只检验两个对象。
+
+### 1. 源码权威修复
+
+旧版本把调用方提供的 `source_commit` 和 `source_tree` 写入对象，但没有证明：
+
+```text
+commit 确实存在
+commit 确实是 commit object
+commit^{tree} 确实等于声明 tree
+声明成员确实存在于该 commit
+成员 Git blob / committed bytes 确实匹配
+当前执行 bytes 确实等于 committed bytes
+```
+
+本轮新实现分别绑定：
+
+```text
+14 个 retained generator/verifier source members
+5 个 repair implementation source members
+```
+
+并验证真实 Git commit、tree、成员对象、提交字节和当前字节关系。
+
+实际代码并非只设置 `source_bound=true`：它调用 Git 解析 `commit^{commit}` 与 `commit^{tree}`，读取 `<commit>:<path>`，随后再次从 Git 与当前工作树重读并比较每个成员。
+
+正式工件绑定的两组来源为：
+
+```text
+retained generator/verifier
+  commit dba5d949a743dd625e5fe0e10b0f4809ac9f87ad
+  tree   d706531377e5303265cd2dcee3e355c6642c466b
+  members 14
+
+repair implementation
+  commit f26e30c0c6488e5b14b2004bd776e23f23dbc77d
+  tree   7917ca2e0172394d2779d0186d1046bda872555c
+  members 5
+```
+
+工件中每个成员都记录了 Git blob OID、提交内容 SHA-256、提交字节数、当前 SHA-256 和当前字节数，两组均为全部匹配。
+
+GitHub 中两个 commit 实际解析出的 tree 也分别与报告中的 `d706...` 和 `7917...` 一致。
+
+### 2. 深度指标修复
+
+本轮没有继续把以下量都叫作“程序深度”：
+
+```text
+节点总数
+DAG 依赖深度
+语义计算深度
+完整工作流交互深度
+```
+
+而是正式拆成四个不可互换的量：
+
+| 指标                            | 本轮定义                                                  |
+| ----------------------------- | ----------------------------------------------------- |
+| `node_count`                  | 精确源 Program 中的全部节点数                                   |
+| `structural_dependency_depth` | 输出节点祖先 DAG 的最长路径，所有节点权重均为 1                           |
+| `semantic_operation_depth`    | 最长路径中 `semantic` 节点计 1、`transparent_projection` 节点计 0 |
+| `workflow_interaction_depth`  | 证据解析阶段 1 + 语义操作深度 + 独立验证阶段 1                          |
+
+PLAN 和 ANSWER 固定模板步骤不被当作语义计算；纯检索的语义深度为 0。
+
+实际实现从输出节点反向取得完整依赖闭包，拒绝不参与输出的节点，并依据真实 Operation Registry 的 `program_role` 逐节点计算结构深度与语义深度。
+
+底层 `TaskProgram` 同时要求 Operation 输入引用与 `dependencies` 完全一致，并要求节点按拓扑顺序排列，因此当前深度计算不是基于一个与实际输入关系分离的装饰性 DAG。
+
+**代码真实实例化了本轮两个修复对象。**
+
+---
+
+## 三、直接反例检查
+
+### 1. 旧 source-binding 反例已经复现
+
+旧 `_source_binding` 可以接受：
+
+```text
+source_commit = 0000000000000000000000000000000000000000
+source_tree   = 1111111111111111111111111111111111111111
+```
+
+并继续把自身标成 source-bound，使旧 G2 成立。
+
+新 authority 对同一输入在 `git_commit_resolution` 阶段拒绝。该控制直接证明：
+
+```text
+旧 G2 的确存在具体反例
+新 authority 对这个具体反例已经闭合
+```
+
+
+
+### 2. 五类 source-authority 攻击
+
+正式控制结果为：
+
+| 攻击                  | 实际拒绝位置                          |
+| ------------------- | ------------------------------- |
+| 不存在的 commit         | `git_commit_resolution`         |
+| 真实 commit + 错误 tree | `commit_tree_relation`          |
+| 替换成员内容并重建绑定         | `committed_member_bytes`        |
+| 交叉交换两个成员并重建绑定       | `committed_member_bytes`        |
+| 当前工作树成员未提交修改        | `current_worktree_member_bytes` |
+
+结果为 `5/5 rejected, 0 accepted`。
+
+正式 JSON 工件记录的异常类别、拒绝阶段和 reason hash 与报告一致。
+
+### 3. 三类深度伪造攻击
+
+本轮还检查了：
+
+```text
+删除必要语义依赖
+绕过 derived semantic chain
+添加不参与输出的无关 lookup 以膨胀节点数
+```
+
+前两类虽然重建了新的 Program 身份和深度量，但因不再等于精确源 Program 而在 `exact_source_program_admission` 拒绝；无关节点膨胀则因不属于输出依赖闭包而拒绝。三类控制均保留原 Final answer bytes，因此它们直接检验“能否保留答案、改写 Program 后伪造深度”。结果为 `3/3 rejected, 0 accepted`。
+
+正式负向工件也记录了三套不同的候选 Program 身份和对应拒绝阶段。
+
+**没有发现能够直接推翻本轮 source-authority 或 depth-metric 修复声明的反例。**
+
+---
+
+## 四、Gate 判定
+
+```text
+G0 exact external scope                              PASS
+G1 predecessor formal directory frozen               PASS
+G2 exact Git commit/tree/member authority             PASS
+G3 four depth metrics; legacy fields non-authority    PASS
+G4 retained fixed-Fixture totality 8/8                PASS
+G5 legacy counterexample + five source attacks        PASS
+G6 three depth attacks                                PASS
+G7 zero Provider/GPU/online/Release boundary          PASS
+
+passed / failed                                       8 / 0
+```
+
+
+
+正式 `gate_evaluation.json` 也保存为非补偿式 `8/0`。
+
+### 本轮 Gate
+
+```text
+PASS_AS_SCOPED
+```
+
+不需要继续修改当前 preflight 才能进入独立审计。
+
+---
+
+## 五、对当前 QA 合成链路的正确解释
+
+### 已经证明的内容
+
+八个已注册 Finance task type 各有一个确定性 canonical Fixture，均可通过：
+
+```text
+任务实例化
+-> candidate generator
+-> 精确 public Program 执行
+-> 独立节点 replay
+-> answer schema 检查
+-> answer correctness 检查
+-> citation binding 检查
+-> CandidateQualityEvaluator
+```
+
+结果是：
+
+```text
+registered task types                   8 / 8
+generator successes                     8 / 8
+exact Program executions                8 / 8
+operation correctness                   8 / 8
+answer correctness                      8 / 8
+citation correctness                    8 / 8
+evaluator accepted                      8 / 8
+insufficient_capability                     0
+```
+
+
+
+因此可以说：
+
+> 当前实现对“八个已注册类型各一个固定规范实例”的生成—执行—验证链路是可构造的。
+
+### 尚未解决的核心问题
+
+八个 Fixture 的深度分布是：
+
+```text
+node_count
+  {1: 3, 3: 3, 4: 1, 7: 1}
+
+structural_dependency_depth
+  {1: 3, 2: 4, 3: 1}
+
+semantic_operation_depth
+  {0: 1, 1: 6, 2: 1}
+
+workflow_interaction_depth
+  {2: 1, 3: 6, 4: 1}
+```
+
+其中只有 `derived_growth_comparison` 达到语义深度 2；六个类型只有语义深度 1，一个纯检索类型为 0；不存在任何语义深度 3 及以上的实例。
+
+所以当前 QA 链路的准确状态是：
+
+```text
+registered-type fixture constructibility    CLOSED
+generator/verifier source authority          PREFLIGHT_CLOSED
+depth measurement semantics                  PREFLIGHT_CLOSED
+
+broad problem-type coverage                  NOT_ESTABLISHED
+parameter-space coverage                     NOT_ESTABLISHED
+semantic depth >= 3                          ABSENT
+realistic difficulty                         NOT_ESTABLISHED
+Archive-grounded generation                  NOT_ESTABLISHED
+model-generated QA quality                   NOT_EVALUATED
+training utility                             NOT_EVALUATED
+```
+
+**“8/8 成功”不能补偿“深度 ≥3 为零”。**
+
+这轮修订的价值不在于让 QA 变深，而在于阻止继续用 `7 个节点` 或旧 `program_depth` 把一个实际只有两层语义计算的程序描述成“深问题”。从机制审计角度看，这是必要且正确的修复。
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现会使本轮声明不成立的缺陷。
+
+### Scope limitation
+
+当前证据只有八个固定 Fixture、每类一个。它不证明参数空间总量、真实金融档案上的可构造率、自然语言质量、歧义控制、Benchmark 分布或模型生成质量。报告已经明确保留这些边界，因此它们不应倒推为本轮 Gate 失败。
+
+另一个明确的 member-level 边界是：当前 source authority 针对声明的 `14+5` 个文件成员，并不是完整 transitive import closure 或运行环境封装。当前报告没有声称完整源码树/环境权威，因此这只是未评估范围，不是本轮阻塞项。
+
+### Future hardening
+
+当 QA 链路未来进入 Release 或训练语料授权前，可以再把 `14+5` member authority 扩展为 transitive source/runtime closure。**不应在当前轮次追加这一 Gate，也不需要为此返工本轮 preflight。**
+
+---
+
+## 七、后续实验决定
+
+本轮修订通过后，原先声明的下一步可以继续：
+
+```text
+qa_generator_source_commit_tree_member_authority_repair_
+preflight_independent_audit_only
+```
+
+该独立审计应最小化为：
+
+1. 重验 24 文件、23 个 Manifest members、460,263 member bytes 和 Artifact Root。
+2. 从 Git 对象独立解析两组 commit/tree，重读全部 `14+5` 成员，不能把候选 source-binding JSON 当作权威。
+3. 在空目录重建正式工件，并比较完整路径和实际字节。
+4. 独立重现旧假 commit 反例和五类 source 攻击。
+5. 不调用本轮 `build_depth_metric_audit` 作为结果 oracle，而是从八个实际 Program、依赖边和 Registry role 独立重算四类深度。
+6. 重跑三类深度攻击，并确认最终分布仍为 `{0:1, 1:6, 2:1}`、`depth>=3=0`。
+7. 保持 Provider、GPU、在线 Job、QA Release 和 VTDO 数量为零。
+
+当前正式 Transition 也仅允许这一独立审计，并继续禁止 Provider、GPU 与 QA Release。
+
+独立审计通过之后，合理的实质性下一实验才应是一个新的、离线的：
+
+```text
+qa_semantic_operation_depth_three_plus_
+constructibility_and_coverage_preflight_only
+```
+
+该阶段需要真正新增**语义关键路径不少于 3**的源 Program，而不是通过增加 lookup、模板步骤或无关节点抬高 `node_count`。这一深度扩展目前只是后续方向，**尚未获得本轮授权**。
+
+**最终判断：本轮 source-authority 与 depth-metric 修订按范围通过；QA 链路的“测量错误”已修复，但“问题类型与推理深度不足”仍然成立。现在应执行独立审计，不应直接启动在线 QA 生成或 Release。**
