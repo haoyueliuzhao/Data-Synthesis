@@ -1,0 +1,372 @@
+# Finance v26.226 实验审计
+
+## 一、最终判定
+
+```text
+AUDIT_RESULT
+  PASSED_AS_SCOPED_ARTIFACT_COMPLETENESS
+  FAILED_AS_EXACT_192_JOB_EXECUTION
+
+BLOCKING_DEFECT
+  FOUND
+
+FIRST_FAILED_GATE
+  EXACT_192_JOB_TERMINAL_EVIDENCE_TOTALITY
+
+FIRST_FUNDAMENTAL_BLOCKER
+  SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED
+
+SECOND_INCOMPLETE_PARTITION
+  33 UNBOUND_PROVIDER_FAILURE JOBS
+
+EXACT CAPABILITY ESTIMATE
+  NOT MATERIALIZED
+  NOT AUTHORIZED
+
+V26.225 V3 AUTHORIZATION
+  CONSUMED
+  NONREUSABLE
+
+NEXT SUCCESSOR
+  NONE AUTHORIZED
+```
+
+**v26.226 应当被接受为一份完整、可信、可独立重建的“不完整在线执行记录”，但不能被接受为完成的 192-Job 经验实验。**
+
+本轮确实尝试了全部 192 个 exact v26.209 Jobs，并封存了不可变执行目录；但只有 156 个 Job 形成终止证据，另有 36 个 Job 仅形成失败记录。因此，“执行过程及其工件被完整记录”成立，“exact 192-Job empirical evidence set 已完成”不成立。v26.225 v3 授权已经消费，也不能再用于 replacement、rerun 或 recovery。
+
+---
+
+## 二、本轮实际检验的命题
+
+本轮不是检验 QA、Mapper、State、Contribution 或 VTDO，也不是直接检验训练收益。其核心命题是：
+
+> 修复上一轮 post-response serializer 问题后，能否在 exact parent-bound v26.209 条件上执行一次完整的 192-Job replacement run，并为每个 Job 形成可审计的终止证据链？
+
+应当将这一命题拆成两个不互相补偿的子命题：
+
+1. **执行记录完整性**：所有授权、调用、失败、持久化对象和文件关系是否真实、闭合、可重建。
+2. **经验分母完整性**：192 个 Job 是否全部形成可被 exact-set evaluator 接受的终止 Outcome。
+
+本轮第一个子命题通过，第二个子命题失败。
+
+---
+
+# 三、实现状态
+
+## 1. 授权消费与执行入口：PASS
+
+执行前的顺序满足当前合同：
+
+```text
+重新加载 exact v26.225 v3 authority
+  -> 外层父关系检查
+  -> _consume 内再次重新加载与检查
+  -> 全局 no-replace ledger
+  -> authorization consumption Receipt
+  -> Run Start Receipt
+  -> .env / credential lookup
+  -> Provider client
+```
+
+全局 ledger 在输出目录之前创建，输出目录中的 Receipt 与 ledger 字节一致，Run Start Receipt 在凭据读取和客户端构造前持久化。Job set 保持 exact 192，selective rerun 和 recovery 均为零。
+
+**没有发现能够推翻本轮“一次性授权被正确消费”声明的直接反例。**
+
+---
+
+## 2. Provider Journal：PASS
+
+本轮共发生 611 次 Provider 调用。其调用证据关系为：
+
+```text
+request intents / descriptors    611 / 611
+response / error metadata        578 / 33
+Usage metadata                        611
+orphan intents / descriptors         0 / 0
+invalid relations                     0
+relation closed                     true
+```
+
+
+
+当前附件中的准确错误分区是：
+
+```text
+ReasoningBudgetExhaustedError    31
+JSONDecodeError                   2
+```
+
+31 个 reasoning-budget 退出中，28 个为 `16,384 / 16,384` completion/reasoning tokens，3 个为 `16,383 / 16,383`。总 Usage 算术为：
+
+```text
+Prompt tokens       3,585,599
+Completion tokens   3,480,837
+Reasoning tokens    3,422,511
+total tokens        7,066,436
+estimated cost USD  1.33152428080000012119
+```
+
+
+
+所以，这 33 个 Job 的问题不是“Provider 调用没有留下记录”，而是**已有调用级错误证据没有进入被授权的 Job 终止证据域**。
+
+---
+
+## 3. 已产生工件的闭包：PASS
+
+全部 192 个 Job 都被尝试一次，最终形成：
+
+```text
+complete Job records       156
+Job failure records         36
+Raw / Result / Trace /
+Outcome / checkpoint        156 each
+top-level exception escapes   0
+```
+
+156 个完整 Job 的终止分区是：
+
+```text
+completed_qualified             126
+final_response_abi_invalid       26
+completed_invalid                 2
+first_response_abi_invalid        2
+```
+
+这些 Job 使用一至五次 Provider 调用；126 个 Qualified 只是当前不完整分母中的描述性结果，不是 Capability 估计。
+
+执行目录本身包含 3,428 个文件和 99,765,014 字节，自排除 Manifest 绑定 3,427 个成员；附件报告没有发现缺失、额外、SHA-256 不匹配或字节数不匹配的成员。
+
+两套 credential-free postrun audit 又独立重建了：
+
+* 3,427 个 Manifest 成员和 3,426 个 canonical JSON；
+* 611 个 Provider 关系；
+* 192 个 Job/ordinal；
+* 780 个 Raw/Result/Trace/Outcome/checkpoint 文件；
+* Census、Summary、Transition、Manifest 和 Root。
+
+其共同判定为：
+
+```text
+SCOPED_ARTIFACT_COMPLETENESS          PASS
+EXACT_192_JOB_EXECUTION_COMPLETION    FAIL / INCOMPLETE
+```
+
+
+
+因此，36 个失败 Job **不是从执行目录中消失了**；它们被完整记录为失败，只是没有形成终止 Outcome。
+
+---
+
+# 四、直接反例检查
+
+## 1. 三个 Host failure：直接推翻终止证据全覆盖
+
+三个 Host failure 都发生在已经成功完成两次或三次 Provider 调用之后。postrun audit 使用保存的 public projection、通过 exact v26.209 Runner 做零 Provider replay，稳定复现：
+
+```text
+ordinals 6 and 22
+  UnboundExecutionFailure:
+  v26.213 parser evidence cannot bind a subsequent_action record
+
+ordinal 149
+  UnboundExecutionFailure:
+  v26.213 reference evidence cannot bind a subsequent_action record
+```
+
+ 
+
+这是本轮最直接、最小、可复现的反例：
+
+```text
+actual authorized Job
+  -> actual Provider responses
+  -> actual subsequent_action InvocationRecord
+  -> parser/reference failure observed
+  -> v26.213 evidence type cannot represent that phase
+  -> no authoritative terminal
+  -> no Raw/Result/Trace/Outcome/checkpoint
+```
+
+因此，本轮首个本质阻塞点准确地是：
+
+```text
+SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED
+```
+
+它不是 Prompt、模型、Action ABI 或旧 serializer 失败；它是 **Runner 已经观察到后续 Action 失败，但 terminal-evidence composition 无法承载该 phase**。
+
+---
+
+## 2. 三十三个 Provider failure：独立的第二缺口
+
+另外 33 个 Job 全部绑定：
+
+```text
+UnboundExecutionFailure:
+Provider failure has no admitted v26.209 source terminal
+```
+
+其中：
+
+```text
+ReasoningBudgetExhaustedError    31
+JSONDecodeError                   2
+```
+
+每个错误调用都有完整的 request/error/Usage/descriptor 链，所以不能归类为日志遗失。但是，当前 source-bound failure authority 没有把这些 adapter-level Provider 错误变成经过认证的 Event、Observation、SourceExitProof 和 terminal Outcome。两个 JSON response text 又被有意禁止持久化，因此它们具体在哪个 JSON 语法位置失败无法重建，也不应事后猜测。
+
+这 33 行不能通过以下方式补齐：
+
+```text
+根据异常类事后指定 terminal
+把 ReasoningBudgetExhaustedError 手动改成某个已有 terminal
+把 JSONDecodeError 猜成 response_abi_invalid
+直接将 failure record 视为 Qualified=false Outcome
+只重跑这 33 个 Job 后与原 156 行拼接
+```
+
+这些做法都会越过当前冻结的 terminal authority 或改变经验数据身份。
+
+---
+
+# 五、非补偿 Gate 判定
+
+| Gate                                       | 本轮证据                                        | 判定                    |
+| ------------------------------------------ | ------------------------------------------- | --------------------- |
+| G0：exact 授权与一次性消费                          | v26.225 v3 被正确消费；ledger 和 Run Start 顺序闭合    | **PASS**              |
+| G1：192-Job 尝试覆盖                            | 192 个授权 Job/ordinal 各出现一次                   | **PASS**              |
+| G2：Provider 调用证据闭包                         | 611/611 intent、descriptor、Usage 闭合，零 orphan | **PASS**              |
+| G3：已产生工件真实性                                | 156 套五层对象和 36 个失败记录可独立重建                    | **PASS**              |
+| G4：192-Job authoritative terminal totality | 仅 156/192 有 terminal Outcome                | **FAIL**              |
+| G5：exact-set Capability evaluation         | 因 G4 失败而未授权                                 | **UNKNOWN / BLOCKED** |
+| G6：Mapper、State、Contribution、VTDO          | 未进入本轮                                       | **UNEVALUATED**       |
+
+**首个失败 Gate 是 G4。**
+
+G0–G3 的通过只能证明“失败被可靠记录”，不能补偿 G4 的失败，也不能把 156 个完整 Job 提升成 exact 192-Job evidence set。
+
+---
+
+# 六、发现分级
+
+## Blocking defect
+
+### 首要：`subsequent_action` evidence domain 未闭合
+
+这是确定性的 Host 实现缺口，已由三个真实 Job 和无 Provider replay 直接复现。它直接导致当前 exact execution completion 声明不成立。
+
+### 次要但同样阻断完整分母：33 个 Provider 错误没有终止权威
+
+这些错误有完整调用证据，但缺少被现有 source authority 接受的 terminal parent chain。即使三个 Host 缺口修复，当前 33 行仍然不能让本轮历史执行变为完整 192-Job evidence set。
+
+## Scope limitation
+
+* 126 个 `completed_qualified` 只能描述已终止的 156 行。
+* 26 个 `final_response_abi_invalid` 是完整子集中的主要非 Qualified 终止类型，但不能据此推出完整 Population 的总体瓶颈比例。
+* 两个 JSONDecodeError 的精确响应语法错误不可重建。
+* 本轮没有检验 QA 类型覆盖、Mapper、State、frequency、Contribution、VTDO 或训练效用。
+
+## Future hardening
+
+本轮不需要继续扩展到生产级、密码学级或全系统审计。当前两个具体缺口已经足以决定 Gate，不应再增加与本轮声明无关的新阻塞条件。
+
+---
+
+# 七、当前允许与禁止的结论
+
+## 允许声明
+
+可以声明：
+
+1. v26.226 的 one-shot replacement 执行真实发生，授权消费顺序正确。
+2. 所有 192 个 Job 均被尝试并被记录为 complete record 或 failure record。
+3. Provider Journal、已产生的五层证据、Manifest 和目录关系完整可审计。
+4. 156 个 Job 获得 authoritative terminal，其中 126 个为 `completed_qualified`。
+5. 三个 Host failure 的确定原因是 `subsequent_action` parser/reference evidence domain 缺口。
+6. 33 个 Provider failure 有完整调用日志，但无当前授权的 terminal binding。
+7. v26.226 是 **artifact-complete、execution-incomplete** 的负向实验记录。
+
+## 禁止声明
+
+不能声明：
+
+```text
+q_first = 126 / 192
+q_bounded_correction = 126 / 192
+Capability success rate = 126 / 156
+36 个失败均应计为模型失败
+v26.226 证明模型在完整条件上通过
+v26.226 证明模型在完整条件上失败
+历史 36 行可以被事后填补
+可以选择性重跑 3、33 或 36 个 Job
+可以进入 Mapper / State / Contribution / VTDO
+```
+
+---
+
+# 八、后续实验判断
+
+## 当前是否可以继续在线执行
+
+**不可以。**
+
+read-only postrun audit transition 已被两套独立审计消费。当前正式决定是：
+
+```text
+v26_226_artifact_complete_execution_incomplete_at_
+subsequent_action_evidence_domain_and_
+unbound_provider_response_failures
+```
+
+当前没有任何 successor 获得授权。repair、replacement、rerun、recovery、经验估计、QA、Mapper、State、Contribution 和 VTDO 均保持禁止。
+
+## 唯一合理的下一实验建议
+
+建议下一阶段仅设计为零 Provider 修复预检：
+
+```text
+fresh_exact_v209_subsequent_action_parser_reference_
+evidence_domain_closure_preflight_only
+```
+
+它应当只做以下工作：
+
+1. 冻结 v26.226 的 exact source、三个 failure records 和对应 public projections。
+2. 零 Provider 重放 ordinals 6、22、149。
+3. 使 parser/reference evidence 能够真实承载 `subsequent_action` InvocationRecord；terminal 必须从实际 InvocationOutcome、phase、State、Candidate 和 Registry 父对象推导，不得增加 caller terminal。
+4. 要求三条正控制全部形成：
+
+   ```text
+   observed record
+     -> derived terminal
+     -> Raw -> Result -> Trace -> Outcome -> checkpoint
+   ```
+5. 至少拒绝 phase 替换、parser/reference 类型替换、跨 Job record、陈旧 State/Candidate parent 和全重哈希伪造 evidence。
+6. Provider、credential、历史工件修改、经验估计和在线授权保持为零。
+7. 通过后只允许独立审计，不直接允许新在线执行。
+
+这一步通过后，**33 个 Provider 错误的 source-authenticated terminalization 或 fresh recovery Population 仍需单独决策**。不应把两个修复混入同一首轮预检，也不能用修复后的本地 replay 回填 v26.226 历史 Outcome。
+
+最终状态应记录为：
+
+```text
+V26.226 RECORD INTEGRITY
+  PASS
+
+V26.226 EXACT EXPERIMENT COMPLETION
+  FAIL / INCOMPLETE
+
+FIRST BLOCKER
+  SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED
+
+CURRENT AUTHORIZATION
+  CONSUMED / DEAD
+
+NEXT ONLINE RUN
+  NOT AUTHORIZED
+
+NEXT RATIONAL WORK
+  ZERO-PROVIDER SUBSEQUENT-ACTION EVIDENCE-DOMAIN REPAIR PREFLIGHT
+```

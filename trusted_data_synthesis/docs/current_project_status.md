@@ -15,6 +15,123 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.227 Subsequent-Action Parser/Reference Evidence-Domain Closure Preflight
+
+Finance v26.227 consumed only
+`fresh_exact_v209_subsequent_action_parser_reference_evidence_domain_closure_preflight_only`.
+The exact 13,590-byte external review at SHA-256
+`5e9c72e7f0a9c25517e4eb9f63f0f9a3088940167f4e3c7b39c7b09517b18d1a`
+accepts v26.226 artifact completeness but retains its exact 192-Job execution as
+`FAILED_INCOMPLETE`. It authorizes only the credential-free repair of the first blocker,
+`SUBSEQUENT_ACTION_PARSER_REFERENCE_EVIDENCE_DOMAIN_NOT_CLOSED`. The exact 30-byte directive
+`参照审计结果逐一修订`, SHA-256
+`a8bdf30ec84061dd289280f38fb257330db9ced1d1e559d094291d25363ca2cf`,
+consumed only that scope.
+
+The complete immutable v26.226 directory revalidates at 3,428 files and 99,765,014 bytes; its
+Manifest binds 3,427 members and 99,047,004 bytes. The three exact Host-failure rows at Job
+ordinals 6, 22, and 149 form source set
+`dbecba00270f755044c2293ba103ed647b977cf2530af508e0515042cab8d33c`.
+The other 33 failures remain the disjoint Provider-failure exclusion set
+`d9243f618f547da83cae5e6698d3155030b3065058cf5372b8171bf013d3d3f0`;
+v26.227 does not replay or terminalize them and changes no historical v26.226 byte or terminal.
+
+The preliminary v1 directory remains immutable but is superseded. It matched the public payload
+sequence but did not explicitly require every replayed canonical request hash to equal its frozen
+v26.226 Provider descriptor request hash. Authoritative v2 adds that exact source relation and
+format/type-complete source cleanup. Both versions make zero Provider calls, and their three
+source Jobs and terminal partition are unchanged.
+
+Two strict evidence variants now bind the complete exact v26.209 invocation prefix, actual
+terminal invocation, public response, Job, current State, and ordered current Candidate set. The
+dispatcher accepts only the evidence object; terminal, policy, and phase are not caller arguments.
+A credential-free exact Runner replay produces:
+
+```text
+Job ordinal   records   evidence                              derived terminal
+6             3         subsequent_action_parser_rejection   first_response_abi_invalid
+22            3         subsequent_action_parser_rejection   first_response_abi_invalid
+149           2         subsequent_action_reference_failure  first_action_reference_invalid
+```
+
+All eight replayed canonical request-body hashes equal the corresponding frozen Provider
+descriptor request hashes, and all eight public-response hashes match. The `first_*` values are
+the frozen Registry names for non-Correction Action failures, not a claim that these failures
+occurred at the first Action; all three terminal records have actual phase `subsequent_action`.
+The parser decisions bind policy
+`fresh_kernel_terminal_policy:b5fb980fc0c80b2c72a964d538cf487e9a27403aff0ebe4e88ffb3b29847c04f`;
+the reference decision binds
+`fresh_kernel_terminal_policy:443b4c076ea4d694590fbafcd66d1c23681679bd24368ad43a354299c480fe3b`.
+
+Each control persists one fresh nonempirical
+Raw -> Result -> Trace -> Outcome -> checkpoint chain. All eight invocation records, three
+derived decisions, and fifteen layer artifacts close with zero exception escape. Eight attacks
+cover phase replacement, evidence-type replacement, cross-Job substitution, prefix truncation,
+stale State, stale Candidates, a fully rehashed five-layer forgery, and excluded-Provider-row
+substitution. All 8/8 reject before Raw; the full-rehash attack creates five candidate identities
+but still fails source-authority admission.
+
+The exact noncompensatory Gate partition is:
+
+```text
+G0 external scope and exact v26.226 Freeze                  PASS
+G1 exact three Host-failure source rows                      PASS
+G2 complete invocation-prefix binding                       PASS
+G3 subsequent-Action parser evidence                        PASS
+G4 subsequent-Action reference evidence                     PASS
+G5 derived terminal and five-layer closure                  PASS
+G6 negative controls                                        PASS
+G7 zero-Provider scope boundary                             PASS
+passed / failed                                              8 / 0
+```
+
+Authoritative identities include:
+
+- external authorization / v26.226 Freeze:
+  `finance_v26_227_external_authorization:9d344b1d0a0199b5c35ade37f0eb18247dd87e99fb4622f7ec7a60bf1fdcaf88` /
+  `finance_v26_227_v226_freeze:b95c537029153dbcb7b1b59859363552da7023a73b93fa807e98c5d7d8def6be`;
+- source / dispatcher:
+  `finance_v26_227_source_identity:b55101d2717580e1f0bb331fa5da77667d22ef7542f74005ced7d1f1b5125867` /
+  `finance_v26_227_subsequent_action_dispatcher_binding:a026eb3b3248f9bb3eaa8bc9d401f5f480ccf09cbc73d840d01cc2526d478cd2`;
+- control / negative / scope Audits:
+  `finance_v26_227_control_audit:57d37112387c87bd3c0ab2b36aa1dedf42f812700c3665d76c0371180be287c4` /
+  `finance_v26_227_negative_audit:259fe24976fbfd38d24c26c6e62fcd3bafffaafb75c4d4f1a24d3a6878972fed` /
+  `finance_v26_227_scope_audit:c982d1bae6b2e21831d12d106d6794b6c3561e87f8b9568257aceb8a5b855ac0`;
+- Gate / Decision / Transition / report:
+  `finance_v26_227_gate_evaluation:fa1a77e69edee6a72ce2e02a3c3153a9b22d28349a08ed3496e5ccbdb828c05f` /
+  `finance_v26_227_decision:a1ba81374ac7e0c717b3551f21d1cf116f1595a856aeb7081378788f75e1e2d9` /
+  `finance_v26_227_transition:e17860f5577f6e2aeb2d8251258ffb3997428b4dae3afc7fed5bdc5b0cfa763e` /
+  `finance_v26_227_report:8e338aead7b9e5e8a03a49306016ce4158470f2255e9502ed1d8745438e01f79`;
+- Artifact Manifest / Root:
+  `finance_v26_227_artifact_manifest:3a4080aabfcfcc11750358961818956089c7c3ff154d168b9c00f3cb5bb25bd8` /
+  `finance_v26_227_artifact_root:1e4550aaa3db50523b4a9c8ba7eefad323d2bb0d377954be71238c46e8917e94`.
+
+The exact authoritative source commit/tree are
+`78bd5edf524d899a16809c793af7cfa6c333683a` /
+`ea4ac2e38582144c03855e6991ce9fe49d0f3a3a`. The 38-file, 3,715,790-byte formal
+directory rebuilds byte for byte; its Manifest binds 37 members and 3,708,807 bytes. Focused
+tests pass 8/8. PyCompile, focused Ruff check/format, focused no-import-follow Mypy, and
+package-wide Ruff pass. The adjacent main-process group passes 134/134 with v26.217 excluded.
+Two isolated v26.217 attempts produce 7/8 and 0/8 at its historical `id(error)` allocator-address
+reuse seam; v26.227 does not rewrite that predecessor and does not misreport a combined adjacent
+pass.
+
+The current decision is:
+
+```text
+subsequent_action_parser_reference_evidence_domain_closed_for_three_v26_226_
+host_failures_independent_audit_required_online_execution_blocked
+```
+
+The only permitted successor is
+`fresh_exact_v209_subsequent_action_parser_reference_evidence_domain_closure_independent_audit_only`.
+It may independently rebuild, replay, reconstruct the fifteen layers, and repeat the eight
+attacks with zero Provider calls; it may not issue an online authorization. The 33 Provider
+failures remain a separate unresolved source-authority and recovery problem. Provider execution,
+replacement, failed-Job rerun, recovery, historical mutation, empirical estimation, QA, Mapper,
+State, frequency, Contribution, VTDO, training, release, and production remain forbidden. See
+`docs/finance_v26_227_fresh_exact_v209_subsequent_action_parser_reference_evidence_domain_closure_preflight.md`.
+
 ## v26.226 Parent-Bound Serializer-Repair 192-Job Replacement Online Execution
 
 After two independent credential-free reviews passed v26.225 v3, Finance v26.226 consumed its
