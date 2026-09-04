@@ -1,0 +1,1190 @@
+# 一、本轮 QA 链路实验审计结论
+
+本次审计基于上传的实验报告及其中给出的形式工件、Gate 和重放结果；未直接读取对应 Git 仓库源码。因此，下面确认的是**报告所声明的实验对象与证据链是否一致**，不是一次额外的源码级独立复现。
+
+建议正式分类为：
+
+```text
+audit_decision
+  = ACCEPT_NEGATIVE_RESULT_AS_SCOPED
+
+implementation_blocking_defect
+  = NONE_FOUND_IN_REPORTED_EVIDENCE
+
+scientific_gate
+  = FAIL_AT_G4
+
+first_fundamental_blocker
+  = authoritative_gross_margin_target_evidence_absent_from_current_
+    admissible_archive_evidence_domain
+
+current_stage_rerun_required
+  = false
+
+old_qa_mainline_resume
+  = false
+
+recommended_successor
+  = finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_only
+```
+
+这里必须区分两个结论：
+
+```text
+本轮实验是否可信地完成了自己的检验：是
+本轮原定的正向科学命题是否成立：否
+```
+
+本轮只检验两个已注册、`semantic_operation_depth >= 3` 的任务类型能否各自获得多个 Archive-grounded Evidence Binding。它没有声称检验关键推理轨迹、模型生成能力或训练价值。其范围设置与前置授权是一致的。
+
+---
+
+## 1. 当前声明与实际实现相符
+
+### Branch-and-merge 路径
+
+`derived_growth_absolute_spread` 在两个 Archive 记录、九个时间窗口上形成了：
+
+```text
+9 个候选
+9 个不同 Evidence Binding
+9/9 完整 Program 执行
+9/9 独立节点重放
+9/9 答案、Schema、引用正确
+9/9 质量接受
+semantic_operation_depth = 3
+```
+
+而且覆盖了相邻期间、长跨度期间、正负号组合和 near-equal-growth 边缘关系。因此，这一部分确实支持：
+
+> 在冻结的两个 Archive 记录和九个参数窗口上，该 branch-and-merge 任务是可构造、可执行和可验证的。
+
+它不支持 Archive-wide 频率或一般覆盖率，报告也没有越级声称这些结论。
+
+### Serial target-gap 路径
+
+`registered_margin_target_gap` 所需的角色是：
+
+```text
+gross_profit
+revenue
+gross_margin_target
+```
+
+当前 CDW 记录可以提供三个 gross-profit/revenue 组合，但无法提供同实体、同适用期间的权威 `gross_margin_target`。实验没有把常量、历史答案或由实际值导出的毛利率伪装成目标值。因此三条候选均正确地被阻断为：
+
+```text
+authoritative_gross_margin_target_evidence_absent
+```
+
+这是 Evidence-role authority 失败，不是 arithmetic、generator 或 verifier 失败。
+
+---
+
+## 2. 直接反例检查
+
+没有发现能够直接推翻本轮负向结论的反例。
+
+以下三种“修复”都不能成立：
+
+```text
+实际毛利率             ≠ 管理层目标毛利率
+历史问题的答案         ≠ 目标值证据
+任意百分比常量         ≠ 权威目标证据
+```
+
+九个 branch 成功行也不能补偿 serial 任务的零绑定，因为本轮命题明确要求**两个任务类型都**具有多个 Archive-grounded Binding。报告的非补偿 Gate 正确地把 G4 判为失败，而其余成功行没有被拿来“平均”掉该失败。
+
+因此：
+
+```text
+G4 = FAIL
+```
+
+是正确结果，不需要通过放宽 Evidence role、修改阈值或隐藏三个失败行来变成 PASS。
+
+---
+
+# 二、发现分级
+
+## Blocking defect
+
+**没有发现新的实现级 Blocking defect。**
+
+本轮的阻断是实验对象本身的科学结果：
+
+```text
+两个已注册 depth-three 任务均具有多个 Archive Binding
+                                                = false
+```
+
+首个阻塞点准确定位为 serial 任务缺少权威 target Evidence。
+
+所以本轮不应被分类为“实验实现失败”，而应分类为：
+
+```text
+valid_negative_constructibility_result
+```
+
+---
+
+## Scope limitation
+
+### 1. “target evidence absent”只在当前可接纳 Evidence 域内成立
+
+当前 Archive 是冻结的 FinQA `test.json`，本轮 Evidence item 明确绑定到表格、行标签、单元格坐标和规范化谓词。
+
+因此最精确的解释是：
+
+> 当前冻结 Archive 的已注册表格单元格 Evidence adapter 中，没有发现能够满足 `gross_margin_target` 角色的权威证据。
+
+它不能被扩大成：
+
+```text
+所有公司文档中都不存在毛利率目标
+所有叙述性文本中都不存在目标或指引
+现实金融信息源中没有该类 Evidence
+```
+
+这不是当前 Gate 的缺陷，因为本轮只使用了该冻结 Archive；但后续报告应保持这个限定。
+
+### 2. Semantic-operation depth 不是 reasoning depth
+
+本轮确认的是：
+
+```text
+semantic_operation_depth = 3
+```
+
+它表示 Program DAG 中语义运算的依赖深度。
+
+它不表示：
+
+```text
+模型进行了三层关键判断
+模型解释了为何选择这些 Evidence
+模型比较过备选行动
+模型根据 Observation 更新了判断
+```
+
+一个三层 Program 可以被 deterministic executor 机械执行，而完全没有可观察的关键推理过程。因此当前结果不能被解释为“已经具备深度三的推理轨迹”。
+
+### 3. Parameter Binding 多样性不是同一任务下的轨迹多样性
+
+九个 branch rows 改变了实体、期间和 Evidence Binding。按后续 VTDO 所需的具体任务定义，这些变化通常属于不同的任务实例 \(x\)，而不是同一个 \(x\) 下不同的轨迹状态 \(z\)。
+
+因此：
+
+```text
+9 个 Archive Binding
+    ≠
+同一任务下 9 个有效轨迹状态
+```
+
+本轮增加的是实例参数覆盖，不是 \(\pi(z\mid x)\) 的非退化支持。
+
+### 4. 当前只证明一个 branch Program skeleton 的局部可构造性
+
+两实体、九窗口是有用的构造性证据，但仍不能证明：
+
+* 问题类型覆盖充分；
+* 不同 reasoning topology 已覆盖；
+* 多种有效 Program/轨迹均可生成；
+* 真实难度分布合理；
+* QA 适合训练。
+
+报告已经明确保留了这些边界。
+
+---
+
+## Future hardening
+
+只建议做三个非阻断性文档澄清，不需要重跑当前实验，也不应修改已经冻结的形式工件：
+
+```text
+1. authoritative_target_evidence_absent
+   -> bounded to current admitted table-cell Archive domain
+
+2. G6 cross-entity/period/relationship/edge coverage
+   -> clarify that this is admitted branch-case coverage,
+      not coverage shared by both task types
+
+3. semantic_operation_depth
+   -> explicitly label as Program depth rather than reasoning depth
+```
+
+这些可以写入外部审计说明，不应回写当前 Manifest、Decision 或 Artifact Root。
+
+---
+
+# 三、本轮允许与禁止的结论
+
+## 当前允许保留
+
+```text
+PASS  Archive/source/Catalog authority
+PASS  冻结参数网格和程序化聚合
+PASS  branch 任务的 9 个局部 Archive Binding
+PASS  9/9 deterministic execution 和 independent replay
+PASS  serial 任务缺少 target Evidence 的精确定位
+PASS  对常量注入、actual-to-target relabel 等攻击的拒绝
+FAIL  两个任务类型都具有多个 Archive Binding
+```
+
+## 当前仍然禁止
+
+```text
+一般 QA 类型覆盖结论
+Benchmark 分布或频率结论
+reasoning depth 结论
+关键推理轨迹有效性结论
+同一任务下多轨迹非退化结论
+模型在线生成质量
+QA Release
+Mapper / State / Contribution / VTDO
+训练或主链恢复
+```
+
+当前报告也明确规定没有自动授权的后继实验；Archive 扩展或任务语义重设计都需要新的外部决策。
+
+---
+
+# 四、是否应立即执行原报告建议的 Archive 扩展
+
+原建议：
+
+```text
+qa_registered_margin_target_gap_authoritative_target_evidence_
+archive_expansion_preflight_only
+```
+
+在**只想修复当前 G4**的前提下是合理的。
+
+但根据刚才对关键推理轨迹的讨论，它不应成为现在唯一或优先的下一步。因为即使找到两个或更多明确的毛利率目标：
+
+```text
+G4 可以关闭
+```
+
+也仍然不能解决：
+
+```text
+Program depth 与 reasoning depth 混同
+轨迹缺少 pre-action 关键判断
+没有 Observation 后的 claim update
+没有 reasoning-action faithfulness
+没有同一 x 下多个有效轨迹状态
+```
+
+因此建议：
+
+```text
+当前 Archive constructibility 实验
+  -> 冻结为有效负结果
+
+立即 Archive 扩展
+  -> 暂缓
+
+优先后继
+  -> QA/Trajectory vNext 科学对象与合同冻结
+```
+
+Archive target 扩展可以在 vNext 的 `TargetEvidenceAuthorityContract` 建立后，作为独立支线恢复。
+
+---
+
+# 五、QA/Trajectory vNext 的核心修订目标
+
+新链路不再把“答案 Program 被执行”当作“推理轨迹已经存在”。
+
+应明确分成五种对象：
+
+```text
+1. Answer Oracle Program
+2. Critical Decision Graph
+3. Public Critical Reasoning Record
+4. Action / Observation Execution Trace
+5. Claim Update And Final Answer Trace
+```
+
+形式上，对具体任务 \(x\)，新轨迹可表示为：
+
+$$
+\tau =
+(s_0,r_0,a_0,o_0,u_0,
+ s_1,r_1,a_1,o_1,u_1,\ldots,f),
+$$
+
+其中：
+
+* \(s_t\)：当时公开可用的状态、Evidence 和已验证 Claims；
+* \(r_t\)：Action 前提交的结构化关键判断；
+* \(a_t\)：实际选定的操作或工具行动；
+* \(o_t\)：真实执行 Observation；
+* \(u_t\)：由 Observation 导出的 Claim/不确定性更新；
+* \(f\)：最终答案、引用和 Claim lineage。
+
+这里的 \(r_t\) 应是**公开、结构化、可验证的决策记录**，不是私有模型 CoT，也不能用 Thinking token 数替代。
+
+---
+
+# 六、建议的新链路架构
+
+```text
+Archive / Evidence Source
+  -> EvidenceBundle
+  -> ProofGraph
+  -> EvidenceBinding
+  -> SemanticInstance
+
+SemanticInstance
+  -> AnswerOracleProgramBinding
+  -> CriticalDecisionGraph
+
+Current Public State
+  -> ReasoningActionEnvelope
+  -> Pre-action validation
+  -> Action execution
+  -> Observation artifact
+  -> ObservationUpdate
+  -> Next Public State
+
+Complete sequence
+  -> ReasoningTrajectory
+  -> AnswerValidityReport
+  -> TrajectoryValidityReport
+  -> QualifiedReasoningTrajectory
+```
+
+现有组件可以保留：
+
+```text
+EvidenceBundle
+ProofGraph
+EvidenceBinding
+BindingSnapshot
+SemanticInstance
+CanonicalSemanticPlan
+PublicPlanCandidateExecutor
+independent Oracle replay
+CandidateWorkflowVerifier
+```
+
+但它们的解释需要收窄：
+
+```text
+CanonicalSemanticPlan
+  = Answer/operation correctness oracle
+
+PublicPlanCandidateExecutor
+  = deterministic execution and verification tool
+
+两者都不再被称为模型 reasoning trajectory
+```
+
+---
+
+# 七、建议增加的核心合同
+
+## 1. `AnswerOracleProgramBindingV1`
+
+它将现有 Program 明确绑定为答案正确性的 Oracle：
+
+```text
+task_instance_id
+evidence_binding_id
+canonical_semantic_plan_id
+expected_answer_schema
+expected_answer_value_or_recompute_contract
+citation_contract
+tolerance_and_rounding_contract
+```
+
+它只回答：
+
+> 给定 Evidence，什么操作结果和最终答案是正确的？
+
+它不规定模型必须采用唯一推理路线。
+
+---
+
+## 2. `CriticalDecisionGraphV1`
+
+它定义任务中真正需要模型作出的关键决策，而不是完整参考 CoT。
+
+建议字段：
+
+```text
+critical_decision_graph_id
+task_instance_id
+answer_oracle_program_id
+
+decision_obligations:
+  - decision_id
+  - trigger_state_predicate
+  - subgoal
+  - unresolved_uncertainty_type
+  - required_evidence_roles
+  - admissible_action_classes
+  - admissible_alternative_actions
+  - forbidden_shortcut_classes
+  - produced_claim_schema
+  - downstream_claim_dependencies
+  - required_or_optional
+  - counterfactual_intervention_ids
+```
+
+例如 branch growth-spread 任务至少包含：
+
+```text
+D1  确认两个指标使用可比较的期间和定义
+D2  决定分别计算 revenue growth 与 operating-income growth
+D3  检查符号、单位和增长率可比较性
+D4  合并两个分支并计算 spread
+D5  将最终数值与正确 Evidence 引用绑定
+```
+
+该 Graph 只定义必须满足的 decision obligations，不规定唯一排序或唯一语言表达。
+
+---
+
+## 3. `PublicReasoningStateV1`
+
+```text
+state_id
+task_instance_id
+available_evidence_refs
+verified_claim_refs
+current_subgoal
+remaining_uncertainties
+available_action_ids
+completed_action_refs
+observation_refs
+state_version
+```
+
+关键规则：
+
+```text
+模型只能引用当前 State 已公开的 Evidence 和 Claim
+未来 Observation 不得出现在当前 reasoning 中
+跨 State 或跨 Job reasoning 重用必须拒绝
+```
+
+---
+
+## 4. `ReasoningActionEnvelopeV1`
+
+建议将关键判断和 Action 原子化提交。Host 只有在整个 Envelope 验证通过后才执行 Action：
+
+```json
+{
+  "state_id": "...",
+  "decision_id": "...",
+  "subgoal": "...",
+  "evidence_refs": ["..."],
+  "claim_refs": ["..."],
+  "unresolved_uncertainty": "...",
+  "candidate_action_ids": ["..."],
+  "selected_action_id": "...",
+  "decision_basis": [
+    {
+      "relation": "supports|rules_out|requires|insufficient",
+      "subject_ref": "...",
+      "evidence_refs": ["..."]
+    }
+  ],
+  "expected_effect": "...",
+  "action": {
+    "state_id": "...",
+    "action_id": "...",
+    "decision_kind": "execute_public_operation",
+    "protocol": "finance_reasoning_action.v1"
+  },
+  "protocol": "finance_public_critical_reasoning.v1"
+}
+```
+
+设计原则：
+
+* 不要求大段自由文本；
+* `decision_basis` 使用 Evidence/Claim 的结构化边；
+* reasoning 和 action 同时持久化，但必须在 Action 执行前提交；
+* 不能先执行，再补写解释；
+* 旧四字段 Action ABI 可以作为内层 Action，但外层必须使用全新的 Contract 和 identity。
+
+---
+
+## 5. `ObservationUpdateV1`
+
+每次 Action 后必须形成公开更新：
+
+```text
+update_id
+parent_reasoning_action_id
+action_execution_id
+observation_id
+accepted_claims
+rejected_or_revised_claims
+remaining_uncertainties
+newly_enabled_actions
+next_subgoal
+next_state_id
+```
+
+它回答：
+
+> 这次 Observation 实际改变了什么？
+
+不能只记录工具输出而不说明其对后续决策的作用。
+
+---
+
+## 6. `ReasoningTrajectoryV1`
+
+```text
+trajectory_id
+task_instance_id
+initial_state_id
+ordered_reasoning_action_ids
+ordered_observation_update_ids
+final_claim_refs
+final_answer_ref
+critical_decision_graph_id
+answer_oracle_program_id
+```
+
+完整父链必须是：
+
+```text
+State_t
+  -> ReasoningAction_t
+  -> ActionExecution_t
+  -> Observation_t
+  -> Update_t
+  -> State_(t+1)
+```
+
+不能用一个最终 rationale 文本替代这条时序链。
+
+---
+
+## 7. `ReasoningValidityReportV1`
+
+建议把答案有效性和轨迹有效性完全分离：
+
+$$
+V_{\mathrm{QA}}
+=
+V_{\mathrm{source}}
+\land
+V_{\mathrm{answer}}
+\land
+V_{\mathrm{citation}},
+$$
+
+$$
+V_{\mathrm{trajectory}}
+=
+V_{\mathrm{preaction}}
+\land
+V_{\mathrm{grounding}}
+\land
+V_{\mathrm{reasoning\text{-}action}}
+\land
+V_{\mathrm{observation\text{-}update}}
+\land
+V_{\mathrm{critical\ coverage}}.
+$$
+
+最终：
+
+$$
+V_{\mathrm{VTDO\ candidate}}
+=
+V_{\mathrm{QA}}
+\land
+V_{\mathrm{trajectory}}.
+$$
+
+任何一个因子失败都不能被总分、语言流畅度或答案正确性补偿。
+
+---
+
+# 八、Target Evidence 的专门修订
+
+当前失败说明 `gross_margin_target` 不能只是一个普通数值 role。应新增：
+
+```text
+TargetEvidenceAuthorityContractV1
+```
+
+至少绑定：
+
+```text
+metric_definition_id
+target_modality
+  = management_target
+  | company_guidance
+  | analyst_consensus
+  | policy_threshold
+  | peer_benchmark
+  | observed_actual
+source_authority
+issuer_or_author
+statement_as_of
+effective_period
+entity_scope
+unit
+currency_if_applicable
+gaap_or_non_gaap_basis
+exact_text_or_table_locator
+source_document_id
+```
+
+每个 target-gap Task 必须声明允许的 modality。例如：
+
+```text
+registered_margin_target_gap
+allowed_target_modalities
+  = {management_target, company_guidance}
+```
+
+则以下 Evidence 必须拒绝：
+
+```text
+observed_actual
+analyst_consensus
+peer_average
+arbitrary_constant
+derived_margin
+```
+
+除非重新定义一个新的 Task，例如：
+
+```text
+gross_margin_vs_consensus_gap
+gross_margin_vs_peer_benchmark_gap
+gross_margin_period_over_period_gap
+```
+
+这些都是新任务语义，必须获得新的 task identity，不能伪装成原 task 的数据补充。
+
+---
+
+# 九、当前 serial 任务的三种处理方式
+
+## 方案 A：保留原语义，扩展 Archive
+
+寻找明确陈述公司毛利率目标或指引的 issuer-authored 文档。
+
+要求：
+
+```text
+target modality 明确
+适用期间明确
+metric definition 明确
+单位明确
+source authority 明确
+```
+
+这是原报告建议的合法修复路径，但应在 Target Evidence Contract 冻结后执行。
+
+## 方案 B：构造新的、Evidence 充分的 serial 正向任务
+
+例如：
+
+```text
+gross_margin_period_change
+```
+
+程序可以是：
+
+```text
+gross_profit_t1 / revenue_t1
+  -> gross_margin_t1
+
+gross_profit_t2 / revenue_t2
+  -> gross_margin_t2
+
+gross_margin_t2 - gross_margin_t1
+  -> period change
+```
+
+它使用当前 CDW Archive 已具备的 Evidence，但必须作为**新 Task**，不能覆盖原 `registered_margin_target_gap`。
+
+## 方案 C：把当前缺失 target 作为 reasoning 负向 Fixture
+
+在 vNext trajectory preflight 中，正确行为可以是：
+
+```text
+识别 target role 缺失
+  -> 不执行 target-gap 计算
+  -> 选择 seek_authoritative_target
+     或 terminate_evidence_insufficient
+```
+
+这可以检验模型是否会：
+
+* 发现证据不足；
+* 拒绝把 actual 当 target；
+* 选择检索更多 Evidence；
+* 在无法检索时正确 abstain。
+
+建议组合使用：
+
+```text
+正向 serial 覆盖：方案 B
+证据不足 reasoning 检验：方案 C
+原 target-gap 最终恢复：方案 A，后续独立进行
+```
+
+---
+
+# 十、问题类型与深度覆盖的修订
+
+不应再用“注册了多少 task type”或“Program depth 最大值”单独表示覆盖。
+
+建议创建：
+
+```text
+QATaskAndReasoningCoverageMatrixV1
+```
+
+覆盖轴包括：
+
+| 轴                    | 建议取值                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| Task family          | retrieval、ratio、comparison、selection、ranking、reconciliation、target-gap、conflict/insufficiency   |
+| Program topology     | single、serial、branch-and-merge、select-then-lookup、correction                                    |
+| Evidence modality    | table cell、narrative statement、cross-document                                                   |
+| Temporal structure   | single-period、paired-period、multi-period                                                        |
+| Entity structure     | single-entity、cross-entity                                                                      |
+| Reasoning obligation | definition alignment、period alignment、operation choice、evidence sufficiency、conflict resolution |
+| Answer shape         | scalar、comparison、ranking、structured explanation                                                |
+| Trajectory structure | direct、alternative valid path、correction、abstention                                             |
+
+第一轮 vNext 不需要覆盖整个组合空间。最小构造性矩阵建议只覆盖四种结构：
+
+```text
+T1 serial derivation
+T2 branch-and-merge
+T3 select-then-lookup
+T4 evidence-insufficiency or correction
+```
+
+推荐的具体 Fixture：
+
+| Fixture                                   | 状态                                      |
+| ----------------------------------------- | --------------------------------------- |
+| `derived_growth_absolute_spread`          | 复用语义，增加 reasoning contract              |
+| 新 `gross_margin_period_change`            | 正向 serial                               |
+| 新 `temporal_peak_secondary_lookup`        | selection-lookup，需要新 Operation identity |
+| 旧 `registered_margin_target_gap` 缺 target | 负向 evidence-insufficiency Fixture       |
+
+跨实体 ranking、reconciliation 和多文档冲突可放到下一轮，不应作为首轮全部强制 Gate。
+
+---
+
+# 十一、深度指标必须拆分
+
+## 1. Semantic-operation depth
+
+保留现有定义：
+
+$$
+d_{\mathrm{sem}}
+=
+\max \text{ operation-dependency path length}.
+$$
+
+它描述 Program。
+
+## 2. Reasoning depth
+
+新定义：
+
+$$
+d_{\mathrm{reason}}
+=
+\max \text{ verified critical-decision dependency path length}.
+$$
+
+只有当后续决策真实使用前一步生成的 verified claim 时，才能形成 reasoning edge。
+
+## 3. Evidence-integration depth
+
+```text
+一个 downstream Claim 最多合并多少条独立 Evidence/Claim 分支
+```
+
+branch-and-merge 任务应至少产生两条独立分支再合并。
+
+## 4. Correction depth
+
+```text
+模型检测到不一致或失败后，
+经历多少次有效 revise -> re-execute -> update
+```
+
+## 5. Critical-decision coverage
+
+$$
+\mathrm{CDC}(\tau,x)
+=
+\frac{
+\#\text{被有效 reasoning step 覆盖的 required obligations}
+}{
+\#\text{required decision obligations}
+}.
+$$
+
+这些指标不能合并为一个 `depth` 字段，也不能用 token 数、文本长度或 Operation 节点总数替代。
+
+---
+
+# 十二、关键推理是否“真的关键”的检验
+
+每个 required decision obligation 至少注册一个直接干预：
+
+```text
+移除关键 Evidence
+交换 earlier/later period
+交换 numerator/denominator role
+改变单位或 metric definition
+删除当前 selected Action
+加入一个容易混淆的 alternative
+把 target modality 改为 observed_actual
+```
+
+预期结果必须是以下之一：
+
+```text
+selected Action 改变
+当前 Action 不再可接纳
+reasoning 输出 evidence insufficient
+downstream Claim 改变
+最终答案或有效性改变
+```
+
+若一个 reasoning step 在所有注册干预下都不改变任何行动、Claim 或有效性，它更可能只是装饰性说明，而不是关键推理。
+
+这不是要求唯一 CoT，而是要求该步骤对公开决策结构有可检验作用。
+
+---
+
+# 十三、最小直接反例集合
+
+为了避免过度审计，第一轮只需要以下直接反例，不必扩展成生产级攻击全集：
+
+```text
+A1 Observation 已产生后再补写 pre-action reasoning
+A2 无 Evidence refs 的通用 rationale
+A3 将一个 State 的 reasoning 绑定到另一个 State
+A4 reasoning 选择 Action-A，实际执行 Action-B
+A5 reasoning 引用当前 State 尚不可见的 Evidence
+A6 Observation 与 Claim update 不相容
+A7 actual margin 被重标为 target
+A8 Final 正确但关键 reasoning obligations 缺失
+A9 reasoning 正确但 Final 或 citation 错误
+A10 两条仅改写措辞的轨迹被误判为两个不同 quotient State
+```
+
+所有攻击都应只检验新合同的直接反例，不需要再次审计旧系统全部 artifact 安全属性。
+
+---
+
+# 十四、建议的实验阶段
+
+## 阶段 0：冻结当前结果
+
+```text
+current_archive_preflight
+  = valid_negative_result
+
+rerun
+  = false
+
+formal_artifact_rewrite
+  = false
+
+archive_target_expansion
+  = deferred
+```
+
+当前 9 个 branch rows 可以作为以后固定 Fixture 的 Evidence parent，但不能被标记为 reasoning-bearing trajectory。
+
+---
+
+## 阶段 1：科学对象与合同冻结
+
+建议精确命名：
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_
+and_contract_freeze_only
+```
+
+范围：
+
+```text
+Provider calls                         0
+credential reads                       0
+Archive expansion                      0
+old Catalog mutation                   0
+Catalog promotion                      0
+online Jobs                            0
+VTDO / Mapper / State                  0
+```
+
+应生成：
+
+```text
+AnswerOracleProgramBindingContract
+CriticalDecisionGraphContract
+PublicReasoningStateContract
+ReasoningActionEnvelopeContract
+ObservationUpdateContract
+ReasoningTrajectoryContract
+ReasoningValidityContract
+TargetEvidenceAuthorityContract
+DepthMetricContract
+QATaskAndReasoningCoverageMatrix
+```
+
+本阶段只证明这些对象定义一致，不证明任何模型能力。
+
+---
+
+## 阶段 2：固定 Fixture 构造性检验
+
+建议命名：
+
+```text
+finance_qa_vnext_reasoning_bearing_fixed_fixture_
+constructibility_preflight_only
+```
+
+使用前述四种 Fixture。
+
+每个正向任务至少构造：
+
+```text
+2 条语义有效但非同构的 reasoning/action path
+1 条直接无效 path
+```
+
+需要证明：
+
+```text
+Answer Oracle 可重算
+Critical Decision Graph 可编译
+reasoning 在 Action 前提交
+Action 与 decision 一致
+Observation 后 Claim 正确更新
+reasoning depth 程序化导出
+有效替代路径不会被强迫成唯一参考轨迹
+直接攻击均拒绝
+```
+
+仍然零 Provider 调用。
+
+---
+
+## 阶段 3：Archive-grounded 多任务构造性检验
+
+建议命名：
+
+```text
+finance_qa_vnext_reasoning_bearing_archive_grounded_
+multi_family_constructibility_preflight_only
+```
+
+目标不是 Benchmark 频率，而是：
+
+```text
+每个正向 task archetype 至少有多个真实 Evidence Binding
+每个 included task 的 Evidence roles 完整
+每个 included task 至少存在一个完整 reasoning-bearing trajectory
+选定的 multitrajectory cells 至少存在两个不同 quotient State
+```
+
+对于 target-gap：
+
+```text
+找到明确 target Evidence -> 进入正向可回答集合
+仍未找到                 -> 保持 typed blocked
+```
+
+任何 synthetic target 或 actual-to-target relabel 都继续禁止。
+
+---
+
+## 阶段 4A：小规模 Reasoning-Action ABI 在线校准
+
+建议先做接口校准，而不是立即恢复大规模主链。
+
+推荐：
+
+```text
+12 个冻结 source cells
+Control: 旧 Action-only interface
+Repair:  新 ReasoningActionEnvelope
+24 个 first-step Jobs
+```
+
+只测量：
+
+```text
+ReasoningAction ABI crossing
+State binding
+Evidence-ref validity
+selected Action reference validity
+pre-action commitment
+Action execution admission
+```
+
+这不是 Capability estimate。
+
+---
+
+## 阶段 4B：小规模多步一致性校准
+
+只在 4A 证明接口可达后执行。
+
+选取固定的小规模任务，至少完成：
+
+```text
+ReasoningAction
+  -> Observation
+  -> ObservationUpdate
+  -> next ReasoningAction or Final
+```
+
+测量：
+
+```text
+reasoning-action consistency
+observation-update consistency
+critical-decision coverage
+counterfactual sensitivity
+final claim lineage
+```
+
+不需要立即达到 192 Jobs。
+
+---
+
+## 阶段 5：重建新的实验主链
+
+只有前述阶段通过后，才创建新的主链代际：
+
+```text
+Finance v27 Mainline
+```
+
+必须重新物化：
+
+```text
+Task Population
+Reasoning-bearing TaskPackage
+Job Manifest
+Runner
+Prompt/Response Contract
+Trajectory Contract
+Validity Contract
+Outcome Contract
+Estimand Contract
+Mapper/State Contract
+```
+
+全部使用 fresh identity。
+
+禁止：
+
+```text
+给旧轨迹事后附加 rationale
+复用旧 Job ID
+把旧 completed_qualified 解释为 reasoning-qualified
+合并新旧 denominator
+把旧 semantic_operation_depth 当成新 reasoning_depth
+```
+
+---
+
+# 十五、与 VTDO 的后续连接
+
+只有当 `ReasoningTrajectoryValidity` 闭合后，才定义轨迹商状态 \(z\)。
+
+建议未来的 quotient 表示保留：
+
+```text
+critical decision obligation sequence
+Evidence-role access pattern
+verified Claim dependency DAG
+Action class sequence
+branch/merge structure
+correction structure
+termination mode
+```
+
+应当剔除：
+
+```text
+措辞风格
+同义改写
+解释长度
+私有 Thinking 内容
+无决策作用的冗余文本
+```
+
+于是：
+
+```text
+x
+  = concrete Task + Evidence Snapshot + entity/period/
+    metric semantics + answer contract
+
+z
+  = normalized critical reasoning / action / claim-update structure
+```
+
+只有在同一 \(x\) 下至少存在两个有效且不被 quotient 合并的 \(z\)，才真正形成可优化的 \(\pi(z\mid x)\)。当前九个 Archive Binding 不能直接承担这一作用。
+
+---
+
+# 十六、最终修订决定
+
+本轮最合理的处理是：
+
+```text
+current QA Archive experiment            ACCEPT_NEGATIVE_AS_SCOPED
+current G4                               FAIL
+implementation repair                    NOT_REQUIRED
+formal artifact rewrite                  FORBIDDEN
+immediate Archive target expansion       DEFERRED
+old QA mainline continuation              PAUSED
+reasoning-bearing QA redesign             AUTHORIZED_ONLY_BY_NEW_DECISION
+Provider execution                        NOT_AUTHORIZED
+VTDO integration                          NOT_AUTHORIZED
+```
+
+下一次外部决定建议只授权：
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_
+and_contract_freeze_only
+```
+
+该阶段应以当前缺失 `gross_margin_target` 的负结果作为设计约束，同时把现有 `semantic_operation_depth` 保留为 Program 指标，但正式新增独立的：
+
+```text
+Critical Decision Graph
+Public Reasoning Record
+Reasoning-Action Consistency
+Observation-Update Consistency
+Reasoning Depth
+Multi-trajectory Non-degeneracy
+```
+
+在这些对象通过固定 Fixture、Archive grounding 和小规模在线校准之前，不应恢复旧实验主链，也不应进入 Mapper、State、Contribution 或 VTDO。

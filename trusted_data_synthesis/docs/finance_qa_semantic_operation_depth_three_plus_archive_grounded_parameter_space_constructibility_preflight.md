@@ -33,6 +33,24 @@ Benchmark-frequency rows, new task or Operation registrations, Catalog promotion
 VTDO, training, and production rows are zero. The deprecated `raw_financial_data_lake` is neither
 read nor used.
 
+
+## Post-Audit Scope Clarifications
+
+The subsequent review accepts this directory as a valid negative result and requires no rerun or
+formal-artifact rewrite. It narrows three phrases without changing any saved JSON, Manifest,
+Decision, or Root:
+
+1. `authoritative_gross_margin_target_evidence_absent` means absent from the currently admitted
+   frozen FinQA table-cell adapter domain, not absent from every real-world financial source.
+2. G6 measures entity, period, numeric-relation, and edge coverage among the nine admitted branch
+   cases. It is not coverage shared by both registered task types.
+3. `semantic_operation_depth` is deterministic answer-Program dependency depth. It is not model
+   reasoning depth, critical-decision depth, or evidence of a pre-action reasoning trajectory.
+
+The nine Archive Bindings are nine task instances, not nine quotient trajectory States for one
+fixed task instance. They do not establish non-degenerate `pi(z | x)` support. Historical formal
+bytes remain immutable.
+
 ## Exact Predecessor And Catalog Freeze
 
 The stage validates the complete registered-Catalog integration independent-audit directory:

@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-09-04
+Audit date: 2026-09-05
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -14,6 +14,69 @@ messages are not treated as experimental evidence.
 - v22 exact-target measurement source commit: `3aa1b0c39d040f79f11bba6166573ec82d729377`
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
+
+
+## QA vNext Reasoning-Bearing Scientific Object And Contract Freeze
+
+The QA side path consumed only
+`finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_only`. The exact
+30,082-byte review at SHA-256
+`7ee383ced0b883c04e6187160c3fe11f7d6bbc40ad79263320d47a6c5825aa23` accepts the prior
+Archive experiment as a valid negative result and authorizes only this zero-execution Contract
+freeze. The exact 33-byte directive `参照审计报告，逐一修订` is bound at SHA-256
+`a3ce5b0198c82767a5635e440b44e4f1978b50798db08132eb007f1efa865abb`.
+
+The prior 24-file formal directory remains immutable. Three scope corrections now explicitly
+limit target absence to the current frozen FinQA table-cell adapter, G6 diversity to the nine
+admitted branch cases, and semantic-operation depth to the deterministic answer Program. Nine
+Archive Bindings are different task instances, not multiple quotient trajectory States for one
+fixed task.
+
+Ten new Contracts separate the Answer Oracle, Critical Decision Graph, public State,
+ReasoningAction Envelope, Observation Update, complete Reasoning Trajectory, answer/trajectory
+validity, target Evidence authority, five depth/coverage metrics, and an eight-axis future
+coverage matrix. One synthetic schema-conformance chain materializes the exact order:
+
+```text
+State -> pre-action ReasoningAction -> ActionExecution
+  -> Observation -> ObservationUpdate -> next State
+```
+
+QA validity is `source AND answer AND citation`; trajectory validity separately requires
+pre-action commitment, grounding, reasoning/action consistency, Observation/update consistency,
+and critical-decision coverage. Qualification requires both. Target Evidence permits only
+`management_target` or `company_guidance`; actuals, consensus, peer benchmarks, arbitrary
+constants, and derived margins remain forbidden. Semantic-operation, reasoning,
+evidence-integration, and correction depths plus critical-decision coverage are explicitly
+noninterchangeable.
+
+All ten direct counterexamples reject, including post-Action reasoning backfill, ungrounded
+rationale, crossed State, Action mismatch, future Evidence, incompatible Claim update,
+actual-to-target relabelling, missing critical obligation, invalid Final/citation, and
+wording-only quotient duplication. All eight noncompensatory Gates pass. The decision is:
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_
+passed_independent_audit_required
+```
+
+The Decision / Report / Manifest / Root are:
+
+- `finance_qa_reasoning_contract_decision:773234d9bf52df79b38362a620a27c2c1b337a85521a92df5c50787fee38141f`;
+- `finance_qa_reasoning_contract_report:90958782d99c16c1223ac979bc22a66d8a5ad3c40762b2fed35b855fe331193d`;
+- `finance_qa_reasoning_contract_artifact_manifest:cab74a9bdf3cbe762145c41cdafab89dc59df02b7d9a42fe4230295658324793`;
+- `finance_qa_reasoning_contract_artifact_root:d805427b5212edd40833a6c58ad835d3280d812dedf279c53360f252c98e6230`.
+
+The source commit/tree are `0a908909f27b75b41085062e2673abcfaa29dda7` /
+`a56d9e374cc8d15b1e49e78a3c953362db61ca88`. The 30-file, 77,840-byte formal directory
+rebuilds byte for byte; its Manifest binds 29 members and 73,415 bytes. Focused tests pass 11/11
+with warnings treated as errors, and the adjacent QA partition passes 101/101.
+
+This is a Contract freeze, not a real QA reasoning result. The only permitted successor is its
+credential-free independent audit. Archive expansion, fixed-Fixture execution, Provider/GPU,
+online calibration, new-mainline construction, Mapper, State, Contribution, VTDO, training,
+release, and production remain forbidden. See
+`docs/finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze.md`.
 
 
 ## QA Depth-Three Archive-Grounded Parameter-Space Constructibility Preflight
