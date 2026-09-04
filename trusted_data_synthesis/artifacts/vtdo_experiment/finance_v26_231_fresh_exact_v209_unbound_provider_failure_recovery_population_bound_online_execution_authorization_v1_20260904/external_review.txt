@@ -1,0 +1,372 @@
+# Finance v26.230 主链实验审计
+
+```text
+AUDIT_DECISION                = PASS_AS_SCOPED
+BLOCKING_DEFECT               = NONE_FOUND
+MANDATORY_REVISION            = NONE
+CURRENT_GATE                  = PASS
+RECOVERY_POPULATION_AUTHORITY = CLOSED
+RECOVERY_EXECUTION_RESULT     = NOT_EVALUATED
+V26_226_EMPIRICAL_SET         = STILL_INCOMPLETE
+NEXT_UNCLOSED_GATE            = RECOVERY_ONLINE_AUTHORIZATION
+```
+
+**本轮主链实验可以按声明范围通过，不需要继续修订 v26.230。**
+
+本轮检验的不是“33 个失败 Job 是否已经恢复”，而是：
+
+> 能否从 v26.226 的实际失败工件中，独立确定 33 个 `unbound_provider_failure`，重构其成功调用前缀及最后失败请求，并据此确认 v26.229 构造的 33 个全新、尚未执行的 Recovery Jobs。
+
+v26.230 明确没有执行 Recovery Job、没有构造历史失败响应、没有补写历史 terminal，也没有完成 v26.226 的经验分母。
+
+---
+
+## 一、本轮理论命题与实现状态
+
+| 本轮对象                        |                                审计结果 |   判定 |
+| --------------------------- | ----------------------------------: | ---: |
+| v26.229 完整冻结与确定性重建          |                   117/117 文件、字节完全一致 | PASS |
+| 从实际 v26.226 失败记录重新分区        |                3 Host + 33 Provider | PASS |
+| 33 个失败 Job 的 Journal 关系     |               88 调用＝55 成功前缀＋33 最终错误 | PASS |
+| 从 Runtime 重建请求              |                          88/88 请求匹配 | PASS |
+| 成功前缀响应投影                    |                            55/55 匹配 | PASS |
+| 最后失败请求捕获                    |                      33/33，在响应投影前停止 | PASS |
+| 响应可识别性划分                    | 31 reasoning-budget + 2 JSON-decode | PASS |
+| Recovery Candidate / Job 重建 |                        33/33，实际字节一致 | PASS |
+| Provider、Recovery、经验估计      |                                均为 0 | PASS |
+
+### 1. 来源分区不是循环自证
+
+实现从 v26.226 的完整 Manifest、`execution_summary.json` 和每一个实际 `job_failures/job_XXX.json` 开始。它先依据实际 `failure_kind` 将三个 Host failure 排除，只接收 `unbound_provider_failure`，之后才把独立构造的候选形状与 v26.229 保存对象比较。
+
+独立导出的精确分区为：
+
+```text
+Host failure ordinals       6, 22, 149
+unbound Provider failures   33
+actual failure files        36
+candidate selector calls     0
+```
+
+33 个 Provider ordinal、来源集合摘要及 33 个 source-row 实际字节全部匹配。
+
+因此，没有发生：
+
+```text
+直接读取 v26.229 的 33 行
+  -> 再用同一批行证明 v26.229 正确
+```
+
+### 2. 请求重放真实到达了历史失败调用点
+
+独立 Capture Transport 只接受 55 个已经持久化的成功 public projections。当前缀耗尽时，它记录最后一个 `TransportDispatch`，随后立即抛出本地停止异常：
+
+```text
+不提供失败响应
+不创建失败调用 InvocationRecord
+不派生 terminal
+不写 Raw / Result / Trace / Outcome
+不调用 Provider
+```
+
+实际实现逐调用核对 request canonical bytes、SHA-256、字节数、certificate、pre-transport Receipt，以及成功前缀的 response hash。
+
+最终结果为：
+
+```text
+reconstructed requests                     88
+successful-prefix InvocationRecords         55
+captured final failed requests              33
+request matches                          88/88
+public response-projection matches       55/55
+failed-call responses supplied               0
+failed-call InvocationRecords                 0
+historical terminals created                  0
+```
+
+最后失败请求的阶段分布也得到实际重建：
+
+```text
+first_action          3
+subsequent_action    25
+final                 5
+correction            0
+```
+
+
+
+---
+
+## 二、响应可识别性边界正确
+
+v26.230 没有把“请求可以重构”混同为“历史响应可以恢复”。
+
+### 31 个 `ReasoningBudgetExhaustedError`
+
+这 31 行只授权以下结论：
+
+```text
+normalized public string length = 0
+normalized public string hash   = SHA256(empty)
+finish_reason                    = length
+```
+
+不能据此恢复：
+
+* Provider 原始 content 字段是 `null` 还是空字符串；
+* 原始 HTTP response bytes；
+* private reasoning 内容。
+
+### 2 个 `JSONDecodeError`
+
+ordinal 62 和 139 的公开内容长度、hash 与 finish reason 只是诊断量。规范化字符串和原始 response envelope 均未持久化，所以 exact JSON syntax 保持不可识别，没有被猜测或补写。实际代码也只把 reasoning-budget 行标为 `failure_semantics_identifiable=true`，而 JSON-decode 行保持不可识别。
+
+正式划分为：
+
+```text
+ReasoningBudgetExhaustedError      31
+JSONDecodeError                     2
+failed requests reconstructible    33
+raw response bytes persisted        0
+raw response bytes guessed          0
+historical terminals created        0
+```
+
+
+
+---
+
+## 三、Recovery Population 是否真实实例化
+
+v26.230 从独立 source、Journal、replay 和 identifiability 结果出发，重新构造了：
+
+```text
+Recovery Candidates       33/33
+Recovery Jobs             33/33
+Recovery Contract byte match   true
+Recovery Population match      true
+historical identity overlap       0
+```
+
+每个 Recovery Candidate 绑定：
+
+```text
+actual v26.226 source row
+ordered successful Provider-call prefix
+exact failed request hash and byte count
+failed request certificate
+failed pre-transport Receipt
+failure class
+identifiability boundary
+historical Job only as parent
+```
+
+每个 Recovery Job 使用新的内容身份，并明确保持：
+
+```text
+recovery_execution_authorized = false
+provider_calls_authorized     = false
+historical_job_reclassified   = false
+```
+
+实际实现与保存的 v26.229 Candidate、Job、Contract 和 Population 逐字节比较。
+
+因此：
+
+```text
+RECOVERY_POPULATION_CONSTRUCTIBILITY = PASS
+ONLINE_RECOVERY_EXECUTABILITY        = NOT_YET_MATERIALIZED
+```
+
+当前这 33 个对象仍不是可执行 online Job Manifest。
+
+---
+
+## 四、直接反例检查
+
+本轮最相关的三类直接反例均已覆盖。
+
+### 来源或父对象替换
+
+以下攻击被拒绝：
+
+```text
+host_failure_substituted
+cross_job_provider_descriptor
+swap_error_or_usage_artifact
+provider_call_prefix_truncated
+failed_request_hash_replaced
+```
+
+### Population 身份和集合伪造
+
+以下攻击被拒绝：
+
+```text
+duplicate_recovery_job
+remove_recovery_job
+historical_job_identity_reused
+```
+
+### 越权或虚构不可识别内容
+
+以下攻击被拒绝：
+
+```text
+authorize_online_execution
+authorize_provider_call
+invent_json_response_bytes
+reclassify_json_syntax_as_identifiable
+```
+
+正式负向工件记录：
+
+```text
+attacks / rejected / accepted       12 / 12 / 0
+candidate identities recomputed     12 / 12
+writes before rejection                     0
+Provider calls before rejection             0
+```
+
+每个攻击都有实际拒绝阶段，不是只保存一个汇总 PASS。
+
+**未发现能够直接推翻本轮声明的反例。**
+
+---
+
+## 五、Gate 判定
+
+正式非补偿 Gate 为：
+
+```text
+A0 exact v26.229 Freeze                                  PASS
+A1 detached rebuild and replay dependency closure       PASS
+A2 independent v26.226 3/33 source partition             PASS
+A3 independent 88-call Provider-Journal closure         PASS
+A4 independent prefix and failed-request reconstruction PASS
+A5 identifiability and Recovery Population              PASS
+A6 twelve direct negative controls                      PASS
+A7 zero external-execution scope                        PASS
+
+passed / failed                                           8 / 0
+```
+
+
+
+提交的 `gate_evaluation.json` 也确实绑定八个证据对象并记录 `8/0`，不存在一个 Gate 补偿另一个 Gate 的情况。
+
+```text
+CURRENT_GATE = PASS
+```
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+v26.230 已真实实例化并独立确认：
+
+```text
+33-row source authority
+88-call redacted Journal closure
+55-response successful-prefix replay
+33 failed-request reconstruction
+31/2 identifiability partition
+33 fresh nonexecuted Recovery Jobs
+```
+
+### Scope limitation
+
+以下对象仍未评估，但不否定本轮：
+
+1. Recovery 请求能否获得成功响应；
+2. 扩大 Completion 或 rollout budget 后的模型行为；
+3. 两个 JSON-decode 行的历史响应内容；
+4. Recovery 后是否能继续完成剩余 Runtime Program；
+5. Recovery outcome 应如何进入新的经验 estimand；
+6. Capability、State frequency、Contribution 或 VTDO。
+
+v26.230 只声明六个直接 replay dependency members，并明确不声称超出冻结源码快照的通用 runtime-environment closure。这是主动保留的范围，不是当前缺陷。
+
+### Future hardening
+
+```text
+NONE_REQUIRED_BEFORE_AUTHORIZATION_ONLY_STAGE
+```
+
+上一轮提出的 replay dependency closure 加固已经由 v26.230 完成，不应继续围绕同一 source-authority 问题重复审计。
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 允许
+
+可以正式声称：
+
+> v26.226 的 33 个 `unbound_provider_failure` 构成一个精确、来源可审计的集合；其 55 个成功调用前缀和 33 个最后失败请求可以在零 Provider 调用下重建；v26.229 据此构造的 33 个全新非执行 Recovery Jobs 已通过独立审计。
+
+### 禁止
+
+不能声称：
+
+* 33 个失败 Job 已恢复；
+* 31 个 reasoning-budget Job 增大预算后必然成功；
+* 两个 JSON-decode 历史响应已恢复；
+* 33 个 Job 已拥有历史 terminal；
+* v26.226 已形成完整的 192-Job empirical evidence set；
+* 可以把未来 Recovery outcome 直接回填到 v26.226；
+* 可以计算新的 Capability、frequency、Contribution 或 VTDO；
+* QA 链路、训练或 Release 已获得授权。
+
+报告自身也将成功恢复、历史响应、完整经验集和所有下游结论明确排除。
+
+尤其是 v26.226 仍然是：
+
+```text
+192 attempted Jobs
+156 complete Jobs
+36 failure records
+execution_status = incomplete
+```
+
+它原有的一次性 replacement authorization 已经消耗，不能用于 Recovery。
+
+---
+
+## 八、后续主链实验
+
+作为本次外部审计，**唯一获授权的下一阶段**应为：
+
+```text
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_
+online_execution_authorization_only
+```
+
+该阶段只能构造一份新的、尚未消费的一次性在线授权，不能直接调用 Provider。v26.230 的历史 Transition 仍保持 `next_stage_authorized=false`，不会被追溯修改；新的阶段需要绑定本次外部审计字节及单独的 operator directive。
+
+授权阶段必须至少冻结三项内容：
+
+| 必须冻结的对象                                                            | 原因                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| exact v26.229 Recovery Contract、Population 和 33 个 Recovery Job IDs | 防止替换或扩大来源人口                                                        |
+| Recovery 执行语义                                                      | 明确是“只重发失败调用”还是“从失败点继续执行至终止”                                        |
+| 新资源与调用预算                                                           | 31 个 reasoning-budget 行若改变 `max_tokens`，即形成新的恢复条件，不能冒充原 v26.226 条件 |
+
+还应明确：
+
+```text
+55 个历史成功调用只允许本地重放，不应再次调用 Provider
+在线调用上限不能默认等于 33
+```
+
+因为其中 3 个失败在 `first_action`、25 个在 `subsequent_action`、5 个在 `final`。若恢复 Action 后继续至 Final，后续实际 Provider 调用数可能高于每 Job 一次，必须由新的 Recovery Execution Contract 预先限定。
+
+## 最终结论
+
+> **v26.230 主链实验通过。当前首个未闭合对象已经从“Recovery Population 是否可信”前移到“如何为该精确 Population 定义并签发一次性 Recovery 在线执行授权”。可以进入 authorization-only 阶段；Provider 调用和 Recovery 执行本身仍未授权。**

@@ -15,6 +15,83 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.231 Recovery-Population-Bound Online Execution Authorization
+
+Finance v26.231 consumed only
+`fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_authorization_only`.
+The exact 12,817-byte external review at SHA-256
+`a7a93482dbd8a7944f105b670ca9eb35a042fcc87f790940ca4c8910c3a6b5e4` accepts v26.230 as
+`PASS_AS_SCOPED` and authorizes only this decision stage. The exact 30-byte directive
+`参照审计报告继续实验` is bound at SHA-256
+`2310d8996483f5f0d431940d98cbfc56a53e23aca61b59306de2d9bf61b9ec1a`.
+
+The decision is:
+
+```text
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_
+execution_authorization_issued_not_consumed
+```
+
+The exact v26.230 20-file, 308,132-byte directory and all nineteen Manifest members over 304,982
+bytes revalidate. v26.231 separately revalidates the 117-file v26.229 directory and binds its exact
+Recovery Contract, Recovery Population, 33 Candidate IDs, 33 fresh Recovery Job IDs, 33 source
+rows, and 33 failed-request hashes. All Candidate and Job bytes match. The frozen failure-phase
+partition remains 3 first-Action, 25 subsequent-Action, and five Final rows; 31 failures are
+reasoning-budget rows and two retain unavailable JSON syntax.
+
+The 55 historical successful calls are local public-projection replay inputs only. Their saved
+Usage totals 351,522 input plus 314,076 output tokens, or 665,598 combined; Provider reissues are
+zero. The new execution semantics require the first online call for each Recovery Job to equal its
+captured failed request byte for byte and then continue the exact v26.209 current-State Runner to
+a fresh terminal. This is not a fixed 33-call request-only retry.
+
+`deepseek-v4-flash`, `thinking.type=enabled`, JSON response format, and `max_tokens=16384` remain
+unchanged. No larger-Completion success claim is made. Residual limits retain the historical
+prefix in trajectory accounting but start the new Provider ledger at zero:
+
+```text
+maximum online Primary requests                 638
+maximum online Provider calls                   704
+maximum online transport invocations            737
+maximum online rollout tokens            36,294,402
+```
+
+The 704-call value is the sum of exact per-Job residual ceilings `23 - prefix_calls`, not an
+expected count. One diagnostic request passes without consumption; all eighteen invalid controls
+and ten fully rehashed parent attacks reject before credentials or Provider activity. All eight
+noncompensatory Gates pass. One authorization is issued, zero are consumed, and Provider calls,
+credential lookups, Recovery executions, empirical rows, and historical v26.226 writes are zero.
+
+Authoritative identities include:
+
+- parent / Execution Contract / Composition:
+  `fresh_v26_231_exact_recovery_parent_binding:9a67201347027bd2dc147bebf39ec2825616c6a3ead1acc6db7c8b038df95665` /
+  `fresh_v26_231_recovery_execution_contract:48705123b548e499afb2f3553d10ee454d15975e54b8a275ce3b732f107f70e0` /
+  `fresh_v26_231_recovery_online_execution_composition:cf18a6134e0dea327460a28deae4ecb4e314d3aef655074b2ed97ae6fa6561a7`;
+- authorization / Gate / Decision / Transition:
+  `fresh_v26_231_exact_recovery_online_execution_authorization:d54c68b13db02db4582f7e587973b61af431efa714f1ba3d6473939f4b12c06d` /
+  `finance_v26_231_gate_evaluation:713932e60414c905a5e602013372d13522d9b90ed76431ddbec452e0d7e03527` /
+  `finance_v26_231_online_authorization_decision:9be1b0912f6bb4f6d5cfee7af5d4185d593ae54e482edd7517e3e6d0e48c47d3` /
+  `finance_v26_231_transition:bfd9754ad862373eaf427f445e3e8760920a506cd60b6df399abdecef4ff64da`;
+- Report / Manifest / Root:
+  `finance_v26_231_online_authorization_report:09e2894fbc945ccb28d53f1e60ba84769ed60fad75b59f562f8fadbe56aa48ed` /
+  `finance_v26_231_artifact_manifest:92c0f3baaeaeb278e9037ebf4dd85c3e86b760bd1d624681379857700f134308` /
+  `finance_v26_231_artifact_root:a9d1d137adcdb3552fcfc5eaf8c979a6f0ab2906b7165a690144c53adb1c24d1`.
+
+The exact source commit/tree are `d74406041cabb1ea61df22b99f8a96affdae2ea0` /
+`3cdbb7cbdbc79ec01726ba262b8833d4e013d058`. The 18-file, 103,759-byte formal directory
+rebuilds byte for byte; its Manifest binds seventeen members and 100,870 bytes. Focused tests pass
+9/9 and the adjacent v26.226-v26.231 partition passes 69/69. Focused static checks and package-wide
+Ruff pass.
+
+The only permitted successor is
+`fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_only`.
+It must consume the exact authorization once and durably persist consumption and Run Start
+Receipts before credential lookup. Larger `max_tokens`, historical-prefix reissue, Population
+change, replacement run, historical mutation/backfill, or empirical estimation before independent
+postrun audit remain forbidden. See
+`docs/finance_v26_231_fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_authorization.md`.
+
 ## v26.230 Unbound Provider-Failure Recovery-Population Preflight Independent Audit
 
 Finance v26.230 consumed only
