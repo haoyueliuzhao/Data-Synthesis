@@ -1,0 +1,467 @@
+# Finance QA 链路本轮修订审计
+
+```text
+AUDIT_DECISION                  = PASS_AS_SCOPED
+BLOCKING_DEFECT                 = NONE_FOUND
+MANDATORY_REVISION              = NONE
+CURRENT_GATE                    = PASS
+DEPTH_THREE_CONSTRUCTIBILITY    = CLOSED_FOR_TWO_FIXED_FIXTURES
+TOPOLOGY_WITNESSES              = 1_SERIAL + 1_BRANCH_AND_MERGE
+REGISTERED_CATALOG_INTEGRATION  = NOT_EVALUATED
+ARCHIVE_GROUNDED_COVERAGE       = NOT_EVALUATED
+OVERALL_QA_COVERAGE_SUFFICIENT  = NOT_ESTABLISHED
+NEXT_AUTHORIZED_STEP            = INDEPENDENT_AUDIT_ONLY
+```
+
+**本轮可以按其明确声明的范围通过，不需要继续修改当前 v2 预检。**
+
+更准确地说：
+
+> 本轮确实对先前“最大语义操作深度只有 2”的问题做出了实质修复，构造出了两条形式上和执行上都达到 `semantic_operation_depth=3` 的程序；但它只证明两个固定 Fixture 的存在性和可执行性，尚未证明当前 QA 链路的问题类型覆盖已经充分。
+
+本轮只消费 `qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_only`，其授权输入和运行范围均限定为 credential-free 预检。
+
+---
+
+## 一、本轮实际检验的命题
+
+本轮命题不是：
+
+```text
+当前 QA 生成器已经能够大规模生成足够多、足够深的问题
+```
+
+而是：
+
+```text
+是否至少存在：
+1 个 serial semantic chain
+1 个 branch-and-merge semantic chain
+
+使其：
+- semantic_operation_depth = 3
+- 可从固定 Evidence 和 Pattern 编译
+- 可经 public Plan 执行
+- 可经独立逐节点 Oracle 重放
+- 最终答案、Schema、引用和质量 Gate 全部通过
+```
+
+报告也明确把 Archive grounding、参数空间覆盖率、Benchmark 频率、模型生成质量和 QA Release 排除在本轮之外。
+
+因此，本轮应当以**深度三可构造性与两个拓扑见证**为审计对象，不能要求它同时证明生产级 QA 覆盖。
+
+---
+
+## 二、实现是否真实实例化了该命题
+
+### 1. 前置缺口确实存在，并被本轮直接推进
+
+冻结前驱的语义深度分布是：
+
+```text
+semantic depth 0    1
+semantic depth 1    6
+semantic depth 2    1
+semantic depth >=3  0
+maximum depth       2
+```
+
+本轮没有修改前驱文件，而是在新的实验 Registry 和程序身份下增加深度三见证。
+
+这意味着本轮不是重新解释旧的八个浅层 Fixture，而是新增了真正不同的程序对象。
+
+### 2. 新增操作不是只停留在任务描述中
+
+实验 Registry 在六个默认 Operation 之外新增三个 Operation：
+
+```text
+scale_ratio_percent
+signed_percentage_point_gap
+absolute_percentage_point_gap
+```
+
+三者分别有独立的 Executor 和 Oracle 类，Registry 中的 `program_role` 均为 `semantic`。实际 Registry 工件记录了：
+
+```text
+base operators       6
+extension operators  3
+semantic roles       3/3
+distinct class pairs true
+```
+
+
+
+源代码也确实分别实现了乘以 100、observed-reference 和绝对值运算，而不是通过同一个固定答案函数伪造三个节点。
+
+### 3. Serial 程序确实具有三层语义临界路径
+
+Serial Fixture 的程序为：
+
+```text
+gross_profit lookup ─┐
+                     ├─ ratio
+revenue lookup ──────┘
+                          -> scale_ratio_percent
+target lookup ─────────────────────────────┐
+                                           └─ signed_percentage_point_gap
+```
+
+其输出关键语义路径是：
+
+```text
+ratio
+  -> scale_ratio_percent
+  -> signed_percentage_point_gap
+```
+
+正式度量为：
+
+```text
+nodes                         6
+edges                         5
+structural_dependency_depth   4
+semantic_operation_depth      3
+workflow_interaction_depth    5
+output_dependency_closed      true
+```
+
+ 
+
+### 4. Branch-and-merge 程序不是换名字的串行程序
+
+第二个 Fixture 具有两条真实的独立增长率分支：
+
+```text
+revenue earlier/later
+  -> revenue growth ──────────┐
+                              ├─ signed gap -> absolute gap
+income earlier/later          │
+  -> operating-income growth ─┘
+```
+
+其语义临界路径为：
+
+```text
+growth
+  -> signed_percentage_point_gap
+  -> absolute_percentage_point_gap
+```
+
+正式度量为：
+
+```text
+nodes                         8
+edges                         7
+structural_dependency_depth   4
+semantic_operation_depth      3
+workflow_interaction_depth    5
+output_dependency_closed      true
+```
+
+实际 `depth_metrics.jsonl` 还记录了两个 `growth` 节点深度均为 1、合并节点为 2、最终绝对值节点为 3，因此这不是仅靠 `topology_kind` 标签宣称存在分支。
+
+### 5. 深度不是简单按节点数计算
+
+正式 `program_depth.py` 的计算规则是：
+
+```text
+transparent_projection weight = 0
+semantic operation      weight = 1
+
+semantic_depth(node)
+  = role_weight(node)
+  + max(semantic_depth(parent))
+```
+
+同时要求所有程序节点都位于输出节点的祖先闭包内，因而不能通过增加与答案无关的节点来抬高深度。候选指标随后还必须针对 exact source Program 重新推导并完全一致。
+
+所以在当前冻结的 `program_role` 定义下，两条程序的 `semantic_operation_depth=3` 是真实推导值，而不是任务作者直接填写的难度标签。
+
+---
+
+## 三、执行和验证链是否完整
+
+两条 Fixture 均经过了以下实际链路：
+
+```text
+EvidenceBundle
+  -> ProofGraph
+  -> Pattern / Evidence Binding
+  -> source Program
+  -> CanonicalSemanticPlan / BindingSnapshot / SemanticInstance
+  -> protected SurfaceRealization
+  -> PublicPlanCandidateExecutor
+  -> complete ProgramExecution
+  -> nodewise Oracle replay
+  -> CandidateWorkflowVerifier
+  -> CandidateQualityEvaluator
+```
+
+正式结果为：
+
+```text
+exact cases / source Programs       2 / 2
+complete Program executions         2 / 2
+independent nodewise replays         2 / 2
+answer-schema correctness            2 / 2
+answer correctness                   2 / 2
+citation correctness                 2 / 2
+quality evaluator accepted           2 / 2
+insufficient_capability              0
+```
+
+
+
+实际 `coverage_audit.json` 也绑定了两条不同的 Program ID、Program hash、topology hash、execution ID、trajectory ID、verification ID 和 assessment ID，并分别记录为 `serial_chain` 与 `branch_and_merge`。
+
+因此，本轮不是只证明“Pattern 可以被序列化”，而是完成了从 Evidence 到程序执行、答案和引用验证的完整确定性链路。
+
+---
+
+## 四、直接反例检查
+
+本轮七个反例覆盖了足以直接推翻当前命题的主要方式。
+
+### 1. 用无关节点伪造更深程序
+
+```text
+serial_irrelevant_lookup_inflation
+```
+
+在 `output_dependency_closure` 被拒绝。说明增加与输出无关的 lookup 不能抬高深度。
+
+### 2. 保留答案但跳过关键语义节点
+
+```text
+serial_semantic_scale_bypass
+branch_merge_absolute_bypass
+```
+
+均在 `exact_source_program_admission` 被拒绝。
+
+这说明即使最终数值恰好不变，也不能删除语义节点后继续沿用原深度结论。
+
+### 3. 用串行程序冒充分支合并程序
+
+```text
+branch_to_serial_topology_substitution
+```
+
+在 exact source Program admission 被拒绝。
+
+### 4. 交叉替换 Evidence 角色
+
+```text
+branch_cross_metric_evidence_substitution
+```
+
+把 operating-income Evidence 换成 revenue 后，在 Pattern source admission 被拒绝。
+
+### 5. 完全重哈希错误答案和伪造引用
+
+```text
+fully_rehashed_wrong_answer_and_citation
+```
+
+在 verifier/evaluator admission 被拒绝。
+
+### 6. 通过修改 Registry role 洗高或洗低深度
+
+```text
+operation_role_laundering
+```
+
+把 `scale_ratio_percent` 改成 `transparent_projection` 后，虽然重新推导了候选指标，仍因不符合冻结 Registry 被拒绝。
+
+正式记录为：
+
+```text
+attacks / rejected / accepted    7 / 7 / 0
+rehashed candidates                    7
+original answer retained               5
+attack writes / Provider calls     0 / 0
+```
+
+
+
+**没有发现能够直接推翻“两条固定深度三程序可构造并完整执行”这一声明的反例。**
+
+---
+
+## 五、Gate 判定
+
+正式 Gate 为：
+
+```text
+G0 exact external scope                                  PASS
+G1 exact predecessor independent-audit Freeze            PASS
+G2 exact Git source and operation Registry authority     PASS
+G3 exact serial and branch-and-merge source Programs     PASS
+G4 complete execution and independent replay 2/2         PASS
+G5 answer/schema/citation/evaluator 2/2                   PASS
+G6 semantic depth three plus and two topology kinds      PASS
+G7 seven attacks reject and zero external scope          PASS
+
+passed / failed                                           8 / 0
+```
+
+
+
+提交的正式 `gate_evaluation.json` 与报告一致，为非补偿式 `8/0`。
+
+```text
+CURRENT_GATE = PASS
+```
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+当前没有发现以下任一情况：
+
+* 实际程序深度仍只有 2；
+* 分支程序其实没有分支；
+* 仅依靠无关节点增加深度；
+* 没有执行实际 Program；
+* Oracle、答案或引用验证未通过；
+* 旧前驱对象被追溯修改；
+* 本轮越权执行 Provider、Archive 或 Release。
+
+### Scope limitation
+
+#### 1. “深度三”是 Registry-relative 的程序深度
+
+Serial 的第三层包含 `scale_ratio_percent`，Branch 的第三层包含绝对值。这些确实是数值和单位发生变化的显式 Operation，但仍属于相对简单的代数转换。
+
+因此，本轮证明的是：
+
+```text
+formal compositional semantic-operation depth = 3
+```
+
+而不是：
+
+```text
+expert cognitive difficulty = high
+multi-document research difficulty = high
+agent planning difficulty = high
+```
+
+报告已经明确排除了 realistic difficulty 和语言质量，因此这不是本轮缺陷。
+
+#### 2. “coverage”只能理解为两个拓扑见证
+
+本轮只有：
+
+```text
+1 serial_chain
+1 branch_and_merge
+```
+
+它没有给出拓扑全集、参数空间或问题类型分布。因此更精确的科学语言是：
+
+> 已获得两个不同拓扑的深度三构造见证。
+
+而不是：
+
+> 深度三拓扑空间已经获得充分覆盖。
+
+#### 3. 当前注册 QA 目录尚未扩展
+
+新增 Operation 和 Pattern 被限制在实验 Registry 中；`FinanceTaskPlugin.task_family_ids` 仍保持原有八类目录。
+
+所以，对“当前 QA 主链问题类型覆盖是否已经充分”的回答仍然是：
+
+```text
+NO
+```
+
+当前完成的是实验性可构造性，不是注册目录集成，更不是生成 Population 覆盖。
+
+### Future hardening，但不阻断本轮
+
+当前负向控制 helper 接收调用方提供的 `rejection_stage`，并宽泛捕获 `ValueError / TypeError / KeyError`。七个攻击的确都产生了拒绝，但当前预检本身并没有独立证明异常恰好来自所记录的边界。
+
+这不推翻 `7/7 rejected`，但下一轮独立审计应：
+
+```text
+从实际 typed exception 或独立调用边界推导 rejection_stage
+而不是继承当前 helper 传入的 stage 字符串
+```
+
+同样，独立审计应从实际 Program DAG 推导 `serial_chain` 和 `branch_and_merge`，不能把当前 `case_id -> topology_kind` 映射本身当作拓扑证据。
+
+---
+
+## 七、当前允许与禁止的结论
+
+### 允许
+
+可以正式保留：
+
+> 在冻结的 Finance 实验 Registry 和语义深度定义下，当前 QA 链路已构造并完整验证两条 `semantic_operation_depth=3` 的确定性程序：一条串行语义链和一条双分支合并语义链。两条程序均通过 public-Plan 执行、逐节点 Oracle 重放、答案 Schema、答案正确性、引用绑定和质量评估。
+
+也可以保留：
+
+```text
+previous maximum semantic depth    2
+new depth-three fixtures            2
+serial topology witnesses           1
+branch-and-merge witnesses          1
+complete execution / replay       2/2
+accepted quality assessments      2/2
+```
+
+### 禁止
+
+当前不能声称：
+
+* 原有八类注册任务已经整体达到深度 3；
+* 新的两个 task type 已进入正式 Finance QA Catalog；
+* 当前 QA 链路的问题类型覆盖已经充分；
+* 在同一 task type 内具有参数空间覆盖；
+* Archive 中能够稳定构造此类问题；
+* Benchmark 中深度和类型频率已经匹配；
+* 模型能够生成这些程序、问题或答案；
+* 这些 Fixture 具有真实专家难度；
+* 已具备 QA Release 或训练使用资格；
+* 已获得 VTDO 集成或生产授权。
+
+---
+
+## 八、唯一合理的下一实验
+
+本轮已经授权且只授权：
+
+```text
+qa_semantic_operation_depth_three_plus_constructibility_and_coverage_
+preflight_independent_audit_only
+```
+
+正式 Transition 仍禁止 Provider、GPU、Archive、Benchmark 和 QA Release。
+
+该独立审计应保持窄范围：
+
+1. 冻结并验证 v2 的完整 21 文件、162,669 字节，以及 20 个 Manifest members、159,547 member bytes 和 Artifact Root。当前正式 Manifest 已记录该精确成员集合。
+2. 从 exact commit `2267de7f59f1ee5ea36377f016c82ae8829697cf` 和 tree `b926794c0d1f196156603240c11fcf0b4e6618b8` 的 detached snapshot 执行，而不是使用可变工作树。该 commit 的 v2 修订只处理类型标注和 Manifest 字节求和，实验语义结果未改变。
+3. 从实际 Evidence、Pattern 和 Registry 独立重建两个 source Programs；不得使用保存的 Coverage Audit 选择程序。
+4. 从 DAG 和 Registry role 独立推导：
+
+   ```text
+   serial semantic path = ratio -> scale -> signed gap
+   branch semantic path = growth -> signed gap -> absolute gap
+   ```
+5. 独立执行全部 14 个节点，重新取得 Executor 输出、Oracle 结果、答案、Schema、引用和质量决策。
+6. 独立推导拓扑类别，不信任保存的 `topology_kind`。
+7. 重做七个攻击，并从实际异常来源推导拒绝阶段。
+8. 保持 Provider、Archive、Benchmark、Release、VTDO 和训练计数为零。
+
+## 最终结论
+
+> **本轮 QA 修订按声明范围通过。它已经解决“是否能够构造真正的语义操作深度三程序”这一存在性问题，并提供了串行与分支合并两个拓扑见证；但尚未解决注册任务目录集成、Archive-grounded 构造率以及总体问题类型覆盖不足。当前应进入且只能进入独立审计，不应直接进入在线生成、QA Release 或训练。**

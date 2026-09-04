@@ -15,6 +15,86 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## QA Semantic-Operation Depth-Three-Plus Preflight Independent Audit
+
+The QA side path consumed only
+`qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_independent_audit_only`.
+The exact 14,928-byte external review at SHA-256
+`1c0c189157b5d1cbcbbbf4801c55053520558d789ce9bc981c20d58e0ab7d3c8` accepts the
+two-Fixture preflight as `PASS_AS_SCOPED` and authorizes only the independent audit. The exact
+38-byte directive `参照审计执行QA链路后续实验` is bound at SHA-256
+`c992e9fe84c3c7a54aff22c7c0ea0229c0d8001943cf5abb0c37cf24bafcd373`.
+
+The independent decision is:
+
+```text
+qa_semantic_operation_depth_three_plus_constructibility_and_two_topology_
+coverage_preflight_independently_confirmed
+```
+
+All 21 candidate files and 162,669 bytes revalidate, including all twenty self-excluding Manifest
+members over 159,547 bytes. A detached archive of the exact candidate commit contains 715 source
+files and rebuilds all 21 paths and bytes exactly under a four-key, credential-free environment.
+The independent audit directly verifies the exact candidate Git commit/tree and all five source
+members; it separately assembles the nine-operation Registry without calling the candidate
+Registry factory and reproduces its exact Manifest SHA-256 and Binding bytes.
+
+Starting from the actual saved EvidenceBundles and Packages rather than the candidate Coverage
+Audit, the audit recompiles both source Programs from their Patterns and role bindings. It then
+executes and Oracle-replays all fourteen nodes, reruns answer/schema/citation verification and the
+quality evaluator, and matches every saved Package, execution, verification report, assessment,
+and depth row.
+
+```text
+exact cases / Programs                         2 / 2
+Executor outputs / Oracle-replayed nodes     14 / 14
+answer/schema/citation/quality rows            2 / 2 each
+semantic-depth distribution                    {3: 2}
+structural/workflow depth                    {4: 2} / {5: 2}
+derived topology distribution  branch_and_merge: 1, serial_chain: 1
+```
+
+Topology is derived from the semantic DAG and Registry roles, not from saved labels. The serial
+critical path is `ratio -> scale_ratio_percent -> signed_percentage_point_gap`; the branch path
+is `growth -> signed_percentage_point_gap -> absolute_percentage_point_gap`, with two distinct
+growth nodes before the merge. All seven independently rebuilt attacks reject at their observed
+typed boundaries; accepted attacks, attack writes, Provider calls, GPU Jobs, Archive selections,
+Benchmark rows, catalog promotions, and Release objects are zero. All eight noncompensatory Gates
+pass.
+
+Authoritative identities include:
+
+- source / Registry / execution:
+  `qa_semantic_depth_three_source_authority_audit:756b74644c1b2806c4c419046d0c7ba2083a26d149eff6d8104cad8faf5eae86` /
+  `qa_semantic_depth_three_registry_authority_audit:70fecdc6b67d73fa6af350388430239d3fd6f23d443fd726fab4bcdbdcb2c3aa` /
+  `qa_semantic_depth_three_independent_execution_audit:1e7d14e32892b66a8b2d3de7b807f9c272424e8caad31736842c5ae3322384b1`;
+- depth/topology / negative / Gate:
+  `qa_semantic_depth_three_independent_depth_topology_audit:9049065f5aac7ffdcfa3b70dd5c040551104d6f074ba20c4193d2e333fd7b067` /
+  `qa_semantic_depth_three_independent_negative_audit:f870a86c6b6a3f751b4f190305062cb44fee93c6ea3ba8c4dfaedfc50a471573` /
+  `qa_semantic_depth_three_independent_gate:046a342f45dbf54808f5356b00ff2c0e26b6921b8c91e01125cde414986d6f69`;
+- Decision / Transition / Report:
+  `qa_semantic_depth_three_independent_decision:7cdd0ae2d3df43c8fb20e130a0551ab374af12825e3d7716fafcafae42ecb5b9` /
+  `qa_semantic_depth_three_independent_transition:a0be77a5a9411baa83bcb3deca0a99f979bb6c43c04089df0730fad30c1432c3` /
+  `qa_semantic_depth_three_independent_report:38cf48aa35a705812d1eaed3c0180a56194fbf5ef77a3dd675aa44f130d12d48`;
+- Manifest / Root:
+  `qa_semantic_depth_three_independent_artifact_manifest:1499a9ca7f7d31187d5424d3e589209a3f42cfdc070b077fb33cde11c68ab717` /
+  `qa_semantic_depth_three_independent_artifact_root:a8463e016a7f85d2b7d9772ce89e2ad801aeedb38accdb6eab55ad73f1526b55`.
+
+The exact audit source commit/tree are `4eb2f87e90e72c4748d37fdea2d0e98fea13d6f8` /
+`d2554444ae90350804a73add64c70f48d6367ebc`. The 17-file, 49,551-byte formal directory
+rebuilds byte for byte; its Manifest binds sixteen members and 46,959 bytes. Focused tests pass
+9/9 and the selected adjacent QA partition passes 60/60. Focused PyCompile, Ruff check/format,
+and no-import-follow Mypy pass.
+
+This is deterministic fixed-Fixture constructibility evidence only. The audit grants no successor
+authority. The prospective next candidate is
+`qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_only`, which
+requires a separate external audit decision. Catalog promotion, Archive grounding, Benchmark
+estimation, online generation, Provider/GPU execution, QA Release, VTDO integration, training,
+release, and production remain unauthorized. The separate v26.231 recovery authorization remains
+issued and unconsumed. See
+`docs/finance_qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_independent_audit.md`.
+
 ## v26.231 Recovery-Population-Bound Online Execution Authorization
 
 Finance v26.231 consumed only
