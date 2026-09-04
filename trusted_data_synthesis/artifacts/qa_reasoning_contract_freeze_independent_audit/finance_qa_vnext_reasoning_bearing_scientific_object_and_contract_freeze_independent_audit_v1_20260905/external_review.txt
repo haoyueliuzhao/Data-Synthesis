@@ -1,0 +1,860 @@
+# 一、本轮实验审计结论
+
+本次审计以两份上传报告为依据：当前的 **Finance QA vNext Reasoning-Bearing Scientific Object And Contract Freeze**，以及其冻结的 Archive-grounded 负结果前驱。附件没有包含对应源码和 30 个形式工件目录，因此这里完成的是**声明—设计—报告证据一致性审计**，不能替代报告中要求的下一轮源码与工件独立重建。
+
+建议正式归类为：
+
+```text
+AUDIT_DECISION
+  = PASS_AS_SCOPED
+
+CURRENT_CANDIDATE_GATE
+  = PASS, 8 / 0
+
+BLOCKING_DEFECT
+  = NONE_FOUND_IN_REPORTED_SCOPE
+
+MANDATORY_REVISION
+  = NONE
+
+SCOPE_LIMITATION
+  = SYNTHETIC_SCHEMA_CONFORMANCE_ONLY
+
+INDEPENDENT_CONFIRMATION
+  = PENDING
+
+OLD_QA_MAINLINE
+  = PAUSED
+
+UNIQUE_IMMEDIATE_SUCCESSOR
+  = finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_
+    freeze_independent_audit_only
+```
+
+本轮不应被判为“已经产生关键推理轨迹”，但也不应因尚未产生真实轨迹而判失败。它声明的对象只是**科学对象和 Contract 冻结**：10 个内容寻址 Contract、13 个类型化 conformance objects、一条合成 Schema 一致性链和 10 个直接反例；报告明确否认真实 QA 执行、Archive Evidence 使用、模型行为测量、真实 reasoning-bearing trajectory 和 fixed-Fixture 授权。
+
+---
+
+# 二、按照限定审计框架逐项检查
+
+## 1. 本轮明确检验的命题
+
+本轮命题可准确写为：
+
+> 能否在不执行真实 QA、不过问模型能力的前提下，冻结一组相互分离的科学对象和类型 Contract，使“答案 Oracle—关键决策—公开状态—先于行动的结构化判断—行动—Observation—Claim 更新—下一状态—最终有效性”成为可实例化、可验证和可直接反驳的形式对象？
+
+它没有检验：
+
+* 模型是否会生成这些对象；
+* 这些对象是否足以描述真实金融任务中的关键推理；
+* 同一个任务是否存在多条有效 quotient trajectories；
+* QA 数据是否可以进入 Release 或 VTDO。
+
+因此，本轮审计不能把这些后续问题反向提升为本轮 Blocking defect。
+
+---
+
+## 2. 前驱负结果是否被正确保留
+
+这一项通过。
+
+前驱实验的精确结果仍是：
+
+```text
+branch-and-merge: 9 个 Archive Binding 全部执行并验证
+serial target-gap: 3 个候选全部缺少 authoritative target Evidence
+G4: FAIL
+```
+
+前驱没有重跑或改写。新实验只增加了三个窄化解释：
+
+1. target 缺失只适用于当前 FinQA table-cell adapter 域；
+2. cross-entity/period/relation/edge coverage 只适用于九个 branch cases；
+3. `semantic_operation_depth` 是确定性答案 Program 深度，不是 reasoning depth。
+
+它还明确保留“九个 Binding 是九个任务实例，而不是同一 \(x\) 下九个 quotient States”。
+
+这与前驱报告后加的范围澄清完全一致：九个 Archive Binding 不建立非退化的 \(\pi(z\mid x)\) 支持。
+
+---
+
+## 3. 科学对象是否真实分离
+
+这一项在**合同定义层**通过。
+
+当前 10 个 Contract 分别承担：
+
+```text
+AnswerOracleProgramBindingContract
+CriticalDecisionGraphContract
+PublicReasoningStateContract
+ReasoningActionEnvelopeContract
+ObservationUpdateContract
+ReasoningTrajectoryContract
+ReasoningValidityContract
+TargetEvidenceAuthorityContract
+DepthMetricContract
+QATaskAndReasoningCoverageMatrixContract
+```
+
+特别重要的是：
+
+```text
+Answer Oracle
+  = 给定 Evidence 与 Program 语义，什么答案是正确的
+
+Critical Decision Graph
+  = 模型必须完成哪些公开关键判断、允许哪些替代行动、
+    禁止哪些 shortcut、产生哪些 Claim，以及如何直接干预
+```
+
+这避免把唯一参考 Program 错当成唯一模型思考路径。每个 required obligation 还要求至少一个直接 counterfactual intervention，而且对象中不请求或持久化私有 CoT。
+
+这正面解决了此前“轨迹只有工具调用和答案 Program，却不反映关键推理”的对象定义问题。
+
+---
+
+## 4. 推理是否被约束在 Action 之前
+
+这一项在**Schema/parent-contract 层**通过。
+
+冻结的父链是：
+
+```text
+PublicReasoningState_t
+  -> ReasoningActionEnvelope_t
+  -> ActionExecution_t
+  -> PublicObservation_t
+  -> ObservationUpdate_t
+  -> PublicReasoningState_(t+1)
+```
+
+`ReasoningActionEnvelopeV1` 同时包含：
+
+* 当前 Evidence/Claim references；
+* 当前 subgoal；
+* 未解决不确定性；
+* 当前候选 Actions；
+* selected Action；
+* decision-basis relations；
+* expected effect。
+
+也就是说，公开关键判断和内部 Action 被放在一个 pre-action envelope 中。`ObservationUpdateV1` 又要求所有 accepted/rejected/revised Claims 精确引用对应 Observation，并说明该 Observation 如何改变下一状态。
+
+但这里需要保持一个重要边界：
+
+```text
+合同规定了 pre-action parent order
+    ≠
+已经观察到真实 Runtime 中的 durable pre-action commitment
+```
+
+当前只有合成 conformance chain，没有执行真实任务。报告已经明确承认这一点，因此这是 **Scope limitation**，不是对本轮命题的直接反例。
+
+---
+
+## 5. Validity 是否仍然不可补偿
+
+这一项通过。
+
+当前定义为：
+
+$$
+V_{\mathrm{QA}}
+=
+V_{\mathrm{source}}
+\land
+V_{\mathrm{answer}}
+\land
+V_{\mathrm{citation}},
+$$
+
+$$
+V_{\mathrm{trajectory}}
+=
+V_{\mathrm{preaction}}
+\land
+V_{\mathrm{grounding}}
+\land
+V_{\mathrm{reasoning\text{-}action}}
+\land
+V_{\mathrm{observation\text{-}update}}
+\land
+V_{\mathrm{critical\ coverage}},
+$$
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{QA}}
+\land
+V_{\mathrm{trajectory}}.
+$$
+
+所以：
+
+```text
+答案正确但缺关键决策       -> 不 Qualified
+推理链有效但答案/引用错误   -> 不 Qualified
+```
+
+当前三个 Validity objects 仍只是 Schema conformance objects，不是测得的 QA outcomes。
+
+---
+
+## 6. Target authority、深度与覆盖是否正确拆分
+
+这一项通过。
+
+### Target authority
+
+对于原 `registered_margin_target_gap`，只接受：
+
+```text
+management_target
+company_guidance
+```
+
+以下仍然被明确禁止：
+
+```text
+observed_actual
+analyst_consensus
+peer_benchmark
+arbitrary_constant
+derived_margin
+```
+
+因此当前设计没有通过改名方式把 observed margin 洗成 target。
+
+### 深度
+
+五个指标被分开：
+
+```text
+semantic_operation_depth
+reasoning_depth
+evidence_integration_depth
+correction_depth
+critical_decision_coverage
+```
+
+并明确排除：
+
+```text
+token 数
+文本长度
+Program 节点总数
+单一通用 depth 字段
+```
+
+作为 reasoning depth authority。
+
+### 覆盖矩阵
+
+当前只冻结八个覆盖轴和四个未来 archetypes：
+
+```text
+serial_derivation
+branch_and_merge
+select_then_lookup
+evidence_insufficiency_or_correction
+```
+
+`coverage_measured=false`、`benchmark_frequency_claimed=false`，所以没有把设计矩阵误报成覆盖测量。
+
+---
+
+# 三、直接反例检查
+
+当前注册的 10 个直接反例覆盖了本轮最关键的错误类型：
+
+```text
+A1  Action 后补写 reasoning
+A2  无 Evidence 的通用 rationale
+A3  cross-State reasoning
+A4  reasoning 选择 A、实际执行 B
+A5  reasoning 引用未来 Evidence
+A6  Claim update 引用错误 Observation
+A7  observed actual 被重标为 target
+A8  Final 正确但缺 required decision
+A9  reasoning 有效但 Final/citation 错误
+A10 只改措辞的轨迹被计为不同 quotient State
+```
+
+报告给出的结果是：
+
+```text
+rejected / accepted = 10 / 0
+Provider calls      = 0
+```
+
+且每类攻击落在与其语义相符的拒绝边界。
+
+在上传报告范围内，没有发现以下类型的具体反例：
+
+* Answer Oracle 仍暗中规定唯一 reasoning path；
+* Final correctness 可以补偿 reasoning failure；
+* reasoning correctness 可以补偿答案错误；
+* actual margin 可以进入 management target role；
+* wording paraphrase 可以制造新的 quotient State；
+* 未来 Observation 可以被当前 reasoning 使用。
+
+因此：
+
+```text
+BLOCKING_DEFECT = NONE_FOUND
+```
+
+是合理结论。
+
+---
+
+# 四、Gate 判定
+
+报告的 8 个非补偿 Gate 与其声明范围一致：
+
+```text
+G0 scope 与前驱冻结                         PASS
+G1 三项范围澄清、前驱零改写                 PASS
+G2 exact source 与 10 个 Contract descriptors PASS
+G3 Answer Oracle / Decision Graph 分离       PASS
+G4 pre-action public chain                    PASS
+G5 validity / target / depth / coverage       PASS
+G6 10 个直接反例拒绝                         PASS
+G7 零执行、零 Archive expansion、零 VTDO     PASS
+```
+
+因此本轮候选 Gate 可接受为：
+
+```text
+PASS_AS_SCOPED
+```
+
+
+
+不过应保留两层状态：
+
+```text
+candidate self-evaluation       PASS
+本次报告一致性审计              PASS_AS_SCOPED
+源码/工件独立重建               PENDING
+```
+
+不能把当前文本审计写成“independently confirmed”。
+
+---
+
+# 五、发现分级
+
+## Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有需要回写当前 Contract、Gate、Decision、Manifest 或 Root 的强制修订。
+
+## Scope limitation
+
+只有三个，且都已被报告正确限定：
+
+1. 当前只有 synthetic schema-conformance chain；
+2. 没有真实金融 task、Archive reasoning 或模型响应；
+3. 没有同一任务下的两条有效非同构 trajectory。
+
+报告自己也明确声明：当前结果不建立 reasoning-bearing fixed Fixture、双路径、Archive-grounded reasoning、模型 ABI reachability、Capability、QA Release 或 VTDO State。
+
+## Future hardening
+
+唯一当前需要做的 hardening 是已经声明的**独立审计**。它不是修复当前失败，而是把“candidate 自证”提升到“independent confirmation”。
+
+不应在本轮额外增加：
+
+* 生产级密码学威胁模型；
+* Archive-wide coverage；
+* 模型能力 Gate；
+* VTDO Gate；
+* 多任务 Release Gate。
+
+这些都超出本轮声明。
+
+---
+
+# 六、本轮允许与禁止的科学结论
+
+## 允许
+
+```text
+十个 reasoning-bearing QA Contract 已被冻结
+Answer Oracle 与关键推理义务已分离
+公开结构化 reasoning 被规定为 Action 前对象
+Observation 必须显式影响 Claim 和下一 State
+QA validity 与 trajectory validity 不可补偿
+target modality authority 已明确
+Program depth 与 reasoning depth 已区分
+十个直接合同反例在候选实现中拒绝
+前驱 Archive 负结果保持不变
+```
+
+## 仍然禁止
+
+```text
+真实任务已产生关键推理轨迹
+Runtime 已证明先 reasoning 后 Action
+模型能够输出 ReasoningActionEnvelope
+多条有效轨迹已经存在
+同一 x 下 pi(z | x) 非退化
+QA 类型覆盖已经充分
+Archive-wide constructibility 或 frequency
+QA Release / Mapper / State / Contribution / VTDO
+训练与主链恢复
+```
+
+---
+
+# 七、当前是否可以继续下一步
+
+**可以，但只能继续精确的独立审计。**
+
+当前 Transition 明确规定唯一后继为：
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_
+independent_audit_only
+```
+
+该阶段可以独立重建 10 个 Contract descriptors、13 个 conformance objects、时间顺序链和 A1–A10；不能执行 QA Fixture、读取或扩展 Archive、注册新任务或 Operation，也不能启动在线校准。
+
+所以当前授权状态应写为：
+
+```text
+independent audit                    MAY_PROCEED
+fixed-Fixture reasoning execution    NOT_YET_AUTHORIZED
+Archive target expansion             NOT_YET_AUTHORIZED
+Provider calibration                 NOT_YET_AUTHORIZED
+old/main experimental chain          REMAINS_PAUSED
+```
+
+---
+
+# 八、唯一直接后继实验设计
+
+## 实验名称
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_
+independent_audit_only
+```
+
+## 本轮只检验的命题
+
+> 在不调用候选自评 helper 作为 outcome oracle 的条件下，是否能从 exact source、primitive conformance inputs 和冻结前驱独立重建全部 Contract 与对象关系，并复现 8/0 Gate 和 A1–A10 拒绝结果？
+
+## 输入冻结
+
+必须精确绑定：
+
+```text
+当前 30-file / 77,840-byte directory
+29-member self-excluding Manifest
+source commit/tree
+  0a908909f27b75b41085062e2673abcfaa29dda7
+  a56d9e374cc8d15b1e49e78a3c953362db61ca88
+
+前驱 Archive negative-result Manifest/Root/Decision/Gate
+external review bytes
+operator directive bytes
+ten expected Contract names
+exact declared conformance-object denominator
+exact A1-A10 attack IDs
+```
+
+当前报告给出的目录重建、11/11 focused tests 和 101/101 adjacent QA checks可以作为比较目标，但不能作为独立审计的结果 Oracle。
+
+## 独立实现要求
+
+```text
+1. 从 exact commit 创建 detached source snapshot
+2. 从源码重新导出十个 Contract descriptors
+3. 不读取候选 Conformance Audit 作为构造输入
+4. 从 primitive synthetic inputs 独立构造 declared 13-object set
+5. 独立重建 State -> Envelope -> Execution -> Observation ->
+   Update -> State 链
+6. 独立重算 V_QA、V_trajectory、V_qualified
+7. 独立重算 target modality admission
+8. 独立重算五类 depth/coverage 指标
+9. 独立实施 A1-A10
+10. 最后才与候选对象、ID、Gate 和 Report 比较
+```
+
+## 建议 Gate
+
+```text
+A0 exact authority and scope freeze                         PASS/FAIL
+A1 detached exact-source and 30-file reproducibility        PASS/FAIL
+A2 ten Contract descriptors independently reconstructed    PASS/FAIL
+A3 declared thirteen conformance objects reconstructed     PASS/FAIL
+A4 exact parent order and cross-object relations           PASS/FAIL
+A5 validity, target, depth and coverage derivation         PASS/FAIL
+A6 A1-A10 independently reject                             PASS/FAIL
+A7 candidate self-audit non-oracle and zero external scope PASS/FAIL
+```
+
+非补偿规则：
+
+```text
+overall PASS
+  iff A0 AND A1 AND A2 AND A3 AND A4 AND A5 AND A6 AND A7
+```
+
+## 通过后的 Decision
+
+建议为：
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_
+independently_confirmed
+```
+
+## 失败处理
+
+若任何 Gate 失败，只定位第一个直接阻塞点：
+
+```text
+descriptor mismatch
+object-denominator mismatch
+parent-order mismatch
+invalidity factorization mismatch
+attack unexpectedly accepted
+source/directory nonreproducibility
+```
+
+不得借此跳到真实 Fixture、在线校准或重建主链。
+
+---
+
+# 九、独立审计通过后的首个科学实验
+
+这部分是**预先设计的条件性后继**，目前还没有被当前 Transition 授权。
+
+## 建议名称
+
+```text
+finance_qa_vnext_reasoning_bearing_fixed_fixture_
+constructibility_preflight_only
+```
+
+## 为什么不立即做四类任务
+
+当前最先需要回答的不是“覆盖是否足够”，而是：
+
+> 已冻结的 reasoning-bearing Contract 能否在一个真实、具体、可执行的金融 QA Fixture 上形成完整的关键推理链？
+
+直接同时加入 serial、branch、select-lookup、correction、Archive expansion 和多轨迹，会把首个失败点混在一起，属于过度扩张。
+
+因此首轮 fixed-Fixture 应只使用当前已经成功构造的 branch-and-merge task。
+
+---
+
+## Fixture Population
+
+从前驱九个已执行 branch rows 中按预注册规则选择两个：
+
+```text
+F1 = row_id 排序后第一个 mixed_sign case
+F2 = 与 F1 不同的、row_id 排序后第一个 near_equal_growth case
+```
+
+前驱已有：
+
+```text
+mixed_sign rows       3
+near_equal edge rows  2
+```
+
+而且九个 Program 均执行、独立重放并通过答案、引用和质量验证。
+
+选择只依赖冻结 Evidence-derived case labels 和 row ID，不读取未来 trajectory outcome。
+
+---
+
+## 冻结不变量
+
+```text
+Task type
+  = derived_growth_absolute_spread
+
+Task semantics
+EvidenceBundle / ProofGraph / BindingSnapshot
+entity and period bindings
+Answer Oracle Program
+Operation Registry
+answer schema and citation contract
+rounding/tolerance
+ten reasoning-bearing Contracts
+```
+
+本实验不改变：
+
+```text
+Archive source
+Task or Operation registration
+Renderer semantics
+target-gap task
+Provider model
+QA Release
+VTDO
+```
+
+---
+
+## 每个 Fixture 的 Critical Decision Graph
+
+建议最小包含五个 required obligations：
+
+```text
+D0 comparability
+   确认 entity、period、metric definition 和单位可比较
+
+D1 revenue branch
+   选择并执行 revenue growth 所需 Evidence 与 Operation
+
+D2 operating-income branch
+   选择并执行 operating-income growth 所需 Evidence 与 Operation
+
+D3 branch merge
+   根据两个 verified growth Claims 处理符号并计算 absolute spread
+
+D4 final grounding
+   将答案、期间、指标和引用绑定到 verified Claims
+```
+
+每个 obligation 注册一个最直接干预：
+
+```text
+I0 交换 earlier/later period
+I1 移除 revenue branch 的一个必要 Evidence
+I2 移除 operating-income branch
+I3 替换一个 branch Claim 或符号
+I4 替换最终 citation
+```
+
+预期结果只能是：
+
+```text
+Action 改变
+当前 Action 拒绝
+产生 evidence_insufficient
+下游 Claim 改变
+V_QA 或 V_trajectory 失败
+```
+
+---
+
+## 实际执行链
+
+本轮不能只构造最终对象，必须真实执行并按顺序持久化：
+
+```text
+State_t durable write
+  -> ReasoningActionEnvelope_t durable no-replace write
+  -> ActionExecution_t
+  -> PublicObservation_t
+  -> ObservationUpdate_t
+  -> State_(t+1)
+```
+
+关键检查：
+
+```text
+Envelope 文件创建与 fsync 在 Action dispatch 之前
+ActionExecution 必须引用 exact Envelope
+Observation 必须引用 exact ActionExecution
+Update 必须引用 exact Observation
+下一 State 必须由 Update 推导
+后补 rationale 不得成为已执行 Action 的 parent
+```
+
+这一步才把当前的“pre-action Schema 语义”推进为“fixed-Fixture Runtime 顺序证据”。
+
+---
+
+## Fixed-Fixture Gate
+
+```text
+F0 exact independent-audit predecessor                      PASS
+F1 exact two-Fixture parent and deterministic selection     PASS
+F2 Answer Oracle independently recomputable                 PASS
+F3 task-specific Critical Decision Graph complete           PASS
+F4 all Envelopes durably committed before Action            PASS
+F5 all Actions produce source-bound Observations             PASS
+F6 all Updates produce compatible Claims and next States    PASS
+F7 V_QA, V_trajectory and V_qualified pass for 2/2           PASS
+F8 registered interventions and direct attacks reject       PASS
+F9 zero Provider, new task, Archive expansion and VTDO       PASS
+```
+
+测量值应由对象直接派生：
+
+```text
+critical_decision_coverage = 1.0
+evidence_integration_depth >= 2
+reasoning_depth
+  = independently derived longest Decision-Graph dependency path
+correction_depth = 0
+```
+
+不要预设一个任意 `reasoning_depth >= 3` 阈值；应要求观测值与冻结 Decision Graph 的结构性期望相等。
+
+---
+
+## 本阶段最多允许的结论
+
+通过后只能说：
+
+> 两个冻结、Archive-grounded branch Fixtures 能在确定性执行环境中产生完整、公开、先于行动提交、Observation-responsive 且最终有效的 reasoning-bearing trajectories。
+
+仍然不能说：
+
+```text
+模型能生成这些轨迹
+两条有效轨迹已存在于同一 x
+QA task-family coverage 足够
+pi(z | x) 非退化
+可以进入 VTDO
+```
+
+---
+
+# 十、再下一阶段：同一任务多轨迹构造性
+
+只有 fixed-Fixture 单路径实验通过后，才进入：
+
+```text
+finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_
+quotient_constructibility_preflight_only
+```
+
+其唯一命题是：
+
+> 对完全相同的 \(x\)，是否至少存在两条均为 \(V_{\mathrm{qualified}}=1\)、且在预注册 quotient 下不被合并的 reasoning/action/claim-update 结构？
+
+必须固定：
+
+$$
+x=
+\text{Task}
++\text{Evidence Snapshot}
++\text{entity/period/metric semantics}
++\text{answer contract}.
+$$
+
+不同 Evidence Binding、不同期间或不同实体不能冒充同一个 \(x\)。
+
+在执行前必须冻结 quotient features：
+
+```text
+critical-decision dependency DAG
+Evidence-role access pattern
+verified Claim dependency DAG
+Action-class sequence
+branch/merge structure
+correction structure
+termination mode
+```
+
+明确删除：
+
+```text
+自然语言措辞
+字段排列
+解释长短
+同义改写
+无决策作用的冗余文本
+```
+
+通过条件：
+
+```text
+同一 x 的有效 trajectories                  >= 2
+对应 quotient State IDs                      >= 2
+paraphrase-only variants 合并                 PASS
+不同 Evidence Binding 冒充同一 x             REJECT
+两条 trajectory 的 V_qualified               2 / 2
+frequency / distribution estimate             0
+```
+
+若现有 Operation Registry 无法形成两条真正不同的有效路径，应报告：
+
+```text
+same_task_multitrajectory_constructibility_not_closed
+```
+
+不能在同一实验中临时增加 Operation 来让 Gate 通过。
+
+---
+
+# 十一、后续在线校准与主链恢复顺序
+
+完整顺序应是：
+
+```text
+1. Contract freeze independent audit
+2. fixed-Fixture single-path reasoning constructibility
+3. same-x multitrajectory quotient constructibility
+4. Archive-grounded multi-family reasoning constructibility
+5. small first-step ReasoningActionEnvelope ABI calibration
+6. small multistep ObservationUpdate calibration
+7. fresh QA/trajectory mainline redesign
+8. Mapper / State / Contribution / VTDO
+```
+
+在线校准不应立即恢复 192-Job 主链。建议先做 12 个 source cells 的 first-step calibration，只测：
+
+```text
+ReasoningActionEnvelope ABI crossing
+current-State binding
+Evidence/Claim reference validity
+selected-Action validity
+pre-action commitment
+```
+
+它不能称为 Capability estimate。只有 first-step interface 可达后，才做少量完整：
+
+```text
+Envelope -> Action -> Observation -> Update -> next Envelope/Final
+```
+
+的多步校准。
+
+旧主链不能原地修补。后续必须建立 fresh mainline identities，禁止：
+
+```text
+给旧 trajectory 事后附 rationale
+把旧 completed_qualified 变成 reasoning-qualified
+复用旧 Job/Raw/Result/Trace/Outcome IDs
+把不同 Evidence Binding 当同一 x
+合并新旧 denominator
+把 semantic_operation_depth 改名为 reasoning_depth
+```
+
+---
+
+# 十二、最终决定
+
+```text
+本轮 Contract freeze                         PASS_AS_SCOPED
+Blocking defect                              NONE_FOUND
+强制修订                                     NONE
+源码/工件独立确认                            REQUIRED
+真实 reasoning-bearing Fixture               NOT_ESTABLISHED
+当前唯一可执行后继                           INDEPENDENT_AUDIT_ONLY
+fixed-Fixture 实验                            DESIGNED, NOT YET AUTHORIZED
+Archive target expansion                      DEFERRED SEPARATE BRANCH
+Provider execution                            NOT AUTHORIZED
+旧实验主链                                   REMAINS PAUSED
+VTDO integration                              NOT AUTHORIZED
+```
+
+本轮已经完成了合理的“对象纠偏”：不再把答案 Program、token 长度或工具序列直接当成关键推理轨迹。现在不需要继续扩充 Contract，也不应恢复主链；唯一合理的下一实验是对这套对象冻结做独立重建。独立审计通过后，再用两个冻结的 branch Fixtures 检验真实的、按时间提交的 public reasoning chain。

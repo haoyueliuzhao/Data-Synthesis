@@ -16,6 +16,51 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Reasoning-Bearing Contract Freeze Independent Audit
+
+The only authorized successor to the scientific-object Contract freeze is complete. The exact
+24,106-byte review at SHA-256
+`c322942a7d67decc705d133850a0f7f53ccc7dae82185a45654d43183cd790e4` and exact 30-byte
+directive `参照审计继续实验修订`, SHA-256
+`d7f0a7b9c625edb3ec4d53a21418dd0b11ec7291a0ae934b98364ea651f9d3ca`, authorize only
+this credential-free independent audit.
+
+The audit freezes all 30 candidate files and 77,840 bytes, retains the prior 7/1 Archive result
+as immutable negative evidence, and reproduces all 30 files byte for byte from detached exact
+source. It independently reconstructs all ten Contract descriptors from source fields and all
+thirteen synthetic conformance objects from primitive inputs. Parent relations, the separate QA
+and trajectory validity conjunctions, target modality, five depth/coverage values, and the
+future eight-axis/four-archetype matrix are independently derived before comparison with the
+candidate Conformance Audit, Gate, or Report. A1-A10 reject independently and the final
+noncompensatory Gate is 8/0.
+
+The decision is:
+
+```text
+finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_
+independently_confirmed
+```
+
+The Decision / Report / Manifest / Root are:
+
+- `finance_qa_reasoning_contract_independent_decision:1b914ec0196ffb01f28026b75a48aaa0f247d80e6ee14ff677fc3ab5cb08e917`;
+- `finance_qa_reasoning_contract_independent_report:8274080a39c428ac978a3c6349b108743837e6bb01d8a04d4cf3b6265bbfe027`;
+- `finance_qa_reasoning_contract_independent_artifact_manifest:2af7cf54ddb7b5bee945cc72f59100cdb7073c3ba1c2304c36fced594dbc280a`;
+- `finance_qa_reasoning_contract_independent_artifact_root:661ac910a80064ff7c435cdc37a75204a39ba9bf10180865ce538f03cfb765f0`.
+
+The source commit/tree are `5786b393597e3ea6955fcbb214310ab2606675d2` /
+`d856976de04b37c70198228dfdc4ae35388f837e`. The 21-file, 81,938-byte formal directory
+rebuilds byte for byte; its Manifest binds twenty members and 78,675 bytes. Focused candidate
+plus audit tests pass 22/22, and the adjacent QA partition passes 112/112.
+
+This remains synthetic Schema-conformance evidence, not a real QA trajectory or Runtime durable
+pre-action commitment. The prospective fixed-Fixture experiment is not authorized:
+`next_stage_authorized=false`. Archive Evidence, Provider/GPU, online calibration, old-mainline
+restoration, QA Release, Mapper, State, Contribution, VTDO, training, release, and production
+remain forbidden. See
+`docs/finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze_independent_audit.md`.
+
+
 ## QA vNext Reasoning-Bearing Scientific Object And Contract Freeze
 
 The QA side path consumed only
@@ -72,10 +117,10 @@ The source commit/tree are `0a908909f27b75b41085062e2673abcfaa29dda7` /
 rebuilds byte for byte; its Manifest binds 29 members and 73,415 bytes. Focused tests pass 11/11
 with warnings treated as errors, and the adjacent QA partition passes 101/101.
 
-This is a Contract freeze, not a real QA reasoning result. The only permitted successor is its
-credential-free independent audit. Archive expansion, fixed-Fixture execution, Provider/GPU,
-online calibration, new-mainline construction, Mapper, State, Contribution, VTDO, training,
-release, and production remain forbidden. See
+This is a Contract freeze, not a real QA reasoning result. Its historical credential-free
+independent-audit successor has now been consumed and completed by the section above. Archive
+expansion, fixed-Fixture execution, Provider/GPU, online calibration, new-mainline construction,
+Mapper, State, Contribution, VTDO, training, release, and production remain forbidden. See
 `docs/finance_qa_vnext_reasoning_bearing_scientific_object_and_contract_freeze.md`.
 
 
