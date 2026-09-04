@@ -117,6 +117,85 @@ Start Receipts before credential lookup. Population change, prefix reissue, fail
 before independent postrun audit remain forbidden. See
 `docs/finance_v26_232_fresh_exact_v209_recovery_online_authorization_predecessor_manifest_actual_byte_authority_repair.md`.
 
+## QA Semantic-Depth-Three Registered Catalog Integration Preflight
+
+The QA side path consumed only
+`qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_only`. The exact
+13,342-byte external review at SHA-256
+`2b95605826bac2da00f67e3264d0d6cb6c72081473963a10a7939417a7cd917d` accepts the
+depth-three independent audit as `PASS_AS_SCOPED` and identifies Registered Catalog integration
+as the first unclosed Gate. The exact 41-byte directive `参照审计报告继续QA合成链实验` is bound
+at SHA-256 `a476c8224f869ecf8de596d936faec0de22b7cbbdf968a1db7f94c40c46ca8bd`.
+
+The resulting decision is:
+
+```text
+qa_semantic_operation_depth_three_plus_registered_catalog_integration_
+preflight_passed_independent_audit_required
+```
+
+The immutable historical `finance_tasks.v2` eight-type surface is captured without modification.
+A fresh preflight-only Catalog at version
+`finance_qa_registered_catalog.v3-depth-three-preflight.1` contains those eight exact task rows
+plus `derived_growth_absolute_spread` and `registered_margin_target_gap`, each exactly once. Its
+ten-operation Registry retains seven historical rows and registers
+`absolute_percentage_point_gap`, `scale_ratio_percent`, and
+`signed_percentage_point_gap` exactly once with semantic roles.
+
+Both new types are reached by Catalog lookup and a content-addressed resolution Receipt before
+Pattern, Renderer, Runtime, Evidence Binding, Program compilation, or realization selection. The
+branch-and-merge eight-node case and serial six-node case then execute all fourteen nodes and
+pass independent Oracle replay, answer/schema/citation verification, and quality evaluation.
+Both retain semantic depth three:
+
+```text
+historical / extension / total task registrations       8 / 2 / 10
+historical / extension / total Operation rows           7 / 3 / 10
+Catalog resolutions / complete executions               2 / 2
+independent replay / answer / citation / quality         2 / 2 each
+semantic-depth distribution                               {3: 2}
+Catalog attacks / rejected / accepted                  8 / 8 / 0
+Provider calls / GPU Jobs                                 0 / 0
+```
+
+The eight attacks cover task alias, missing/duplicate task registration, missing/duplicate
+Operation registration, wrong Operation role, direct Package admission without a resolution
+Receipt, and crossed Pattern registration. All reject before output write or external execution.
+All eight noncompensatory Gates pass.
+
+Authoritative identities include:
+
+- historical snapshot / fresh Catalog:
+  `finance_qa_historical_catalog_snapshot:20aa36f41a52df846f41adddd337670ddf00144e40b0710eb873be2f61add4b0` /
+  `finance_qa_registered_catalog:4761c0dace3f2f87169c6f10db76043fc250ff03f584e7466e21b10e13b63268`;
+- integration / negative / Gate:
+  `qa_registered_catalog_integration_audit:c8bd00534c05eb6686fd8be23af36736b57be6c08ca40a8811ef2941f52af0ec` /
+  `qa_registered_catalog_negative_audit:7b917313373f5a87da4b70fd175c6a46bc38dca179979a773741af55130a2062` /
+  `qa_registered_catalog_gate:2f1fa33d5768b96ff0dce184c90b5ca80d29e7700dd73761eca0ba369b6013d3`;
+- Decision / Transition / Report:
+  `qa_registered_catalog_decision:d3fd3c551f0a4c16734058b3c979848a6402d3816b0fe4484f1673695013b548` /
+  `qa_registered_catalog_transition:d160afc4bca85e4a38230be4a444cce4ab4eab108d45dae212a5598b47a4d635` /
+  `qa_registered_catalog_report:86f1608d4f0f76da1a47feba1988d7413678a657afe98e2d4b3d7b2aab4b980f`;
+- Manifest / Root:
+  `qa_registered_catalog_artifact_manifest:2c91dbaaf0007a5542bc5c6297657f6bd11763f9eb79d1f355a24869761824f1` /
+  `qa_registered_catalog_artifact_root:0f16712cb459e29858d2899a355ddfd23bf89dc80f096ad25a8adb71614aa627`.
+
+The exact source commit/tree are `13877e14c9e5050eb77f0895c73a686b389a6aaf` /
+`3067b7aa72d9895f89513c8e68a9a55dd6fbde71`. The 23-file, 183,833-byte formal directory
+rebuilds byte for byte; its Manifest binds 22 members and 180,424 bytes. Focused tests pass 10/10,
+the selected adjacent QA partition passes 70/70, and focused PyCompile, Ruff check/format,
+no-import-follow Mypy, and package-wide Ruff pass.
+
+This is fixed-Fixture Catalog-integration evidence, not Archive grounding, Benchmark agreement,
+overall QA sufficiency, Catalog promotion, or Release eligibility. The only permitted successor
+is
+`qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_independent_audit_only`.
+Provider/GPU execution, Archive sampling, Benchmark estimation, empirical frequency claims,
+Catalog promotion, QA Release, VTDO, training, release, and production remain forbidden. The
+separate v26.232 Recovery authorization remains unconsumed and was neither read nor broadened.
+See
+`docs/finance_qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight.md`.
+
 ## QA Semantic-Operation Depth-Three-Plus Preflight Independent Audit
 
 The QA side path consumed only

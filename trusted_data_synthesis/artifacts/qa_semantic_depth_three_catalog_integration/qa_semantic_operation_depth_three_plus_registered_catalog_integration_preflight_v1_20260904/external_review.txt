@@ -1,0 +1,370 @@
+# Finance QA 深度三独立审计修订结论
+
+```text
+AUDIT_DECISION                     = PASS_AS_SCOPED
+BLOCKING_DEFECT                    = NONE_FOUND
+MANDATORY_REVISION                 = NONE
+CURRENT_GATE                       = PASS
+DEPTH_THREE_CONSTRUCTIBILITY       = CLOSED_FOR_EXACT_TWO_FIXTURES
+TWO_TOPOLOGY_SUPPORT_EXISTENCE     = CLOSED_FOR_EXACT_TWO_FIXTURES
+REGISTERED_CATALOG_INTEGRATION     = NOT_EVALUATED
+ARCHIVE_GROUNDED_COVERAGE          = NOT_EVALUATED
+PARAMETER_SPACE_COVERAGE           = NOT_EVALUATED
+OVERALL_QA_SUFFICIENCY             = NOT_EVALUATED
+NEXT_UNCLOSED_GATE                 = REGISTERED_CATALOG_INTEGRATION
+```
+
+**本轮修订可以按声明范围通过，不需要继续修订当前独立审计。**
+
+关键边界是：
+
+> 本轮关闭的是“QA 链路能否真实构造、执行并验证两个语义操作深度为 3 的固定程序，且分别具有串行和分支汇合拓扑”，而不是“当前 QA 链路的问题类型、深度和真实任务分布已经充分”。
+
+报告已经明确把结果限制为固定 Fixture 构造性证据，并排除了 Catalog 集成、Archive-grounded 覆盖、参数空间覆盖、真实难度、Benchmark 频率、模型生成质量和整体 QA 充分性，因此没有越级。
+
+---
+
+## 一、本轮声明是否被真实实例化
+
+### 1. 候选实验本身已获得完整冻结
+
+本轮不是只读取候选报告中的 PASS，而是冻结了候选 v2 的完整 21 文件目录：
+
+```text
+files / bytes                 21 / 162,669
+Manifest members              20
+Manifest file bytes            3,122
+Manifest file SHA-256          7371a60a...
+path / hash / byte matches     21 / 21 / 21
+```
+
+尤其是，`artifact_manifest.json` 自身的原始字节、长度和 SHA-256 都被单独绑定，而不是只验证 Manifest 所列成员。这一实现已经避免了“仅改变 Manifest JSON 字段顺序但仍通过”的同类问题。
+
+候选源代码还从精确 commit 的 detached archive 中重新运行，重建后的 21 个文件、路径和实际字节全部一致，且环境中没有凭证、Provider 或 GPU 活动。
+
+**判定：候选冻结与可重建性 PASS。**
+
+### 2. 独立审计没有直接调用候选自评 helper
+
+审计没有调用候选的：
+
+```text
+preflight builder
+fixture constructor
+coverage helper
+depth helper
+topology helper
+Registry factory
+negative-control helper
+```
+
+候选侧的五个源文件经过 Git commit/tree、Blob OID、committed bytes 和 current bytes 核对；审计随后独立建立默认六操作加三项实验操作的九操作 Registry。三项新操作均保持 `program_role=semantic`，且 Executor 与 Oracle 为不同实现类。
+
+审计源码边界还通过 AST 检查禁止导入候选 preflight/models 和既有 Program-depth helper；它只导入作为被审对象的 Operation 类、Pattern 和 Runtime 定义，而选择、编译、执行、指标派生、拓扑派生及攻击记录均由独立实现完成。
+
+**判定：不是使用候选 Coverage Audit 再证明候选 Coverage Audit，独立性满足本轮范围。**
+
+### 3. 两个程序确实由 Pattern、Evidence 和公共执行路径重新构造
+
+正向人口从实际持久化的两个 `EvidenceBundle` 和两个 `RealizedTaskPackage` 出发，按 Bundle parent 连接。审计重新执行：
+
+```text
+EvidenceBundle
+  -> ProofGraph
+  -> source Pattern
+  -> role Binding
+  -> TaskPatternCompiler
+  -> source Program
+  -> semantic Plan / Binding / Instance
+  -> protected realization
+  -> rebuilt RealizedTaskPackage
+```
+
+重建后的 Package 与候选实际字节一致。随后两个 Package 均进入公共 `PublicPlanCandidateExecutor`，再经过 Workflow Verifier 和 Quality Evaluator，而不是直接使用候选 Coverage row 的结果。
+
+实际结果为：
+
+```text
+Programs reconstructed                 2 / 2
+complete Program executions             2 / 2
+Executor node outputs                  14 / 14
+Oracle node replays                    14 / 14
+answer schema / answer correct           2 / 2
+citation correct / quality accepted      2 / 2
+insufficient_capability                       0
+```
+
+
+
+公共执行对象自身还要求所有 hard Gates 通过、Oracle verification 为真，并要求独立 replay 节点数等于实际 Program 节点数；当前两个正式 case row 分别记录了 `8/8` 与 `6/6` 的 replay。
+
+**判定：执行与验证对象已真实实例化。**
+
+---
+
+## 二、问题程序深度与拓扑是否可信
+
+独立指标实现检查了：
+
+* Program node ID 唯一；
+* 节点顺序满足拓扑顺序；
+* Operation input references 与 dependencies 完全相等；
+* 所有节点都属于最终输出的祖先闭包；
+* Registry 中 `transparent_projection=0`、`semantic=1`；
+* 深度沿依赖路径递推，而不是简单统计节点总数；
+* 保存的候选 depth helper 未被调用。
+
+最终两个程序分别为：
+
+| Case                       | 节点 |  边 | 结构深度 | 语义操作深度 | Workflow 深度 | 拓扑                 |
+| -------------------------- | -: | -: | ---: | -----: | ----------: | ------------------ |
+| `serial_margin_target_gap` |  6 |  5 |    4 |  **3** |           5 | `serial_chain`     |
+| `branch_merge_growth_gap`  |  8 |  7 |    4 |  **3** |           5 | `branch_and_merge` |
+
+两条关键语义路径是：
+
+```text
+ratio
+  -> scale_ratio_percent
+  -> signed_percentage_point_gap
+
+growth
+  -> signed_percentage_point_gap
+  -> absolute_percentage_point_gap
+```
+
+分支案例中的两个 `growth` 是不同 DAG 节点，在进入 signed gap 前形成两个独立语义父节点；审计没有因为 Operator 名称相同而把它们折叠。拓扑先从 DAG 派生，之后才与候选标签比较。
+
+因此：
+
+```text
+semantic-depth distribution    {3: 2}
+topology distribution          {serial_chain: 1, branch_and_merge: 1}
+```
+
+是对这两个确切 Program 的有效结论。
+
+但其中的 `two_topology_coverage` 只能解释为：
+
+```text
+这两个固定 Fixture 对两种拓扑各提供一个支持点
+```
+
+不能解释为：
+
+```text
+两种拓扑的参数空间已经被覆盖
+现实 Finance 问题的拓扑分布已经被覆盖
+当前 QA 数据集的深度结构已经充分
+```
+
+报告已主动保留这一边界，所以这是 **Scope limitation**，不是当前 Blocking defect。
+
+---
+
+## 三、直接反例检查
+
+本轮最直接的反例已经覆盖。
+
+### 1. 通过无关节点虚增深度
+
+在 serial Program 中加入不属于最终输出祖先闭包的 lookup，即使保留原答案并重算身份，也在：
+
+```text
+output_dependency_closure
+```
+
+被拒绝。
+
+### 2. 删除中间语义操作但保留答案
+
+以下修改均被拒绝：
+
+```text
+跳过 scale_ratio_percent
+跳过 absolute_percentage_point_gap
+用 serial Program 替换 branch Program
+```
+
+拒绝边界均为：
+
+```text
+exact_source_program_admission
+```
+
+说明“答案仍然正确”不能替代 exact source Program 身份。
+
+### 3. Evidence 角色替换
+
+将 operating-income Evidence 替换成 revenue Evidence，在：
+
+```text
+pattern_source_admission
+```
+
+被拒绝。
+
+### 4. 错误答案、伪造引用与 Registry-role laundering
+
+完全重哈希后的错误答案与伪造 citation 被 Evaluator 拒绝；把 `scale_ratio_percent` 从 semantic 改成 transparent 会改变权威深度指标并被拒绝。七个攻击最终为：
+
+```text
+attempted / rejected / accepted    7 / 7 / 0
+```
+
+
+
+结合实际源码核对，**未发现能够在保持本轮 exact candidate、exact source Program 和 authoritative Registry 不变的情况下，直接推翻“两个固定深度三程序可构造并通过完整执行验证”的反例。**
+
+---
+
+## 四、Gate 判定
+
+```text
+A0 exact external scope and candidate Freeze             PASS
+A1 detached exact-directory rebuild                      PASS
+A2 independent Git source and Registry authority         PASS
+A3 independent Pattern/Program reconstruction            PASS
+A4 independent 14-node execution and verification        PASS
+A5 independent depth and topology derivation             PASS
+A6 seven direct attacks reject                           PASS
+A7 zero external-execution scope                         PASS
+
+passed / failed                                           8 / 0
+```
+
+
+
+```text
+CURRENT_GATE = PASS
+```
+
+---
+
+## 五、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+本轮已经可信关闭：
+
+```text
+两个固定 Fixture 的深度三可构造性
+一个串行 Program 的存在
+一个分支汇合 Program 的存在
+14 个 Program 节点的完整执行和 Oracle replay
+两个答案的 Schema、数值和引用正确性
+两个候选的本地 Quality acceptance
+```
+
+### Scope limitation
+
+以下仍未评估，但不否定本轮：
+
+1. 两个新 task type 是否真正进入正式 Finance Catalog；
+2. 正式 Catalog 入口是否能完整到达 Pattern、Compiler、Executor 和 Verifier；
+3. 同一 task type 不同 Evidence、时间窗口、实体和参数下的成功率；
+4. Archive 中是否存在足够且可合法绑定的真实证据；
+5. 深度 3、深度 4 及更高深度在目标任务分布中的频率；
+6. 真实问题的语言歧义、检索难度和推理难度；
+7. 模型能否生成这些问题及有效轨迹；
+8. QA Release、训练效用或 VTDO 集成。
+
+当前证据明确排除了这些更强结论。
+
+### Future hardening
+
+```text
+NONE_REQUIRED_BEFORE_REGISTERED_CATALOG_INTEGRATION_PREFLIGHT
+```
+
+不应继续围绕同一两个 Fixture 增加更多重哈希攻击、环境完备证明或生产级要求。当前第一个未闭合对象已经前移到 Catalog 集成。
+
+---
+
+## 六、当前允许与禁止的科学结论
+
+### 允许
+
+可以正式声称：
+
+> 在精确冻结的 QA 实验源、九操作 Registry 和两个固定 Evidence Fixture 下，当前 QA 链路能够构造、公开执行并独立验证两个语义操作深度为 3 的 Finance Program；其中一个具有串行语义拓扑，另一个具有分支汇合语义拓扑。两个 Program 共 14 个节点全部执行并完成 Oracle replay，答案 Schema、答案值、引用和本地 Quality Gate 均通过。
+
+### 禁止
+
+仍不能声称：
+
+* 当前正式 Finance QA Catalog 已支持这两个 task type；
+* QA 链路已经具有充分的问题类型覆盖；
+* QA 链路已经具有充分的深度覆盖；
+* 两个 Fixture 可以代表真实任务分布；
+* Archive-grounded 构造成功率已经获得测量；
+* 现实问题中深度三任务占比已经确定；
+* 当前 QA 问题具有 expert-level 真实难度；
+* 模型能够稳定生成这些问题或解决轨迹；
+* QA Release Population、训练语料或 VTDO 输入已经就绪。
+
+---
+
+## 七、后续实验
+
+当前正式 Transition 保持：
+
+```text
+next_stage_authorized = false
+```
+
+这是独立审计工件形成时的历史状态，不应追溯修改。
+
+基于本次外部审计，下一阶段可以限定为：
+
+```text
+qa_semantic_operation_depth_three_plus_registered_catalog_integration_
+preflight_only
+```
+
+该阶段只需关闭一个问题：
+
+> 两个已经验证的 task type 和三项新语义 Operation，能否通过一个全新的、版本化的正式 Catalog/Registry 入口被发现、实例化、执行和验证，而不是依赖实验包的直接 helper 调用？
+
+建议冻结以下最小链条：
+
+```text
+historical eight-type Catalog
+  -> fresh versioned Catalog extension
+  -> exact two new task-type registrations
+  -> exact three new Operation registrations
+  -> Catalog lookup
+  -> Pattern selection
+  -> Evidence Binding
+  -> Program compilation
+  -> protected realization
+  -> PublicPlanCandidateExecutor
+  -> Workflow Verifier
+  -> Quality Evaluator
+```
+
+该阶段至少应验证：
+
+```text
+旧八类 Catalog 对象和身份不变
+新 Catalog 使用全新身份
+两个新 task type 各且仅注册一次
+三项新 Operation 各且仅注册一次
+Catalog 查询能够到达对应 Pattern
+不存在直接绕过 Catalog 调用实验 fixture/helper 的正向路径
+两个注册类型各有一个确定性端到端执行控制
+错误 task-type alias、缺失注册、重复注册、错误 Operation role 均拒绝
+Provider / GPU / Archive selection / Benchmark / Release 均为 0
+```
+
+此时**不需要同时要求 Archive 参数覆盖、Benchmark 分布或在线模型生成**；这些应留到 Catalog 集成通过并完成独立审计之后。
+
+QA 支路也没有读取、消费或扩大单独的 Finance Recovery 授权，因此本轮 QA PASS 不改变主链 Recovery Gate 的状态。
+
+## 最终结论
+
+> **本轮 QA 链路修订通过。两个固定语义深度三 Program 及串行/分支汇合两种拓扑的构造、执行和验证证据已经闭合；没有发现直接推翻该窄命题的反例。它没有解决整体问题类型覆盖或深度分布充分性。首个未闭合 Gate 已前移到版本化 Registered Catalog Integration，应进入零 Provider 的 Catalog 集成 preflight，而不应继续扩张当前两个 Fixture 的审计。**
