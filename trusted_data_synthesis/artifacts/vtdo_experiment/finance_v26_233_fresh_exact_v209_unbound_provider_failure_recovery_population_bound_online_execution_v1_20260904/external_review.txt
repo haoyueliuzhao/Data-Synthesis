@@ -1,0 +1,320 @@
+# Finance v26.232 主链实验审计结论
+
+```text
+AUDIT_DECISION                 = PASS_AS_SCOPED
+BLOCKING_DEFECT                = NONE_FOUND
+FIRST_FAILED_GATE              = NONE
+MANDATORY_REVISION             = NONE
+
+V26_231_AUTHORIZATION          = SUPERSEDED_NONCONSUMABLE
+V26_232_AUTHORIZATION          = ACCEPTED_UNCONSUMED
+RECOVERY_POPULATION_AUTHORITY  = RETAINED
+CURRENT_GATE                   = PASS
+
+NEXT_UNCLOSED_GATE             = RECOVERY_ONLINE_EXECUTION
+NEXT_STAGE_AUTHORIZED          =
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_
+online_execution_only
+```
+
+**本轮 v26.232 可以按声明范围通过。原先唯一的 G0 缺陷已被实质修复，没有必要继续扩张本轮审计或增加新的前置 Gate。经本次审计，原定 33-Job Recovery 在线执行可以继续。**
+
+---
+
+## 一、本轮实际检验的命题
+
+本轮不是再次证明整个 Recovery Population，也不是执行 Recovery，而是修复一个非常具体的授权父链缺陷：
+
+> v26.231 验证了 v26.229 和 v26.230 Manifest 的解析对象及其成员，却没有绑定两个 `artifact_manifest.json` 文件自身的原始字节，因此同长度、语义等价的 JSON key 重排可以改变 Manifest 文件字节而不改变旧授权身份。
+
+v26.231 已被正确收窄为 `FAIL_NARROWLY_AT_G0`，其 33 个 Recovery Jobs、55 个成功前缀调用、`3/25/5` 失败阶段分布、继续执行语义和预算仍被保留；但旧授权明确不可消费。
+
+v26.232 的本轮声明因此只有：
+
+1. 绑定 v26.229、v26.230 的 Manifest 原始字节；
+2. 保留 v26.231 已通过的 Recovery 语义投影；
+3. 生成一个包含新 Manifest-byte authority 父节点的全新授权；
+4. 旧 v26.231 授权不可替代、不可复用；
+5. 当前阶段保持零 Provider、零 Recovery、零经验估计。
+
+这一范围在报告中表达清楚，没有把授权修复写成 Recovery 成功或 Capability 结果。
+
+---
+
+## 二、实现是否真实关闭了原缺陷
+
+### 1. Manifest 原始字节现在先于解析被验证
+
+v26.232 的实际实现顺序是：
+
+```text
+read artifact_manifest.json raw bytes
+  -> exact byte-count check
+  -> exact SHA-256 check
+  -> typed Manifest parsing
+  -> exact path-set equality
+  -> every member byte-count/SHA-256
+  -> directory geometry equality
+```
+
+报告绑定的两个核心原始 Manifest 为：
+
+```text
+v26.229  16,952 bytes
+SHA-256  3c74bf72426c33400338e9f234a82bc342f368910a40c84d360ac3bd61b8fa72
+
+v26.230   3,150 bytes
+SHA-256  70ad2b0afa9fac2917512e4e2d7d85cf2f42abb99e8a6a058b751f627f8605b1
+```
+
+
+
+源码中的 `_validate_manifest_raw` 确实先执行 `len(raw)` 和 `sha(raw)` 比较，只有通过后才调用 `model_validate_json(raw)`；`_manifest_authority` 随后再验证路径集合、所有成员字节和目录几何。不是只在报告中加入了两个哈希字段。
+
+**判定：原始字节权威真实实例化。**
+
+### 2. 新权威进入了完整授权父链
+
+修复不是生成两个孤立的审计对象。新的父关系是：
+
+```text
+v26.229 Manifest-byte authority ─┐
+                                 ├─ repaired RecoveryParentBinding
+v26.230 Manifest-byte authority ─┘
+             │
+             ├─ repaired v26.230 Freeze
+             ├─ retained RecoveryExecutionContract
+             ├─ repaired RecoveryComposition
+             └─ fresh v26.232 ExactOnlineAuthorization
+```
+
+新的授权构造直接包含：
+
+```text
+v231_candidate_freeze_id
+v229_manifest_byte_authority_id
+v230_manifest_byte_authority_id
+v230_freeze_id
+parent_binding_id
+execution_contract_id
+composition_id
+exact 33 recovery_job_ids
+recovery_job_set_sha256
+```
+
+源码中的 `_authorization` 和 `PrecredentialGuard` 与这一描述一致：新授权身份包含两个 Manifest authority ID，Guard 比较严格重验证后的授权对象、精确授权字节以及请求中的 Freeze、Parent、Contract、Composition 和 Job set。
+
+报告中相应的新授权为：
+
+```text
+fresh_v26_232_exact_manifest_byte_bound_recovery_online_execution_authorization:
+c332e42c45bbd718a16ba65258099c9193cb84348b83f94960d3bf4bd015e371
+```
+
+它尚未被消费。
+
+**判定：不是“检查了 Manifest 字节但授权仍未绑定”的空修复。**
+
+### 3. 旧授权确实不能冒充新授权
+
+旧 v26.231 授权：
+
+```text
+fresh_v26_231_exact_recovery_online_execution_authorization:
+d54c68b13db02db4582f7e587973b61af431efa714f1ba3d6473939f4b12c06d
+```
+
+在新 Guard 中不能作为合法授权类型和精确字节对象通过。正式控制中，旧授权替换、授权字节修改、父节点变化、Job 集变化以及禁止意图均在任何 post-Guard probe、凭证或 Provider 活动前拒绝。
+
+测试源码也明确覆盖了：
+
+* 三个前驱 Manifest 的实际字节权威；
+* 两个同长度 key-reordering 攻击；
+* 旧 v26.231 授权替换；
+* 新旧授权 ID 不同；
+* 33-Job 语义和预算不变；
+* 空目录第二次构建的实际字节一致性。
+
+**判定：旧授权不可消费这一修复成立。**
+
+---
+
+## 三、直接反例检查
+
+### 原阻塞反例：同长度、语义等价的 Manifest key 重排
+
+两个攻击都满足：
+
+```text
+原字节数 = 攻击后字节数
+解析后的 JSON 对象完全相等
+Manifest 成员文件完全不变
+解析后的 Manifest 身份可以保持不变
+原始文件 SHA-256 发生变化
+```
+
+结果为：
+
+```text
+v26.230 attack -> freeze.manifest_bytes
+v26.229 attack -> freeze.manifest_bytes
+
+attempted / rejected / accepted = 2 / 2 / 0
+```
+
+
+
+源码实现的攻击不是只设置一个 `rejected=true` 字段：它实际重排顶层键，验证字节数相同、解析结果相同、候选字节不同，然后调用正式 `_validate_manifest_raw`，并要求捕获的异常必须是 `V232Error` 且阶段必须精确为 `freeze.manifest_bytes`。
+
+因此，**直接推翻 v26.231 的原反例已经不能通过 v26.232。**
+
+### 授权父节点完全重哈希攻击
+
+另有十个攻击修改外部决策、v26.231 Freeze、v26.230 Freeze、Recovery Parent、Execution Contract 或 Recovery Job 成员，并重新计算合法的新授权身份。十个对象全部被预期字节 Guard 拒绝：
+
+```text
+fully rehashed attacks / rejected = 10 / 10
+accepted                           = 0
+```
+
+
+
+**未发现能够在不修改当前冻结条件的情况下，直接推翻本轮声明的具体反例。**
+
+---
+
+## 四、为什么复用 v26.231 语义重建不构成过度或不足审计
+
+v26.232 在两个前驱 Manifest 原始字节权威通过以后，才调用保留的 v26.231 语义重建，并要求重新构造的旧 Parent 与已保存的 v26.231 Parent 实际字节一致；之后仅增加新的 Manifest-byte authority 父节点。
+
+这符合本轮授权范围，因为外部审计已经明确保留了：
+
+* 33 个 Recovery Jobs；
+* 55 个成功前缀调用；
+* 33 个失败请求；
+* `3/25/5` 失败阶段划分；
+* 31 个 reasoning-budget 与 2 个 JSON-decode 来源；
+* continuation semantics；
+* residual budget。
+
+本轮没有声称重新独立证明这些对象，因此不应要求再实现一套新的 Recovery Population 编译器或重做 v26.230 全量审计。那会把一个 Manifest-byte 修复不必要地升级成全系统重审。
+
+---
+
+## 五、Gate 判定
+
+```text
+G0 external scope, v26.231 candidate, exact v26.230 Manifest Freeze  PASS
+G1 exact v26.229 Manifest, Contract, Population, and 33 Jobs         PASS
+G2 exact 55-prefix and 33 failed-request authority                   PASS
+G3 continue-from-failure-to-terminal semantics                      PASS
+G4 explicit residual resource and call budget                       PASS
+G5 fresh Manifest-byte-bound one-time authorization                 PASS
+G6 precredential, parent, and Manifest-byte attacks                 PASS
+G7 zero-Provider/recovery/empirical boundary                        PASS
+
+passed / failed                                                      8 / 0
+```
+
+
+
+```text
+CURRENT_GATE = PASS
+```
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+本轮声明范围内不需要强制修订。
+
+### Scope limitation
+
+以下仍未评估，但均不否定 v26.232：
+
+1. 33 个 Recovery Job 是否会成功到达新鲜终止状态；
+2. 31 个 reasoning-budget failure 是否会在相同 `max_tokens=16,384` 下再次发生；
+3. 实际执行是否严格先写 Consumption Receipt 和 Recovery Run Start Receipt，再读取凭证；
+4. 在线执行是否真正调用新 v26.232 Guard，而不是旧 v26.231 Guard；
+5. Recovery 后的完整 terminal partition、Qualified 数量和经验 estimand；
+6. v26.226 的 192-Job 经验集合是否最终完整。
+
+这些都是**下一阶段在线执行或其 postrun audit 的对象**，不是当前授权修复的缺陷。
+
+### Future hardening
+
+```text
+NONE_REQUIRED_BEFORE_THE_EXACT_RECOVERY_ONLINE_EXECUTION
+```
+
+不需要在执行前再增加新的 Manifest 攻击集合、重新设计 Recovery Population，或重新审计 QA 支路。
+
+---
+
+## 七、当前允许和禁止的结论
+
+### 允许
+
+可以声称：
+
+> v26.231 的唯一 G0 缺陷已被修复。v26.229 和 v26.230 自排除 Manifest 的实际文件字节现已在解析前由精确长度和 SHA-256 约束，并通过新权威对象进入 Recovery Parent、Execution Contract、Composition 和全新的 v26.232 一次性授权。原 33-Job Recovery Population、55 个历史成功前缀、33 个失败请求、继续执行语义和资源预算保持不变。旧 v26.231 授权不可消费。
+
+### 禁止
+
+仍不能声称：
+
+* Recovery 已经成功；
+* 33 个失败 Job 已被补齐；
+* v26.226 经验集合已经完整；
+* 31 个 reasoning-budget failure 已被修复；
+* Capability、`q_first` 或 `q_bounded_correction` 已重新估计；
+* Mapper、State、frequency、Contribution 或 VTDO 已获得授权；
+* QA 支路可并入本次 Recovery 条件；
+* 可以修改 `max_tokens`、模型、请求体或新增 Recovery Job。
+
+---
+
+## 八、后续主链实验
+
+本次审计后，可以直接进入：
+
+```text
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_
+online_execution_only
+```
+
+无需再增加一个新的授权修复 preflight。
+
+在线阶段必须严格执行：
+
+```text
+exact v26.232 authorization bytes
+  -> repaired precredential Guard
+  -> consume exactly once
+  -> durable Consumption Receipt
+  -> durable Recovery Run Start Receipt
+  -> credential lookup / Provider construction
+  -> locally replay 55 persisted successful public projections
+  -> issue each of the 33 exact captured failed requests once
+  -> continue exact v26.209 current-State Runtime to a fresh terminal
+  -> persist fresh Recovery evidence
+  -> Raw -> Result -> Trace -> Outcome -> checkpoint
+```
+
+
+
+执行时必须保持三个边界：
+
+1. **不要重新向 Provider 发出那 55 个成功前缀调用。**它们只能作为本地持久化 public projection 被回放。
+2. **不要提高 `max_tokens`。**当前 16,384 是冻结条件；31 个 reasoning-budget failure 即使再次失败，也应作为本次 Recovery 的真实结果保留。提高预算会形成新实验条件，而不是补齐 v26.209。
+3. **执行完成后先做独立 postrun audit，再做任何经验估计。**失败 Job 不得选择性重跑，也不得直接回填历史 v26.226 terminal。
+
+## 最终判定
+
+> **Finance v26.232 主链实验通过本轮窄范围审计。前驱 self-excluding Manifest 的实际字节权威已在代码、父链和新授权中真实闭合；原同长度语义等价重排反例被准确拒绝，旧 v26.231 授权不可替代。未发现 Blocking defect。下一步应执行唯一冻结的 33-Job Recovery online stage，而不是继续扩张授权层审计。**

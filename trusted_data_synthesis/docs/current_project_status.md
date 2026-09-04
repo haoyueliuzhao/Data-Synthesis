@@ -15,6 +15,31 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.233 Exact 33-Job Provider-Failure Recovery Online Execution
+
+Finance v26.233 consumed the exact v26.232 authorization once and executed only the frozen
+33-Job Recovery Population. All 55 successful public prefixes were replayed locally with zero
+Provider reissues, and all 33 first live requests match the captured failed requests. The Runner
+made 64 fresh Provider calls.
+
+Sixteen Jobs reached new terminals: eight `completed_qualified`, one `completed_invalid`, and
+seven `final_response_abi_invalid`. Seventeen ended in new `unbound_provider_failure` records:
+sixteen `ReasoningBudgetExhaustedError` and one `JSONDecodeError`; Host failures are zero. No
+Recovery Job was retried and no v26.226 artifact or terminal was changed or backfilled.
+
+Summary / Transition are
+`finance_v26_233_execution_summary:af4e4ceaa286a2cd93b1dcb5433104b70509918205ffb2cf457fe8745ad6b233` /
+`finance_v26_233_transition:475f270536c7448f8d687ce982cb55534a4862e783f63d543a2bd9a5ae04640f`.
+The 381-file, 12,265,007-byte directory has a 380-member, 12,184,524-byte self-excluding
+Manifest. Fresh Usage is 464,481 input and 637,076 output tokens. This is raw Recovery evidence,
+not an empirical estimate.
+
+The authorization is consumed and non-reusable. Only a separately authorized credential-free
+postrun independent audit may follow. Provider retry, replacement execution, historical backfill,
+empirical estimation, QA, Mapper, State, frequency, Contribution, VTDO, training, release, and
+production remain forbidden. See
+`docs/finance_v26_233_fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution.md`.
+
 ## v26.232 Predecessor Manifest Actual-Byte Authority Repair
 
 Finance v26.232 consumed only

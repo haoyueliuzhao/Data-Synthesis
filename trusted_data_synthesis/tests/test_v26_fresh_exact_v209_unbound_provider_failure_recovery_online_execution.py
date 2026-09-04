@@ -28,7 +28,9 @@ REVIEW = Path(
 def prepared(tmp_path_factory: pytest.TempPathFactory) -> subject.PreparedRecoveryExecution:
     target = tmp_path_factory.mktemp("v26-233-prepare") / "online"
     original = subject.OUTPUT_DIR
+    original_ledger = subject.LEDGER_DIR
     subject.OUTPUT_DIR = os.path.relpath(target, ROOT)
+    subject.LEDGER_DIR = os.path.relpath(target.parent / "ledger", ROOT)
     try:
         value = subject.prepare_execution(
             repository_root=ROOT,
@@ -37,6 +39,7 @@ def prepared(tmp_path_factory: pytest.TempPathFactory) -> subject.PreparedRecove
         )
     finally:
         subject.OUTPUT_DIR = original
+        subject.LEDGER_DIR = original_ledger
     assert not target.exists()
     return value
 
