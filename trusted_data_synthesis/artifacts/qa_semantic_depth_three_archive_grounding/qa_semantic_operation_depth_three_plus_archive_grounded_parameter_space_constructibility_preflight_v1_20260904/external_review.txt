@@ -1,0 +1,295 @@
+# 本轮 QA 链路实验审计结论
+
+```text
+AUDIT_DECISION                  = PASS_AS_SCOPED
+BLOCKING_DEFECT                 = NONE_FOUND
+MANDATORY_REVISION              = NONE
+
+REGISTERED_CATALOG_INTEGRATION  = CLOSED_FOR_EXACT_2_FIXED_FIXTURES
+HISTORICAL_CATALOG              = RETAINED_8_TASKS_7_OPERATIONS
+FRESH_PREFLIGHT_CATALOG         = 10_TASKS_10_OPERATIONS
+DEPTH_THREE_EXTENSIONS          = 2_TASKS_3_SEMANTIC_OPERATIONS
+PROGRAM_EXECUTION               = 2/2
+EXECUTED_ORACLE_VERIFIED_NODES  = 14/14
+SEMANTIC_DEPTH_DISTRIBUTION     = {3:2}
+CATALOG_AUTHORITY_ATTACKS       = 8/8_REJECTED
+
+GENERAL_QA_COVERAGE             = NOT_ESTABLISHED
+ARCHIVE_GROUNDING               = NOT_EVALUATED
+QA_RELEASE_READINESS            = NOT_ESTABLISHED
+NEXT_STAGE_AUTHORIZED           = FALSE
+```
+
+**本轮按声明范围通过。**
+
+本轮关闭的不是“QA 合成链已经充分”，而是一个更窄且明确的命题：
+
+> 两个已验证的 semantic-depth-3 Finance 任务类型，已经真实注册进一个新的版本化 Catalog，并可从 Catalog resolution 开始，经过 Binding、Program 编译、受保护的题面实现、公开执行、Oracle 复核、工作流验证和质量评估，完成两个固定 Fixture 的端到端确定性链路。
+
+独立审计自身给出的正式决定也是 `qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_independently_confirmed`，并声明八个非补偿 Gate 全部通过。
+
+---
+
+## 一、本轮声明与实现是否一致
+
+### 1. 候选实验及其源工件确实被冻结
+
+独立审计没有只读取候选 Report，而是：
+
+* 校验候选目录 23 个文件、183,833 字节；
+* 在解析 Manifest 前先校验 Manifest 自身的实际字节数和 SHA-256；
+* 校验全部 22 个 Manifest member 的路径、字节数和哈希；
+* 从候选 commit `13877e14...` 创建 detached source archive；
+* 在受限环境中重新构建完整候选目录，并获得 23/23 路径、哈希和实际字节一致。
+
+因此，独立审计所接受的是这个精确候选，而不是事后重新描述出来的“等价实验”。
+
+**判定：A0、A1 PASS。**
+
+### 2. 历史 Catalog 与新增 Catalog 的关系被真实重建
+
+独立实现从实际的：
+
+```text
+FinanceTaskPlugin
+8 个 TaskPatternSpec
+Finance Renderer Manifest
+未扩展的 Finance Operation Registry
+```
+
+重建历史快照，并确认其仍为 8 个任务类型、7 个 Operation；随后独立构造新的：
+
+```text
+finance_qa_registered_catalog.v3-depth-three-preflight.1
+```
+
+其组成是：
+
+```text
+历史任务             8
+新增任务             2
+任务总数            10
+
+历史 Operation       7
+新增 Operation       3
+Operation 总数      10
+```
+
+新增任务恰为：
+
+```text
+derived_growth_absolute_spread
+registered_margin_target_gap
+```
+
+新增 Operation 恰为：
+
+```text
+absolute_percentage_point_gap
+scale_ratio_percent
+signed_percentage_point_gap
+```
+
+三者均注册为 `semantic`，并且两个任务与三个 Operation 都只出现一次。独立构造的 Catalog 对象和两个 Resolution Receipt 均与候选工件逐字节一致。
+
+**判定：A2、A3 PASS。**
+
+### 3. Catalog 不是装饰性登记，而是进入了实际执行入口
+
+两个固定 `EvidenceBundle` 是唯一允许复用的正向输入。任务类型和角色绑定随后由 Evidence predicate 与 fiscal year 重新推导，而不是从候选 Package 复制。
+
+实际链路为：
+
+```text
+Catalog task row
+  -> Pattern / Renderer / Runtime resolution
+  -> content-addressed Resolution Receipt
+  -> EvidenceBundle / ProofGraph / Evidence Binding
+  -> TaskPatternCompiler / Program
+  -> semantic binding bundle
+  -> protected RealizedTaskPackage
+  -> PublicPlanCandidateExecutor
+  -> nodewise Oracle replay
+  -> CandidateWorkflowVerifier
+  -> CandidateQualityEvaluator
+  -> depth metric reconstruction
+```
+
+结果是：
+
+| Fixture          | 任务类型                             | 节点 | 语义深度 | 结果 |
+| ---------------- | -------------------------------- | -: | ---: | -- |
+| branch-and-merge | `derived_growth_absolute_spread` |  8 |    3 | 通过 |
+| serial chain     | `registered_margin_target_gap`   |  6 |    3 | 通过 |
+
+两条链合计 14/14 个节点执行并通过 Oracle 复核；答案 Schema、答案值、引用绑定和质量评估均为 2/2；结构深度为 `{4:2}`，语义操作深度为 `{3:2}`，工作流深度为 `{5:2}`。 
+
+**判定：A4、A5 PASS。**
+
+---
+
+## 二、直接反例检查
+
+独立审计没有调用候选 negative-control helper，而是通过自己的 `_resolve`、Catalog validation 和 Package admission 路径重新实施八个攻击：
+
+| 攻击                                | 拒绝位置                                 |
+| --------------------------------- | ------------------------------------ |
+| 未注册 task alias                    | `catalog.task_lookup`                |
+| 缺少新增任务                            | `catalog.extension_task_domain`      |
+| 重复任务注册                            | `catalog.task_uniqueness`            |
+| 缺少新增 Operation                    | `catalog.extension_operation_domain` |
+| 重复 Operation 注册                   | `catalog.operation_uniqueness`       |
+| 将语义缩放伪装为透明投影                      | `catalog.operation_role`             |
+| 无 Resolution Receipt 直接提交 Package | `catalog.resolution_receipt`         |
+| 任务注册绑定其他 Pattern hash             | `catalog.pattern_relation`           |
+
+结果为：
+
+```text
+attempted / rejected / accepted = 8 / 8 / 0
+candidate attack helper calls   = 0
+Provider calls                  = 0
+```
+
+攻击名称、类型化拒绝边界和 reason hash，都是在独立执行完成后才与候选工件比较。
+
+**判定：不存在可直接推翻本轮 Catalog 集成声明的反例，A6 PASS。**
+
+---
+
+## 三、独立性判断
+
+独立审计源码没有导入候选 Catalog/preflight 模块，也没有调用：
+
+```text
+_fixture_inputs
+_compile_realized
+_integration
+build_catalog_descriptor
+validate_catalog_rows
+derive_program_depth_metrics
+admit_program_depth_metrics
+```
+
+它直接使用公共的 Pattern compiler、执行器、Verifier、Evaluator，以及上一阶段已审计的 depth-three Pattern/Operation 定义重新构建结果。审计源码自身的 `__init__.py`、`models.py` 和 `audit.py` 也绑定到 commit/tree 与 Git Blob/current-byte 关系。
+
+这足以支持当前的“独立复核固定两例 Catalog 集成”命题；没有必要在本轮重新审计公共执行器和 Verifier 的全部内部正确性，否则会重复打开此前已经关闭的层级。
+
+---
+
+## 四、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+未发现导致本轮两个固定 Fixture 的 Registered Catalog 集成结论不成立的问题。
+
+### Scope limitation
+
+当前结果仍然只有：
+
+```text
+2 个任务类型
+2 个固定 EvidenceBundle
+2 条 Program
+1 个 serial topology
+1 个 branch-and-merge topology
+```
+
+所以它不能证明：
+
+* 当前 Finance QA 问题类型已经充分；
+* 每个任务类型的参数空间得到覆盖；
+* 深度 3 在真实任务分布中占有合理比例；
+* 复杂度、歧义度或语言质量已达到真实数据标准；
+* Archive 中能够稳定发现足够多的可绑定实例；
+* 模型能够在线生成这些任务；
+* 这些样本已适合进入训练或 QA Release。
+
+这些限制已在本轮报告中明确保留，不构成对当前固定 Fixture 结果的否定。
+
+### Future hardening
+
+实现中，逐 case 的答案、引用、质量和深度确实由实际执行结果计算并逐字节匹配；但随后 `execution_audit` 中若干聚合计数与 `{3:2}` 分布仍以本轮固定值写入，A5 又读取这些汇总字段。
+
+这不会推翻当前结论，因为两个持久化独立 case row 已分别记录真实的 `quality_accepted=true`、答案/引用检查为真和 `semantic_operation_depth=3`，且候选输出逐对象匹配。不过在下一阶段扩展到多 Evidence Binding、多参数组合后，应改为：
+
+```text
+case rows
+  -> 程序化聚合 counts/distributions
+  -> Gate
+```
+
+并使任意一行失败直接导致相应 Gate 失败，而不是继续沿用固定的 `2` 或 `{3:2}`。这是**后续扩展前的实现加固**，不是本轮 mandatory revision。
+
+---
+
+## 五、Gate 总结
+
+| Gate                          |   状态 |
+| ----------------------------- | ---: |
+| A0 外部范围与精确候选 Freeze           | PASS |
+| A1 detached 完整目录重建            | PASS |
+| A2 独立源与历史 Catalog 权威          | PASS |
+| A3 独立新 Catalog 与 Resolution   | PASS |
+| A4 Binding、Program、Package 重建 | PASS |
+| A5 14 节点执行、深度与验证              | PASS |
+| A6 八个直接 Catalog 攻击拒绝          | PASS |
+| A7 零外部执行与零 Release 越界         | PASS |
+
+```text
+CURRENT_GATE = PASS_AS_SCOPED
+```
+
+---
+
+## 六、当前允许与禁止的结论
+
+### 允许
+
+可以声称：
+
+> 新的版本化 Finance QA preflight Catalog，在保持历史八类任务注册快照不变的情况下，新增了两个 semantic-depth-3 任务类型和三个语义 Operation；两个任务均可从 Catalog resolution 出发完成独立重建、公开执行、14 节点 Oracle 复核、答案与引用验证以及质量接受。
+
+### 禁止
+
+仍不能声称：
+
+```text
+QA 类型覆盖充分
+QA 深度分布充分
+真实 Archive 实例充分
+参数空间覆盖充分
+整体 QA 合成链已完成
+模型在线生成有效
+QA Release 就绪
+训练效用成立
+```
+
+本轮没有 Provider、GPU、Archive evidence selection、Benchmark、Catalog promotion、Release、VTDO 或训练结果。
+
+---
+
+## 七、后续实验
+
+首个合理的后续实验保持为：
+
+```text
+qa_semantic_operation_depth_three_plus_archive_grounded_parameter_space_
+constructibility_preflight_only
+```
+
+但当前 `next_stage_authorized=false`，需要新的外部决定。
+
+下一轮应只回答：
+
+> 在不新增任务类型、不进入在线生成、也不做分布频率推断的条件下，这两个已注册任务类型能否从真实 Archive 中获得多个不同的 Evidence Binding，并在跨实体、跨时期、跨数值关系和边界条件的冻结参数格上稳定完成同一 Catalog-mediated 链路？
+
+下一轮仍应是零 Provider 的构造性实验，并将本轮的固定汇总常量改为由全部 case rows 自动聚合。
+
+## 最终判定
+
+> **本轮 QA Registered Catalog Integration Independent Audit 按窄范围通过。两个新增 depth-3 任务及三个语义 Operation 已真实进入新的版本化 Catalog，两个固定 Fixture 经 Catalog 解析、编译、执行和验证闭环，14/14 节点与八项直接攻击均得到独立复核。未发现 Blocking defect。当前首个未闭合问题已经前移到 Archive-grounded 的多实例、参数空间构造性，而不是继续修补 Catalog 集成。**

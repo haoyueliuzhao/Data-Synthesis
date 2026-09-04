@@ -15,6 +15,62 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+
+## QA Depth-Three Archive-Grounded Parameter-Space Constructibility Preflight
+
+The QA side path consumed only
+`qa_semantic_operation_depth_three_plus_archive_grounded_parameter_space_constructibility_preflight_only`.
+It binds the exact 11,253-byte review at SHA-256
+`e3564ae8610b5f38624f2bd72d32b4f989ff455a23a4b3f60d999e2517f1f9c1` and the 32-byte
+directive `参照审计继续QA链路实验` at SHA-256
+`5ac54319faf77fd28b5da88716880cb094373e1cf96322f8646960521605ee45`.
+
+The experiment freezes the passing registered-Catalog independent audit, retains the exact
+8-historical + 2-extension task Catalog and three extension Operations, and reads only the
+14,395,143-byte, 1,147-record repository-frozen FinQA snapshot as a source-evidence Archive. The
+deprecated `raw_financial_data_lake` is not used. No Benchmark distribution estimate is made.
+
+Two exact source records yield nine distinct Archive bindings for
+`derived_growth_absolute_spread`: three CDW annual windows and six HII quarterly windows. All nine
+complete the Catalog resolution, Binding, protected realization, eight-node public execution,
+independent Oracle, answer/schema/citation verification, evaluator, and semantic-depth-three
+admission chain. They cover two entities, five adjacent and four longer windows, two near-equal
+growth cases, and the relationship partition `{both_positive: 5, both_negative: 1, mixed_sign:
+3}`.
+
+The same Archive provides three CDW gross-profit/revenue candidates for
+`registered_margin_target_gap`, but its full 1,147-record table domain contains no target-labelled
+row. All three therefore stop with
+`authoritative_gross_margin_target_evidence_absent`; no observed margin, benchmark answer, or
+constant is relabelled as a target. Aggregation is derived from all twelve saved rows: 9 are
+constructible and 3 are blocked. A fixed aggregate injection and omission of the failed rows both
+reject, along with seven Archive, source, Binding, and target-authority attacks.
+
+The noncompensatory Gate is 7/1. Only
+`G4_both_registered_depth_three_types_have_multiple_archive_bindings` fails. The decision is:
+
+```text
+qa_semantic_operation_depth_three_plus_archive_grounded_parameter_space_
+constructibility_failed_registered_margin_target_evidence_absent
+```
+
+The Decision / Report / Manifest / Root are:
+
+- `qa_archive_parameter_space_decision:71454455586f36d36a1bd6edfddd2ce2cd00cf078caa45d92a382ec14b143ab6`;
+- `qa_archive_parameter_space_report:7669d8ba86b6bd13aabc2eed3eb332cf31b562fdc5ad30a84cbbc823bfe448d9`;
+- `qa_archive_parameter_space_artifact_manifest:29dbf80f462d7dbf079df99e77d44dc5739b2a9ece8525356b43dc9ddc0f63b7`;
+- `qa_archive_parameter_space_artifact_root:b24d054bbf6cd5275675636f7a3f69fac127b2ab1a42483911c384c1cae60f98`.
+
+The source commit/tree are `f084a4ff503935797acf2bc873943c6cd8670529` /
+`40b8b712da76c4100524160bd79be1bc30248e9c`. The 24-file, 784,989-byte formal directory
+rebuilds byte for byte and its Manifest binds 23 members and 781,444 bytes. Focused tests pass
+11/11; the adjacent QA partition passes 90/90. No successor is authorized. The prospective next
+candidate is a separate authoritative gross-margin-target Archive expansion preflight. Provider,
+GPU, online generation, synthetic target injection, task-semantic redesign, Catalog promotion,
+Benchmark-frequency inference, QA Release, VTDO, training, release, and production remain
+unauthorized. See
+`docs/finance_qa_semantic_operation_depth_three_plus_archive_grounded_parameter_space_constructibility_preflight.md`.
+
 ## v26.234 Exact 33-Job Recovery Online Execution Postrun Independent Audit
 
 Finance v26.234 consumed only the newly authorized zero-Provider postrun independent audit. The
