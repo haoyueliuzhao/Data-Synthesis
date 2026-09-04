@@ -37,7 +37,7 @@ from trusted_synthesis.experiments.vtdo_experiment import (
 
 RUN_ID: Final = (
     "finance_v26_227_fresh_exact_v209_subsequent_action_parser_reference_"
-    "evidence_domain_closure_preflight_v1_20260904"
+    "evidence_domain_closure_preflight_v2_20260904"
 )
 OUTPUT_DIR: Final = f"trusted_data_synthesis/artifacts/vtdo_experiment/{RUN_ID}"
 V226_DIR: Final = (
@@ -393,6 +393,25 @@ def _host_failure_row(
 class Replay:
     records: tuple[v209_models.ExecutableInvocationRecord, ...]
     terminal: str
+
+
+def _bind_replay_to_v226_source(*, host: models.HostFailureRow, replay: Replay) -> None:
+    source = v226_models.JobFailureRecord.model_validate(host.failure_record)
+    if len(source.provider_calls) != len(replay.records):
+        _fail(
+            "replay.source_geometry",
+            "replay invocation count differs from frozen v26.226 Provider-call count",
+        )
+    for invocation, provider_call in zip(replay.records, source.provider_calls, strict=True):
+        if (
+            provider_call.status != "succeeded"
+            or invocation.canonical_request_body_sha256 != provider_call.request_sha256
+            or invocation.public_response_sha256 != provider_call.response_sha256
+        ):
+            _fail(
+                "replay.source_binding",
+                "replayed request/response differs from frozen v26.226 source call",
+            )
 
 
 def _replay(
@@ -1036,6 +1055,7 @@ def build(
                 public_payloads=host.public_payloads,
                 loaded=loaded,
             )
+            _bind_replay_to_v226_source(host=host, replay=replay)
             expected_terminal = (
                 models.PARSER_TERMINAL
                 if host.expected_evidence_kind == "subsequent_action_parser_rejection"

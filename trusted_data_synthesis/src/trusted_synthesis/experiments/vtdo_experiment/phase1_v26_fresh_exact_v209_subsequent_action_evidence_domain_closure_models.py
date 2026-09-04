@@ -23,8 +23,7 @@ from trusted_synthesis.runtime.agent.prospective_semantic_action_response_gramma
 
 SCHEMA_VERSION: Final = "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
 CONSUMED_STAGE: Final = (
-    "fresh_exact_v209_subsequent_action_parser_reference_"
-    "evidence_domain_closure_preflight_only"
+    "fresh_exact_v209_subsequent_action_parser_reference_evidence_domain_closure_preflight_only"
 )
 NEXT_STAGE: Final = (
     "fresh_exact_v209_subsequent_action_parser_reference_"
@@ -35,9 +34,7 @@ DECISION_VALUE: Final = (
     "v26_226_host_failures_independent_audit_required_online_execution_blocked"
 )
 
-EXTERNAL_REVIEW_SHA256: Final = (
-    "5e9c72e7f0a9c25517e4eb9f63f0f9a3088940167f4e3c7b39c7b09517b18d1a"
-)
+EXTERNAL_REVIEW_SHA256: Final = "5e9c72e7f0a9c25517e4eb9f63f0f9a3088940167f4e3c7b39c7b09517b18d1a"
 EXTERNAL_REVIEW_BYTE_COUNT: Final = 13_590
 OPERATOR_DIRECTIVE: Final = "参照审计结果逐一修订"
 OPERATOR_DIRECTIVE_SHA256: Final = (
@@ -53,26 +50,18 @@ V226_MANIFEST_ID: Final = (
     "19cef807ae34c71c13d526c09c385163d1b30b2ced05322e3ec7e6f0e803d217"
 )
 V226_ARTIFACT_ROOT: Final = (
-    "finance_v26_226_artifact_root:"
-    "7ac11713bf70dbd57297b6d87db0e6982ce5ad8222849e3a4826020904f95280"
+    "finance_v26_226_artifact_root:7ac11713bf70dbd57297b6d87db0e6982ce5ad8222849e3a4826020904f95280"
 )
 V226_SUMMARY_ID: Final = (
     "finance_v26_226_execution_summary:"
     "459c05325e7d8b1201b4ee9c5cca903876c8bd70f331b97db5d3245b59d82bbd"
 )
 V226_TRANSITION_ID: Final = (
-    "finance_v26_226_transition:"
-    "e5b3a3b173cf91c5bf6150c3279fa053608c09d2f3d4679084d54cc4f32207b7"
+    "finance_v26_226_transition:e5b3a3b173cf91c5bf6150c3279fa053608c09d2f3d4679084d54cc4f32207b7"
 )
-V226_MANIFEST_SHA256: Final = (
-    "d6cc9799114ad0015fe8e781317e1b0eae498a09fc109f8ead199c1b11e38ee1"
-)
-V226_SUMMARY_SHA256: Final = (
-    "337b5156fc86f5159a1c7081c9978105351dfc5217b12e7254669c37d6728122"
-)
-V226_TRANSITION_SHA256: Final = (
-    "105f2c1ed44b43ca0e0d3179278ce308c68199c3033344b0fd1e634562dd5b8c"
-)
+V226_MANIFEST_SHA256: Final = "d6cc9799114ad0015fe8e781317e1b0eae498a09fc109f8ead199c1b11e38ee1"
+V226_SUMMARY_SHA256: Final = "337b5156fc86f5159a1c7081c9978105351dfc5217b12e7254669c37d6728122"
+V226_TRANSITION_SHA256: Final = "105f2c1ed44b43ca0e0d3179278ce308c68199c3033344b0fd1e634562dd5b8c"
 V226_SOURCE_COMMIT: Final = "a52df3e215f681a855bfdc94aafe9d699f08a59c"
 V226_SOURCE_TREE: Final = "6600c26140eafe5581f3ca727281638df07b5d14"
 
@@ -103,12 +92,10 @@ HOST_FAILURE_FILE_BYTE_COUNTS: Final = (12_333, 12_334, 8_570)
 PARSER_TERMINAL: Final = "first_response_abi_invalid"
 REFERENCE_TERMINAL: Final = "first_action_reference_invalid"
 PARSER_POLICY_ID: Final = (
-    "fresh_kernel_terminal_policy:"
-    "b5fb980fc0c80b2c72a964d538cf487e9a27403aff0ebe4e88ffb3b29847c04f"
+    "fresh_kernel_terminal_policy:b5fb980fc0c80b2c72a964d538cf487e9a27403aff0ebe4e88ffb3b29847c04f"
 )
 REFERENCE_POLICY_ID: Final = (
-    "fresh_kernel_terminal_policy:"
-    "443b4c076ea4d694590fbafcd66d1c23681679bd24368ad43a354299c480fe3b"
+    "fresh_kernel_terminal_policy:443b4c076ea4d694590fbafcd66d1c23681679bd24368ad43a354299c480fe3b"
 )
 EVIDENCE_KINDS: Final = (
     "subsequent_action_parser_rejection",
@@ -220,9 +207,9 @@ class ExternalAuthorization(FrozenModel):
     historical_artifact_modification_authorized: Literal[False] = False
     empirical_estimation_authorized: Literal[False] = False
     online_execution_authorized: Literal[False] = False
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_authorization(self) -> ExternalAuthorization:
@@ -269,12 +256,8 @@ class V226Freeze(FrozenModel):
     v226_transition_sha256: Literal[
         "105f2c1ed44b43ca0e0d3179278ce308c68199c3033344b0fd1e634562dd5b8c"
     ] = V226_TRANSITION_SHA256
-    v226_source_commit: Literal["a52df3e215f681a855bfdc94aafe9d699f08a59c"] = (
-        V226_SOURCE_COMMIT
-    )
-    v226_source_tree: Literal["6600c26140eafe5581f3ca727281638df07b5d14"] = (
-        V226_SOURCE_TREE
-    )
+    v226_source_commit: Literal["a52df3e215f681a855bfdc94aafe9d699f08a59c"] = V226_SOURCE_COMMIT
+    v226_source_tree: Literal["6600c26140eafe5581f3ca727281638df07b5d14"] = V226_SOURCE_TREE
     formal_file_count: Literal[3428] = 3_428
     formal_total_byte_count: Literal[99765014] = 99_765_014
     manifest_member_count: Literal[3427] = 3_427
@@ -298,9 +281,9 @@ class V226Freeze(FrozenModel):
     v225_v3_authorization_reusable: Literal[False] = False
     historical_terminal_assignment_authorized: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_freeze(self) -> V226Freeze:
@@ -309,8 +292,7 @@ class V226Freeze(FrozenModel):
             or self.host_failure_job_ids != HOST_FAILURE_JOB_IDS
             or self.host_failure_record_ids != HOST_FAILURE_RECORD_IDS
             or self.host_failure_error_sha256s != HOST_FAILURE_ERROR_SHA256S
-            or self.freeze_id
-            != identity(self, "freeze_id", "finance_v26_227_v226_freeze:")
+            or self.freeze_id != identity(self, "freeze_id", "finance_v26_227_v226_freeze:")
         ):
             raise ValueError("v26.227 v26.226 Freeze differs")
         return self
@@ -338,16 +320,15 @@ class SourceIdentity(FrozenModel):
     exact_v209_runner_modified: Literal[False] = False
     provider_network_symbols: Literal[0] = 0
     credential_environment_symbols: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_source(self) -> SourceIdentity:
         paths = tuple(item.relative_path for item in self.implementation_members)
         members = tuple(
-            item.model_dump(mode="json", warnings=False)
-            for item in self.implementation_members
+            item.model_dump(mode="json", warnings=False) for item in self.implementation_members
         )
         if (
             paths != tuple(sorted(set(paths)))
@@ -383,9 +364,9 @@ class HostFailureRow(FrozenModel):
     terminal_evidence_admitted_in_v226: Literal[False] = False
     historical_terminal_added: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_row(self) -> HostFailureRow:
@@ -427,8 +408,7 @@ class HostFailureRow(FrozenModel):
             or record.job_id != HOST_FAILURE_JOB_IDS[position]
             or record.error_sha256 != HOST_FAILURE_ERROR_SHA256S[position]
             or len(record.provider_calls) != HOST_FAILURE_PROVIDER_CALL_COUNTS[position]
-            or self.failure_relative_path
-            != f"job_failures/job_{self.job_ordinal:03d}.json"
+            or self.failure_relative_path != f"job_failures/job_{self.job_ordinal:03d}.json"
             or not _safe_relative_path(self.failure_relative_path)
             or self.failure_file_sha256 != HOST_FAILURE_FILE_SHA256S[position]
             or self.failure_file_byte_count != HOST_FAILURE_FILE_BYTE_COUNTS[position]
@@ -438,9 +418,7 @@ class HostFailureRow(FrozenModel):
             or self.public_payload_sha256s
             != tuple(canonical_sha256(item) for item in self.public_payloads)
             or self.expected_evidence_kind != expected_kind
-            or self.row_id != identity(
-                self, "row_id", "finance_v26_227_host_failure_row:"
-            )
+            or self.row_id != identity(self, "row_id", "finance_v26_227_host_failure_row:")
         ):
             raise ValueError("v26.227 Host failure Row differs")
         return self
@@ -450,8 +428,7 @@ def _strict_invocation_prefix(
     raw_records: tuple[dict[str, Any], ...], *, job_id: str
 ) -> tuple[v209_models.ExecutableInvocationRecord, ...]:
     records = tuple(
-        v209_models.ExecutableInvocationRecord.model_validate(item)
-        for item in raw_records
+        v209_models.ExecutableInvocationRecord.model_validate(item) for item in raw_records
     )
     if (
         len(records) < 2
@@ -501,15 +478,15 @@ class ParserSubsequentActionEvidence(FrozenModel):
     parser_exception_family: Literal["response_serialization_failure"] = (
         "response_serialization_failure"
     )
-    parser_exception_subtype: Literal[
+    parser_exception_subtype: Literal["canonical_action_not_exact_four_field_grammar"] = (
         "canonical_action_not_exact_four_field_grammar"
-    ] = "canonical_action_not_exact_four_field_grammar"
+    )
     parser_rejected: Literal[True] = True
     caller_terminal_input: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_evidence(self) -> ParserSubsequentActionEvidence:
@@ -536,8 +513,7 @@ class ParserSubsequentActionEvidence(FrozenModel):
             or record.candidate_action_ids != self.current_candidate_action_ids
             or self.observed_state_id != self.current_state_id
             or self.observed_action_id not in self.current_candidate_action_ids
-            or record.event_sequence[-2:]
-            != ("parse_exact_response", "terminal_dispatch")
+            or record.event_sequence[-2:] != ("parse_exact_response", "terminal_dispatch")
             or record.public_response_sha256 != self.public_payload_sha256
             or self.public_payload_sha256 != canonical_sha256(self.public_payload)
             or self.public_payload.get("state_id") != self.observed_state_id
@@ -576,9 +552,9 @@ class ReferenceSubsequentActionEvidence(FrozenModel):
     current_reference_valid: Literal[False] = False
     caller_terminal_input: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_evidence(self) -> ReferenceSubsequentActionEvidence:
@@ -624,9 +600,9 @@ Evidence = Annotated[
     ParserSubsequentActionEvidence | ReferenceSubsequentActionEvidence,
     Field(discriminator="evidence_kind"),
 ]
-EVIDENCE_ADAPTER: Final = TypeAdapter(Evidence)
+EVIDENCE_ADAPTER: Final[TypeAdapter[Evidence]] = TypeAdapter(Evidence)
 ObservedEvidence = Evidence
-OBSERVED_EVIDENCE_ADAPTER: Final = EVIDENCE_ADAPTER
+OBSERVED_EVIDENCE_ADAPTER: Final[TypeAdapter[ObservedEvidence]] = EVIDENCE_ADAPTER
 
 
 class DispatcherBinding(FrozenModel):
@@ -645,9 +621,7 @@ class DispatcherBinding(FrozenModel):
     parser_terminal_policy_id: Literal[
         "fresh_kernel_terminal_policy:b5fb980fc0c80b2c72a964d538cf487e9a27403aff0ebe4e88ffb3b29847c04f"
     ] = PARSER_POLICY_ID
-    reference_terminal_kind: Literal["first_action_reference_invalid"] = (
-        REFERENCE_TERMINAL
-    )
+    reference_terminal_kind: Literal["first_action_reference_invalid"] = REFERENCE_TERMINAL
     reference_terminal_policy_id: Literal[
         "fresh_kernel_terminal_policy:443b4c076ea4d694590fbafcd66d1c23681679bd24368ad43a354299c480fe3b"
     ] = REFERENCE_POLICY_ID
@@ -657,9 +631,9 @@ class DispatcherBinding(FrozenModel):
     terminal_policy_input_allowed: Literal[False] = False
     caller_terminal_input_allowed: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_binding(self) -> DispatcherBinding:
@@ -697,9 +671,9 @@ class DispatcherDecision(FrozenModel):
     terminal_policy_was_input: Literal[False] = False
     caller_terminal_was_input: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_decision(self) -> DispatcherDecision:
@@ -722,8 +696,7 @@ class DispatcherDecision(FrozenModel):
             self.evidence_sha256 != canonical_sha256(evidence)
             or self.job_id != evidence.job_id
             or self.job_ordinal != evidence.job_ordinal
-            or (self.terminal_kind, self.terminal_policy_id, self.derivation_rule)
-            != expected
+            or (self.terminal_kind, self.terminal_policy_id, self.derivation_rule) != expected
             or self.decision_id
             != identity(
                 self,
@@ -758,9 +731,9 @@ class LayerArtifact(FrozenModel):
     historical_v226_artifact: Literal[False] = False
     formal_empirical_row: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_artifact(self) -> LayerArtifact:
@@ -782,8 +755,7 @@ class LayerArtifact(FrozenModel):
             or self.payload.get("job_ordinal") != self.job_ordinal
             or self.payload.get("terminal_kind") != self.terminal_kind
             or self.payload.get("evidence_id") != self.evidence_id
-            or self.payload.get("dispatcher_decision_id")
-            != self.dispatcher_decision_id
+            or self.payload.get("dispatcher_decision_id") != self.dispatcher_decision_id
             or self.payload_sha256 != canonical_sha256(self.payload)
             or self.artifact_id
             != identity(
@@ -807,9 +779,9 @@ class FiveLayerArtifacts(FrozenModel):
     actual_byte_match_count: Literal[5] = 5
     historical_v226_write_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_chain(self) -> FiveLayerArtifacts:
@@ -861,9 +833,9 @@ class ControlRow(FrozenModel):
     caller_terminal_argument_count: Literal[0] = 0
     historical_v226_write_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_control(self) -> ControlRow:
@@ -896,8 +868,7 @@ class ControlRow(FrozenModel):
             or evidence.public_payload != record_payloads[-1]
             or evidence.public_payload_sha256 != record_hashes[-1]
             or self.host_failure.v226_freeze_id != self.v226_freeze_id
-            or self.dispatcher_decision.dispatcher_binding_id
-            != self.dispatcher_binding_id
+            or self.dispatcher_decision.dispatcher_binding_id != self.dispatcher_binding_id
             or self.dispatcher_decision.evidence.evidence_id != evidence.evidence_id
             or self.dispatcher_decision.evidence_sha256 != canonical_sha256(evidence)
             or self.dispatcher_decision.terminal_kind != expected_terminal
@@ -937,19 +908,17 @@ class ControlAudit(FrozenModel):
     exception_escape_count: Literal[0] = 0
     empirical_row_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_audit(self) -> ControlAudit:
         if (
-            tuple(item.host_failure.job_ordinal for item in self.controls)
-            != HOST_FAILURE_ORDINALS
+            tuple(item.host_failure.job_ordinal for item in self.controls) != HOST_FAILURE_ORDINALS
             or len({item.host_failure.job_id for item in self.controls}) != 3
             or sum(
-                isinstance(item.evidence, ParserSubsequentActionEvidence)
-                for item in self.controls
+                isinstance(item.evidence, ParserSubsequentActionEvidence) for item in self.controls
             )
             != 2
             or sum(
@@ -964,8 +933,7 @@ class ControlAudit(FrozenModel):
                 or item.dispatcher_binding_id != self.dispatcher_binding_id
                 for item in self.controls
             )
-            or self.audit_id
-            != identity(self, "audit_id", "finance_v26_227_control_audit:")
+            or self.audit_id != identity(self, "audit_id", "finance_v26_227_control_audit:")
         ):
             raise ValueError("v26.227 positive Control Audit differs")
         return self
@@ -986,9 +954,9 @@ class NegativeAudit(FrozenModel):
     fully_rehashed_five_layer_identity_count: Literal[5] = 5
     historical_v226_write_count: Literal[0] = 0
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_audit(self) -> NegativeAudit:
@@ -1023,9 +991,9 @@ class ScopeAudit(FrozenModel):
     frequency_rows: Literal[0] = 0
     contribution_rows: Literal[0] = 0
     vtdo_rows: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_audit(self) -> ScopeAudit:
@@ -1056,9 +1024,9 @@ class Gate(FrozenModel):
     evidence_id: str = Field(min_length=1)
     passed: Literal[True] = True
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_gate(self) -> Gate:
@@ -1079,13 +1047,15 @@ class GateEvaluation(FrozenModel):
     all_gates_passed: Literal[True] = True
     online_execution_authorized: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_evaluation(self) -> GateEvaluation:
-        if tuple(item.gate_name for item in self.gates) != GATE_NAMES or self.evaluation_id != identity(
+        if tuple(
+            item.gate_name for item in self.gates
+        ) != GATE_NAMES or self.evaluation_id != identity(
             self,
             "evaluation_id",
             "finance_v26_227_gate_evaluation:",
@@ -1112,9 +1082,9 @@ class Decision(FrozenModel):
     independent_audit_required: Literal[True] = True
     online_execution_authorized: Literal[False] = False
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_decision(self) -> Decision:
@@ -1140,9 +1110,9 @@ class Transition(FrozenModel):
     provider_failure_authority_remains_separate: Literal[True] = True
     fresh_online_authorization_required_after_independent_audit: Literal[True] = True
     provider_execution_authorized: Literal[False] = False
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_transition(self) -> Transition:
@@ -1181,9 +1151,9 @@ class Report(FrozenModel):
     provider_calls: Literal[0] = 0
     credential_lookups: Literal[0] = 0
     empirical_rows: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_report(self) -> Report:
@@ -1218,9 +1188,9 @@ class ArtifactManifest(FrozenModel):
     artifact_root: str = Field(min_length=1)
     self_excluding: Literal[True] = True
     provider_calls: Literal[0] = 0
-    schema_version: Literal[
-        "fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"
-    ] = SCHEMA_VERSION
+    schema_version: Literal["fresh_exact_v209_subsequent_action_evidence_domain_closure.v1"] = (
+        SCHEMA_VERSION
+    )
 
     @model_validator(mode="after")
     def validate_manifest(self) -> ArtifactManifest:
@@ -1260,9 +1230,7 @@ def artifact_manifest(run_id: str, payloads: Mapping[str, bytes]) -> ArtifactMan
         )
         for path, payload in sorted(payloads.items())
     )
-    member_payloads = tuple(
-        item.model_dump(mode="json", warnings=False) for item in members
-    )
+    member_payloads = tuple(item.model_dump(mode="json", warnings=False) for item in members)
     return make_identity(
         ArtifactManifest,
         {

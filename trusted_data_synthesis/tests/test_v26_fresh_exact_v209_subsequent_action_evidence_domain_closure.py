@@ -41,8 +41,7 @@ def _files(root: Path) -> dict[str, bytes]:
 
 def _observed(output: Path) -> tuple[dict[str, Any], ...]:
     return tuple(
-        _load(path)
-        for path in sorted((output / "replay_evidence" / "observed").glob("*.json"))
+        _load(path) for path in sorted((output / "replay_evidence" / "observed").glob("*.json"))
     )
 
 
@@ -141,8 +140,7 @@ def test_zero_provider_replay_derives_two_parser_and_one_reference_terminal(
 ) -> None:
     _, output, _ = built
     evidence = tuple(
-        models.OBSERVED_EVIDENCE_ADAPTER.validate_python(item)
-        for item in _observed(output)
+        models.OBSERVED_EVIDENCE_ADAPTER.validate_python(item) for item in _observed(output)
     )
     decisions = tuple(
         models.DispatcherDecision.model_validate(_load(path))
@@ -159,9 +157,7 @@ def test_zero_provider_replay_derives_two_parser_and_one_reference_terminal(
     }
     assert all(item.phase == "subsequent_action" for item in evidence)
     assert all(item.provider_calls == 0 for item in evidence)
-    assert {
-        item.job_ordinal: item.terminal_kind for item in decisions
-    } == {
+    assert {item.job_ordinal: item.terminal_kind for item in decisions} == {
         6: models.PARSER_TERMINAL,
         22: models.PARSER_TERMINAL,
         149: models.REFERENCE_TERMINAL,
@@ -226,9 +222,7 @@ def test_all_eight_negative_controls_include_full_rehash_rejection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     repository, output, _ = built
-    audit = models.NegativeAudit.model_validate(
-        _load(output / "negative_control_audit.json")
-    )
+    audit = models.NegativeAudit.model_validate(_load(output / "negative_control_audit.json"))
     assert audit.control_names == models.NEGATIVE_CONTROL_NAMES
     assert (audit.attempted_count, audit.rejected_count, audit.accepted_count) == (8, 8, 0)
     assert audit.rejected_before_raw_write_count == 8
@@ -244,12 +238,8 @@ def test_all_eight_negative_controls_include_full_rehash_rejection(
         repository_root=repository,
         external_authorization_id=authorization.authorization_id,
     )
-    binding = models.DispatcherBinding.model_validate(
-        _load(output / "dispatcher_binding.json")
-    )
-    controls = models.ControlAudit.model_validate(
-        _load(output / "control_audit.json")
-    ).controls
+    binding = models.DispatcherBinding.model_validate(_load(output / "dispatcher_binding.json"))
+    controls = models.ControlAudit.model_validate(_load(output / "control_audit.json")).controls
     authority = subject.ReplayEvidenceAuthority(
         tuple(item.host_failure.row_id for item in controls)
     )
