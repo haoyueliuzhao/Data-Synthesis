@@ -1,0 +1,649 @@
+# QA 合成链路再次审计
+
+## 一、审计结论
+
+本次只审计 **QA 合成链路的实际任务覆盖、程序深度、验证能力与候选发布边界**。v26.226 消费的是 exact v26.209 replacement online execution-only 授权，不属于 QA 合成链路，因此其 192-Job 终止证据问题不用于否定或通过本轮 QA Gate。
+
+```text
+QA_PARENT_AND_IDENTITY_CHAIN
+  PASS_AS_SCOPED
+
+CURRENT_SINGLE_FAMILY_OFFLINE_CANDIDATE_BUILD
+  PASS_AS_SCOPED
+
+ACTUAL_TASK_TYPE_COVERAGE
+  INSUFFICIENT
+
+ACTUAL_PROGRAM_AND_REASONING_DEPTH
+  INSUFFICIENT
+
+REGISTERED_TASK_CATALOG_TO_GENERATOR_TOTALITY
+  FAIL
+
+SURFACE_REALIZATION_DIVERSITY
+  PASS_AS_SCOPED
+
+ARCHIVE_GROUNDING_AND_REALISTIC_DIFFICULTY
+  UNINSTANTIATED / UNKNOWN
+
+FRESH_RELEASE_AUTHORITY_FOR_CURRENT_16_ROW_POOL
+  NOT MATERIALIZED
+
+BROAD_FINANCE_QA_SYNTHESIS_READINESS
+  FAIL
+
+FIRST_FUNDAMENTAL_BLOCKER
+  REGISTERED_TASK_CATALOG_TO_EXECUTABLE_CANDIDATE_GENERATOR_
+  AND_VERIFIER_TOTALITY_NOT_CLOSED
+```
+
+**你的判断成立。** 调整后的链路显著加强了语义身份、证据父绑定、Surface Realization、QualityAssessment 和 Release Authority，但这些调整主要修复了“候选是否可追溯、可重建、不可篡改”，并没有同步建立足够宽的问题类型分布和足够深的实际程序分布。
+
+更准确地说：
+
+> 当前系统已经能可靠地产生并验证一种浅层、同主体、同期间、双指标比较任务，但还不能被解释为一个覆盖充分的金融 QA 合成链路。
+
+---
+
+# 二、当前链路真正通过了什么
+
+当前离线链路已经形成：
+
+```text
+SemanticTaskProposal
+  -> CanonicalSemanticPlan
+  -> BindingSnapshot / EvidenceCorpus / ProofGraph
+  -> SemanticInstance
+  -> SurfaceRealization / RealizedTaskPackage
+  -> pre-outcome Candidate Manifest
+  -> local QualityAssessment
+  -> diversity-aware qualified projection
+```
+
+而且与冻结 VTDO 路径保持隔离，没有生成在线 Job Manifest、经验 Outcome 或生产 Release。
+
+在身份和验证层面，它已经完成了较强闭包：
+
+* Operation semantic contract、Plan、Binding、Instance、Surface、Trajectory、Assessment 和 Selection 都有明确父关系；
+* QualityAssessment 不能通过修改分数或 decision 后重新哈希来“洗白”；
+* sibling trajectory、Execution Binding、weight assignment 和 release plan 的交叉替换会被拒绝；
+* v26.185 又独立重建了固定两 Fixture、六 Release Records、完整 Envelope 和攻击集。
+
+因此，**当前首要问题已经不是哈希、身份或发布工件的可信性**。v26.185 对固定两 Fixture Envelope 的独立审计确实通过；但它也明确将结论限制在固定两 Fixture，现实 Archive grounding、真实多样性、模型行为和训练效用仍未测量。
+
+不应继续围绕同一套 Envelope 增加更高等级的审计 Gate。那会偏离当前真正的内容问题。
+
+---
+
+# 三、任务类型覆盖审计
+
+## 1. 当前 16 条候选不代表 16 类任务
+
+当前 `future_QA_candidate_population` 的精确组成是：
+
+```text
+pre-outcome candidates       16
+semantic tasks / instances    4 / 4
+Renderer surfaces/instance    4
+qualified rows               16
+selected rows                 8
+selected children/instance    2
+```
+
+但其唯一被授权并实际物化的任务类型是：
+
+```text
+registered_cross_metric_comparison
+```
+
+两个更复杂 Proposal 均保持零物化：
+
+```text
+temporal_peak_secondary_lookup
+  missing: argmax, select_by_period
+
+growth_filter_margin_rank
+  missing: growth_by_entity, filter, ratio_by_entity,
+           intersect_on_entity, rank
+```
+
+ 
+
+因此，四个 `semantic_task_id` 只代表四组不同指标绑定：
+
+```text
+revenue / gross_profit
+revenue / operating_income
+revenue / net_income
+operating_cash_flow / net_income
+```
+
+它们仍然共享：
+
+* 同一个 task type；
+* 同一个 comparison task family；
+* 同一种 Program topology；
+* 同一个 `registered_compare` Operation 类型；
+* 同一个 Answer Schema；
+* 同一个同主体、同期间、同来源比较机制。
+
+所以：
+
+```text
+4 semantic_task_ids
+≠ 4 problem types
+
+16 candidate rows
+≠ 16 semantic programs
+
+8 selected rows
+≠ 8 reasoning mechanisms
+```
+
+当前材料本身也明确承认，这一结果只证明“一个 authorized Operation closure”可以形成离线候选池，并不证明 unrestricted QA diversity。
+
+---
+
+## 2. “注册了 8 种任务”不等于“执行了 8 种任务”
+
+当前 `FinanceTaskPlugin` 声明了八种任务：
+
+```text
+fact_retrieval
+comparison
+registered_cross_metric_comparison
+temporal_growth
+temporal_average
+temporal_absolute_change
+registered_ratio
+derived_growth_comparison
+```
+
+其中有真正更深的 Program：
+
+| 任务                                   | 典型语义节点                        |
+| ------------------------------------ | ----------------------------- |
+| `fact_retrieval`                     | 1 个 lookup                    |
+| `comparison`                         | 1 个 compare                   |
+| `registered_cross_metric_comparison` | 1 个 registered_compare        |
+| `temporal_growth`                    | 2 lookup + growth             |
+| `temporal_average`                   | 多个 lookup + aggregate         |
+| `temporal_absolute_change`           | 2 lookup + difference         |
+| `registered_ratio`                   | 2 lookup + ratio              |
+| `derived_growth_comparison`          | 4 lookup + 2 growth + compare |
+
+特别是 `derived_growth_comparison` 已经声明了七节点 Program，并标记为 expert difficulty。
+
+但是，当前候选生成器 `FinanceNumericCandidateGenerator._answer()` 实际只有以下分支：
+
+```text
+fact_retrieval
+comparison / registered_cross_metric_comparison
+temporal_growth
+temporal_average
+otherwise -> insufficient_capability
+```
+
+这意味着以下三个**已经注册的任务类型**尚没有生成器答案实现：
+
+```text
+temporal_absolute_change
+registered_ratio
+derived_growth_comparison
+```
+
+这构成了一个直接、可复现的广覆盖反例：
+
+```text
+构造合法 registered_ratio TaskPackage
+  -> FinanceNumericCandidateGenerator.generate(...)
+  -> _answer() 无 registered_ratio 分支
+  -> 返回 insufficient_capability
+  -> 无法形成与 ratio Program Oracle 一致的最终答案
+  -> CandidateQualityEvaluator 应拒绝
+```
+
+所以当前真正存在的是：
+
+```text
+Task/Pattern/Renderer catalog support
+  ≠
+Candidate generator execution support
+```
+
+这是本轮首个实现层阻塞点。
+
+---
+
+## 3. 历史 Release Authority 也没有覆盖八种任务
+
+v26.183–v26.185 虽然冻结了八种 task type 和 32 个 renderer profile，但实际 Release Authority 默认只使用：
+
+```python
+fixture_indexes = (1, 2)
+```
+
+而 Fixture 1 和 Fixture 2 分别对应：
+
+```text
+fact_retrieval
+comparison
+```
+
+因此，其六条 Release Records 证明的是两个浅层任务类型在固定 Fixture 上能够通过完整 Authority replay，而不是八种任务类型均获得可执行验证。
+
+v26.185 对此并没有越级声称广覆盖；它明确把结果限定为 fixed two-Fixture Envelope。问题只出现在把“冻结八种 task type”误读成“已经执行覆盖八种 task type”时。
+
+---
+
+# 四、推理与程序深度审计
+
+## 1. 六个轨迹步骤不等于六层推理
+
+当前候选轨迹表面上包含：
+
+```text
+1. PLAN
+2. SEARCH
+3. SELECT_EVIDENCE
+4. CALCULATE
+5. VERIFY
+6. ANSWER
+```
+
+但实际轨迹声明：
+
+```text
+planning_track = plan_given
+operator_id    = registered_compare
+program node   = result
+```
+
+也就是 Agent 并不需要发现计划，只需读取公开 Program skeleton，检索两条已经精确限定的 Evidence，然后执行一次绝对差比较。
+
+对应 QualityAssessment 直接记录：
+
+```text
+program_depth = 1
+total_score   = 100
+```
+
+因此，当前深度应解释为：
+
+```text
+workflow action count     = 6
+semantic operation depth  = 1
+planning depth            = plan_given
+branching/search depth    = essentially absent
+```
+
+这不是错误，因为当前 evaluator 本来就是验证一个已知 Program 是否被完整、正确、可追溯地执行。但它不能支持“复杂推理能力”结论。
+
+---
+
+## 2. 100 分是合同正确性，不是题目难度
+
+`CandidateQualityEvaluator` 检查的内容很完整，包括：
+
+* public-only generation；
+* allowed tool compliance；
+* Evidence recall/precision；
+* ProofGraph binding；
+* Program execution coverage；
+* Operation grounding；
+* calculation correctness；
+* Answer Schema、答案和 citation correctness；
+* unsupported claim 与 domain claim 检查。
+
+这是一个很好的**轨迹正确性评价器**。但其 reasoning score 主要由：
+
+```text
+execution_coverage
+operation_grounding
+operation_correctness
+```
+
+构成；`program_depth` 只是记录既有 Oracle Program 的节点数。它没有独立测量：
+
+* 计划发现难度；
+* 多种可行检索路径；
+* 搜索策略转换；
+* 证据冲突消解；
+* 不完整证据下的决策；
+* 多文档归并；
+* 长时序调查；
+* counterfactual reasoning；
+* 自我纠错成本。
+
+因此，当前 16/16 accepted 与 100 分只能说明：
+
+> 确定性生成器正确执行了一个已知的一节点 comparison Program。
+
+不能说明：
+
+> 当前 QA Population 已经具有足够的 reasoning depth。
+
+---
+
+## 3. 当前检索任务也缺少真实选择压力
+
+当前 future population 的每个 cross-metric Bundle 由代码直接构造成：
+
+```text
+evidence = (left_metric, right_metric)
+```
+
+也就是 Corpus 中恰好只有最终需要的两条 Evidence。生成轨迹中也表现为：
+
+```text
+search matched_count = 2
+select selected_count = 2
+```
+
+因此 Evidence recall、precision、selection validity 全部通过是合理的，但这里没有检验：
+
+* wrong-definition distractor；
+* stale version；
+* forecast/observed 混淆；
+* unit/currency mismatch；
+* wrong scope；
+* 同指标不同 statement definition；
+* 多来源冲突；
+* 大候选集检索与筛选。
+
+这应分类为 **Scope limitation**，不是当前单类型候选构造的 Blocking defect；但它阻止将结果解释成真实金融检索能力。
+
+---
+
+# 五、多样性审计
+
+当前 Renderer 层确实有所改善：
+
+```text
+task types in renderer catalog    8
+profiles per task type             4
+languages                          1 (English)
+styles:
+  canonical
+  concise
+  analyst
+  evidence_explicit
+```
+
+
+
+这意味着：
+
+```text
+Surface diversity      有效改善
+Language diversity     尚未建立
+Program diversity      当前候选集中没有改善
+Operation diversity    当前候选集中没有改善
+Trajectory diversity   基本没有改善
+Evidence topology      基本没有改善
+```
+
+同一个 SemanticInstance 的四个 Surface 使用同一确定性生成器、同一 Evidence、同一 Program 和同一计算结果。因此，选择每个 Instance 的两个 Renderer child，可以减少文字模板单一性，但不能被计为两条不同的解决机制。
+
+---
+
+# 六、证据与发布边界
+
+## 1. 当前 Candidate Pool 不是生产级真实金融数据
+
+当前报告明确说明 Evidence 来自本地确定性 engineering fixture，而不是 archive-grounded production QA sample，也不能证明 realistic task-distribution quality。
+
+所有候选还明确标记：
+
+```text
+difficulty                 = candidate_unmeasured
+resource_estimate_status   = engineering_estimate_only
+runner_projection_status   = not_yet_runner_projected
+online_resource_authority  = not_online_resource_authority
+```
+
+
+
+因此，当前最多只能称为：
+
+```text
+offline deterministic candidate constructibility population
+```
+
+不能称为：
+
+```text
+realistic finance QA population
+empirical difficulty-balanced population
+agent-readable QA population
+training-ready QA population
+```
+
+---
+
+## 2. 当前 16 条候选尚未接入新的 Release Authority
+
+当前 Future QA 阶段明确没有创建：
+
+```text
+QAReleasePopulationManifest
+online Job Manifest
+empirical Outcome
+production Release object
+```
+
+
+
+被选择的八条候选只能作为后续 fresh QA experiment design 的输入；若连接到 VTDO，需要重新建立 QA Population、Package Catalog、Job Manifest、Prompt evidence、Execution Contract 和 Outcome authority。
+
+所以目前存在两套尚未汇合的结果：
+
+```text
+v26.184/v26.185
+  强 Release Authority
+  但只有固定 2 Fixtures / 2 actual task types
+
+future_QA_candidate_population
+  有 4 metric-pair instances / 16 surfaces
+  但只有 1 actual task type
+  且没有 fresh QAReleasePopulationManifest
+```
+
+这不是身份冲突，而是当前端到端链路仍未完成。
+
+---
+
+# 七、非补偿 Gate 判定
+
+| Gate                                 | 当前证据                                                 | 判定                                |
+| ------------------------------------ | ---------------------------------------------------- | --------------------------------- |
+| G0：Semantic/Binding/Surface 父关系      | Plan、Binding、Instance、Surface、Evidence、Assessment 闭合 | **PASS**                          |
+| G1：当前单任务类型可构造性                       | 16/16 `registered_cross_metric_comparison` 本地通过      | **PASS AS SCOPED**                |
+| G2：八类注册任务到生成器的执行全覆盖                  | 3 个注册任务缺少生成器答案分支                                     | **FAIL**                          |
+| G3：实际任务类型分布                          | 当前 Population 只有 1 个 task type                       | **FAIL for broad coverage claim** |
+| G4：实际 Operation/Program 深度分布         | 当前全部为一节点 `registered_compare`                        | **FAIL for depth claim**          |
+| G5：Surface diversity                 | 四种英文 Renderer，按 Instance 选择两个                        | **PASS AS SCOPED**                |
+| G6：轨迹正确性验证                           | 当前任务的 Evidence、Operation、Answer、Citation 验证闭合        | **PASS AS SCOPED**                |
+| G7：困难检索与 Archive grounding           | 本地两 Evidence fixture；无真实 Archive Pilot               | **UNKNOWN / UNINSTANTIATED**      |
+| G8：当前 16-row fresh Release Authority | 未创建 QAReleasePopulationManifest                      | **BLOCKED**                       |
+| G9：模型可读性、训练效用                        | 零 Provider、零 Student 实验                              | **UNKNOWN**                       |
+
+首个失败 Gate 是 **G2**。因此，不应先增加新的 Release Envelope、在线 Runner 或 VTDO 连接，也不应先开展 Provider QA 生成。
+
+---
+
+# 八、发现分级
+
+## Blocking defect
+
+### `REGISTERED_TASK_CATALOG_TO_EXECUTABLE_CANDIDATE_GENERATOR_TOTALITY_NOT_CLOSED`
+
+八种已注册任务中，至少三个在当前确定性生成器中没有对应答案实现。历史 Release smoke 又只执行了 Fixture 1/2，未暴露这个缺口。
+
+这直接阻断以下声明：
+
+```text
+the current eight-task Finance QA catalog is executable end to end
+```
+
+## Scope limitation
+
+* 当前 16 条候选只有一个 task type；
+* Program depth 全部为 1；
+* 四 Renderer 主要提供 Surface variation；
+* Evidence 是本地 synthetic fixture；
+* 当前 future corpus 没有 hard distractor；
+* 只有 English、US market；
+* 两个更复杂 Raw Proposal 因 Operation 缺失而正确 fail-closed；
+* difficulty 仍为 `candidate_unmeasured`；
+* 当前 16-row pool 未获得 fresh Release Authority。
+
+这些不否定当前单类型离线结果，但禁止广覆盖解释。
+
+## Future hardening
+
+以下内容不是当前 Gate 的前置阻塞点，不应现在升级为新的审计要求：
+
+* 再增加一层 Artifact Manifest；
+* 再扩展 Runtime 环境指纹；
+* 再设计更复杂的全重哈希攻击；
+* 生产部署、Student 训练或 VTDO 接入；
+* Provider rewrite 或语言生成。
+
+当前 Authority 层已经足以支撑下一次内容能力预检。
+
+---
+
+# 九、当前允许与禁止的结论
+
+## 允许结论
+
+可以声明：
+
+> 当前 QA 链路能够对四个指标绑定生成 16 条 parent-complete、locally verified 的 `registered_cross_metric_comparison` Surface candidates，并从中选择八条具有一定文字表面差异的候选。
+
+也可以声明：
+
+> v26.184/v26.185 已独立证明固定两 Fixture QA Release Authority 的身份、重放和发布工件闭包。
+
+## 禁止结论
+
+不能声明：
+
+```text
+当前 QA 链路覆盖 8 类金融问题
+当前 16 条候选具有 4 类语义机制
+六步轨迹意味着六层推理
+16/16 accepted 证明题目质量或难度充分
+100 分证明复杂 Agent reasoning
+四种 Renderer 等于四种轨迹策略
+当前候选已真实 Archive grounded
+当前候选适合直接进入 VTDO
+当前候选已是训练或生产 Release Population
+```
+
+---
+
+# 十、唯一合理的下一实验
+
+建议下一阶段限定为零 Provider、零 Release 的：
+
+```text
+qa_registered_task_catalog_to_generator_and_verifier_
+execution_totality_preflight_only
+```
+
+它只修复和检验**已经声明的八类任务目录**，暂不增加新任务类型。
+
+## 精确实验对象
+
+构造八个 source-bound canonical cases，每种已注册任务恰好一个：
+
+```text
+fact_retrieval
+comparison
+registered_cross_metric_comparison
+temporal_growth
+temporal_average
+temporal_absolute_change
+registered_ratio
+derived_growth_comparison
+```
+
+逐条执行：
+
+```text
+EvidenceBundle / ProofGraph
+  -> FinanceTaskPlugin compile
+  -> CanonicalSemanticPlan
+  -> one canonical SurfaceRealization
+  -> FinanceNumericCandidateGenerator
+  -> CandidateWorkflowVerifier
+  -> CandidateQualityEvaluator
+```
+
+## 必须通过的非补偿条件
+
+```text
+exact registered task set                         8 / 8
+successful generator branches                     8 / 8
+insufficient_capability on legal controls         0 / 8
+exact Program-node execution coverage             8 / 8
+exact Operation correctness                       8 / 8
+Answer Schema / answer / citation correctness     8 / 8
+Provider / GPU / online Job / Release objects         0
+```
+
+还应记录但不作为彼此补偿的深度分布：
+
+```text
+depth 1:
+  fact_retrieval
+  comparison
+  registered_cross_metric_comparison
+
+depth 3:
+  temporal_growth
+  temporal_absolute_change
+  registered_ratio
+
+depth 4 or dynamic-series depth:
+  temporal_average
+
+depth 7:
+  derived_growth_comparison
+```
+
+这个预检首先修复：
+
+```text
+temporal_absolute_change
+registered_ratio
+derived_growth_comparison
+```
+
+对应的 generator 与 exact Program trace。通过后，才进入下一轮 `argmax/select_by_period` 和 entity-table Operation Contract 的独立扩展。
+
+## 当前后续授权判断
+
+```text
+REPEAT QA RELEASE-AUTHORITY AUDIT
+  NOT NEEDED
+
+PROVIDER QA GENERATION
+  NOT AUTHORIZED
+
+ARCHIVE-BACKED LARGE POPULATION
+  PREMATURE
+
+VTDO INTEGRATION
+  NOT AUTHORIZED
+
+NEXT RATIONAL STEP
+  EXISTING 8-TASK CATALOG
+  -> GENERATOR
+  -> VERIFIER
+  EXECUTION-TOTALITY PREFLIGHT
+```
+
+这一步不会过度扩展研究范围：它不是要求系统支持所有金融问题，而只是验证**当前代码已经公开声明支持的八类任务，是否真的都能端到端生成和验证**。

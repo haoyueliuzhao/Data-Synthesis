@@ -425,7 +425,153 @@ fresh execution authorization and ledger, and must first pass the repaired HTTP-
 tests. See
 `docs/finance_v26_224_fresh_exact_v209_parent_bound_exact_192_job_online_execution.md`.
 
+## Offline QA Registered-Catalog Generator/Verifier Execution Totality Preflight
+
+The QA side-path consumed only
+`qa_registered_task_catalog_to_generator_and_verifier_execution_totality_preflight_only`.
+The exact 20,012-byte external review at SHA-256
+`c293ab051e7c03e7b0ae49a13950f4faf9af2901c171bfb8d1abff505966f776`
+identified the first blocker as incomplete totality from the registered Finance task catalog to
+the executable candidate generator and verifier. The exact 32-byte directive
+`并行开展QA合成链路优化`, SHA-256
+`f60f8ab4fd802017b839ee43839d44c85e4a8cc064e016856ca399a3436c9cda`,
+authorized only this credential-free preflight.
+
+The baseline Freeze revalidates the immutable eighteen-file future-QA pool and the seventeen-file
+semantic-coverage directory. It reads the semantic-coverage identities from the actual formal
+JSON and records a documentation-only post-freeze erratum:
+
+```text
+row Manifest  offline_qa_semantic_coverage_row_manifest:
+              5967b1e2d803f554d53fbc2bf6ffc372172d234c95010b59cfa87114d673c687
+Decision      offline_qa_semantic_coverage_decision:
+              d1d01104cf54810d5407717de762233eedfd752ff64cf42997a85996b0c69060
+Transition    offline_qa_semantic_coverage_transition:
+              1bf08f075b2bf6ffa45b83b4175cfba80c525e57df57a69e6d53e0a515d1f924
+Manifest      offline_qa_semantic_coverage_artifact_manifest:
+              b5b83ba05cc59ad723620ec7ff672e069f9eb938ce3d53eb611faea2b091ca6b
+Root          offline_qa_semantic_coverage_artifact_root:
+              a34e87e38ccdf06e1a4eb9941eaae91d96ccc522f963626d90f1b5ad6758f8ba
+```
+
+No historical formal JSON or identity is rewritten. The baseline Freeze is
+`qa_generator_totality_baseline_scope_freeze:9b81d909baba91d2e57d5ab8242cbb252f4a3d9f98d784d3f96d44ef4712ed82`.
+
+The v7 Finance numeric generator executes the public Program skeleton through the Finance
+Operation Registry, projects its result from actual node outputs and the public Answer Schema,
+and persists the complete ProgramExecution. A source-bound totality wrapper accepts only the
+exact public Task and Evidence corpus of one RealizedTaskPackage, rejects
+`insufficient_capability`, and requires the candidate ProgramExecution, result, and citation set
+to match an independent `PublicPlanCandidateExecutor` replay.
+
+One deterministic canonical case is executed for each of the eight registered task types:
+
+```text
+comparison
+derived_growth_comparison
+fact_retrieval
+registered_cross_metric_comparison
+registered_ratio
+temporal_absolute_change
+temporal_average
+temporal_growth
+```
+
+The three paths previously outside generator support—`temporal_absolute_change`,
+`registered_ratio`, and `derived_growth_comparison`—now produce complete deterministic traces.
+The exact result is:
+
+```text
+registered task types / generator successes             8 / 8
+exact Program executions / operation-correct rows        8 / 8
+answer-schema / answer-correct rows                      8 / 8
+citation-correct / evaluator-accepted rows               8 / 8
+insufficient-capability rows                                  0
+formerly insufficient repair traces                      3 / 3
+Program node-count distribution             {1: 3, 3: 3, 4: 1, 7: 1}
+maximum dependency-depth distribution       {1: 3, 2: 4, 3: 1}
+```
+
+Six attacks substitute an unregistered ratio pair, zero denominator, temporal order, cross-entity
+Evidence, public Program parameter, or a fully rehashed wrong answer and citation. All 6/6 reject,
+accepted attacks and attack output writes are zero.
+
+The noncompensatory Gate partition is:
+
+```text
+G0 exact external scope                                      PASS
+G1 baseline and formal QA scope frozen                       PASS
+G2 source-bound successor generator                          PASS
+G3 registered task and generator totality 8/8                PASS
+G4 Program and operation totality 8/8                        PASS
+G5 answer schema, answer, and citation correctness 8/8       PASS
+G6 six negative controls reject                              PASS
+G7 zero Provider/GPU/online/Release boundary                 PASS
+passed / failed                                               8 / 0
+```
+
+Authoritative identities include:
+
+- authorization / baseline Freeze:
+  `qa_generator_totality_authorization:5500f8d13512c9abf74ceed820b159c3c53479936ba64529f3302934172ffbe8` /
+  `qa_generator_totality_baseline_scope_freeze:9b81d909baba91d2e57d5ab8242cbb252f4a3d9f98d784d3f96d44ef4712ed82`;
+- source / totality:
+  `qa_generator_totality_source_binding:6a366d5430eb10b6840e043b3365ace954edb8f8e9d8f62a5fd3b949677ae1fa` /
+  `qa_generator_totality_audit:7aa3920501111d029c7d8f081e75529e632cd901e8094bb1dcb23db9de2e6ad1`;
+- negative / scope / Gate:
+  `qa_generator_totality_negative_audit:68243fac411a9b115500633e4d6325845b0db70fe8d2a7a3959a4d756b9dba17` /
+  `qa_generator_totality_scope_audit:2821956c337a8914c7ddf60ca99d2e9e45ccad82ced62bb18118d5bfda32e928` /
+  `qa_generator_totality_gate:1c3da076591c03284817a4a454295b506ec778d2082ff98d989e234d4db67318`;
+- Report / Transition:
+  `qa_generator_totality_report:595e1166ebcbdeb4e9f924a562cad65b540237332ebe3ca158e9a797677d23ee` /
+  `qa_generator_totality_transition:dbfddcc94d86907c9120b71dacfd4e85a1f0d5d66020f94307e5af75a1d3e642`;
+- Artifact Manifest / Root:
+  `qa_generator_totality_artifact_manifest:d8c7ce9ad3ea97a15aaeaf170f8680359e88dffbbf045f3e1ddda294c6c17853` /
+  `qa_generator_totality_artifact_root:f2d08a0b4eb35b51b65a901bddb7ce794b2357bced0e6673d819ccf05bcf63db`.
+
+The source commit/tree are `dba5d949a743dd625e5fe0e10b0f4809ac9f87ad` /
+`d706531377e5303265cd2dcee3e355c6642c466b`. The nineteen-file, 449,574-byte
+formal directory rebuilds byte for byte in two exact builds; its Manifest binds eighteen members
+and 446,741 bytes.
+The generator and preflight focused tests pass 13/13; the complete adjacent QA partition passes
+83/83. PyCompile, focused Ruff check/format, focused no-import-follow Mypy, and package-wide Ruff
+pass.
+
+The current decision is:
+
+```text
+qa_registered_eight_task_catalog_generator_verifier_evaluator_
+totality_preflight_passed_independent_audit_required
+```
+
+This result proves deterministic fixture constructibility only. Archive grounding, realistic
+difficulty, benchmark type/depth frequencies, model behavior, and training readiness remain
+unmeasured. Provider calls, credential lookups, GPU Jobs, online Manifests, empirical rows, QA
+Release objects, VTDO, training, and production rows are zero.
+
+The only permitted successor is
+`qa_registered_task_catalog_to_generator_and_verifier_execution_totality_preflight_independent_audit_only`.
+It may independently rebuild the eight cases and six attacks with zero Provider/GPU execution;
+it may not construct a Release Population. See
+`docs/finance_qa_registered_task_catalog_generator_verifier_execution_totality_preflight.md`.
+
 ## Offline QA Semantic-Type Coverage And Program-Depth Closure Preflight
+
+### Post-freeze identity erratum
+
+The formal JSON directory, not the earlier prose identities, is authoritative. Direct
+revalidation gives row Manifest
+`offline_qa_semantic_coverage_row_manifest:5967b1e2d803f554d53fbc2bf6ffc372172d234c95010b59cfa87114d673c687`,
+Decision
+`offline_qa_semantic_coverage_decision:d1d01104cf54810d5407717de762233eedfd752ff64cf42997a85996b0c69060`,
+Transition
+`offline_qa_semantic_coverage_transition:1bf08f075b2bf6ffa45b83b4175cfba80c525e57df57a69e6d53e0a515d1f924`,
+Artifact Manifest
+`offline_qa_semantic_coverage_artifact_manifest:b5b83ba05cc59ad723620ec7ff672e069f9eb938ce3d53eb611faea2b091ca6b`,
+and Root
+`offline_qa_semantic_coverage_artifact_root:a34e87e38ccdf06e1a4eb9941eaae91d96ccc522f963626d90f1b5ad6758f8ba`.
+This documentation-only erratum changes no formal JSON byte or identity; differing row-Manifest,
+Decision, or Transition values later in the historical section are superseded.
 
 The independent QA side-path consumed only
 `offline_qa_semantic_type_coverage_and_program_depth_closure_preflight_only`. The exact

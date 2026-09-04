@@ -1,5 +1,28 @@
 # Finance QA Semantic-Type Coverage And Program-Depth Closure Preflight
 
+## Post-Freeze Identity Erratum
+
+The formal semantic-coverage JSON directory is immutable and remains the evidence authority. The
+original prose recorded pre-write identities for its row Manifest, Decision, and Transition.
+Direct revalidation of the frozen JSON gives:
+
+```text
+row Manifest  offline_qa_semantic_coverage_row_manifest:
+              5967b1e2d803f554d53fbc2bf6ffc372172d234c95010b59cfa87114d673c687
+Decision      offline_qa_semantic_coverage_decision:
+              d1d01104cf54810d5407717de762233eedfd752ff64cf42997a85996b0c69060
+Transition    offline_qa_semantic_coverage_transition:
+              1bf08f075b2bf6ffa45b83b4175cfba80c525e57df57a69e6d53e0a515d1f924
+Manifest      offline_qa_semantic_coverage_artifact_manifest:
+              b5b83ba05cc59ad723620ec7ff672e069f9eb938ce3d53eb611faea2b091ca6b
+Root          offline_qa_semantic_coverage_artifact_root:
+              a34e87e38ccdf06e1a4eb9941eaae91d96ccc522f963626d90f1b5ad6758f8ba
+```
+
+This post-freeze documentation erratum changes no formal JSON byte, identity, Manifest, Root,
+row, decision, or transition. References later in this document that show different row-Manifest,
+Decision, or Transition identities are superseded by the exact values above.
+
 ## Scope And Decision
 
 This independent QA side-path consumes only
