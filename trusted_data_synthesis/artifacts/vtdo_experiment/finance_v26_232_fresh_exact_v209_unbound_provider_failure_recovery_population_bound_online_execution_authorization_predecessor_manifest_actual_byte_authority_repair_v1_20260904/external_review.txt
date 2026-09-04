@@ -1,0 +1,332 @@
+# Finance v26.231 主链实验审计
+
+```text
+AUDIT_DECISION                = FAIL_NARROWLY_AT_G0
+BLOCKING_DEFECT               = PREDECESSOR_SELF_EXCLUDING_MANIFEST_
+                                ACTUAL_BYTE_AUTHORITY_NOT_CLOSED
+FIRST_FAILED_GATE             = G0_EXACT_V26_230_FREEZE
+MANDATORY_REVISION            = NARROW
+RECOVERY_POPULATION_AUTHORITY = RETAINED
+AUTHORIZATION_CONSTRUCTION    = LOCALLY_CONSTRUCTED
+AUTHORIZATION_CONSUMABILITY   = NOT_AUTHORIZED
+PROVIDER_EXECUTION            = BLOCKED
+```
+
+## 一、当前命题
+
+v26.231 声称完成的对象是：
+
+> 在不调用 Provider、不执行 Recovery Job 的前提下，冻结 v26.230 与 v26.229 的精确父对象、33 个 Recovery Jobs、恢复执行语义和资源预算，签发一份尚未消费的一次性在线执行授权。
+
+报告确实把本轮限定为 authorization-only：签发一份授权、消费数为零，并明确没有 Provider 调用、凭证读取、Recovery 执行、Run Start Receipt、经验投影或历史 v26.226 写入。
+
+这个范围设定本身正确，也没有把授权阶段越级解释成 Recovery 结果。
+
+---
+
+## 二、本轮已经真实完成的部分
+
+以下实现可以保留。
+
+### 1. Recovery Population 与执行语义已进入授权对象
+
+授权父链绑定了：
+
+* 33 个 Recovery Candidate；
+* 33 个 fresh Recovery Job；
+* 33 个 source row；
+* 33 个 failed-request hash；
+* 55 个历史成功前缀调用；
+* `3 first_action + 25 subsequent_action + 5 final` 的失败阶段分区。
+
+历史 Job 与 Recovery Job 的身份重叠为零，55 个历史成功调用只允许本地 replay，禁止重新调用 Provider。
+
+执行语义也明确选择了：
+
+```text
+本地重放成功前缀
+  -> 恢复到历史失败前的 current State
+  -> 精确重发最后失败请求一次
+  -> 成功后继续 v26.209 Runner 直到 fresh terminal
+  -> 持久化新的 Recovery evidence
+```
+
+因此它不是错误地把 Recovery 简化为固定的 33 次 request-only retry。
+
+### 2. 资源预算算术是明确的
+
+当前 Contract 明确冻结：
+
+```text
+maximum online Primary requests       638
+maximum online Provider calls         704
+maximum online transport invocations  737
+maximum online rollout tokens         36,294,402
+max Prompt bytes                      60,000
+max_tokens                             16,384
+```
+
+并明确 704 是最坏情况上界，而不是预期调用数；重复 Provider failure 也不能触发临时 replacement retry。
+
+实际提交的 Contract 也确实保留 `max_tokens=16384`、禁止修改失败请求体、要求首个在线请求精确等于捕获的失败请求，并要求成功后继续到 terminal。
+
+### 3. 授权对象与局部 Guard 已构造
+
+当前授权对象：
+
+```text
+authorization_id =
+fresh_v26_231_exact_recovery_online_execution_authorization:
+d54c68b13db02db4582f7e587973b61af431efa714f1ba3d6473939f4b12c06d
+```
+
+绑定了 exact 33-Job set、Parent Binding、Execution Contract 与 Composition，并记录：
+
+```text
+authorization_issued     = true
+authorization_consumed   = false
+maximum_consumptions     = 1
+provider execution now  = false
+provider execution next = true
+```
+
+18 个 admission controls 和 10 个 fully rehashed authorization-parent attacks 也确实在当前构造的 expected-byte Guard 前被拒绝。
+
+这些结果说明**授权对象的局部构造与当前测试 Guard 是存在的**。
+
+---
+
+## 三、唯一 Blocking defect
+
+### `artifact_manifest.json` 本身没有获得实际字节绑定
+
+v26.231 报告声称，在创建授权前“验证 v26.230 formal directory 的每一个字节”，并把它作为 exact Freeze。
+
+但实际 `_verify_manifest()` 的行为是：
+
+1. 把 `artifact_manifest.json` 加入 path set；
+2. 逐个哈希 `manifest.members`；
+3. 统计包括 Manifest 在内的目录总字节数；
+4. **不计算和比较 `artifact_manifest.json` 自身的 SHA-256**。
+
+`_v230_freeze()` 与 `_recovery_parent_binding()` 都是先用 `json.loads` 解析 Manifest，再验证解析后的 Pydantic 对象。
+
+这产生一个直接、可复现的反例。
+
+### 直接反例
+
+对 v26.230 的：
+
+```text
+artifact_manifest.json
+```
+
+仅重新排列顶层 JSON 字段顺序：
+
+```json
+{"manifest_id": "...", "members": [...], "artifact_root": "..."}
+```
+
+改成语义完全相同的：
+
+```json
+{"members": [...], "artifact_root": "...", "manifest_id": "..."}
+```
+
+该修改具有以下性质：
+
+```text
+解析后的 JSON 对象             不变
+Pydantic 模型                  不变
+manifest_id / artifact_root    不变
+Manifest 文件字节数            不变
+目录总字节数                   不变
+19 个 member 文件              全部不变
+Manifest 原始字节              已改变
+Manifest SHA-256               已改变
+```
+
+所以当前代码仍会通过 `_verify_manifest()`，随后生成相同的 `V230Freeze`、Parent Binding 和最终 Authorization ID。
+
+这直接推翻了：
+
+```text
+exact v26.230 formal-directory byte Freeze
+```
+
+而不仅是一个未来生产加固问题。
+
+v26.230 已经公开记录了其 Manifest 文件的独立实际字节凭据：
+
+```text
+bytes    3,150
+SHA-256  70ad2b0afa9fac2917512e4e2d7d85cf2f42abb99e8a6a058b751f627f8605b1
+```
+
+
+
+同一缺陷也影响 v26.229 Manifest；其已有的实际字节凭据是：
+
+```text
+bytes    16,952
+SHA-256  3c74bf72426c33400338e9f234a82bc342f368910a40c84d360ac3bd61b8fa72
+```
+
+
+
+因此不是缺少可用权威值，而是 v26.231 没有消费这些值。
+
+---
+
+## 四、Gate 判定
+
+报告中的历史自评为 `8/0`。
+
+本次外部审计应改判为：
+
+```text
+G0 external scope and exact v26.230 Freeze             FAIL
+G1 exact v26.229 Contract, Population, and 33 Jobs      FAIL_SAME_DEFECT_CLASS
+G2 exact 55-prefix and 33 failed-request authority      RETAINED_CONDITIONAL
+G3 continue-from-failure-to-terminal semantics          RETAINED
+G4 explicit residual resource and call budget           RETAINED
+G5 fresh one-time online authorization                  NOT_AUTHORIZED
+G6 precredential Guard and parent attacks               RETAINED_LOCAL_CONTROL
+G7 zero-Provider/current-stage boundary                  PASS
+
+OVERALL NONCOMPENSATORY GATE                             FAIL
+```
+
+首个本质阻塞点是 **G0**。G1 存在同类 Manifest-byte 问题，但不需要把它升级成第二条研究主线；一次窄修复同时处理两个 predecessor Manifest 即可。
+
+G2–G7 的局部结果不能补偿 G0。特别是，当前 10 个 fully rehashed parent attacks 修改的是解析后的授权父字段，而不是保持语义不变、只改变 predecessor Manifest 原始字节的攻击，因此没有覆盖这一反例。
+
+---
+
+## 五、当前允许与禁止的结论
+
+### 允许保留
+
+可以继续声称：
+
+> v26.231 在零 Provider 调用下构造了一份绑定 33 个 Recovery Job、恢复语义和显式资源预算的候选授权对象；当前授权尚未消费，历史成功前缀未被重新发送，v26.226 未被修改。
+
+也可以保留：
+
+```text
+33 Recovery Jobs
+55 historical successful-prefix calls
+33 exact failed requests
+3 / 25 / 5 phase partition
+31 reasoning-budget + 2 JSON-decode source partition
+704-call worst-case online ceiling
+zero Provider / credential / Recovery execution
+```
+
+### 当前禁止
+
+不能声称：
+
+* 当前 Authorization 已获得完整 exact-byte parent authority；
+* Authorization ID `d54c...c06d` 可以被在线执行消费；
+* v26.231 的正式非补偿 Gate 为 PASS；
+* 可以开始 33-Job Recovery Provider execution；
+* 可以创建 Consumption Receipt 或 Recovery Run Start Receipt；
+* 可以把未来结果回填到 v26.226；
+* 可以计算经验估计、Mapper、State、frequency、Contribution 或 VTDO。
+
+当前 Transition 虽然声明在线执行为唯一后继，但在本次外部审计下不能继续消费。报告中关于 33 个 Job、55 个本地前缀以及禁止扩大条件的边界仍应保留。
+
+---
+
+## 六、唯一合理的下一实验
+
+应执行一个**零 Provider、只修复 predecessor Manifest 实际字节权威**的窄阶段，例如：
+
+```text
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_
+online_execution_authorization_predecessor_manifest_actual_byte_
+authority_repair_only
+```
+
+修复内容只需要：
+
+```python
+def _verify_manifest(
+    directory,
+    manifest_type,
+    *,
+    expected_manifest_byte_count,
+    expected_manifest_sha256,
+):
+    raw = (directory / "artifact_manifest.json").read_bytes()
+
+    if (
+        len(raw) != expected_manifest_byte_count
+        or sha(raw) != expected_manifest_sha256
+    ):
+        fail("freeze.manifest_bytes", "Manifest actual bytes differ")
+
+    manifest = manifest_type.model_validate_json(raw)
+
+    # 然后继续验证 member path/hash/byte_count
+    ...
+```
+
+必须硬绑定：
+
+```text
+v26.230 Manifest
+  bytes    3,150
+  SHA-256  70ad2b0afa9fac2917512e4e2d7d85cf2f42abb99e8a6a058b751f627f8605b1
+
+v26.229 Manifest
+  bytes    16,952
+  SHA-256  3c74bf72426c33400338e9f234a82bc342f368910a40c84d360ac3bd61b8fa72
+```
+
+并增加两个最小负向控制：
+
+```text
+v26_230_manifest_same_length_key_reordering
+v26_229_manifest_same_length_key_reordering
+```
+
+两者都应在：
+
+```text
+freeze.manifest_bytes
+```
+
+拒绝。
+
+修复后应生成全新的：
+
+```text
+V230Freeze
+RecoveryParentBinding
+RecoveryExecutionContract
+RecoveryComposition
+ExactOnlineAuthorization
+Decision
+Transition
+Artifact Manifest / Root
+```
+
+但不得改变：
+
+```text
+33 Recovery Jobs
+55 successful-prefix calls
+33 failed requests
+failed-request bytes
+failure phase partition
+model / Thinking / response_format / max_tokens
+resource ceilings
+continuation semantics
+v26.226 historical bytes
+```
+
+## 最终结论
+
+> **v26.231 的 Recovery Population、恢复语义、预算和候选授权构造可以保留，但其“exact predecessor byte Freeze”存在一个直接反例：两个 self-excluding predecessor Manifest 的原始字节没有被哈希绑定。因此当前非补偿 Gate 在 G0 失败，现有授权不得消费。下一步只需修复 v26.229/v26.230 Manifest 文件自身的实际字节权威并重新生成授权，不需要重新审计 QA 链路、Recovery Population 或其他更高层对象。**

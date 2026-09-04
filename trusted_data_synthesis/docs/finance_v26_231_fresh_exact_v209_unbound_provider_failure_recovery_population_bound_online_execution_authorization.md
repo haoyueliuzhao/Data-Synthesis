@@ -1,5 +1,30 @@
 # Finance v26.231 Fresh Exact v26.209 Unbound Provider-Failure Recovery-Population-Bound Online Execution Authorization
 
+## Post-Review Scope Correction
+
+The subsequent exact 10,544-byte review at SHA-256
+`04a5e36142abc3ecde5706c19f9277ee1315beb6f2b5e023863aad0ab963b5bc` reclassifies v26.231
+as `FAIL_NARROWLY_AT_G0`. The implementation verified the parsed self-excluding v26.229 and
+v26.230 Manifests and all of their members, but did not independently bind the actual bytes of
+either `artifact_manifest.json` file. A same-length top-level key reordering therefore preserved
+the parsed objects and the old authorization identity while changing predecessor Manifest bytes.
+
+The 33 Recovery Jobs, 55 historical successful-prefix calls, 33 failed requests, `3/25/5` phase
+partition, continuation semantics, and residual budgets remain retained at their scoped meanings.
+The historical Gate, Decision, Transition, and every formal byte remain immutable. The current
+scoped decision is:
+
+```text
+v26_231_constructed_a_33_job_recovery_authorization_candidate_with_retained_
+semantics_and_budget_but_did_not_bind_the_actual_bytes_of_the_v26_229_and_
+v26_230_self_excluding_manifests_so_the_authorization_is_not_consumable
+```
+
+The v26.231 authorization must not be consumed. The later v26.232 repair binds both exact
+Manifest byte counts and SHA-256 values before parsing, rejects both semantic-equivalent reorder
+attacks, and issues a distinct unconsumed authorization. See
+`docs/finance_v26_232_fresh_exact_v209_recovery_online_authorization_predecessor_manifest_actual_byte_authority_repair.md`.
+
 ## Scope And Decision
 
 Finance v26.231 consumes only

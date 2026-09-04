@@ -15,6 +15,108 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.232 Predecessor Manifest Actual-Byte Authority Repair
+
+Finance v26.232 consumed only
+`fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_authorization_predecessor_manifest_actual_byte_authority_repair_only`.
+The exact 10,544-byte external review at SHA-256
+`04a5e36142abc3ecde5706c19f9277ee1315beb6f2b5e023863aad0ab963b5bc` classifies v26.231
+as `FAIL_NARROWLY_AT_G0` because its v26.229 and v26.230 self-excluding Manifests were parsed and
+their members hashed without binding the Manifest files' own actual bytes. The exact 24-byte
+directive `参照审计修订问题` is bound at SHA-256
+`a5eccdee792d12977caf76a67107c721878efb7ae02598d987e2e86b83fcc0d8` and authorizes only
+this zero-Provider repair.
+
+The repaired decision is:
+
+```text
+fresh_exact_v209_recovery_online_authorization_predecessor_manifest_actual_
+byte_authority_repaired_new_authorization_issued_not_consumed
+```
+
+The new verifier checks raw `artifact_manifest.json` byte count and SHA-256 before JSON or
+Pydantic parsing, then checks the exact path set and every Manifest member. The authoritative
+predecessor Manifest facts are:
+
+```text
+                         v26.229                 v26.230
+Manifest bytes             16,952                   3,150
+Manifest SHA-256   3c74bf72426c...b8fa72   70ad2b0afa9f...605b1
+formal files / bytes 117 / 1,105,367        20 / 308,132
+members / bytes      116 / 1,088,415        19 / 304,982
+```
+
+For completeness the immutable v26.231 directory is also frozen with its 2,889-byte Manifest at
+SHA-256 `147ac88a48a5f04321cd242fd5031d0e334abccb502eccf02cbc64fa1730039f`.
+The old v26.231 authorization remains immutable but is non-consumable and non-reusable.
+
+Two same-length, parsed-JSON-equal controls reorder only the top-level v26.230 and v26.229
+Manifest keys. Both preserve byte count and parsed objects while changing SHA-256, and both reject
+at `freeze.manifest_bytes` before output write or Provider activity:
+
+```text
+Manifest attacks / rejected / accepted        2 / 2 / 0
+parsed-JSON equal / same-length                2 / 2
+attack writes / Provider calls                 0 / 0
+```
+
+The complete retained Recovery projection remains unchanged:
+
+```text
+Recovery Candidates / Jobs                    33 / 33
+historical successful-prefix calls                 55
+captured failed requests                           33
+failure phases                                3 / 25 / 5
+reasoning-budget / JSON-decode sources         31 / 2
+max_tokens                                     16,384
+maximum online Primary / Provider calls       638 / 704
+maximum transport invocations                      737
+maximum rollout tokens                     36,294,402
+```
+
+The repair produces fresh v26.230 Freeze, Parent Binding, Execution Contract, Composition, and
+authorization identities. One diagnostic request passes without consumption; nineteen invalid
+controls, including old-v26.231 authorization presentation, and ten fully rehashed parent attacks
+reject before credentials. All eight noncompensatory Gates pass. One new authorization is issued,
+zero authorizations are consumed, and Provider calls, credential lookups, Recovery executions,
+historical v26.226 writes, and empirical rows are zero.
+
+Authoritative identities include:
+
+- v26.229 / v26.230 actual-byte authorities:
+  `finance_v26_232_predecessor_manifest_actual_byte_authority:3a3bcbdd61196d96aea85d82a89c0cca9b6242fa7c23a7651441f73111cd65ca` /
+  `finance_v26_232_predecessor_manifest_actual_byte_authority:874d1c41abed1d3b0ef90534ae9d73ac101f4688a8ffd6d092081a9bafbb054c`;
+- repaired Freeze / parent / Contract:
+  `finance_v26_232_v230_manifest_actual_byte_freeze:cf68dcf90ee073ac7bf130a1d3306c3be1d7ef6c03c9497df01b2322d7d1ec06` /
+  `fresh_v26_232_exact_manifest_byte_bound_recovery_parent_binding:30d8ae09d56969bbf76274c78b313642d022a9622316b8cf770156c042eb4069` /
+  `fresh_v26_232_manifest_byte_bound_recovery_execution_contract:256c76f87d70a2bc7c541cc8b307f0c6ab8dde8c3f9bbd01962ed5e0348b45ad`;
+- Composition / authorization:
+  `fresh_v26_232_manifest_byte_bound_recovery_online_execution_composition:4f183c6189583f26bfd41ac6cbe04d2c0c8f30d6e72d7dbd6a597c8d0df92e0c` /
+  `fresh_v26_232_exact_manifest_byte_bound_recovery_online_execution_authorization:c332e42c45bbd718a16ba65258099c9193cb84348b83f94960d3bf4bd015e371`;
+- Manifest attack / Gate / Decision / Transition:
+  `finance_v26_232_manifest_byte_negative_control_audit:bb6b35f3fd900698cc24b5e68fb4116a2cc091d08acf959fb467f949fb6f32a7` /
+  `finance_v26_232_gate_evaluation:16ac15c6ce15aa20471ab808e3ed086cd8a4bc2bc4bb2286c102609476c9b9bc` /
+  `finance_v26_232_online_authorization_decision:26719b53de105c05de9624becd060ccec06a74930ec53135d6d2533a20133b66` /
+  `finance_v26_232_transition:125313bc1aeeac08f0b0675c9cb9d0f6aac7851893858c8fc645eb6ad7ed1014`;
+- Report / Manifest / Root:
+  `finance_v26_232_manifest_byte_repair_report:ff17a8bbca96517f9e6ae9a1865361a7edafa28f10b55f0a13b00e5f2e8a2935` /
+  `finance_v26_232_artifact_manifest:f0c46ed0882f33033496f0dbb542e304167ca767ed3290bc25142a8b4228b02e` /
+  `finance_v26_232_artifact_root:7f49da2bf737dcb50ca975780301647c6128a62248622d63109b6c363c343cf8`.
+
+The exact source commit/tree are `5de7ba42d254cfba2c7c422371668391672b2a52` /
+`5087ecaf2e47b262eec4fab79746ecf8d12aaf5a`. The 23-file, 115,377-byte formal directory
+rebuilds byte for byte; its Manifest binds 22 members and 111,695 bytes. Focused tests pass 9/9;
+the adjacent v26.226-v26.232 suite passes 87/87. Focused PyCompile, Ruff check/format,
+no-import-follow Mypy, and package-wide Ruff pass.
+
+The new authorization remains unconsumed. The only permitted successor is
+`fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_only`.
+It must consume the exact v26.232 authorization once and persist Consumption and Recovery Run
+Start Receipts before credential lookup. Population change, prefix reissue, failed-request or
+`max_tokens` change, replacement run, historical mutation/backfill, and empirical estimation
+before independent postrun audit remain forbidden. See
+`docs/finance_v26_232_fresh_exact_v209_recovery_online_authorization_predecessor_manifest_actual_byte_authority_repair.md`.
+
 ## QA Semantic-Operation Depth-Three-Plus Preflight Independent Audit
 
 The QA side path consumed only
@@ -96,6 +198,29 @@ issued and unconsumed. See
 `docs/finance_qa_semantic_operation_depth_three_plus_constructibility_and_coverage_preflight_independent_audit.md`.
 
 ## v26.231 Recovery-Population-Bound Online Execution Authorization
+
+### Post-review scope correction
+
+The exact 10,544-byte external review at SHA-256
+`04a5e36142abc3ecde5706c19f9277ee1315beb6f2b5e023863aad0ab963b5bc` reclassifies v26.231
+as `FAIL_NARROWLY_AT_G0`. Its 33-Job Recovery Population, 55-call prefix projection,
+continue-to-terminal semantics, explicit budget, and local Guard construction remain valid at
+their scoped meanings. Its `_verify_manifest` path did not bind the actual bytes of the v26.229
+or v26.230 self-excluding Manifest itself, so its exact predecessor-byte Freeze and online
+consumability claims fail. Every v26.231 formal byte and historical identity remains immutable.
+
+The current scoped decision is:
+
+```text
+v26_231_constructed_a_33_job_recovery_authorization_candidate_with_retained_
+semantics_and_budget_but_did_not_bind_the_actual_bytes_of_the_v26_229_and_
+v26_230_self_excluding_manifests_so_the_authorization_is_not_consumable
+```
+
+The old authorization
+`fresh_v26_231_exact_recovery_online_execution_authorization:d54c68b13db02db4582f7e587973b61af431efa714f1ba3d6473939f4b12c06d`
+must not be consumed. The later zero-Provider v26.232 repair above supersedes the old Transition
+and issues a distinct Manifest-byte-bound authorization.
 
 Finance v26.231 consumed only
 `fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_authorization_only`.
