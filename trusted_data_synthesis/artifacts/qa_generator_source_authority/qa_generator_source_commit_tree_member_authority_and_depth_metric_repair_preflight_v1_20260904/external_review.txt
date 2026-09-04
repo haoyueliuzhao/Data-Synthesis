@@ -1,0 +1,681 @@
+# 当前 QA 链路与问题程序深度审计
+
+## 一、审计结论
+
+```text
+QA_REGISTERED_TYPE_CONSTRUCTIBILITY
+  RETAINED: 8 / 8
+
+HONEST_FIXTURE_END_TO_END_EXECUTION
+  RETAINED: 8 / 8
+
+FORMAL_SOURCE_BOUND_TOTALITY_CLAIM
+  FAIL_AT_G2
+
+FIRST_FUNDAMENTAL_BLOCKER
+  QA_GENERATOR_SOURCE_COMMIT_TREE_AND_MEMBER_AUTHORITY_NOT_CLOSED
+
+STRUCTURAL_PROGRAM_DEPTH_MEASUREMENT
+  PASS
+
+SEMANTIC_PROGRAM_DEPTH_CLOSURE
+  FAIL / INSUFFICIENT
+
+REALISTIC_DIFFICULTY_COVERAGE
+  NOT_ESTABLISHED
+
+CURRENT_ONLINE_OR_RELEASE_READINESS
+  BLOCKED
+```
+
+本轮需要把两个结论分开：
+
+1. **功能链路确实已经能跑通八个已注册类型的固定规范样例。**
+2. **但“source-bound”形式授权仍有直接反例；同时，当前问题程序只有结构深度 1–3，按真正语义操作重算后最高只有 2，不能说深度已经充分。**
+
+因此，本轮不是全盘失败，也不能整体 PASS。准确结论应是：
+
+> **八类固定 Fixture 的生成—执行—验证闭环保留；形式总量 Gate 在 G2 源代码权威绑定处失败；问题程序深度仅形成浅层算术组合覆盖，尚未形成深问题覆盖。**
+
+当前报告本身也只声明 deterministic fixture constructibility，并明确排除了真实 Archive grounding、现实难度、Benchmark 分布和 Release readiness，这个边界是诚实的。
+
+---
+
+## 二、当前 QA 链路到底跑通了什么
+
+当前实际链条是：
+
+```text
+registered Finance task catalog
+  -> EvidenceBundle / ProofGraph
+  -> FinanceTaskPlugin 编译 Evidence roles
+  -> RealizedTaskPackage
+  -> FinanceNumericCandidateGenerator v7
+  -> 从 public Program skeleton 重建可执行 Program
+  -> Registry 拓扑执行全部节点
+  -> 生成候选 Trajectory 和 ProgramExecution
+  -> PublicPlanCandidateExecutor 独立重放
+  -> CandidateWorkflowVerifier
+  -> Answer Schema / Answer / Citation 检验
+  -> CandidateQualityEvaluator
+```
+
+报告记录的结果是：
+
+```text
+registered task types / generator successes       8 / 8
+Program executions / operation-correct rows       8 / 8
+answer-schema / answer-correct rows                8 / 8
+citation-correct / evaluator-accepted rows         8 / 8
+insufficient_capability rows                           0
+```
+
+
+
+从精确提交中的实现看，这并不是单纯在报告里硬编码八个 PASS：
+
+* `FinanceTaskPlugin` 真实注册并编译八类任务；
+* v7 generator 从公开 Program skeleton 重建程序，而不是继续维护一个按 `task_type` 返回答案的残缺 switch；
+* `TaskProgramExecutor` 对节点逐个解析输入、检查 Registry Contract、执行 Operation；
+* `TaskProgramOracleVerifier` 使用 verifier implementation 对各节点重新计算；
+* `CandidateWorkflowVerifier` 检查节点覆盖、操作 grounding、计算正确性、答案结构、答案值与引用；
+* `CandidateQualityEvaluator` 将这些结果作为不可补偿的 Hard Gates。
+
+所以以下窄结论可以保留：
+
+> 当前代码能够对八个已注册 Finance task type 各构造一个合法固定样例，并使其通过完整的候选生成、Program 执行、独立节点重放、答案与引用验证。
+
+特别是此前 generator 不支持的三条路径已经真实进入统一 Program 路径：
+
+```text
+temporal_absolute_change
+  lookup -> lookup -> difference
+
+registered_ratio
+  lookup -> lookup -> ratio
+
+derived_growth_comparison
+  lookup × 4 -> growth × 2 -> compare
+```
+
+
+
+---
+
+# 三、首个 Blocking defect：Source Binding 接受伪造 commit/tree
+
+这是本轮最直接的问题，而且会真正推翻报告的 G2，而不是“为了安全再加一个高阶 Gate”。
+
+## 3.1 声明是什么
+
+报告声称：
+
+* 十四个执行相关源文件被 source-freeze；
+* source commit 是 `dba5d949...`；
+* source tree 是 `d7065313...`；
+* G2 `source-bound successor generator` 通过。
+
+## 3.2 实现实际做了什么
+
+`_source_binding()`：
+
+```text
+直接读取当前 repo_root 下十四个工作区文件
+  -> 计算 SHA-256 和 byte count
+  -> 把调用者传入的 source_commit 原样写入
+  -> 把调用者传入的 source_tree 原样写入
+```
+
+它没有执行：
+
+```text
+git rev-parse <commit>^{tree}
+git show <commit>:<path>
+git archive <commit>
+工作区 bytes == committed bytes
+commit -> tree 关系验证
+```
+
+`GeneratorSourceBinding` 的 validator 只验证：
+
+* 路径集合等于 `SOURCE_PATHS`；
+* 十四行文件记录内部 hash 一致；
+* Binding 自身 content ID 一致。
+
+它并不验证这些文件记录属于所声明的 commit。
+
+更关键的是，正式 G2 只检查两个对象字段：
+
+```python
+source_binding.finance_numeric_candidate_v7_source_bound
+and source_binding.registered_catalog_totalized
+```
+
+而这两个字段本身就是默认值为 `True` 的声明字段，并非从 Git 关系检查中导出。
+
+## 3.3 可复现直接反例
+
+当前正式测试 Fixture 明确这样调用 builder：
+
+```python
+source_commit = "0" * 40
+source_tree   = "1" * 40
+```
+
+测试随后不仅接受该对象，还明确断言：
+
+```python
+binding.source_commit == "0" * 40
+binding.source_tree   == "1" * 40
+```
+
+然后继续运行八类总量、深度、负控、Gate 和工件测试。
+
+这给出了一个非常干净的反例：
+
+```text
+不存在的 commit
++ 与其无关的 tree
++ 当前工作区的十四个文件
+-> 仍可生成“source-bound=true”的 Binding
+-> G2 仍然 PASS
+```
+
+因此：
+
+```text
+G2 source-bound successor generator = FAIL
+```
+
+这个缺陷不否定当前真实工作区上八个 Fixture 确实跑通，但它否定：
+
+> “八个结果已经被权威绑定到报告中声明的 exact commit/tree 和其成员 bytes。”
+
+---
+
+## 四、QA 链路逐层 Gate 判定
+
+| 层级                                        | 当前判定                  | 说明                                    |
+| ----------------------------------------- | --------------------- | ------------------------------------- |
+| 八类 Registry catalog 精确枚举                  | **PASS**              | Plugin 与 preflight 都使用相同八类集合          |
+| Evidence role 编译与 Realization             | **PASS for fixtures** | 八个规范 Bundle 均形成一个 RealizedTaskPackage |
+| 候选 Generator 总量                           | **PASS for fixtures** | 8/8，无 `insufficient_capability`       |
+| Public Program 完整执行                       | **PASS for fixtures** | 节点执行数等于 Program 节点数                   |
+| 独立 Operation replay                       | **PASS for fixtures** | verifier 路径重新计算节点输出                   |
+| Answer Schema、Answer、Citation             | **PASS for fixtures** | 8/8                                   |
+| CandidateQualityEvaluator                 | **PASS for fixtures** | 八条均被接受                                |
+| exact commit/tree/member source authority | **FAIL**              | 任意 40 位 commit/tree 标签均可通过            |
+| Archive grounding                         | **UNKNOWN / 未检验**     | 当前 Fixture 来自本地构造数据                   |
+| 现实难度与分布                                   | **UNKNOWN / 未检验**     | 当前只有每类一个规范样例                          |
+| Release / training readiness              | **未授权**               | 无 Release Population 或经验生成            |
+
+所以原报告中 G3–G5 的诚实固定样例结果可以保留；G2 失败后，形式上的 “8/8 source-bound totality” 不能成立。报告中的八 Gate 总体 `8/0` 应当更正为：
+
+```text
+G0 exact external scope                                  PASS
+G1 baseline and formal QA scope frozen                   PASS
+G2 source-bound successor generator                      FAIL
+G3 registered task/generator fixed-fixture totality 8/8 RETAINED
+G4 Program/operation fixed-fixture execution 8/8        RETAINED
+G5 answer/schema/citation fixed-fixture correctness 8/8 RETAINED
+G6 registered negative controls                          PASS_AS_SCOPED
+G7 zero Provider/GPU/online/Release boundary             PASS
+
+overall formal Gate                                      FAIL_AT_G2
+```
+
+---
+
+# 五、问题程序深度审计
+
+## 5.1 当前报告里的“结构依赖深度”计算是正确的
+
+当前 `maximum_dependency_depth` 由 Program DAG 实际导出：
+
+```python
+depth[node] = 1 + max(depth[parent] for parent in dependencies)
+```
+
+并不是简单相信任务标签。`PublicPlanCandidateExecution` 还会重新计算该值并与持久化字段比较。
+
+当前八个固定程序的结构如下：
+
+| Task type                            | 节点数 | 结构最大依赖深度 | Operation 序列                      |
+| ------------------------------------ | --: | -------: | --------------------------------- |
+| `fact_retrieval`                     |   1 |        1 | `lookup`                          |
+| `comparison`                         |   1 |        1 | `compare`                         |
+| `registered_cross_metric_comparison` |   1 |        1 | `registered_compare`              |
+| `temporal_growth`                    |   3 |        2 | `lookup, lookup, growth`          |
+| `temporal_absolute_change`           |   3 |        2 | `lookup, lookup, difference`      |
+| `registered_ratio`                   |   3 |        2 | `lookup, lookup, ratio`           |
+| `temporal_average`                   |   4 |        2 | `lookup × 3, aggregate`           |
+| `derived_growth_comparison`          |   7 |        3 | `lookup × 4, growth × 2, compare` |
+
+
+
+相应分布是：
+
+```text
+node count:
+  {1: 3, 3: 3, 4: 1, 7: 1}
+
+maximum structural dependency depth:
+  {1: 3, 2: 4, 3: 1}
+
+mean structural depth    1.75
+median structural depth  2
+maximum                  3
+```
+
+因此当前确实不再是全部 depth=1，但仍高度集中在 1–2。
+
+---
+
+## 5.2 结构深度不等于语义推理深度
+
+Registry 将 `lookup` 明确定义为：
+
+```text
+program_role = transparent_projection
+action_type  = select_evidence
+```
+
+即 `lookup` 是把已绑定 Evidence payload 投影到 Program 中，不是独立的语义计算 Operation。
+
+因此，七节点的 `derived_growth_comparison` 看起来很长，实际 DAG 是：
+
+```text
+lookup ─┐
+lookup ─┴─> growth ─┐
+                    ├─> compare
+lookup ─┐           │
+lookup ─┴─> growth ─┘
+```
+
+它不是七步串行推理，而是：
+
+```text
+四条并行取值投影
+  -> 两个并行增长率计算
+  -> 一次比较
+```
+
+按 semantic Operation 而非 transparent projection 重算，最长语义链只是：
+
+```text
+growth -> compare
+```
+
+即语义深度 2。
+
+### 按 Registry 的 `program_role` 重算
+
+| Task type                            | 报告结构深度 | 去除 transparent `lookup` 后的语义深度 |
+| ------------------------------------ | -----: | -----------------------------: |
+| `fact_retrieval`                     |      1 |                              0 |
+| `comparison`                         |      1 |                              1 |
+| `registered_cross_metric_comparison` |      1 |                              1 |
+| `temporal_growth`                    |      2 |                              1 |
+| `temporal_absolute_change`           |      2 |                              1 |
+| `registered_ratio`                   |      2 |                              1 |
+| `temporal_average`                   |      2 |                              1 |
+| `derived_growth_comparison`          |      3 |                              2 |
+
+因此推断得到：
+
+```text
+pure semantic depth distribution:
+  {0: 1, 1: 6, 2: 1}
+
+maximum true semantic-operation depth:
+  2
+```
+
+若为了报表把纯 retrieval 任务最小记为 1，则是：
+
+```text
+{1: 7, 2: 1}
+```
+
+无论使用哪种约定，**当前都不存在真正的 semantic depth=3 程序**。
+
+---
+
+## 5.3 当前深度字段语义存在三套口径
+
+这里还有一个会阻碍后续深度采样的问题。
+
+### 口径 A：`maximum_dependency_depth`
+
+这是实际 Program DAG 的结构深度，计算正确。
+
+### 口径 B：`semantic_only_depth`
+
+此前 semantic coverage 工件把：
+
+```python
+semantic_only_depth = execution.maximum_dependency_depth
+```
+
+直接相等赋值，没有剔除 `program_role=transparent_projection` 的节点。也就是说字段名叫 “semantic-only”，实际仍是结构深度。
+
+### 口径 C：Evaluator 的 `program_depth`
+
+`CandidateQualityEvaluator` 的诊断向量把：
+
+```python
+program_depth = len(task.oracle.task_program.nodes)
+```
+
+即节点数 7 会被记录为 `program_depth=7`，而不是依赖深度 3，更不是语义深度 2。
+
+所以当前同一个程序可能同时被描述为：
+
+```text
+program_depth                7   # 实际是节点数
+maximum_dependency_depth     3   # 结构 DAG 深度
+semantic_only_depth          3   # 名称误导，仍是结构深度
+effective semantic depth     2   # 剔除 transparent projection 后
+```
+
+这在当前固定 Fixture 通过性测试中不致命，但一旦用于：
+
+* 难度分层；
+* 深度配额；
+* 合成数据采样；
+* Release balance；
+* 训练权重；
+* Benchmark 对齐；
+
+就会产生系统性的深度误标。
+
+因此对“问题程序深度”的专门 Gate，应判定为：
+
+```text
+STRUCTURAL_DEPTH_DERIVATION                   PASS
+DEPTH_METRIC_SEMANTIC_CONSISTENCY             FAIL
+SEMANTIC_DEPTH_3_PLUS_SUPPORT                 FAIL
+REALISTIC_DIFFICULTY_INSTANTIATION            UNKNOWN
+```
+
+---
+
+## 六、为什么当前程序仍然偏浅
+
+目前 Registry 的主要运算类型是：
+
+```text
+lookup
+compare
+registered_compare
+difference
+ratio
+growth
+aggregate
+```
+
+八类任务主要覆盖了：
+
+* 单事实提取；
+* 两值比较；
+* 两期变化；
+* 两值比率；
+* 小窗口聚合；
+* 两家公司增长率再比较。
+
+其中绝大多数只是“一次最终算子吃若干原始 Evidence”；只有 `derived_growth_comparison` 出现“派生值再进入下游算子”。
+
+仍缺少更深问题通常需要的 Operation 组合，例如：
+
+```text
+filter
+intersection
+select_by_period
+argmax / argmin
+rank
+group_by
+join
+window extrema
+conditional selection
+multi-source reconciliation
+derived value -> filter -> aggregate/rank
+```
+
+此前链路本身已经把下面两个 Proposal 留在 deferred 状态：
+
+```text
+temporal_peak_secondary_lookup
+growth_filter_margin_rank
+```
+
+这正好说明当前缺口不是“再给现有八类多造几个措辞”，而是**缺少能够形成更深 Program DAG 的 Operation 闭包**。
+
+---
+
+# 七、发现分级
+
+## Blocking defect
+
+### B1. Source commit/tree/member authority 未闭合
+
+这是当前 formal totality preflight 的首个本质阻塞点：
+
+```text
+caller-supplied commit/tree labels
++ current worktree file hashes
+-> accepted source Binding
+```
+
+它直接导致 G2 不成立。
+
+### B2. 深度指标合同未统一
+
+只针对“程序深度充分性”命题而言，这是阻塞项：
+
+* `program_depth` 被用作 node count；
+* `semantic_only_depth` 实际仍是 structural depth；
+* transparent lookup 没有从语义深度中剔除。
+
+在修正前，不能以当前字段进行深度分层或声称 depth closure。
+
+## Scope limitation
+
+这些不否定八类固定样例构造结果：
+
+1. 每个 task type 只有一个 canonical case，证明的是类型存在性，不是参数空间 totality。
+2. 当前数据是 deterministic fixture，不是真实 Archive 中自然可构造样本。
+3. 任务的 `easy/medium/hard/expert` 标签是 Pattern 元数据，不是经验难度测量。
+4. 六个负控中前五个主要在 exact package/corpus wrapper 入口被拒绝；它们没有分别证明修改后的输入一定会在内部 Operation Contract 层被定位拒绝。
+5. Generator 与 independent executor 虽然分别执行，但共享部分 Program reconstruction、result projection 和 Registry 代码，因此它是独立重放，而不是完全异构实现验证。
+
+## Future hardening
+
+可后续增加，但不应阻塞当前首要修复：
+
+* 跨不同 Evidence values、主体、期间数量和 registered pair 的参数化测试；
+* 每个任务类型不止一个规范 Fixture；
+* Archive-grounded constructibility rate；
+* model-generated QA 的通过率与失败类型；
+* 与 FinQA/FinSearchComp 等外部分布的深度对齐。
+
+---
+
+# 八、应当怎样修订
+
+## 8.1 先修 Source Authority，不改任务语义
+
+建议下一阶段只做：
+
+```text
+qa_generator_source_commit_tree_member_authority_repair_preflight_only
+```
+
+最小修复包括：
+
+```text
+1. git rev-parse <source_commit>^{tree}
+   必须等于 source_tree
+
+2. 对十四个 SOURCE_PATHS：
+   git show <source_commit>:<path>
+   得到 committed bytes
+
+3. SourceFileBinding 必须绑定 committed bytes
+   不能只绑定当前工作区 bytes
+
+4. 若 builder 从当前工作区执行：
+   current bytes == committed bytes
+   否则失败
+
+   更稳妥的做法：
+   从 exact commit 创建 detached archive 并从其中执行
+
+5. G2 必须由上述实际检查结果派生
+   删除或至少不信任：
+   finance_numeric_candidate_v7_source_bound=True
+   registered_catalog_totalized=True
+   这类自声明布尔值
+
+6. 加入直接负控：
+   nonexistent commit
+   real commit + wrong tree
+   real commit/tree + one changed source file
+   two source files crossed
+   working-tree-only uncommitted implementation
+```
+
+修复后重新构建 fresh identities，再执行独立审计。当前报告给出的原始 independent-audit transition 不宜直接继续，因为它会忠实重建一个仍接受伪造 commit/tree 的设计。
+
+---
+
+## 8.2 单独建立程序深度合同
+
+不要简单把节点数门槛设为“至少 7”，那很容易得到七个并行 lookup 的纸面深度。
+
+建议正式定义四个不同 estimand：
+
+```text
+node_count
+  全部 Program 节点数
+
+structural_dependency_depth
+  包含所有节点的最长 DAG 路径
+
+semantic_operation_depth
+  收缩 transparent_projection 节点后的最长语义路径
+
+workflow_interaction_depth
+  真实检索、计算、选择、验证之间的因果顺序
+  不把固定 PLAN/ANSWER 模板步数当深度
+```
+
+当前深度 Gate 应针对：
+
+```text
+semantic_operation_depth
+```
+
+而不是 `len(nodes)`。
+
+---
+
+# 九、后续深度实验设计
+
+完成 source-authority 修复和独立审计后，再开启一个独立的深度扩展阶段：
+
+```text
+qa_semantic_operation_depth_and_deep_program_constructibility_preflight_only
+```
+
+建议预注册的目标不是任务频率，而是**存在性与可执行性阶梯**：
+
+| 深度层 | 最低要求                | 示例                                      |
+| --- | ------------------- | --------------------------------------- |
+| D1  | 一个语义 Operation      | ratio、growth、aggregate                  |
+| D2  | 派生结果进入第二个 Operation | growth → compare                        |
+| D3  | 至少三个串行语义 Operation  | growth → filter → rank                  |
+| D4  | 分支、汇合及最终选择          | 多路 growth → filter → aggregate → argmax |
+
+最合理的两个首批深程序是：
+
+### A. `temporal_peak_secondary_lookup`
+
+```text
+按期间 lookup
+  -> aggregate/window collection
+  -> argmax period
+  -> select_by_period secondary metric
+  -> final projection
+```
+
+核心不只是节点多，而是 argmax 的结果必须决定后续 Evidence 选择。
+
+### B. `growth_filter_margin_rank`
+
+```text
+多实体两期数据
+  -> growth
+  -> margin/ratio
+  -> threshold filter
+  -> rank
+  -> selected entity result
+```
+
+这里可以形成真实的：
+
+```text
+derived metric
+  -> conditional filtering
+  -> comparative ranking
+```
+
+每个深度 Fixture 必须继续经过现有链条：
+
+```text
+source-bound task
+  -> public Program
+  -> exact topological execution
+  -> independent node replay
+  -> answer/schema/citation verification
+  -> quality evaluator
+```
+
+并增加三类深度专用反例：
+
+1. 删除中间依赖节点，但保留最终答案；
+2. 将最终节点直接绑定原始 Evidence，绕过派生链；
+3. 增加无效并行 lookup 来虚增 node count 或 structural depth。
+
+只有这些攻击也失败，才能说明“深度来自不可绕过的语义依赖”，而不是 DAG 装饰。
+
+---
+
+# 十、最终授权判断
+
+```text
+当前八类固定 Fixture 功能链路
+  可保留
+
+当前 source-bound totality formal Gate
+  不通过
+
+当前结构深度 1/2/3 存在性
+  可保留
+
+当前语义深度充分性
+  不通过
+
+当前真实难度、Archive 分布与训练价值
+  未评估
+
+原 independent audit transition
+  暂不应继续
+
+唯一合理的下一步
+  zero-Provider source commit/tree/member authority repair preflight
+  并同时统一 depth metric schema
+```
+
+一句话概括：
+
+> **当前 QA 链路已经从“只有少数任务能出答案”修到了“八个已注册类型都能完成固定程序”，但还没有修到“形式来源权威可信、问题程序真正够深”。先堵住伪 source binding，再扩展不可绕过的 semantic depth，才是下一步。**

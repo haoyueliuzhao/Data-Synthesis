@@ -1,5 +1,36 @@
 # Finance QA Registered Task Catalog Generator/Verifier Execution Totality Preflight
 
+## Post-Review Scope Correction
+
+The subsequent exact 21,798-byte review at SHA-256
+`118445beed3d77d53cd66b8d1cb4594c4111b7bfd430f6d3ed2360ba01b65033` retains the eight
+registered fixed-Fixture generator successes, public Program executions, independent operation
+replays, answer/schema/citation checks, evaluator acceptances, and the structural-depth result.
+It fails this preflight's formal source-bound interpretation at
+`QA_GENERATOR_SOURCE_COMMIT_TREE_AND_MEMBER_AUTHORITY_NOT_CLOSED`.
+
+The frozen implementation read fourteen current-worktree files but copied caller-selected
+`source_commit` and `source_tree` strings into its Binding without validating the Git
+commit-to-tree or commit-to-member relation. The direct counterexample uses nonexistent commit
+`0000000000000000000000000000000000000000` and unrelated tree
+`1111111111111111111111111111111111111111`; the old builder accepts both and its two G2
+declaration booleans remain true.
+
+Every formal JSON byte, identity, Manifest, Root, historical Gate, Decision, and Transition below
+remains immutable. The scoped retained result is one deterministic constructive case for each of
+the eight registered task types, not an authoritative source-bound totality result. The original
+independent-audit successor is superseded by
+`qa_generator_source_commit_tree_member_authority_repair_preflight_only`, which has now closed
+the Git source relation under fresh identities. The current successor is that repair's separate
+credential-free independent audit only.
+
+The old structural-depth distribution is retained, including maximum structural depth three.
+After contracting Registry `transparent_projection` lookup nodes, however, maximum semantic-
+operation depth is only two. The legacy evaluator `program_depth` and semantic-coverage
+`semantic_only_depth` fields are not authoritative for future depth sampling. Archive grounding,
+deep-Program expansion, Provider/GPU execution, QA Release, training, and production remain
+unauthorized.
+
 ## Scope And Decision
 
 This QA side-path consumes only

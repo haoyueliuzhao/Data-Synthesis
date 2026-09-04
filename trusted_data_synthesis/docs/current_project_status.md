@@ -640,7 +640,185 @@ fresh execution authorization and ledger, and must first pass the repaired HTTP-
 tests. See
 `docs/finance_v26_224_fresh_exact_v209_parent_bound_exact_192_job_online_execution.md`.
 
+## Offline QA Generator Source Authority And Depth-Metric Repair Preflight
+
+This QA side-path consumed only
+`qa_generator_source_commit_tree_member_authority_repair_preflight_only`. The exact 21,798-byte
+external review is bound at SHA-256
+`118445beed3d77d53cd66b8d1cb4594c4111b7bfd430f6d3ed2360ba01b65033`. It retains the old
+eight fixed-Fixture generation/execution/verification results but fails the old formal Gate at
+`QA_GENERATOR_SOURCE_COMMIT_TREE_AND_MEMBER_AUTHORITY_NOT_CLOSED`. The exact 44-byte directive
+`参照审计继续修订优化QA合成链路`, SHA-256
+`d7312594a41e3ad1ca523fd87399cc52205bc6c63e9d81bd8552754d916c7fa7`, authorizes only this repair.
+
+The current decision is:
+
+```text
+qa_generator_source_commit_tree_member_authority_repair_preflight_passed_
+independent_audit_required
+```
+
+The predecessor's complete nineteen-file, 449,574-byte directory and its eighteen Manifest
+members over 446,741 bytes revalidate without historical mutation. The repair recomputes the old
+Manifest and Root from actual paths and bytes before admitting the stored identities. Its Freeze
+is `qa_generator_source_authority_predecessor_freeze:454893143af7f57d952dff22e1aae4d4c5905519c17bbe7f0db21049b2df34d1`.
+
+Two separate Git source authorities are materialized. The generator/verifier remains bound to
+its originally declared commit rather than being silently relabeled with the repair commit:
+
+```text
+generator/verifier source commit  dba5d949a743dd625e5fe0e10b0f4809ac9f87ad
+generator/verifier source tree    d706531377e5303265cd2dcee3e355c6642c466b
+declared / present members        14 / 14
+committed / current byte matches  14 / 14
+
+repair implementation commit      f26e30c0c6488e5b14b2004bd776e23f23dbc77d
+repair implementation tree        7917ca2e0172394d2779d0186d1046bda872555c
+declared / present members         5 / 5
+committed / current byte matches   5 / 5
+```
+
+For every member, the repair resolves the exact Git commit, tree, and Blob, reads committed bytes
+with `git show <commit>:<path>`, and requires committed and current execution bytes to match. A
+caller label or internally consistent Binding identity cannot replace that external relation. The
+Bindings are:
+
+- generator/verifier:
+  `qa_generator_authoritative_source_binding:cd4f225e2e27fa8006828bf4deadd847ad1113d69e9c1c7a0e0d9e3cb3d3e7e9`;
+- repair implementation:
+  `qa_generator_authoritative_source_binding:df21b1f4f733f199a741007fb602c36bfa6cb5683eae8c3e1dbd00232f7937ff`.
+
+The old defect is reproduced rather than inferred. Its helper constructs a Binding with
+nonexistent commit `0000000000000000000000000000000000000000`, unrelated tree
+`1111111111111111111111111111111111111111`, and both old G2 declaration booleans true. The new
+authority rejects that input at `git_commit_resolution`. Five further executed controls reject
+a nonexistent commit, real commit plus wrong tree, changed committed member, two crossed members,
+and an uncommitted worktree member:
+
+```text
+git_commit_resolution / commit_tree_relation             1 / 1
+committed_member_bytes / current_worktree_member_bytes    2 / 1
+attacks / rejected / accepted                             5 / 5 / 0
+attack output writes / Provider calls                     0 / 0
+```
+
+The eight registered canonical Fixtures are rebuilt through the unchanged public-Program
+generator, Registry execution, independent operation replay, answer/citation verifier, and
+quality evaluator:
+
+```text
+registered types / generator successes                    8 / 8
+Program executions / operation-correct rows                8 / 8
+answer-schema / answer-correct rows                        8 / 8
+citation-correct / evaluator-accepted rows                 8 / 8
+insufficient-capability rows                                    0
+```
+
+These remain deterministic constructibility controls, not Archive-grounded, empirical-difficulty,
+model-behavior, task-frequency, or Release-Population evidence.
+
+The depth Contract separates `node_count`, `structural_dependency_depth`,
+`semantic_operation_depth`, and `workflow_interaction_depth`. Transparent lookup projections
+have zero semantic weight; workflow depth adds one Evidence-resolution and one independent-
+verification stage. PLAN and ANSWER templates do not add semantic depth:
+
+```text
+node count                    {1: 3, 3: 3, 4: 1, 7: 1}
+structural dependency depth   {1: 3, 2: 4, 3: 1}
+semantic operation depth      {0: 1, 1: 6, 2: 1}
+workflow interaction depth    {2: 1, 3: 6, 4: 1}
+maximum structural / semantic depth                         3 / 2
+semantic-depth-3-plus rows                                      0
+```
+
+The legacy evaluator `program_depth` and coverage `semantic_only_depth` fields are explicitly
+non-authoritative for future sampling; no old object is rewritten. Three attacks retain the same
+final-answer bytes but delete a required dependency, bypass the derived semantic chain, or add an
+irrelevant lookup. They reject 3/3 at exact-source-Program or output-dependency admission, with
+zero accepted attacks and output writes.
+
+The exact noncompensatory Gate partition is:
+
+```text
+G0 exact external scope                                           PASS
+G1 predecessor formal directory frozen                            PASS
+G2 exact Git commit/tree/member authority                         PASS
+G3 four depth metrics and legacy fields non-authoritative         PASS
+G4 retained fixed-Fixture totality 8/8                            PASS
+G5 legacy counterexample and five source attacks reject           PASS
+G6 three depth attacks reject                                     PASS
+G7 zero Provider/GPU/online/Release boundary                      PASS
+passed / failed                                                    8 / 0
+```
+
+Principal identities include:
+
+- authorization / source Bindings:
+  `qa_generator_source_authority_authorization:0374527bdc9a26e3bc89855b92c0d054840fc6b964f12de012b3817c132d5d4c` /
+  `qa_generator_authoritative_source_binding:cd4f225e2e27fa8006828bf4deadd847ad1113d69e9c1c7a0e0d9e3cb3d3e7e9` /
+  `qa_generator_authoritative_source_binding:df21b1f4f733f199a741007fb602c36bfa6cb5683eae8c3e1dbd00232f7937ff`;
+- legacy/source negative Audits:
+  `qa_generator_legacy_source_counterexample_audit:5b2ad1f7d0083aaa8516bd2d39c759e04081df6173acaefe42c76bad6d311d8f` /
+  `qa_generator_source_authority_negative_audit:f7d626a9ac63f89cbfa13be1a4075461e7b0021d3c863b85046458b37cc0a082`;
+- retained Fixture / depth Contract / depth Audits:
+  `qa_generator_source_authority_retained_fixture_audit:1ad3c4ef3e468bf641af560a68a00554c88bfe1d4469d5cade36276c29118e0c` /
+  `qa_program_depth_metric_contract:3ba7a43cf65f5a37a3dcc648f62ac78489e8b5af16aea0583005e9cd06472865` /
+  `qa_program_depth_metric_audit:34eda481363cc892054f483f8f531f0d5ffe955a07f03cefde2ad4bb98d91d66` /
+  `qa_program_depth_negative_control_audit:6fdd6c29a0435be0ab9acda436925fc948638d73469ed3c606c0a0e627e24b7b`;
+- scope / Gate:
+  `qa_generator_source_authority_scope_audit:38b69b80cb16f9700eeef71f0a0cb348d3337e7c1d8aef7ca19371a28c546d14` /
+  `qa_generator_source_authority_gate:a424203dbf5ad7f9f1f69c380286ee20162edd47f917f316adfb57d401cea1c5`;
+- Report / Transition:
+  `qa_generator_source_authority_repair_report:f42aca195e54f4f59c04e47fc4a27984bf75db88338146e87c57e65c9e38a1f8` /
+  `qa_generator_source_authority_transition:4ec41dda6eb1379e33f9abbfba5d66df8c422889c683085b711e87396055fe02`;
+- Artifact Manifest / Root:
+  `qa_generator_source_authority_artifact_manifest:6df4b52442396600fc7112f9af7598cb3d1c8cea08532156614288da7e7bec4b` /
+  `qa_generator_source_authority_artifact_root:307fd8ef9563e619f8e8f3815e5b754ccd01bfd872af72bd094e9244cbe85d4b`.
+
+The 24-file formal directory contains 463,886 bytes; its self-excluding Manifest binds 23 members
+and 460,263 bytes. Two empty-directory builds reproduce exact paths and bytes. Focused tests pass
+13/13; the new-plus-predecessor totality tests pass 23/23; the selected adjacent QA partition
+passes 64/64. Focused PyCompile, Ruff check/format, and no-import-follow Mypy pass.
+
+The only permitted successor is
+`qa_generator_source_commit_tree_member_authority_repair_preflight_independent_audit_only`. It
+may independently rebuild both Git authorities, rerun the eight fixed Fixtures, reconstruct all
+four depth metrics, and repeat the five source and three depth attacks with zero Provider/GPU.
+
+Archive grounding, realistic-difficulty calibration, benchmark-distribution comparison, deep-
+Program construction, online generation, QA Release, VTDO integration, training, release, and
+production remain unauthorized. The present maximum semantic depth is two; depth-three-plus
+expansion requires a separate external decision after independent audit.
 ## Offline QA Registered-Catalog Generator/Verifier Execution Totality Preflight
+
+### Post-review scope correction
+
+The subsequent exact 21,798-byte review at SHA-256
+`118445beed3d77d53cd66b8d1cb4594c4111b7bfd430f6d3ed2360ba01b65033` retains all eight
+fixed-Fixture generator successes, Program executions, operation replays, answer/schema/citation
+checks, evaluator acceptances, and the structural-depth distribution. It fails the formal claim
+at `QA_GENERATOR_SOURCE_COMMIT_TREE_AND_MEMBER_AUTHORITY_NOT_CLOSED`: the old Binding hashed
+fourteen current-worktree files but copied caller-provided commit/tree labels without proving a
+Git commit-to-tree or commit-to-member relation. Its tests directly admitted nonexistent commit
+`0000000000000000000000000000000000000000` and unrelated tree
+`1111111111111111111111111111111111111111` while both old G2 booleans remained true.
+
+All old formal bytes, identities, historical Gate, Decision, and Transition remain immutable;
+their source-bound interpretation is superseded. The retained scoped decision is:
+
+```text
+qa_registered_eight_task_fixed_fixture_generation_execution_and_verification_
+passed_but_exact_source_commit_tree_member_authority_was_not_closed
+```
+
+The measured structural maximum of three remains valid, but transparent lookup contraction gives
+a maximum semantic-operation depth of two. The old evaluator `program_depth` and coverage
+`semantic_only_depth` fields are not authoritative depth estimands.
+
+The old independent-audit successor is superseded. The operator directive consumed only the
+source-authority/depth repair above, and the current transition is that repair's credential-free
+independent audit only. Provider/GPU execution, deep-Program expansion, QA Release, and production
+remain forbidden.
 
 The QA side-path consumed only
 `qa_registered_task_catalog_to_generator_and_verifier_execution_totality_preflight_only`.
