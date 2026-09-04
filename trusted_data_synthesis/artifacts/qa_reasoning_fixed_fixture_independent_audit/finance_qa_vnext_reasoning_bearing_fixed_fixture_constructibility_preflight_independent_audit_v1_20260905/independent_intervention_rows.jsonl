@@ -1,0 +1,10 @@
+{"case_id":"branch_hii_2014_q2_2014_q4","name":"I0_swap_earlier_later_period","reason_sha256":"18db240211686c01dd1bb924741095b16a2d00ca3b736d8f328327b10071ea4b","rejected":true,"stage":"replay.comparability"}
+{"case_id":"branch_hii_2014_q2_2014_q4","name":"I1_remove_required_revenue_evidence","reason_sha256":"f1a9f8bf43efd14db66c5516f0bba62a69981091feeb6e312dcacf0eeae4532a","rejected":true,"stage":"missing_source_parent"}
+{"case_id":"branch_hii_2014_q2_2014_q4","name":"I2_remove_operating_income_branch","reason_sha256":"f1a9f8bf43efd14db66c5516f0bba62a69981091feeb6e312dcacf0eeae4532a","rejected":true,"stage":"missing_source_parent"}
+{"case_id":"branch_hii_2014_q2_2014_q4","name":"I3_replace_branch_claim_or_sign","reason_sha256":"368dee9d56f9a69f058bf8dd9cdd90b057f57cd6bcbb7f45a5342c231cff5645","rejected":true,"stage":"admission.branch_merge"}
+{"case_id":"branch_hii_2014_q2_2014_q4","name":"I4_replace_final_citation","reason_sha256":"d20806f663fa3535f9bde3545a301e253ff1ecc78b7d2bab70d9730b6c4229d5","rejected":true,"stage":"replay.final_answer_citation"}
+{"case_id":"branch_hii_2014_q1_2014_q3","name":"I0_swap_earlier_later_period","reason_sha256":"18db240211686c01dd1bb924741095b16a2d00ca3b736d8f328327b10071ea4b","rejected":true,"stage":"replay.comparability"}
+{"case_id":"branch_hii_2014_q1_2014_q3","name":"I1_remove_required_revenue_evidence","reason_sha256":"f1a9f8bf43efd14db66c5516f0bba62a69981091feeb6e312dcacf0eeae4532a","rejected":true,"stage":"missing_source_parent"}
+{"case_id":"branch_hii_2014_q1_2014_q3","name":"I2_remove_operating_income_branch","reason_sha256":"f1a9f8bf43efd14db66c5516f0bba62a69981091feeb6e312dcacf0eeae4532a","rejected":true,"stage":"missing_source_parent"}
+{"case_id":"branch_hii_2014_q1_2014_q3","name":"I3_replace_branch_claim_or_sign","reason_sha256":"368dee9d56f9a69f058bf8dd9cdd90b057f57cd6bcbb7f45a5342c231cff5645","rejected":true,"stage":"admission.branch_merge"}
+{"case_id":"branch_hii_2014_q1_2014_q3","name":"I4_replace_final_citation","reason_sha256":"d20806f663fa3535f9bde3545a301e253ff1ecc78b7d2bab70d9730b6c4229d5","rejected":true,"stage":"replay.final_answer_citation"}

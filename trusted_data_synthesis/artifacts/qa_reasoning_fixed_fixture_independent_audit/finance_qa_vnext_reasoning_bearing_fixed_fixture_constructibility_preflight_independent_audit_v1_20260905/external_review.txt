@@ -1,0 +1,496 @@
+# 本轮 QA 链路实验审计结论
+
+```text
+AUDIT_OBJECT
+  = Finance QA vNext Reasoning-Bearing
+    Fixed-Fixture Constructibility Preflight
+
+AUDIT_CLASSIFICATION
+  = PASS_AS_SCOPED
+
+BLOCKING_DEFECT
+  = NONE_FOUND
+
+MANDATORY_REVISION
+  = NONE
+
+REPORTED_GATE
+  = 10 PASS / 0 FAIL
+
+CURRENTLY_CLOSED_OBJECT
+  = deterministic real-Fixture reasoning trajectory
+    + durable pre-Action Envelope commitment
+
+AUTHORIZED_SUCCESSOR
+  = finance_qa_vnext_reasoning_bearing_fixed_fixture_
+    constructibility_preflight_independent_audit_only
+
+OLD_MAINLINE
+  = REMAINS_PAUSED
+```
+
+本轮可以按声明范围通过。它真实推进了上一轮尚未闭合的对象：不再只是定义 reasoning-bearing Contract，而是在两个冻结的 Archive-grounded Fixture 上实际构造了公开推理轨迹，并把每一步 reasoning Envelope 的持久化放在对应 Action callback 之前。当前没有发现能够直接推翻该声明的报告内反例。
+
+本次附件仍是实验报告，而不是源码与 88 文件形式目录本身。因此，下面是**候选实验的报告一致性与科学范围审计**，并不冒充下一阶段要求的源码、工件和 Runtime 独立复验。
+
+---
+
+## 一、本轮真正检验的命题
+
+本轮命题不是：
+
+* 模型能否自主生成推理；
+* 一个任务是否有多条有效轨迹；
+* QA 类型与深度覆盖是否充分；
+* 是否可以恢复 VTDO 主链。
+
+它检验的是：
+
+> 两个预注册、冻结、真实 Archive-grounded 的固定任务，能否分别形成一条完整公开推理轨迹；轨迹是否覆盖任务特定的关键决策；每个决策是否在 Action 执行前形成不可替换、已落盘的 Envelope；Observation 是否真实推动 Claim 与下一 State；最终 QA 与轨迹 Validity 是否同时成立。
+
+这个对象与上一轮识别的首个未闭合点完全一致，没有擅自扩大实验范围。
+
+---
+
+## 二、实现是否真实实例化了本轮对象
+
+### 1. Fixture 选择没有结果泄漏
+
+两个 Fixture 不是根据未来轨迹是否成功挑选，而是通过预注册规则从已冻结 Archive population 中选择：
+
+```text
+F1 = constructible mixed_sign branch rows 中最小 row_id
+F2 = constructible near_equal_growth rows 中最小 row_id，且不同于 F1
+```
+
+选择器只读取 `constructible`、`task_type`、数值关系、`near_equal_growth` 和 `row_id`，不读取未来 reasoning outcome。保存的执行结果只在新执行与独立验证完成后作为比较目标。
+
+因此，没有发现“先运行再挑两个成功样本”的选择偏差反例。
+
+### 2. 轨迹已经承载任务关键推理，而不只是 Program 步数
+
+每个 Fixture 都有任务特定的五个 Critical Decision obligations：
+
+```text
+D0  可比性判断
+    实体、期间、指标定义、单位、币种和来源对齐
+
+D1  Revenue 分支
+    earlier/later Evidence -> revenue growth
+
+D2  Operating-income 分支
+    earlier/later Evidence -> operating-income growth
+
+D3  分支合并
+    两个增长率 -> signed gap -> absolute gap
+
+D4  最终落地
+    完整八节点 Program、答案、Schema、四个引用
+```
+
+其依赖结构为：
+
+```text
+D0 -> D1 --\
+             -> D3 -> D4
+D0 -> D2 --/
+```
+
+D1 与 D2 是两个独立兄弟分支，而不是把八个算术节点简单排成“推理轨迹”。每个 obligation 都有直接 intervention；自由文本 rationale 和 private chain-of-thought 均不作为轨迹对象。
+
+这说明用户此前提出的核心问题——“轨迹需要体现关键性的推理思考，而不是只记录工具执行或答案 Program”——已经在**确定性固定 Fixture 层级**得到实质修复。
+
+### 3. Pre-action commitment 不是一个自报序号
+
+每个 Action 的执行顺序为：
+
+```text
+State_t no-replace write
+  -> Envelope_t O_CREAT|O_EXCL write
+  -> Envelope file fsync
+  -> Envelope directory fsync
+  -> Receipt O_CREAT|O_EXCL write
+  -> Receipt file fsync
+  -> Receipt directory fsync
+  -> 从磁盘重读 Envelope 和 Receipt
+  -> Action callback
+  -> ActionExecution
+  -> Observation
+  -> Update
+  -> State_(t+1)
+```
+
+报告记录：
+
+```text
+Fixtures / Envelopes                    2 / 10
+Envelope no-replace writes                  10
+Envelope file / directory fsync         10 / 10
+Receipt file / directory fsync          10 / 10
+dispatch after durable Receipt          10 / 10
+callback before admission                    0
+```
+
+而且明确拒绝仅凭整数 `preaction_commit_sequence` 声称持久化完成。
+
+因此，本轮已经从上一轮的“对象父关系顺序”推进为真实 Runtime 顺序：
+
+$$
+\text{durable Envelope/Receipt}
+\prec
+\text{Action dispatch}.
+$$
+
+### 4. Observation、Update 与最终 QA 均实际闭合
+
+D0–D3 从冻结 Decimal Evidence 重新计算可比性、两个增长率及其差值；D4 在其 Envelope 被持久化后，才调用现有公开 Program executor、workflow verifier 和 quality evaluator。
+
+报告中的实际结果为：
+
+```text
+complete public Programs                2 / 2
+independently replayed Program nodes   16 / 16
+saved execution byte matches            2 / 2
+saved verification byte matches         2 / 2
+saved assessment byte matches           2 / 2
+answer/schema/citation valid             2 / 2 each
+quality accepted                         2 / 2
+```
+
+每个 Fixture 形成六个 State，以及五个 Envelope、ActionExecution、Observation 和 Update。三个不可补偿 Validity 均为 2/2：
+
+$$
+V_{\mathrm{QA}}
+=
+V_{\mathrm{source}}
+\land V_{\mathrm{answer}}
+\land V_{\mathrm{citation}},
+$$
+
+$$
+V_{\mathrm{trajectory}}
+=
+V_{\mathrm{preaction}}
+\land V_{\mathrm{grounding}}
+\land V_{\mathrm{action}}
+\land V_{\mathrm{observation-update}}
+\land V_{\mathrm{critical\ coverage}},
+$$
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{QA}}\land V_{\mathrm{trajectory}}.
+$$
+
+
+
+这避免了两种错误：
+
+* 正确答案补偿无效轨迹；
+* 形式完整的轨迹补偿错误答案或引用。
+
+---
+
+## 三、问题深度与推理深度是否被再次混淆
+
+没有。
+
+两个 Fixture 的五项测量均被分离：
+
+| 测量                         |  F1 |  F2 |
+| -------------------------- | --: | --: |
+| Semantic-operation depth   |   3 |   3 |
+| Reasoning depth            |   4 |   4 |
+| Evidence-integration depth |   4 |   4 |
+| Correction depth           |   0 |   0 |
+| Critical-decision coverage | 1.0 | 1.0 |
+
+其中：
+
+* semantic-operation depth 来自答案 Program 的 Registry role 依赖；
+* reasoning depth 来自 Critical Decision Graph 的最长路径；
+* evidence-integration depth 来自输出关键 Claim 祖先中的不同叶 Evidence；
+* correction depth 只统计真实拒绝与修订层；
+* coverage 是 required decision IDs 的精确覆盖率。
+
+Token 数和文本长度没有被当成推理深度。
+
+所以本轮得到的是：
+
+```text
+reasoning_depth = 4
+```
+
+而不是把：
+
+```text
+semantic_operation_depth = 3
+```
+
+重新命名成“模型推理深度”。
+
+---
+
+## 四、直接反例检查
+
+本轮的干预和攻击基本覆盖了能够直接推翻当前声明的路径。
+
+### 关键决策干预
+
+每个 Fixture 都执行五类 intervention：
+
+```text
+I0  交换 earlier/later period
+I1  删除 Revenue Evidence
+I2  删除 Operating-income 分支
+I3  替换 branch Claim 或符号
+I4  替换最终 citation
+```
+
+10/10 均被拒绝，或产生预注册的失效结果。
+
+### 持久化与父关系攻击
+
+九类直接攻击包括：
+
+* 未 durable commit 就 dispatch；
+* Action 后补写 reasoning；
+* 通过 `O_EXCL` 覆盖旧 Envelope；
+* 同时重哈希并替换 Envelope 与 Receipt；
+* 交叉绑定 F1/F2 Envelope；
+* selected Action 与 executed Action 不一致；
+* 引用未来或不可见 Evidence；
+* 交叉 Observation、Claim 与 next-State；
+* 保留轨迹但替换 Final answer 或 citation。
+
+结果为：
+
+```text
+attacks / rejected / accepted        9 / 9 / 0
+attack callback calls                        0
+attack output writes / Provider calls    0 / 0
+O_EXCL original bytes retained             true
+```
+
+
+
+在附件报告支持的范围内，没有发现以下直接反例：
+
+```text
+Action 能先于 reasoning commitment 执行          未发现
+Action 后补写 reasoning 仍被接受                  未发现
+不同 Fixture 的状态或 Envelope 可交叉绑定         未发现
+错误 reasoning 可被正确 Final 补偿                未发现
+正确 reasoning 可被错误答案或引用补偿             未发现
+未来 Evidence 可进入当前决策                      未发现
+```
+
+因此：
+
+```text
+BLOCKING_DEFECT = NONE_FOUND
+```
+
+成立。
+
+---
+
+## 五、Gate 判定
+
+本轮十个 Gate 分别覆盖：
+
+```text
+F0  前驱独立审计冻结
+F1  两 Fixture 父关系与预注册选择
+F2  Answer Oracle 可独立重算
+F3  Critical Decision Graph 完整
+F4  Envelope 在 Action 前 durable commit
+F5  Action 产生 source-bound Observation
+F6  Update 产生兼容 Claim 和 next State
+F7  QA / trajectory / qualified validity
+F8  interventions 与 direct attacks
+F9  zero Provider / no expansion / no VTDO
+```
+
+报告结果为：
+
+```text
+passed / failed = 10 / 0
+```
+
+并明确没有 Gate 之间的补偿。
+
+正式判定应为：
+
+```text
+PASS_AS_SCOPED
+```
+
+当前不需要继续修改这一固定 Fixture preflight。
+
+---
+
+## 六、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有必要重做 F1/F2、增加新的 reasoning Contract，或重新设计当前五步 Critical Decision Graph。
+
+### Scope limitation
+
+以下内容仍未检验，但都不构成本轮失败：
+
+1. **只有两个固定任务实例。**
+   两者都属于 HII branch-and-merge family，不能证明任务类型、公司、行业或深度覆盖充分。
+
+2. **轨迹由确定性 Host 路径构造。**
+   尚未证明模型能够生成合法 Envelope、选择 Action 或根据 Observation 更新公开 State。
+
+3. **不是 same-task multi-trajectory。**
+   F1 与 F2 是两个不同任务，不是同一个 \(x\) 下的两个非同构有效状态 \(z_1,z_2\)。
+
+4. **四源码成员只是声明范围。**
+   报告明确不声称完整 transitive import 或 Runtime environment closure。
+
+5. **fsync 顺序不是生产级断电证明。**
+   当前证明的是实际调用、落盘重读与 callback admission 顺序；无需在本轮额外要求文件系统崩溃注入或硬件级持久性证明。
+
+这些应保持“未评估”，而不是反向否定当前 10/0 Gate。
+
+### Future hardening
+
+独立审计应重点确认当前已经声称的对象，不应扩大为新的科学门槛。尤其不需要在下一轮同时要求：
+
+```text
+模型在线生成
+多公司覆盖
+同任务多轨迹
+QA Release
+VTDO State
+训练收益
+```
+
+---
+
+## 七、当前允许与禁止的科学结论
+
+### 当前允许
+
+```text
+两个预注册 Archive-grounded 固定任务均可构造公开 reasoning trajectory
+每条轨迹覆盖五个任务关键决策 obligation
+十个 Action Envelope 均在 Action callback 前完成 no-replace 持久化
+Observation 和 Update 的父链可被实际实例化
+两个八节点答案 Program 均可重放并通过答案、Schema、citation 与质量验证
+两个 Fixture 均通过不可补偿 QA validity 与 trajectory validity
+reasoning depth 与 semantic-operation depth 已被实际区分
+```
+
+### 当前禁止
+
+```text
+模型已经能够生成这些 reasoning Envelopes
+当前轨迹是模型自然策略分布的样本
+两个不同任务证明了 same-x 多轨迹支持
+pi(z | x) 已经非退化
+QA 问题类型与推理深度覆盖已经充分
+这些轨迹已经适合训练
+可以恢复旧实验主链
+可以进入 Mapper / State / Contribution / VTDO
+```
+
+报告自身也明确保持了这些边界。
+
+---
+
+# 八、后续实验决定
+
+当前实验文件中的：
+
+```text
+next_stage_authorized = false
+```
+
+应保持为历史不可变字段，不应回写成 `true`。
+
+本次外部审计可以作为新的 decision parent，授权唯一后继：
+
+```text
+finance_qa_vnext_reasoning_bearing_fixed_fixture_
+constructibility_preflight_independent_audit_only
+```
+
+
+
+## 独立审计的最小范围
+
+下一轮只需要独立确认：
+
+```text
+A0  精确 external review、前驱与 Archive formal directory 冻结
+A1  精确源码和 88 文件形式目录的 detached rebuild
+A2  从冻结 12-row population 独立重新选择同一 F1/F2
+A3  独立重建两个五决策图、十个 Envelope 与完整父链
+A4  从实际磁盘字节确认 Envelope/Receipt、O_EXCL、fsync 与 callback 顺序
+A5  独立重算 D0-D3，重放 16 个 Program 节点及三个 Validity
+A6  独立复现五类 intervention 和九类 direct attacks
+A7  确认 candidate helper、saved execution 和 candidate Gate 不充当结果 Oracle
+A8  确认 Provider、Archive expansion、新注册、same-task 多轨迹和 VTDO 均为零
+```
+
+不得在该独立审计中：
+
+* 新增第三个 Fixture；
+* 修改 D0–D4；
+* 引入模型或 Provider；
+* 扩展 Archive；
+* 恢复旧主链；
+* 把完整 transitive runtime closure 临时升级为 Blocking Gate；
+* 提前构造 same-task multi-trajectory。
+
+---
+
+# 最终决定
+
+```text
+CURRENT CLAIM
+  = two frozen Archive-grounded Fixtures can instantiate
+    reasoning-bearing, observation-responsive trajectories
+    with durable pre-Action commitments
+
+IMPLEMENTATION STATUS
+  = INSTANTIATED AS REPORTED
+
+DIRECT COUNTEREXAMPLE
+  = NONE FOUND
+
+GATE
+  = PASS, 10 / 0
+
+BLOCKING DEFECT
+  = NONE
+
+MANDATORY REVISION
+  = NONE
+
+AUTHORIZED CONCLUSION
+  = deterministic fixed-Fixture reasoning-trajectory
+    constructibility and Runtime preaction commitment
+
+UNEVALUATED SCOPE
+  = model reachability, same-task multi-trajectory,
+    broad QA coverage, training utility, VTDO
+
+NEXT STEP
+  = exact credential-free independent audit MAY PROCEED
+
+OLD MAINLINE
+  = REMAINS PAUSED
+```
+
+本轮最重要的科学进展是：轨迹不再只是答案 Program、工具调用序列或泛化 rationale，而是已经被实例化为“关键决策—行动前承诺—执行—观察—状态更新”的公开因果结构。当前合理动作是独立确认这一结构，而不是继续修改它或越级恢复主链。

@@ -16,6 +16,68 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Reasoning-Bearing Fixed-Fixture Constructibility Preflight Independent Audit
+
+The exact 14,605-byte external review at SHA-256
+5b28c0f02ea48c25b8482b9e32c6304f2a4d6932d1a25dff4f995c4f08bf14ce classifies the
+fixed-Fixture preflight as PASS_AS_SCOPED, reports no blocking defect or mandatory revision, and
+authorizes only the credential-free fixed-Fixture independent audit. The exact 24-byte directive
+参照审计继续实验, SHA-256
+b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb, consumes that
+transition. The candidate's historical next_stage_authorized=false remains immutable.
+
+The audit validates all 88 candidate files and 217,567 bytes, all 87 Manifest members and 201,416
+bound bytes, the complete predecessor directory, and the frozen twelve-row Archive parameter
+space. A detached archive of 751 source files rebuilds all 88 paths and bytes exactly. The
+independent selector rederives the same mixed-sign and near-equal-growth HII cases without reading
+future reasoning outcomes.
+
+Both five-decision graphs and all 62 runtime objects are independently reconstructed: twelve
+States, ten Envelopes, ten durable Receipts, ten ActionExecutions, ten Observations, and ten
+Updates. A dynamic observer delegates to the real os.open, os.fsync, and os.close calls during the
+detached build. It observes twenty O_CREAT|O_EXCL opens, twenty file fsyncs, twenty directory
+fsyncs, ten disk reread/identity admissions, and ten callback entries. Every callback occurs after
+the corresponding Receipt directory fsync; callbacks before admission are zero.
+
+D0-D3 are independently recomputed eight times. Both Programs replay all sixteen nodes.
+QA-valid, trajectory-valid, and qualified counts are 2/2. The semantic-operation, reasoning,
+Evidence-integration, correction, and critical-decision-coverage distributions remain
+{3:2}, {4:2}, {4:2}, {0:2}, and {1.0:2}. All ten interventions and nine real mutated-object
+attacks reject; attack callbacks and formal writes are zero.
+
+The noncompensatory audit Gate passes 9/0. The independent decision is
+finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight_independently_confirmed.
+
+Principal identities are:
+
+- source: qa_reasoning_fixed_fixture_independent_source_binding:f20406d88997c120a13d3e1240f63f2f1be9492a1b7504cce616874aa95713af;
+- dynamic runtime: qa_reasoning_fixed_fixture_dynamic_runtime_audit:6d9796edf932a89eb67a724a9a1d002ccd2ac0fc7922d5fb47bc02a424cd8c8c;
+- semantic: qa_reasoning_fixed_fixture_independent_semantic_audit:e501990180fd295def37d8b22245aede5e99408e7c1a7fa467cdac85d606648d;
+- Gate: qa_reasoning_fixed_fixture_independent_gate:45c11fd703949bc7cedf8da663f858c36f616f4ba94e4b4644cf17d6a0aecc72;
+- Decision: qa_reasoning_fixed_fixture_independent_decision:96474af1423ca9377f32dc031ea581935647197f0018b352590b856503228499;
+- Transition: qa_reasoning_fixed_fixture_independent_transition:8a2641f5e6faa589d742a2c9a2928882e9177a16a58e2c4cd2603265ec59f91b;
+- Report: qa_reasoning_fixed_fixture_independent_report:1ee2f9726722db7d4ed409ef39d74130c152aa4dbdcbd746e7ebd576500dddbd;
+- Manifest / Root:
+  qa_reasoning_fixed_fixture_independent_artifact_manifest:b80cea9944bd4cad41550612f808cc0002ffd27fd98ec7957478b8459e7a6a48 /
+  qa_reasoning_fixed_fixture_independent_artifact_root:73d0e72d13a3421a04511b78df029c64d00d15c58b41e1c963f66ed77ec2e415.
+
+The exact source commit/tree are a3c430a79a5b43597d93e26aab6df40436de8b2b /
+68715d5076008e74c45e2af901cf6ca2fec378ed. The 24-file, 198,117-byte formal directory
+binds 23 members and 194,435 bytes and rebuilds byte for byte. Focused tests pass 8/8; focused
+PyCompile, Ruff check/format, and no-import-follow Mypy pass.
+
+This confirms only two deterministic, different fixed-task trajectories and actual process-level
+pre-Action persistence order. Model reachability, same-task multi-trajectory diversity, broad
+coverage, training value, QA Release, full transitive runtime closure, and hardware crash
+durability remain unmeasured. The only prospective candidate is the same-task multi-trajectory
+quotient constructibility preflight, but next_stage_authorized=false; it requires a separate
+external audit decision. Provider/GPU execution, a third Fixture, Archive expansion, new
+registrations, model generation, same-task multi-trajectory construction, old-mainline
+restoration, Mapper, State, Contribution, VTDO, QA Release, training, release, and production
+remain forbidden. See
+docs/finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight_independent_audit.md.
+
+
 ## QA vNext Reasoning-Bearing Fixed-Fixture Constructibility Preflight
 
 The exact 14,144-byte review at SHA-256
@@ -112,9 +174,9 @@ pre-existing import-order diagnostic in an unrelated v26 Provider-recovery model
 
 This proves only two deterministic, different fixed-task trajectories. Model Envelope generation,
 same-task multi-trajectory quotient diversity, task/depth distribution coverage, QA Release, and
-training utility remain unmeasured. The only prospective successor is the exact credential-free
-fixed-Fixture independent audit, but `next_stage_authorized=false`; it requires a new external
-decision. Provider/GPU work, Archive expansion, task/Operation registration, same-task
+training utility remain unmeasured. The exact credential-free fixed-Fixture independent audit was the only prospective successor,
+with historical `next_stage_authorized=false`; the later external decision and completed audit are
+recorded above. Provider/GPU work, Archive expansion, task/Operation registration, same-task
 multi-trajectory construction, old-mainline restoration, Mapper, State, Contribution, VTDO,
 training, release, and production remain forbidden. See
 `docs/finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight.md`.
