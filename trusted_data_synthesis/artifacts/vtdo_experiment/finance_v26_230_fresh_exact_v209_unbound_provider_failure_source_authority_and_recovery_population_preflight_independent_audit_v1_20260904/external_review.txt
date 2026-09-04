@@ -1,0 +1,384 @@
+# Finance v26.229 本轮实验审计
+
+## 一、审计结论
+
+```text
+AUDIT_DECISION             = PASS_AS_SCOPED
+BLOCKING_DEFECT            = NONE_FOUND
+MANDATORY_REVISION         = NONE
+CURRENT_GATE               = PASS
+NEXT_AUTHORIZED_STEP       = INDEPENDENT_AUDIT_ONLY
+RECOVERY_EXECUTION_READY   = NO
+ONLINE_AUTHORIZATION_READY = NO
+```
+
+**本轮可以按声明范围通过，不需要返工。**
+
+v26.229 检验的并不是“33 个失败 Job 是否已经恢复”，而是：
+
+> 能否从不可变的 v26.226 实际失败工件中，独立确定 33 个 `unbound_provider_failure` 源行，恢复其成功调用前缀和最后一个失败请求的权威身份，并据此构造 33 个全新但尚未执行的 Recovery Jobs。
+
+报告从一开始就把范围限定为 credential-free Recovery-Population preflight，并明确排除 Provider 调用、恢复执行、经验估计和在线授权。
+
+---
+
+## 二、本轮理论命题与实现状态
+
+| 本轮对象                                      | 实现状态                                  | 判定   |
+| ----------------------------------------- | ------------------------------------- | ---- |
+| 从实际 v26.226 失败文件导出 33 行，而非复用 v26.228 排除清单 | 已实现                                   | PASS |
+| 33 行的 Provider Journal 关系闭合               | 88 个调用、55 个成功前缀、33 个失败调用              | PASS |
+| 从成功前缀重放到精确失败请求                            | 88/88 请求 hash、字节数、证书和 Receipt 匹配      | PASS |
+| 区分请求可恢复性与历史响应可识别性                         | 31 个 reasoning-budget、2 个 JSON decode | PASS |
+| 构造 33 个全新非执行 Recovery Jobs                | 33 个唯一新身份，历史身份仅作父节点                   | PASS |
+| 不进行历史回填、Provider 调用或恢复执行                  | 对应计数均为零                               | PASS |
+
+### 1. 33 行来源不是循环自证
+
+源码首先验证完整 v26.226 目录、Manifest、Summary、Transition 和 Provider Census；随后遍历 `summary.failure_records`，重新读取每一个实际 `job_failures/job_XXX.json`，只接收：
+
+```text
+failure_kind == unbound_provider_failure
+```
+
+在完成实际来源选择之后，才把导出的集合摘要与 v26.228 的排除集合进行比较。也就是说，v26.228 只作为**事后对照目标**，不是 source selector。
+
+源码实现与报告一致：它从 v26.226 Summary 中读取实际失败记录，将三个 `host_failure` 排除，再独立构造 Provider 投影并与冻结摘要比较。
+
+因此，没有出现下面这种失效循环：
+
+```text
+v26.228 说这 33 行应被排除
+  -> v26.229 直接复制这 33 行
+  -> 再用同一列表证明自己选对了
+```
+
+### 2. Provider Journal 闭合到正确层级
+
+33 个失败 Job 共包含：
+
+```text
+Provider descriptors             88
+request metadata                 88
+Usage metadata                   88
+successful response metadata     55
+terminal error metadata          33
+```
+
+每个 Job 的调用 ordinal 都从 0 连续开始，前缀调用均成功，最后一个调用为失败调用；不存在中间缺口。实际工件中还保持：
+
+```text
+raw requests persisted             0
+raw Provider responses persisted   0
+private reasoning bodies           0
+```
+
+
+
+这里的结论是 **redacted Provider-Journal relation closure**，不是“原始 HTTP 响应已经恢复”。报告没有越级。
+
+### 3. 失败请求重放是请求级重建，不是结果回填
+
+重放阶段只向本地 Capture Transport 提供 55 个已经持久化的成功 public projections。到历史失败调用时，Capture Transport：
+
+```text
+记录 TransportDispatch
+验证 certificate 与 pre-transport Receipt
+在响应投影之前主动停止
+不提供响应
+不构造失败调用 InvocationRecord
+不派生历史 terminal
+不发起网络请求
+```
+
+最终得到：
+
+```text
+source Jobs                                  33
+reconstructed calls                          88
+successful-prefix invocation records         55
+captured failed requests                      33
+request hash / byte-count matches          88/88
+certificate / Receipt matches              88/88
+public-prefix response matches             55/55
+historical failed-call terminal records        0
+Provider calls reissued                        0
+```
+
+
+
+源码确实通过 `_CaptureFailedRequest` 在最后一次发送后、响应投影前中止；随后逐调用比较 canonical request bytes、request SHA-256、证书、Receipt 和成功前缀响应 hash。
+
+所以本轮能够授权的表述是：
+
+> 33 个**失败请求**可从冻结 Runtime 状态和成功前缀中精确重建。
+
+不能表述为：
+
+> 33 个历史失败响应或终止状态已经恢复。
+
+---
+
+## 三、可识别性边界正确
+
+本轮将三个概念分开是正确的：
+
+```text
+source-row authority
+failed-request reconstructibility
+historical response-content identifiability
+```
+
+### 31 个 ReasoningBudgetExhaustedError
+
+这 31 行的客户端规范化公开内容满足：
+
+```text
+public_content_length = 0
+public_content_sha256 = SHA256(empty)
+finish_reason         = length
+```
+
+因此可以证明的是：
+
+> 客户端持久化的 normalized public string 为空。
+
+不能证明：
+
+* Provider 原始字段究竟是 `null` 还是 `""`；
+* 原始 HTTP response bytes；
+* private reasoning 内容。
+
+### 2 个 JSONDecodeError
+
+Job ordinal 62 和 139 保留了公开内容的长度、hash 和 finish reason 诊断，但没有保存规范化字符串或原始响应 envelope。因此只能确定发生了 JSON decode failure，不能恢复原始 JSON 语法，也不能从诊断信息反推历史 terminal。
+
+这个 `31/2` 划分没有把“请求可重试”错误解释为“历史响应已知”，符合本轮理论对象。
+
+---
+
+## 四、Recovery Population 是否真实构造
+
+每个源行都生成：
+
+```text
+1 RecoveryCandidate
+1 RecoveryPopulationJob
+```
+
+Candidate 绑定：
+
+* v26.226 source-authority Audit；
+* Provider Journal Audit；
+* request-replay Audit；
+* identifiability Audit；
+* 历史 Job 和 failure record，仅作为父对象；
+* 完整成功 Provider-call 前缀；
+* 精确失败 request hash、字节数、certificate、Receipt；
+* 失败类型；
+* “历史 JSON 语法不可恢复”的明确边界。
+
+Recovery Contract 明确规定：
+
+```text
+fresh Recovery identity required              true
+historical Job identity parent-only           true
+historical response reconstruction required  false
+unknown JSON invention allowed                false
+historical rerun/reclassification allowed     false
+Provider execution authorized                 false
+recovery execution authorized                 false
+```
+
+最终 Population 含 33 个唯一的新 Recovery Job 身份，保留 `31/2` 可识别性划分，但不把原来 33 个失败记录标记为 resolved。
+
+因此，**Recovery Population 的构造性命题成立**。但这些对象目前只是 source-bound future population records，而不是已经具备执行授权的在线 Job Manifest。
+
+---
+
+## 五、直接反例检查
+
+本轮需要检查的直接反例主要有三类。
+
+### 反例 1：用 Host failure 替换 Provider failure
+
+已拒绝于：
+
+```text
+admission.source_partition
+```
+
+三个 Host failure ordinal `6, 22, 149` 没有进入 Recovery Population。
+
+### 反例 2：保留总体数量但交叉替换来源
+
+以下攻击均被拒绝：
+
+```text
+cross_job_provider_descriptor
+failed_request_hash_replaced
+provider_call_prefix_truncated
+swap_error_or_usage_artifact
+historical_job_identity_reused
+```
+
+这说明仅重算下游 candidate identity，不能替代实际 source row、descriptor、调用顺序和重放请求权威。
+
+### 反例 3：把不可识别信息“补出来”
+
+以下攻击均被拒绝：
+
+```text
+invent_json_response_bytes
+reclassify_json_syntax_as_identifiable
+```
+
+同时，直接申请 Provider 调用、在线执行、删除或重复 Recovery Job 也被拒绝。正式结果是：
+
+```text
+attacks / rejected / accepted     12 / 12 / 0
+writes before rejection                    0
+Provider calls before rejection            0
+```
+
+
+
+持久化的 `negative_control_audit.json` 记录了全部 12 个攻击的实际拒绝阶段，而不是只保存一个汇总布尔量。
+
+**未发现能直接推翻本轮声明的具体反例。**
+
+---
+
+## 六、Gate 判定
+
+正式 Gate 为：
+
+```text
+A0 exact v26.228 Freeze                          PASS
+A1 exact v26.226 source authority                PASS
+A2 Provider Journal relation closure             PASS
+A3 exact prefix and failed-request reconstruction PASS
+A4 identifiability and fresh Recovery Population PASS
+A5 direct negative controls and zero scope       PASS
+
+passed / failed                                   6 / 0
+```
+
+
+
+正式 `gate_evaluation.json` 与报告一致，为非补偿式 `6/0`。
+
+### 本轮 Gate
+
+```text
+PASS_AS_SCOPED
+```
+
+---
+
+## 七、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+没有发现导致“33 行来源权威、失败请求可重建、新 Recovery Population 可构造”不成立的问题。
+
+### Scope limitation
+
+当前 Recovery Jobs **不是可执行在线 Jobs**。它们没有获得 Provider、credential、failed-request reissue、历史响应替换或 recovery execution 权限。这是报告主动声明的边界，不是本轮缺陷。
+
+同样，v26.226 的历史状态仍然是：
+
+```text
+156 complete Jobs
+36 failure records
+execution_status = incomplete
+```
+
+v26.229 没有把 33 行转成 terminal，也没有使 192-Job empirical evidence set 完整。
+
+### Future hardening，但不阻断本轮
+
+v26.229 的 `SourceIdentity` 对象直接绑定的是两个新增实现文件；请求重放本身还调用了既有 v26.226、v26.209 和 Runtime 模块。
+
+我核对了本轮实际 source commit：
+
+```text
+commit 60b17abebae106477089df365d3ddafb2dac3174
+tree   040f3831fcf6bd08a9f7b9385321cfb78808acf2
+```
+
+Git 对象关系与报告一致。
+
+而且实际 v26.229 commit 中使用的：
+
+* v26.209 replay module blob 与冻结 v26.209 source commit 的 blob 相同；
+
+* v26.226 loader module blob 与冻结 v26.226 source commit 的 blob 相同。
+
+所以这没有构成针对**本次实际执行**的反例，也不应阻断当前 Gate。但后续独立审计最好直接从 exact commit 的 detached snapshot 执行，或者显式加入 replay dependency closure，避免独立审计仅依赖当前工作树中的导入模块。
+
+---
+
+## 八、当前允许与禁止的科学结论
+
+### 允许
+
+可以正式保留：
+
+> v26.226 的 33 个 `unbound_provider_failure` 行形成了一个来源可审计的精确集合；其 55 个成功调用前缀和 33 个最后失败请求可以在零 Provider 调用条件下重建；据此可以构造 33 个全新、未执行、不可与历史对象混同的 Recovery Jobs。
+
+也可以保留：
+
+```text
+ReasoningBudgetExhaustedError     31
+JSONDecodeError                    2
+failed requests reconstructible   33
+historical response bytes          0
+historical terminals created       0
+```
+
+### 禁止
+
+当前仍不能声称：
+
+* 33 个失败 Job 已恢复；
+* 31 个 reasoning-budget Job 在扩大预算后会成功；
+* 2 个 JSONDecodeError 的原始响应已恢复；
+* 33 个 Job 已获得历史 terminal；
+* v26.226 已成为完整 192-Job empirical evidence set；
+* 可以计算新的 Capability、频率、Contribution 或 VTDO；
+* 可以执行 Recovery、failed-Job rerun 或 replacement run；
+* 可以接入 QA、训练、release 或 production。
+
+正式 Report 也只记录 33 个源行和 33 个新 Recovery Jobs，Provider、恢复执行、经验行和在线授权均为零。
+
+---
+
+## 九、后续实验
+
+原先授权的下一步可以继续：
+
+```text
+fresh_exact_v209_unbound_provider_failure_source_authority_and_
+recovery_population_preflight_independent_audit_only
+```
+
+该独立审计应保持窄范围，只完成以下验证：
+
+1. 从 exact commit `60b17...` 的 detached snapshot 重建全部 117 个文件。
+2. 对比 116 个 Manifest members、1,088,415 member bytes 和 Artifact Root。
+3. 从实际 v26.226 Summary 与 36 个 failure files 独立导出 `3 Host + 33 Provider`，不能用 v26.229 source rows 或 v26.228 exclusion list 作 selector。
+4. 独立重建 88-call Journal，确认 `55 succeeded + 33 provider_error`。
+5. 从 exact v26.209 Runtime 重放 33 个调用前缀，确认 88 个请求和 55 个公开响应投影。
+6. 在最后失败请求处停止，不生成响应、InvocationRecord、terminal 或五层 Outcome。
+7. 重建 `31/2` 可识别性划分和 33 个新 Recovery Job 身份。
+8. 重复 12 个攻击。
+9. Provider 调用、credential lookup、Recovery execution、历史回填和经验估计保持为零。
+
+正式 Transition 也只允许这一独立审计，并明确继续禁止 Recovery execution 和在线授权。
+
+**最终判断：v26.229 按本轮窄命题通过。它成功关闭的是“33 个 Provider 失败行能否形成来源权威、请求可重建的未来 Recovery Population”，而不是“恢复是否成功”。现在可以进入独立审计；不能直接执行这 33 个 Recovery Jobs。**

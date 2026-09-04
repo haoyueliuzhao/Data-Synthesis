@@ -15,6 +15,117 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+## v26.230 Unbound Provider-Failure Recovery-Population Preflight Independent Audit
+
+Finance v26.230 consumed only
+fresh_exact_v209_unbound_provider_failure_source_authority_and_recovery_population_preflight_independent_audit_only.
+The exact 13,653-byte external review is bound at SHA-256
+357326334bbd3af473e0f473503797ccd797fd0c8b92b8d91f7b478f340b002b and classifies
+v26.229 as PASS_AS_SCOPED with no blocking defect or mandatory revision. The 24-byte directive
+参照审计继续实验 is bound at
+b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb.
+
+The independent decision is:
+
+~~~text
+v26_229_exact_33_unbound_provider_failure_recovery_population_
+independently_confirmed
+~~~
+
+The exact 117-file, 1,105,367-byte v26.229 directory and all 116 Manifest members over
+1,088,415 bytes revalidate. A 705-file detached archive of exact v26.229 source commit
+60b17abebae106477089df365d3ddafb2dac3174 rebuilds all 117 files and bytes exactly under a
+minimal environment. A new six-member replay dependency closure confirms all current replay
+blobs equal v26.229, the v26.209 Runner equals its frozen v26.209 blob, and the v26.226 loader
+equals its frozen v26.226 blob.
+
+Selection begins from the actual v26.226 Summary and all 36 failure files. It independently
+derives Host ordinals 6, 22, and 149 plus the exact 33 unbound Provider rows; candidate v26.229
+source rows and the v26.228 exclusion set are not selectors. All 33 independently reconstructed
+candidate source rows and the aggregate source-authority object match v26.229 bytes.
+
+The independent Provider Journal closes 88 calls:
+
+~~~text
+successful prefix / final failed calls                    55 / 33
+request / Usage metadata                                  88 / 88
+response / error metadata                                 55 / 33
+ReasoningBudgetExhaustedError / JSONDecodeError           31 / 2
+orphan descriptors / invalid relations                     0 / 0
+raw request / raw response / private reasoning bodies      0 / 0 / 0
+~~~
+
+Using only the 55 persisted public response projections, the exact v26.209 Runner reconstructs
+all 88 canonical requests. The capture transport stops at each final failed request before
+supplying a response or constructing a failed-call InvocationRecord.
+
+~~~text
+request hash/byte/certificate/Receipt matches             88 / 88
+successful public-response matches                        55 / 55
+failed phase first / subsequent / Final / Correction    3 / 25 / 5 / 0
+failed responses / failed InvocationRecords / terminals    0 / 0 / 0
+Provider calls / credential lookups                        0 / 0
+~~~
+
+The independent identifiability partition remains 31 reasoning-budget rows with an exactly empty
+normalized public string and two JSON-decode rows whose exact response strings and syntax remain
+unknown. Historical response bytes are neither persisted nor guessed. Starting only from the
+independent source, replay, and identifiability results, all 33 Recovery Candidates, 33 Recovery
+Jobs, the Recovery Contract, and the Population reconstruct byte for byte. Historical identity
+overlap is zero; all Recovery Jobs remain nonexecuted and unauthorized.
+
+All twelve independently constructed and rehashed attacks reject before output or Provider
+activity. The noncompensatory Gate partition is:
+
+~~~text
+A0 exact v26.229 Freeze                                      PASS
+A1 detached rebuild and replay dependency closure            PASS
+A2 independent v26.226 3/33 source partition                 PASS
+A3 independent 88-call Provider-Journal closure              PASS
+A4 independent prefix and failed-request reconstruction       PASS
+A5 independent 31/2 identifiability and Recovery Population  PASS
+A6 twelve independent direct negative controls               PASS
+A7 zero external-execution scope                              PASS
+passed / failed                                               8 / 0
+~~~
+
+Authoritative identities include:
+
+- Freeze / detached rebuild / dependency closure:
+  finance_v26_230_v229_freeze_audit:71cb15f73f471e43e20bd4c9a5508fe165caa8763872fc43f378ca41b7925d52 /
+  finance_v26_230_detached_rebuild_audit:b1d5cfe2825e1bf03a519eee1ec7fa8fdb3a199b66a7edefe620bc2ebc712cee /
+  finance_v26_230_replay_dependency_closure_audit:4c39eef58abd4a6862eb81f83a087b18b8d8ba17d5698e0aa9942b738e9869c5;
+- source / Journal / replay:
+  finance_v26_230_independent_source_partition_audit:5e1d6c3c4bff127705bb3befdc72bb00cfe49360460ca78379301f8955e721ba /
+  finance_v26_230_independent_provider_journal_audit:b5c123f588fabd170002b933b9d2144513480c7072d364213751fd30509684a0 /
+  finance_v26_230_independent_request_replay_audit:9289bd1525f5391f8666031924afc8c1692fe4e528b08afdeac39114ef7428cd;
+- identifiability / Population / negative control:
+  finance_v26_230_independent_identifiability_audit:c6912db93c0990ab3e3062e97ad3f2b216944facb838d08e4b36b3ad36619853 /
+  finance_v26_230_independent_recovery_population_audit:6ba5d20162af1eb6fb7f91367d94e963d7b14c3af49f8e948383a7f42919c9cb /
+  finance_v26_230_independent_negative_control_audit:c6c3687987abb6dcb2b7924c46e20395a106a5b2ff39db383e855973905aaf73;
+- Gate / Decision / Transition / Report:
+  finance_v26_230_gate_evaluation:bc8db7576be5ea67c0ceadda83c1210282e0ca2e467131a7d0397413501592a4 /
+  finance_v26_230_independent_audit_decision:eafa69e8a27b05955b115ea93f895b6c9d27d7c509a4946843ab93828cf252c7 /
+  finance_v26_230_transition:79aab330f2ef4d17481262a7663d56d6ee2c00513660fd3c7a60f5c390c44fdb /
+  finance_v26_230_independent_audit_report:1af2d30e05746d1058ed05c982f309988f44a9c41f518146e4a186caa931d7fc;
+- Manifest / Root:
+  finance_v26_230_artifact_manifest:8a48e037f821085a2a90934b2cac68dd739c0eefd110291f8cf03a910fd8cdf5 /
+  finance_v26_230_artifact_root:3144ae72addc83cfcf2924a3ff5a70032a5e7aec07b48e2a897f6f30ad76cd64.
+
+The exact source commit/tree are bb056e0def4a7ceec4f07797b5e559ff7067f848 /
+413c52ab220393d6ff63855ce9735b248915c6b6. The 20-file, 308,132-byte formal directory
+rebuilds byte for byte; its Manifest binds nineteen members and 304,982 bytes. Focused tests pass
+10/10 and the adjacent v26.226-v26.230 partition passes 60/60. Focused PyCompile, Ruff
+check/format, no-import-follow Mypy, and package-wide Ruff pass.
+
+The prospective next candidate is
+fresh_exact_v209_unbound_provider_failure_recovery_population_bound_online_execution_authorization_only,
+but next_stage_authorized remains false. A separate external audit decision is required.
+Provider or Recovery execution, failed-Job rerun, historical response replacement, v26.226
+mutation/backfill, empirical estimation, online authorization, QA, Mapper, State, frequency,
+Contribution, VTDO, training, release, and production remain forbidden. See
+docs/finance_v26_230_fresh_exact_v209_unbound_provider_failure_source_authority_and_recovery_population_preflight_independent_audit.md.
+
 
 ## v26.229 Unbound Provider-Failure Source Authority And Recovery-Population Preflight
 
