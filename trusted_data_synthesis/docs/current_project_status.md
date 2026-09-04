@@ -142,6 +142,93 @@ Start Receipts before credential lookup. Population change, prefix reissue, fail
 before independent postrun audit remain forbidden. See
 `docs/finance_v26_232_fresh_exact_v209_recovery_online_authorization_predecessor_manifest_actual_byte_authority_repair.md`.
 
+## QA Semantic-Depth-Three Registered Catalog Integration Preflight Independent Audit
+
+The QA side path consumed only
+`qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_independent_audit_only`.
+The exact 14,751-byte review at SHA-256
+`856cafe7a458b1b9784fbe308a75534ec98f0592085871e0e7ccb3dbfd91b696` classifies the
+Registered Catalog integration preflight as `PASS_AS_SCOPED`; the exact directive
+`参照审计继续QA链路实验修订` authorizes only this zero-external-execution audit.
+
+The independent decision is:
+
+```text
+qa_semantic_operation_depth_three_plus_registered_catalog_integration_
+preflight_independently_confirmed
+```
+
+The audit freezes all 23 candidate files and 183,833 bytes, binds the exact 3,409-byte Manifest
+file at SHA-256 `821a4e6874aa4205ad391b744e45f4b36ebc58ff26d05fc797794a5a0f803caa`,
+and rebuilds the entire candidate directory from detached commit
+`13877e14c9e5050eb77f0895c73a686b389a6aaf`. All 23 paths and actual bytes match.
+
+Without importing the candidate Catalog or preflight modules, it reconstructs the historical
+eight-task Finance Catalog from source, independently creates the fresh ten-task/ten-Operation
+Catalog, and confirms exact single registrations for
+`derived_growth_absolute_spread`, `registered_margin_target_gap`,
+`absolute_percentage_point_gap`, `scale_ratio_percent`, and
+`signed_percentage_point_gap`. All three new Operations retain `program_role=semantic`; the
+reconstructed Catalog and both resolution Receipts match the candidate bytes.
+
+Only the two persisted Evidence Bundles are reused as frozen inputs. Evidence predicate and fiscal
+year independently determine every role binding. Both Catalog-resolved tasks then rebuild their
+Bindings, Programs, and Packages; execute and Oracle-replay 8+6 nodes; reverify answer schema,
+answer, citation, and quality; and independently rederive semantic depth three. Every Receipt,
+Package, execution, verification, assessment, metric, integration row, and the final candidate
+integration Audit matches after reconstruction:
+
+```text
+historical / extension task registrations                    8 / 2
+historical / extension Operation registrations               7 / 3
+Catalog resolutions / Binding-Program-Package chains          2 / 2
+executed / independently Oracle-verified nodes              14 / 14
+answer/schema/citation/quality passes                         2 / 2
+semantic-depth distribution                                   {3:2}
+```
+
+Eight independently implemented attacks reproduce the exact task lookup, missing/duplicate task,
+missing/duplicate Operation, semantic-role laundering, missing Receipt, and crossed-Pattern
+rejection boundaries. Names, stages, and reason hashes match 8/8; accepted attacks and output
+writes are zero. All eight noncompensatory audit Gates pass.
+
+Authoritative identities include:
+
+- candidate Freeze / detached rebuild:
+  `qa_registered_catalog_candidate_freeze_audit:2ff8772ef9680468c17a835f46eaeba0ae0d6766d4e738232fce9ee63b46d6d8` /
+  `qa_registered_catalog_detached_rebuild_audit:0000e727a4de770edefa2cefbb1310a79611670f9c892e31b8e13cbc8ab2cb4c`;
+- historical / fresh Catalog Audits:
+  `qa_registered_catalog_independent_historical_audit:43be4f0d8309534806161468547cbfe8e933d2d129db133a4e784048e025c602` /
+  `qa_registered_catalog_independent_authority_audit:dfd6582928b55fc8468fbfc702ba1bb2f7ff066b3d49657305db77c80be73f6d`;
+- execution / negative / scope:
+  `qa_registered_catalog_independent_execution_audit:27ae156973a4431c4fe8b8fde6bc6d9fa824d99cebb4bbb9396a11ccc0b45800` /
+  `qa_registered_catalog_independent_negative_audit:01eea1eabd036054d97f8b0ec5faee70e25070ce59fe0bc22b1ac6856570dc79` /
+  `qa_registered_catalog_independent_scope_audit:8a3360151f782be11f717d40506cc6dd32fe2e8167f7e9850898b7bc709d02b9`;
+- Gate / Decision / Transition:
+  `qa_registered_catalog_independent_gate:857cc64a51101e52c61dc575ce1d4f81721c3511aa346d4e84bc622eb89330f2` /
+  `qa_registered_catalog_independent_decision:9878eb311f4f50cbe1e4c7b67364d0023a5fbae44f3b458697124bd3aa3f27fe` /
+  `qa_registered_catalog_independent_transition:1ed6e00744475f3f9efa0e3f6a70a7da4ec6eaaf166cc2edd020e41d69099daf`;
+- Report / Manifest / Root:
+  `qa_registered_catalog_independent_report:93b4b12fb32936bc767c135b2897a0d020ea4fbb794595216cb20d43628f9eda` /
+  `qa_registered_catalog_independent_artifact_manifest:c7f36c18aa46e5456e1b1cb3693344d4d4f9fc040a6d27491d4bbd60e20a9ed8` /
+  `qa_registered_catalog_independent_artifact_root:dd8c66bfd5374871d1ed96311aa042a612308696a7cf0f01e53e4c465ca926cb`.
+
+The exact audit source commit/tree are
+`cbc85fc1d66d46e58bf679f6825172b51ac27819` /
+`415abb224c6070d29ccb91c5ad2747bdd38455c2`. The 17-file, 48,465-byte formal directory
+rebuilds byte for byte; its Manifest binds sixteen members and 45,866 bytes. Focused tests pass
+9/9; the selected adjacent QA partition passes 79/79; focused PyCompile, Ruff check/format, and
+no-import-follow Mypy pass. Package-wide Ruff stops only at the pre-existing import-order
+diagnostic in the committed v26.233 mainline Recovery model, which this QA audit does not rewrite.
+
+Provider calls, credential lookups, GPU Jobs, Archive selections, Benchmark rows, Catalog
+promotions, QA Release objects, and mainline Recovery authorization reads are zero. The audit
+confirms only two fixed Fixtures; it does not establish Archive-grounded or parameter-space
+coverage, overall QA sufficiency, distribution agreement, training utility, or Release readiness.
+The prospective Archive-grounded parameter-space preflight is not authorized and requires a
+separate external decision. See
+`docs/finance_qa_semantic_operation_depth_three_plus_registered_catalog_integration_preflight_independent_audit.md`.
+
 ## QA Semantic-Depth-Three Registered Catalog Integration Preflight
 
 The QA side path consumed only

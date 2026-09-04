@@ -1,0 +1,393 @@
+# Finance QA Registered Catalog Integration 审计结论
+
+```text
+AUDIT_DECISION                    = PASS_AS_SCOPED
+BLOCKING_DEFECT                   = NONE_FOUND
+MANDATORY_REVISION                = NONE
+CURRENT_GATE                      = PASS
+
+REGISTERED_CATALOG_INTEGRATION    = CLOSED_FOR_EXACT_TWO_FIXED_FIXTURES
+HISTORICAL_EIGHT_TASK_CATALOG     = RETAINED_UNCHANGED
+NEW_TASK_REGISTRATIONS            = 2 / 2
+NEW_OPERATION_REGISTRATIONS       = 3 / 3
+CATALOG_MEDIATED_EXECUTIONS       = 2 / 2
+SEMANTIC_DEPTH_DISTRIBUTION       = {3: 2}
+
+CATALOG_PROMOTION                 = NOT_AUTHORIZED
+ARCHIVE_GROUNDED_COVERAGE         = NOT_EVALUATED
+PARAMETER_SPACE_COVERAGE          = NOT_EVALUATED
+OVERALL_QA_SUFFICIENCY            = NOT_EVALUATED
+
+NEXT_STAGE_AUTHORIZED             =
+qa_semantic_operation_depth_three_plus_registered_catalog_integration_
+preflight_independent_audit_only
+```
+
+**本轮 QA 链路实验可按声明范围通过。**它真实关闭了“两个既有深度三任务能否经一个全新、版本化、预检专用的 Registered Catalog 被注册、解析、编译、执行和验证”这一对象。未发现能够直接推翻该窄命题的实现反例，也不需要在进入独立审计前继续增加新的 Gate。
+
+---
+
+## 一、本轮实际声明
+
+本轮没有声称把新任务正式发布到生产 Finance Catalog，而是构造一个独立的：
+
+```text
+finance_qa_registered_catalog.v3-depth-three-preflight.1
+```
+
+其中保留历史八类任务，新增：
+
+```text
+derived_growth_absolute_spread
+registered_margin_target_gap
+```
+
+并新增三项语义 Operation：
+
+```text
+absolute_percentage_point_gap
+scale_ratio_percent
+signed_percentage_point_gap
+```
+
+两个任务分别通过分支汇合和串行链两个固定 Fixture，完成 Catalog 解析、Pattern/Renderer/Runtime 选择、Evidence Binding、Program 编译、保护性问题实现、公共执行、节点级 Oracle replay、Workflow 验证和质量评价。报告同时明确排除了 Catalog promotion、Archive grounding、参数覆盖、Benchmark 测量、在线生成和 QA Release。
+
+这个声明范围是合理的，没有把“两个固定任务进入预检 Catalog”越级解释成“QA 问题类型与深度已经充分”。
+
+---
+
+## 二、实现是否真实完成 Catalog 集成
+
+### 1. 历史 Catalog 没有被原地修改
+
+实现从实际 `FinanceTaskPlugin`、八个历史 `TaskPatternSpec`、Finance Renderer Manifest 和历史 Operation Registry 派生快照，然后另外构造新的版本化 Catalog。报告记录的历史域仍为八个 task type、七个 Operation，且新 Catalog 没有被 promotion。
+
+最终源码提交为：
+
+```text
+commit  13877e14c9e5050eb77f0895c73a686b389a6aaf
+tree    3067b7aa72d9895f89513c8e68a9a55dd6fbde71
+```
+
+该 commit/tree 与 GitHub 实际关系一致；本轮变更位于新的实验 Catalog integration 模块，没有改写历史 Finance task plugin。
+
+**判定：G1 历史 Catalog immutable 成立。**
+
+### 2. 两种任务和三项 Operation 确实进入同一个新 Catalog
+
+`build_catalog_descriptor()` 不是只写几个计数字段。它实际构造：
+
+```text
+8 historical task registrations
++ 2 depth-three extension registrations
+
+7 historical operation registrations
++ 3 depth-three extension registrations
+```
+
+`validate_catalog_rows()` 随后检查：
+
+* task type 唯一性；
+* Operation ID 唯一性；
+* 历史八类精确集合；
+* 扩展两类精确集合；
+* 扩展三项 Operation 精确集合；
+* 三项扩展 Operation 必须为 `semantic`；
+* task registration 与实际 Pattern ID、version、hash、Renderer 一致；
+* Operation registration 与实际 Registry Manifest 完整一致；
+* 所有已注册 Pattern 引用的 Operation 均在 Registry 中闭合。
+
+Catalog 构造函数还重新生成期望 descriptor，并要求传入 descriptor 与期望对象完全相等，因而不能通过只重算 `catalog_id` 注入另一套 runtime、renderer、version 或 registration。
+
+正式工件中，两类任务和三项 Operation 的注册计数均为一，Catalog canonical-byte SHA-256 也与修订后的源码一致。
+
+**判定：G2 新版本 Catalog 与精确注册成立。**
+
+### 3. 正向执行不是直接复用上一轮的 Package 或执行结果
+
+实际正向路径为：
+
+```text
+RegisteredFinanceQACatalog.resolve(task_type)
+  -> Catalog registration row
+  -> Pattern
+  -> Renderer profile
+  -> DepthThreePatternRuntime
+  -> content-addressed resolution Receipt
+  -> TaskPatternCompiler
+  -> semantic binding bundle
+  -> realize_task
+  -> PublicPlanCandidateExecutor
+  -> CandidateWorkflowVerifier
+  -> CandidateQualityEvaluator
+  -> derive/admit Program depth metrics
+```
+
+`compile_control()` 使用 Catalog 中解析出的 Pattern、Renderer、Runtime 和 Catalog 扩展后的 Operation Registry重新构造 Binding、Program、Semantic Plan 与 RealizedTaskPackage。它没有读取上一轮保存的 Package、Execution、Verification、Assessment 或 Coverage row 作为正向结果。
+
+随后 `_integration()` 对两个 Package 重新运行公共执行、Workflow 验证和质量评价，并从实际 reconstructed Program 重新派生深度。
+
+正式执行行显示两个 task type 分别拥有不同的：
+
+* resolution Receipt；
+* Pattern；
+* Renderer；
+* Evidence Bundle；
+* Realized Package；
+* source Program；
+* public execution；
+* verification trajectory；
+* quality assessment；
+* depth-metric identity。
+
+两行均为 `semantic_operation_depth=3`，且 answer、schema、citation、independent replay 和 evaluator acceptance 全部通过。
+
+**判定：G3、G4、G5 成立。**
+
+---
+
+## 三、直接反例检查
+
+### 1. 错误任务别名不能进入 Catalog
+
+```text
+registered_margin_gap
+```
+
+不是注册 task type，实际在：
+
+```text
+catalog.task_lookup
+```
+
+拒绝。
+
+### 2. 缺失或重复注册不能通过
+
+以下控制均被实际拒绝：
+
+```text
+missing_task_registration       -> catalog.extension_task_domain
+duplicate_task_registration     -> catalog.task_uniqueness
+missing_operation_registration  -> catalog.extension_operation_domain
+duplicate_operation_registration-> catalog.operation_uniqueness
+```
+
+### 3. Operation role laundering 不能通过
+
+将：
+
+```text
+scale_ratio_percent
+```
+
+从 `semantic` 改为 `transparent_projection`，在：
+
+```text
+catalog.operation_role
+```
+
+拒绝。因而不能通过修改 Registry role 人为降低或改变语义深度解释。
+
+### 4. 无 Catalog Receipt 的直接 Package 不能通过
+
+直接提交上一轮构造出的 Package，但不给出当前 Catalog 重新派生的 resolution Receipt，会在：
+
+```text
+catalog.resolution_receipt
+```
+
+拒绝。
+
+### 5. task registration 与 Pattern 交叉绑定不能通过
+
+改变 `registered_margin_target_gap` 的 Pattern hash，即使保持其他注册结构，也在：
+
+```text
+catalog.pattern_relation
+```
+
+拒绝。
+
+八项正式控制结果为：
+
+```text
+attempted / rejected / accepted = 8 / 8 / 0
+output writes                   = 0
+Provider calls                  = 0
+```
+
+ 实际保存的拒绝阶段与报告一致。
+
+**未发现保持当前精确 Catalog、两个 task registration、三项 Operation registration 和两个固定输入不变时，能够绕过 Catalog 得到本轮正向结果的直接反例。**
+
+---
+
+## 四、关于上一轮 Fixture helper 的边界
+
+当前 Catalog 的 `control_input()` 仍从上一轮 `_fixture_inputs()` 取得两个确定性的 `EvidenceBundle + role bindings`。该 helper 只生成固定 Evidence 输入；Pattern 选择、Program 编译、Realization、Execution、Verification、Evaluation 和 Depth 派生全部在本轮重新执行。
+
+因此，这一点应解释为：
+
+```text
+固定 Fixture 数据被复用                       是
+上一轮已编译 Program/Package 被复用           否
+上一轮执行或评价结果被当作本轮结果             否
+本轮 Catalog 自主发现 Archive Evidence         否
+```
+
+它**不推翻本轮 Catalog integration claim**，因为报告明确把结果限制为两个固定 Fixture。但它意味着当前结果不能解释成：
+
+* Catalog 已具备 Archive Evidence 发现能力；
+* Catalog 已能自动实例化任意实体、期间和参数；
+* QA Population 已能由 Catalog 自主生成。
+
+这是 **Scope limitation**，不是 Blocking defect。
+
+---
+
+## 五、一个需要保持窄解释的 API 边界
+
+当前 `admit_package()` 对本轮内部正向路径是充分的：它重新派生 Receipt，并检查 task type 与 source Program lineage。本轮两个 Package 又确实由同一个 Catalog 的 `compile_control()` 内部构造。
+
+但它不应被解释成：
+
+> 已经证明任意外部 `RealizedTaskPackage` 的全部 Pattern、Renderer、Runtime、Evidence 和 Catalog provenance 都能由该入口完整认证。
+
+当前实验没有提出这一一般性命题，因此无需为此阻断本轮，也无需在独立审计前新增生产级 Package-admission Gate。独立审计只需从 Catalog 重新构造两个 Package，而不应把任意外部 Package 交给 `admit_package()` 后据此声明通用安全性。
+
+---
+
+## 六、Gate 判定
+
+| Gate | 本轮对象                                          |       判定 |
+| ---- | --------------------------------------------- | -------: |
+| G0   | 外部授权与深度三独立审计 Freeze                           | **PASS** |
+| G1   | 历史八类 Finance Catalog 保持不变                     | **PASS** |
+| G2   | 新版本 Catalog、两类任务和三项 Operation 精确注册            | **PASS** |
+| G3   | Catalog lookup 到 Pattern、Renderer、Runtime 的关系 | **PASS** |
+| G4   | 两个固定任务经 Catalog 路径完整执行                        | **PASS** |
+| G5   | Schema、答案、引用、质量评价均为 2/2                       | **PASS** |
+| G6   | 八项 Catalog-authority 控制全部拒绝                   | **PASS** |
+| G7   | 零 Provider、零 GPU、零 Release、零主链授权读取            | **PASS** |
+
+报告正式记录为 8/0。
+
+```text
+CURRENT_GATE = PASS
+```
+
+---
+
+## 七、发现分级
+
+### Blocking defect
+
+```text
+NONE_FOUND
+```
+
+本轮无需强制修订。
+
+### Scope limitation
+
+当前仍未评估：
+
+1. 非固定 Fixture 的 Evidence、实体、期间、参数组合；
+2. Archive-grounded task constructibility；
+3. 深度三以上任务在目标分布中的频率；
+4. 历史八类与新增两类的真实问题类型平衡；
+5. 语言歧义、检索难度和 expert-level 推理难度；
+6. 模型生成 QA 与轨迹的成功率；
+7. Catalog promotion、QA Release、训练效用与 VTDO 集成；
+8. 任意外部 Package 的一般性 Catalog provenance admission。
+
+这些对象在报告中均被明确排除。
+
+### Future hardening
+
+```text
+NONE_REQUIRED_BEFORE_THE_DECLARED_INDEPENDENT_AUDIT
+```
+
+不应在当前两个 Fixture 上继续增加新的生产级、密码学式或全参数空间攻击，来延迟已经授权的独立审计。
+
+---
+
+## 八、当前允许与禁止的结论
+
+### 允许
+
+可以正式声称：
+
+> 在一个全新、版本化、未 promotion 的 Finance QA Registered Catalog 中，两个经过独立验证的语义深度三 task type 与三项新语义 Operation 已各注册一次。两个固定 Evidence Fixture 均能从 Catalog resolution 出发，重新完成 Pattern/Renderer/Runtime 选择、Evidence Binding、Program 编译、保护性实现、公共执行、节点级 Oracle replay、Workflow 验证和质量评价；两个 Program 的语义操作深度均为 3。
+
+### 禁止
+
+仍不能声称：
+
+* 正式生产 Finance Catalog 已经发布这两个 task type；
+* 当前 QA 链路的问题类型覆盖已经充分；
+* 当前 QA 链路的深度分布已经充分；
+* Catalog 已具备 Archive Evidence 检索和自动绑定能力；
+* 两个 Fixture 代表真实 Finance QA 分布；
+* 深度三任务具有已测量的现实频率；
+* 模型能够稳定生成或解决这些任务；
+* QA Release Population、训练语料或 VTDO 输入已经就绪。
+
+---
+
+## 九、唯一合理的后续实验
+
+可以直接进入：
+
+```text
+qa_semantic_operation_depth_three_plus_registered_catalog_integration_
+preflight_independent_audit_only
+```
+
+独立审计应限定为：
+
+```text
+freeze exact 23-file preflight directory
+  -> bind artifact_manifest.json actual bytes
+  -> detached rebuild from commit 13877e14...
+  -> reconstruct historical Catalog snapshot from source
+  -> reconstruct fresh Catalog without using saved integration Audit as oracle
+  -> read exact persisted Evidence Bundles as fixed inputs
+  -> resolve both registered task types
+  -> independently rebuild both Bindings, Programs and Packages
+  -> execute 8 + 6 = 14 nodes
+  -> independently replay all 14 Oracle nodes
+  -> rederive both semantic-depth-three results
+  -> reverify schema / answer / citation / quality
+  -> repeat the exact eight registered attacks
+  -> compare with saved objects only after independent reconstruction
+```
+
+为保持独立性，该阶段可以读取本轮保存的两个 `EvidenceBundle` 作为冻结输入，但不应调用：
+
+```text
+上一轮 _compile_realized
+上一轮 coverage/depth/topology helper
+本轮保存的 integration row 作为结果 oracle
+本轮保存的 Gate 或 Decision 作为通过条件
+```
+
+它必须继续保持：
+
+```text
+Provider calls                         0
+GPU Jobs                               0
+Archive selections                     0
+Benchmark estimates                    0
+Catalog promotions                     0
+QA Release objects                     0
+mainline Recovery authorization reads  0
+```
+
+本轮 Transition 已将该独立审计设为唯一后继；Archive、Benchmark、在线生成和 Release 仍未授权，主链 v26.232 Recovery 授权也保持未消费、未读取。
+
+## 最终判定
+
+> **本轮 QA Registered Catalog Integration Preflight 按窄范围通过。两个新增深度三任务和三项语义 Operation 已真实进入一个新的版本化 Catalog，并通过 Catalog 解析后的内部编译与执行路径完成两个固定 Fixture 的端到端验证；八项直接 Catalog-authority 反例全部拒绝。未发现 Blocking defect。下一步应执行精确的零 Provider 独立审计，而不是把当前结果提前解释成 Archive 覆盖、整体问题类型充分性、深度分布充分性或 QA Release 就绪。**
