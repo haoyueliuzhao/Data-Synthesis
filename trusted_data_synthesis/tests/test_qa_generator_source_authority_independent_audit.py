@@ -169,13 +169,31 @@ def test_scope_gate_decision_and_transition_remain_non_online(
     products: models.QAGeneratorSourceAuthorityIndependentAuditProducts,
 ) -> None:
     scope = products.scope_audit
-    audit_source = (ROOT / scope.audit_source_relative_path).read_bytes()
     assert scope.audit_source_commit == _git("rev-parse", "HEAD")
     assert scope.audit_source_tree == _git("rev-parse", "HEAD^{tree}")
-    assert scope.audit_source_sha256 == hashlib.sha256(audit_source).hexdigest()
-    assert scope.audit_source_byte_count == len(audit_source)
+    assert tuple(row.relative_path for row in scope.audit_source_members) == (
+        models.INDEPENDENT_AUDIT_SOURCE_PATHS
+    )
+    assert scope.audit_source_member_count == len(scope.audit_source_members) == 3
+    member_rows = tuple(row.model_dump(mode="python") for row in scope.audit_source_members)
+    assert (
+        scope.audit_source_member_set_sha256
+        == hashlib.sha256(
+            json.dumps(
+                member_rows,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+    )
+    for row in scope.audit_source_members:
+        current = (ROOT / row.relative_path).read_bytes()
+        assert row.current_sha256 == hashlib.sha256(current).hexdigest()
+        assert row.current_byte_count == len(current)
+        assert row.current_bytes_match is True
     assert scope.audit_source_commit_tree_relation_verified is True
-    assert scope.audit_source_current_bytes_match is True
+    assert scope.audit_source_current_byte_matches == 3
     assert scope.helper_boundary_passed is True
     assert scope.candidate_helper_calls == scope.candidate_oracle_calls == 0
     assert not any(

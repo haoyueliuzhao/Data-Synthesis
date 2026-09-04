@@ -6,7 +6,7 @@ from typing import Any, Final, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from trusted_synthesis.canonical_json import strict_canonical_hash
+from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canonical_hash
 
 STAGE: Final = (
     "qa_generator_source_commit_tree_member_authority_repair_preflight_independent_audit_only"
@@ -144,6 +144,15 @@ REPAIR_SOURCE_PATHS: Final = (
     "trusted_data_synthesis/src/trusted_synthesis/experiments/"
     "qa_generator_source_authority/preflight.py",
 )
+INDEPENDENT_AUDIT_SOURCE_PATHS: Final = (
+    "trusted_data_synthesis/src/trusted_synthesis/experiments/"
+    "qa_generator_source_authority_independent_audit/__init__.py",
+    "trusted_data_synthesis/src/trusted_synthesis/experiments/"
+    "qa_generator_source_authority_independent_audit/models.py",
+    "trusted_data_synthesis/src/trusted_synthesis/experiments/"
+    "qa_generator_source_authority_independent_audit/audit.py",
+)
+
 REGISTERED_TASK_TYPES: Final = (
     "comparison",
     "derived_growth_comparison",
@@ -831,17 +840,11 @@ class IndependentScopeBoundaryAudit(Identified):
     depth_attack_audit_id: str = Field(min_length=1)
     audit_source_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
     audit_source_tree: str = Field(pattern=r"^[0-9a-f]{40,64}$")
-    audit_source_relative_path: Literal[
-        "trusted_data_synthesis/src/trusted_synthesis/experiments/"
-        "qa_generator_source_authority_independent_audit/audit.py"
-    ] = (
-        "trusted_data_synthesis/src/trusted_synthesis/experiments/"
-        "qa_generator_source_authority_independent_audit/audit.py"
-    )
-    audit_source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    audit_source_byte_count: int = Field(gt=0)
+    audit_source_members: tuple[GitSourceMemberAuditRow, ...] = Field(min_length=3, max_length=3)
+    audit_source_member_count: Literal[3] = 3
+    audit_source_member_set_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     audit_source_commit_tree_relation_verified: Literal[True] = True
-    audit_source_current_bytes_match: Literal[True] = True
+    audit_source_current_byte_matches: Literal[3] = 3
     helper_boundary_passed: Literal[True] = True
     candidate_helper_calls: Literal[0] = 0
     candidate_oracle_calls: Literal[0] = 0
@@ -867,6 +870,17 @@ class IndependentScopeBoundaryAudit(Identified):
 
     @model_validator(mode="after")
     def validate_all(self) -> IndependentScopeBoundaryAudit:
+        rows = tuple(row.model_dump(mode="python") for row in self.audit_source_members)
+        if (
+            tuple(row.relative_path for row in self.audit_source_members)
+            != INDEPENDENT_AUDIT_SOURCE_PATHS
+            or self.audit_source_member_count != len(self.audit_source_members)
+            or self.audit_source_current_byte_matches
+            != sum(row.current_bytes_match for row in self.audit_source_members)
+            or self.audit_source_member_set_sha256
+            != hashlib.sha256(canonical_json_bytes(rows)).hexdigest()
+        ):
+            raise ValueError("independent audit source-member authority differs")
         self.require_identity("audit_id")
         return self
 

@@ -1273,27 +1273,79 @@ def _depth_attacks(
 
 
 def _helper_boundary(repo_root: Path, source_commit: str, source_tree: str) -> dict[str, Any]:
-    relative = (
-        "trusted_data_synthesis/src/trusted_synthesis/experiments/"
-        "qa_generator_source_authority_independent_audit/audit.py"
-    )
-    current = (repo_root / relative).read_bytes()
-    if source_commit == "1" * 40:
+    development_sentinel = source_commit == source_tree == "1" * 40
+    if development_sentinel:
         source_commit = _git_text(repo_root, "implementation.commit", "rev-parse", "HEAD")
         resolved_tree = _git_text(
             repo_root, "implementation.commit_tree", "rev-parse", "HEAD^{tree}"
         )
-        committed = current
     else:
+        resolved_commit = _git_text(
+            repo_root,
+            "implementation.commit",
+            "rev-parse",
+            f"{source_commit}^{{commit}}",
+        )
+        if resolved_commit != source_commit:
+            _fail("implementation.commit", "independent audit commit resolution differs")
         resolved_tree = _git_text(
-            repo_root, "implementation.commit_tree", "rev-parse", f"{source_commit}^{{tree}}"
+            repo_root,
+            "implementation.commit_tree",
+            "rev-parse",
+            f"{source_commit}^{{tree}}",
         )
         if resolved_tree != source_tree:
             _fail("implementation.commit_tree", "independent audit commit/tree relation differs")
-        committed = _git(repo_root, "implementation.source", "show", f"{source_commit}:{relative}")
-        if committed != current:
-            _fail("implementation.current_bytes", "independent audit implementation is uncommitted")
-    tree = ast.parse(current.decode("utf-8"))
+
+    rows: list[models.GitSourceMemberAuditRow] = []
+    audit_payload: bytes | None = None
+    for relative_path in models.INDEPENDENT_AUDIT_SOURCE_PATHS:
+        current_path = repo_root / relative_path
+        if not current_path.is_file():
+            _fail("implementation.current_bytes", f"audit source member absent: {relative_path}")
+        current = current_path.read_bytes()
+        if development_sentinel:
+            committed = current
+            blob_oid = _git_blob_oid(committed)
+        else:
+            committed = _git(
+                repo_root,
+                "implementation.source",
+                "show",
+                f"{source_commit}:{relative_path}",
+            )
+            blob_oid = _git_text(
+                repo_root,
+                "implementation.source",
+                "rev-parse",
+                f"{source_commit}:{relative_path}",
+            )
+            if blob_oid != _git_blob_oid(committed):
+                _fail(
+                    "implementation.source",
+                    f"audit source blob differs: {relative_path}",
+                )
+            if committed != current:
+                _fail(
+                    "implementation.current_bytes",
+                    f"audit source current bytes differ: {relative_path}",
+                )
+        rows.append(
+            models.GitSourceMemberAuditRow(
+                relative_path=relative_path,
+                git_blob_oid=blob_oid,
+                committed_sha256=_sha(committed),
+                committed_byte_count=len(committed),
+                current_sha256=_sha(current),
+                current_byte_count=len(current),
+            )
+        )
+        if relative_path.endswith("/audit.py"):
+            audit_payload = current
+    if audit_payload is None:
+        _fail("implementation.source_domain", "audit implementation source is absent")
+
+    tree = ast.parse(audit_payload.decode("utf-8"))
     forbidden_modules = {
         "trusted_synthesis.experiments.qa_generator_source_authority.preflight",
         "trusted_synthesis.experiments.qa_generator_source_authority.depth",
@@ -1325,14 +1377,17 @@ def _helper_boundary(repo_root: Path, source_commit: str, source_tree: str) -> d
                 calls.add(node.func.attr)
     if imports & forbidden_modules or calls & forbidden_calls:
         _fail("implementation.helper_boundary", "candidate helper or depth oracle call is present")
+    source_rows = tuple(rows)
     return {
         "audit_source_commit": source_commit,
         "audit_source_tree": resolved_tree,
-        "audit_source_relative_path": relative,
-        "audit_source_sha256": _sha(committed),
-        "audit_source_byte_count": len(committed),
+        "audit_source_members": source_rows,
+        "audit_source_member_count": len(source_rows),
+        "audit_source_member_set_sha256": _sha(
+            _canonical_bytes(tuple(row.model_dump(mode="python") for row in source_rows))
+        ),
         "audit_source_commit_tree_relation_verified": True,
-        "audit_source_current_bytes_match": True,
+        "audit_source_current_byte_matches": sum(row.current_bytes_match for row in source_rows),
         "helper_boundary_passed": True,
         "candidate_helper_calls": 0,
         "candidate_oracle_calls": 0,
