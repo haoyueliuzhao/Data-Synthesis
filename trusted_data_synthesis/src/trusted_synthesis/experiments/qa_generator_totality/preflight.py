@@ -497,6 +497,8 @@ class QAGeneratorTotalityProducts(FrozenModel):
     model_config = ConfigDict(frozen=True, extra="forbid", arbitrary_types_allowed=True)
 
     authorization: QARevisionAuthorization
+    external_review_bytes: bytes
+    operator_directive_bytes: bytes
     baseline_scope_freeze: BaselineQAScopeFreeze
     source_binding: GeneratorSourceBinding
     totality_audit: GeneratorTotalityAudit
@@ -1075,6 +1077,8 @@ def build_qa_generator_totality_preflight(
     )
     return QAGeneratorTotalityProducts(
         authorization=authorization,
+        external_review_bytes=audit,
+        operator_directive_bytes=directive,
         baseline_scope_freeze=baseline_scope_freeze,
         source_binding=source_binding,
         totality_audit=totality,
@@ -1125,8 +1129,10 @@ def write_qa_generator_totality_artifacts(
         "authorization.json": canonical_json_bytes(products.authorization) + b"\n",
         "baseline_scope_freeze.json": canonical_json_bytes(products.baseline_scope_freeze) + b"\n",
         "evidence_bundles.jsonl": _jsonl(products.bundles),
+        "external_review.txt": products.external_review_bytes,
         "gate_evaluation.json": canonical_json_bytes(gate) + b"\n",
         "negative_control_audit.json": canonical_json_bytes(products.negative_audit) + b"\n",
+        "operator_directive.txt": products.operator_directive_bytes,
         "program_executions.jsonl": _jsonl(products.executions),
         "quality_assessments.jsonl": _jsonl(products.assessments),
         "realized_task_packages.jsonl": _jsonl(products.realized_packages),

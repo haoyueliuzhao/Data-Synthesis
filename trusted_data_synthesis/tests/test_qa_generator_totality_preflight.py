@@ -72,6 +72,8 @@ def test_exact_external_scope_and_v7_source_binding(
     assert hashlib.sha256(authorization.operator_directive.encode()).hexdigest() == (
         OPERATOR_DIRECTIVE_SHA256
     )
+    assert products.external_review_bytes == audit
+    assert products.operator_directive_bytes == OPERATOR_DIRECTIVE.encode("utf-8")
     assert authorization.operator_directive_sha256 == OPERATOR_DIRECTIVE_SHA256
     assert authorization.provider_execution_authorized is False
     assert authorization.gpu_execution_authorized is False
@@ -256,12 +258,20 @@ def test_artifact_build_is_deterministic_and_manifest_is_self_excluding(
     files = _files(left)
     manifest = json.loads(files["artifact_manifest.json"])
     assert manifest["self_excluding"] is True
-    assert manifest["file_count"] == len(files) - 1 == 16
+    assert manifest["file_count"] == len(files) - 1 == 18
     assert "artifact_manifest.json" not in {item["relative_path"] for item in manifest["members"]}
     for item in manifest["members"]:
         payload = files[item["relative_path"]]
         assert item["sha256"] == hashlib.sha256(payload).hexdigest()
         assert item["byte_count"] == len(payload)
+    assert files["external_review.txt"] == AUDIT.read_bytes()
+    assert len(files["external_review.txt"]) == EXTERNAL_AUDIT_BYTE_COUNT
+    assert hashlib.sha256(files["external_review.txt"]).hexdigest() == EXTERNAL_AUDIT_SHA256
+    assert files["operator_directive.txt"] == OPERATOR_DIRECTIVE.encode("utf-8")
+    assert len(files["operator_directive.txt"]) == OPERATOR_DIRECTIVE_BYTE_COUNT
+    assert hashlib.sha256(files["operator_directive.txt"]).hexdigest() == (
+        OPERATOR_DIRECTIVE_SHA256
+    )
     transition = json.loads(files["transition.json"])
     assert transition["next_stage"] == NEXT_STAGE
     assert transition["provider_execution_authorized"] is False
