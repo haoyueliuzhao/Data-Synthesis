@@ -598,4 +598,3 @@ def run_design_controls(contract: Mapping[str, Any]) -> dict[str, Any]:
         "semantic_class_witnesses": 0,
         "actual_quotient_partition_computed": False,
     }
-
