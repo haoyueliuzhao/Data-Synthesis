@@ -16,6 +16,141 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Fixed Finite Support / Training Representation and Class-Weight Intervention Preflight
+
+Completed on 2026-09-06: the five already Qualified and assigned model trajectories now
+have an actual 27-row request-conditioned supervision package, one fixed within-state
+materialization kernel, and two class-only weight views applied to CPU token-loss aggregation.
+This is preflight-only, with no Student weights, forward pass, parameter update or Release.
+The historical sections below retain their point-in-time findings; their then-uninstantiated
+training representation does not override this bounded new result.
+
+The latest 24,437-byte external review, SHA-256
+`4df85efb69a45d5fafb6c93a74b077682da9fd1130e0d16ca2ebb28af110a339`,
+closes the finite quotient measurement as `PASS_AS_SCOPED`, with no mandatory revision or
+repeat measurement audit. The current directive `参照审计继续实验` authorizes its recommended
+offline representation/weight preflight, not more Provider sampling, Student training,
+Contribution estimation, coverage-prior updates or old-mainline recovery.
+
+The exact parents remain the 785-file / 8,312,321-byte original six-session pilot and the
+51-file / 1,086,642-byte closed quotient measurement. Existing qualifications, two State
+objects and five Assignments are reused, not recomputed. The original empirical quantities
+remain q=5/6, joint frequencies (4/6,1/6), conditional frequencies (4/5,1/5), with M01's
+failure mass 1/6 retained. A is M02/M04/M05/M06; B is M03. Their original State IDs are unchanged.
+
+Eligibility is derived from the actual saved Receipt for every original submission.
+Each positive unit uses its corresponding original HTTP body `messages` as input and the
+exact original model `raw_public_json` string as target. No parsed-JSON reserialization,
+value shortening, citation completion, future State injection or clean-trajectory fiction
+is permitted. Every row binds its original Request, provider request/response, Submission,
+Receipt, event, session Manifest, qualification, Assignment and State with source paths.
+
+The actual export is 11 Action + 11 Update + 5 Final = 27 positive units:
+M02/M04/M05/M06 each contribute five, and M03 contributes seven. All 12 rejected Qualified
+submissions and all 12 M01 submissions are explicitly excluded from positive imitation loss,
+including M01's admitted intermediate steps. All 51 original submissions remain in the parents.
+Nine positive units occur after an earlier rejection; six directly retain rejection feedback
+in the actual input. Counters, parent/state bindings and visible Host context are not rewritten.
+
+The existing local Qwen2.5-7B-Instruct tokenizer is bound at configuration revision
+`a09a35458c702b33eeacc393d103063234e8bc28`, using five non-weight files / 11,488,285 bytes
+and the exact embedded 2,507-byte chat template. Loading is local-only, token=False,
+trust_remote_code=False and fast-tokenizer-only. Extra template/special-token sidecars
+are rejected. The historical Student configuration supplies only selected tokenizer/model
+identity and length references, not a new optimizer or training authorization.
+The selected sequence cap is 24,576, below the model config's 32,768 position cap;
+the tokenizer's declared 131,072 is not adopted as model context authority.
+
+Actual tokenization yields 352,876 prompt tokens, 15,939 raw-content target tokens and
+54 excluded template suffix tokens, for 368,869 real tokens. Original target UTF-8 bytes
+total 30,938; these are not Token counts. Full row length is 12,716–15,110, so no row is
+truncated. The common right-padded CPU batch is [27,15110], with 39,101 padding positions.
+Only the original assistant-content interval is supervised. Prompt, role header, EOS,
+suffix and padding labels are -100; the NLL interface predicts labels[:,1:] exactly once.
+Offsets, exact prefix IDs and raw target-byte decode are checked with the actual tokenizer.
+
+The finite kernel is uniform over original trajectories within each existing class:
+A gives each of four members 1/4; B gives M03 1. P explicitly chooses the measured empirical
+conditional distribution (4/5,1/5) as a baseline, without an optimality claim.
+Q uses (1/2,1/2) as a controlled class-mass transfer, not a coverage prior r or Novelty update.
+
+| Trajectory | Actual supervised tokens T_j | P trajectory weight | Q trajectory weight | P per-target-token coefficient | Q coefficient |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| M02 | 2,812 | 1/5 | 1/8 | 1/14060 | 1/22496 |
+| M03 | 4,691 | 1/5 | 1/2 | 1/23455 | 1/9382 |
+| M04 | 2,793 | 1/5 | 1/8 | 1/13965 | 1/22344 |
+| M05 | 2,817 | 1/5 | 1/8 | 1/14085 | 1/22536 |
+| M06 | 2,826 | 1/5 | 1/8 | 1/14130 | 1/22608 |
+
+The actual objective first averages all selected target tokens within each original trajectory,
+then mixes trajectories by pi(state)*M(trajectory|state). P/Q share the same text, row order,
+tokenizer, template, base arrays, labels, attention and target masks; only coefficients change.
+No extra division by row count, batch size or global target-token count is applied.
+An equal-row mean would give B 7/27 (~25.93%); a global target-token mean gives B
+4691/15939 (~29.43%), both different from P's registered 20%. Both errors are detected.
+
+Two views each run nine controlled NLL probes: all-one, two class indicators, five trajectory
+indicators and position-varying rational values. All 18 pass through the actual CPU weighted
+sum, with masked-out NaNs ignored. Maximum float64 full-batch error is 8.326672684688674e-17;
+fixed-coefficient microbatch-sum error is at most 8.881784197001252e-16, below 1e-12.
+These artificial NLLs are not Student losses, utility or Contribution. Fixed-sum equality
+does not imply equivalence of arbitrary stochastic optimization protocols.
+
+All 13 isolated representation/weight controls pass. They reject source/target rewriting,
+future input replacement, rejected or M01 promotion, row/token-mean normalization errors,
+within-class selection changes, Q text/tokenizer identity changes, prompt/EOS/padding
+supervision and double causal shifting. They are not new model trajectories or training data.
+
+The independent checker validates original text membership, target spans/masks/labels,
+base tensor contents/padding, the fixed original kernel and exact class/trajectory masses.
+It does not invoke the exporter, tokenizer, kernel/view builder, collator or loss producer.
+It also does not claim independent retokenization or NLL execution. Persisted validation
+separately retokenizes the same 27 original targets using the frozen tokenizer and recomputes
+the same CPU loss/control driver. No old qualification, projection or ten-pair comparison runs.
+
+Source was frozen before formal materialization at commit
+`065501db40d5088c805e4924184062e57b617206`, tree
+`145aa15d11e85ca0e660fb1bfd439b3254dee8d2`.
+Ten implementation members total 124,177 bytes; six references total 135,121 bytes.
+This is a declared member binding, not a complete runtime/dependency closure.
+
+All four scoped Gates pass. The focused 98 tests pass: inputs 12, tokenization 30, loss 32,
+independent 12 and preflight/rebuild 12. Test-only source authority is explicitly marked;
+the formal CLI instead verifies the actual frozen Git source. Focused Ruff/format over
+15 source/test files, Python 3.12 Mypy over ten source modules and compilation pass.
+Full-project Ruff retains only the unrelated historical v26 I001, which was not modified.
+
+The formal package has 40 files / 7,523,887 bytes: 39 self-excluding Manifest members /
+7,517,920 bytes plus a 5,967-byte Manifest. The persistence receipt covers 38 prior files
+and 76 ordered file/directory fsync events. JSONL, full dataset JSON and token/batch arrays
+are different containers for the same 27 units, not additional independent samples.
+A separate real frozen-source rebuild reproduces all 40 files / 7,523,887 bytes exactly.
+It reexports and retokenizes the same 27 units and recomputes their CPU loss/weight controls;
+original parents and the formal directory are unchanged. This adds no statistical sample.
+
+Principal identities:
+
+- Representation contract:
+  `share_training_representation_contract:2afb65db38b1a3a6aad34f90fadfe9f7a248456af194a9d01d47b9060c8f7d36`.
+- Finite materialization kernel:
+  `share_training_materialization_kernel:65ec649d8747c0c955717ed26d94229ab254c461f32949e2ce90a4a0445cea68`.
+- P / Q views:
+  `share_training_weight_view:207c0711bb9f2d51b3f28015495ba47972d8f24558af10f966149d68fbfc694f` /
+  `share_training_weight_view:48fc353e95e3f0e17294a75cfc3814e5255561eebe5ddd09c8eae3322f44576a`.
+- Report:
+  `share_training_report:f81f7c13609f34c6ec67348173537fe7771e06714fe6dc2a5e8a39995f4b921a`.
+- Manifest / Root:
+  `share_training_manifest:8b79e5183a6540dacfe371f2a3c69ae8f1deb29aec85f18109d2d691fb3b456b` /
+  `share_training_root:c82fcc4f94de982115fad8937734ef53142d4fdb49cf895f9c111a7759a2c11c`.
+
+New Provider calls, credential reads, model sessions, candidate Runtime executions, sources,
+Tasks, Student parameter loads/forward passes/updates, GPU jobs and Release operations are
+all zero. The runtime I/O/CUDA guard records zero forbidden attempts; it does not claim to
+be a complete operating-system sandbox. B still has one independent original realization.
+Balancing benefit, Contribution and Student generalization remain unmeasured. The old mainline
+remains paused and further Student trials are not automatically authorized.
+See [the detailed representation and weight-intervention report](finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight.md).
+
 ## QA vNext Frozen Model Trajectories / Finite Quotient Assignment and Empirical Measurement
 
 Completed on 2026-09-06: the five existing Qualified model trajectories now have formal

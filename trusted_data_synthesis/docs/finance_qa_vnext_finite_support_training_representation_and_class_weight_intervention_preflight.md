@@ -2,7 +2,7 @@
 
 日期：2026-09-06。阶段：`finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_only`。
 
-本文件记录审计后的实现选择与有界实验；正式物化结果、测试总数和工件身份将在冻结代码后的执行完成时补入。开发时已见过这批历史数据，并已做本地 tokenizer 探测，不声称数据盲确认。
+本轮已完成有限支持上的训练表示与类级权重干预预检：真实来源的 27 条准入响应已导出、分词并形成可消费 CPU 张量，固定类内核下 P/Q 的目标 Token 质量分别实现 `(4/5,1/5)` 与 `(1/2,1/2)`。98 项测试、13 项隔离控制和 18 项受控损失检查通过。没有 Student 参数加载、forward 或更新。开发时已见过这批历史数据，不声称数据盲确认。
 
 ## 1. 审计收口与本轮唯一新增对象
 
@@ -111,7 +111,7 @@ P/Q 共用完全相同的 27 行顺序和一份 `input_ids/labels/attention_mask
 
 ## 7. 工件与可复现性
 
-实现位于 `src/trusted_synthesis/experiments/qa_reasoning_share_training_preflight/`。正式目录预计为：
+实现位于 `src/trusted_synthesis/experiments/qa_reasoning_share_training_preflight/`。正式目录为：
 
 ```text
 artifacts/qa_reasoning_share_training_preflight/
@@ -131,3 +131,144 @@ artifacts/qa_reasoning_share_training_preflight/
 它不支持：Q 比 P 更好、B 的 Contribution 为正、罕见状态更有价值、VTDO 已有效、跨任务泛化提高，或 Student 已获训练 Release。原有 `q` 和经验频率不变。这里只有一个任务和 B 的一个原有效实现；控制与重建次数不是独立样本数。
 
 下一轮若开展 Student 对比，仍需明确受益模型参数、优化协议和独立评价目标；在这道训练题上复现答案不能作为泛化收益。当前不擅自开始该阶段。
+
+## 9. 正式执行结果（不是后续计划）
+
+### 9.1 冻结顺序、输入不变与运行范围
+
+正式物化前完成源码提交 `065501db40d5088c805e4924184062e57b617206`，tree `145aa15d11e85ca0e660fb1bfd439b3254dee8d2`。正式运行之后没有再修改这 10 个实现文件；其声明成员总计 124,177 bytes，六个引用文件总计 135,121 bytes。开发单元测试中的 source authority 是明确标注的 isolated test-only authority，不冒充真实执行前 Git 冻结；本次正式 CLI 则核对真实 commit/tree/blob 与当前字节。
+
+正式执行的网络、credential、模型权重打开和 CUDA 初始化尝试计数均为 0，`CUDA_initialized=false`。CPU intra-op threads 固定为 8，退出后恢复原线程数。实际环境 Python 3.12.13、torch 2.7.1+cu128；CUDA 版 torch 的安装不表示本轮使用 CUDA。tokenizer 依赖为 transformers 5.14.1、tokenizers 0.22.2、Jinja2 3.1.6、huggingface-hub 1.25.1。
+
+原 785 文件 pilot、51 文件商测量目录及本地 tokenizer/config 均保持不变。新运行没有重算原资格或商关系。正式 `materialize` 执行一次，其内置 `validate` 对同一组已保存监督单元重新分词并复核，不增加统计样本。
+
+### 9.2 实际 Token 数和损失系数
+
+27 个目标原始公开字符串合计 **30,938 UTF-8 bytes**；实际监督 Token 是 **15,939**，两者不可混用。逐轨迹的实际分母与施加系数为：
+
+| 原轨迹 | 准入行 | 实际目标 Token T_j | P 每目标 Token 系数 | Q 每目标 Token 系数 |
+| --- | ---: | ---: | ---: | ---: |
+| M02 | 5 | 2,812 | 1/14060 | 1/22496 |
+| M03 | 7 | 4,691 | 1/23455 | 1/9382 |
+| M04 | 5 | 2,793 | 1/13965 | 1/22344 |
+| M05 | 5 | 2,817 | 1/14085 | 1/22536 |
+| M06 | 5 | 2,826 | 1/14130 | 1/22608 |
+
+全体输入 prompt（含真实可见 Host 条件内容和角色头）共 352,876 Token，目标内容 15,939 Token，模板 EOS／尾换行共 54 Token，因此原始完整序列共 368,869 Token。单行完整长度范围 **12,716–15,110**，低于上限 24,576；最大行仍有 9,466 Token 空间，没有截断或丢弃监督单元。
+
+实际基础批次 shape 为 `[27,15110]`，共 407,970 个位置；右侧 padding 为 39,101 个位置。只有 15,939 个位置具有正向目标 mask。prompt、角色头、suffix、EOS 和 padding 的标签均为 `-100`，mask 均为 0。实际系数矩阵 shape 为 `[27,15109]`，对应因果位移后的位置，而不是将 labels 本身提前 shift 两次。
+
+在 27 行等权、且各行先做自己的目标 Token 均值时，B 的隐含质量是 `7/27≈25.9259%`；全体目标 Token 直接等权时是 `4691/15939≈29.4310%`。两种总质量虽都是 1，都不等于 P 的 B 质量 20%；本轮两个负控制均识别了这个差异。
+
+### 9.3 实际受控损失结果
+
+两视图共 18 项 probe 全部通过；全 1 损失聚合都为 1，class indicator 分别得到 P 的 `(4/5,1/5)` 与 Q 的 `(1/2,1/2)`；五个 trajectory indicator 分别复现表中的轨迹概率。不是只在 Manifest 中声明这些质量。
+
+位置变化的测试损失取：第 `i` 行、因果 NLL 的第 `p` 位置为 `(7(i+1)+(p mod 13))/17`，只使用目标位置，行号从 0 开始。结果为：
+
+| 视图 | 精确有理数参考 | 完整 CPU batch 的 float64 结果 |
+| --- | --- | ---: |
+| P | `153251869611856531/24298656097170420` | 6.307010107843072 |
+| Q | `212672134193546515/38877849755472672` | 5.470264830261338 |
+
+所有完整 batch probe 相对于有理数参考转为 float64 后的最大绝对误差为 `8.326672684688674e-17`；固定系数微批次求和的最大误差为 `8.881784197001252e-16`，均低于 `1e-12`。每项精确参考、实际值及误差保存在[受控损失记录](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/loss_checks.json)。
+
+这是人为设计 NLL 的组装控制，以上两个数值**不是 Student 的实际训练损失或效用**，不能用来比较 P/Q 学习优劣。有理数的大整数应通过 Python 的精确整数 JSON 解析，或直接读取 `exact` 字符串；不要用会将大整数转成 IEEE-754 Number 的解析方式重新序列化这些参考值。
+
+### 9.4 13 项隔离控制的实际拒绝位置
+
+| # | 控制 | 实际失败代码 |
+| --- | --- | --- |
+| 1 | `target_numeric_or_field_rewrite` | `text.exact_original_input_and_target` |
+| 2 | `request_replaced_with_future_state` | `text.exact_original_input_and_target` |
+| 3 | `rejected_qualified_promoted` | `text.positive_membership_order` |
+| 4 | `M01_intermediate_promoted` | `text.positive_membership_order` |
+| 5 | `equal_row_mean_instead_of_trajectory_mean` | `independent.fixed_per_target_token_coefficient` |
+| 6 | `global_target_token_mean` | `independent.fixed_per_target_token_coefficient` |
+| 7 | `within_class_kernel_changed` | `independent.fixed_uniform_within_state_kernel` |
+| 8 | `Q_text_identity_changed` | `independent.shared_representation_only_class_intervention` |
+| 9 | `Q_tokenizer_identity_changed` | `independent.shared_representation_only_class_intervention` |
+| 10 | `target_mask_includes_prompt` | `independent.exact_content_only_mask` |
+| 11 | `target_mask_includes_EOS` | `independent.exact_content_only_mask` |
+| 12 | `padding_supervised` | `independent.zero_loss_right_padding` |
+| 13 | `causal_labels_shifted_twice` | `independent.unshifted_causal_labels` |
+
+每次只修改隔离副本；被修改对象重新计算内容身份，必要时同步关联 kernel／batch／view 的身份，使 mask 与权重控制不只是被旧哈希拦下。类内核控制将 A 的选择改为 `(1/2,1/6,1/6,1/6)`，并相应调整 Q 的轨迹系数，类边际仍为 1/2，但不再是固定原 M，因此被拒绝。
+
+原始文本／目标改写控制直接在来源核对处失败；晋升控制引用真实排除 Submission／Receipt，并在正向成员列表检查处失败。这些拒绝是预期的控制结果，不是正式数据导出失败。完整控制记录见[控制汇总](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/controls.json)。
+
+### 9.5 四个 Gate 与 98 项测试
+
+| Gate | 限定对象 | 正式结果 |
+| --- | --- | --- |
+| G0 | 原准入响应的真实来源、原输入和完整排除覆盖 | PASS |
+| G1 | 实际 Token 化、content mask、padding、无截断 | PASS |
+| G2 | 固定有限类内核和精确 P/Q 质量 | PASS |
+| G3 | 实际 CPU 损失恒等与隔离控制 | PASS |
+
+| 专项测试文件 | 通过数 |
+| --- | ---: |
+| `test_qa_reasoning_share_training_inputs.py` | 12 |
+| `test_qa_reasoning_share_training_tokenization.py` | 30 |
+| `test_qa_reasoning_share_training_loss.py` | 32 |
+| `test_qa_reasoning_share_training_independent.py` | 12 |
+| `test_qa_reasoning_share_training_preflight.py` | 12 |
+| 合计 | **98** |
+
+主进程汇总复跑前四组得到 86 PASS / 92.29 秒；端到端 12 项为 12 PASS / 488.95 秒，包含多次同数据物化／重建／只读校验与 I/O 保护检查。两组曾并行运行，不把时长相加当成一次实验墙钟耗时。重复测试不增加正式控制数、训练样本数或模型调用数。
+
+15 个本轮 source/test 文件的 Ruff 与 format 检查通过；10 个源码模块 Mypy（显式 `--python-version 3.12 --follow-imports=silent`）和编译通过。全项目 source/tests Ruff 仍只报告未改动历史 v26 文件的 I001 import-order 问题；本轮没有修订该无关历史源码，也没有声称全项目 lint 已清零。
+
+### 9.6 工件字节与身份
+
+正式目录共 **40 个文件 / 7,523,887 bytes**。自排除 Manifest 列出 39 个成员 / 7,517,920 bytes，Manifest 本身 5,967 bytes。持久化记录覆盖其之前 38 个文件及 76 个 file／directory fsync 事件；它自己和 Manifest 不属于其覆盖成员。
+
+主要可消费对象：27 行 [JSONL](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/training_rows.jsonl)（1,038,696 bytes）、[基础批次元数据](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/base_batch.json)与基础 `base_batch.npz`（231,498 bytes）、[P 视图](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/view_P.json)、[Q 视图](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/view_Q.json)，以及实际 `weights/P.npz`（3,898 bytes）和 `weights/Q.npz`（3,892 bytes）。保存 JSONL、完整 dataset JSON 和 token／batch 两层表示是同一 27 行的不同容器，不是重复计入 54 行或更多独立样本。
+
+| 对象 | 正式身份 |
+| --- | --- |
+| `source_authority` | `share_training_source_authority:3d0476b8fec3f8bfd523e61e1f9dada74c1cb2ca56e69e1c453ca154ed272de2` |
+| `parent_freeze` | `share_training_parent_freeze:d2ce3664875b0dab313c59fcdc166c8ec77c6aef102e0bdcd9f8ea17404f0cc9` |
+| `tokenizer_binding` | `share_training_tokenizer_binding:19bd113181c70cdc83291facccc25e7bc28ecd789588be5020ba9940d4fbaf58` |
+| `representation_contract` | `share_training_representation_contract:2afb65db38b1a3a6aad34f90fadfe9f7a248456af194a9d01d47b9060c8f7d36` |
+| `text_dataset` | `share_training_text_dataset:7acb8fd02722c33751abd4ebc8b251a96082dcb07af1b08be959251cf64a2aa2` |
+| `tokenized_dataset` | `share_training_tokenized_dataset:e0483c89b1da0df0ec074b44aa37feb821fa9f3d429e71a7d8ff4bf8820d29ca` |
+| `materialization_kernel` | `share_training_materialization_kernel:65ec649d8747c0c955717ed26d94229ab254c461f32949e2ce90a4a0445cea68` |
+| `base_batch` | `share_training_base_batch:2e2615a59354312ea02a373350bdfe1b5f83885f99a8f403cd5d33b968c1201b` |
+| `view_P` | `share_training_weight_view:207c0711bb9f2d51b3f28015495ba47972d8f24558af10f966149d68fbfc694f` |
+| `view_Q` | `share_training_weight_view:48fc353e95e3f0e17294a75cfc3814e5255561eebe5ddd09c8eae3322f44576a` |
+| `independent_validation` | `share_training_independent_validation:4e94e4cd5d9c7a2f88b2886a913dbe143e825c6ba867c5a2eae765f879b6ed27` |
+| `loss_checks` | `share_training_loss_checks:87e23e1aa776a7245fcf7ce534a9fe56daceb1a2ca82f0a0266918df28706860` |
+| `controls` | `share_training_controls:ee38ca3cb588250dc57b5fca78069f08ca59d8d058b0e2c10edc733fd92aa1a3` |
+| `gate_evaluation` | `share_training_gate_evaluation:561dd0f456cfe01e0be843c4654b7ac6786019c30d38d21dd266bb3b709cdee9` |
+| Report | `share_training_report:f81f7c13609f34c6ec67348173537fe7771e06714fe6dc2a5e8a39995f4b921a` |
+| Manifest | `share_training_manifest:8b79e5183a6540dacfe371f2a3c69ae8f1deb29aec85f18109d2d691fb3b456b` |
+| Root | `share_training_root:c82fcc4f94de982115fad8937734ef53142d4fdb49cf895f9c111a7759a2c11c` |
+
+[正式报告](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/report.json)与[完整 Manifest](../artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906/artifact_manifest.json)保存其余成员和完整哈希。B 仍只有 M03 一个独立实现；上调其系数不增加有效样本量。
+
+### 9.7 完整重建与复验入口
+
+真实冻结 Git 源的单独全量重建已完成：40 个文件 / 7,523,887 bytes 全部逐字节一致，原正式目录及两个父目录均未改变。该重建再次导出同一 27 行、使用同一本地 tokenizer、重新组装 CPU 数组及 P/Q 系数，并重算本轮 18 probes／13 controls；不调用旧资格／投影／十对比较，不进行 Student forward。
+
+以下只读验证命令不会覆盖原工件；需要本仓库已绑定父输入、本地 tokenizer 五文件及记录中的软件版本：
+
+```bash
+trusted_data_synthesis/.venv/bin/python -m trusted_synthesis.experiments.qa_reasoning_share_training_preflight.preflight \
+  --mode validate \
+  --repo-root /data1/zhuxinrui/projects/Data-Synthesis \
+  --replay-from /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906
+```
+
+如需重建，在新的临时目录创建子目录；不会覆盖正式目录：
+
+```bash
+training_replay_dir=$(mktemp -d /tmp/share-training-replay.XXXXXX)
+trusted_data_synthesis/.venv/bin/python -m trusted_synthesis.experiments.qa_reasoning_share_training_preflight.preflight \
+  --mode replay \
+  --repo-root /data1/zhuxinrui/projects/Data-Synthesis \
+  --replay-from /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_reasoning_share_training_preflight/finance_qa_vnext_finite_support_training_representation_and_class_weight_intervention_preflight_v1_20260906 \
+  --output-directory "$training_replay_dir/rebuilt"
+```
+
+当前完成对象是“既有有限支持上的类级训练权重干预已准确实例化”。Contribution、Student 效用、独立目标泛化评估均仍为未测；旧主链保持暂停，未自动授予下一阶段训练权限。
