@@ -16,6 +16,82 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Reasoning-Bearing Same-Task Multitrajectory Quotient Constructibility Preflight
+
+The exact 17,346-byte review at SHA-256
+`5e3b3bd2a79bafb0ac4088379b581d210410a6d18cfe6becd6c2858e100cc380` accepts the preceding
+fixed-Fixture independent audit as `PASS_AS_SCOPED` and newly authorizes only
+`finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_quotient_constructibility_preflight_only`.
+The exact 24-byte directive `参照审计继续实验` is bound at SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`. The historical
+predecessor `next_stage_authorized=false` remains immutable.
+
+The new preflight revalidates the 24-file independent audit, 88-file fixed-Fixture preflight,
+and 24-file Archive parameter-space directory. Both original Tasks, questions, EvidenceBundles,
+role bindings, answer Programs, and D0-D4 obligations are retained. The new runtime exposes all
+dependency-ready actions, so D1 and D2 are both selectable after D0. Each task executes both
+`D0,D1,D2,D3,D4` and `D0,D2,D1,D3,D4` afresh with its own durable Envelope/Receipt chain.
+
+Before any callback, an exact quotient Contract and candidate registration are written and
+fsynced. The quotient retains the typed semantic causal graph, Task/Program/Evidence scope,
+decision roles, dependencies, selected action semantics, and exact public results; it removes
+independent scheduling, wording, and incidental runtime IDs. Claim references are normalized to
+their producer decision roles. This predeclared rule merges the two independent sibling orders.
+
+The actual result is a local negative finding:
+
+| Task | Qualified trajectories | Distinct trajectory IDs | Quotient classes |
+| --- | ---: | ---: | ---: |
+| F1: HII 2014 Q2 to Q4, mixed sign | 2 | 2 | 1 |
+| F2: HII 2014 Q1 to Q3, near-equal growth | 2 | 2 | 1 |
+
+Both tasks have two valid execution schedules but no multiple-class witness in this candidate
+family. The preflight does not infer global uniqueness over all legal paths or model sampling
+probabilities. Its scientific outcome is:
+
+```text
+no_same_task_multiple_quotient_classes_witnessed_in_frozen_schedule_family
+```
+
+All four trajectories independently reparse their own 31-file runtime chain, giving 124 runtime
+objects, twenty callback-time durable observations, and 32 positive independent Program-node
+replays. QA-valid, trajectory-valid, and qualified counts are 4/4. Per-trajectory semantic,
+reasoning, Evidence-integration, correction, and coverage metrics are 3/4/4/0/1.0. Eight actual
+negative controls reject. The noncompensatory workflow Gate passes 9/0; the class count is a
+scientific outcome, not a condition forcing the Gate to pass.
+
+The exact source commit/tree are `47cbc12d2684409f58b64f1e41c6a117da251949` /
+`30004dcb093ec13a1c839c3765089d79700b92ef`. Six new and seven retained source members
+have verified Git Blob and committed/current byte relations. The formal directory contains 156
+files and 602,070 bytes; its Manifest binds 155 members and 574,961 bytes. A new-process second
+execution build matches every actual byte. Focused tests pass 9/9 and the adjacent QA partition
+passes 136/136. Focused PyCompile, Ruff/format, and Mypy pass; package-wide Ruff retains the
+previous unrelated v26 import-order diagnostic.
+
+Principal identities:
+
+- quotient Contract:
+  `qa_reasoning_multitrajectory_quotient_contract:449767f2ac26ec641b7b8bb3d7dc744a0ffd102947c168a91f2db6ddd633b68c`;
+- partition:
+  `qa_reasoning_multitrajectory_partition:863bc031eeb86b27799e94c7c10d62dacf830074ee0c75422515edd7ab199e7c`;
+- Gate / Decision / Transition:
+  `qa_reasoning_multitrajectory_gate:f8f33e5c3b977326f0f0674950d9affcdfe4658c2ccbe51ecfb0176ee9ad6e1f` /
+  `qa_reasoning_multitrajectory_decision:70c12ecebffe8e921b1488b9a8f4a8d3f48cafa73b9679e9195ea4965b701e46` /
+  `qa_reasoning_multitrajectory_transition:38121a98a7ca8c93b3a34d88bb48c4a0256e33ae836081307b71a7d93d28f60e`;
+- Report / Manifest / Root:
+  `qa_reasoning_multitrajectory_report:53cfa41ee18d1759560f74da55da1f5a27887d610ecb26c80a635c4d838fdc67` /
+  `qa_reasoning_multitrajectory_manifest:364cdbc7f004122ddd28f723f3ada2c4610cf3e4a8bf61b88497407132d75205` /
+  `qa_reasoning_multitrajectory_root:3d01e238143bf9238a26d5d4e2050fc1ac7f30bb3cabe3154b29aa063b4ccb72`.
+
+Provider calls, credential lookups, GPU Jobs, Archive expansion, third Fixtures, new registrations,
+model-generated trajectories, QA Release, Mapper, VTDO State, Contribution, VTDO, training, and
+production remain zero; the old mainline stays paused. The prospective successor is only
+`finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_quotient_constructibility_preflight_independent_audit_only`;
+its `next_stage_authorized=false` requires a separate new external decision. See
+`docs/finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_quotient_constructibility_preflight.md`.
+
+
+
 ## QA vNext Reasoning-Bearing Fixed-Fixture Constructibility Preflight Independent Audit
 
 The exact 14,605-byte external review at SHA-256
@@ -69,12 +145,11 @@ PyCompile, Ruff check/format, and no-import-follow Mypy pass.
 This confirms only two deterministic, different fixed-task trajectories and actual process-level
 pre-Action persistence order. Model reachability, same-task multi-trajectory diversity, broad
 coverage, training value, QA Release, full transitive runtime closure, and hardware crash
-durability remain unmeasured. The only prospective candidate is the same-task multi-trajectory
-quotient constructibility preflight, but next_stage_authorized=false; it requires a separate
-external audit decision. Provider/GPU execution, a third Fixture, Archive expansion, new
-registrations, model generation, same-task multi-trajectory construction, old-mainline
-restoration, Mapper, State, Contribution, VTDO, QA Release, training, release, and production
-remain forbidden. See
+durability were outside this audit. Its historical next_stage_authorized=false remains
+unchanged; a later external decision authorized the same-task quotient preflight recorded above.
+Provider/GPU execution, a third Fixture, Archive expansion, new registrations, model generation,
+old-mainline restoration, Mapper, State, Contribution, VTDO, QA Release, training, release, and
+production remain forbidden. See
 docs/finance_qa_vnext_reasoning_bearing_fixed_fixture_constructibility_preflight_independent_audit.md.
 
 

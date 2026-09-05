@@ -1,0 +1,318 @@
+# 本轮 QA 链路实验审计
+
+**审计结论：`PASS_AS_SCOPED`。未发现阻断本轮声明的具体缺陷，无强制修订要求。固定 Fixture 的独立审计可以结束，下一步应转向已声明的“同任务多轨迹商构造性预检”，而不是再次重复本轮审计。**
+
+本次依据你上传的完整报告审查其证据链、内部一致性与结论范围；没有亲自访问报告中的 Git 仓库或重建形式目录。报告记录的独立审计结果是 **9 个 Gate 通过、0 个失败**，以下判断不把该记录冒充为我另外执行的一次源码复验。
+
+## 一、本轮声明的对象与上一轮授权一致
+
+本轮只检验：
+
+> 上一轮两个冻结、Archive-grounded 固定任务的公开推理轨迹，能否在不以候选报告或候选自评为结果判据的条件下，被独立重建、重算和验证；其中“先承诺、后执行”是否有实际 Runtime 调用顺序证据。
+
+它没有声称模型自主生成了这些轨迹，也没有声称两个不同任务构成同一任务下的多轨迹支持。报告明确将模型生成、同任务商状态多样性、广泛问题类型与深度覆盖、Release 资格排除在外，并保持旧主链暂停。
+
+因此，本轮不是新增 QA 类型、扩展任务深度或验证 VTDO，而是完成上一轮已经授权的**固定任务推理轨迹独立确认**。
+
+---
+
+## 二、实现与证据是否完成了这个对象
+
+### 1. 候选重建与独立语义验证已经分开
+
+这是本轮最关键的进展之一。
+
+报告记录了两条不同的证据路径：
+
+| 路径                               | 实际作用            | 不能替代什么               |
+| -------------------------------- | --------------- | -------------------- |
+| 从精确候选 commit 提取源码，重新运行候选 builder | 验证 88 文件目录的可复现性 | 不能独自证明候选语义正确         |
+| 单独实现 Fixture 选择、决策图、父链与语义重算      | 独立检验候选结果        | 不依赖候选 Gate 或候选自评得出结论 |
+
+候选目录的 88 个文件、217,567 字节全部重建一致；与此同时，报告明确说明 detached rebuild 只是可复现性控制，候选语义结果不充当独立结果 Oracle。独立实现还检查了候选选择、语义、持久化、干预、攻击、Gate 和 Report helper 的调用边界。
+
+所以本轮不是：
+
+```text
+再次运行候选代码
+  → 再次得到 PASS
+  → 宣称独立验证
+```
+
+而是同时保留了“候选能否复现”与“另一路径是否得出相同结果”两个不同问题。**这满足本轮独立审计的核心要求。**
+
+### 2. 两个 Fixture 的选择与轨迹父链被独立重建
+
+独立选择器重新读取冻结的十二行 Archive population，按既定规则选出原来的 F1、F2，没有读取未来 reasoning outcome。随后，EvidenceBundle、RealizedTaskPackage、执行、验证、质量评估、深度和 Catalog receipt 均按各自的精确父身份关联。
+
+任务关键决策仍为：
+
+```text
+D0  可比性
+D1  Revenue 增长分支
+D2  Operating-income 增长分支
+D3  带符号差值与绝对差值合并
+D4  完整 Program、答案、Schema 和引用落地
+```
+
+独立重建的 Runtime 对象数量也一致：
+
+$$
+12\ \text{States}
++
+10\times
+(\text{Envelope}+\text{Receipt}+\text{Execution}+\text{Observation}+\text{Update})
+=
+62.
+$$
+
+报告记录 62/62 对象与候选文件 canonical bytes 相同，候选 reconstruction helper 调用为零。每一步的 Envelope、执行、Observation、Update 和下一 State 都有对应父关系，而不是事后仅把几个对象 ID 串起来。
+
+这仍然是两个任务各有一条确定性轨迹，**不是两个同任务商状态**；但对本轮声明而言，对象已经完整。
+
+### 3. Pre-action 顺序获得了实际动态观察，而非重复信任 Receipt
+
+上一轮最需要独立确认的是：记录里的“先写后执行”，是否也是程序实际发生的顺序。
+
+本轮报告给出的方法是：观察器委托实际 `os.open`、`os.fsync`、`os.close`，并监测真实 `execute_action` callback 入口；在 callback 入口重读最终输出目录里的 Envelope 和 Receipt，再核对字节、哈希、长度、身份与父关系。
+
+对应结果为：
+
+| 观察项                            |    结果 |
+| ------------------------------ | ----: |
+| 实际 Action callbacks            |    10 |
+| Envelope 与 Receipt 的排他创建       |    20 |
+| Envelope／Receipt 文件 fsync      | 10／10 |
+| Envelope／Receipt 目录 fsync      | 10／10 |
+| callback 入口磁盘重读与 Receipt 身份匹配  |    10 |
+| callback 晚于对应 Receipt 目录 fsync |    10 |
+| admission 前 callback           |     0 |
+
+因此，报告支持的顺序是：
+
+```text
+Envelope 排他创建与 fsync
+  → Receipt 排他创建与 fsync
+  → 磁盘重读与身份准入
+  → Action callback
+```
+
+它不再仅依赖保存的逻辑事件整数。报告也把结论明确限定为进程层实际调用、重读和 callback 顺序，没有扩张为断电恢复或文件系统崩溃安全性。**无需为本轮追加硬件级持久性证明。**
+
+### 4. 推理决策、答案计算和三层 Validity 均有独立结果
+
+D0 独立检查可比性；D1、D2 重算两条 Decimal 增长分支；D3 重算带符号差值与绝对差值；之后 D4 才进入公开 Program 执行与验证。
+
+报告记录：
+
+```text
+D0–D3 独立重算                       8/8
+完整公开 Program                    2/2
+Program 节点独立重放                16/16
+执行／验证／质量评估对照一致          2/2，各项
+QA-valid／trajectory-valid／qualified 2/2，各项
+```
+
+
+
+这与已冻结的不可补偿关系一致：
+
+$$
+V_{\mathrm{qualified}}
+=
+V_{\mathrm{QA}}\land V_{\mathrm{trajectory}}.
+$$
+
+正确答案不能补偿轨迹缺失或错误，完整轨迹也不能补偿错误答案与引用。这个关系在前置 Contract 中已有明确规定，本轮没有为了取得通过结果改换 Validity 含义。
+
+---
+
+## 三、直接反例检查：有没有能推翻本轮声明的问题？
+
+### 已覆盖的直接否定路径
+
+报告中的负向证据与当前命题相对应，而不是只检查格式合法性。
+
+| 可能直接推翻本轮声明的情况                     | 报告中的对应检查                                              |
+| --------------------------------- | ----------------------------------------------------- |
+| 先执行 Action，再补写 reasoning          | 动态 callback 顺序观察；post-action backfill 拒绝              |
+| Envelope／Receipt 内部自洽，但替换了应当验证的对象 | fully rehashed substitution 在 replay-owned bytes 边界拒绝 |
+| 把 F1 的推理对象接到 F2                   | cross-Fixture Envelope／Receipt 拒绝                     |
+| 声明选择 A，实际执行 B                     | Action lineage 拒绝                                     |
+| 当前决策引用未来不可见 Evidence              | current-State grounding 拒绝                            |
+| Observation、Update、next-State 错接  | lineage 拒绝                                            |
+| 轨迹保留有效，但 Final 或 citation 被替换     | Final answer／citation 验证拒绝                            |
+
+十个注册干预和九个直接攻击均记录为拒绝，攻击 callback、形式目录写入与 Provider 调用均为零。排他创建攻击还实际执行第二次 `O_CREAT|O_EXCL` 打开，并确认原文件字节保留。
+
+这里应保留一个准确边界：**九个攻击支持的是报告所声明的独立 admission 检查，不是所有未来生成器、Runtime 或在线模型路径的全域安全证明。**报告没有作出后一种声明，因此这不是 Blocking defect。
+
+### 实现期间的临时路径泄漏，不构成本轮未修复缺陷
+
+报告披露，诊断构建曾发现临时目录路径进入一个负向控制的 reason hash；该草稿没有被接纳为正式工件。最终实现改为确定性的 typed-boundary／exception 投影，并通过第二次完整目录构建的一致性检查。
+
+当前没有证据表明该问题仍存在于最终 24 文件目录，也没有报告显示历史正式工件被回写。因而不能仅因出现过这次诊断，就要求再次重做整个阶段。
+
+**直接反例检查结果：在本次提供的报告中，未发现能够推翻限定声明的具体矛盾；这不等同于我已对未提供的源码穷尽验证。**
+
+---
+
+## 四、Gate 判定与发现分级
+
+### Gate
+
+| Gate | 本轮检验对象                           | 判定   |
+| ---- | -------------------------------- | ---- |
+| A0   | 外部范围、前驱、Archive 与候选冻结            | PASS |
+| A1   | 精确 88 文件 detached rebuild        | PASS |
+| A2   | F1／F2 独立选择                       | PASS |
+| A3   | 决策图和父链独立重建                       | PASS |
+| A4   | 实际观察到的 durable pre-action 顺序     | PASS |
+| A5   | Actions、Program、Validity 与深度独立重算 | PASS |
+| A6   | 独立干预与攻击                          | PASS |
+| A7   | 候选 helper 与结果 Oracle 边界          | PASS |
+| A8   | 零外部扩展及限定任务范围                     | PASS |
+
+这些是报告原有的九个 Gate；没有必要在接受它们之后，临时增加模型能力、同任务多轨迹或训练收益作为本轮通过条件。
+
+### 发现分级
+
+| 等级                   | 本次结论                       | 处理                   |
+| -------------------- | -------------------------- | -------------------- |
+| **Blocking defect**  | **NONE_FOUND**             | 不阻断当前 Gate，无强制修订     |
+| **Scope limitation** | 模型生成、同任务商多样性、广泛覆盖、训练效用等未检验 | 保持未授权，不否定当前结果        |
+| **Future hardening** | 全传递 Runtime 环境封闭、崩溃注入等     | 不作为当前或下一构造性预检的新增前置门槛 |
+
+后两类限制在报告中已经明确披露。
+
+---
+
+## 五、当前可以接受什么科学结论？
+
+### 1. 已经闭合：固定任务的公开推理轨迹可构造性及其独立确认
+
+当前可以接受：
+
+> 对两个精确冻结的 Archive-grounded 任务，存在覆盖五个关键决策义务的确定性公开轨迹；其推理承诺先于对应 Action callback，执行结果能够形成 Observation 与 State 更新，最终答案及轨迹共同通过验证；上述对象、语义结果与进程级顺序已经获得报告所记录的独立确认。
+
+这比“定义了 reasoning Schema”或“候选 builder 自己跑通”更进一步。报告已经完成对 Runtime 对象、语义结果、实际执行顺序和负向控制的独立确认。
+
+对于你此前提出的“轨迹需要体现关键推理过程”，本轮能够支持的准确说法是：
+
+**关键推理决策已经成为可检查的公开计算与决策结构，而不再只有工具调用日志或最终答案 Program。**
+
+但它仍不能证明某个模型内部实际采用了这些思考步骤，因为本轮没有模型生成。不要把“公开 reasoning-bearing 轨迹有效”进一步写成“模型真实思维过程已被验证”。
+
+### 2. 深度指标已经独立确认，但覆盖充分性仍没有结论
+
+本轮两个 Fixture 的结果是：
+
+| 指标                           |  F1 |  F2 |
+| ---------------------------- | --: | --: |
+| `semantic_operation_depth`   |   3 |   3 |
+| `reasoning_depth`            |   4 |   4 |
+| `evidence_integration_depth` |   4 |   4 |
+| `correction_depth`           |   0 |   0 |
+| `critical_decision_coverage` | 1.0 | 1.0 |
+
+推理深度来自关键决策 DAG；Evidence integration 来自输出关键 Claim 的不同 Evidence 祖先；Token 数和文本长度不构成深度依据。
+
+这里的 `{4: 2}` 只是两个固定轨迹的测量结果，不能解释为 QA 总体具有充分推理深度；`coverage=1.0` 也只是**各自任务要求的决策覆盖完整**，不是全部问题类型覆盖完整。
+
+同样，`correction_depth=0` 表示这两条轨迹没有实际纠错层，不意味着纠错机制已经被验证，也不意味着当前轨迹无效。
+
+---
+
+## 六、下一步应当推进哪个对象？
+
+**当前阶段没有剩余阻断点。下一尚未检验的科学对象是：同一个固定任务下，能否构造多个有效且商后不同的公开推理轨迹。**
+
+报告已经把唯一预期后继写为：
+
+```text
+finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_
+quotient_constructibility_preflight_only
+```
+
+它同时明确本轮独立审计自身没有授予后继权限，历史 `next_stage_authorized=false` 保持不变。
+
+### 下一阶段的核心判据
+
+设 \(\kappa_x\) 是固定任务 \(x\) 下采用的轨迹商映射。下一阶段真正需要检验的是：
+
+$$
+\exists \tau_1,\tau_2:
+\quad
+V_{\mathrm{qualified}}(\tau_1\mid x)
+=
+V_{\mathrm{qualified}}(\tau_2\mid x)
+=
+1,
+\qquad
+\kappa_x(\tau_1)\ne\kappa_x(\tau_2).
+$$
+
+而不是：
+
+$$
+\operatorname{hash}(\tau_1)\ne\operatorname{hash}(\tau_2).
+$$
+
+前置 Contract 已经拒绝把纯措辞变化计成不同商状态；同时，Answer Oracle 本来就不规定唯一推理路径，关键决策图允许约定范围内的替代 Action。 
+
+### 建议采用的最小实验范围
+
+**固定任务与规则。** 沿用已审计的 F1／F2，逐任务报告；保持各任务的 Evidence、问题内容、答案语义、D0–D4 义务和 Validity 不变，不新增第三个 Fixture、任务类型或 Operation。商映射及其归约规则必须在候选轨迹结果出现前明确，不能看到结果后为了得到“两类”而修改等价关系。
+
+**只探索现有合同允许的替代路径。** 允许的动作选择和合法调度可以构成候选，但不要预先把它们宣布为不同商状态。例如，D1 与 D2 的执行次序交换，应由实际商规则判断；本次报告不足以让我们直接断言它一定保留为两类，或一定被归并。
+
+**逐条验证，再进行商归并。** 新候选必须重新经历 pre-action commitment、Action、Observation、Update 和独立 Validity。不能复制旧轨迹后换 ID，也不能给两条轨迹分别改任务输入来制造差异。
+
+这里尤其需要注意当前 `admission.replay_owned_bytes` 的适用范围：它用于检查冻结 Fixture 的独立重建是合理的；下一阶段应当把每条新轨迹与**其自身的行动前承诺和实际执行重放**比较，不能把“等于旧参考轨迹的全部字节”当作所有新轨迹的有效性条件。否则，多轨迹会被验证器按定义排除。**这是下一命题的实现要求，不是本轮缺陷。**
+
+### 允许负结果，不要求一定构造成功
+
+下一阶段应同时记录有效执行轨迹数和商后类别数。例如：
+
+| 观察结果                                  | 允许结论               |
+| ------------------------------------- | ------------------ |
+| 同一 \(x\) 下至少两条 Qualified 轨迹，且商后仍为至少两类 | 该任务存在局部确定性的多商类构造见证 |
+| 多条 Qualified 轨迹，但商后全部合并               | 本次候选族没有建立多商类支持     |
+| 新候选无法通过轨迹或 QA Validity                | 该候选路径无效，不能靠答案正确补偿  |
+
+“本次候选族只得到一个类”不能自动扩张成“所有合法轨迹只有一个类”；同样，构造出了两个类也不能直接写成模型的 \(\pi(z\mid x)\) 非退化，因为**模型可达性和模型采样概率尚未测量**。
+
+---
+
+## 七、后继授权决定
+
+本次外部审阅接受当前独立审计，可作为新的 decision parent，**允许下一阶段仅开展上述同任务多轨迹商构造性零 Provider 预检**。后续执行仍需按既有流程绑定本次审计与操作指令，不回写本轮历史 Transition；本答复没有创建或消费运行时授权工件，也没有执行该实验。
+
+不要求再增加一次同内容的 fixed-Fixture 独立审计。Provider／GPU 执行、Archive 扩展、新任务或 Operation 注册、旧主链恢复、模型频率估计、Mapper／VTDO State、Contribution、VTDO 和训练均不在这次后继范围内。
+
+```text
+CURRENT_AUDIT
+  = PASS_AS_SCOPED
+
+BLOCKING_DEFECT
+  = NONE_FOUND
+
+MANDATORY_REVISION
+  = NONE
+
+CLOSED_OBJECT
+  = independently confirmed fixed-Fixture reasoning trajectories
+    and process-level durable pre-Action ordering
+
+NEXT_SCIENTIFIC_OBJECT
+  = same-task valid multitrajectory quotient constructibility
+
+NEXT_STEP
+  = bounded zero-Provider preflight may proceed
+    under a new external-decision binding
+
+OLD_MAINLINE
+  = REMAINS_PAUSED
+```
+
+**本轮应当收口：固定任务的公开推理轨迹及其独立确认已经完成。接下来检验“同一个问题是否真的存在商后不同的有效解决行为”，而不是继续增加同一条固定轨迹的审计层数。**
