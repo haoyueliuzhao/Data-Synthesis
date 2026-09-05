@@ -145,10 +145,16 @@ def test_saved_outcome_reports_are_not_semantic_oracles(products: dict[str, Any]
         "report.json",
         "gate_evaluation.json",
         "negative_audit.json",
-        "selection_audit.json",
         "independent_replays.jsonl",
     ):
         files[name] = b'{"untrusted_outcome": "deliberately_unusable"}'
+    selection = json.loads(files["selection_audit.json"])
+    files["selection_audit.json"] = canonical_json_bytes(
+        {
+            "selected_row_ids": selection["selected_row_ids"],
+            "all_other_selection_fields": "deliberately_unusable",
+        }
+    )
     audit, results = audit_trajectories(repo_root=ROOT, candidate_files=files)
     quotient, _, _ = audit_quotient(candidate_files=files, results=results)
     assert audit["qualified"] == 4 and quotient["tasks_with_multiple_classes"] == 0
