@@ -236,3 +236,131 @@ Share D/S、原始提交负例、明确 Update、独立终端 Oracle、原始工
 
 旧五条 Qualified 轨迹、原始六会话、两个商状态、五个 Assignment、经验频率及上一轮
 27-row 训练表示／权重预检全部保留原有边界；本次没有改写其工件。
+
+## 9. 最终验证记录（2026-09-06）
+
+### 9.1 冻结源码与主入口实测
+
+实际执行使用本地冻结源码提交 `19f2672fb8d848d2cd41ac1c5b857d697685de08`，
+tree `325a7fadef514b9cde22df600b19cf1fcf73ddac`。
+生成工件前再次核对十五个直接修订的源码文件与该提交逐字一致；本节及工件在后续结果提交中补充，
+不改变已用于执行的源码。`checks/source_provenance.json` 保存逐文件身份。
+
+工件根目录：
+`artifacts/qa_vnext_integration/finance_qa_vnext_unified_entry_v2_20260906/`。
+两套自排除清单共覆盖 **619 个文件、16,346,177 字节**：
+
+- `entry/`：495 个文件、12,701,557 字节，包含九个主入口会话的完整原始提交与验证。
+- `checks/`：124 个文件、3,644,620 字节，包含只读复核、完整重建核对、反序 branch 会话及同构证明。
+
+固定身份：
+
+```text
+entry report:
+finance_qa_vnext_entry_report:e0c20b27fbc35fb981f90141c0f0a93e07ec675e9715d13c6a04ad6d805ad7c6
+entry manifest:
+finance_qa_vnext_entry_manifest:49eea3c274149d6de8a5bafe4eaac529e87e365170784e6035c4805164af4211
+checks manifest:
+finance_qa_vnext_checks_manifest:ba389f9e298efefca6364b179b17cd4cf050d50b938c9cd18062a63cbbe56a9b
+integration checks:
+finance_qa_vnext_integration_checks:40c98b528a7d560ed79a4942acedde76728ca087de989c4c5786a6deae712f21
+```
+
+主入口实际 **9/9 qualified**，共 28 Action、28 个独立 Update、9 Final，即 65 个 callback Submission。
+这九条均为 fixture；没有把测试回调改名成模型。
+
+| 实际主入口案例 | Action 数 | Submission 数 | 实际结构依赖深度 | 实际语义操作依赖深度 | 可观察选择依赖深度 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| branch_cdw_fy2015_fy2016 / derived_growth_absolute_spread | 8 | 17 | 4 | 3 | 0 |
+| fact_retrieval | 1 | 3 | 1 | 0 | 0 |
+| registered_cross_metric_comparison | 1 | 3 | 1 | 1 | 0 |
+| registered_ratio | 3 | 7 | 2 | 1 | 0 |
+| temporal_absolute_change | 3 | 7 | 2 | 1 | 0 |
+| temporal_average | 4 | 9 | 2 | 1 | 0 |
+| temporal_growth | 3 | 7 | 2 | 1 | 0 |
+| Share：disclosed_total | 2 | 5 | 2 | 2 | 1 |
+| Share：reconstructed_total | 3 | 7 | 3 | 3 | 2 |
+
+每行均来自该案例本轮 session/independent audit，未借用旧 Program 测试或旧模型会话的列。
+branch 最终结果为 `2.757665967870018967554982530 percentage_points`；
+Share 两条最终结果同为 `93.508458 percent`，但保持不同的实际依据与 Claim 依赖。
+这些是当前有限绑定的数值结果，不外推总体模型正确率。
+
+### 9.2 只读复核与完整重建
+
+九个已保存会话分别重新构造其 source-bound adapter，并将其 `execute` 显式替换成会抛错的守卫，
+然后调用只读 audit。九份独立报告均与首次报告逐字一致，adapter Action executor 调用为零。
+独立核验所需的 Oracle 计算正常保留，不能把“不执行候选 Action”误说成完全不计算。
+
+另在全新临时输出目录再次运行同一公共入口。
+完整文件集合及 **495 个文件的每个字节** 与正式 `entry/` 相同，包含全部清单、原始 response、
+Receipt、Observation、Update、session、QA 和测量，而不只是最终 report hash 相同。
+
+对同一真实来源 branch Task，额外运行 `reverse_ready_order=True` 的公共 fixture：
+它产生不同 session 与实际调度顺序，仍通过独立 QA／trajectory 核验；
+同任务比较返回 `equivalent`，并保存完整节点 correspondence。
+这条反序会话是单独的等价控制，不混入主入口九条覆盖计数。
+
+Share 同任务直接／重建两条比较为 `not_equivalent`。
+差异见证不仅记录 2/3 个实际 Action，还保留左右 operation、真实 Evidence ID、typed inputs、
+accepted-input dependencies 与公开判断。未调用旧两类分配器或重估其经验概率。
+
+### 9.3 测试与静态检查：保留失败，不宣称全绿
+
+最终一次合并运行十四个相关测试文件，结果为 **247 passed、1 failed，150.40 秒**。
+不是全仓库测试总数；唯一失败与新统一入口的九条合格轨迹属于不同对象。
+
+| 测试组 | 实测结果 |
+| --- | --- |
+| 新域 Catalog | 33 passed |
+| 新通用 Runtime／原始提交／明确 Update／持久化 | 88 passed |
+| 新公共 Entry／CLI／完整 manifest | 22 passed |
+| 独立实际图／深度／有限比较 | 14 passed |
+| Program／Share 数值上下文隔离 | 8 passed |
+| 真实旧 Pilot Registry 接线与身份回归 | 5 passed |
+| 七份历史相关 Finance／depth-three／Share 协议测试文件 | 67 passed |
+| exact-response Grammar 与历史重放 | 10 passed、1 既有失败 |
+
+唯一失败是 `test_v26_113_runner_preflight_rebuilds_byte_identically`。
+恢复精确旧源码后，它已越过冻结 source guards，但旧脚本 fixture 的
+`cross_check_evidence` 在语义反编译／准入阶段产生
+`semantic acquisition selects a non-effective tool`。
+随后从不可变 `5d68a52c6a8b42021cdc8057d23afb475ff752f8` 用 Git archive 提取完整
+833 个源码文件（不是仅替换一个当前模块），在独立子进程中复现同一失败。
+因此这项更深层不一致在本次修订前已存在；本任务未修改旧实验业务逻辑、原报告、哈希或准入规则。
+它没有被 skip、xfail 或错误计为通过，也不是新 QA 入口验证失败。
+
+Ruff 覆盖全部变更源码与测试，检查通过；`git diff --check` 通过。
+全局 generalization audit 扫描 197 个 core/runtime/architecture 文件，violation 为零，
+没有新增 domain-import／domain-field／dispatch 豁免。
+
+类型检查的选项须分别说明：
+
+- 新九个域模块：`mypy --python-version 3.12 --follow-imports=silent` 通过。
+- 新九模块加五个旧修订模块：项目现有配置（Python 3.10、`follow_imports=skip`）检查十四文件通过。
+- 同十四模块改用 Python 3.12 / silent，会报告旧 realization 的 5 项、旧 Grammar 的 13 项，
+  共 18 项既有类型诊断。对修订前源码作 shadow-file 对照，除行号位移外诊断完全一致；
+  本次未把这些诊断藏为“严格十四模块全通过”。
+
+复跑最终测试可使用：
+
+```bash
+trusted_data_synthesis/.venv/bin/python -m pytest -q \
+  trusted_data_synthesis/tests/test_qa_vnext_catalog.py \
+  trusted_data_synthesis/tests/test_qa_vnext_runtime.py \
+  trusted_data_synthesis/tests/test_qa_vnext_entry.py \
+  trusted_data_synthesis/tests/test_finance_qa_vnext_measurement.py \
+  trusted_data_synthesis/tests/test_qa_vnext_numeric_context.py \
+  trusted_data_synthesis/tests/test_finance_pilot_registry.py \
+  trusted_data_synthesis/tests/test_phase1_v26_exact_response_grammar_preflight.py \
+  trusted_data_synthesis/tests/test_finance_pilot.py \
+  trusted_data_synthesis/tests/test_finance_archive_adapter.py \
+  trusted_data_synthesis/tests/test_finance_numeric_generator_totality.py \
+  trusted_data_synthesis/tests/test_qa_semantic_depth_three_plus_preflight.py \
+  trusted_data_synthesis/tests/test_qa_semantic_depth_three_catalog_integration_preflight.py \
+  trusted_data_synthesis/tests/test_qa_reasoning_share_public_protocol_preflight.py \
+  trusted_data_synthesis/tests/test_qa_reasoning_share_public_protocol_guards.py
+```
+
+本次执行、只读核验、重建及局部控制均没有真实 Provider 消耗、GPU 任务或 Student 参数更新。
+本次成果不解除“广泛新模型覆盖未建立、三类来源未实例化、一般 accepted Claim 修订未实现”的边界。

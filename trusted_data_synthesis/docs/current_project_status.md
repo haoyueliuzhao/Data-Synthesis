@@ -42,6 +42,21 @@ This work preserves all earlier limited PASSes, immutable Share source/model/quo
 artifacts and empirical frequencies. No new Provider call, GPU job, Student update, training
 release or old-mainline unpause follows from the integration result.
 
+Frozen implementation commit: `19f2672fb8d848d2cd41ac1c5b857d697685de08`, tree
+`325a7fadef514b9cde22df600b19cf1fcf73ddac`. The formal entry has 9/9 qualified fixture
+sessions, 28 Actions, 28 explicit Updates and 9 Finals. All nine saved audits revalidate
+identically without candidate execution; all 495 entry files rebuild byte-identically.
+An additional real branch reverse-order control is equivalent; Share D/S remain distinct.
+The entry and checks manifests cover 619 files / 16,346,177 bytes under
+`artifacts/qa_vnext_integration/finance_qa_vnext_unified_entry_v2_20260906/`.
+
+The final 14-file test selection is 247 passed / 1 failed (150.40s), not an all-green claim.
+The sole V26.113 historical scripted-fixture semantic-admission failure reproduces with
+the complete immutable pre-revision 5d68a52 source (833 files); it remains explicit and
+outside this QA integration fix. New domain modules pass Python 3.12/silent mypy;
+the strict combined legacy check retains 18 baseline type diagnostics. Ruff and the
+197-file generalization audit pass (zero architecture violations).
+
 See [the detailed revision mapping, source limits and final verification record](finance_qa_vnext_unified_entry_source_audit_revisions.md).
 
 ## QA vNext Fixed Finite Support / Training Representation and Class-Weight Intervention Preflight
