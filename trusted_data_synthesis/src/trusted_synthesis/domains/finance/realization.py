@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from trusted_synthesis.core.evidence.schema import EvidenceBundle, EvidenceItem
 from trusted_synthesis.core.graph.schema import ProofGraph
+from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.task.pattern_compiler import TaskPatternInstantiation
 from trusted_synthesis.core.task.realization import (
     RealizationPortfolio,
@@ -53,9 +54,10 @@ def compile_finance_realization_portfolio(
     bundle: EvidenceBundle,
     proof_graph: ProofGraph,
     *,
+    registry: OperationRegistry | None = None,
     max_realizations: int = 3,
 ) -> FinanceRealizationCompilation:
-    registry = finance_vnext_operation_registry()
+    registry = registry if registry is not None else finance_vnext_operation_registry()
     semantic_binding = build_semantic_binding_bundle(
         pattern=instantiation.pattern,
         program=instantiation.program,

@@ -89,6 +89,25 @@ trusted-synthesis validate-counterfactuals \
 pytest -q
 ```
 
+## Finance QA vNext Public-Decision Entry
+
+The versioned domain entry connects one Catalog and Registry to source-bound tasks,
+callback-owned typed Action/Update/Final submissions, the common Runtime, independent QA
+and trajectory validation, and actual dependency-graph depth/finite comparison:
+
+```bash
+trusted-synthesis finance-qa-vnext \
+  --repo-root .. \
+  --output-dir /tmp/finance-qa-vnext-example
+```
+
+The output directory must not exist. The default requests all eleven registered families
+over existing frozen sources: seven Pattern cases and two Share fixture sessions execute;
+three unsupported-source families remain explicit uninstantiated rows. This is an offline
+integration regression, not new model coverage or a training release. The older `finance-pilot`
+remains a deterministic execution-trace workflow. See the detailed
+[source-audit revisions and protocol boundaries](docs/finance_qa_vnext_unified_entry_source_audit_revisions.md).
+
 ## Canonical Experiment
 
 ```bash

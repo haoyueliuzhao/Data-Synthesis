@@ -52,12 +52,18 @@ FINANCE_NUMERIC_GENERATOR_CONTRACT_ID = canonical_hash(
 
 
 class FinanceNumericCandidateGenerator:
-    """Execute a resolved Finance public Program without consulting the hidden Oracle."""
+    """Deterministically execute a resolved public Program, then render its trace.
+
+    This generator is not an interactive public-reasoning submission protocol.
+    """
+
+    def __init__(self, registry: OperationRegistry | None = None) -> None:
+        self._registry = registry if registry is not None else finance_vnext_operation_registry()
 
     def generate(self, task: TaskPublicSpec, runtime: EvidenceToolRuntime) -> Trajectory:
         evidence = runtime.search(task.retrieval_scope)
         selected = self._select(task, evidence)
-        registry = finance_vnext_operation_registry()
+        registry = self._registry
         program, execution, public_roles = _execute_public_program(
             task,
             selected,

@@ -94,6 +94,18 @@ from trusted_synthesis.runtime import (
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
+    if args.command == "finance-qa-vnext":
+        from trusted_synthesis.domains.finance.qa_vnext.runner import run_finance_qa_vnext
+
+        if args.output and args.output.resolve().is_relative_to(args.output_dir.resolve()):
+            parser.error("--output must be outside the immutable --output-dir")
+        qa_report = run_finance_qa_vnext(
+            args.repo_root,
+            args.output_dir,
+            task_types=tuple(args.task_type) if args.task_type else None,
+        )
+        _emit(qa_report, args.output)
+        return 0 if qa_report["all_instantiated_cases_passed"] else 1
     if args.command == "audit-generalization":
         _emit(
             audit_generalization_contract(args.source_root).model_dump(mode="json"),
@@ -217,8 +229,7 @@ def main(argv: list[str] | None = None) -> int:
         ledger = load_v26_stage_ledger(args.ledger)
         artifact_args = tuple(_parse_v26_artifact(item) for item in args.artifact)
         references = tuple(
-            make_v26_stage_artifact_reference(role, path)
-            for role, path in artifact_args
+            make_v26_stage_artifact_reference(role, path) for role, path in artifact_args
         )
         advanced = advance_v26_stage(
             ledger,
@@ -285,6 +296,14 @@ def _parser() -> argparse.ArgumentParser:
         subparser.add_argument("--output", type=Path)
         if command != "inspect-finance":
             subparser.add_argument("--limit", type=int, default=3)
+    qa_vnext = subparsers.add_parser(
+        "finance-qa-vnext",
+        help="versioned public-decision QA entry; default offline fixtures over frozen sources",
+    )
+    qa_vnext.add_argument("--repo-root", type=Path, default=Path.cwd())
+    qa_vnext.add_argument("--output-dir", type=Path, required=True)
+    qa_vnext.add_argument("--task-type", action="append")
+    qa_vnext.add_argument("--output", type=Path)
     pilot = subparsers.add_parser("finance-pilot")
     pilot.add_argument("--config", required=True)
     pilot.add_argument("--pilot-config", required=True)

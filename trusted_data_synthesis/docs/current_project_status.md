@@ -16,6 +16,34 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Unified Domain Entry — Independent Source-Audit Revisions
+
+The independent source audit of GitHub commit
+`f964b115ead7354e7982900d87fd64908cca8f1e` is addressed by a new domain implementation,
+`domains/finance/qa_vnext/`, exposed as `finance-qa-vnext`; this is not another audit of
+the preceding finite training-representation preflight.
+
+One Catalog and shared Registry now connect registered tasks, validated frozen sources,
+public typed callback submissions, actual Action/Observation/explicit Update execution,
+independent QA and trajectory validation, actual dependency-graph depths and finite comparison.
+The old `run_finance_pilot()` also receives the same vNext Registry throughout compilation,
+reference/candidate execution, proof, verification, plugin/release manifests and replay,
+fixing the real `registered_compare` wiring defect without downgrading its semantics.
+
+The new default requests eleven families: eight historical Patterns, two depth-three
+Patterns, and the explicit Share adapter. Current frozen sources instantiate seven Pattern
+types and one Share task (two fixture support paths); comparison, derived-growth comparison
+and margin-target-gap remain explicitly uninstantiated. Registration is not source coverage.
+Actual branch semantic-operation dependency depth is three, not a claim of three model
+critical decisions. The generic callback adapter does not certify arbitrary external calls
+as model samples. General accepted-Claim revision remains explicitly unsupported.
+
+This work preserves all earlier limited PASSes, immutable Share source/model/quotient/training
+artifacts and empirical frequencies. No new Provider call, GPU job, Student update, training
+release or old-mainline unpause follows from the integration result.
+
+See [the detailed revision mapping, source limits and final verification record](finance_qa_vnext_unified_entry_source_audit_revisions.md).
+
 ## QA vNext Fixed Finite Support / Training Representation and Class-Weight Intervention Preflight
 
 Completed on 2026-09-06: the five already Qualified and assigned model trajectories now

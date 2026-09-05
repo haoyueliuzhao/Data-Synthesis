@@ -40,16 +40,17 @@ class FinanceTaskPlugin:
     def __init__(
         self,
         *,
+        registry: OperationRegistry | None = None,
         allow_structured_claims: bool = False,
         source_grounding_requirement: VerifierRequirement = VerifierRequirement.NOT_APPLICABLE,
     ) -> None:
-        registry = finance_vnext_operation_registry()
+        self._registry = registry if registry is not None else finance_vnext_operation_registry()
         patterns = finance_task_patterns(
             allow_structured_claims=allow_structured_claims,
             source_grounding_requirement=source_grounding_requirement,
         )
         self._patterns = {pattern.task_type: pattern for pattern in patterns}
-        self._compiler = TaskPatternCompiler(registry, FinanceTaskPatternRuntime())
+        self._compiler = TaskPatternCompiler(self._registry, FinanceTaskPatternRuntime())
 
     @staticmethod
     def operation_registry() -> OperationRegistry:
@@ -228,6 +229,7 @@ class FinanceTaskPlugin:
             instantiation,
             bundle,
             proof_graph,
+            registry=self._registry,
             max_realizations=max_realizations,
         )
 
@@ -313,6 +315,7 @@ class FinanceTaskPlugin:
             instantiation,
             bundle,
             proof_graph,
+            registry=self._registry,
             max_realizations=max_realizations,
         )
 

@@ -35,7 +35,7 @@ from trusted_synthesis.core.evaluation.realization_binding import (
 )
 from trusted_synthesis.core.evaluation.schema import QualityAssessment, ReleaseDecision
 from trusted_synthesis.core.immutable_artifacts import write_immutable_artifact_directory
-from trusted_synthesis.core.operations.registry import default_registry
+from trusted_synthesis.core.operations.registry import OperationRegistry
 from trusted_synthesis.core.release import (
     DiversityAwareReleaseSelection,
     DiversityReleasePolicy,
@@ -56,10 +56,12 @@ from trusted_synthesis.core.task.schema import VerifierRequirement
 from trusted_synthesis.core.trajectory.candidate_verifier import CandidateWorkflowVerifier
 from trusted_synthesis.core.trajectory.generator import ReferenceWorkflowCompiler
 from trusted_synthesis.core.trajectory.schema import Trajectory
+from trusted_synthesis.core.trajectory.verifier import ReferenceWorkflowVerifier
 from trusted_synthesis.domains.finance.adapter import FinanceArchiveAdapter
 from trusted_synthesis.domains.finance.counterfactual import (
     finance_counterfactual_registry,
 )
+from trusted_synthesis.domains.finance.operations import finance_vnext_operation_registry
 from trusted_synthesis.domains.finance.plugins import finance_plugin_set
 from trusted_synthesis.domains.finance.policy import FinanceSemanticPolicy
 from trusted_synthesis.domains.finance.quality_clauses import FinanceQualityClauseProvider
@@ -99,6 +101,7 @@ def run_finance_pilot(
         raise ValueError(f"incompatible finance archive: {inspection['errors']}")
     if output_dir.exists():
         raise FileExistsError(f"immutable finance pilot output already exists: {output_dir}")
+    registry = finance_vnext_operation_registry()
     policy = FinanceSemanticPolicy()
     source_grounding_verifier = adapter.source_grounding_verifier()
     sample = sample_evidence(
@@ -116,18 +119,19 @@ def run_finance_pilot(
         hard_distractor_types=config.hard_distractor_types,
         use_real_distractors=True,
         task_synthesizer=FinanceTaskPlugin(
+            registry=registry,
             allow_structured_claims=True,
             source_grounding_requirement=VerifierRequirement.REQUIRED,
         ),
     )
 
-    reference_compiler = ReferenceWorkflowCompiler()
-    candidate_generator = FinanceNumericCandidateGenerator()
+    reference_compiler = ReferenceWorkflowCompiler(registry)
+    candidate_generator = FinanceNumericCandidateGenerator(registry)
     reference_evaluator = ReferenceQualityEvaluator(
+        workflow_verifier=ReferenceWorkflowVerifier(registry),
         semantic_policy=policy,
         source_grounding_verifier=source_grounding_verifier,
     )
-    registry = default_registry()
     plugin_set = finance_plugin_set(adapter, registry, source_grounding_verifier)
     quality_contract_compiler = QualityContractCompiler(
         registry,
@@ -300,6 +304,7 @@ def run_finance_pilot(
         proof_certificates=proof_certificates,
     )
     reproducibility = _reproducibility_check(
+        registry=registry,
         cases=cases,
         config=config,
         reference_compiler=reference_compiler,
@@ -806,10 +811,10 @@ def _build_report(
         "reproducibility": reproducibility,
         "current_boundaries": [
             "resolved retrieval track only",
-            "deterministic candidate generator rather than a live LLM agent",
+            "deterministic execution trace; not the interactive public-reasoning protocol",
             "no human alignment sample in this small pilot",
-            "advanced ratio comparison and multi-entity growth DAGs remain future work",
-            "cross-domain contracts run in CI, outside this finance-only pilot",
+            "task-family coverage is limited to the explicitly requested pilot quotas",
+            "cross-domain checks are deterministic contract fixtures, not model evaluations",
         ],
     }
 
@@ -884,6 +889,7 @@ def _binary_detection_metrics(
 
 def _reproducibility_check(
     *,
+    registry: OperationRegistry,
     cases: tuple[PilotTaskCase, ...],
     config: FinancePilotConfig,
     reference_compiler: ReferenceWorkflowCompiler,
@@ -957,18 +963,17 @@ def _reproducibility_check(
         split_policy=split_policy,
     )
     replay_source_grounding = adapter.source_grounding_verifier()
-    replay_registry = default_registry()
     replay_cross_domain_contracts = run_cross_domain_contract_suite()
     manifest_replay = build_release_manifest(
         release_id=release_id,
         tasks=(case.task for case in cases),
         adapters=(adapter,),
-        registry=replay_registry,
+        registry=registry,
         split_policy=split_policy,
         source_build_ids={"finance_kg": str(inspection["kg_build_id"])},
         candidate_selection=selection_replay,
         domain_plugin_sets=(
-            finance_plugin_set(adapter, replay_registry, replay_source_grounding),
+            finance_plugin_set(adapter, registry, replay_source_grounding),
             *replay_cross_domain_contracts.plugin_sets,
         ),
         source_grounding_verifiers=(replay_source_grounding,),

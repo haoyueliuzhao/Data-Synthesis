@@ -395,7 +395,7 @@ def _grammar_from_model_visible(value: Any) -> StageOneResponseGrammarArtifact:
     fields = tuple(value["fields"])
     field_types = tuple(value["types_aligned_to_fields"])
     defaults = tuple(value["defaults_aligned_to_fields"])
-    if len(fields) != 10 or len(field_types) != 10 or len(defaults) != 10:
+    if fields != FIELD_ORDER or len(field_types) != 10 or len(defaults) != 10:
         raise ValueError("model-visible field Grammar is malformed")
     columns = tuple(value["rule_columns"])
     if columns != (
@@ -418,11 +418,14 @@ def _grammar_from_model_visible(value: Any) -> StageOneResponseGrammarArtifact:
         "no_semantic_field_selection",
     ):
         raise ValueError("model-visible shape or Host rules changed")
+    # Decode the registered aligned wire columns, not an Evidence domain field.
+    # FIELD_ORDER is checked above; its first/last columns are stage/protocol.
+    stage_constant, *_, response_protocol = defaults
     skeleton = dict(zip(fields, defaults, strict=True))
     artifact = StageOneResponseGrammarArtifact(
         grammar_id=str(value["id"]),
-        response_protocol=skeleton["protocol"],
-        stage_constant=skeleton["stage"],
+        response_protocol=response_protocol,
+        stage_constant=stage_constant,
         field_order=fields,
         state_id_rule=value["state_id_rule"],
         fields=tuple(
