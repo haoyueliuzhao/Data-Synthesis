@@ -16,7 +16,116 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Source-Distinct Support Route — Bounded Source Not Instantiated
+
+The exact 24,654-byte external review at SHA-256
+`e279cc6ee587766a87b430588fe1632a0d48a3c84f6b9c97a86908523e768dce` accepts the
+preceding six-trajectory finite semantic comparison as `PASS_AS_SCOPED`, finds no blocking
+defect or mandatory revision, and closes that comparison. Its access was report review and
+public Decimal arithmetic, not repository or actual-artifact replay. The exact 24-byte directive
+`参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`, admits only
+`finance_qa_vnext_source_distinct_support_route_constructibility_and_finite_separation_preflight_only`.
+
+The authorized design allows at most one new Task with a shared Evidence universe and two
+routes: D uses disclosed later revenue, while S reconstructs that same revenue from exactly
+two source-explicit exhaustive, non-overlapping components. Both would retain the same two-period
+revenue-versus-operating-income growth-gap objective. Runtime execution requires a complete
+source binding first. The stage actually completes only the bounded source-inspection branch:
+
+```text
+status                              source_not_instantiated
+missing required roles              income_earlier / income_later
+new Tasks / candidates / Runtime executions                0 / 0 / 0
+own-route validations / finite comparisons                     0 / 0
+scientific witness W / class count / finite relation        null / null / null
+```
+
+The complete 27-file, 8,384,212-byte predecessor directory remains byte-identical. F1/F2 and their
+historical one-class-per-task result are unchanged; no old builder, candidate Runtime,
+own-validator or comparator is rerun.
+
+One finite source-only inspection uses the existing exact
+`benchmarks/finqa/frozen/test.json`: 1,147 records, 14,395,143 bytes, SHA-256
+`831dbfb2e785dbc227f895ce3f24046433467aec67b09db2bd6ac7692a8a30dc`.
+Only document identifiers, original tables and source pre/post text are used. Gold questions,
+answers and Programs are not selection or answer authority; no Benchmark-frequency or training
+use occurs. This is the explicitly bounded source-only exception in the current review, not a
+change to the frozen Benchmark's general evaluation-only policy.
+
+The fixed lexical/table-structure screen yields 59 records from nineteen pages. Exact manual
+page interpretations are retained as known-source annotations, not misreported as a data-blind
+classifier. The policy and its durable receipt precede each formal replay of this one completed
+source inspection; rebuilds do not expand its domain. Selection uses no growth-gap answer or
+arithmetic sum coincidence.
+
+Four consolidated revenue partitions are supported on JPM 2014/2015 and UNP 2015/2016 source
+pages. They occur in twelve records, but these are not twelve independent sources: the actual
+header, component and total rows are compared within each same-page alias group. Whole-record
+byte equality is not claimed. JPM discloses noninterest revenue plus net interest income as total
+net revenue; UNP discloses total freight revenues plus other revenues as total operating revenues.
+The allowed same-report check covers 27 records and finds no recognized operating-income source.
+Both required operating-income roles therefore remain unbound in this exact adapter domain.
+This is not a claim that revenue partitions are absent, or that no suitable financial source
+exists elsewhere.
+
+The existing aggregate primitive is inspected without execution. Its default is mean, so any
+future reconstruction would require explicit sum and the actual registered input-compatibility
+checks. No fake metadata, synthetic Evidence or silently changed primitive is introduced.
+Concrete Task-level compatibility remains not evaluated because no complete Task exists.
+All 1,159 saved source references and their canonical value hashes are independently checked
+against the actual source JSON in the focused tests. The tests also check all 27 income-domain
+records and the same-page used-row equality. Five null-result schema controls reject fabricated
+W, class and execution claims; they are not financial Runtime negative controls.
+
+The exact Gate partition is:
+
+```text
+G0 external scope and closed predecessor Freeze                 PASS
+G1 fixed source census and evidence of missing roles            PASS
+G2 complete new Task support binding                            NOT_INSTANTIATED
+G3 two own-qualified routes and finite separation                NOT_RUN_SOURCE_UNAVAILABLE
+G4 null witness and zero execution boundary                     PASS
+passed / failed / not instantiated / not run                    3 / 0 / 1 / 1
+complete two-route preflight passed                             false
+source branch completed as scoped                               true
+```
+
+The exact source commit/tree are `82e5505dbb16a83cf704399f405602614c0a0d25` /
+`ea0b53e5b3b4dc81c053aef401f62052163fe81d`. Five implementation members, ten declared
+reference members and the frozen raw Archive member have exact Git authority. A complete
+transitive import or environment closure is not claimed. The formal directory contains twenty
+files and 1,251,021 bytes; its self-excluding Manifest binds nineteen members and 1,247,928 bytes.
+Separate Python processes reproduce all paths and actual bytes exactly. Focused tests pass
+17/17; focused PyCompile, Ruff check/format and no-import-follow Mypy pass. Full source/tests
+Ruff retains one unrelated frozen v26 import-order diagnostic; no full-library pass is claimed.
+
+Principal identities:
+
+- source census / Gate:
+  `qa_source_distinct_support_source_census_summary:947200a0ce03e7ca48dca4a68a6013ef4c07b1d32c9c41bc8ef0f00e7178ef30` /
+  `qa_source_distinct_support_gate:629172091ec6b2e6b182a040488a78c10fb01ce8e47ea28d66c17eeaab79d76e`;
+- Decision / Transition:
+  `qa_source_distinct_support_decision:1e55344b7cabc4d8a38776e9c1eeb4e6c1aab1c0560bed3bfdcfbd0f8dccae59` /
+  `qa_source_distinct_support_transition:155fa49a154f8ff5594698f59e67a84fe3dd68e94cf3058b271651cd6270ceda`;
+- Report / Manifest / Root:
+  `qa_source_distinct_support_report:aed6e919f195286c251db61f9f34c6f95bc13bd1b50ab7ecc62220b0926e1baf` /
+  `qa_source_distinct_support_manifest:7d1f92e85a9cfaadbde5f3774a5898283270d1bf7d4a75409513bbff3e790f3c` /
+  `qa_source_distinct_support_root:27047db451b404e972da64ca7b61902cdf79db05bdae129aa3a260d2946e4e60`.
+
+The bounded source branch is complete; a two-route execution or separation result does not
+exist. W remains null, not zero, and no new multi-class witness is claimed. Provider calls,
+credential reads, GPU Jobs, primitive executor/Oracle calls, online authorizations, QA Release,
+VTDO and training outputs are zero. The old mainline remains paused. No successor, expanded
+Archive search, alternate axis or mechanical repeat audit is authorized. A further source
+supplement or scope redesign requires a separate external decision. See
+`docs/finance_qa_vnext_source_distinct_support_route_constructibility_and_finite_separation_preflight.md`.
+
 ## QA vNext Finite Own-Qualified Candidate Semantic-Equivalence Comparison
+
+This comparison is closed as scoped by the later external review. The bounded new-source
+branch recorded above preserves every historical byte and class result; its null outcome does
+not reclassify either old Task or imply that the new two-route experiment executed.
 
 The exact 23,746-byte external review at SHA-256
 `4987d122e9f128db658544b89d46a076133eb8617d1c2c0378492f774c5d0450` accepts the
