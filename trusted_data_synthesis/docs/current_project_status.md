@@ -16,7 +16,89 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Public Reasoning Semantics, Allowed Behavior And Quotient Contract Design
+
+The exact 13,357-byte external review at SHA-256
+`5bb6c8fd48bc953be1130d07ce6542320e55d855240f84277fb49c52070e3e38` accepts the completed
+same-task independent confirmation as `PASS_AS_SCOPED`, finds no blocking defect or mandatory
+revision, closes that audit topic, and supports only the declared design successor. Its access
+was report review, DAG enumeration and quantity checks, not repository reconstruction. The exact
+24-byte directive `参照审计继续实验` is bound at SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`.
+
+This stage consumes only
+`finance_qa_vnext_public_reasoning_semantics_allowed_behavior_and_quotient_contract_design_only`.
+It freezes all eighteen predecessor files and 126,608 bytes without rerunning an old audit builder
+or a historical trajectory. The two prior Tasks' four saved projections still compare as one
+class per Task; this is retained historical evidence, not a new execution or qualification.
+
+The new source-bound design separates three noninterchangeable domains:
+
+- invariant Task, authorized Evidence universe, source/role constraints, answer Oracle, answer
+  schema, units, rounding/tolerance, citations and required validation obligations;
+- selected visible support, typed decision basis, realized causal derivation and Observation-
+  grounded Claim updates, whose differences require future own-execution validity;
+- wording, operational identities, exact numeric representation and truly independent commuting
+  scheduling, which do not by themselves define a different behavior.
+
+The fixed answer Oracle is not a unique reasoning route. The old five-step execute-only graph is
+a verified local subdomain, not a universal grammar. An alternative route may not omit required
+obligations, weaken its validator, change the answer objective or expand the Evidence pool merely
+to manufacture a second class. Equal final answers alone do not imply equivalent behavior.
+
+Model responsibility is prospective and field/phase-specific: a model may propose public basis,
+strategy, operands, actions and Observation-grounded updates if separately authorized. The Host
+owns source resolution, rule-based admission, exact tool execution, persistence and verification;
+a Host-scripted route is not relabeled model reasoning. No model responsibility has been observed
+in this stage.
+
+Nine Contract invariants and eighteen local hypothetical change controls pass: four equivalence
+rules, five conditional retained-difference rules and nine rejected requests. The strict
+`design_unexecuted` Schema rejects caller qualification or measured-class claims. Every control
+retains zero actual trajectories and zero semantic-class witnesses. Eight noncompensatory Gates
+pass; this is design consistency, not general semantic separation or constructibility evidence.
+
+The decision is:
+
+```text
+public_reasoning_behavior_and_quotient_semantics_design_frozen_not_executed
+```
+
+The exact implementation source commit/tree are `e7b7ceb3e8f92b43e4d8b3fd442e4213748ebe32` /
+`ea71157912f22962420d3e7783eee56ca985cfd6`. Four design implementation members and
+three non-executed historical reference members have exact Git commit/tree/blob/current-byte
+relations. The fifteen-file formal directory contains 64,237 bytes; its self-excluding Manifest
+binds fourteen members and 61,873 bytes. A separate new-process second build matches all paths and
+actual bytes. Focused tests pass 14/14; PyCompile, Ruff check/format and no-import-follow Mypy pass.
+Package-wide Ruff retains the one unrelated frozen v26 import-order diagnostic. The old 148-test
+result remains historical and is not reported as a new test run here.
+
+Principal identities:
+
+- behavior Contract:
+  `qa_reasoning_behavior_design_contract:7c380879df9ae6228bc10d88e9fe6c4aa2d77a34774fa224f521dafd537eaf05`;
+- Gate / Decision / Transition:
+  `qa_reasoning_behavior_design_gate:3c1ecab0f8557a6cf774752daf736c11a59b505836ad92d2a2e6c0e032ef0bc3` /
+  `qa_reasoning_behavior_design_decision:ff51b0f51346d6ad47dc00d1887e1e109cf36acaed8233dd83f4220e9a17e9c0` /
+  `qa_reasoning_behavior_design_transition:5225b15a32173caaffe44b9db1ec32857864ab3c7d51de3ac203a0e976d86d39`;
+- Report / Manifest / Root:
+  `qa_reasoning_behavior_design_report:6e92ba8b4a5180ab7e46ef554947c93cc8ba6a7289c8a2e7103606ab80c063b8` /
+  `qa_reasoning_behavior_design_manifest:38e699777f456718203633e7cab8c23b6b74c0e8c2714e2af5953d234fdc2283` /
+  `qa_reasoning_behavior_design_root:94618bb1c74e77c5056bfc98f124d6e2a063723e0cf5c0c42bb79f9547784afb`.
+
+Provider calls, credential lookups, GPU Jobs, new task/trajectory/class witnesses, online
+authorizations, empirical estimates, Mapper/State Assignments, Contribution, VTDO, QA Release,
+training and production are zero. The old mainline remains paused. The next candidate is
+`finance_qa_vnext_reasoning_behavior_typed_candidate_family_constructibility_preflight_only`,
+with `next_stage_authorized=false` and a separate new external decision required. No further
+same-content independent audit of the closed scheduling experiment is required. See
+`docs/finance_qa_vnext_public_reasoning_semantics_allowed_behavior_and_quotient_contract_design.md`.
+
 ## QA vNext Same-Task Schedule Execution And Quotient Independent Confirmation
+
+This independent-confirmation topic is closed as scoped by the subsequent external review.
+The later design-only decision is recorded above; no predecessor formal byte or historical
+Transition is changed.
 
 The exact 14,079-byte external review at SHA-256
 `621858b8c56aba741f27d821fae27893d4ef74a70706f26d92942113b0ca4bf5` accepts the current
