@@ -16,6 +16,110 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Public State / Generator Proposal-Action-Observation-Update Protocol
+
+The exact 15,329-byte external review, SHA-256
+`2e1bef7f9691f56931db9f22a8c0330f8bf557e66daa286e316f6b68b93cfab1`,
+accepts and closes the preceding finite D/S constructibility experiment as `PASS_AS_SCOPED`.
+It finds no mandatory revision and explicitly does not request a new source scan, third
+deterministic route or duplicate audit. The current 24-byte directive
+`参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`,
+admits the minimal local public-State and explicit generator-update protocol preflight only.
+The audit itself is not online execution authority.
+
+This new protocol preflight passes five scoped Gates. It reuses the exact saved share Task,
+four Evidence objects, three operation contracts and numeric policy; it does not instantiate
+another financial Task. The prior 65 formal files / 254,479 bytes remain exactly unchanged.
+Historical `W_share=1` and the two classes in the frozen D/S set remain historical results;
+the earlier compound Task still has W null. No old candidate Runtime, source rescan or new
+quotient comparison is invoked. The old mainline remains paused.
+
+The public request exposes the shared Task/Evidence/operation universe plus current accepted
+Claims, a pending Observation, bounded counters and typed feedback. It excludes a Host route
+selector, node plan, hidden answer Oracle and caller-supplied generator-origin labels.
+Generator proposals supply the operation, actual operand references, parameters and public
+basis. Each Action produces only a pending Observation. A separate generator Update must
+explicitly submit disposition and the complete proposed scalar Claim before Host validation
+can materialize an accepted Claim. Final consumes an actually accepted percentage Claim.
+Rejected proposals are not repaired or replaced, and no private reasoning is requested.
+
+The actual callable is a registered local deterministic fixture, not a model. Its source
+member is tied to the committed source authority before the first callback; each exchange
+checks the actual loaded class, bound method, source digest and compiled method code. This
+is a callback-source identity check, not a full transitive/runtime-environment closure claim.
+The Host accepts submitted semantics through the common grammar; the fixture client owns its
+fixed reconstruction strategy. Moving this strategy outside the Host does not demonstrate
+model choice, diversity or reachability.
+
+Exactly one actual public-protocol session was executed:
+
+```text
+generator callbacks / submitted public objects                 7 / 7
+Action dispatches / explicit accept Updates / accepted Claims   3 / 3 / 3
+Final submissions / independently checked answer, percent       1 / 93.508458
+protocol validity / QA validity / persisted-artifact validity   true / true / true
+formal Gates passed / failed                                   5 / 0
+Provider calls / credential reads / GPU calls                   0 / 0 / 0
+new quotient comparisons / old candidate Runtime calls          0 / 0
+```
+
+The submitted sequence is relation-aware F+O sum, explicit acceptance of the total Observation,
+F divided by that accepted total Claim, explicit ratio acceptance, percent scaling, explicit
+percentage acceptance, and Final. All three accepted Claims point to their own later generator
+turn and actual Observation. The ratio consumes the real accepted derived-total Claim
+`public_share_protocol_claim:72cf9b163c5b0169bc08d754ae93d11fd7ad2417b8be318f689ade45d268970e`;
+the source total remains visible but is not the submitted numeric denominator.
+
+Direct admission previews accept both legal first choices on the same initial State and one
+explicit reject-Update on an actual pending State. All nine negative previews reject.
+These previews make no callback, kernel call or committed Update and add no actual trajectory.
+In particular, rejecting an Observation and successfully replanning was not executed.
+Seventeen additional independent-validator tests include fully rehashed semantic tampering,
+registration tampering and persistence failures; these are test cases, not formal samples.
+
+The independent checker reads exact raw public submissions, reconstructs the state transitions
+and actual producer-consumer dependencies, verifies file membership/fsync ordering, and computes
+the disclosed-total answer Oracle offline. It imports no protocol Engine, parser, admission
+helper, fixture, financial Runtime or quotient comparator. It does not count its arithmetic as
+generator behavior. The full common evidence, including disclosed T and the original source
+table, remains exposed; no information-isolation experiment is claimed.
+
+The source was committed before execution at
+`606b13c35cb3aca4107ee5497451ba51378bb843`, tree
+`6736228347d4d8519c7ac099378a409dc45b8053`.
+Eight implementation members and eight declared reference members are bound to exact Git
+objects/current bytes; complete transitive closure remains unclaimed.
+The formal directory contains 71 files / 648,048 bytes. Its self-excluding Manifest binds
+70 members / 637,560 bytes; the Manifest itself is 10,488 bytes. The one session accounts for
+54 files / 548,046 bytes, not 54 samples.
+
+The focused 51 tests pass (13 public-view, 11 callback/schema guards, 10 preflight/rebuild,
+17 independent replay). Byte-only reconstruction reproduces every formal file with Engine,
+callback, old source loader and numerical kernels disabled. It is not another positive execution.
+Focused Ruff check/format, eight-module Mypy and compile checks pass. Full source/tests Ruff
+retains the one unrelated frozen v26 I001 import-order issue; that source was not edited.
+
+Principal identities:
+
+- Public context:
+  `public_share_protocol_public_context:8b8a2e0ef5eadd71addb113c785a51115f8792d258f61794b88db917f02e234b`.
+- Protocol:
+  `public_share_protocol_contract:784dc1b48c9341949d8528b15c0c73e1ab1f0b9711459f7ce00848e97fcc211c`.
+- Session Manifest:
+  `public_share_protocol_session_manifest:ce12bd49ef71f38910a69186ea85b4498d652ac51f8dc4a9429941514e370643`.
+- Report:
+  `public_share_protocol_report:bdd0312614c253858d614b03660685965d593f47ab0eb89f1bf6dbf46352eb10`.
+- Manifest / Root:
+  `public_share_protocol_manifest:8935da52f4f8146c290a5f9875e1e319b4e9f3d7d347efe4dec07aed163dbb66` /
+  `public_share_protocol_root:69c83461068a0ff5c583e93b05b7dab59455d92e12606c389f2105ba075100de`.
+
+The bounded protocol integration is complete. Model reachability, class probabilities,
+new W/class counts, Contribution, Novelty and training utility remain unmeasured/null.
+No Provider adapter, model call, training, Release or old-mainline restart has occurred.
+`next_stage_authorized=false`; any model experiment needs a separately defined scope.
+See `docs/finance_qa_vnext_share_public_state_proposal_action_observation_update_protocol_preflight.md`.
+
 ## QA vNext Part-Whole Share Dual-Support Preflight
 
 The exact 22,925-byte external review at SHA-256

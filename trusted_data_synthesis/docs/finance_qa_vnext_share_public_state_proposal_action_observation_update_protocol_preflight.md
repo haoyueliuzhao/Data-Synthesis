@@ -4,9 +4,12 @@
 研究对象是生成器能否通过真实回调提交行动及后续 Update，Host 能否依据当前 State 验证并执行这些提交，
 而不是再次证明旧的两条确定性路线有不同支持语义。
 
-这是零 Provider 的最小接入预检。唯一正向交互采用已登记的确定性 fixture，
-不使用模型，不把 fixture 的选择描述为模型行为，也不测量模型可达性或生成分布。
-正式执行结果、工件身份及测试总量统一记录在第 15 节；前面的接口说明不能替代实际执行证据。
+本轮正式结果为 `passed_as_scoped`：唯一确定性 fixture 会话实际完成七次回调、三次 Action、
+三次显式 accept Update、三个 accepted Claim 和一个 Final，答案为 **93.508458%**。
+独立协议验证与 QA 均通过，五项 Gate 全部通过；三个正向 preview 均准入，九个负向 preview 均拒绝。
+
+这是零 Provider 的最小接入预检。不使用模型，不把 fixture 的选择描述为模型行为，
+也不测量模型可达性或生成分布。正式执行证据、工件身份及测试记录集中列于第 15 节。
 
 阶段名称：
 
@@ -308,7 +311,7 @@ Schema 拒绝自报标签与真实 callback 实现身份绑定是两个不同检
 
 generator turn 再绑定通过这些检查的登记对象，因此来源不是公开提交者自行填写的标签。
 这项合同只声明实际 callback 的源码 authority；不把模块 globals 身份相同扩写为
-全部传递依赖、运行时全局绑定或完整执行环境已经闭合。最终源码与工件中的对应检查在正式结果区核对。
+全部传递依赖、运行时全局绑定或完整执行环境已经闭合。对应实际源码及登记工件已核对，身份与检查范围见第 15 节。
 
 唯一正向生成器是 `PublicRequestFixture.generate`。
 其策略已明确写在 fixture 代码中：优先重建总额，再根据公开 State 中已经接受的指标继续比例和百分比，
@@ -334,7 +337,7 @@ callback 7  Final: 引用已接受 percent Claim、答案及实际支持
 ```
 
 预算因此是一个完整协议会话、三个实际 Action、三个显式 accept Update 和一个 Final，
-合计七次回调。是否完整达到该计划，只能由正式交互记录决定。
+合计七次回调。正式会话实际完成了这七轮，逐轮 State 与 Claim 形成记录见第 15 节。
 操作形状与旧 S 相似，但本轮验证的是独立提交和 Update 的接口责任，不重复测量旧 S 的语义类别。
 
 此外只安排三个不执行内核、不提交状态更新的正向 preview：
@@ -367,7 +370,7 @@ callback 7  Final: 引用已接受 percent Claim、答案及实际支持
 
 这些控制调用纯准入 `preview`，不调用生成器、不执行数值内核、不提交 Update，
 也不修改唯一真实会话的初始 State 或实际 event 记录。
-它们是固定状态上的接口反例，不是额外实际失败轨迹或额外模型样本。
+它们是固定状态上的接口反例，不是额外实际失败轨迹或额外模型样本。实际准入结果见第 15 节。
 
 控制中可以出现故意错误的数值或先验正确答案，但它们属于 Host 的离线验证输入，
 不会被放入初始生成器 Request，也不作为选择真实正向 Action 的依据。
@@ -385,9 +388,9 @@ Update、Claim、State 和 Final 的身份、内容、顺序及依赖；不能�
 因此，公开视图测试通过不能单独证明七次真实回调已经发生；接口 preview 通过也不能单独证明
 State 已经经过对应更新。正式结论需要把协议级测试与实际会话证据分开列示。
 
-## 14. 预期解释与停止边界
+## 14. 本轮解释与停止边界
 
-如果唯一交互和协议验证通过，本轮最多支持：固定任务可以经当前公开 JSON 协议完成一次
+唯一交互和协议验证已经通过，本轮的限定结论是：固定任务可以经当前公开 JSON 协议完成一次
 由已登记确定性 fixture 提交、Host 验证执行、生成器显式接受更新的有限交互。
 这使未来模型接入的责任边界具体化，但不等于模型接入或模型能力测试已经完成。
 
@@ -401,7 +404,352 @@ Provider 适配器、模型可达性、在线调用、训练、Release、VTDO �
 
 ## 15. 正式结果与工件身份
 
-本节为唯一正式结果区。正式执行尚未写入本文，不从前述源码、计划或 preview 设计推定通过。
-后续仅根据实际工件补齐：唯一会话的 callback／Action／Update／Final 计数、独立验证结果、
-三个正向 preview 与九个负向 preview 的实际准入状态、callback 实现来源绑定、测试总量、
-前驱字节不变性、正式文件与字节计数、关键内容 ID、源码提交／树绑定及停止决定。
+### 15.1 唯一实际会话与独立验证
+
+正式会话实际计数为：
+
+| 项目 | 实际数量或结果 |
+| --- | --- |
+| 完整正向协议会话 | 1 |
+| 生成器 callback／原始公开响应 | 7／7 |
+| 获准 Action／数值内核调用 | 3／3 |
+| 显式 accept Update | 3 |
+| accepted Claim | 3 |
+| Final | 1 |
+| 实际拒绝提交／callback 失败 | 0／0 |
+| Final 答案 | 93.508458 percent |
+| `protocol_valid` | true |
+| `qa_valid` | true |
+| `qualified` | true |
+| 终止原因 | `final_submitted` |
+
+独立报告保存 `raw_public_responses_replayed=7`，实际重放七个原始公开响应与后续事件。
+它没有导入 Engine、提交解析器、准入函数或 Runtime 来替代自身检查，
+也没有重新计算旧商关系。离线 QA Oracle 得到 `93.508458`；
+该 Oracle 值没有放入生成器 Request，不计为生成器或 Action 执行。
+
+`candidate_runtime_executions=0` 是独立验证步骤没有新增候选执行的计数，
+不能用它抹去本轮已发生的三个 Action／数值内核调用。
+本轮也没有调用旧的 D/S 候选 Runtime。
+
+### 15.2 实际 State、Action 与显式接受阶段
+
+下表的 `A/U/S` 分别表示 Action、Update、submission 的累计数量。
+`Q0` 至 `Q7` 是便于阅读的文档标签，不是协议输入，也不用于驱动生成器。
+
+| 轮次／State | 该轮真实提交 | 轮后 phase | A/U/S | 已接受 Claim 数 | 轮后 pending／新增对象 |
+| --- | --- | --- | --- | ---: | --- |
+| 初始 Q0 | 无 | action | 0/0/0 | 0 | 无 |
+| 1 → Q1 | `relation_sum(method=sum)` | update | 1/0/1 | 0 | 总额 Observation=`21813`；没有 Claim |
+| 2 → Q2 | accept Update，完整提交总额 proposition | action | 1/1/2 | 1 | 总额 Claim 被接受；pending 清空 |
+| 3 → Q3 | `share_ratio`，分母为上一轮 accepted Claim | update | 2/1/3 | 1 | ratio Observation；没有新增 Claim |
+| 4 → Q4 | accept Update，完整提交 ratio proposition | action | 2/2/4 | 2 | ratio Claim 被接受；pending 清空 |
+| 5 → Q5 | `scale_percent`，输入为 accepted ratio Claim | update | 3/2/5 | 2 | percent Observation；没有新增 Claim |
+| 6 → Q6 | accept Update，完整提交 percent proposition | action | 3/3/6 | 3 | percent Claim 被接受；pending 清空 |
+| 7 → Q7 | Final，消费 accepted percent Claim | terminal | 3/3/7 | 3 | `final_submitted` |
+
+三次 Action 后没有当轮 Claim；三个 Claim 分别由第 2、4、6 轮的另一条生成器 Update 提交产生。
+这些 Update 的完整 `proposed_claim` 与对应实际 Observation output 相等，Host 未填补缺失 Claim。
+七次 callback 都有各自 Request、generator turn、原始公开 JSON、Submission、Receipt 和轮后 State，
+不是将单个回调的返回值拆成七个阶段标签。
+
+实际 ratio 与 percent Observation 分别为：
+
+```text
+ratio
+0.93508458258836473662494842525099711181405583826159
+
+percent
+93.508458258836473662494842525099711181405583826159
+```
+
+第 7 轮依据已接受 percent Claim 和冻结量化规则提交 `93.508458`。
+这些值来自已有会话工件，本节没有另外调用数值内核计算它们。
+
+初始与最终 State 身份为：
+
+```text
+Q0
+public_share_protocol_public_state:50d045a62af58d6f319f68e92564749eb97e9a2fec0439a37711fbb881430439
+
+Q7
+public_share_protocol_public_state:b94c3cd0c556252ced5920ae3f02df7b63224be390ae2c1cb2c4fa5ef86fbf89
+```
+
+终止时剩余 Action/Update/submission 预算为 `0/0/5`。
+会话因有效 Final 停止，没有为了耗尽 submission 预算追加请求。
+
+### 15.3 实际分母消费与公开总额边界
+
+第 1 轮 Action 的三个实际支持输入为原 F、O 和非数值关系 Evidence，
+输出的总额 Observation 身份为：
+
+```text
+public_share_protocol_observation:c15f1d4203de8fb185d55e395a0e2009c1b7b87ba8f9ae2ba5c07484cd6c4aab
+```
+
+第 2 轮的显式 accept Update 才产生总额 Claim：
+
+```text
+public_share_protocol_claim:72cf9b163c5b0169bc08d754ae93d11fd7ad2417b8be318f689ade45d268970e
+```
+
+第 3 轮提交和实际 execution 的 denominator 均为：
+
+```json
+{
+  "role": "denominator",
+  "kind": "claim",
+  "ref_id": "public_share_protocol_claim:72cf9b163c5b0169bc08d754ae93d11fd7ad2417b8be318f689ade45d268970e"
+}
+```
+
+后续 ratio 和 percent 的已接受 Claim 分别为：
+
+```text
+ratio Claim
+public_share_protocol_claim:1c1d891bd89c960e20310cac48b6e518ff0063827715a02410a7ca26e936e709
+
+percent Claim
+public_share_protocol_claim:df3e4fde2a669660ec881c8cebce469ab0dc8362b25889ad4a630a75875500f3
+```
+
+第 5 轮消费上述 ratio Claim，第 7 轮 Final 消费上述 percent Claim。
+Final citations 是 F、O、关系三个旧 Evidence ID。
+本轮由这些真实提交和消费边确认“Update 后才能使用 Claim”的协议行为，不重新授予旧 S 一个新语义类。
+
+逐个读取七个 Request 后，确认其 task、四项 evidence、三项 operations、numeric、
+shared obligations 和 answer schema 均与同一个 PublicContext 相等。
+全部七个 Request 都包含披露总额 T=`21813`，关系 Evidence 也一直包含完整来源表格的总额行。
+所以本轮支持 fixture 实际提交并消费了重建 Claim，不支持它从未看到 T、信息隔离后仍能求解，
+也不支持两套来源统计独立。
+
+### 15.4 三个正向 preview 与九个负向 preview
+
+两个合法初始 Action 均以同一 Q0 为输入，实际 preview 结果均为 `admitted.action`：
+
+- 直接使用 F/T 的 `share_ratio`。
+- 使用 F/O/关系、参数明确为 sum 的 `relation_sum`。
+
+这证明固定接口在同一初始环境准入两个不同第一动作。
+这里没有执行完整直接路线，更没有重新做一次 D/S 有限商比较。
+
+对唯一会话第 1 轮之后的真实 pending State，显式 reject Update 的 preview 结果为：
+
+```text
+admitted             true
+code                 admitted.update
+would_clear_pending  true
+would_create_claim   false
+committed_updates    0
+kernel_calls         0
+```
+
+这项结果只支持 reject 接口的准入语义。
+唯一正式会话的三个 Update 全部为 accept，实际拒绝数为 0；
+reject 后的真实状态转换、替代选择或重新规划没有在本轮执行。
+
+九个负向 preview 的实际拒绝阶段为：
+
+| 控制 | 实际拒绝代码 |
+| --- | --- |
+| `incorrect_parameters_not_repaired` | `admission.parameters` |
+| `action_blocked_until_generator_update` | `admission.pending_update` |
+| `observation_is_not_an_accepted_claim` | `admission.accepted_claim` |
+| `stale_state_update` | `admission.current_state` |
+| `cross_observation_update` | `admission.observation_parent` |
+| `missing_proposed_claim_not_host_filled` | `admission.explicit_proposed_claim` |
+| `proposed_claim_disagrees_with_observation` | `admission.observed_claim_content` |
+| `caller_cannot_claim_model_origin` | `schema.public_submission` |
+| `final_requires_accepted_percentage_claim` | `admission.final_accepted_claim` |
+
+三个正向 preview 与九个负向 preview 合计没有产生 callback、内核执行、提交更新或额外完整会话，
+实际 State 和 transcript 字节保持不变。九个负向 preview 的“拒绝”不应与会话中的实际拒绝次数混写。
+
+### 15.5 Callback 源码身份与五项 Gate
+
+实际 GeneratorRegistration 保存 `before_first_callback=true`，绑定 fixture 文件：
+
+```text
+path
+trusted_data_synthesis/src/trusted_synthesis/experiments/qa_reasoning_share_public_protocol/fixture.py
+
+bytes   6,172
+SHA256  3b73baed69120c0f2771292a8767dad42769fb186e095402ce1f78dab673dfd8
+Git blob
+05a261a3f3f648a8df8a25c3d9f287c7af974407
+```
+
+该文件是源码 authority 中的已提交成员，当前字节与已提交字节一致；
+binding 指向 `PublicRequestFixture.generate`，每轮调用前进行已加载类、bound method、
+源码编译 CodeType 及实际 globals 身份检查。登记审计实际结果为 `passed=true`、
+`errors=[]`，并明确其自身没有执行 callback。
+
+独立 guard 测试还核对原生 callback、实例方法伪造和类方法替换。
+类方法替换测试保留真实模块 globals，使其通过该层身份条件，再在
+`generator.compiled_method` 被拒绝；因此检查并非只依赖自报字符串。
+这仍不是全部传递代码、运行时全局绑定或完整环境闭包的证明。
+
+五个正式 Gate 均通过，失败数为零：
+
+| Gate | 实际结果 | 限定范围 |
+| --- | --- | --- |
+| G0 | PASS | 新范围、前驱不变性及已提交声明源码 |
+| G1 | PASS | 公开投影及登记 callback 责任 |
+| G2 | PASS | 唯一实际生成器／Update 会话及独立 QA |
+| G3 | PASS | 固定状态上的直接准入控制 |
+| G4 | PASS | 零外部执行及历史见证不扩张 |
+
+### 15.6 文件计数、源码 authority 与内容身份
+
+正式目录为：
+
+```text
+trusted_data_synthesis/artifacts/qa_reasoning_share_public_protocol/
+finance_qa_vnext_share_public_state_proposal_action_observation_update_protocol_preflight_v1_20260905
+```
+
+逐成员读取实际文件并验证 SHA-256 后，目录实际为：
+
+| 范围 | 文件数 | 字节数 |
+| --- | ---: | ---: |
+| 根目录直接文件，包含 Manifest | 17 | 100,002 |
+| `session` | 54 | 548,046 |
+| 总计 | 71 | 648,048 |
+
+自排除的 Manifest 绑定 70 个成员、637,560 字节；Manifest 自身为 10,488 字节。
+全部 70 个成员的实际字节数和 SHA-256 已核对。
+文件大小包含每轮完整公开 Request 与 State，不能解释为独立来源数或生成器样本量。
+
+本轮冻结的是 8 个新实现文件、116,544 字节；8 个声明引用文件、79,483 字节，
+后者包括旧任务所需的既有工具与支持实现。来源 Task 为 1、Evidence 为 4、操作合同为 3；
+没有新增财务 Task、来源页面组或 Archive 扫描。
+
+```text
+implementation commit 606b13c35cb3aca4107ee5497451ba51378bb843
+implementation tree   6736228347d4d8519c7ac099378a409dc45b8053
+
+reference commit      b6783ac6676c6b821ab819f9215961fbd0605e84
+reference tree        475ff81d9e26d9424c1f6942de5cf7eb5cda1fb2
+```
+
+关键身份如下：
+
+```text
+public context
+public_share_protocol_public_context:8b8a2e0ef5eadd71addb113c785a51115f8792d258f61794b88db917f02e234b
+
+protocol
+public_share_protocol_contract:784dc1b48c9341949d8528b15c0c73e1ab1f0b9711459f7ce00848e97fcc211c
+
+source authority
+public_share_protocol_source_authority:dc55252c9b54648985204c8f809b46d8491d02438293a7aa03843578ea68f4a6
+
+generator binding
+public_share_protocol_generator_binding:1d5832df115b8cbb9e20eb0fcec781d937f42769060f11f293ae65c6fba706db
+
+generator registration
+public_share_protocol_generator_registration:7b9141467cd9a9e7738e68bffa2ac282955ff0d9fc3580c0248264c57801b911
+
+session manifest
+public_share_protocol_session_manifest:ce12bd49ef71f38910a69186ea85b4498d652ac51f8dc4a9429941514e370643
+
+Final
+public_share_protocol_final:922696e8fc2b80355d3ae3b7cdb5ee04dc439c3d7a439716d85148e26f3914b2
+
+controls
+public_share_protocol_controls:e9bc9717d868227c000f43f8402795446ad53aa195bbf93eb62f1a63168d56e8
+
+Gate
+public_share_protocol_gate_evaluation:b4b6b129cc8894d82b4badd1a556a280d26b1152efff4c29ba39af01895103cd
+
+report
+public_share_protocol_report:bdd0312614c253858d614b03660685965d593f47ab0eb89f1bf6dbf46352eb10
+
+decision
+public_share_protocol_decision:ec3ce0b7c75843c1fcf58e09319bdc9f3beb1f2163dbe3ffb13e64360cffeea2
+
+manifest
+public_share_protocol_manifest:8935da52f4f8146c290a5f9875e1e319b4e9f3d7d347efe4dec07aed163dbb66
+
+artifact root
+public_share_protocol_root:69c83461068a0ff5c583e93b05b7dab59455d92e12606c389f2105ba075100de
+```
+
+独立报告没有另加对象 `id` 字段，其 5,310 字节由正式 Manifest 绑定：
+
+```text
+independent_validation.json SHA256
+e923063ea98820ccce4c5c475e3507a5efe18c33a58459e81c1b01496442ece1
+```
+
+### 15.7 测试记录与前驱保持
+
+本轮四组专项测试合计 **51 项通过，组合运行 1.78 秒**：
+
+| 测试组 | 通过数 | 主要范围 |
+| --- | ---: | --- |
+| 公开视图 | 13 | 原对象与公开字段、预算、阶段、深拷贝 |
+| callback／parser／copy guards | 11 | 实际 callback 身份、严格 JSON 与动态对象隔离 |
+| preflight／无执行重建 | 10 | 前驱与工件绑定、冻结、重建及禁止额外执行 |
+| 独立语义验证 | 17 | 完整事件重放、语义篡改、登记链和文件／fsync 异常 |
+| 合计 | 51 | 本轮专项，不是模型样本 |
+
+独立测试中包括七项完整重算相关内容 ID 后的语义篡改拒绝、三项登记链篡改，
+以及三项文件／fsync 异常检查等。这些是测试输入，不增加正式 `direct_controls.json` 的九个负向 preview，
+也不增加 callback、内核调用或科学样本量。
+
+无执行重建测试将 Engine、`generate`、三个数值内核、旧来源入口和旧 Runtime 调用设为禁止，
+只读取正式会话的既有字节并独立重算验证及报告。重建目录与正式目录全部 71 个文件逐路径、
+逐字节相等，仍为 648,048 字节。这个验证没有重新运行唯一会话，
+新增完整协议会话、callback 和内核调用均为零；本轮科学样本量始终为一个实际会话。
+
+本轮 12 个源码／测试文件的 Ruff check／format 通过，8 个源码文件 Mypy 和编译检查通过。
+扩大到整个 `src/tests` 的 Ruff 检查仍只报告历史文件
+`phase1_v26_fresh_exact_v209_unbound_provider_failure_recovery_online_execution_models.py:2`
+的 `I001` 导入排序问题；该文件未改动，不把历史问题包装为本轮已修复。
+
+前驱 65 个文件、254,479 字节保持不变，旧 Task、四项 Evidence、三个操作和 numeric 继续精确复用。
+旧 `W_share=1`、两个旧候选有限类及更早 `W=null` 分别保持；
+本轮 `new_W_share`、`new_semantic_class_count`、模型类别概率和训练效用均为 null。
+独立报告将模型可达性标为 `NOT_MEASURED`，这不是模型失败或模型概率为零的结果。
+
+实际 `source_rescans=0`、`old_candidate_runtime_calls=0`、
+`new_quotient_comparisons=0`；Provider、凭证读取、GPU 均为零。
+唯一实际会话与固定控制完成后停止，`next_stage_authorized=false`，
+旧主链仍为 `remains_paused`。本轮没有通过这一协议正结果恢复在线模型、训练或后继主链权限。
+
+### 15.8 只复用既有会话的复核命令
+
+以下命令在新的临时子目录重建已有正式工件。必须保留 `--replay-from`；
+省略该参数会进入新建会话分支，本轮复核不应再次运行该分支。
+
+```bash
+protocol_repo=/data1/zhuxinrui/projects/Data-Synthesis
+protocol_formal="$protocol_repo/trusted_data_synthesis/artifacts/qa_reasoning_share_public_protocol/finance_qa_vnext_share_public_state_proposal_action_observation_update_protocol_preflight_v1_20260905"
+protocol_check_dir="$(mktemp -d /tmp/share-public-protocol-check.XXXXXX)"
+
+PYTHONPATH="$protocol_repo/trusted_data_synthesis/src" \
+  "$protocol_repo/trusted_data_synthesis/.venv/bin/python" \
+  -m trusted_synthesis.experiments.qa_reasoning_share_public_protocol.preflight \
+  --repo-root "$protocol_repo" \
+  --external-audit "$protocol_formal/external_review.txt" \
+  --source-commit 606b13c35cb3aca4107ee5497451ba51378bb843 \
+  --source-tree 6736228347d4d8519c7ac099378a409dc45b8053 \
+  --replay-from "$protocol_formal" \
+  --output-directory "$protocol_check_dir/replay"
+```
+
+成功重建要求全目录字节相等，返回的 `new_generator_callbacks` 和 `new_kernel_calls` 均为 0。
+报告内部仍保留原实际会话的七次 callback 和三次内核调用，这是既有执行计数，不是重建新增执行。
+
+四个专项测试的独立命令为：
+
+```bash
+cd /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis
+.venv/bin/pytest -q \
+  tests/test_qa_reasoning_share_public_protocol_view.py \
+  tests/test_qa_reasoning_share_public_protocol_guards.py \
+  tests/test_qa_reasoning_share_public_protocol_preflight.py \
+  tests/test_qa_reasoning_share_public_protocol_independent.py
+```
