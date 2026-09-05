@@ -16,7 +16,74 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Same-Task Schedule Execution And Quotient Independent Confirmation
+
+The exact 14,079-byte external review at SHA-256
+`621858b8c56aba741f27d821fae27893d4ef74a70706f26d92942113b0ca4bf5` accepts the current
+same-task schedule preflight as `PASS_AS_SCOPED`. Its access was report consistency plus
+independent five-node DAG enumeration, not repository access. The exact 24-byte directive
+`参照审计继续实验` authorizes only the current four-trajectory independent confirmation.
+No earlier completed independent-audit builder is rerun inside this stage.
+
+All 156 candidate files and 602,070 bytes revalidate; a detached archive of 762 exact-source
+files reproduces that directory byte for byte. Independent Git checks confirm the candidate's
+six implementation and seven retained members, plus all six independent-audit members.
+The audit does not claim complete transitive import or runtime-environment closure.
+
+The same F1 and F2 source Tasks are independently selected and their exact public Task, Bundle,
+Package, answer Program and graph parents are reconstructed. All four own-trajectory chains
+reconstruct 124 runtime objects, twenty Action results, and 32 positive Program-node replays.
+QA-valid, trajectory-valid and qualified counts are 4/4. A syscall observer sees twenty real
+callback entries after their own Envelope/Receipt exclusive-create, file-fsync and directory-
+fsync chain; both preregistration objects are durably present first. Callback-time Envelope and
+Receipt byte hashes match the frozen files. This is process-level ordering evidence, not a
+hardware crash-durability experiment.
+
+Independent enumeration of all 120 permutations yields exactly two legal complete orders:
+`D0,D1,D2,D3,D4` and `D0,D2,D1,D3,D4`. The independent quotient Contract, four typed causal
+projections and two per-task partitions match the saved candidate bytes. Each fixed Task still
+has two distinct qualified trajectories and only one quotient class. Semantic, reasoning,
+Evidence-integration, correction and coverage values remain 3/4/4/0/1.0 per trajectory.
+Six runtime and four quotient attacks reject; the four runtime hash attacks are single-object
+rehashes, not complete-chain forgery tests.
+
+All nine noncompensatory Gates pass. The independent decision is:
+
+```text
+same_task_legal_schedule_execution_and_quotient_collapse_independently_confirmed
+```
+
+This confirms a valid local negative result within the frozen legal scheduling family, not
+global semantic uniqueness, model reachability, natural strategy probabilities or training value.
+The exact source commit/tree are `7ef2b7287ddd9f87e286d580d3445a42259b80b0` /
+`761defd8404b1d27ed41a2d25d83c38550efc896`. The 18-file, 126,608-byte independent
+formal directory binds seventeen Manifest members and 123,729 bytes. A new-process full rebuild
+matches all eighteen paths and actual bytes. Focused tests pass 12/12; the fifteen-file adjacent
+QA partition passes 148/148. Focused PyCompile, Ruff check/format and no-import-follow Mypy pass.
+Package-wide Ruff retains the one pre-existing unrelated v26 import-order diagnostic.
+
+Principal identities:
+
+- Gate / Decision / Transition:
+  `qa_reasoning_multitrajectory_independent_gate:dab6ae50d2c750b63033ec9e56571727162806eb6135521c05d7d0696c6cbc27` /
+  `qa_reasoning_multitrajectory_independent_decision:341b7a2ff5e08a285c85cec046cf93f5bb6aa0838ac7386c52c270b7ff58d358` /
+  `qa_reasoning_multitrajectory_independent_transition:a486df5555eb7438c8e669d7da4bf36a34284b59ecd734816c7cd4b44c0ddfa0`;
+- Report / Manifest / Root:
+  `qa_reasoning_multitrajectory_independent_report:7b58e51696645205abf60f33c153f9b14a1b2484bbea8440414cc0d704d0d07b` /
+  `qa_reasoning_multitrajectory_independent_manifest:496945ece1995fca7f5c789f0ecd71ca44c8f6907401c659e3aaa3b8d467f064` /
+  `qa_reasoning_multitrajectory_independent_root:c1465cfcfef7de2c8c3d8c70f1743150bce67222840f783e37f97b87078f3197`.
+
+Provider calls, credential lookups, GPU Jobs, new cases/schedules, empirical estimates,
+online authorizations, QA Release, VTDO, training and production are zero. The old mainline
+remains paused. The prospective next candidate is
+`finance_qa_vnext_public_reasoning_semantics_allowed_behavior_and_quotient_contract_design_only`.
+It is not authorized: `next_stage_authorized=false` requires a separate new external decision.
+See `docs/finance_qa_vnext_reasoning_bearing_same_task_multitrajectory_quotient_constructibility_preflight_independent_audit.md`.
+
 ## QA vNext Reasoning-Bearing Same-Task Multitrajectory Quotient Constructibility Preflight
+
+The subsequent external decision authorized only the current-stage independent confirmation
+recorded above. This predecessor's formal Transition and all historical bytes remain unchanged.
 
 The exact 17,346-byte review at SHA-256
 `5e3b3bd2a79bafb0ac4088379b581d210410a6d18cfe6becd6c2858e100cc380` accepts the preceding
