@@ -16,6 +16,122 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Real-Model Adapter / Fixed Six-Session Public-Protocol Pilot
+
+This is the latest completed experiment. The older sections below retain their original
+point-in-time findings; their then-unmeasured model reachability is superseded only by the
+bounded observations reported here, not by a general capability or class-probability claim.
+
+The 27,072-byte external review, SHA-256
+`1fc713f450529c16094ca7ff63c69b2d6b5f2342908151c0bf3f678c6d590b0f`,
+closes the preceding local fixture protocol preflight as `PASS_AS_SCOPED`, with no mandatory
+revision or repeat audit. The current 30-byte directive `参照审计开展后续实验`, SHA-256
+`8e30b645e46c5682c61a1e4ca820e51aa5c8b07bfa052274b665ebd20afd33fa`,
+together with the standing API-resource authorization, admits this fixed pilot.
+The review itself is not online execution authority.
+
+The pilot reuses one saved share Task, the same four Evidence objects, three operations,
+numeric policy and Action/explicit Update/Final semantics. A registered DeepSeek adapter
+submits the exact current public Request through a neutral, stateless prompt. The Host does
+not select operations or operands, complete proposed Claims, repair responses or add citations.
+An Action still produces only a pending Observation; a later explicit accepted model Update
+must supply the complete scalar proposition before a Claim can be consumed.
+
+Before any mock or online execution, seven implementation files and the declared reference
+members were frozen at source commit `55fb6aab8d7122b4d930d1c31843e7d3653ccd19`, tree
+`dc9c8c59c7e9b96e1cf0033d6aa9563faa06ce44`. No source changed after execution.
+The source/callback checks bind declared files and actual methods, not the full runtime
+dependency closure or immutable remote model weights.
+
+Two complete adapter/mock sessions passed: direct support in five callbacks, and
+sum/reject/direct replanning in seven. Two additional one-turn controls exercised invalid
+public JSON and transport failure. Together these controls used 14 mock callbacks, five
+numerical executions and five explicit Updates (four accept, one reject), with zero Provider
+calls or credential reads. The invalid-JSON one-turn probe is an intentionally incomplete
+session with independent UNKNOWN, although its bounded failure seam passes. Controls are
+not included in the six-session model denominator.
+
+The online configuration was frozen as requested model `deepseek-v4-pro`, thinking disabled,
+temperature 0.7, top_p 1, max_tokens 8192 and JSON output, without tools or streaming. The
+official documented version `DeepSeek-V4-Pro-0813` is not an immutable snapshot guarantee.
+Each of the six preregistered sessions had at most 12 Provider attempts and 12 submissions,
+three Actions and three Updates. There were no automatic retries, replacements, fallback
+models or additional samples for support coverage.
+
+| Session | Provider attempts | Qualified Y | Terminal outcome | Valid Final support |
+| --- | ---: | ---: | --- | --- |
+| M01 | 12 | 0 | Submission budget exhausted, no valid Final | unresolved |
+| M02 | 7 | 1 | Valid Final | disclosed total |
+| M03 | 12 | 1 | Valid Final | reconstructed total Claim |
+| M04 | 6 | 1 | Valid Final | disclosed total |
+| M05 | 9 | 1 | Valid Final | disclosed total |
+| M06 | 5 | 1 | Valid Final | disclosed total |
+
+All six sessions have complete evidence and independently valid protocol transitions.
+The fixed-denominator engineering proportion is `q_public_protocol=5/6`; M01 remains a
+complete failure, not an unknown, excluded sample or reconstructed success. Its three
+accepted Claims do not substitute for a valid Final. The other five Final answers pass
+the independent QA check at 93.508458 percent.
+
+There were exactly 51 Provider attempts and 51 original public submissions. All passed
+strict schema; 33 passed semantic admission (14 Action, 14 accept Update, five Final) and
+18 were rejected. Rejections were six `admission.public_basis`, eight
+`admission.observed_claim_content`, three `admission.final_grounding` and one
+`admission.final_percent_claim`. All eight Claim-content failures prematurely rounded the
+full percentage Observation to the six-decimal Final representation; one also changed its
+definition. Subsequent corrections were new model submissions after public feedback, not
+Host repairs. Action admission was 14/20, Update admission 14/22 and Final admission 5/9.
+No online transport, envelope or schema failure occurred. Model reject-Updates were zero;
+actual reject/replan is witnessed only by the separate mock control.
+
+M03's ratio actually consumed its accepted reconstructed-total Claim, and its valid Final
+retains F/O/part-whole lineage rather than disclosed T. Four other successful sessions used
+disclosed T. These are observed final-support descriptions, not new quotient assignments.
+Historical `W_share=1` and the frozen two-class D/S result remain unchanged; new W, class
+counts, class probabilities, Contribution, Novelty and training utility remain null.
+The result is limited model reachability on one fixed task/configuration, not a population
+probability, proof about private reasoning or evidence of general revision capability.
+
+All 51 response model strings were `deepseek-v4-pro`, fingerprints were
+`a307abda487cd1b463329ccb945ce396`, and finish reasons were `stop`.
+Reported usage totals were 565,082 prompt + 24,852 completion = 589,934 tokens;
+reasoning-token fields were absent/null, not measured zero. The 3,812,352-token cumulative
+pre-send reservation is a budget allowance, not actual usage. Online numerical executions
+were 14, distinct from five local-control executions. GPU jobs, old candidate Runtime calls,
+source rescans, new quotient comparisons and training jobs were zero.
+No complete HTTP envelope, private reasoning text or credential value was persisted.
+
+All four scoped workflow Gates pass; report status is `workflow_completed_as_scoped`.
+The final artifact directory contains 785 files / 8,312,321 bytes: 784 self-excluded members
+of 8,191,735 bytes and a 120,586-byte Manifest. The preparation subset contains 198 files /
+1,938,267 bytes. Neither file count is a sample count. The predecessor's 71 files /
+648,048 bytes and its predecessor's 65 files / 254,479 bytes remain unchanged.
+
+The focused 46 tests pass: 20 adapter, seven contract, ten independent-checker and nine
+preflight/rebuild cases. Byte-only replay reproduces all 785 files exactly with model/mock
+transports, Engine, credentials and numerical kernels disabled. It makes no new Provider,
+mock or numerical call. Focused Ruff check/format (11 files), Mypy (seven source modules)
+and compile checks pass. Full source/tests Ruff retains only the unrelated frozen v26 I001
+import-order issue, which was not modified.
+
+Principal identities:
+
+- Model configuration:
+  `share_model_pilot_model_config:47626f1bc6c9586fb44a4b394ba490c7fbf6a9b8841ba6766251323ef5e37e86`.
+- Pilot registration:
+  `share_model_pilot_pilot_registration:64b318f7fe42e913bebfe60715bd4583df1490dfeb789abcef09c7e999546811`.
+- Source authority:
+  `share_model_pilot_source_authority:b5163f9e6fe37892e7934996cda0166a4bfda6236f8d462b2098c4d79e60fead`.
+- Report:
+  `share_model_pilot_report:29457220bfe21f469d893bf9f1115e98b59a5ad0ab17bca8d796f88b3cb5b9b4`.
+- Manifest / Root:
+  `share_model_pilot_manifest:73dbba1f2af7cfb26fe1092fe5a6716b3b58df061a965244c10b615c6401af62` /
+  `share_model_pilot_root:fcc52ce717a9de0e764a6a4feca1f96f367e3f974595a0678ce609f07c3d5ae6`.
+
+The fixed pilot is complete and stopped. The old mainline remains paused, and
+`next_stage_authorized=false`; this result does not authorize more online sampling.
+See [the detailed six-session report](finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot.md).
+
 ## QA vNext Public State / Generator Proposal-Action-Observation-Update Protocol
 
 The exact 15,329-byte external review, SHA-256

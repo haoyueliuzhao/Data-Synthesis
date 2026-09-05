@@ -1,5 +1,7 @@
 # Share 公开协议真实模型适配与固定六会话工程试验
 
+当前正式状态：固定六个在线会话已完成，51 次真实 Provider attempts；5/6 Qualified，1 个提交预算耗尽失败完整保留，六会话均 evidence-complete / protocol-valid。四个本地控制和 G0–G3 均按限定范围通过。46 项测试通过；详细实际结果、用量、失败轨迹和只读重放方法见第 12 节。旧主链继续暂停，不授权追加采样。
+
 ## 1. 文档状态与本轮问题
 
 阶段名称：`finance_qa_vnext_share_public_protocol_model_adapter_and_six_session_engineering_pilot`。
@@ -162,7 +164,7 @@ envelope 必须有单条 choice、非空 response id、`object=chat.completion`�
 
 以下四个控制属于 `adapter_mock`，不进入正式六会话分母。它们只检查新模型适配接缝，不重新执行旧 D/S 候选族或复制前轮攻击矩阵。
 
-| 控制 | 预登记提交过程 | 预计 callback / Action / Update | 当前执行状态 |
+| 控制 | 预登记提交过程 | 预计 callback / Action / Update | 预登记时状态 |
 | --- | --- | --- | --- |
 | direct | ratio → accept → percent → accept → Final | 5 / 2 / 2 | 待正式准备执行 |
 | reject_then_direct | sum → reject → ratio 用披露 T → accept → percent → accept → Final | 7 / 3 / 3 | 待正式准备执行 |
@@ -230,24 +232,206 @@ cd trusted_data_synthesis
 
 完整 `prepare` 与 `online` 命令不属于上述单元检查；前者包含一次正式控制执行，后者会消耗最多六会话的在线预算。正式执行命令和输出目录应在执行记录中报告，不能把一般复查单元测试的命令替代它们。
 
-## 12. 正式执行结果：待填写
+## 12. 正式执行结果：准备通过，固定六会话已完成
 
-本节在设计初稿时尚无正式控制或在线结果。下列项目保持待记录，而不是用“预期通过”或零计数填补尚未运行的试验：
+本节是正式工件落盘后的实际结果，取代前文初稿表格中的“待执行”状态；前文保留执行前设计与预算，不把它们改写成事后选择。正式报告状态为 `workflow_completed_as_scoped`：6/6 会话证据完整且 protocol-valid，5/6 Qualified，M01 是完整记录的预算耗尽失败。
 
-| 项目 | 初稿状态 |
+正式工件根目录为 [finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/)。以下所有会话、控制和用量均直接读取该目录的冻结 JSON；没有为撰写本节重新调用 Provider、回放 kernel 或补跑会话。
+
+### 12.1 冻结与实际工件身份
+
+| 对象 | 实际身份或规模 |
 | --- | --- |
-| source commit / tree 与 source authority | 待首次正式冻结记录 |
-| 准备工件目录、manifest、root、字节数 | 待正式准备执行 |
-| direct / reject_then_direct 完整控制 | 未执行 |
-| invalid_json / transport_failure 单轮控制 | 未执行 |
-| M01–M06 在线会话 | 未执行 |
-| 实际 Provider attempts / submissions / kernel calls / Updates | 尚无正式在线结果 |
-| 逐会话证据完整性、终止、首个失败 | 待实际工件 |
-| Qualified 分子与六会话主比例 | 未评估 |
-| 阶段条件指标与实际支持描述 | 未评估 |
-| 最终 artifact manifest/root 与独立核验 | 待实际工件 |
+| 实现 source commit | `55fb6aab8d7122b4d930d1c31843e7d3653ccd19` |
+| 实现 source tree | `dc9c8c59c7e9b96e1cf0033d6aa9563faa06ce44` |
+| 声明实现文件 | 7 个，均与上述提交中的字节相等 |
+| 声明前驱引用文件 | 12 个，绑定前驱 commit/tree；不声称完整运行环境闭包 |
+| source authority | `share_model_pilot_source_authority:b5163f9e6fe37892e7934996cda0166a4bfda6236f8d462b2098c4d79e60fead` |
+| model configuration | `share_model_pilot_model_config:47626f1bc6c9586fb44a4b394ba490c7fbf6a9b8841ba6766251323ef5e37e86` |
+| 新协议条件 | `public_share_protocol_contract:0e352eb0aa3849d10ed9732f7d7196a553f117f7f1b76261d712c9092d87dd30` |
+| pilot registration | `share_model_pilot_pilot_registration:64b318f7fe42e913bebfe60715bd4583df1490dfeb789abcef09c7e999546811` |
+| 准备报告 | `share_model_pilot_preparation_report:f5355c171d3313c74e9d9c8aaa13417b447963a6f49feee22cee2eb612dfa65e` |
+| 准备 manifest | `share_model_pilot_preparation_manifest:8a37db24437b6aa01dbe5d8e5ed8cc2b1aaeefbbcacd39400990a1f34d983b78` |
+| 准备 manifest 自排除成员 | 197 个，1,906,433 bytes；manifest 自身 31,834 bytes |
+| 最终 report | `share_model_pilot_report:29457220bfe21f469d893bf9f1115e98b59a5ad0ab17bca8d796f88b3cb5b9b4` |
+| 最终 manifest | `share_model_pilot_manifest:73dbba1f2af7cfb26fe1092fe5a6716b3b58df061a965244c10b615c6401af62` |
+| 最终 root | `share_model_pilot_root:fcc52ce717a9de0e764a6a4feca1f96f367e3f974595a0678ce609f07c3d5ae6` |
+| 最终 manifest 自排除成员 | 784 个，8,191,735 bytes |
+| 最终 manifest 自身 | 120,586 bytes |
+| 含最终 manifest 的目录几何 | 785 个文件，8,312,321 bytes |
 
-正式执行后应替换/补充本节并更新文档开头的状态。若实际失败与计划不同，保留真实失败；若证据不完整，明确 UNKNOWN。若工程检查需要修改源码，记录修改发生在首次在线调用之前还是之后，并且不能把修改后的新条件混入先前冻结条件。
+实际初始 HTTP body 为 33,132 UTF-8 bytes，body SHA-256 为 `b334a1c092f8fa7a5c1060bbf95525267391d222702bc5d631d861b5c331a1f4`；输入保守准入数为 34,156，精确离线 token 数保持 null。它通过 65,536-byte 请求上限，不是用 32,768-byte 公开输出上限约束输入。准备记录的 Provider attempts、credential reads、online sessions started 均为 0。
+
+### 12.2 四个本地控制的实际结果
+
+[准备报告](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/preparation_report.json) 记录 `all_controls_passed=true`，合计实际 14 mock callbacks、5 kernel calls、0 Provider attempts、0 credential reads。
+
+| 控制 | 实际 callback / Action / Update | 接缝结论 | 完整会话核验 |
+| --- | --- | --- | --- |
+| direct | 5 / 2 / 2 | 两个独立 accept 后提交有效 Final | evidence complete；protocol/QA/Qualified 均 true |
+| reject_then_direct | 7 / 3 / 3 | 实际 commit 1 reject，再以披露 T 完成 ratio/percent | evidence complete；protocol/QA/Qualified 均 true |
+| invalid_json | 1 / 0 / 0 | 保留 21-byte 公开内容摘要；schema 拒绝；submission_count=1 | 非 terminal 单轮接缝，完整会话结论保持 UNKNOWN |
+| transport_failure | 1 / 0 / 0 | 1 次 mock attempt 后 `transport.timeout`；无 Submission/Receipt | evidence complete；protocol-valid=true；Qualified=false；QA=null |
+
+reject 控制第 2 次回调后，实际 State 为 action 阶段、pending=null、accepted_claims=[]，action_count=1、update_count=1、submission_count=2，反馈 `observation_rejected`。被拒绝的 sum Observation id 为 `public_share_protocol_observation:40ea94694126949347b308967403bd7c7a48dfff646e5431e9212318b430fcde`。后续两个 accept 仅新增 ratio 和 percent Claims，因此最终 accepted Claim 数为 2，而不是自动留下被拒绝的总额 Claim。
+
+invalid_json 的公开摘要为 `70139560a841f0bfa0e9f7b44cce1f8f6ba08d6537d7f514516fb2e30e4028a3`，证据等级为 `receiver_diagnosis_only`；未保存非法公开原文。该控制故意只运行一轮且未达终止，独立完整会话审计返回 `evidence.terminal_stop`，相关 Qualified/protocol/QA 字段为 null。这不是新增“失败模型会话”，也不是丢失了一个被声称完整的在线结果；单轮失败接缝的通过与完整会话 UNKNOWN 必须同时报告。
+
+两个完整 mock 的成功均不进入模型成功分子或六会话分母，控制记录的模型样本指标 Y 也保持 null。真实模型没有提交 reject；本轮实际 reject 见证只有上述一个明确标记的 mock 控制。
+
+### 12.3 固定六会话总览
+
+下表 callback 数与 Provider attempts、公开 Submission 数在本次均相等；Action/Update 指实际准入并 commit 的数量，而非所有曾提交的该类 JSON。所有 6 个会话证据完整、protocol-valid=true、无机制缺陷或 UNKNOWN 在线会话。
+
+| 会话 | Provider attempts / Submissions | Action / Update / accepted Claims | 有效 Final / QA / Y | 真实终止 | Final 实际支持描述 |
+| --- | ---: | ---: | --- | --- | --- |
+| [M01](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M01.json) | 12 / 12 | 3 / 3 / 3 | false / null / 0 | submission_budget_exhausted | unresolved |
+| [M02](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M02.json) | 7 / 7 | 2 / 2 / 2 | true / true / 1 | final_submitted | disclosed_total |
+| [M03](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M03.json) | 12 / 12 | 3 / 3 / 3 | true / true / 1 | final_submitted | reconstructed_total_claim |
+| [M04](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M04.json) | 6 / 6 | 2 / 2 / 2 | true / true / 1 | final_submitted | disclosed_total |
+| [M05](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M05.json) | 9 / 9 | 2 / 2 / 2 | true / true / 1 | final_submitted | disclosed_total |
+| [M06](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/online_reports/M06.json) | 5 / 5 | 2 / 2 / 2 | true / true / 1 | final_submitted | disclosed_total |
+| 合计 | 51 / 51 | 14 / 14 / 14 | 5 个有效 Final | 5 完成、1 预算失败 | 4 disclosed、1 reconstructed、1 unresolved |
+
+因此主结果是 `5/6 = 0.8333333333333334`，即约 83.33% 的固定六会话工程观察比例；不是 51 个独立样本的成功率。没有替换 M01，没有因尚有 21 次总调用余量而补出第七会话，也没有因 M03 是重建方式而另加定向样本。
+
+protocol-valid=true 表示 Host 正确处理实际提交和拒绝、状态及证据链闭合，不表示模型每条提交都得到准入。M01 没有有效 Final，QA 检查未到达，故 QA=null 而非“QA 错答案”；它的完整预算终止证据仍允许主指标 Y=0。
+
+五个有效 Final 的答案均为 `93.508458 percent`，由已接受 percent Claim 及实际支持引用进入独立离线 QA。该答案没有在请求中作为正确答案实例提前提供。
+
+### 12.4 逐会话实际拒绝与恢复轨迹
+
+本小节的“第 n 次回调”从 1 开始，对应原工件 `turn_index=n-1`。这些是已保存公开 JSON/Receipt 的观察，不推断模型内部思考。
+
+- M01：第 1–2 次 sum/accept 成功；第 3–5 次 ratio 都因 `admission.public_basis` 被拒绝，第 6 次 ratio 才准入，第 7 次 accept 成功。第 8 次 percent 的 basis 再被拒绝；第 9 次 Final 引用 ratio Claim，因 `admission.final_percent_claim` 被拒绝。第 10 次 percent 准入，第 11 次 accept 因 proposed value 不等于完整 Observation 而拒绝；第 12 次 accept 准入，但提交预算随即耗尽，未剩一次合法 Final。最终已有 3 个 accepted Claims 也不能替代缺失的有效 Final。
+- M02：第 1–4 次完成直接 ratio/accept/percent/accept；第 5–6 次 Final 因 `admission.final_grounding` 拒绝。两次都在实际 F/T 支持之外额外列入 part-whole 关系。第 7 次模型原始提交改为实际 F/T 引用后通过；Host 没有替它删除多余 citation。
+- M03：第 1–5 次依次完成 sum/accept/ratio/accept/percent。第 6–9 次 accept 全因 `admission.observed_claim_content` 拒绝；第 10 次提交完整 Observation 值后 accept 准入。第 11 次 Final 用 F/T/关系引用代替真实 F/O/关系支持，因 `admission.final_grounding` 拒绝；第 12 次改为真实支持后才形成有效 Final。
+- M04：第 3 次 percent Action 的 basis 只列了 ratio Claim，漏掉其实际 Evidence lineage，因 `admission.public_basis` 被拒绝；第 4 次新公开提交补足对应 evidence refs，随后 accept 与 Final 通过，共 6 次。
+- M05：第 3 次 percent Action 在直接 F/T 支持之外多列 part-whole 关系，basis 被拒绝；第 4 次准入。第 5–7 次 accept 都因提前舍入 proposed value 被拒绝，第 8 次完整提交后准入，第 9 次 Final 通过。
+- M06：实际 5 次 callback 顺序为 ratio → accept → percent → accept → Final，没有任何提交拒绝。
+
+M01 第 3 次 ratio 的 basis 多列披露 T，第 4–5 次又只列 F、漏掉总额 Claim 的 O/关系 lineage；第 8 次 percent 则漏列实际消费的 ratio claim_refs。以上六个 basis 拒绝与三次 Final grounding 拒绝，均不是 schema 缺字段，也不是“引用越多越好”：它们要求准确对应实际消费的依据。
+
+8 次 `admission.observed_claim_content` 拒绝都涉及 percent Update 把真实 Observation 的完整值提前舍入成最终六位答案：
+
+| 项目 | 实际公开值 |
+| --- | --- |
+| 工具 percent Observation / 合法 proposed Claim | `93.508458258836473662494842525099711181405583826159` |
+| 8 次被拒绝 Update 的 proposed value | `93.508458` |
+| 允许在 Final 使用的答案表示 | `93.508458` |
+
+M03 第 9 次回调还把 definition 从 `freight share in percent` 改为另一种表述；其余 7 次上述 Update 拒绝，在完整字段比较中仅 value 与 Observation 不同。模型后来新的公开提交才给出匹配内容，旧响应及拒绝记录原样保留。这里见证的是公开协议反馈后的后续提交，不是 Host 修复，也不应解释为一般学习或内部信念修订能力已经验证。
+
+### 12.5 阶段分母、错误分布与公开所有权
+
+| 实际测量对象 | 分子 / 条件分母 |
+| --- | ---: |
+| 收到公开 content / Provider attempts | 51 / 51 |
+| 严格 schema 通过 / 收到的公开 content | 51 / 51 |
+| action-or-final 请求阶段的 schema 通过 | 29 / 29 |
+| update 请求阶段的 schema 通过 | 22 / 22 |
+| Action 准入 / Action 提交 | 14 / 20 |
+| Update 准入 / Update 提交 | 14 / 22 |
+| 完整 proposed Claim 一致 / accept Update 提交 | 14 / 22 |
+| Final 准入 / Final 提交 | 5 / 9 |
+| QA-valid / 实际到达有效 Final 的会话 | 5 / 5 |
+| Qualified / 完整证据的正式会话 | 5 / 6 |
+
+51 条公开提交中，33 条准入（14 Action、14 Update、5 Final），18 条拒绝。拒绝分布为 `admission.public_basis` 6 次、`admission.observed_claim_content` 8 次、`admission.final_grounding` 3 次、`admission.final_percent_claim` 1 次。本次在线没有 transport/envelope 失败、空公开 content 或 schema 拒绝；这不抹去本地失败控制的必要性，也不是声称这些失败不可能发生。
+
+所有 51 条在线公开响应均作为严格 schema 通过的原始公开 JSON 保存，证据等级为 `public_submission_replayable`；其中 18 条仍然未通过语义准入。故本次在线的具体错误可以从原始公开提交复查，不仅依赖 hash。完整 HTTP envelope 和私有 reasoning_content 仍未保存或重放。
+
+14 次在线 accepted Claim 均由新的模型 Update 明确提交完整命题后创建，Action 本身没有自动接受。所有模型 Update 都选择 accept，实际模型 reject 提交数及 commit 数均为 0。五个成功会话中，M02–M05 都经历过至少一次拒绝后的新提交，只有 M06 是无拒绝的最短直接过程。
+
+本次首先观察到的困难落在 public basis 的准确覆盖、完整 Observation 命题与 Final 舍入表示的区别、以及最终实际支持引用，而不是 JSON schema 生成。该判断只描述这六条运行及具体错误，不能外推为一般任务上的错误概率或可靠性排序。
+
+### 12.6 实际支持见证，不新增旧商映射
+
+M02、M04、M05、M06 的有效 Final 最终依赖披露总额 Evidence。M03 的有效 Final 则依赖被显式接受的重建总额 Claim：
+
+```text
+accepted total Claim
+  = public_share_protocol_claim:927d24ecd31b1c6e280bd9c2be57c52a5ba75862311d3081f86d50802b2f70c7
+
+ratio execution consuming that denominator
+  = public_share_protocol_execution:1724bdbdc382fe4a44cb0c130104fb494b590da3e459291d1fec72f102b5884e
+
+accepted percent Claim consumed by the valid Final
+  = public_share_protocol_claim:7e614c1c48f4549c08f59a8e6e68e6e2bbd9a30ce09dc41f0a6e55f57a6c6bfa
+```
+
+M03 最终引用的真实 lineage 是 F、O 和 part-whole 关系，不是披露 T。该结论来自实际 Final-to-Claim-to-execution 关系，而非因为看到一次 sum 就赋予路线标签。
+
+M01 也确实执行并接受了重建总额，ratio 实际消费了该 Claim；但它没有有效 Final，最终支持描述因此保持 `unresolved`。不能把这条未完成轨迹补计成第二个重建成功，也不能删除它来计算仅成功轨迹的主指标。
+
+本轮因此获得了两种实际支持使用方式的模型运行观察，但 `old_quotient_mapping=false`、`new_W_share=null`、新的语义/商类数为 null。没有把这些描述绑定到旧 D/S 商 ID，没有估计类分布，更没有据此宣称均匀概率或 VTDO 收益。
+
+### 12.7 实际模型元数据、token 用量与预算
+
+51 次实际响应的 model 字符串均为 `deepseek-v4-pro`，可选 fingerprint 均为 `a307abda487cd1b463329ccb945ce396`，finish_reason 均为 `stop`。这些是接收端提取的真实返回元数据，不是把文档版本 `DeepSeek-V4-Pro-0813` 填成实际响应，也不证明远端权重的独立不可变身份。
+
+| 会话 | prompt tokens | completion tokens | actual total tokens | 发送前累计预留 allowance |
+| --- | ---: | ---: | ---: | ---: |
+| M01 | 134,088 | 6,014 | 140,102 | 897,024 |
+| M02 | 76,919 | 3,278 | 80,197 | 523,264 |
+| M03 | 137,190 | 6,740 | 143,930 | 897,024 |
+| M04 | 64,947 | 2,481 | 67,428 | 448,512 |
+| M05 | 97,869 | 4,119 | 101,988 | 672,768 |
+| M06 | 54,069 | 2,220 | 56,289 | 373,760 |
+| 合计 | 565,082 | 24,852 | 589,934 | 3,812,352 |
+
+所有 51 次响应都有 prompt/completion/total usage，且逐次和汇总满足 prompt + completion = total。本次 cache-hit tokens 合计为 0，cache-miss 为 565,082；reasoning_tokens 在 51 条记录中均缺失并保持 null，不能报告为“实测 reasoning tokens=0”。
+
+实际 HTTP request body 范围为 33,132–36,740 bytes，累计 1,787,607 bytes；最大输入保守准入数为 37,764。公开 response content 范围为 632–1,568 bytes，累计 60,644 bytes。3,812,352 是 51 次发送前固定预留额度之和，不是实际消耗；本次实际 usage 总数为 589,934。均不应混用为费用或模型内部推理长度。
+
+实际在线数值 kernel 调用为 14；与四个本地控制的 5 次分开记账，总共 19 次本轮新接缝/在线数值执行。真实 Provider 尝试合计仍只有 51，mock callbacks 不算 Provider。无 GPU、无旧候选 Runtime 重跑、无 session replacement、无自动网络 retry。
+
+### 12.8 Gate 与限定收口
+
+正式 [Gate 记录](../artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905/gate_evaluation.json) 的 G0–G3 均通过：
+
+| Gate | 实际覆盖对象 | 结果 |
+| --- | --- | --- |
+| G0 | 请求/响应与登记的当前 State 身份关系 | PASS |
+| G1 | 两个完整 mock 和两个单轮失败控制 | PASS（保留单轮 UNKNOWN 限定） |
+| G2 | 六个固定会话、无替换、实际尝试受界 | PASS |
+| G3 | 独立协议核验与有限解释 | PASS |
+
+本轮可以收口为：真实模型的公开返回值已在不被 Host 补写语义内容的条件下进入既有协议；五个会话形成可归属、可公开重放的 Action/Update/Final 完整闭环，一个预算失败会话完整保留。公开模型可达性获得有限见证，同时完整命题与实际支持引用仍存在实测提交失败。
+
+报告不要求所有模型会话成功或两种支持方式都出现。旧主链继续 `remains_paused`，`next_stage_authorized=false`。本节报告的是既定六会话已经完成的结果，不授权追加采样或新任务。
+
+### 12.9 最终验证与安全的无新增调用重放
+
+最终本轮定向测试实际为 `46 passed in 3.44s`，分组如下：
+
+| 测试组 | 实际通过数 | 主要对象 |
+| --- | ---: | --- |
+| adapter | 20 | 精确呈现、受限响应提取、无修复、私有字段/凭证边界、模拟 HTTP |
+| contract | 7 | 冻结模型与协议条件、权限和资源界限 |
+| independent | 10 | 固定实际工件的独立结构/语义/证据与分母检查 |
+| preflight / replay | 9 | 冻结、51 次账本、禁止在线重启、完整字节重建 |
+| 合计 | 46 | 不增加正式科学样本 |
+
+本轮 7 个实现源码与 4 个测试文件，共 11 个文件的 Ruff 检查及 format 检查通过；7 个实现源码文件的 Mypy 通过。全项目范围另存在历史 v26 文件的 Ruff `I001`，本轮未改该历史文件，因而这里不声称整个仓库零静态检查问题。
+
+完整重建测试把模型 adapter、curl transport、mock transport、Scenario handler、Engine 构造、三个数值 kernel 的 execute 以及凭证读取入口全部替换为“被调用即测试失败”的哨兵。随后 `replay_pilot` 只读取既有执行字节、独立重建验证报告/汇总/manifest，并得到与原目录逐文件完全相同的 785 个文件、8,312,321 bytes。原正式目录也保持字节不变。
+
+因此，这次重建的新增 Provider attempts、mock callbacks、kernel calls 和 credential reads 均为 0。它复用的是已经完成的六个模型会话，不是第二批模型会话；同样不重新执行两个完整 mock。另一个测试对已启动过的正式 cohort 调用在线入口时，在读取凭证前拒绝为 `pilot.no_online_restart_or_replacement`，并核对原目录不变。
+
+如只需复查当前正式结果，可从仓库根目录执行下面的 `replay` 命令。该命令不传入凭证参数，replay 分支不读取凭证，也不调用 `prepare` 或 `online`；目标是新临时父目录中的尚不存在的 `rebuilt` 子目录，避免覆盖正式工件：
+
+```bash
+cd trusted_data_synthesis
+share_pilot_replay_tmp="$(mktemp -d /tmp/share-pilot-replay.XXXXXX)"
+PYTHONPATH=src .venv/bin/python -m trusted_synthesis.experiments.qa_reasoning_share_model_pilot.preflight \
+  --mode replay \
+  --repo-root .. \
+  --replay-from artifacts/qa_reasoning_share_model_pilot/finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_20260905 \
+  --output-directory "$share_pilot_replay_tmp/rebuilt"
+```
+
+运行前应保留本轮冻结源码及前驱工件；重放会检查声明的 source commit/tree 和配置身份。上面命令只是已有证据的独立核验/重建，不是重新采样的许可，也不应改成使用正式目录作为输出目标。生成的临时副本可保留供检查，本命令不删除任何文件。
 
 ## 13. 可接受结论与停止条件
 
