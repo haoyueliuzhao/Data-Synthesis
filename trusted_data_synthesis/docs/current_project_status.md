@@ -16,7 +16,139 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Part-Whole Share Dual-Support Preflight
+
+The exact 22,925-byte external review at SHA-256
+`91ed0480d5e235c0438c01a89a8ea58add7a03fe6872523ce4f6b2d6b4837125` accepts the
+previous bounded source inspection and correct stopping as `PASS_AS_SCOPED`, not the unexecuted
+D/S growth-gap experiment. It finds no mandatory revision and requires no repeated Archive scan
+or duplicate audit. Its access was report and count-relation review, not repository/source/JSON
+replay. The exact 24-byte directive `参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`, admits only
+`finance_qa_vnext_part_whole_share_dual_support_preflight_only`.
+
+One new single-period revenue-share Task is now instantiated and executed. The old compound
+growth-gap Task remains uninstantiated with W null and Gate partition 3/0/1/1; its twenty formal
+files and 1,251,021 bytes remain unchanged. F1/F2 and their historical one-class results are not
+rerun or reclassified. The old mainline remains paused.
+
+The only source is the already witnessed `UNP/2015/page_56.pdf-1` page group. Source projection
+reads only its four saved array indices 30, 981, 1065 and 1099, not a new Archive-wide census.
+The source rule chooses the latest interpretable complete annual column before any answer or
+sum-based selection. Actual source values are:
+
+```text
+actual column / period             1 / 2015
+Total freight revenues F           20,397
+Other revenues O                    1,416
+Total operating revenues T         21,813
+unit                               millions
+currency                           dollar_as_disclosed
+scope                              consolidated Union Pacific and subsidiaries
+```
+
+The year comes from the actual table header and same-page context, not the report directory.
+Dollar notation does not establish an independently explicit ISO currency code. The source
+authority remains curated_database / FinQA. Seventy-three reference occurrences, representing
+33 distinct JSON pointers, are checked against actual raw rows/context. All four aliases match
+the actual used rows; one page group is not four independent financial sources. No QA gold
+question, answer or Program is selection or answer authority.
+
+The new Task asks for freight revenues as a percentage of total operating revenues in that period.
+D/S share one visible universe of F, O, disclosed T and the nonnumeric part-whole relation; the
+task, numeric/answer contract, available operations, controller ownership and four common
+validation obligations are identical. Required citations follow actual support, not every
+visible item. The execution-specific provenance is:
+
+```text
+D  actual F / disclosed T -> percent
+S  actual F + actual O + source relation -> accepted derived total Claim
+     -> actual F / that Claim -> percent
+```
+
+A new narrow relation-aware interface checks exact complete, disjoint member identities,
+period, units and consolidated scope before explicit `method=sum`. Freight, Other and Total
+retain their distinct original metrics and definitions. The derived total is a Claim with
+F/O/relation lineage, not rewritten raw Evidence. A separate local share-ratio contract checks
+actual numerator/denominator roles. The old aggregate and financial operation Registry remain
+unchanged; old same-metric compatibility is neither bypassed nor falsely claimed to pass.
+
+The new source, Task, local operation contracts, D/S declarations and finite comparison rules
+are durably frozen before either execution. Each operation persists a deterministic Fixture
+proposal, then its source/type admission Receipt, before arithmetic dispatch. Actual execution,
+Observation, accepted Claim, update and successor State follow. Receipt/Manifest readers verify
+actual bytes and file/directory fsync order. No answer Oracle runs inside the candidate Runtime.
+
+Exactly two original Runtime calls produce five actual operation records: D has two and S has
+three. Independent verification reparses the actual source excerpts and every persisted object,
+recomputes each operation, follows producer-consumer Claim references and separately calculates
+the answer Oracle from disclosed T. Both routes pass QA and trajectory validity:
+
+```text
+D / S Final value, percent                     93.508458 / 93.508458
+D / S own-qualified                                     true / true
+D / S common obligation coverage                             4/4, 4/4
+original candidate Runtime calls / operation records              2 / 5
+same-task formal pairs                                               1
+finite retained semantic classes                                     2
+W_share                                                              1
+```
+
+The finite comparator retains actual source support, ordered ratio roles, relation members,
+sum parameters, derived Claim dependencies, Observation grounding and accepted updates.
+D consumes the disclosed-total Evidence; S consumes the real sum Claim whose lineage contains
+F, O and the relation but not T as a numeric operand. Their equal answer, route names, IDs and
+different operation counts are not separation authorities. The result is a finite two-class
+constructive witness for this new Task under its frozen rules, not a universal Mapper result.
+
+All eight direct controls reject: missing/duplicate members; changed period, unit or scope;
+missing sum and mean parameters; and a fully rehashed prospective S trace that retains a sum but
+actually consumes disclosed T. The latter retains the answer and passes QA, but fails trajectory
+validation at `replay.claimed_denominator_support`. These are admission and record-replay
+controls, not extra Runtime executions. A regression replay also verifies that swapping the
+two legal sum members preserves the complete normalized projection, while unsupported semantics
+stay undetermined. No extra formal candidate or pair is added.
+
+Five noncompensatory Gates pass; a second class is not a prerequisite for a passing finite
+comparison Gate. Provider calls, credential lookups, GPU Jobs, new online authorizations,
+Benchmark-frequency estimates, QA Release, VTDO, training and production outputs are zero.
+This new mechanism experiment does not measure the old growth-gap depth, model choice,
+model reachability, task-population coverage or training benefit.
+
+The exact implementation commit/tree are `b6783ac6676c6b821ab819f9215961fbd0605e84` /
+`475ff81d9e26d9424c1f6942de5cf7eb5cda1fb2`. Eight implementation members, six declared
+reference members and the raw Archive member have exact Git authority; complete transitive import
+or environment closure is not claimed. The formal directory contains 65 files and 254,479 bytes;
+its self-excluding Manifest binds 64 members and 245,007 bytes. Rebuilding with the original
+Runtime bytes reproduces all files exactly and makes zero new Runtime/kernel calls; it is not
+a second execution of the candidates. The focused 27-test suite passes, with Runtime/kernel and
+old source-scan entry points blocked during replay tests. Focused PyCompile, Ruff check/format
+and no-import-follow Mypy pass. Full source/tests Ruff retains one unrelated frozen v26 I001.
+
+Principal identities:
+
+- source / Task / contract:
+  `part_whole_share_source_binding:c1936c263ade54d4391eef11d3c1c93932e3bd959dd4e18b6c1c5a412612a254` /
+  `part_whole_share_task:0616bef8f302347723ff0ab8c84a570a9b76bb6cb09681e9a7dafec555a13a3f` /
+  `part_whole_share_contract:5266609cc280585c8ef3a28583968069c09d2e2b9642595f44a3c57752a9a028`;
+- Gate / Decision / Transition:
+  `part_whole_share_gate:92839eeb696c1dd47c654bcb93b7ae6232d436047cb7e1ffc1e29c156af99485` /
+  `part_whole_share_decision:f0adb26c7e177aad4eb407dfe2664e4b87a08d634c0d4874e36bd9325fcd3506` /
+  `part_whole_share_transition:3b461731826138d56c5458a5c2f3b277a9c93becedcab9aaf4796b49d5a2a64b`;
+- Report / Manifest / Root:
+  `part_whole_share_report:9f287a99652050c7c1fd4fb2c6afe0d38c5e2f205d5548121a9f23e3a152ea90` /
+  `part_whole_share_manifest:21a2e52198336101d1cf273af76a3bb0d26eb9baefb68dcd946c28261630a251` /
+  `part_whole_share_root:4a18be9c78b3f7bae7308339de50a0233db81c08484b5fa7fc3791c60fb1b221`.
+
+The finite preflight is complete; no successor, model execution or training stage is authorized.
+A separate external decision is needed for future model-visible support selection and update
+experiments. See `docs/finance_qa_vnext_part_whole_share_dual_support_preflight.md`.
+
 ## QA vNext Source-Distinct Support Route — Bounded Source Not Instantiated
+
+The later review closes this bounded source branch as scoped. The separately authorized
+single-period share experiment above creates a new Task; it preserves this compound Task's
+uninstantiated status, null W, five-way Gate statuses and every historical formal byte.
 
 The exact 24,654-byte external review at SHA-256
 `e279cc6ee587766a87b430588fe1632a0d48a3c84f6b9c97a86908523e768dce` accepts the
