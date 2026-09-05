@@ -16,7 +16,108 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Reasoning-Behavior Typed Candidate-Family Constructibility Preflight
+
+The exact 25,343-byte external review at SHA-256
+`893f9718dca59a1d29b1fe9f993471ff15e9fbfeb86cc570ef1b9b9db670ddcc` accepts the
+preceding behavior-design freeze as `PASS_AS_SCOPED`, finds no blocking defect or mandatory
+revision, and closes that design topic. Its access was report consistency review, not repository
+or actual-artifact reconstruction. The exact 36-byte directive `参照审计报告开展后续实验`
+is bound at SHA-256 `3915f5d4befe661fb2b627ac9b578caa07e860a7c0ab4f70b438f6cd96a65403`.
+
+This stage consumes only
+`finance_qa_vnext_reasoning_behavior_typed_candidate_family_constructibility_preflight_only`.
+It preserves both exact F1/F2 Tasks, questions, entities, periods, metrics, authorized Evidence,
+answer Oracles, units, answer Schemas, tolerance, citations and validation obligations. The
+fifteen-file, 64,237-byte predecessor design and the actual frozen Archive source directory
+revalidate without historical mutation or new Archive selection.
+
+A source/type census precedes outcome loading and registered execution. The existing
+`TaskProgram.v2` grammar and numeric Evidence `value` selector admit direct Evidence operands
+for registered growth. This yields one finite alternate A per Task: four transparent lookups
+are removed while both growth operations, signed gap and absolute gap remain. No Task,
+Evidence item, Operation, algebraic rule or semantic-equivalence rule is added.
+
+Before execution, the complete finite family and its durable registration Receipt are frozen:
+
+| Group | Per Task | Total | Actual registered operations per candidate |
+| --- | ---: | ---: | ---: |
+| B: baseline lookup-mediated route | 1 | 2 | 8 |
+| A: registered direct-Evidence route | 1 | 2 | 4 |
+| C: baseline independent-branch swap control | 1 | 2 | 8 |
+
+The primary population is four B/A candidates; the two C rows are separate scheduling controls.
+All six use the same new typed runtime and independent validator. Every actual operation has
+its own State, pre-action proposal, durable admission Receipt, registered execution, Observation
+and update chain. Independent validation rereads actual files, replays registered Oracles,
+maps the five public obligations, and checks the fixed source answer and citation policy.
+No old D0-D4 trajectory or complete expected-Envelope equality is used as the route validator.
+Host admission remains distinct from registered Operations; Final is a separate closure artifact.
+
+All six candidates are QA-valid, trajectory-valid and qualified. There are forty actual
+registered operations, forty candidate-node Oracle replays, forty-eight separate source-answer
+Oracle replays, six Finals and 258 runtime files. The answer Oracle's eight-node calculations
+are verification work, not candidate Actions or backfilled candidate execution. Each B/C route
+uses eight registered actions plus Final, within the ten-public-step ceiling.
+
+Ten independently replayed boundary controls produce nine expected rejections and one intended
+label-only acceptance. Wrong temporal/operand roles, unavailable or cross-task Evidence,
+unverified Claim, missing actual Observation, comparison-only Final, caller qualification and
+fabricated model ownership reject. The label-only change preserves the typed structure and adds
+no positive population or semantic class. The future-Evidence control is an unavailable sentinel,
+not a newly sampled future publication. Its one baseline and ten control validations are eleven
+additional negative-control replays, outside the positive execution and Oracle denominators.
+
+All five noncompensatory Gates pass. The decision is:
+
+```text
+registered_direct_evidence_candidate_constructed_and_own_verified_
+semantic_separation_not_evaluated
+```
+
+The shorter A route is a source-backed, own-verified constructive result, not proof of a new
+reasoning behavior or quotient class. Semantic-class count is null / not evaluated, not zero,
+one or two. These deterministic Fixtures provide no model-owned strategy or empirical frequency
+evidence. New Task/Operation/Archive selection, Provider/credential/GPU activity, online
+authorization, Mapper/State Assignments, QA Release, VTDO, training and production remain zero.
+The old mainline remains paused.
+
+The exact source commit/tree are `bc4a6217ab22e2f24e8a40ca14824291ae09b576` /
+`a41d7d2748187a82f0ddcec35287b4b90c9c6966`. All seven implementation members and nineteen
+declared reference members have exact Git commit/tree/blob/current-byte authority; no complete
+transitive import or runtime-environment closure is claimed. The formal directory contains
+278 files and 1,176,762 bytes; its self-excluding Manifest binds 277 members and 1,136,816 bytes.
+A separate new-process complete rebuild reproduces all paths and actual bytes. Focused tests
+pass 14/14 and the adjacent candidate-family/design partition passes 28/28. Focused PyCompile,
+Ruff check/format and no-import-follow Mypy pass. Package-wide Ruff retains the unrelated frozen
+v26 import-order diagnostic; it is not reported as passing.
+
+Principal identities:
+
+- authorization / source authority:
+  `qa_reasoning_candidate_family_authorization:43c7a9408b9aaea2d3c4f71fcc24e4e7079900abfe9ff12c71344378229be834` /
+  `qa_reasoning_candidate_family_source_authority:e0d36384e07ab66c39a6cbced0abe6ff82b0f1eca167e5386e33909934b519bf`;
+- Gate / Decision / Transition:
+  `qa_reasoning_candidate_family_gate:d7be3c989e1766cdee6012fbc18e4173ca2f542db67f7725c9cf67c86f8b0cd7` /
+  `qa_reasoning_candidate_family_decision:602b9b37232229f8766acd5716816fd0fe2ae7e01959e30c32e6483451cbcc57` /
+  `qa_reasoning_candidate_family_transition:938fde5f57d2e3815afb6061b5b98b5467c54cd67e3ad7d3061e17d68e007c2d`;
+- Report / Manifest / Root:
+  `qa_reasoning_candidate_family_report:e17a7290f2946f82865b5960649f557d83d975a538ecd8cc76600e2082e61319` /
+  `qa_reasoning_candidate_family_manifest:a9fa15d097fa30dada250c69ca17906cc4a197e0aa635b1d4b80b5f62931bb64` /
+  `qa_reasoning_candidate_family_root:9e6be2dea9a8566e613374b726f654715a9f458ba9ca82fd490ed01e6696b83b`.
+
+The prospective successor is
+`finance_qa_vnext_finite_own_qualified_candidate_semantic_equivalence_comparison_only`,
+with `next_stage_authorized=false` and a separate new external decision required. Integrated
+independent replay is complete; another mechanical same-content independent audit is not
+required by this transition. See
+`docs/finance_qa_vnext_reasoning_behavior_typed_candidate_family_constructibility_preflight.md`.
+
 ## QA vNext Public Reasoning Semantics, Allowed Behavior And Quotient Contract Design
+
+This design topic is closed as scoped by the subsequent external review. The later bounded
+candidate-family preflight is recorded above; the design's original formal bytes and historical
+Transition remain immutable.
 
 The exact 13,357-byte external review at SHA-256
 `5bb6c8fd48bc953be1130d07ce6542320e55d855240f84277fb49c52070e3e38` accepts the completed
