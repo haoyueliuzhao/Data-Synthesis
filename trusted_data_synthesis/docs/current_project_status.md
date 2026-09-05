@@ -16,7 +16,120 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Finite Own-Qualified Candidate Semantic-Equivalence Comparison
+
+The exact 23,746-byte external review at SHA-256
+`4987d122e9f128db658544b89d46a076133eb8617d1c2c0378492f774c5d0450` accepts the
+preceding finite candidate-source, own-execution and bounded-validation preflight as
+`PASS_AS_SCOPED`, finds no blocking defect or mandatory revision, and closes that topic.
+Its access was report review and arithmetic consistency, not repository or actual-artifact
+replay. The exact 24-byte directive `参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`, admits only
+`finance_qa_vnext_finite_own_qualified_candidate_semantic_equivalence_comparison_only`.
+
+The new stage freezes every byte of the 278-file, 1,176,762-byte candidate directory. It
+rejoins only the exact saved six B/A/C trajectories and their original F1/F2 Task/Evidence
+sources. The primary domain remains four B/A candidates, with two C scheduling controls.
+No candidate declaration, candidate Runtime execution, Task, Evidence or Operation is added;
+no historical builder, candidate source generator or old scheduling experiment is rerun.
+All historical 40 Action and six Final artifacts remain immutable.
+
+Before comparison, the measurement Contract and exact six-member domain are durably frozen.
+This is measurement-rule instantiation on already known candidates, not data-blind confirmation.
+Six read-only own-route validations reproduce the saved complete validation bytes: six Qualified,
+forty own-route Oracle nodes and forty-eight answer-Oracle nodes. These are verification work,
+not new candidate Actions. Public projection and graph comparison execute no Operation or Oracle.
+
+Each actual proposal/Receipt/execution/Observation/Claim/Update/State/Final chain is recovered
+as a typed public graph. Task and answer authority, Evidence versions/source/locator/roles/units,
+typed requires-basis, exact Operation versions and ordered inputs, observation-grounded updates,
+five discharged obligations and Final citations are retained. Host comparability remains
+Host-derived, and deterministic Fixture fields are not relabeled model reasoning.
+
+All sixteen actual B/C lookup instances satisfy five witnessed contraction conditions: exact
+transparent registration, value/source preservation, ordered reference substitution, actual
+State visibility, and no extra retained verification or State effect. The rule composes the
+actual Evidence payload -> lookup -> payload.value reference into the same Evidence.value.
+It does not delete an entire public step merely because its name is lookup. Uncontracted graphs,
+actual State snapshots and all sixteen full condition witnesses remain in the new artifacts.
+
+B/C's public graphs have 68 nodes and 195 edges before contraction; A has 40 nodes and 127 edges.
+All six normalized public graphs have forty nodes, 127 typed directed edges and four retained
+semantic Operations. Public-graph node counts are not Action counts or a new reasoning-depth
+measurement. Original Runtime files are not rewritten or backfilled by normalization.
+
+The complete same-task comparison is:
+
+| Task | B-C | B-A | A-C | Primary B/A classes | C role |
+| --- | --- | --- | --- | ---: | --- |
+| F1 | equivalent | equivalent | equivalent | 1 | same-class schedule control |
+| F2 | equivalent | equivalent | equivalent | 1 | same-class schedule control |
+
+Every equivalence result binds a complete forty-node bijection, all attributes, and a
+127-edge bijection checked in both directions with exact roles and positions. Finite searches
+complete in 47-56 states under a 100,000-state bound. A separate direct certificate check and
+a regression test reconstruct all node/edge correspondences without calling comparator helpers.
+Neither equal answers, unequal hashes nor changed route labels determine the result.
+
+Twenty-two isolated projection/relationship controls pass. They preserve ID/label/independent
+schedule invariance; retain same-answer Evidence-source and ordered-role differences; reject
+contraction when a real State witness contains an extra validation effect; and leave unknown,
+missing or uncomputed semantics undetermined. Exact Decimal tests distinguish a changed digit
+beyond 28 places while admitting equivalent trailing-zero representations without context
+rounding. These controls are not additional Qualified financial trajectories or class witnesses.
+
+Four noncompensatory Gates pass, with zero failed and zero unknown. The decision is:
+
+```text
+fixed_family_lookup_forwarding_direct_evidence_and_independent_schedule_
+one_retained_class_per_task
+```
+
+This is a scoped local negative result: the fixed lookup/direct-reference/scheduling family
+does not supply another retained behavior class for either Task. It does not establish global
+semantic uniqueness, model reachability, frequencies, Contribution, training value or improved
+reasoning depth. Provider calls, credential lookups, GPU Jobs, online authorizations, new
+candidate executions, Mapper/State Assignments, QA Release, VTDO and production rows are zero.
+The old mainline remains paused.
+
+The exact implementation commit/tree are `b1e43da622c7fc10823c3d40d02d9b6445fdfe38` /
+`b33869265ee66faa25b997c1029bae8f6f7115c9`. Seven new implementation members, three direct
+reference members and the predecessor's twenty-six declared members have exact Git source
+authority; no complete transitive import or runtime-environment closure is claimed.
+The formal directory has 27 files and 8,384,212 bytes; its self-excluding Manifest binds
+26 members and 8,380,170 bytes. Independent Python processes produce identical complete paths
+and actual bytes. The focused suite passes 18/18, including blocked Runtime/executor entry points,
+independent certificate checking, UNKNOWN Gate propagation and full empty-directory rebuild.
+Focused PyCompile, Ruff check/format and no-import-follow Mypy pass. Full source/tests Ruff
+retains only the unrelated frozen v26 I001; no package-wide pass is claimed. Old adjacent
+candidate-construction tests are not rerun in this no-new-candidate stage.
+
+Principal identities:
+
+- measurement Contract / input revalidation:
+  `qa_reasoning_finite_comparison_measurement_contract:e74bae34870ea80d4d23d76b78201f8a8397cc33dcd259c7fee53648353eb59d` /
+  `qa_reasoning_finite_comparison_input_revalidation:624a00d7d89a983eacd56f54a9c75b37b7f22dacc7ba74d205e550c131088b6f`;
+- Gate / Decision / Transition:
+  `qa_reasoning_finite_comparison_gate:670847906f7a7390ca66b9201bd06132a865af607f5e97d89956771a9e203441` /
+  `qa_reasoning_finite_comparison_decision:7b667025d0eec25b6fcc3fa31c2f335d697a7bc4c5e8746d5f68b8a6f58acbc6` /
+  `qa_reasoning_finite_comparison_transition:7a6d325dd1721358deaa72d7f64799dc52fdacb516a8a9e446360b1bde15ddc4`;
+- Report / Manifest / Root:
+  `qa_reasoning_finite_comparison_report:3a6b0ea8b84908dc1c17954ceed4e12d1f5ce3c9bc6f2ac2fce3d68202793457` /
+  `qa_reasoning_finite_comparison_manifest:3e612e9d6937ff6169ce9a88f284ef55cb9a8e3c81d91dcecad56ce170dce047` /
+  `qa_reasoning_finite_comparison_root:ef93a3154167c8c739d557066e49078e5b6564c7ece8f3afa0fa8a3cbc00ec00`.
+
+The finite comparison is closed. Its Transition explicitly stops further mechanical expansion
+along lookup deletion, same-source direct reference, pure labels and independent schedule axes.
+No mechanical repeat independent audit is required. No successor is authorized; a new question
+and separate external decision are required for any future retained-behavior source or model
+experiment. See
+`docs/finance_qa_vnext_finite_own_qualified_candidate_semantic_equivalence_comparison.md`.
+
 ## QA vNext Reasoning-Behavior Typed Candidate-Family Constructibility Preflight
+
+This finite constructibility topic is closed as scoped by the subsequent external review.
+The new six-trajectory semantic comparison is recorded above. The original null class counts,
+formal bytes and historical Transition remain immutable; the new measurement does not backfill them.
 
 The exact 25,343-byte external review at SHA-256
 `893f9718dca59a1d29b1fe9f993471ff15e9fbfeb86cc570ef1b9b9db670ddcc` accepts the
