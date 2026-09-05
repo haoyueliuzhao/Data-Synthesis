@@ -345,9 +345,8 @@ def run_candidate(
 ) -> dict[str, Any]:
     registry = registry or catalog_operation_registry()
     if writer is None:
-        _require(
-            output_root is not None, "runtime.output_root", "output_root or writer is required"
-        )
+        if output_root is None:
+            raise CandidateRuntimeError("runtime.output_root", "output_root or writer is required")
         writer = DurableArtifactWriter(output_root)
         writer.create_root()
     program, schedule = candidate["program"], tuple(candidate["schedule"])
