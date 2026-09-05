@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-09-05
+Audit date: 2026-09-06
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -15,6 +15,154 @@ messages are not treated as experimental evidence.
 - v22 exact-target source tree: `b61605018f35ed9550aa02d6c89e164bbe7252c8`
 - Credentials remain process-environment inputs and are not tracked or serialized
 
+
+## QA vNext Frozen Model Trajectories / Finite Quotient Assignment and Empirical Measurement
+
+Completed on 2026-09-06: the five existing Qualified model trajectories now have formal
+finite quotient Assignments under a new, explicit measurement rule. The exact ten unordered
+pairs yield six equivalences and four retained-semantic differences, with no undetermined
+pair. The resulting partition has two observed valid states. This is a known-data rule
+instantiation and empirical push-forward, not a data-blind confirmation or population estimate.
+Subsequent experiment sections are historical snapshots; their then-current “latest” and
+“unmeasured” statements do not override this bounded new result.
+
+The external review is preserved as exactly 24,120 bytes, SHA-256
+`d5d64a7acf39a0400773d8d1cd8db012f3846597d29d038edfce83b2f010d743`.
+It closes the real-model adapter/six-session execution as `PASS_AS_SCOPED`, with no mandatory
+revision, replacement session or repeat adapter audit. The new 24-byte directive
+`参照审计继续实验`, SHA-256
+`b2dc80634c27edf4db128ad352e77776e2dfe3242a450bfa62783d426b298fcb`,
+authorizes only the recommended zero-execution measurement. It does not authorize more
+Provider sampling, prompt changes, protocol relaxation or old-mainline recovery.
+
+The exact input is the preceding 785-file / 8,312,321-byte pilot directory, its fixed six
+declarations, 51 original public submissions, saved independent qualification records and
+terminal evidence. The new loader verifies the immutable Manifest/Root and session file
+bindings and reuses the previous qualification results; it does not rerun the Provider
+adapter audit or financial QA/candidate execution. The original directory is unchanged.
+Mocks and the old clean deterministic fixtures are not added to the empirical population.
+
+Each mapped representation includes all four common visible Evidence nodes and all actual
+admitted Action, Execution, Observation, explicit Update, accepted Claim and Final nodes.
+Typed edges retain pre-action basis, ordered operand roles, resolved input contents,
+source/authority/locator semantics, grounding and actual producer-consumer dependencies.
+M02/M04/M05/M06 each have 15 nodes / 57 edges; M03 has 20 nodes / 113 edges. These are
+representation sizes, not class-separation criteria or additional samples. Source total T
+remains visible to every model session; no information-isolation claim is introduced.
+
+Canonicalization ignores consistent graph-key renaming and declared set/serialization order,
+uses exact finite Decimal equality, and permits only the registered two-member sum exchange.
+Equivalent pairs contain a complete label- and edge-preserving node bijection. Different
+pairs contain explicit retained node/edge facts; neither graph hashes, size, Final answer
+nor the old support-description label decides a class. Source identities are not merged
+merely because their numeric values coincide. Canonical search is bounded at 4,096
+within-label permutations; unsupported semantics or exhausted interpretation bounds stay
+undetermined rather than being assigned a guessed class.
+
+The original interaction history and its budget/cost effects remain separate from the
+task-solving graph. Every one of the 51 events has a decision record. All 18 rejections are
+retained in a correction ledger: 12 in Qualified sessions meet C0–C4 and are reduced only
+as non-classifying interface corrections; M01's six remain outside the valid mapping domain.
+
+The reduction checks establish that the rejection block has no new execution, Observation,
+accepted Claim or Final; the knowledge state and Action/Update bounds remain unchanged;
+the nearest following admission has the same kind and semantic target; and the change
+only aligns public basis, proposed acceptance content or Final citations with existing
+facts. The rejection's exact proposal, changed fields, parent IDs, later admission and
+one-submission/one-attempt cost remain recorded. No rejected proposed value is relabeled
+as an accepted Claim that was subsequently revised.
+
+In particular, the seven premature percentage-value proposals in Qualified sessions are
+not exact-Decimal surface variants of the full Observation. Their values differ. They may
+be reduced here only because they were never accepted, the pending Observation did not
+change, and a later model Update accepted that same complete Observation. M03's one
+changed definition follows the same rule. The eighth historical rounding error belongs
+to M01 and is not part of the 12 Qualified reductions. Meaningful accepted-Claim changes,
+new verification, actual support switches or unsupported reject/revision events are not
+erased by this accept-only finite rule; they remain undetermined with original evidence.
+
+| Observed valid state membership | Count | Joint frequency in six sessions | Conditional frequency among five Qualified |
+| --- | ---: | ---: | ---: |
+| M02, M04, M05, M06 | 4 | 4/6 | 4/5 |
+| M03 | 1 | 1/6 | 1/5 |
+
+The first class's actual ratio consumes disclosed total Evidence. M03's ratio consumes
+the actually accepted `relation_sum` total Claim, with F/O/part-whole lineage retained
+through its subsequent Update, percentage Claim and Final. These descriptions explain
+the completed graph comparison; they are not inputs that assigned the classes.
+
+The end-to-end result remains `q=5/6`. M01 has complete evidence, protocol validity, QA
+null and Y=0: its accepted final percentage Claim never became a valid submitted Final.
+Its remaining mass 1/6 is a failed outcome, not a valid quotient state or a sixth member
+of conditional support. Mapped Qualified count is five and unmapped count is zero.
+If a required projection/pair is undetermined, this finite implementation withholds the
+complete partition, retains all five Qualified objects as unmapped, and does not renormalize
+a smaller subset. Controls exercise this conservative policy.
+
+The two new State identities are:
+
+- `share_quotient_quotient_state:e28821613cfbbb9cfa893fb96cffce4afd8d51aa05c5abcc80baeb09713c7e24`.
+- `share_quotient_quotient_state:fda7bb3c703072097de094c6ec8441ec97cf973190cdb6e4e1588983b0dfa54c`.
+
+All five Assignments bind the exact Task, verification/public context, protocol, generation
+condition, new measurement rule, original trajectory Manifest and saved qualification.
+No old deterministic D/S State identity is reused. Historical `W_share=1` and the earlier
+compound Task's W null remain unchanged; no new W calculation is claimed. The empirical
+frequencies (4/5, 1/5) are not population probabilities or a training target `pi_t`.
+Contribution, coverage prior, class-internal materialization and Student/training comparison
+remain separate, unexecuted objects.
+
+All four scoped Gates pass, without requiring exactly two states. Twelve isolated new
+measurement controls pass: three equivalence controls, two retained-edge differences, four
+unexplained-causality cases kept undetermined, two invalid-domain/denominator rejections,
+and one unknown-mapping denominator-preservation control. These counterfactual copies are
+not newly Qualified model trajectories and do not add pairs to the formal ten-pair domain.
+
+The independent checker verifies actual event/node/edge coverage, every correction's
+conditions, full bijections or explicit semantic discrepancies, finite canonical State
+objects, relation consistency, Assignment and empirical denominators. It does not call
+the production projector/comparator/measurement functions, model/Host execution or old
+qualification checker. Isolated control results are additionally recomputed by their
+frozen control driver; that recomputation is not an independent control-classifier claim.
+
+Source was frozen before formal materialization at commit
+`aa1451ae261b47218b2a5887f6fbe8f7f01ff871`, tree
+`3ae1cc3639bec151a6f81850aa8f3de7c4ede016`.
+Nine implementation members total 158,165 bytes; six declared references total 153,546 bytes.
+Declared source checks do not claim a complete transitive dependency/environment closure.
+
+The final directory contains 51 files / 1,086,642 bytes: 50 self-excluding Manifest members
+of 1,079,099 bytes and a 7,543-byte Manifest. Its persistence receipt covers 49 earlier
+members and 98 ordered file/directory fsync events; the receipt and Manifest are excluded
+from that receipt's own coverage. These 51 new files are not 51 new Provider calls.
+
+The focused 51 tests pass (nine inputs, 20 projection/measurement, 12 independent and ten
+preflight/rebuild). Persistence unit tests explicitly use isolated test source authority;
+the formal build and a separate full rebuild verify the actual frozen Git source instead.
+That full rebuild reproduces all 51 files byte-for-byte by recomputing the same frozen
+graphs, ten pairs and controls. These are repeated computations on saved data; they add
+no model/candidate execution or statistical sample. Focused Ruff/format (13 files), Mypy
+(nine source modules) and compilation pass. Full source/tests Ruff retains only the
+unrelated historical v26 I001 import-order issue; that old source remains unchanged.
+
+Principal measurement identities:
+
+- Rule:
+  `share_quotient_measurement_contract:1f09e3be2856880fae1936414148bafa694c7a0437bdd3ddaf5ec568c96751be`.
+- Partition:
+  `share_quotient_partition:dbf43e852cdb21cd8d876bd64e238f36cf34f3004213b1c823baf07c1f4ee6ea`.
+- Empirical measurement:
+  `share_quotient_empirical_measurement:9b8e33c8c46aeb3263e7cae76a18ff2d9bd1e5ae86b40476c373a53f20b49757`.
+- Report:
+  `share_quotient_report:839cae2ad653cf8c081731a6fb1225b6d491f469cb6e978bc2a0a8515cce7416`.
+- Manifest / Root:
+  `share_quotient_manifest:cb6731e6dcbc39e37d148e09836b709b4a6b182f0d487a37662474982944531c` /
+  `share_quotient_root:57452a01a2aa34be08ae0244bc602410468a62fe03aa8eda2e215274395a8cde`.
+
+New Provider calls, credential reads, model sessions, candidate Runtime executions,
+source scans, Tasks, GPU jobs, training and Release operations are all zero. The bounded
+measurement is complete; the old mainline remains paused and `next_stage_authorized=false`.
+See [the detailed finite quotient report](finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement.md).
 
 ## QA vNext Real-Model Adapter / Fixed Six-Session Public-Protocol Pilot
 

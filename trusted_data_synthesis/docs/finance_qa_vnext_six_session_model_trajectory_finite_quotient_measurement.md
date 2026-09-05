@@ -2,11 +2,11 @@
 
 ## 1. 当前状态与本轮问题
 
-本轮是零 Provider 的新测量阶段，日期为 2026-09-06。当前已完成精确输入层及其 9 项隔离测试；测量规则和有限投影正在实现，新的声明源码尚未正式冻结，五条 Qualified 轨迹的正式投影、十个配对、Assignment 和经验商分布尚未执行。因此本文件首先登记设计与边界，结果节保持待实测，不能提前把“两类”或 `(4/5,1/5)` 写成结果。
+本轮零 Provider 测量已于 2026-09-06 完成。五条既有 Qualified 轨迹全部完成有限投影和 Assignment；十个配对得到 6 个等价、4 个保留语义差异、0 个未定，形成两个有效商状态。端到端比例仍为 5/6，成功条件下的经验商分布为 (4/5,1/5)，M01 的完整失败不进入有效类。四个 Gate、12 个隔离测量控制、51 项定向测试通过，真实冻结源码的完整重建复现全部 51 个正式文件的精确字节。规则与限定见下文，正式实测见第 13 节；两类不是预设通过条件。
 
 阶段名称：`finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_only`。
 
-计划正式目录：
+正式目录：
 
 ```text
 trusted_data_synthesis/artifacts/qa_reasoning_share_quotient_measurement/
@@ -56,11 +56,11 @@ finance_qa_vnext_share_public_protocol_model_adapter_six_session_pilot_v1_202609
 | 会话 | 父回调数 | 父 Qualified / Y | 本轮角色 |
 | --- | ---: | --- | --- |
 | M01 | 12 | false / 0；QA=null | 完整失败 Outcome；不进入有效 Assignment |
-| M02 | 7 | true / 1 | 待映射有效轨迹 |
-| M03 | 12 | true / 1 | 待映射有效轨迹 |
-| M04 | 6 | true / 1 | 待映射有效轨迹 |
-| M05 | 9 | true / 1 | 待映射有效轨迹 |
-| M06 | 5 | true / 1 | 待映射有效轨迹 |
+| M02 | 7 | true / 1 | 已映射：状态 A |
+| M03 | 12 | true / 1 | 已映射：状态 B |
+| M04 | 6 | true / 1 | 已映射：状态 A |
+| M05 | 9 | true / 1 | 已映射：状态 A |
+| M06 | 5 | true / 1 | 已映射：状态 A |
 
 五条 Qualified 轨迹共有 39 条原始提交，其中 27 条准入、12 条拒绝；M01 的 12 条提交、6 条拒绝及预算失败仍在六会话完整总体中。39、51、5 和 6 是不同统计对象，不能互换分母。
 
@@ -155,9 +155,9 @@ Update 的后继合法 proposed Claim 必须完整等于原先已存在的 Obser
 
 这两个 Decimal 数不相等。本轮不能通过放宽精度、套用 Final 容差或“表面格式相同”使它们相等。
 
-可能成立的归约理由只能是：较短值从未成为 accepted Claim；pending Observation 一直是同一个完整命题；拒绝没有产生任何执行或知识状态效果；后来的独立模型提交才对齐该既有 Observation；其余 C0–C4 也都满足。是否满足必须在正式投影中逐条记录检查结果。
+可能成立的归约理由只能是：较短值从未成为 accepted Claim；pending Observation 一直是同一个完整命题；拒绝没有产生任何执行或知识状态效果；后来的独立模型提交才对齐该既有 Observation；其余 C0–C4 也都满足。正式投影已经逐条保存这些检查结果，实际 12 条 Qualified 拒绝的归约和 M01 六条排除分别见第 13 节。
 
-这八次属于父批次的历史计数，其中一次在 M01；不能把 M01 的 rejected Update 或最终已有的 percent Claim 变成有效 Assignment。其余七次位于五条 Qualified 轨迹内，仍需本轮的具体因果检查，而不是因为已知父会话后来成功就自动归约。另有一次还变更过 definition，必须把该字段差异写入纠正账本，不能只报告 value。
+这八次属于父批次的历史计数，其中一次在 M01；不能把 M01 的 rejected Update 或最终已有的 percent Claim 变成有效 Assignment。其余七次位于五条 Qualified 轨迹内，本轮已逐条完成具体因果检查；归约依据不是父会话后来成功这一标签。另有一次还变更过 definition，必须把该字段差异写入纠正账本，不能只报告 value。
 
 ### 7.2 有意义的拒绝或修订不能归约为接口纠正
 
@@ -196,17 +196,17 @@ M05–M06
 | --- | --- | --- |
 | 端到端成功比例 | `q_hat = 5/6` | 全部六个固定模型 Outcome，包括 M01 |
 | 有效状态联合出现频率 | `u_hat(z) = n_z/6` | 全部六个固定 Outcome |
-| 成功条件下经验商分布 | `pi_hat_gen(z | Y=1) = n_z/5` | 五条已 Qualified 轨迹 |
+| 成功条件下经验商分布 | `pi_hat_gen(z given Y=1) = n_z/5` | 五条已 Qualified 轨迹 |
 
 完整映射时 `sum(n_z)=5`，`sum(u_hat)=5/6`，`sum(pi_hat_gen)=1`。剩余的 `1/6` 是没有形成 Qualified 终局的历史会话质量，不是一个可进入 VTDO 有效支持集合的成功状态。
 
 若有未映射 Qualified 对象，应明确 `sum(n_z)+n_unmapped=5`，保留成功条件分母 5 与联合分母 6；不能删掉未映射对象，再按较小分母重新归一化并称其为“全部成功轨迹的分布”。必要时完整分布字段保持 null/undetermined，同时报告已知计数和未映射质量。
 
-只有正式配对及分区真的支持某个计数结构时才物化对应分数。当前不填写 `(4/5,1/5)`，也不把父标签的次数直接命名为经验商分布。
+只有正式配对及分区支持计数结构时才物化对应分数。本轮十对比较和完整分区已经支持计数 (4,1)，因此物化联合频率 (4/6,1/6) 和成功条件下经验分布 (4/5,1/5)；这不是把父支持标签的次数直接升级为商分布。
 
 这些是固定、已知六会话经验数据在本轮规则下的推前频率，不是总体概率、无条件模型能力、训练目标 `pi_t`、最优权重或跨版本稳定分布。Correction 即使不用于区分类，仍会改变这批历史执行的成本与预算失败风险；本轮不消除其实际消耗。
 
-## 10. 新测量对象的有限控制计划
+## 10. 新测量对象的有限控制
 
 控制只针对新投影/比较/分母边界，不重做父适配器攻击矩阵、不运行模型/mock 会话、不调用金融 kernel。
 
@@ -217,13 +217,13 @@ M05–M06
 | 有意义的 Claim/Update 因果关系改变 | 不能按普通协议纠正删除；当前有限域不足时保持 unknown |
 | 非 Qualified M01 或未定对象被强制 Assignment / 更改分母 | 必须拒绝或保持未定；不把六改五、不把五改已映射数 |
 
-这些控制是输入/图的隔离测量检查，不是新科学样本，不占用或增加固定十个真实无序配对。具体控制数、返回代码和实际结果待实现冻结与正式执行后填写，不按预期先写通过。
+这些控制是输入/图的隔离测量检查，不是新科学样本，不占用或增加固定十个真实无序配对。实际冻结的 12 个控制全部符合预期；具体输入变化、返回类别与限定见第 13.6 节和正式 controls 记录。
 
-## 11. 产物、源码绑定与可重建性计划
+## 11. 产物、源码绑定与可重建性
 
 本轮新的 source authority 只声明实际测量实现及所使用的只读引用文件，绑定新的 source commit/tree/current bytes；不声称完整传递依赖或远端模型环境闭包。父 source authority 作为输入引用保持不变，不修改 2026-09-05 的正式源或工件。
 
-计划产物至少覆盖以下相互独立的对象，实际文件名和身份在接口最终确定后记录：
+正式产物已覆盖以下相互独立的对象；文件、源码和内容身份见第 13 节：
 
 - 外部审计原字节、当前操作指令及本轮零新增执行授权边界。
 - 新 source authority、完整 parent freeze、测量合同和固定生成/验证条件。
@@ -237,42 +237,246 @@ M05–M06
 
 重建目标是从同一冻结输入和测量规则重新得到相同新产物，不读取凭证、不创建新模型轨迹、不补跑 M01、不调用旧适配器或金融内核。重建和隔离单元用例也不扩充十配对或六会话科学总体。
 
-安全 CLI 尚待本轮 preflight 接口完成后据实际代码补充。本文件不猜测 mode、参数或可重复运行语义，也不提供可能误调用父 `prepare`/`online` 的命令。
+安全 CLI 已按实际 preflight 接口列于第 13.8 节。重建会重新计算同一冻结轨迹的投影、十个配对和测量控制；它不是再次运行模型，也不是只复制文件后宣称完成新的语义计算。
 
-## 12. 已完成的输入层检查
+## 12. 最终测试与独立验证
 
-本轮初稿时实际已通过 [test_qa_reasoning_share_quotient_inputs.py](../tests/test_qa_reasoning_share_quotient_inputs.py) 的 9 项测试，结果为 `9 passed in 1.09s`；输入模块及测试 Ruff 检查通过，输入模块 Mypy 通过。该结果只说明当前输入绑定检查，不是正式投影或十配对已经通过。
+本轮四组定向测试合计 51 项通过。冻结前完整运行结果为 `51 passed in 14.38s`；正式工件生成后再次运行得到 `51 passed in 14.63s`，不增加模型样本。
 
-覆盖内容包括：精确父 manifest/root/几何、原资格逐对象复用、51 条原始公开交互及18个拒绝保留、全部785成员与条件/资格引用、新六/五分母排除规则、父字节变化拒绝、mock来源/失败晋升/条件替换拒绝，以及读后父目录不变。
+| 测试组 | 用例数 | 主要覆盖 |
+| --- | ---: | --- |
+| [inputs](../tests/test_qa_reasoning_share_quotient_inputs.py) | 9 | 固定父目录、六个 Outcome、原资格引用、51 原始提交、mock/失败晋升/条件替换拒绝 |
+| [projection](../tests/test_qa_reasoning_share_quotient_projection.py) | 20 | C0–C4、完整图、重命名/集合变化、实际因果差异、失败排除、未定及固定分母 |
+| [independent](../tests/test_qa_reasoning_share_quotient_independent.py) | 12 | 不调用生产侧测量函数的图/纠正/十对证书/状态/Assignment/频率独立核验，及重哈希篡改反例 |
+| [preflight](../tests/test_qa_reasoning_share_quotient_preflight.py) | 10 | 不覆盖输出、审计/源码身份拒绝、完整重建、fsync 顺序、缺失工件、伪造配对/控制/分母拒绝 |
+| 合计 | 51 | 都不是新增科学样本 |
 
-测试把父 `audit_records`、`audit_session`、`aggregate_pilot`、只读数值输出复算入口以及旧比较器的候选 loader/revalidator 设为“调用即失败”，验证新输入加载不依赖这些流程；静态检查还确认输入模块不导入父 preflight、adapter、Engine 或 Runtime。这里只复用已有资格，不重新产生一份 QA 结果。
+测试把 Provider/model/mock 传输、ModelProtocolEngine、三个数值 executor、凭证入口和旧资格重算设为“调用即失败”。独立检查器测试在准备纯内存测量夹具后，还禁用生产侧 projector、comparator 和 measurement producer；独立核验仍能完成其五类检查。
 
-输入读取需要核对已冻结 git 对象和文件内容，但不读取 `.env`，不访问 Provider，不重新扫描 FinQA archive，也不创建完整 mock 会话。该组测试没有生成新的模型行为或金融执行证据。
+持久化单元测试使用显式标注 `test_only_not_a_formal_source_authority=true` 的隔离源码权威，不能用它冒充真实执行前的 Git 冻结证明。第 13 节的正式测量及独立临时目录重建则真实校验了本轮已提交的 source commit/tree/current bytes。两类验证的证据范围分开记录。
 
-## 13. 正式结果：待冻结与实测
+本轮 9 个实现源码与 4 个测试文件共 13 个文件的 Ruff check/format 检查通过；9 个源码文件的 Mypy 与编译检查通过。全项目 `src tests` Ruff 仍只有历史 v26 文件的 `I001`：
 
-本节当前没有新的正式商结果。父六会话的 5/6 是已有资格事实，不代表本轮映射已经完成。
+```text
+src/trusted_synthesis/experiments/vtdo_experiment/
+phase1_v26_fresh_exact_v209_unbound_provider_failure_recovery_online_execution_models.py:2
+```
 
-| 新测量项目 | 初稿状态 |
+该旧文件没有修改，本轮不声称整个仓库已经零静态检查问题，也没有为扩大测试总数运行旧候选实验。
+
+## 13. 正式测量结果
+
+### 13.1 完成状态、源码和精确输入
+
+正式报告状态为 `finite_quotient_measurement_completed_as_scoped`。本轮源码在正式投影物化前提交冻结：
+
+```text
+source commit = aa1451ae261b47218b2a5887f6fbe8f7f01ff871
+source tree   = 3ae1cc3639bec151a6f81850aa8f3de7c4ede016
+```
+
+9 个实现成员合计 158,165 bytes，6 个声明引用合计 153,546 bytes。引用包括 canonical JSON、只读输入/源码绑定、持久化 writer、父会话只读 reader，以及旧商比较和行为语义设计的声明参照；没有执行旧候选比较器。源码没有在正式测量后修改。这里仍只声明这些成员，不是完整传递依赖或运行环境闭包。
+
+父目录全部 785 个文件、8,312,321 bytes 在测量、验证和重建前后保持不变。新输入没有产生第七会话，没有把四个旧 mock 或确定性 D/S fixture 纳入分母。五条合格轨迹的资格来自父独立报告，不是本轮重新计算出的五次 QA 成功。
+
+### 13.2 六个 Outcome 与五个 Assignment
+
+下表的 A/B 只是便于阅读的新状态简称，不是从旧 D/S 标签继承的类别。正式身份在表后给出。
+
+| 会话 | 历史提交 / 准入 / 拒绝 | 本轮投影状态 | Qualified 纠正归约数 | 有效 Assignment |
+| --- | --- | --- | ---: | --- |
+| M01 | 12 / 6 / 6 | `not_qualified` | 0 | 无 |
+| M02 | 7 / 5 / 2 | `mapped` | 2 | A |
+| M03 | 12 / 7 / 5 | `mapped` | 5 | B |
+| M04 | 6 / 5 / 1 | `mapped` | 1 | A |
+| M05 | 9 / 5 / 4 | `mapped` | 4 | A |
+| M06 | 5 / 5 / 0 | `mapped` | 0 | A |
+| 合计 | 51 / 33 / 18 | 5 mapped，0 unmapped，1 非 Qualified | 12 | 5 个 |
+
+M01 不是缺失证据或 `undetermined` 投影；它是已知完整失败。其 `graph=null`、无有效 Assignment，六条拒绝按 `excluded_nonqualified` 保留。已经接受的最终 percent Claim 仍不能替代一个实际有效 Final。
+
+正式 State ID：
+
+```text
+A = share_quotient_quotient_state:e28821613cfbbb9cfa893fb96cffce4afd8d51aa05c5abcc80baeb09713c7e24
+B = share_quotient_quotient_state:fda7bb3c703072097de094c6ec8441ec97cf973190cdb6e4e1588983b0dfa54c
+```
+
+A 的成员为 M02、M04、M05、M06，B 的成员为 M03。每个 Assignment 独立绑定新 State ID、实际 projection、原 qualification、session manifest 和固定 condition，而不是靠显示名称赋类。
+
+### 13.3 十个配对及保留语义证书
+
+| 配对 | 正式结果 | 证书类型 |
+| --- | --- | --- |
+| M02–M03 | `different_retained_semantics` | 实际保留节点语义差异 |
+| M02–M04 | `equivalent` | 完整节点双射及所有带角色边保持 |
+| M02–M05 | `equivalent` | 完整节点双射及所有带角色边保持 |
+| M02–M06 | `equivalent` | 完整节点双射及所有带角色边保持 |
+| M03–M04 | `different_retained_semantics` | 实际保留节点语义差异 |
+| M03–M05 | `different_retained_semantics` | 实际保留节点语义差异 |
+| M03–M06 | `different_retained_semantics` | 实际保留节点语义差异 |
+| M04–M05 | `equivalent` | 完整节点双射及所有带角色边保持 |
+| M04–M06 | `equivalent` | 完整节点双射及所有带角色边保持 |
+| M05–M06 | `equivalent` | 完整节点双射及所有带角色边保持 |
+
+因此是 6 等价、4 保留差异、0 未定。全域完整性、自反、对称和传递检查均通过，随后才生成完整分区。没有“必须两类”的 Gate。
+
+四条 A 轨迹分别有 15 个节点、57 条边，M03 有 20 个节点、113 条边。每条图都含四个共同可见 Evidence；图大小不是差异判据。完整对应还覆盖了 Action 的参数和 basis、实际 resolved inputs、Observation、显式 Update、accepted Claim、grounding、依赖和 Final。
+
+M03 的核心区别不是“执行过一次 sum”这句描述，而是如下已保存的实际生产—消费链：
+
+```text
+accepted total Claim
+= public_share_protocol_claim:927d24ecd31b1c6e280bd9c2be57c52a5ba75862311d3081f86d50802b2f70c7
+
+ratio execution actually consuming that Claim as denominator
+= public_share_protocol_execution:1724bdbdc382fe4a44cb0c130104fb494b590da3e459291d1fec72f102b5884e
+
+accepted percent Claim actually consumed by its valid Final
+= public_share_protocol_claim:7e614c1c48f4549c08f59a8e6e68e6e2bbd9a30ce09dc41f0a6e55f57a6c6bfa
+```
+
+M03 的实际支持是 F/O/part-whole 关系经 `relation_sum`、Observation 和模型显式 accept 后形成总额 Claim，再作为 ratio 的分母；四条 A 轨迹直接消费披露总额 Evidence。各条 Final 的答案同为 93.508458%，并不能消除实际来源和依赖差异。所有轨迹仍可见披露 T，本轮没有构造信息隔离条件或检查模型私有推理。
+
+### 13.4 12 条归约与 6 条排除的逐项边界
+
+以下轮次均为 1 基回调序号。括号中的后继是最近的实际准入提交；每条归约记录都实际通过 C0–C4，未跨过任何中间准入事件。
+
+| 会话 | 拒绝轮次 → 后继准入 | 原始错误与后续对齐 | 决定 |
+| --- | --- | --- | --- |
+| M02 | Final 5、6 → Final 7 | F/T/关系引用改为该既有答案 Claim 的实际 F/T grounding | 两条归约 |
+| M03 | Update 6、7、8、9 → Update 10 | 提前舍入值改为同一完整 Observation；第 9 次还对齐 definition | 四条归约 |
+| M03 | Final 11 → Final 12 | 同一 answer Claim 下的 F/T/关系引用改为实际 F/O/关系 grounding | 一条归约 |
+| M04 | Action 3 → Action 4 | percent 操作及 inputs 不变，补齐实际 evidence basis | 一条归约 |
+| M05 | Action 3 → Action 4 | percent 操作及 inputs 不变，移除无实际使用的关系 basis | 一条归约 |
+| M05 | Update 5、6、7 → Update 8 | 提前舍入值对齐同一完整 Observation | 三条归约 |
+| M06 | 无拒绝 | 无纠正块 | 零条 |
+| M01 | 六条拒绝保留在失败轨迹 | 不因算术链相似或终态已有 Claim 晋升为成功 | 六条 `excluded_nonqualified` |
+
+M03 的 Final 引用由 T 改为 O 不是运行中换了一条实际计算依据：两次 Final 仍指向同一个 accepted answer Claim，此前实际 ratio 一直消费重建总额。类似地，七次错误 Update 的短值都未被接受；这里没有先接受错误值再修订 Claim。
+
+归约只影响本轮类别表示，不抹去 12 次提交的预算消耗，也不删除 M01 的六次错误。全部原始公开 JSON、拒绝 Receipt、State 反馈、顺序和实际成本继续由父工件与新账本引用。
+
+### 13.5 三种经验对象及有限结论
+
+| 对象 | 本轮实际值 |
 | --- | --- |
-| 本轮 source commit/tree 与 authority | 待正式冻结 |
-| measurement contract / condition / parent freeze ID | 待正式产物绑定 |
-| 五条 Qualified 有限图与逐条 C0–C4 判断 | 待实测 |
-| M01 失败/预算与非有效 Assignment 限定 | 设计已固定；待新 Outcome 记录 |
-| 十个无序配对判定及 witness | 待实测 |
-| 自反/对称/传递及全域一致性 | 待实测 |
-| 有效 Assignment、未映射对象与状态定义 | 待实测 |
-| 新类数及 n_z / u_hat / pi_hat_gen | 未评估，不预填两类 |
-| 隔离测量控制与完整新测试数 | 待实际结果 |
-| 新 manifest/root、字节几何及无新增执行重建 | 待实际产物 |
-| 安全 CLI 与最终 Gate | 待真实入口和验证 |
+| 端到端成功比例 | `q_hat=5/6` |
+| 状态 A 的联合频率 | `u_hat(A)=4/6` |
+| 状态 B 的联合频率 | `u_hat(B)=1/6` |
+| 联合有效质量 | `4/6+1/6=5/6` |
+| 成功条件下状态 A 频率 | `pi_hat_gen(A given Y=1)=4/5` |
+| 成功条件下状态 B 频率 | `pi_hat_gen(B given Y=1)=1/5` |
+| Qualified 已映射 / 未映射 | `5 / 0` |
+| 完整失败质量 | `1/6`，不是有效商状态 |
 
-后续只依据实际冻结产物补充本节。若出现 undetermined，记录具体事件、规则或配对解释缺口，不把它改写成“不同行为”，也不把已映射子集的频率重新归一化冒充完整分布。
+正式商类数为 2，只对应这一固定 Task、协议、生成条件、规则和五条有效轨迹。这里不再把新的有限商状态及其经验频率保持为未测量，但也不把它扩大成总体分布或训练目标。
+
+独立的 unknown 控制使一条 Qualified 投影未定后，本实现保守地不物化完整分区：五条 Qualified 都保留为 unmapped，联合/条件分母仍分别为 6/5，完整条件分布为 null，端到端比例仍为 5/6。它没有删掉未知对象后重新归一化。
+
+历史旧 `W_share=1` 及更早 compound Task 的 W null 均保持原样；本轮没有新增 W 计算。覆盖先验、Contribution、类内物化、训练权重和 Student 比较仍为未执行对象。
+
+### 13.6 十二个隔离测量控制
+
+| 控制 | 实际结果 |
+| --- | --- |
+| 一致图 key 双射、显示标签及序列化顺序变化 | equivalent |
+| 已登记 typed set 顺序变化 | equivalent |
+| 真正相等的有限 Decimal 表面变化 | equivalent |
+| 改变实际分母使用边、保持 Final 答案 | different_retained_semantics |
+| 改变 Observation → Update 因果边、保持 Final 答案 | different_retained_semantics |
+| 拒绝块中改变已接受 Claim | undetermined |
+| 拒绝块中改变 pending Observation | undetermined |
+| 被拒绝 Action 与后继之间改变实际 operand | undetermined |
+| 被拒绝 Final 与后继之间改变 answer Claim | undetermined |
+| 强行将 M01 加入有效投影域 | rejected |
+| Qualified 映射未定时保留原分母和五条 unmapped | preserved_unknown |
+| 删除 M01 并将总体分母改为五 | rejected |
+
+12 个控制全部符合预期。这些是已知输入/图的隔离变体及测量机制检查，不是新模型行为，也没有为变体重新做 own-qualification。反事实图的差异结果不能增加正式模型类数，正式同任务配对仍只有原五条有效轨迹的十对。
+
+独立检查器对正式图、纠正、配对证书、Assignment 和经验测量作独立核验；保存的控制结果另外由同一冻结 control driver 重算核对，不能把后者描述成独立的第二套控制分类器。
+
+### 13.7 四个 Gate、工件几何及身份
+
+| Gate | 对象 | 结果 |
+| --- | --- | --- |
+| G0 | 固定历史总体及原资格 | PASS |
+| G1 | 有限投影与明确纠正决定 | PASS |
+| G2 | 十对、关系一致性与 Assignment | PASS |
+| G3 | 经验分母、控制及独立验证 | PASS |
+
+正式目录共 51 个文件、1,086,642 bytes。自排除 Manifest 绑定 50 个成员、1,079,099 bytes；Manifest 自身 7,543 bytes。持久化 receipt 覆盖其前面的 49 个成员及 98 个有序 file/directory fsync 事件，receipt 本身与最终 Manifest 不在该 receipt 的自我覆盖中。
+
+51 个文件不是 51 次新增 Provider 调用。新目录包含六个投影/排除记录、十个配对、两个 State、五个 Assignment、十二个控制以及根级身份、账本、报告和持久化对象；原 51 次公开交互仍保留在父目录。
+
+关键正式身份：
+
+```text
+measurement contract
+= share_quotient_measurement_contract:1f09e3be2856880fae1936414148bafa694c7a0437bdd3ddaf5ec568c96751be
+
+source authority
+= share_quotient_source_authority:027789ca29775927cd1b06090f8dfb7d725a0992fb19c588cd1806959255d43e
+
+parent freeze
+= share_quotient_parent_freeze:3dc72c755d66256042a4c185c7438c42969504c2ccd968499cf64d4361b6dd56
+
+partition
+= share_quotient_partition:dbf43e852cdb21cd8d876bd64e238f36cf34f3004213b1c823baf07c1f4ee6ea
+
+empirical measurement
+= share_quotient_empirical_measurement:9b8e33c8c46aeb3263e7cae76a18ff2d9bd1e5ae86b40476c373a53f20b49757
+
+independent validation
+= share_quotient_independent_validation:3e72c8c7f7aaaabcfe5b03254982132e3ceb9fb13d7c5e338acb0762f58e331d
+
+report
+= share_quotient_report:839cae2ad653cf8c081731a6fb1225b6d491f469cb6e978bc2a0a8515cce7416
+
+manifest
+= share_quotient_manifest:cb6731e6dcbc39e37d148e09836b709b4a6b182f0d487a37662474982944531c
+
+root
+= share_quotient_root:57452a01a2aa34be08ae0244bc602410468a62fe03aa8eda2e215274395a8cde
+```
+
+正式 [报告](../artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906/report.json)、[分区与 Assignment](../artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906/relation_partition.json)、[纠正账本](../artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906/correction_ledger.json) 和 [Manifest](../artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906/artifact_manifest.json) 可分别核对这些对象。
+
+### 13.8 真实冻结源码重建与安全 CLI
+
+正式测量后，在独立临时目录中使用正式 source authority 的真实 Git commit/tree 重新运行 `replay_measurement`。全部 51 个文件、1,086,642 bytes 与原正式目录逐文件、逐字节一致；原目录及父 785 文件均未修改。
+
+本次重建会重新进行同一有限投影、十个配对和控制的计算，并独立核验结果；不是新增十对统计观察，也不声称完全禁止了生产侧 projector/comparator。新增 Provider、凭证读取、模型会话、候选 Runtime、数值 kernel 执行、GPU 作业和统计样本都为 0。
+
+只需检查保存工件时，可从仓库根目录执行：
+
+```bash
+cd trusted_data_synthesis
+PYTHONPATH=src .venv/bin/python -m trusted_synthesis.experiments.qa_reasoning_share_quotient_measurement.preflight \
+  --mode validate \
+  --repo-root .. \
+  --replay-from artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906
+```
+
+`validate` 独立核验正式测量对象，并重算隔离测量控制；它不生成新的正式目录，也不执行模型或旧候选。若需验证完整产物可重建性，同样从仓库根目录执行下列命令，输出到新临时父目录中尚不存在的子目录：
+
+```bash
+cd trusted_data_synthesis
+share_quotient_replay_tmp="$(mktemp -d /tmp/share-quotient-replay.XXXXXX)"
+PYTHONPATH=src .venv/bin/python -m trusted_synthesis.experiments.qa_reasoning_share_quotient_measurement.preflight \
+  --mode replay \
+  --repo-root .. \
+  --replay-from artifacts/qa_reasoning_share_quotient_measurement/finance_qa_vnext_six_session_model_trajectory_finite_quotient_measurement_v1_20260906 \
+  --output-directory "$share_quotient_replay_tmp/rebuilt"
+```
+
+两条命令均不接受模型凭证参数，不调用父 `prepare`/`online`，也不续跑 M01。输出目录必须不存在；实现采用 no-replace 写入，不应把正式目录作为新的输出目标。临时副本可保留检查，以上命令不删除任何文件。
 
 ## 14. 完成条件与不扩张的后续边界
 
 本轮完成条件只有四类：精确六会话输入总体不变；每个保留/归约决定有实际事件和冻结规则依据；十个配对、有限关系与 Assignment 一致；经验计数、成功条件分母、未映射质量和生成条件明确分开。不是“所有轨迹成功”“必须两类”或“必须得到期望比例”。
 
-若五条有效模型轨迹完成非退化的正式分区，可以推进到“固定条件下多个有效商状态与这批样本的经验分布已被实例化”的有限声明。若尚有未解释纠正因果，只修复该测量解释边界，不重新采样、重扫来源或返回整个 callback 安全审计。
+本轮五条有效模型轨迹已经完成非退化的正式分区，因此支持“固定条件下多个有效商状态与这批样本的经验分布已被实例化”的有限声明。若尚有未解释纠正因果，只修复该测量解释边界，不重新采样、重扫来源或返回整个 callback 安全审计。
 
 无论哪种结果，都不自动授权 Contribution、覆盖先验、训练目标权重、Student 比较或旧主链恢复。父执行结果、失败记录与模型条件保持原样；本轮之后的新任务仍需明确范围。
