@@ -1,0 +1,45 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:555f9130ac868c69447ec3a094c5a87794be788f772644e00b54a1f8885354c1",
+  "observation_id": "finance_qa_vnext_observation:d54227c40ec1e52d8a53f67270ef34ba6e55688ac289935a7b5dc97e68fc2e05",
+  "disposition": "accept",
+  "proposed_claim": {
+    "id": "finance_qa_vnext_claim:1e8a3e0f9c3b4a5a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b",
+    "type": "numeric_claim",
+    "predicate": "total_operating_revenues",
+    "subject": "Union Pacific Corporation and subsidiaries",
+    "period": "2015",
+    "scope": "consolidated_issuer",
+    "unit": "millions",
+    "value": "21813",
+    "source_refs": [
+      "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+      "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+    ],
+    "derivation": {
+      "operation": "relation_sum",
+      "inputs": [
+        "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+        "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+        "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+      ],
+      "method": "sum"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:d54227c40ec1e52d8a53f67270ef34ba6e55688ac289935a7b5dc97e68fc2e05"
+    ],
+    "evidence_refs": [
+      "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+      "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+    ],
+    "fulfills_obligation": "total"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "ratio"
+}

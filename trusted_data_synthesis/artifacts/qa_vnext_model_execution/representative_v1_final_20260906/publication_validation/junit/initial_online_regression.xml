@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="164" time="167.611" timestamp="2026-09-06T12:41:41.656020+08:00" hostname="lyg0310"><testcase classname="tests.test_qa_vnext_online_transport" name="test_config_and_actual_http_bytes_freeze_the_current_full_public_request" time="0.005" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_reservation_durability_and_raw_return_without_host_repair[not JSON]" time="0.019" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_reservation_durability_and_raw_return_without_host_repair[  \n]" time="0.017" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_reservation_durability_and_raw_return_without_host_repair[```json\n{}\n```]" time="0.017" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_reservation_durability_and_raw_return_without_host_repair[{ &quot;x&quot;: 1.00 }\n]" time="0.017" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_no_public_string_consumes_one_attempt_and_never_fabricates_submission[None]" time="0.016" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_no_public_string_consumes_one_attempt_and_never_fabricates_submission[]" time="0.015" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_identity_mismatch_preserves_raw_response_without_public_submission[None]" time="0.012" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_identity_mismatch_preserves_raw_response_without_public_submission[unregistered-model]" time="0.012" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_timeout_is_observed_once_without_retry_response_or_exception_secret" time="0.011" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_input_cap_saves_actual_untruncated_request_without_consuming_attempt" time="0.038" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_attempt_33_has_resource_outcome_not_a_send_or_replacement" time="0.283" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_unexpected_conditions_do_not_rewrite_or_drop_available_public_content" time="0.012" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_same_runtime_accepts_17_step_branch_or_new_callback_correction[True]" time="0.958" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_same_runtime_accepts_17_step_branch_or_new_callback_correction[False]" time="0.148" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_httpx_sender_uses_exact_bytes_single_post_and_safe_client_options" time="0.030" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_httpx_total_deadline_has_no_automatic_retry" time="0.015" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_allowed_observed_alias_and_absent_usage_are_retained_without_filling" time="0.013" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_public_string_over_runtime_byte_cap_is_not_truncated_by_transport" time="0.028" /><testcase classname="tests.test_qa_vnext_online_transport" name="test_httpx_response_byte_bound_returns_only_observed_partial_body" time="0.011" /><testcase classname="tests.test_qa_vnext_online_runtime_outcome" name="test_observed_callback_stop_preserves_prefix_without_a_fabricated_submission[0]" time="0.814" /><testcase classname="tests.test_qa_vnext_online_runtime_outcome" name="test_observed_callback_stop_preserves_prefix_without_a_fabricated_submission[1]" time="0.886" /><testcase classname="tests.test_qa_vnext_online_runtime_outcome" name="test_observed_callback_stop_preserves_prefix_without_a_fabricated_submission[2]" time="0.873" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_exact_http_bytes_are_linked_to_every_runtime_submission" time="0.404" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_mock_transport_cannot_become_model_evidence_from_response_model_field" time="0.309" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_complete_observed_failure_is_not_unknown[timeout]" time="0.179" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_complete_observed_failure_is_not_unknown[no_response]" time="0.102" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_complete_observed_failure_is_not_unknown[partial_timeout]" time="0.101" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_complete_observed_failure_is_not_unknown[wrong_model]" time="0.102" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_missing_observed_response_remains_unknown_not_zero_success" time="0.435" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_explicit_not_started_and_missing_start_evidence_are_distinct" time="0.023" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_budget_exhaustion_and_presend_input_resource_stop_keep_prefix_depth" time="0.330" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_qualified_corrected_session_stays_exportable_when_projection_is_unknown" time="0.355" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_complete_condition_violation_is_separate_from_task_qa_failure" time="0.289" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_future_state_http_messages_cannot_replace_actual_runtime_condition" time="0.438" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_old_protocol_registration_does_not_borrow_current_qa_result" time="0.293" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_resealed_transport_cannot_hide_attempts_or_reverse_reservation_order[unreserved_send]" time="0.492" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_resealed_transport_cannot_hide_attempts_or_reverse_reservation_order[send_before_reservation]" time="0.437" /><testcase classname="tests.test_qa_vnext_online_qualification" name="test_not_started_does_not_erase_an_already_observed_resource_stop" time="0.016" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_original_http_messages_and_noncanonical_targets_survive_export_exactly" time="0.884" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_corrected_qualified_session_exports_admitted_targets_with_real_feedback_and_no_assignment" time="0.093" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_program_paths_have_their_own_row_counts_not_the_old_27_rows[branch-17]" time="1.686" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_program_paths_have_their_own_row_counts_not_the_old_27_rows[comparison-3]" time="0.356" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_unqualified_or_unverified_sessions_export_zero_without_reading_http_or_tokenizer[known_failure-False-True-True]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_unqualified_or_unverified_sessions_export_zero_without_reading_http_or_tokenizer[unknown-None-False-False]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_unqualified_or_unverified_sessions_export_zero_without_reading_http_or_tokenizer[success-True-False-True]" time="0.035" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_not_started_session_creates_neither_placeholder_nor_positive_token_check" time="0.001" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_callback_model_label_alone_is_never_export_authority_and_fixture_is_excluded" time="0.097" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_old_public_protocol_cannot_enter_new_candidates" time="0.048" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[public_request_id]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[public_runtime_state_id]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[provider_attempt_id]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[request_id]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[response_id]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[submission_id]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[receipt_id]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_missing_verified_turn_identity_is_rejected_not_filled[model_origin_evidence_id]" time="0.036" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_turn_map_must_cover_every_actual_event_once_including_unadmitted[missing]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_turn_map_must_cover_every_actual_event_once_including_unadmitted[duplicate]" time="0.068" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_turn_map_must_cover_every_actual_event_once_including_unadmitted[future_index]" time="0.041" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_future_state_or_other_receipt_parent_is_rejected[public_request_id]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_future_state_or_other_receipt_parent_is_rejected[public_runtime_state_id]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_future_state_or_other_receipt_parent_is_rejected[submission_id]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_future_state_or_other_receipt_parent_is_rejected[receipt_id]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_future_state_or_other_receipt_parent_is_rejected[admitted]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_qualified_metadata_cannot_bypass_exact_transport_bytes[request_sha256]" time="0.043" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_qualified_metadata_cannot_bypass_exact_transport_bytes[response_sha256]" time="0.044" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_qualified_metadata_cannot_bypass_exact_transport_bytes[public_request_sha256]" time="0.042" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_qualified_metadata_cannot_bypass_exact_transport_bytes[raw_public_content_sha256]" time="0.044" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_transport_binding_cannot_escape_qualified_directory[../outside.body]" time="0.044" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_transport_binding_cannot_escape_qualified_directory[/tmp/outside.body]" time="0.043" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_modified_http_conditions_or_normalized_response_are_not_silently_used[future_user]" time="0.398" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_modified_http_conditions_or_normalized_response_are_not_silently_used[history_append]" time="0.421" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_modified_http_conditions_or_normalized_response_are_not_silently_used[normalized_response]" time="0.398" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_modified_http_conditions_or_normalized_response_are_not_silently_used[manifest]" time="0.390" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_independent_domain_audit_cannot_be_replaced_by_online_success_flags[qualified]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_independent_domain_audit_cannot_be_replaced_by_online_success_flags[qa_valid]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_independent_domain_audit_cannot_be_replaced_by_online_success_flags[trajectory_valid]" time="0.039" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_independent_domain_audit_cannot_be_replaced_by_online_success_flags[evidence_complete]" time="0.037" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_qualification_identity_and_projection_status_are_not_mutable_flags" time="0.071" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_rows_use_frozen_five_file_tokenizer_and_only_original_content_mask" time="5.506" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_long_original_target_overflow_retains_qualified_raw_row_without_truncation" time="1.755" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_tokenization_is_deterministic_and_never_assigns_legacy_weights" time="1.365" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[old_protocol]" time="0.083" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[old_schema]" time="0.078" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[assignment]" time="0.081" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[class_weight]" time="0.081" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[target_bytes]" time="0.081" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_token_consumer_rejects_old_or_rewritten_candidates_before_loading[duplicate]" time="0.083" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_sequence_limit_cannot_be_silently_raised" time="0.080" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[render]" time="0.409" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[prefix]" time="0.627" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[boundary]" time="0.474" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[decode]" time="0.507" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[padding]" time="0.504" /><testcase classname="tests.test_qa_vnext_online_representation" name="test_new_row_boundary_failures_are_not_reported_as_fitted[suffix]" time="0.501" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_all_controls_pass_without_model_population_or_supervision_export" time="5.382" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_branch_reaches_all_17_submissions_in_same_registered_runtime" time="0.012" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_correction_preserves_invalid_first_response_and_gets_fresh_state_feedback" time="0.003" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_no_response_and_wrong_model_have_typed_stop_no_submission_and_audited_prefix[C_empty_content-provider.no_public_content]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_no_response_and_wrong_model_have_typed_stop_no_submission_and_audited_prefix[C_wrong_model-provider.model_identity_mismatch]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_every_actual_unchanged_control_request_fits_allowance_without_future_generalization" time="0.001" /><testcase classname="tests.test_qa_vnext_online_controls" name="test_full_control_artifact_sets_are_sealed_and_re_readable" time="0.151" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_panel_is_three_exact_existing_contexts_with_three_five_three_coverage" time="0.903" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_panel_does_not_invent_an_extra_task_group[]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_panel_does_not_invent_an_extra_task_group[D]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_panel_does_not_invent_an_extra_task_group[S01]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_condition_preregisters_twelve_sessions_in_four_fixed_cbs_rounds" time="1.032" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_condition_budgets_include_final_and_match_the_single_transport_configuration" time="0.717" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_plan_preserves_unknown_not_started_and_neutral_share_without_claiming_model_success" time="0.568" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_identical_freeze_inputs_are_deterministic_and_run_tag_changes_all_session_ids" time="1.718" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_invalid_run_tag_does_not_create_a_condition[]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_invalid_run_tag_does_not_create_a_condition[a/b]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_invalid_run_tag_does_not_create_a_condition[/absolute]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_changed_teacher_prompt_or_budget_cannot_borrow_the_fixed_condition[max_tokens-16384]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_changed_teacher_prompt_or_budget_cannot_borrow_the_fixed_condition[maximum_input_tokens-200000]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_changed_teacher_prompt_or_budget_cannot_borrow_the_fixed_condition[system_prompt-Always choose reconstructed_total.]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_changed_teacher_prompt_or_budget_cannot_borrow_the_fixed_condition[automatic_retries-1]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_freeze_rejects_modified_record_content_with_an_unrecomputed_id[config]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_freeze_rejects_modified_record_content_with_an_unrecomputed_id[implementation]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_baseline_report_cannot_change_content_while_retaining_the_old_id" time="0.602" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_branch_cannot_be_replaced_with_another_source_case" time="0.582" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_source_snapshot_checks_all_python_files_against_one_archive_without_extracting" time="0.003" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_dirty_python_content_or_new_uncommitted_module_prevents_source_freeze[changed]" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_dirty_python_content_or_new_uncommitted_module_prevents_source_freeze[extra]" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_postfreeze_source_changes_are_rejected[changed]" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_postfreeze_source_changes_are_rejected[extra]" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_postfreeze_source_changes_are_rejected[missing]" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_source_member_path_cannot_escape_repository" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_source_snapshot_identity_cannot_be_silently_changed" time="0.002" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_sealed_directory_has_exact_sorted_members_hashes_and_no_self_member" time="0.005" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[bytes]" time="0.004" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[extra]" time="0.004" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[missing]" time="0.003" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[duplicate]" time="0.004" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[identity]" time="0.003" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[noncanonical]" time="0.004" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_and_member_tampering_is_rejected[self_exclusion]" time="0.003" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_or_member_symlinks_are_rejected[manifest.json]" time="0.003" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_manifest_or_member_symlinks_are_rejected[condition.json]" time="0.004" /><testcase classname="tests.test_qa_vnext_online_plan" name="test_directory_cannot_be_resealed_over_an_existing_manifest" time="0.018" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_twelve_synthetic_sessions_complete_real_runtime_qualification_export_and_tokenization" time="55.757" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_launches_follow_four_frozen_rounds_without_replacements" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_share_route_witness_follows_actual_final_scale_ratio_and_denominator_claims" time="0.012" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_reanalysis_is_byte_equal_without_provider_callback_or_operation_execution" time="35.685" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_existing_population_cannot_execute_again_or_read_credentials_again" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_known_observed_failure_continues_all_registered_future_rounds" time="27.877"><failure message="KeyError: 'records'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_known_observed_failure_co0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x71f6dc7cea50&gt;
+
+    
+    def test_known_observed_failure_continues_all_registered_future_rounds(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -&gt; None:
+&gt;       result = _fixture(monkeypatch, tmp_path, behavior="known_failure")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_qa_vnext_online_runner.py:311: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/trusted_synthesis/experiments/finance_qa_vnext_model_execution/runner.py:344: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/data1/zhuxinrui/projects/Data-Synthesis')
+preparation_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_known_observed_failure_co0/preparation')
+execution_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_known_observed_failure_co0/execution')
+output_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_known_observed_failure_co0/execution/analysis')
+
+    def analyze(
+        root: Path,
+        preparation_directory: Path,
+        execution_directory: Path,
+        output_directory: Path,
+    ) -&gt; dict[str, Any]:
+        """Read persisted evidence only. Does not call callbacks or execute task Operations."""
+        root = root.resolve()
+        prepared = _prepared(root, preparation_directory.resolve())
+        execution_directory = execution_directory.resolve()
+        require(
+            execution_directory == Path(prepared["report"]["execution_directory"]),
+            "analysis.registered_execution_directory",
+        )
+        require(
+            read_json((execution_directory / "registrations.json").read_bytes())
+            == prepared["registrations"],
+            "analysis.registration_inventory",
+        )
+        if (execution_directory / "manifest.json").exists():
+            verify_directory(execution_directory, kind="execution_manifest")
+            require(
+                not output_directory.resolve().is_relative_to(execution_directory),
+                "analysis.immutable_execution",
+            )
+        store = DurableStore(output_directory.resolve())
+        qualifications, candidates, session_rows, usage_rows = [], [], [], []
+        for registration in prepared["registrations"]:
+            directory = execution_directory / "sessions" / registration["label"]
+            start_path, session_path = directory / "start.json", directory / "runtime/session.json"
+            start = read_json(start_path.read_bytes()) if start_path.exists() else None
+            session = read_json(session_path.read_bytes()) if session_path.exists() else None
+            adapter = prepared["panel"].adapter(registration["task_group"])
+            qualification = qualify_session(
+                adapter,
+                registration,
+                session,
+                directory / "runtime",
+                directory / "transport",
+                start_record=start,
+            )
+            # Re-analysis must exactly reproduce the qualification saved before aggregation.
+            if (directory / "qualification.json").exists():
+                require(
+                    qualification == read_json((directory / "qualification.json").read_bytes()),
+                    "analysis.qualification_not_reproducible",
+                )
+            qualifications.append(qualification)
+            store.json(f"qualifications/{registration['label']}.json", qualification)
+            exported = export_candidates(session, qualification, directory / "transport")
+            store.json(f"exports/{registration['label']}.json", exported)
+            candidates.extend(exported["rows"])
+            transport_metrics = _transport_metrics(directory / "transport", qualification)
+            store.json(f"transport_metrics/{registration['label']}.json", transport_metrics)
+            usage_rows.extend(transport_metrics["rows"])
+            failures = (
+                Counter(
+                    event["receipt"].get("error_code") or "unspecified"
+                    for event in session["events"]
+                    if not event["receipt"]["admitted"]
+                )
+                if session
+                else Counter()
+            )
+            session_rows.append(
+                {
+                    "label": registration["label"],
+                    "registration_id": registration["id"],
+                    "qualification_id": qualification["id"],
+                    "status": qualification["status"],
+                    "termination_reason": qualification["reason"],
+                    "qa_valid": qualification["qa_valid"],
+                    "qualified": qualification["qualified"],
+                    "provider_attempts": qualification["provider_attempt_count"],
+                    "submissions": qualification["runtime_submission_count"],
+                    "depth_metrics": qualification["depth_metrics"],
+                    "depth_scope": qualification["depth_scope"],
+                    "projection_status": qualification["projection_status"],
+                    "unadmitted_submission_reasons": dict(sorted(failures.items())),
+                    "unadmitted_events": [
+                        {
+                            "turn_index": event["sequence"],
+                            "public_runtime_state_id": event["request"]["state"]["id"],
+                            "submission_kind": event["parsed"]["kind"] if event["parsed"] else None,
+                            "error_code": event["receipt"]["error_code"],
+                            "phase": event["request"]["state"]["phase"],
+                            "pending_obligation": (
+                                event["request"]["state"]["pending_observation"] or {}
+                            ).get("obligation_id"),
+                        }
+                        for event in session["events"]
+                        if not event["receipt"]["admitted"]
+                    ]
+                    if session
+                    else [],
+                    "exported_candidates": exported["candidate_count"],
+                    "share_support": _share_support(session, qualification)
+                    if registration["task_group"] == "S"
+                    else None,
+                }
+            )
+        summary = summarize(qualifications, prepared["coverage"])
+        store.json("measurement.json", summary)
+        store.json("session_outcomes.json", record("session_outcomes", rows=session_rows))
+        pairs = []
+        for group in TASK_GROUPS:
+            eligible = [
+                item
+                for item in qualifications
+                if item["task_group"] == group and item["qualified"] is True
+            ]
+            for left, right in combinations(eligible, 2):
+                comparison = compare_qualified_sessions(left, right)
+                pairs.append(
+                    record(
+                        "finite_pair",
+                        task_group=group,
+                        left_qualification_id=left["id"],
+                        right_qualification_id=right["id"],
+                        comparison=comparison,
+                    )
+                )
+        require(len(pairs) &lt;= 18, "analysis.same_task_pair_budget")
+        store.json(
+            "finite_comparisons.json",
+            record(
+                "finite_comparisons",
+                pairs=pairs,
+                maximum_pairs=18,
+                quotient_assignments=[],
+                full_distribution_materialized=False,
+                class_weights_assigned=False,
+            ),
+        )
+        raw_dataset = record(
+            "supervision_dataset",
+            rows=candidates,
+            candidate_count=len(candidates),
+            quotient_assignments=[],
+            class_weights_assigned=False,
+        )
+        store.json("supervision_candidates.json", raw_dataset)
+        tokens = tokenize_candidates(candidates, prepared["tokenizer_binding"])
+        store.json("token_representations.json", tokens)
+        known_counts = [item["provider_attempt_count"] for item in qualifications]
+        total_attempts = sum(known_counts) if all(type(n) is int for n in known_counts) else None
+        require(total_attempts is None or total_attempts &lt;= 384, "analysis.total_attempt_budget")
+        actual_usage = {}
+        for key in (
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "prompt_cache_hit_tokens",
+            "prompt_cache_miss_tokens",
+            "reasoning_tokens",
+        ):
+            observed = [item["usage"][key] for item in usage_rows]
+            complete_usage = len(usage_rows) == total_attempts and all(type(n) is int for n in observed)
+            actual_usage[key] = {
+                "total": sum(observed) if complete_usage else None,
+                "observed_subtotal": sum(n for n in observed if type(n) is int),
+                "missing_count_in_verified_attempts": sum(n is None for n in observed),
+                "all_registered_attempts_observed": complete_usage,
+            }
+        all_evidence = all(item["evidence_complete"] for item in qualifications)
+        scientific = {
+            "selected_task_model_execution_witness_count": summary[
+                "selected_tasks_with_success_witness"
+            ],
+            "positive_raw_supervision_export_witness": bool(candidates),
+            "positive_token_representation_validated": tokens["positive_representation_validated"],
+            "at_least_one_consumable_token_candidate": tokens["fit_count"] &gt; 0,
+            "all_positive_candidates_fit": bool(candidates) and tokens["not_fit_count"] == 0,
+            "student_training_effect_claimed": False,
+        }
+        report = record(
+            "pilot_report",
+            stage=STAGE,
+            condition_id=prepared["condition"]["id"],
+            implementation_id=prepared["implementation"]["id"],
+            preparation_id=prepared["report"]["id"],
+            qualification_ids=[item["id"] for item in qualifications],
+            measurement=summary,
+            session_rows=session_rows,
+            provider_attempt_count=total_attempts,
+            reserved_token_allowance=total_attempts * 107520 if total_attempts is not None else None,
+            maximum_reserved_token_allowance=41_287_680,
+            actual_response_models=sorted(
+                {model for item in qualifications for model in item["actual_response_models"]}
+            ),
+            actual_usage=actual_usage,
+            maximum_observed_http_body_bytes=max(
+                (item["body_byte_count"] for item in usage_rows), default=None
+            ),
+            maximum_observed_input_admission_proxy=max(
+                (item["input_admission_proxy"] for item in usage_rows), default=None
+            ),
+            condition_flag_counts=dict(
+                Counter(flag for item in usage_rows for flag in item["condition_flags"])
+            ),
+            token_sequence_length_min=min(
+&gt;               (item["sequence_length"] for item in tokens["records"]), default=None
+                                                     ^^^^^^^^^^^^^^^^^
+            ),
+            token_sequence_length_max=max(
+                (item["sequence_length"] for item in tokens["records"]), default=None
+            ),
+            candidate_count=len(candidates),
+            token_fit_count=tokens["fit_count"],
+            token_not_fit_count=tokens["not_fit_count"],
+            token_dataset_id=tokens["id"],
+            finite_comparison_count=len(pairs),
+            finite_comparison_status_counts=dict(
+                Counter(item["comparison"]["relation"] for item in pairs)
+            ),
+            scientific_objects=scientific,
+            observed_generation_condition_counts=dict(
+                Counter(
+                    "valid"
+                    if item["condition_valid"] is True
+                    else "invalid"
+                    if item["condition_valid"] is False
+                    else "unknown_or_not_started"
+                    for item in qualifications
+                )
+            ),
+            gate_scope=(
+                "workflow freezing, binding and evidence accounting; "
+                "not all-model-success or all-generation-conformance"
+            ),
+            gates={
+                "G0_condition_and_binding": all_evidence,
+                "G1_evidence_accounting": all_evidence,
+                "G2_independent_qualification_and_measurement": all_evidence,
+                "G3_original_export_and_representation_accounting": True,
+            },
+            workflow_evidence_complete=all_evidence,
+            full_twelve_session_execution_complete=summary["complete_decidable_population"],
+            provider_calls_by_analysis=0,
+            task_operation_executions_by_analysis=0,
+            student_parameter_loads=0,
+            student_forward_calls=0,
+            student_updates=0,
+            gpu_jobs=0,
+            no_hidden_reasoning_quality_claim=True,
+            old_mainline="remains_paused",
+        )
+E       KeyError: 'records'
+
+src/trusted_synthesis/experiments/finance_qa_vnext_model_execution/runner.py:687: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_online_runner" name="test_missing_evidence_is_unknown_and_halts_future_rounds_without_failure_imputation" time="8.614"><failure message="KeyError: 'records'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_missing_evidence_is_unkno0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x71f548905190&gt;
+
+    
+    def test_missing_evidence_is_unknown_and_halts_future_rounds_without_failure_imputation(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -&gt; None:
+&gt;       result = _fixture(monkeypatch, tmp_path, behavior="unknown")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_qa_vnext_online_runner.py:330: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/trusted_synthesis/experiments/finance_qa_vnext_model_execution/runner.py:344: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/data1/zhuxinrui/projects/Data-Synthesis')
+preparation_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_missing_evidence_is_unkno0/preparation')
+execution_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_missing_evidence_is_unkno0/execution')
+output_directory = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-379/test_missing_evidence_is_unkno0/execution/analysis')
+
+    def analyze(
+        root: Path,
+        preparation_directory: Path,
+        execution_directory: Path,
+        output_directory: Path,
+    ) -&gt; dict[str, Any]:
+        """Read persisted evidence only. Does not call callbacks or execute task Operations."""
+        root = root.resolve()
+        prepared = _prepared(root, preparation_directory.resolve())
+        execution_directory = execution_directory.resolve()
+        require(
+            execution_directory == Path(prepared["report"]["execution_directory"]),
+            "analysis.registered_execution_directory",
+        )
+        require(
+            read_json((execution_directory / "registrations.json").read_bytes())
+            == prepared["registrations"],
+            "analysis.registration_inventory",
+        )
+        if (execution_directory / "manifest.json").exists():
+            verify_directory(execution_directory, kind="execution_manifest")
+            require(
+                not output_directory.resolve().is_relative_to(execution_directory),
+                "analysis.immutable_execution",
+            )
+        store = DurableStore(output_directory.resolve())
+        qualifications, candidates, session_rows, usage_rows = [], [], [], []
+        for registration in prepared["registrations"]:
+            directory = execution_directory / "sessions" / registration["label"]
+            start_path, session_path = directory / "start.json", directory / "runtime/session.json"
+            start = read_json(start_path.read_bytes()) if start_path.exists() else None
+            session = read_json(session_path.read_bytes()) if session_path.exists() else None
+            adapter = prepared["panel"].adapter(registration["task_group"])
+            qualification = qualify_session(
+                adapter,
+                registration,
+                session,
+                directory / "runtime",
+                directory / "transport",
+                start_record=start,
+            )
+            # Re-analysis must exactly reproduce the qualification saved before aggregation.
+            if (directory / "qualification.json").exists():
+                require(
+                    qualification == read_json((directory / "qualification.json").read_bytes()),
+                    "analysis.qualification_not_reproducible",
+                )
+            qualifications.append(qualification)
+            store.json(f"qualifications/{registration['label']}.json", qualification)
+            exported = export_candidates(session, qualification, directory / "transport")
+            store.json(f"exports/{registration['label']}.json", exported)
+            candidates.extend(exported["rows"])
+            transport_metrics = _transport_metrics(directory / "transport", qualification)
+            store.json(f"transport_metrics/{registration['label']}.json", transport_metrics)
+            usage_rows.extend(transport_metrics["rows"])
+            failures = (
+                Counter(
+                    event["receipt"].get("error_code") or "unspecified"
+                    for event in session["events"]
+                    if not event["receipt"]["admitted"]
+                )
+                if session
+                else Counter()
+            )
+            session_rows.append(
+                {
+                    "label": registration["label"],
+                    "registration_id": registration["id"],
+                    "qualification_id": qualification["id"],
+                    "status": qualification["status"],
+                    "termination_reason": qualification["reason"],
+                    "qa_valid": qualification["qa_valid"],
+                    "qualified": qualification["qualified"],
+                    "provider_attempts": qualification["provider_attempt_count"],
+                    "submissions": qualification["runtime_submission_count"],
+                    "depth_metrics": qualification["depth_metrics"],
+                    "depth_scope": qualification["depth_scope"],
+                    "projection_status": qualification["projection_status"],
+                    "unadmitted_submission_reasons": dict(sorted(failures.items())),
+                    "unadmitted_events": [
+                        {
+                            "turn_index": event["sequence"],
+                            "public_runtime_state_id": event["request"]["state"]["id"],
+                            "submission_kind": event["parsed"]["kind"] if event["parsed"] else None,
+                            "error_code": event["receipt"]["error_code"],
+                            "phase": event["request"]["state"]["phase"],
+                            "pending_obligation": (
+                                event["request"]["state"]["pending_observation"] or {}
+                            ).get("obligation_id"),
+                        }
+                        for event in session["events"]
+                        if not event["receipt"]["admitted"]
+                    ]
+                    if session
+                    else [],
+                    "exported_candidates": exported["candidate_count"],
+                    "share_support": _share_support(session, qualification)
+                    if registration["task_group"] == "S"
+                    else None,
+                }
+            )
+        summary = summarize(qualifications, prepared["coverage"])
+        store.json("measurement.json", summary)
+        store.json("session_outcomes.json", record("session_outcomes", rows=session_rows))
+        pairs = []
+        for group in TASK_GROUPS:
+            eligible = [
+                item
+                for item in qualifications
+                if item["task_group"] == group and item["qualified"] is True
+            ]
+            for left, right in combinations(eligible, 2):
+                comparison = compare_qualified_sessions(left, right)
+                pairs.append(
+                    record(
+                        "finite_pair",
+                        task_group=group,
+                        left_qualification_id=left["id"],
+                        right_qualification_id=right["id"],
+                        comparison=comparison,
+                    )
+                )
+        require(len(pairs) &lt;= 18, "analysis.same_task_pair_budget")
+        store.json(
+            "finite_comparisons.json",
+            record(
+                "finite_comparisons",
+                pairs=pairs,
+                maximum_pairs=18,
+                quotient_assignments=[],
+                full_distribution_materialized=False,
+                class_weights_assigned=False,
+            ),
+        )
+        raw_dataset = record(
+            "supervision_dataset",
+            rows=candidates,
+            candidate_count=len(candidates),
+            quotient_assignments=[],
+            class_weights_assigned=False,
+        )
+        store.json("supervision_candidates.json", raw_dataset)
+        tokens = tokenize_candidates(candidates, prepared["tokenizer_binding"])
+        store.json("token_representations.json", tokens)
+        known_counts = [item["provider_attempt_count"] for item in qualifications]
+        total_attempts = sum(known_counts) if all(type(n) is int for n in known_counts) else None
+        require(total_attempts is None or total_attempts &lt;= 384, "analysis.total_attempt_budget")
+        actual_usage = {}
+        for key in (
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "prompt_cache_hit_tokens",
+            "prompt_cache_miss_tokens",
+            "reasoning_tokens",
+        ):
+            observed = [item["usage"][key] for item in usage_rows]
+            complete_usage = len(usage_rows) == total_attempts and all(type(n) is int for n in observed)
+            actual_usage[key] = {
+                "total": sum(observed) if complete_usage else None,
+                "observed_subtotal": sum(n for n in observed if type(n) is int),
+                "missing_count_in_verified_attempts": sum(n is None for n in observed),
+                "all_registered_attempts_observed": complete_usage,
+            }
+        all_evidence = all(item["evidence_complete"] for item in qualifications)
+        scientific = {
+            "selected_task_model_execution_witness_count": summary[
+                "selected_tasks_with_success_witness"
+            ],
+            "positive_raw_supervision_export_witness": bool(candidates),
+            "positive_token_representation_validated": tokens["positive_representation_validated"],
+            "at_least_one_consumable_token_candidate": tokens["fit_count"] &gt; 0,
+            "all_positive_candidates_fit": bool(candidates) and tokens["not_fit_count"] == 0,
+            "student_training_effect_claimed": False,
+        }
+        report = record(
+            "pilot_report",
+            stage=STAGE,
+            condition_id=prepared["condition"]["id"],
+            implementation_id=prepared["implementation"]["id"],
+            preparation_id=prepared["report"]["id"],
+            qualification_ids=[item["id"] for item in qualifications],
+            measurement=summary,
+            session_rows=session_rows,
+            provider_attempt_count=total_attempts,
+            reserved_token_allowance=total_attempts * 107520 if total_attempts is not None else None,
+            maximum_reserved_token_allowance=41_287_680,
+            actual_response_models=sorted(
+                {model for item in qualifications for model in item["actual_response_models"]}
+            ),
+            actual_usage=actual_usage,
+            maximum_observed_http_body_bytes=max(
+                (item["body_byte_count"] for item in usage_rows), default=None
+            ),
+            maximum_observed_input_admission_proxy=max(
+                (item["input_admission_proxy"] for item in usage_rows), default=None
+            ),
+            condition_flag_counts=dict(
+                Counter(flag for item in usage_rows for flag in item["condition_flags"])
+            ),
+            token_sequence_length_min=min(
+&gt;               (item["sequence_length"] for item in tokens["records"]), default=None
+                                                     ^^^^^^^^^^^^^^^^^
+            ),
+            token_sequence_length_max=max(
+                (item["sequence_length"] for item in tokens["records"]), default=None
+            ),
+            candidate_count=len(candidates),
+            token_fit_count=tokens["fit_count"],
+            token_not_fit_count=tokens["not_fit_count"],
+            token_dataset_id=tokens["id"],
+            finite_comparison_count=len(pairs),
+            finite_comparison_status_counts=dict(
+                Counter(item["comparison"]["relation"] for item in pairs)
+            ),
+            scientific_objects=scientific,
+            observed_generation_condition_counts=dict(
+                Counter(
+                    "valid"
+                    if item["condition_valid"] is True
+                    else "invalid"
+                    if item["condition_valid"] is False
+                    else "unknown_or_not_started"
+                    for item in qualifications
+                )
+            ),
+            gate_scope=(
+                "workflow freezing, binding and evidence accounting; "
+                "not all-model-success or all-generation-conformance"
+            ),
+            gates={
+                "G0_condition_and_binding": all_evidence,
+                "G1_evidence_accounting": all_evidence,
+                "G2_independent_qualification_and_measurement": all_evidence,
+                "G3_original_export_and_representation_accounting": True,
+            },
+            workflow_evidence_complete=all_evidence,
+            full_twelve_session_execution_complete=summary["complete_decidable_population"],
+            provider_calls_by_analysis=0,
+            task_operation_executions_by_analysis=0,
+            student_parameter_loads=0,
+            student_forward_calls=0,
+            student_updates=0,
+            gpu_jobs=0,
+            no_hidden_reasoning_quality_claim=True,
+            old_mainline="remains_paused",
+        )
+E       KeyError: 'records'
+
+src/trusted_synthesis/experiments/finance_qa_vnext_model_execution/runner.py:687: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_online_runner" name="test_summary_keeps_unknown_and_not_started_out_of_numeric_success_denominators[unknown]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_summary_keeps_unknown_and_not_started_out_of_numeric_success_denominators[not_started]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_accepts_only_literal_dummy_values_without_interpolation[DEEPSEEK_API_KEY=dummy-key\n-dummy-key]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_accepts_only_literal_dummy_values_without_interpolation[# comment\nIGNORED=value\nexport DEEPSEEK_API_KEY = 'dummy-key'\n-dummy-key]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_accepts_only_literal_dummy_values_without_interpolation[DEEPSEEK_API_KEY = &quot;literal-${DUMMY}-$(ignored)&quot;\n-literal-${DUMMY}-$(ignored)]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[OTHER_KEY=dummy\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=''\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=dummy\nDEEPSEEK_API_KEY=second-dummy\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=dummy\x00value\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=dummy\x01value\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=dummy\tvalue\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY='dummy\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=&quot;dummy\n]" time="0.001" /><testcase classname="tests.test_qa_vnext_online_runner" name="test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values[DEEPSEEK_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n]" time="0.002" /></testsuite></testsuites>

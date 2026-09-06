@@ -1,0 +1,16 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:ac84b5ba2ede51464bd5740e3072c01485a301a4a8eb8bde87e8db80cadd4d76",
+  "observation_id": "finance_qa_vnext_observation:d11894875157196da934ebf4406722a5892c8d0386a2f3e67a8961032e06bdc8",
+  "disposition": "accept",
+  "proposed_claim": null,
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": ["finance_qa_vnext_observation:d11894875157196da934ebf4406722a5892c8d0386a2f3e67a8961032e06bdc8"],
+    "evidence_refs": ["evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e"],
+    "fulfills_obligation": "revenue_earlier_value"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "income_earlier_value"
+}

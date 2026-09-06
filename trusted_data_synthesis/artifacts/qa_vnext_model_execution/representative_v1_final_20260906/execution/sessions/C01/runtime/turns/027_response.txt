@@ -1,0 +1,41 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c42907c405ff21c4bf60436fe3a61cf36d95c13725a06bd108ba5468b59ea66b",
+  "observation_id": "finance_qa_vnext_observation:b984e558ae0423e6280edaf5f0a5c2551f4e4550c1b20d607f405a885f20c939",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:comparison_result",
+    "predicate": "comparison",
+    "subject": {
+      "subject_id": "finqa:HII",
+      "subject_type": "public_company"
+    },
+    "temporal_context": {
+      "basis": "fiscal_period",
+      "frequency": "quarterly",
+      "label": "2014 Q4"
+    },
+    "payload": {
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "difference": "1783",
+      "result_context": {
+        "currency": "USD",
+        "unit": "million USD"
+      }
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:b984e558ae0423e6280edaf5f0a5c2551f4e4550c1b20d607f405a885f20c939"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

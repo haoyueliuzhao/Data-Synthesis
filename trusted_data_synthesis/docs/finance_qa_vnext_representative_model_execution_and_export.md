@@ -1,5 +1,10 @@
 # 统一 QA vNext：代表任务真实模型执行与原始监督表示实验
 
+本轮已完成：12个真实会话中 C03 成功，其余11个在32次提交上限处终止。
+C/B/S 分别为1/4、0/4、0/4；共374个真实请求，没有替换或补采样。
+导出C03的3条原始监督候选并全部通过Token表示检查；未进行Student训练。
+主要拒绝集中于Update完整命题接受，且发现公开呈现缺口；详见第9–12节的证据与限定。
+
 ## 1. 本轮问题和授权范围
 
 用户本轮指令为“参照实验设计方案进行后续实验”。据此执行附件建议的
@@ -226,3 +231,225 @@ Token 统计字段提供 `records`，并非真实 Token 数据缺该字段；补
 24 passed（132.43 秒），包括100条合成候选的真实分词和只读再分析。
 加上真实prepare读回与既有回归，相关唯一测试最终状态为339项通过；
 两个准备轮的0-call诊断分别保留，最终只有修复后启动的12会话进入模型总体。
+
+## 9. 正式运行中的公开 Update 呈现定位（不修改冻结条件）
+
+首轮 C01、B01、S01 均真实收到 `deepseek-v4-pro` 响应，并在32次提交后以
+`submission_budget_exhausted` 终止。独立核验确认模型归属、生成配置及前缀事件完整，
+但无有效 Final，QA=null、Qualified=false。下列定位读取已经保存的实际 HTTP 字节与 Receipt，
+没有调用模型、重放执行器或修补响应；后续轮次继续原已登记条件，不将此分析注入模型请求。
+
+| 已保存提交 | 实际 `proposed_claim` | 与 Observation 的关系 | 该提交准入错误 |
+| --- | --- | --- | --- |
+| C01 / turn001 | null，disposition=accept | 没有提交观察命题 | `admission.exact_observation_acceptance` |
+| B01 / turn002 | 自建扁平 Claim | `12988.7` 与 lookup 观察值相同，但缺 outer output、lineage、operation、operation_contract_id | 同上 |
+| S01 / turn007 | 自建 ID 与扁平 numeric Claim | `21813` 及三个来源引用与 relation_sum 观察一致，但对象包装不同 | 同上 |
+
+这三份请求均包含完整 `state.pending_observation.proposition`，因此不是未提供数值数据。
+但实际公开 Update schema 的 `proposed_claim` 仅为任意 object 或 null，没有 accept/reject
+与该字段的条件关系或完整复制说明。transition options 只包含新解锁义务、不确定性和 next_subgoal；
+中性系统提示也只泛称遵循协议和 schema。实际 HTTP 请求没有传递 `contract()` 中的
+`callback_submits_complete_claim=true`，更没有明确写出整对象 canonical equality 条件。
+
+宿主 `runtime.py` 的真实准入规则则要求：accept 时 `proposed_claim` 与整个
+pending Observation 的 proposition 规范化 JSON 字节相等；reject 时为 null。
+离线 `PublicFixtureCallback` 在代码里直接 deepcopy 完整 proposition，已经内置这项构造知识。
+因此，离线 fixture 成功不是模型侧协议说明充分的证据。
+
+证据位置均在正式根 `execution/sessions/SESSION/`：
+`transport/attempts/NNN_http_request.body`、`NNN_http_response.body`、`NNN_public_content.txt`，
+以及 `runtime/turns/NNN_receipt.json`。选取的三个 NNN 为001、002、007。
+HTTP user JSON 与 Runtime request 的 canonical 字节、HTTP content 与公共原始响应字节均已核对一致。
+对应源码为 `protocol.py` 的 Update、`runtime.py` 的 request/_admit、
+`transport.py` 的 SYSTEM_PROMPT 和 `callbacks.py` 的 fixture Update。
+
+实测结论是：在当前冻结呈现条件下，这些提交违反了宿主的完整命题接受规则。
+“公开呈现不足可能促成失败”是有具体证据支撑的解释，但尚无修订条件对照，不能证明它是唯一原因。
+尤其不能由 B01/S01 的这两次数值一致而结构不符的响应，推断模型数学算错或深度导致失败。
+这不是工件丢失或执行证据被污染；仍按原预算完成已登记总体，既不改提示、放宽准入，也不补样。
+本轮的配置／来源完整性检查通过，不等于“模型获得了无遗漏的全部条件语义”这一更强命题成立。
+以上是首轮诊断时保留的运行策略；最终12个会话已按相同冻结条件全部完成，不是三组最终均为零成功。
+
+## 10. 正式12会话结果
+
+唯一正式根：`artifacts/qa_vnext_model_execution/representative_v1_final_20260906/`。
+实际执行源码提交 `bbc713c6ee1c6c3ef6c0ce57dd9c67c4bbc13955`，tree
+`0863d39c0ba34d8f24c90f50b2ca51e9dacd7fa5`；850个Python源文件在执行后与冻结版本逐字节一致。
+首次／末次发送前reservation分别为2026-09-06 05:11:33.454983和05:24:37.185484 UTC，
+即北京时间13:11:33–13:24:37；这是预留时间范围，不冒充整个分析流程的wall time。
+固定的是每轮C/B/S调度登记及线程提交顺序；并行线程的实际HTTP发送／返回顺序可以交错，
+首次reservation实际来自B01，不是根据模型结果动态重排。
+
+### 10.1 分母、状态与实际资源
+
+| 固定任务 | Success / 登记数 | Known failure | Unknown | Not started | 实际attempts |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| C：注册跨指标比较 | 1/4 = 25% | 3 | 0 | 0 | 118 |
+| B：分支合并 | 0/4 = 0% | 4 | 0 | 0 | 128 |
+| S：来源明确的部分／整体占比 | 0/4 = 0% | 4 | 0 | 0 | 128 |
+| 合计 | 1/12 = 8.33% | 11 | 0 | 0 | 374 |
+
+三个固定任务的等权平均为1/12。每任务只有4个重复会话，这不是稳定能力估计或整个Finance QA覆盖率。
+11个失败均为有完整证据的 `submission_budget_exhausted`，不是HTTP错误、超时或缺失证据；
+无Final时QA=null，但端到端成功为false。全部12份独立资格检查均确认模型归属、生成配置和轨迹／前缀有效。
+
+374次HTTP均返回200，374个不同Provider response ID；返回模型均为 `deepseek-v4-pro`，
+finish_reason均为stop，条件异常flag为0。观察到的system_fingerprint均为
+`a307abda487cd1b463329ccb945ce396`；相同opaque fingerprint不是不可变权重证明。
+无自动重试、fallback、会话替换、额外可用性探测或路线定向补样。
+实际374次预留allowance为40,212,480，低于41,287,680的冻结上限；C03的有效Final节省了10次请求。
+
+| Provider实报usage | 总量 | 缺失情况 |
+| --- | ---: | --- |
+| prompt_tokens | 6,150,285 | 0次缺失 |
+| completion_tokens | 177,057 | 0次缺失 |
+| total_tokens | 6,327,342 | 0次缺失 |
+| prompt_cache_hit_tokens | 5,173,632 | 0次缺失 |
+| prompt_cache_miss_tokens | 976,653 | 0次缺失 |
+| reasoning_tokens | null | 374次均未提供，不能填0 |
+
+实际最大HTTP请求body为63,313 bytes，输入准入proxy为64,337；最大HTTP响应body为2,819 bytes，
+最大公共content为2,191 bytes。实报usage不是预留额度，也不是价格估算。
+当前最大请求小于离线完整branch控制，是因为真实B会话均未越过首个lookup的Update，
+不能据此推断真实完整branch请求的长度或Token适配性。
+
+### 10.2 每个会话的完整状态与实际深度
+
+深度列依次为 structural / semantic-operation / observable-choice。
+“前缀”不是完整任务深度；只有C03的数值来自完整合格会话。
+
+| 会话 | 状态 | attempts / submissions | 已准入Action/Update/Final | 实际执行Operation | 深度及范围 |
+| --- | --- | ---: | --- | --- | --- |
+| C01 | known_failure | 32 / 32 | 1 / 0 / 0 | registered_compare | 1 / 1 / 0，前缀 |
+| B01 | known_failure | 32 / 32 | 1 / 0 / 0 | lookup | 1 / 0 / 0，前缀 |
+| S01 | known_failure | 32 / 32 | 1 / 0 / 0 | relation_sum | 1 / 1 / 1，前缀 |
+| C02 | known_failure | 32 / 32 | 1 / 0 / 0 | registered_compare | 1 / 1 / 0，前缀 |
+| B02 | known_failure | 32 / 32 | 1 / 0 / 0 | lookup | 1 / 0 / 0，前缀 |
+| S02 | known_failure | 32 / 32 | 1 / 0 / 0 | relation_sum | 1 / 1 / 1，前缀 |
+| C03 | success | 22 / 22 | 1 / 1 / 1 | registered_compare | 1 / 1 / 0，完整 |
+| B03 | known_failure | 32 / 32 | 1 / 0 / 0 | lookup | 1 / 0 / 0，前缀 |
+| S03 | known_failure | 32 / 32 | 1 / 0 / 0 | share_ratio | 1 / 1 / 1，前缀 |
+| C04 | known_failure | 32 / 32 | 1 / 0 / 0 | registered_compare | 1 / 1 / 0，前缀 |
+| B04 | known_failure | 32 / 32 | 1 / 0 / 0 | lookup | 1 / 0 / 0，前缀 |
+| S04 | known_failure | 32 / 32 | 1 / 0 / 0 | relation_sum | 1 / 1 / 1，前缀 |
+
+共53份声明为Action的公共提交、320份Update、1份Final；实际准入并执行12个Action，
+只有1个Update产生accepted Claim，只有1个有效Final。其余360次未准入。
+单会话声明为Action的提交最多11次，实际Operation调用均只有1次，没有越过12的Action上限。
+
+| Receipt中的首个错误代码 | 次数 |
+| --- | ---: |
+| `admission.exact_observation_acceptance` | 319 |
+| `admission.alternative_set` | 18 |
+| `admission.public_judgment` | 21 |
+| `admission.selected_action_content` | 2 |
+| JSON解析／结构Schema错误 | 0 |
+
+这是每份Receipt记录的首个准入错误，不是穷尽同一提交的全部潜在违规。
+319/360的未准入事件首先失败于完整命题接受；不能将“接口语义准入失败”统称为JSON生成失败。
+四个B会话都停留在第一个lookup的pending Observation，没有见证语义操作深度三的模型完成轨迹。
+
+Share的实际初始执行是3次relation_sum、1次share_ratio；S01/S02/S04调用relation_sum的turn为6/0/10，
+S03调用share_ratio的turn为6。四者均没有accepted Claim或Final。
+因此仅有两种初始支持选择的前缀观察，完整disclosed/reconstructed支持见证均为0，不能称为两类成功路线。
+
+### 10.3 商状态与广度
+
+仅C03合格，且保留19条未准入历史，故projection_status=undetermined。
+没有同任务合格轨迹对，实际有限比较数为0（上限18）；不把所有失败前缀送入比较器制造类数。
+所有quotient_assignment_id仍为null，没有新的商类分布、旧State ID继承或P/Q加权。
+
+完整11类表位于 `execution/analysis/measurement.json`：3类本轮执行、5类有来源但未做模型测量、
+3类仍无合法当前来源。三个选定任务中只有1个获得完整成功见证；这不是整个Finance QA的1/3覆盖率。
+
+## 11. 三条原始监督候选与可消费Token表示
+
+唯一来源会话C03：
+`finance_qa_vnext_session:7b70df0b9e2e2fcb57c710d6e79b5d710ec26daacbb72fb8b9f3d05157e6787e`。
+实际准入turn为2（Action）、20（accept Update）、21（Final）。
+前两次Action和中间17次Update未准入；没有删除这些历史来换取纯accept投影。
+三个真实请求依次保留 `selected_action_content`、`exact_observation_acceptance`、`claim_accepted` 反馈。
+
+| C03 turn | 目标类型 | Prompt tokens | Target tokens | Suffix tokens | 总长度 | 目标UTF-8 bytes | Token适配 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 2 | Action | 13,878 | 694 | 2 | 14,574 | 1,532 | fit |
+| 20 | Update | 14,526 | 763 | 2 | 15,291 | 1,437 | fit |
+| 21 | Final | 13,785 | 407 | 2 | 14,194 | 701 | fit |
+
+目标Token共1,864；三个序列共44,059 Token，均未截断、无padding，低于24,576上限。
+目标区间分别为[13878,14572)、[14526,15289)、[13785,14192)；causal shift=1，
+logit对应区间两端各减1。Suffix IDs为[151645,198]，与prompt一样不纳入目标label，值为-100。
+全部input_ids、attention、target_mask、labels逐位置核验；目标decode后的UTF-8与同次Provider公共content、
+transport保存文本、Runtime response和导出target逐字节一致。
+
+374条公共提交中正向保留3条、排除371条：失败11会话整组排除352条（包括11条已准入Action），
+成功C03排除19条未准入提交。失败export的excluded_submission_count=0表示整会话先行排除，
+不表示失败会话不存在rejection。三个候选均projection=undetermined、Assignment=null、未赋类权重。
+
+这验证了一个真实成功比较会话的“当前请求—原响应—正向候选—Token表示”链路。
+不声称B/S已取得正向训练表示、不声称新的Mψ或类概率已闭合；没有Student参数加载、forward、
+反向传播、参数更新或GPU作业。依赖导入可能涉及PyTorch，不等于加载受益模型或进行训练。
+
+## 12. 只读复核、工件身份与下一步
+
+正式 `execution/` 为5,128文件、186,480,659 bytes，其中transport子树3,040文件／114,832,209 bytes，
+Runtime子树1,980文件／66,142,709 bytes，analysis为43文件／2,601,616 bytes。
+独立核对3,632个canonical JSON、38份递归manifest，完整成员集合／字节数／SHA均通过。
+374条真实HTTP→reservation→response→公共文本→Submission链逐一成立；没有空内容填补或隐式修复。
+
+同一冻结实现对12份资格记录的只读重验全部逐字节复现；完整再分析也与原analysis全部43个文件同字节。
+重验时对网络、Provider、callback及Task executor设置禁止调用保护，计数全部为0。
+12个export与完整Token dataset另行独立复算同字节，审计前后360个对应工件hash不变。
+`checks/` 为46文件、2,792,271 bytes，保存完整再分析及源快照证明。
+
+三份preparation各405文件，均完整核验；模型配置、software、protocol、catalog、coverage、tokenizer资产、
+原始设计和task_contexts三份完全同字节。condition仅id／implementation_id／run_tag变化，registration
+仅相应派生ID变化；850个Python源文件中只有runner.py在两个调用前修复中发生变化。
+两份superseded准备根均无execution，诊断中的started_sessions、Provider attempts、replacements均为0。
+
+`publication_validation/`另保存8文件／82,889 bytes，包括5份JUnit原文（保留中间失败／错误）
+及验证汇总。按测试身份去重并按执行顺序取最终状态，169项新增测试全部通过；
+加上调用前170项既有回归，共339项相关测试最终通过，最终collect-only亦为339。
+既有170项保存的是执行计数与stdout依据，不伪称另有JUnit；没有宣称整个仓库测试全绿。
+架构检查实际以 `--source-root src` 扫描197个共享层源文件、发现0违规，未把空扫描当作验证。
+新8模块mypy及相关Ruff再次通过。源码、测试及依赖文件与正式冻结提交完全相同。
+
+整个新工件前缀共6,401文件／227,427,292 bytes，包含两个0-call准备轮和正式结果；
+正式根5,587文件／202,045,174 bytes。最大单文件2,026,228 bytes。
+封存前检查没有实际API key字节匹配，不包含.env或Student权重；没有清理或改写原始响应。
+
+在与冻结源快照一致的当前工作树中，可只读复核（输出目录必须不存在，不重新运行模型）：
+
+```bash
+trusted_data_synthesis/.venv/bin/trusted-synthesis finance-qa-vnext-model analyze \
+  --repo-root /data1/zhuxinrui/projects/Data-Synthesis \
+  --prepared-dir /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_model_execution/representative_v1_final_20260906/preparation \
+  --output-dir /tmp/qa-vnext-model-readonly-review
+```
+
+关键身份：
+
+- 正式condition：`qa_vnext_model_execution_condition:7093a766457da0c4c75aa9ddad2443ba21905c5829f9122c07ce2d62dd9982ea`。
+- 正式preparation：`qa_vnext_model_execution_preparation:40bffaabf533831b1312b7b291a8e6a1829e6600c061c9ab6af0c9a0953e80cb`。
+- 实验report：`qa_vnext_model_execution_pilot_report:8a113f97cccc14838eae5405c27c2dc31615ddad57b5d1fa5dce48c5671e30fd`。
+- Token dataset：`qa_vnext_model_execution_token_representation_dataset:b939dc2dcf4a0fb75045898adfe91e66b73d2aa56b7fab9bf6985352746daac5`。
+- 只读checks：`qa_vnext_model_execution_readonly_reanalysis_checks:a0c31b1f6ef05ec1b9e2d5074eb57f319589bf972c2ccde9e98abc0ca98c095f`。
+- execution manifest SHA-256：`6697418c533ae7f4d8b08b9889a287932607b1425c318d865ca60da7eec172b6`。
+- preparation manifest SHA-256：`a83d706ce7614e3de6b4ff7747a9b930f4cd6893a6d509961f820bb9916e1e9b`。
+
+### 分层结论
+
+| 对象 | 本轮结论 |
+| --- | --- |
+| G0–G3工作流：冻结、真实归属、证据核验、原样导出与表示检查 | 闭合；不是模型全成功的PASS |
+| 三个代表任务均可由模型完整完成 | 未成立，仅C取得1个见证 |
+| 完整branch深度三／Share完整支持路线 | 未取得模型见证 |
+| 新协议正向候选与Token表示 | 在C03的3条目标上成立 |
+| 新商映射／类概率／P/Q干预 | 未建立或执行 |
+| Student效果、Contribution、VTDO收益或训练Release | 未测量，不作结论 |
+
+当前唯一优先后续方向是把Update的条件语义和校验反馈明确公开，并在另行登记的新条件下做有界对照：
+说明accept必须提交整个观察proposition、reject必须为null；给出模型可读且与真实准入一致的结构要求。
+这是建议，不是本轮已实施修复或已经得到的因果效应。C03的一次成功不消除呈现缺口，
+其余失败也不能归结为模型普遍不会计算。此时不先扩大来源／题型、不再补样当前冻结总体，
+不重做旧Registry／P/Q实验，不开始Student更新。旧主链继续暂停。

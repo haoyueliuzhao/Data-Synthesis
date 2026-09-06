@@ -1,0 +1,42 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:454b2ae45e786260ba6a5e5e9e71e6c9b5cb06cd53530fc792a7f514c4c7e8f6",
+  "observation_id": "finance_qa_vnext_observation:623d1baba86b96a5e8fd32e0363bc734775825d46702a10d0fcfe63dbcb45155",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "finance_qa_vnext_claim:accepted_result",
+    "operation": "registered_compare",
+    "operation_contract_id": "operation_semantic_contract:30f579114835044d1621372291278403d27357b2050a065e3d51a41ca0b8e684",
+    "inputs": [
+      {
+        "ref_id": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+        "role": "evidence_role_1"
+      },
+      {
+        "ref_id": "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b",
+        "role": "evidence_role_2"
+      }
+    ],
+    "parameters": {
+      "registered_pair": "revenue/operating_income"
+    },
+    "output": {
+      "difference": "1783",
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:623d1baba86b96a5e8fd32e0363bc734775825d46702a10d0fcfe63dbcb45155"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

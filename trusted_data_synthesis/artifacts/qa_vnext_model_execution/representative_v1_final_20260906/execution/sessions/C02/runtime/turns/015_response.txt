@@ -1,0 +1,51 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:fc258d3dfa25a61401e11dc9a728e76c6f1ca3b295af429b07111e5af2a700ec",
+  "observation_id": "finance_qa_vnext_observation:623d1baba86b96a5e8fd32e0363bc734775825d46702a10d0fcfe63dbcb45155",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:registered_compare_result",
+    "predicate": "registered_compare",
+    "subject": {
+      "subject_id": "finqa:HII",
+      "subject_type": "public_company",
+      "name": "Huntington Ingalls Industries"
+    },
+    "temporal_context": {
+      "basis": "fiscal_period",
+      "frequency": "quarterly",
+      "label": "2014 Q4",
+      "valid_from": "2014-10-01",
+      "valid_to": "2014-12-31"
+    },
+    "parameters": {
+      "registered_pair": "revenue/operating_income"
+    },
+    "inputs": [
+      {
+        "role": "evidence_role_1",
+        "ref_id": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c"
+      },
+      {
+        "role": "evidence_role_2",
+        "ref_id": "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+      }
+    ],
+    "output": {
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "difference": "1783"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": ["finance_qa_vnext_observation:623d1baba86b96a5e8fd32e0363bc734775825d46702a10d0fcfe63dbcb45155"],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

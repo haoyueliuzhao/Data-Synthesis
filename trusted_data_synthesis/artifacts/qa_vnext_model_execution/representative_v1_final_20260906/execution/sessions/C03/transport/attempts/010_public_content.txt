@@ -1,0 +1,51 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1dc752a3b0acb4606252e0e0a542b72700d634e18ed321bbea893a360b35c43e",
+  "observation_id": "finance_qa_vnext_observation:5f5cdd02cd1e9c1de7d4838aded9d63555d41a2d07e3cf2c228fd85c7646bce8",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:compare_revenue_operating_income_hii_2014q4",
+    "claim_type": "comparison",
+    "predicate": "registered_compare",
+    "subject": {
+      "subject_id": "finqa:HII",
+      "subject_type": "public_company",
+      "name": "Huntington Ingalls Industries"
+    },
+    "temporal_context": {
+      "basis": "fiscal_period",
+      "frequency": "quarterly",
+      "label": "2014 Q4",
+      "valid_from": "2014-10-01",
+      "valid_to": "2014-12-31"
+    },
+    "result": {
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "difference": "1783",
+      "result_context": {
+        "currency": "USD",
+        "unit": "million USD"
+      }
+    },
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "operation_contract_id": "operation_semantic_contract:30f579114835044d1621372291278403d27357b2050a065e3d51a41ca0b8e684",
+    "source_grounding": "curated_database"
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:5f5cdd02cd1e9c1de7d4838aded9d63555d41a2d07e3cf2c228fd85c7646bce8"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

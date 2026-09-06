@@ -1,0 +1,31 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a7ad10fa56f10454ba960e089ba63ae665e805602c8e8cd468a3d197f9798320",
+  "observation_id": "finance_qa_vnext_observation:6f9363ff6469a361ccef6515bf9ef5095897dd355c85da81460e88cd67e19b60",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:revenue_earlier_value_accepted",
+    "type": "scalar_observation",
+    "predicate": "revenue",
+    "subject_id": "finqa:CDW",
+    "temporal_context": {
+      "basis": "fiscal_period",
+      "label": "FY2015"
+    },
+    "payload": {
+      "currency": "USD",
+      "unit": "million USD",
+      "value": "12988.7"
+    },
+    "lineage": ["evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e"]
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": ["finance_qa_vnext_observation:6f9363ff6469a361ccef6515bf9ef5095897dd355c85da81460e88cd67e19b60"],
+    "evidence_refs": ["evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e"],
+    "fulfills_obligation": "revenue_earlier_value"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "income_earlier_value"
+}

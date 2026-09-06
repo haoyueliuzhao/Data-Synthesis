@@ -1,0 +1,46 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:afbc1a8ee7b8f98f259ac1f96d956cf59ac08ad77e0ffd2ecc1bb50d91f6701a",
+  "decision": {
+    "obligation_id": "result",
+    "subgoal": "compare_quantities",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:623498fd9cb1f69c8bbefbe66dbf47a4ac31166a34ce7efdbc4b5869a1c6c9e8"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:623498fd9cb1f69c8bbefbe66dbf47a4ac31166a34ce7efdbc4b5869a1c6c9e8",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+        "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+      ],
+      "claim_refs": []
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "result",
+      "output_schema": "comparison"
+    }
+  },
+  "operation": "registered_compare",
+  "inputs": [
+    {
+      "evidence_id": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "payload": {
+        "value": "1927",
+        "unit": "million USD"
+      }
+    },
+    {
+      "evidence_id": "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b",
+      "payload": {
+        "value": "144",
+        "unit": "million USD"
+      }
+    }
+  ],
+  "parameters": {
+    "registered_pair": "revenue/operating_income"
+  }
+}

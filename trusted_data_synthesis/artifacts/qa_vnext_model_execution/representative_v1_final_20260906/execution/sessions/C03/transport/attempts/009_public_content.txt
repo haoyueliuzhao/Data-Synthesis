@@ -1,0 +1,38 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c6a393eff918e28c186c2ce7f93e4d7fbd153f6882ca473c511625839e06e5cb",
+  "observation_id": "finance_qa_vnext_observation:5f5cdd02cd1e9c1de7d4838aded9d63555d41a2d07e3cf2c228fd85c7646bce8",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:finance_qa_vnext_comparison_result",
+    "type": "comparison",
+    "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+    "difference": "1783",
+    "result_context": {
+      "currency": "USD",
+      "unit": "million USD"
+    },
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+        "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+      ],
+      "claim_refs": []
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:5f5cdd02cd1e9c1de7d4838aded9d63555d41a2d07e3cf2c228fd85c7646bce8"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

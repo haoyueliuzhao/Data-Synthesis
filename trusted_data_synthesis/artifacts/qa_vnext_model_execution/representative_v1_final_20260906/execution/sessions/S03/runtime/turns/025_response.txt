@@ -1,0 +1,23 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:fe4f68c2263ba921fe87fa5130ece141407610fd762b11a5cd55f7001ee95de9",
+  "observation_id": "finance_qa_vnext_observation:a3ab4e17a625299b7c347a7816ed0dfa1ce1c5414636b3c7dbaff548070fcba2",
+  "disposition": "accept",
+  "proposed_claim": null,
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:a3ab4e17a625299b7c347a7816ed0dfa1ce1c5414636b3c7dbaff548070fcba2"
+    ],
+    "evidence_refs": [
+      "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a"
+    ],
+    "fulfills_obligation": "ratio"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [
+    "percent"
+  ],
+  "next_subgoal": "percent"
+}

@@ -68,7 +68,7 @@ write to that archive.
 ```bash
 cd /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis
 source scripts/activate_project.sh
-python -m pip install -e ".[dev,finance,training]"
+python -m pip install -e ".[dev,finance,online,training]"
 ```
 
 The migrated server and model-cache contract are documented in
@@ -107,6 +107,16 @@ three unsupported-source families remain explicit uninstantiated rows. This is a
 integration regression, not new model coverage or a training release. The older `finance-pilot`
 remains a deterministic execution-trace workflow. See the detailed
 [source-audit revisions and protocol boundaries](docs/finance_qa_vnext_unified_entry_source_audit_revisions.md).
+
+The explicitly online companion is `finance-qa-vnext-model {prepare,run,analyze}`
+(Python 3.11+; executed here with 3.12.13). `prepare` makes zero network calls; `run`
+reads the existing `trusted_data_synthesis/.env` from the repository root and executes a
+single, non-replaceable three-task/twelve-session population; `analyze` is read-only and
+makes no Provider calls. The completed 2026-09-06 population has C/B/Share success counts
+1/4, 0/4, 0/4, 374 requests, and three original supervision candidates with validated token
+masks. It does not establish broad task completion, quotient weights or Student benefit.
+Do not rerun its existing execution directory. See the [frozen conditions, real results and
+Update presentation gap](docs/finance_qa_vnext_representative_model_execution_and_export.md).
 
 ## Canonical Experiment
 

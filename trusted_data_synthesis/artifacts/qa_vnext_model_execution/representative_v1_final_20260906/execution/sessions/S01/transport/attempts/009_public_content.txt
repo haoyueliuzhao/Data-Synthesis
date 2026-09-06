@@ -1,0 +1,38 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:26fbc6e66db3ba58f7fdaa8e40170a7429ab09d62e02c992d8a11a233b0e78d5",
+  "observation_id": "finance_qa_vnext_observation:82304f002e26ab20cf61221657e412d4b1ba1574234935af9ff0e7bb141c2286",
+  "disposition": "accept",
+  "proposed_claim": {
+    "id": "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+    "currency": "dollar_as_disclosed",
+    "definition": "Total operating revenues",
+    "kind": "numeric",
+    "metric": "total_operating_revenues",
+    "period": "2015",
+    "provider": "FinQA",
+    "schema_version": "part_whole_share_numeric_evidence.v1",
+    "scope": "consolidated_issuer",
+    "source_authority": "curated_database",
+    "source_document_id": "UNP/2015/page_56.pdf",
+    "source_record_id": "UNP/2015/page_56.pdf-1",
+    "subject": "Union Pacific Corporation and subsidiaries",
+    "unit": "millions",
+    "value": "21813"
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:82304f002e26ab20cf61221657e412d4b1ba1574234935af9ff0e7bb141c2286"
+    ],
+    "evidence_refs": [
+      "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+      "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+    ],
+    "fulfills_obligation": "total"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "ratio"
+}

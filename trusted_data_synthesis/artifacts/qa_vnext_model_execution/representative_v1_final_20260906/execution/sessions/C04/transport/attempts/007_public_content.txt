@@ -1,0 +1,41 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:0dbac90646a91d7f11be67ed1234d827d1e635af00998a2e012a8e3ac17e2708",
+  "observation_id": "finance_qa_vnext_observation:ae39a288cc6a02c394aaee62fefe1c47c23f3cd681ba789dd3133ef601716c91",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:result:registered_compare:revenue/operating_income",
+    "predicate": "registered_compare",
+    "parameters": {
+      "registered_pair": "revenue/operating_income"
+    },
+    "inputs": [
+      {
+        "role": "left_registered_metric",
+        "evidence_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c"
+      },
+      {
+        "role": "right_registered_metric",
+        "evidence_ref": "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+      }
+    ],
+    "output": {
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "difference": "1783"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:ae39a288cc6a02c394aaee62fefe1c47c23f3cd681ba789dd3133ef601716c91"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

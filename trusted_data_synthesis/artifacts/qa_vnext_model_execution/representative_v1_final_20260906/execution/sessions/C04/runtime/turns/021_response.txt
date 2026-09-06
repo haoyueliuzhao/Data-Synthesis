@@ -1,0 +1,33 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:457f3a5c343006897fb161d6c7c94b4f47b04a95b3b8af1e7c9346ec7b887534",
+  "observation_id": "finance_qa_vnext_observation:ae39a288cc6a02c394aaee62fefe1c47c23f3cd681ba789dd3133ef601716c91",
+  "disposition": "accept",
+  "proposed_claim": {
+    "claim_id": "claim:registered_compare_result",
+    "claim_type": "comparison",
+    "statement": "Revenue is higher than operating_income for Huntington Ingalls Industries for 2014 Q4 by 1783 million USD.",
+    "result": {
+      "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "difference": "1783"
+    },
+    "support": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ]
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:ae39a288cc6a02c394aaee62fefe1c47c23f3cd681ba789dd3133ef601716c91"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

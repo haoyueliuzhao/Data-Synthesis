@@ -16,6 +16,58 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Representative Real-Model Execution and Original Supervision Export
+
+Completed on 2026-09-06 under source commit `bbc713c6ee1c6c3ef6c0ce57dd9c67c4bbc13955`
+(tree `0863d39c0ba34d8f24c90f50b2ca51e9dacd7fa5`). The three existing source-bound
+tasks were each registered for four independent model sessions through the same public v2
+Runtime. This is the first real-model population for the unified domain protocol, not a repeat
+of the earlier fixture or old 27-row class-weight preflight.
+
+The fixed population is complete: C comparison 1/4, B branch 0/4, Share 0/4; one success
+(C03), eleven known submission-budget failures, zero unknown and zero not-started rows.
+There were 374 actual HTTP attempts and raw Runtime submissions, all with observed
+`deepseek-v4-pro` responses and no generation-condition flags, retry, fallback, replacement
+or quota-filling samples. Reported usage totals 6,327,342 tokens; reserved allowance is
+40,212,480 and is explicitly not actual usage. Missing reasoning-token usage remains null.
+
+All 374 responses pass JSON/structural parsing. Of 360 unadmitted submissions, 319 first fail
+the exact observed-proposition acceptance rule. Inspection of saved requests found that
+the complete Proposition is visible, but the accept/full-object-copy and reject/null
+conditional requirements are not explicitly communicated by the public schema or prompt.
+This is an evidenced presentation gap, not proof that it is the only cause, nor a mathematical
+ability or causal-depth finding. The frozen condition was not modified after model responses.
+
+C03 completes in 22 submissions with admitted turns 2/20/21 (Action/Update/Final).
+Its 19 unadmitted corrections remain intact, so Qualified=true coexists with projection
+undetermined. Exactly three original-request/original-response supervision candidates are
+exported, with null quotient Assignments and no class weights; their local token lengths are
+14,574 / 15,291 / 14,194, all below 24,576, with 1,864 target tokens total. No failed-session
+prefix or old row is imported. No same-task qualified pair exists, so finite comparisons are zero.
+
+The branch sessions only reach lookup prefixes (semantic depth zero), not complete depth-three
+model trajectories. Share executes three relation_sum prefixes and one share_ratio prefix;
+none has an accepted Claim or Final, so neither constitutes a complete support-route witness.
+Coverage remains three selected model task types, five source-available unmeasured types and
+three source-unavailable types; one of the three selected tasks has a success witness.
+
+All twelve qualifications and all 43 analysis files reproduce byte-identically under read-only
+guards with zero callback/Provider/executor/network calls. The original execution contains
+5,128 files / 186,480,659 bytes; all recursive manifests verify. Related unique tests have
+339 passing final outcomes, including a real prepare/readback regression. Two earlier zero-call
+preparations are preserved: one stopped at tuple/list serialization equality, another at the
+incorrect root-level credential path. Both stopped before any session or HTTP attempt; the
+actual existing configuration is `trusted_data_synthesis/.env`. These are not replaced model
+sessions, and the final 850-file Python source snapshot remains unchanged after execution.
+
+Next priority: explicitly publish the Update conditional semantics and matching validation
+feedback, then preregister a new bounded condition comparison. Do not expand sources or begin
+Student training on the strength of this single-task witness. No Student weights, forward,
+parameter updates, GPU jobs, Contribution, VTDO intervention or training Release occurred;
+the old mainline remains paused. Earlier sections below retain their point-in-time results.
+
+See [the detailed experiment report, failures, masks and artifact identities](finance_qa_vnext_representative_model_execution_and_export.md).
+
 ## QA vNext Unified Domain Entry — Independent Source-Audit Revisions
 
 The independent source audit of GitHub commit
