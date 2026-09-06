@@ -137,7 +137,135 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=trusted_data_synthesis/src truste
 
 新工件目录：`artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907`。准备目录保存精确设计、两 profile/config、比较合同、原规则、八登记、实际初始 HTTP、Token 政策、来源与实现身份；执行目录保存固定调度、原运行/传输证据、新资格、分析及封存 manifest。
 
-正式结果将在执行后补入，不在冻结设计中预填双支持、成功数量或完整分布。
+### 8.1 正式执行结果与身份
+
+源码冻结提交为 `a6a2c2c7528b0c84c189c1f7c37c1292028379c0`。准备成功后只执行了一次八会话在线入口，四波均按固定 N/E 顺序启动，未重试、回退、替换或追加样本。实际 202 次 Provider 调用，八条结果均证据完整、条件有效、模型来源验证通过；响应模型标识均为 `deepseek-v4-pro`。没有 unknown 或 not_started。
+
+| 对象 | 正式 ID 的哈希部分 |
+| --- | --- |
+| 探索条件 | `1ce7cd127bdabb128949f389ed0f9dd9244a4ff48aa29eb9e61d72c80f89d0ca` |
+| 比较合同 | `54f82514bb8a92c7607639fabb1d750d13bc9ca875947f107793723fd7513ed9` |
+| 准备 manifest | `b89fa592ef49de187418ed4bfc636fdd06af5c3f3e606406f006cdbe40cf0a16` |
+| 执行 manifest | `920893d34dd2409aa4a78f60c737a7bee008781efa945f3b37aadb91386aba6e` |
+| 分析 manifest | `e0c540d5325991a5770732b2ee34c59f8384a51804b045aea2c8ea428c978fb3` |
+| 正式报告 | `8cb45bb6748246a185f224d4909992608a0e6017a33401f56557ea1b743463d6` |
+
+旧商规则 ID 原样复用：`qa_vnext_model_execution_panel_quotient_rule:0af6d8446a28f48387d6ea5697d9284c65907dc633422ee85393699b62d7cfb2`。在线开始后未修改任何源码、提示、资格标准或商归约规则。
+
+完整身份与结果见[正式报告](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/report.json)、[冻结条件](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/preparation/condition.json)和[比较合同](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/preparation/comparison_contract.json)。
+
+### 8.2 八会话分层结果
+
+下表“支持”只给 Qualified 完整行为标注；失败前缀即使执行过相同计算，也不晋升为有效支持。深度按“结构／语义／可观察选择依赖”列示；失败行仅为 `reached_prefix`，不是完整行为深度。
+
+| 会话 | 调用/提交 | A/U/F 准入 | 拒绝 | Qualified | 有效 Final 实际支持 | 新投影 | 深度 |
+| --- | ---: | --- | ---: | --- | --- | --- | --- |
+| N01 | 32 | 1/1/0 | 30 | false | — | ineligible | 1/1/1 前缀 |
+| E01 | 32 | 3/3/0 | 26 | false | — | ineligible | 3/3/2 前缀 |
+| N02 | 32 | 3/3/0 | 26 | false | — | ineligible | 3/3/2 前缀 |
+| E02 | 16 | 3/3/1 | 9 | true | 重建 total Claim | undetermined | 3/3/2 完整 |
+| N03 | 8 | 3/3/1 | 1 | true | 重建 total Claim | undetermined | 3/3/2 完整 |
+| E03 | 32 | 3/3/0 | 26 | false | — | ineligible | 3/3/2 前缀 |
+| N04 | 32 | 1/1/0 | 30 | false | — | ineligible | 1/1/1 前缀 |
+| E04 | 18 | 3/3/1 | 11 | true | 披露总额 Evidence | supported | 2/2/1 完整 |
+
+计数闭合：
+
+```text
+202 = 20 Action + 20 Update + 3 Final + 159 未准入提交
+159 = 59 alternative_set + 8 public_judgment + 92 final_qa
+42 = 三个有效会话的 21 准入 + 21 未准入
+202 = 42 有效会话提交 + 5 × 32 失败会话提交
+21 正向候选 = 9 Action + 9 Update + 3 Final
+```
+
+所有实际 Observation 的首次后继 Update 都完成 accept，共产生 20 个 accepted Claim；这不能把失败前缀当成完整成功。五条失败均为 `submission_budget_exhausted`，`qa_valid=null`，不是内部证据未知或被替换的会话。
+
+### 8.3 获得了什么支持，为什么严格 W 尚未成立
+
+实际支持核查确认：N03、E02 各自的有效 Final 真正依赖本会话执行 sum 并经显式 Update 接受的 total Claim；ratio 以 Claim 输入消费该结果，随后 percent 和有效 Final 完成。这是新的真实模型重建支持可达见证，且中性与软引导条件下各出现一次，不只是离线图修改或失败计算前缀。
+
+E04 虽属软引导组，仍合法使用披露总额 Evidence 完成 Final；它也执行了 sum，但该 total Claim 未被后继 ratio 消费。它仍然 Qualified，证明本轮没有把探索偏好偷换成正确性约束。三条成功最终 result 均为 `{value:"93.508458",unit:"percent"}`，而 N03/E02 的实际 lineage 有三项，E04 有两项；最终数值相同不抹掉真实依据差异。
+
+但严格定义的 `W_support` 还要求当前适用规则下的确定 D/R 商差异配对。本轮两个重建成功的新纠正形态没有被原规则完整解释：
+
+| 会话 | 未定位置（T 从 1 起） | 具体原因 |
+| --- | --- | --- |
+| N03 | T1 | 被拒披露 ratio 提案后先执行 sum，后来 ratio 改用新 total Claim；不是原 S02 那种后来执行相同操作与相同实际输入的关系 |
+| E02 | T1–T2 | 同上：后来实际 R 的 denominator 与原被拒 D 提案不同，冻结规则未定义这类支持转换历史 |
+| E02 | T9、T11、T12、T14 | Final 引用遗漏真实重建支持中的 other Evidence，却加入披露 total Evidence；不是“保留完整真实 lineage，仅附加冗余引用”的原对齐域 |
+
+具体测量原因码为 `panel_quotient.retained_later_proposal_execution_not_identified` 和 `panel_quotient.new_or_replaced_citation_support`。前者不是缺失 ratio 执行记录，而是找不到原规则要求的“相同 operation、inputs、parameters 的后续实际执行”；真实发生的是支持转换。后者不否定最终被接受 Final 的正确性，而是此前被拒引用改变不能按原规则归约。
+
+E02 T10、T13、T15 的其他 Final 表示修正可以按原规则解释，但整条轨迹仍因上述未定项不获得投影。N03 T8 和 E02 T16 的有效 Final 资格继续成立，未重新判为失败。
+
+E04 的 T1 被拒 D 提案 → T2 sum → T3 accept → T4 实际 D ratio，以及 T8–T17 到 T18 的同 Claim Final 对齐，均落在原规则域，因此获得一个正式 Assignment。其实际 sum 与未消费 Claim 继续保留，没有为了映射而删除。
+
+结果应同时表述为：**实际 Qualified 支持中 D=1、R=2；supported=1、undetermined=2；正式 Assignment=1；全有效集合应有 3 对，但当前可比较的 supported 配对为 0。**
+
+所以 `W_support=false` 表示预先要求的双支持商分离见证尚未建立，不表示重建支持没有发生，也不表示三个成功只有一个商类。`complete_class_count=null`，当前一个已赋类只是局部结果；完整 π 仍为 null。没有在看到这些事件后扩规则、删未映射成功或用部分实际图越过原支持 Gate。
+
+具体来源见[商测量、逐事件解释与实际支持证明](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/quotient.json)，原始会话分别为 [N03](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/session.json)、[E02](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/session.json)、[E04](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/session.json)。
+
+### 8.4 成功率、未映射质量与分层权重
+
+| 分层 | 登记 n | 成功 m | 成功比例 q | 已映射联合质量 | 未映射有效联合质量 | 失败质量 | 完整 π |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| N | 4 | 1 | 1/4 | 0/4 | 1/4 | 3/4 | null |
+| E | 4 | 2 | 2/4 | 1/4 | 1/4 | 2/4 | null |
+| Γ_explore | 8 | 3 | 3/8 | 1/8 | 2/8 | 5/8 | null |
+
+质量守恒为 `1/8 + 2/8 + 5/8 = 1`，没有 unknown/not_started 质量。探索源成功比例为 `3/8=0.375`；N/E 成功条件下的混合权重分别为 `1/3`、`2/3`，不是各 `1/2`。
+
+实际支持标签在三个成功中为披露 `1/3`、重建 `2/3`，这只是已核查的支持类型构成，**不能替代尚未闭合的完整商分布**。不能仅对 E04 重归一化为探索源 `π=1/1`；有效但未映射质量仍是 `2/3` 的成功池。
+
+E 的成功率在这八个有限观察中高于 N，不构成稳定提示因果增益、自然路线偏好或统计显著性结论。两个 profile 是不同来源分层，数值本来可以相同或不同；条件中禁止用引导分布替代中性分布的约束不是预言二者数值必不相等。
+
+机器统计见[分层及探索源测量](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/measurement.json)。
+
+### 8.5 保留的负结果
+
+N01 在 T4 起、N04 在 T3 起未正确提交完整当前候选列表，分别出现 29、30 次 `admission.alternative_set`。首个错误分别把正确 ID 尾段 `...7a9f4fbb3f40` 写成 `...7a9f4bbf3f40` 和 `...7a9f4bb3f40`。这些是不同的实际错误，不统一描述成同一种少字错误，也不把全部原始响应假定为完全相同。公开规则和反馈未被删改。
+
+N02、E01、E03 完成了三个实际操作与三个 accept Update，但 Final 分别被拒 23、26、26 次，均未获得有效 Final。比如 E01 最后已经给出六位数值，却将披露 total 与重建支持共同作为四项 citation，而实际重建链要求的是自身真实 lineage；正确数值不能补偿引用不匹配。这里只报告已记录拒绝与输入输出，不推断模型动机或一般算术能力。
+
+这些失败不触发接口修复、自动纠错或补样；它们完整进入本轮 `3/8` 的分母。
+
+### 8.6 原始监督表示与成本边界
+
+三条成功各有七个准入响应，全部形成原样新候选及完整包。E02、E04 的十四条候选保留其真实 E system 指导，N03 的七条保留真实 N prompt；没有给 E 目标重新配中性请求。
+
+| 项目 | 实际结果 |
+| --- | ---: |
+| 原始正向候选 / fit | 21 / 21 |
+| not_fit / 截断 | 0 / 0 |
+| 完整包 | 3（另五条失败保留非完整、非正向包记录） |
+| 最大序列长度 | 24,574，距 32,768 尚余 8,194 |
+| prompt Token | 471,371 |
+| 目标 Token | 18,019 |
+| 协议 suffix Token | 42 |
+| 总真实 Token | 489,432 |
+| CPU batch | 12，每批至多 2 条 |
+| padding Token | 6,208 |
+| 含 padding 总位置 | 495,640 |
+
+即 `471,371 + 18,019 + 42 = 489,432`，再加 `6,208` padding 得 `495,640`。目标 mask 与因果前驱计数均为 18,019，全部在 CPU 检查；不证明 Student 或 GPU 训练效用。Token 记录继承原资格的 Assignment 字段，新的商 Assignment 独立存于 quotient sidecar，不回写原候选或伪造其生成时已有类身份。
+
+新表示 data binding 为 `qa_vnext_model_execution_task_panel_representation_data_binding:e2a2055a27a9af6cb7d8e8714566f3f72da448f2dbb7ff84f05a797d511f40ff`。详见[profile 与原始消息检查](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/representation_profile_checks.json)、[完整包](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/session_packages.json)及 [CPU 加载](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/cpu_loading.json)。
+
+Provider 的 202 次实际 usage 均有 prompt/completion/total 字段：prompt 4,184,419，completion 110,368，合计 4,294,787；缓存命中 2,906,496、未命中 1,277,923，二者和为 prompt 总量。reasoning usage 字段在 202 条中均缺失，保留 null，不能由 thinking disabled 请求推断其测量值为零。
+
+实际预约量 `202 × 107,520 = 21,719,040`，低于上限 27,525,120；最大实际 HTTP body 为 74,092 bytes，低于 98,304。N/E 初始 body 分别为 70,029/70,459 bytes。以上预约量、模型 usage 与本地监督 Token 是三种不同计量，不相加也不互相替代。[传输指标](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/transport_metrics.json)保留全部实际 attempt 来源。
+
+### 8.7 检查、封存与范围结论
+
+新增组件测试 **63/63 通过，22.83 秒**：plan/runner 7、quotient 26、measurement 21、representation 9。Ruff 全部通过，mypy 新增 10 个源码文件通过。[JUnit](../artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/validation/component_tests.xml)保留逐用例结果。没有重跑旧测试或独立复做同内容语义审计。
+
+正式在线阶段允许新 Share Runtime 和新资格核验，实际执行 20 个 Share 操作；非 Share 操作、Student 构造/权重读取和 CUDA 初始化禁止入口计数全零。离线测量/表示阶段 Provider、Runtime、Operation、资格/audit 重跑及 Student/GPU 的 16 个禁止入口计数全零。`cuda_initialized=false`。这是插桩入口的执行边界，不是对任意代码的形式化隔离证明。
+
+历史 12,984 个工件、653,652,590 字节与 898 个前驱 Python 文件原字节不变，旧 113 条候选/Token 和旧 15 个完整包未重编码。新阶段共 2,893 个文件、143,825,264 字节：准备 manifest 32 个成员，执行 manifest 2,858 个成员（含分析目录和分析 manifest），另有准备/执行 manifest 本身及一份 JUnit；分析 manifest 单独绑定 34 个成员。发布前只核对封存成员与字节读回，没有新增模型样本。
+
+本轮工作流已完成，结果不是“全部商测量闭合”：实际披露与重建的完整模型支持都已出现，重建生产—消费链在新条件下得到实证，但两条有效轨迹的纠正历史仍未映射，完整 π 与全量类数仍未定，严格 `W_support` 尚未建立。原有十五轨迹商测量对象继续保持已闭合；本轮没有回写它，也没有开启 Student/Contribution/VTDO 更新。
 
 ## 9. 正确收口与下一对象
 

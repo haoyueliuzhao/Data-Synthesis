@@ -177,6 +177,12 @@ It preregisters four neutral and four soft-guided fresh sessions on the same Sha
 in four fixed N/E waves with at most two parallel sessions and 256 Provider attempts.
 Prompt preference does not change legal actions or qualification; actual denominator
 production and Claim consumption, not profile names, establish the target support witness.
+Completed under source `a6a2c2c7`: 202 calls, N 1/4 and E 2/4 successful; actual qualified
+support is reconstructed Claim twice and disclosed Evidence once. The two reconstructed
+correction histories remain outside the frozen quotient rule, so only one Assignment is
+available, complete π stays null and the strict paired `W_support` is not established.
+All 21 original positive records fit into three complete packages with E prompts retained;
+63 new tests pass, with no replacement, historical rewrites or Student/GPU execution.
 See the [stratified same-task support exploration design and record](docs/finance_qa_vnext_same_task_support_exploration.md).
 
 ## Canonical Experiment

@@ -1,0 +1,19 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:bb12639c94face08e78ed7ae87d65029de88ceeb6e4a29c78e01bfa3fcf19057",
+  "answer_claim_id": "finance_qa_vnext_claim:ad7e3d42df8266681316af9a7afbe3c82160bed877fb2dd8187e85786a10eab4",
+  "result": {
+    "value": "93.508458",
+    "unit": "percent",
+    "metric": "freight_share_percent",
+    "period": "2015",
+    "scope": "consolidated_issuer",
+    "subject": "Union Pacific Corporation and subsidiaries",
+    "currency": "dollar_as_disclosed"
+  },
+  "citations": [
+    "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+    "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+    "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+  ]
+}

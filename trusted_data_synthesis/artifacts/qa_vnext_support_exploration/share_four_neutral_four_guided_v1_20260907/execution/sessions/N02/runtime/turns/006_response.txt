@@ -1,0 +1,47 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b645268fe5bb425124dd73b6bd971ecc9324d3169faff1a5105538025126a9bb",
+  "observation_id": "finance_qa_vnext_observation:840683964068bf0141a4b8c830831878625d87b1208e2ac8ffe558064775258f",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+      "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+    ],
+    "operation": "share_ratio",
+    "operation_contract_id": "operation_semantic_contract:81f63807f37b07aba56742f314c21088458095cbd2f9110ed8dc4ba55f4332c8",
+    "output": {
+      "currency": "dollar_as_disclosed",
+      "definition": "freight divided by legitimate operating revenue total",
+      "lineage": [
+        "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+        "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+        "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+      ],
+      "metric": "freight_share_ratio",
+      "period": "2015",
+      "scope": "consolidated_issuer",
+      "subject": "Union Pacific Corporation and subsidiaries",
+      "unit": "ratio",
+      "value": "0.93508458258836473662494842525099711181405583826159"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:840683964068bf0141a4b8c830831878625d87b1208e2ac8ffe558064775258f"
+    ],
+    "evidence_refs": [
+      "part_whole_share_numeric_evidence:b06f192aa1fe09cd004309de456a2ed1a9e37cbf74cf91c2496d618c528e4f67",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a",
+      "part_whole_share_relation_evidence:44ffd67e2791d65c99ccb101ebc29d15e37fce35939fd0ab9bcbbaf9ff218386"
+    ],
+    "fulfills_obligation": "ratio"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [
+    "percent"
+  ],
+  "next_subgoal": "percent"
+}
