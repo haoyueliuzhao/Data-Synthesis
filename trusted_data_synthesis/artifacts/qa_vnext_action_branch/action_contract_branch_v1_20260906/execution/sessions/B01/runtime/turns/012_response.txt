@@ -1,0 +1,47 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:26b489f992f16113ae4da9c4dd3641ab65e9a3288c78b9c3403b79cb086a279b",
+  "decision": {
+    "obligation_id": "signed_gap",
+    "subgoal": "derive_quantity",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:2a9fc2bc8a1f2eabebddf62419313db7fdb3fb5dd7be5274e393e7bc1b74e07b"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:2a9fc2bc8a1f2eabebddf62419313db7fdb3fb5dd7be5274e393e7bc1b74e07b",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43",
+        "evidence:finqa_archive_cell:809dca76084da983b8f7f0f40865512eb49875cdb76603314e0ba370725315e2",
+        "evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e",
+        "evidence:finqa_archive_cell:ffaccdc5c07a6b746edb92488f1eb1323ac7aab6380dd7f0c4cff079b7301773"
+      ],
+      "claim_refs": [
+        "finance_qa_vnext_claim:02cc1dc4687e5f5458db0473c075a2067707daff1925cfa9af73476aa4513110",
+        "finance_qa_vnext_claim:655a6fdc841834f25f763c9c43daa58f7b31e14a98a466179a82bd88fb3b8911"
+      ]
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "signed_gap",
+      "output_schema": "scalar"
+    }
+  },
+  "operation": "signed_percentage_point_gap",
+  "inputs": [
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:02cc1dc4687e5f5458db0473c075a2067707daff1925cfa9af73476aa4513110",
+      "role": "income_growth",
+      "selector": "value"
+    },
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:655a6fdc841834f25f763c9c43daa58f7b31e14a98a466179a82bd88fb3b8911",
+      "role": "revenue_growth",
+      "selector": "value"
+    }
+  ],
+  "parameters": {}
+}

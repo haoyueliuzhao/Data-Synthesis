@@ -1,0 +1,37 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:594a96bcfc822bae1d2494159c4b9d84357f869c96ad3ada68d31a2ae8385f8f",
+  "observation_id": "finance_qa_vnext_observation:638fdeb15205cd49081e07e18832b736ec3c14de911fbb88db5cbd91b9c763fd",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43"
+    ],
+    "operation": "lookup",
+    "operation_contract_id": "operation_semantic_contract:5973498aa753de7f23db18e12807d21c8a71baf5af45805d961b3d6134df6417",
+    "output": {
+      "payload": {
+        "currency": "USD",
+        "kind": "scalar_observation",
+        "unit": "million USD",
+        "value": "13981.9"
+      },
+      "selected_ref": "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:638fdeb15205cd49081e07e18832b736ec3c14de911fbb88db5cbd91b9c763fd"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43"
+    ],
+    "fulfills_obligation": "revenue_later_value"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [
+    "revenue_growth"
+  ],
+  "next_subgoal": "income_earlier_value"
+}

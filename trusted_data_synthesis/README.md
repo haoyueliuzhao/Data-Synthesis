@@ -134,8 +134,11 @@ See the [six-session design and execution record](docs/finance_qa_vnext_repaired
 
 The next bounded entry is
 `python -m trusted_synthesis.experiments.finance_qa_vnext_action_branch {prepare,run,analyze}`.
-It publishes the existing Action full-candidate and selected-offer relations, then measures only
-two fresh B sessions (64 Provider attempts maximum), without repeating C/S or changing admission.
+It completed two fresh B sessions under published Action full-set/selected-offer rules:
+2/2 Qualified, 34 actual Provider calls, 16/16 first-Update commits, semantic depth 3,
+and no rejection. Original admission, Update and Final standards are unchanged. Of 34 raw
+supervision candidates, 32 fit the Token limit; two overlength Updates remain untruncated.
+No C/S repeat, cross-condition success pooling or Student training occurred.
 See the [Action contract repair and original B reachability report](docs/finance_qa_vnext_action_public_contract_branch_reachability.md).
 
 ## Canonical Experiment

@@ -1,0 +1,40 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f2e6e50ae1a4988007bfd2347fb31b13c573b9a7bddb5a7a170085574600cee1",
+  "decision": {
+    "obligation_id": "result",
+    "subgoal": "derive_quantity",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:8cfa88c442ab78af254ee093359d185ca3294971a46e41c556aafc93e3aa34cc"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:8cfa88c442ab78af254ee093359d185ca3294971a46e41c556aafc93e3aa34cc",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43",
+        "evidence:finqa_archive_cell:809dca76084da983b8f7f0f40865512eb49875cdb76603314e0ba370725315e2",
+        "evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e",
+        "evidence:finqa_archive_cell:ffaccdc5c07a6b746edb92488f1eb1323ac7aab6380dd7f0c4cff079b7301773"
+      ],
+      "claim_refs": [
+        "finance_qa_vnext_claim:69d43af12adb1780e1bcb7421df24213473e70417070a50df59de2ae160b715c"
+      ]
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "result",
+      "output_schema": "scalar"
+    }
+  },
+  "operation": "absolute_percentage_point_gap",
+  "inputs": [
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:69d43af12adb1780e1bcb7421df24213473e70417070a50df59de2ae160b715c",
+      "role": "signed_gap",
+      "selector": "value"
+    }
+  ],
+  "parameters": {}
+}

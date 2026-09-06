@@ -100,4 +100,158 @@ PYTHONPATH=trusted_data_synthesis/src trusted_data_synthesis/.venv/bin/python \
 
 ## 7. 实际结果
 
-调用前记录：新增 23 项测试和 69 项局部控制已通过；相关回归与真实已提交 CLI 往返仍在完成。尚未发起本轮真实 Provider 调用。待两条实际登记记录、独立复核与导出完成后，本节按实际结果填写，不以测试或历史 C/S 成功替代 B 的结果。
+### 7.1 冻结身份与完整结果
+
+本轮已经完成。真实调用使用冻结提交 `1cf4d520d8bca30ffbdda7bfb059b5e8607cd8dd` 的 871 个 Python 源文件；之后没有更改源码、测试、采样配置、候选集合或验证标准。工件根为 `trusted_data_synthesis/artifacts/qa_vnext_action_branch/action_contract_branch_v1_20260906/`，以下相对路径从此处起算。
+
+| 冻结对象 | 实际身份 |
+| --- | --- |
+| Condition | `qa_vnext_model_execution_action_branch_condition:ba20f2e9fc60c60f557240c9627f9c4734025967176cd21b869c90ed222fa2e9` |
+| Preparation | `qa_vnext_model_execution_action_branch_preparation:b721f65c1c7f85308c2934f085549e3e450e84bf5a9f7887ab90e52a4aca86d1` |
+| Action publication | `finance_qa_vnext_action_public_contract:fe48fd87bdf017de09f3091503230f48a83ce4ece83faf20e0c06dedec6baff8` |
+| 实际报告 | `qa_vnext_model_execution_pilot_report:4a3d9a7f1aad76406cf3e56bab824c27ed8e9f5e6ff35d23964f839c16d13c49` |
+| Execution manifest | `qa_vnext_model_execution_execution_manifest:6d0ae251cf016d2131c059fb49b1a3204573988c972230a2a56473e08eef7a42` |
+
+| 会话 | Provider / Submission | 准入 Action / Update / Final | 未准入 | 完整结果 |
+| --- | ---: | ---: | ---: | --- |
+| B01 | 17 / 17 | 8 / 8 / 1 | 0 | 有效 Final，独立 QA/轨迹通过，Qualified |
+| B02 | 17 / 17 | 8 / 8 / 1 | 0 | 有效 Final，独立 QA/轨迹通过，Qualified |
+| 合计 | 34 / 34 | 16 / 16 / 2 | 0 | 2/2 |
+
+两行完整、可判定，q_B,new=2/2=1；known_failure、unknown、not_started 均为零。至少一个完整 B 见证的冻结科学条件满足，执行工作流亦完整。每会话在第 17 次提交的有效 Final 后立即停止；没有补样、网络重试、回退、替换、Host 响应修复或两会话之后的新 Provider 调用。
+
+34 条实际响应全部通过 JSON/结构 Schema，HTTP 均为 200，身份均为 `deepseek-v4-pro`，无观测到的条件偏离。34/34 实际 HTTP body 都含中性完整任务指令、原 Update publication 和新 Action publication；两个实际首请求分别与调用前冻结的空初态 Request/HTTP 一致。
+
+这回答了“B 在新 Action 公开条件下能否完整完成”的有限构造问题，而不是稳定总体能力的精确估计。没有同期 O 组，不将旧 B 0/2 与新 B 2/2 的差值当成精确因果效应；模型响应身份也不构成服务权重不可变的保证。
+
+### 7.2 候选全集约束已进入真实执行
+
+16/16 个实际 Action 都在第一次提交时列全当前候选且无重复、选择当前合法项并通过后续对应关系与依赖检查。没有 alternative_set、selected_action_content 或 public_judgment 拒绝。没有把仅通过集合条件、但后续拒绝的 Action 计作执行成功。
+
+下表 T 为从 1 起算的 Submission 序号。两条会话并非被强制成唯一执行脚本：
+
+| Action T | B01 实际操作（当时可用候选数） | B02 实际操作（当时可用候选数） |
+| ---: | --- | --- |
+| 1 | revenue_earlier lookup（4） | revenue_earlier lookup（4） |
+| 3 | revenue_later lookup（3） | revenue_later lookup（3） |
+| 5 | revenue_growth（3） | income_earlier lookup（3） |
+| 7 | income_earlier lookup（2） | income_later lookup（2） |
+| 9 | income_later lookup（1） | revenue_growth（2） |
+| 11 | income_growth（1） | income_growth（1） |
+| 13 | signed_percentage_point_gap（1） | signed_percentage_point_gap（1） |
+| 15 | absolute_percentage_point_gap（1） | absolute_percentage_point_gap（1） |
+
+例如前两个 revenue lookup 接受后，当前集合出现新的 revenue_growth ID，而非仅删除旧 ID；两个模型会话均正确使用这一当前集合。实际候选清单恰好都采用 Request 内的列出顺序，但并没有据此增加排序标准：清单换序仍合法由零调用控制证明，不冒称实际模型尝试过所有排列。
+
+新反馈的 missing/extra/duplicate 与字段来源功能通过局部和模拟纠正测试；本轮真实会话没有拒绝，所以没有真实模型使用新增拒绝反馈来纠正的样本，不能单独声称测得反馈改善。
+
+### 7.3 实际 Claim 消费与分支推进
+
+| 位置 | B01 实际证据 | B02 实际证据 |
+| --- | --- | --- |
+| 首 Action 全集准入 | T1，四个当前候选完整声明 | T1，同左 |
+| 首 lookup Claim commit | T2 | T2 |
+| 首非透明操作与 Claim 消费 | T5 revenue_growth 使用 T2/T4 接受的 lookup Claim | T9 revenue_growth 使用 T2/T4 接受的 lookup Claim |
+| 第二个 growth 分支 | T11 income_growth 使用 T8/T10 Claim | T11 income_growth 使用 T6/T8 Claim |
+| 分支合并 | T13 按原 income_growth、revenue_growth 输入角色消费两条已接受增长结果 | T13，同样的角色和依赖关系 |
+| absolute 后继 | T15 消费 T14 接受的 signed_gap Claim | T15，同左 |
+| 有效 Final | T17 使用 T16 接受的 result Claim | T17，同左 |
+
+不是只在文本中提出 growth：每一步都存在原样模型 Action、已准入 Receipt、真实执行记录、Observation、后续模型 Update、accepted Claim 和后继引用。完整 ID、输入角色及 selector 见 `execution/analysis/progress/B01.json`、`B02.json`；数值输出亦由独立资格器复验。
+
+下面按每个实际 Observation 列出处理与消费。每一行均为首次 Update 合格、处理提交数 1、最终 accept、首次拒绝 null；Claim 都有真实后继消费者。
+
+| 会话 | Observation 义务 | Action T | Update T | Claim 后继消费者 |
+| --- | --- | ---: | ---: | --- |
+| B01 | revenue_earlier_value | 1 | 2 | growth T5 |
+| B01 | revenue_later_value | 3 | 4 | growth T5 |
+| B01 | revenue_growth | 5 | 6 | signed gap T13 |
+| B01 | income_earlier_value | 7 | 8 | growth T11 |
+| B01 | income_later_value | 9 | 10 | growth T11 |
+| B01 | income_growth | 11 | 12 | signed gap T13 |
+| B01 | signed_gap | 13 | 14 | absolute T15 |
+| B01 | result | 15 | 16 | Final T17 |
+| B02 | revenue_earlier_value | 1 | 2 | growth T9 |
+| B02 | revenue_later_value | 3 | 4 | growth T9 |
+| B02 | income_earlier_value | 5 | 6 | growth T11 |
+| B02 | income_later_value | 7 | 8 | growth T11 |
+| B02 | revenue_growth | 9 | 10 | signed gap T13 |
+| B02 | income_growth | 11 | 12 | signed gap T13 |
+| B02 | signed_gap | 13 | 14 | absolute T15 |
+| B02 | result | 15 | 16 | Final T17 |
+
+因此本轮首次接受为 16/16 个实际到达的 Observation：lookup 8、growth 4、signed gap 2、absolute gap 2；reject、Update 拒绝和终止时待处理 pending 均为零。growth、signed gap 和 absolute gap 从前序仅有局部控制，推进到了新条件下的真实模型 Update/commit/消费见证。不把 16 个 Observation 写成 16 个完整任务。
+
+两会话的已验证数值相同：revenue lookup 为 `12988.7`、`13981.9`，income lookup 为 `742`、`819.2`（原数据单位 million USD）。原 Operation 得到 revenue growth `7.646646700593592892283292400`、income growth `10.40431266846361185983827493`，signed gap 为 `-2.757665967870018967554982530` percentage_points；absolute 及 Final 为 `2.757665967870018967554982530` percentage_points。计算由冻结 Operation 执行，本轮不把它解释成模型脱离工具自行心算这些数值。
+
+### 7.4 实际深度与有限比较
+
+| 会话 | 实际结构深度 | 实际语义操作深度 | 可观察选择依赖深度 | 证据范围 |
+| --- | ---: | ---: | ---: | --- |
+| B01 | 4 | 3 | 0 | complete_session |
+| B02 | 4 | 3 | 0 | complete_session |
+
+结构路径包含 lookup→growth→signed gap→absolute 四层；lookup 在既有语义权重中透明，故实际语义深度为三。这是执行依赖深度，不是隐藏思维、关键内部推理深度或“17 次提交所以深度 17”。多个独立义务的合法调度不被现有测量当作新的语义选择；候选数也不是推理深度。
+
+两个 Qualified 会话的投影均 supported，唯一同任务无序配对在既有限投影下 equivalent。B01 提前执行 revenue_growth，B02 先完成四个 lookup；该合法调度差异没有被自动包装为两个不同语义商状态。没有新 Assignment、类权重、完整商分布、Contribution 或 Student 训练。
+
+### 7.5 原响应候选完整保留；Token 表示为部分可用
+
+两条完整 Qualified 会话各导出 17 条真实请求—准入原响应，共 34 条原始监督候选。本轮所有提交都准入，无失败前缀混入，也不读取历史 C/S、旧 B 或单步校准响应作为正向行。
+
+在冻结的 24,576 Token 限制下，32 条可用、2 条过长；全部序列长度范围 20,882–24,924。两条过长记录如下：
+
+| 会话 / 提交 | 对象 | prompt tokens | target tokens | 全序列 tokens | 超出上限 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| B01 / T16 | 接受 absolute result Observation 的 Update | 23,913 | 970 | 24,885 | 309 |
+| B02 / T16 | 同上 | 23,932 | 990 | 24,924 | 348 |
+
+全序列另包含该 tokenizer 表示中的两个 suffix tokens。它们是完整任务后期较长状态下的原样 Update 候选，不是无效轨迹。两条原始候选及未截断 Token 记录都保留，`truncated=false`，没有放大长度上限、裁剪公共上下文、丢弃字段或重写任务资格。
+
+因此应如实记录 `status=contains_not_fit`、`positive_representation_validated=false`，而不是宣称全量正向表示通过。32 个可消费轮次也不自动等于两个完备的可训练整会话包；本轮没有构建训练分布或启动训练。表示的这个局部长度缺口不否定 B 的完整有效 Final 与轨迹见证。
+
+原始候选、所有 Token 记录以及逐行长度见 `execution/analysis/supervision_candidates.json`、`token_representations.json` 和 `publication_validation/token_lengths.json`。两条过长的候选身份分别以 `719feea50307f70a...`、`71d6d1dec420b8e4...` 开始，完整 ID 保存在长度诊断中。
+
+### 7.6 真实用量与执行边界
+
+| 会话 | Prompt tokens | Completion tokens | Total tokens |
+| --- | ---: | ---: | ---: |
+| B01 | 355,919 | 10,036 | 365,955 |
+| B02 | 356,724 | 10,072 | 366,796 |
+| 合计 | 712,643 | 20,108 | 732,751 |
+
+缓存命中 328,320 + 未命中 384,323 = prompt 712,643。34 条 reasoning_tokens 均缺失，保持 null，不填零。实际 34 次调用预留 allowance 为 3,655,680，设计上限为 6,881,280；二者不是实际 Token 消耗，也不是成本报价。
+
+最大实际 HTTP body 为 78,532 bytes，输入代理最大 79,556，均未触发上限。Teacher HTTP 字节准入与附加 tokenizer 的 24,576 序列限制是不同边界：不能因前者通过，隐去上节两个过长候选。
+
+最早 reservation 为 UTC `2026-09-06T11:58:25.844944+00:00`，最晚为 `2026-09-06T12:00:28.075908+00:00`；它们是预留记录时间，不冒称完整会话起止时间。本轮实际 C/S 调用、新来源、新题型、网络自动重试、fallback、替换、后追加 Provider 调用、Student 权重加载/forward/更新、GPU 作业均为零。
+
+### 7.7 测试、独立复核与发布完整性
+
+最终通过的不同测试共 145 项：新增 23 项接线/模拟完整执行测试，1 项冻结提交下实际 CLI prepare→原样读回→两条 B 完整模拟 HTTP 往返，以及 121 项相关 Runtime/测量/资格回归。69 项局部 Action 控制也全部通过。没有重做原 118 项 Update 审计、来源或 Registry 构造实验。
+
+初次相关回归中的 11 项失败来自手写测试轨迹没有加入新 Action publication，首错均提前落在 `event.actual_request`；只更新测试请求呈现后，121 项全部通过。该初始失败 JUnit 与最终通过记录分别保留于 `publication_validation/tests/`，不当成真实模型失败或隐藏掉。真实 CLI 往返没有模拟 source/preparation/configuration 检查，HTTP I/O 才由本地测试替代，不能当作另两条 Provider 样本。
+
+真实执行结束后，两次串行只读重分析各产生 17 个文件、15,449,594 bytes，均与正式 `execution/analysis` 逐文件字节一致。两个财务执行器、Runtime 构造、Callback、Provider、socket 和凭据入口均设禁止调用保护，计数全部为零。重新验证全部 871 个冻结源文件、原验证标准保持记录和 12 个 preparation/execution/analysis 递归 manifest。领域中立架构检查 197 个文件、0 个违反。
+
+历史三阶段共 8,813 个文件、345,828,010 bytes，与准备时清单逐项哈希一致。新工件没有 `.env` 或权重文件；实际 API Key 字节扫描零命中。当前修改没有回写原 1/12、O/R 0/12 vs 12/12 或六会话 4/6 的任何定义和原始证据。
+
+| 新工件子目录 | 文件数 | bytes |
+| --- | ---: | ---: |
+| preparation | 106 | 4,317,739 |
+| execution | 546 | 37,521,515 |
+| reanalysis | 17 | 15,449,594 |
+| guarded_reanalysis | 17 | 15,449,594 |
+| readonly_verification | 4 | 10,093 |
+| publication_validation | 11 | 2,233,743 |
+| 合计 | 701 | 74,982,278 |
+
+最大单文件为 9,675,716 bytes 的 Token 记录。审计原文 CRLF、模型原响应空白及失败 JUnit 文本保留原字节，不为格式检查重新正规化工件。
+
+只读复核身份为 `qa_vnext_model_execution_action_branch_readonly_verification:8e5b5e6888c6516402c0456065226c7d07c53eb1945e2d99b25c37d016cb55a0`；发布核对身份为 `qa_vnext_model_execution_action_branch_publication_validation:fda095f598010591a2d10c8e615bcf9a9ef836614e575252698e998dc72937c7`。复核脚本与完整检查结果均随对应目录保存。
+
+## 8. 收口
+
+当前 Action 公开缺口按本轮有限范围完成修复，并获得两条真实 B 完整可达见证；原 B 接入缺口可以关闭，不再重复同内容证明。原 Update 修复保留，并在本轮实际到达的 growth/signed gap/absolute gap 上获得新的动态接受与消费见证。
+
+这不是同一新条件下 C/B/S 六会话全部成功，也不是一般数学能力、通用规划或 VTDO 训练效用证明。后续若建设统一任务面板或研究训练表示，应另行固定统一生成与表示条件；本轮不因两个 Token 候选过长而自动改写表示合同、提高预算或开始训练。两个登记会话及附加测量到此结束，旧主线保持暂停。

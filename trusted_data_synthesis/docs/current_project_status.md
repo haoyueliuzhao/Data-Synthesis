@@ -18,11 +18,21 @@ messages are not treated as experimental evidence.
 
 ## QA vNext Action Contract and Two Fresh B Sessions
 
-The next audited scope repairs only the existing Action full-candidate-set and selected-offer
-correspondence publication, preserving original Runtime/independent admission and Update/Final
-standards. It preregisters two fresh original B sessions, concurrent at most two, with 64 total
-Provider attempts; no C/S rerun, extra calibration, replacement or training. Local dynamic-set
-controls and real-entry tests precede execution. See the
+The Action repair completed under frozen source `1cf4d520`, preserving original
+Runtime/independent admission and Update/Final standards. Two fresh B sessions both qualify:
+17 submissions each, 34 actual Provider calls, 16 Actions, 16 first-try accepted Updates and
+two valid Finals, with no rejection, retry or replacement. Actual Claim consumption reaches
+growth, signed gap and absolute: structural depth 4, semantic operation depth 3.
+
+This closes the scoped B reachability gap under its new Action-publication condition, not a
+pooled new-condition C/B/S 6/6 result. There is no C/S rerun or further calibration/training.
+The 34 original supervision candidates remain intact; 32 fit the existing Token bound, while
+two T16 Updates exceed it by 309/348 tokens and remain untruncated. Full positive representation
+validation is therefore false, separately from both sessions' valid qualification.
+
+All 145 final tests and 69 finite local controls pass. Two guarded read-only analyses reproduce
+all 17 analysis files byte-for-byte; all 8,813 historical files remain unchanged. Actual usage
+is 732,751 tokens. See the
 [Action repair and B reachability report](finance_qa_vnext_action_public_contract_branch_reachability.md).
 Historical results below remain separate conditions, never pooled into a new all-success panel.
 
