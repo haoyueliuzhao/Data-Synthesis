@@ -126,8 +126,10 @@ presentation R 12/12, without Action execution, Update commits or new full sessi
 
 The separately authorized six-full-session follow-up uses
 `python -m trusted_synthesis.experiments.finance_qa_vnext_repaired_full_task {prepare,run,analyze}`.
-It freezes two fresh C/B/S rounds, restores the neutral full-task instruction, and caps all
-Provider attempts at 192. The previous twelve-session and 24-call results remain separate.
+It completed two fresh C/B/S rounds with neutral full-task instructions: C 2/2, B 0/2,
+S 2/2, 116 actual Provider calls, 13/13 first-Update accepts and 20 eligible original-response
+Token candidates. B remains blocked on Action candidate-set enumeration, not Update acceptance.
+The previous twelve-session and 24-call results remain separate; no post-pilot calls or training.
 See the [six-session design and execution record](docs/finance_qa_vnext_repaired_update_six_session_full_task.md).
 
 ## Canonical Experiment

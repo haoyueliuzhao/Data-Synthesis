@@ -18,11 +18,22 @@ messages are not treated as experimental evidence.
 
 ## QA vNext Repaired-Presentation Six Full Sessions
 
-The audit accepts the prior bounded Update repair and authorizes its next scoped experiment:
-two fresh complete sessions for each of the original C/B/S tasks. The new entry freezes two
-three-way concurrent rounds, neutral full-task instructions, actual Runtime commits and a
-192-Provider-attempt global bound. It does not continue historical pending states or inject
-calibration responses. Source freezing and bounded wiring tests precede real calls.
+The separately authorized follow-up completed under frozen source `1d4a7c87`: two fresh
+complete sessions per original C/B/S task, neutral full-task instructions and unchanged
+admission. Results are C 2/2, B 0/2, S 2/2, overall 4/6 with six decidable rows and 116 actual
+Provider attempts (bound 192). All 13 newly pending Observations were accepted on their
+first Update and committed; 116/116 actual requests include the repaired public contract.
+The B failures exhaust submissions while repeatedly omitting legal Action candidates from
+the required full candidate set; they do not establish failed numerical growth reasoning.
+Both S sessions correct errors and reach valid Final, using disclosed-total support despite
+also calling sum. Their quotient projection remains undetermined, without losing qualification.
+
+Only the four Qualified complete sessions yield 20 original-response Token candidates,
+all fitting the existing 24,576 limit. Actual usage is 2,264,196 tokens. Two read-only
+reanalyses reproduce the 37 analysis files byte-for-byte; 6,935 historical files are unchanged.
+The 11 new distinct wiring/actual-entry tests and 26 later-Observation local controls pass.
+The three-task complete-witness criterion remains unmet because B has no full success;
+no replacement, further calibration, post-six-session Provider call or Student training occurs.
 
 The pre-execution design and subsequent actual results are recorded in the
 [six-session report](finance_qa_vnext_repaired_update_six_session_full_task.md).

@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="10" time="68.232" timestamp="2026-09-06T16:59:12.442976+08:00" hostname="lyg0310"><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_exact_population_configuration_and_coverage" time="1.080" /><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_reject_old_or_calibration_configuration[config0]" time="0.001" /><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_reject_old_or_calibration_configuration[config1]" time="0.001" /><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_reject_old_or_calibration_configuration[config2]" time="0.001" /><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_later_branch_share_shapes_use_existing_admission_without_execution" time="1.757"><failure message="AssertionError: assert {'absolute_pe...e_ratio', ...} &gt;= {'absolute', ...'share_ratio'}&#10;  &#10;  Extra items in the right set:&#10;  'growth_rate'&#10;  'difference'&#10;  'absolute'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_later_branch_share_shapes0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5ddaf42570&gt;
+
+    def test_later_branch_share_shapes_use_existing_admission_without_execution(tmp_path, monkeypatch):
+        _, _, _, panel = population()
+        monkeypatch.setattr(PublicQARuntime, "run", forbidden)
+        monkeypatch.setattr(ProgramTaskAdapter, "execute", forbidden)
+        monkeypatch.setattr(ShareTaskAdapter, "execute", forbidden)
+        monkeypatch.setattr(HttpxSender, "send", forbidden)
+        result = run_controls(panel, tmp_path / "controls", plan.configuration())
+        assert result["passed"] and result["provider_attempts"] == result["action_executions"] == 0
+        assert len(result["initial_rows"]) == 3
+        assert result["later_shape_control_count"] == 26
+&gt;       assert {r["operation"] for r in result["later_shape_rows"]} &gt;= {
+            "growth_rate", "difference", "absolute", "scale_percent", "relation_sum", "share_ratio"}
+E       AssertionError: assert {'absolute_pe...e_ratio', ...} &gt;= {'absolute', ...'share_ratio'}
+E         
+E         Extra items in the right set:
+E         'growth_rate'
+E         'difference'
+E         'absolute'
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:80: AssertionError</failure></testcase><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_six_real_entry_loop_and_readonly_measurements[success]" time="16.175"><failure message="KeyError: 'answer'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_six_real_entry_loop_and_r0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5ddaf248f0&gt;
+behavior = 'success'
+
+    @pytest.mark.parametrize("behavior", ["success", "known_failure", "unknown", "correction", "reject"])
+    def test_six_real_entry_loop_and_readonly_measurements(tmp_path, monkeypatch, behavior):
+&gt;       preparation, prepared, sends, report = synthetic_run(tmp_path, monkeypatch, behavior=behavior)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:148: in synthetic_run
+    report = runner.run(ROOT, preparation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:142: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:273: in analyze
+    progression = progress(session, qualification)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom...ation_id': 'finance_qa_vnext_observation:1ec264c3ebceee6caa3d5b413852904dc90e305ab51fb1cc32568dfe625c9f48', ...}], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...06784', 'session_id': 'finance_qa_vnext_session:ea7e2ec9a71ff19b6fde48d9b3bdb9f81800acba84058c2dc87e3eb58adee770', ...}
+
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        if session is None or not qualification["evidence_complete"]:
+            return record("repaired_progress", evidence_measured=False, observations=[],
+                          first_executed_action=None, first_accepted_claim=None,
+                          first_claim_consumption=None, complete_success=qualification["end_to_end_success"],
+                          first_blocking_evidence={"qualification_reason": qualification["reason"]})
+        observations: dict[str, dict[str, Any]] = {}
+        creators: dict[str, dict[str, Any]] = {}
+        first_action = first_claim = first_consumption = first_failure = None
+        for event in session["events"]:
+            parsed, receipt, sequence = event["parsed"], event["receipt"], event["sequence"]
+            marker = {"sequence": sequence, "submission_id": event["submission"]["id"],
+                      "receipt_id": receipt["id"]}
+            if not receipt["admitted"] and first_failure is None:
+                first_failure = {**marker, "kind": "unadmitted_submission", "error_code": receipt["error_code"],
+                                 "public_update_contract_present": event["request"].get("public_update_contract") == public_update_contract()}
+            observation = event.get("observation")
+            if observation is not None:
+                require(receipt["admitted"] and event.get("execution") is not None, "six.actual_observation")
+                first_action = first_action or {**marker, "operation": observation["selected_action"]["operation"],
+                                                "observation_id": observation["id"]}
+                observations[observation["id"]] = {
+                    "observation_id": observation["id"], "created_sequence": sequence,
+                    "operation": observation["selected_action"]["operation"],
+                    "obligation_id": observation["obligation_id"], "pending_model_submission_count": 0,
+                    "first_pending_submission_admitted": None, "first_typed_update_admitted": None,
+                    "first_typed_update_sequence": None, "first_rejection": None,
+                    "eventual_disposition": None, "committed_claim_id": None, "later_consumers": [],
+                }
+            pending = event["request"]["state"]["pending_observation"]
+            if pending is not None:
+                row = observations[pending["id"]]
+                row["pending_model_submission_count"] += 1
+                if row["first_pending_submission_admitted"] is None:
+                    row["first_pending_submission_admitted"] = receipt["admitted"]
+                if parsed and parsed["kind"] == "update" and row["first_typed_update_sequence"] is None:
+                    row["first_typed_update_sequence"] = sequence
+                    row["first_typed_update_admitted"] = receipt["admitted"]
+                if not receipt["admitted"] and row["first_rejection"] is None:
+                    row["first_rejection"] = {**marker, "error_code": receipt["error_code"]}
+                if receipt["admitted"] and parsed and parsed["kind"] == "update":
+                    row["eventual_disposition"] = parsed["disposition"]
+            claim = event.get("claim")
+            if claim is not None:
+                row = observations[claim["observation_id"]]
+                row["committed_claim_id"] = claim["id"]
+                creators[claim["id"]] = row
+                first_claim = first_claim or {**marker, "claim_id": claim["id"], "observation_id": claim["observation_id"]}
+            consumed = []
+            if receipt["admitted"] and parsed:
+                if parsed["kind"] == "action" and event.get("execution") is not None:
+                    consumed = [ref["ref_id"] for ref in parsed["inputs"] if ref["kind"] == "claim"]
+                elif parsed["kind"] == "final" and qualification["qa_valid"] is True:
+&gt;                   consumed = [parsed["answer"]["answer_claim_id"]]
+                                ^^^^^^^^^^^^^^^^
+E                   KeyError: 'answer'
+
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/measurement.py:67: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_six_real_entry_loop_and_readonly_measurements[known_failure]" time="13.900"><failure message="KeyError: 'answer'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_six_real_entry_loop_and_r1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5d53f9af60&gt;
+behavior = 'known_failure'
+
+    @pytest.mark.parametrize("behavior", ["success", "known_failure", "unknown", "correction", "reject"])
+    def test_six_real_entry_loop_and_readonly_measurements(tmp_path, monkeypatch, behavior):
+&gt;       preparation, prepared, sends, report = synthetic_run(tmp_path, monkeypatch, behavior=behavior)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:148: in synthetic_run
+    report = runner.run(ROOT, preparation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:142: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:273: in analyze
+    progression = progress(session, qualification)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom..._id': 'finance_qa_vnext_observation:94168c12daf2f24a3684fed4057937be2077978f4084e23dbbabde83a8366787', ...}, ...], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...9b053', 'session_id': 'finance_qa_vnext_session:c639402cb1b2945602653facdf61d45499faf53cadea99cd232d49d97e86061d', ...}
+
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        if session is None or not qualification["evidence_complete"]:
+            return record("repaired_progress", evidence_measured=False, observations=[],
+                          first_executed_action=None, first_accepted_claim=None,
+                          first_claim_consumption=None, complete_success=qualification["end_to_end_success"],
+                          first_blocking_evidence={"qualification_reason": qualification["reason"]})
+        observations: dict[str, dict[str, Any]] = {}
+        creators: dict[str, dict[str, Any]] = {}
+        first_action = first_claim = first_consumption = first_failure = None
+        for event in session["events"]:
+            parsed, receipt, sequence = event["parsed"], event["receipt"], event["sequence"]
+            marker = {"sequence": sequence, "submission_id": event["submission"]["id"],
+                      "receipt_id": receipt["id"]}
+            if not receipt["admitted"] and first_failure is None:
+                first_failure = {**marker, "kind": "unadmitted_submission", "error_code": receipt["error_code"],
+                                 "public_update_contract_present": event["request"].get("public_update_contract") == public_update_contract()}
+            observation = event.get("observation")
+            if observation is not None:
+                require(receipt["admitted"] and event.get("execution") is not None, "six.actual_observation")
+                first_action = first_action or {**marker, "operation": observation["selected_action"]["operation"],
+                                                "observation_id": observation["id"]}
+                observations[observation["id"]] = {
+                    "observation_id": observation["id"], "created_sequence": sequence,
+                    "operation": observation["selected_action"]["operation"],
+                    "obligation_id": observation["obligation_id"], "pending_model_submission_count": 0,
+                    "first_pending_submission_admitted": None, "first_typed_update_admitted": None,
+                    "first_typed_update_sequence": None, "first_rejection": None,
+                    "eventual_disposition": None, "committed_claim_id": None, "later_consumers": [],
+                }
+            pending = event["request"]["state"]["pending_observation"]
+            if pending is not None:
+                row = observations[pending["id"]]
+                row["pending_model_submission_count"] += 1
+                if row["first_pending_submission_admitted"] is None:
+                    row["first_pending_submission_admitted"] = receipt["admitted"]
+                if parsed and parsed["kind"] == "update" and row["first_typed_update_sequence"] is None:
+                    row["first_typed_update_sequence"] = sequence
+                    row["first_typed_update_admitted"] = receipt["admitted"]
+                if not receipt["admitted"] and row["first_rejection"] is None:
+                    row["first_rejection"] = {**marker, "error_code": receipt["error_code"]}
+                if receipt["admitted"] and parsed and parsed["kind"] == "update":
+                    row["eventual_disposition"] = parsed["disposition"]
+            claim = event.get("claim")
+            if claim is not None:
+                row = observations[claim["observation_id"]]
+                row["committed_claim_id"] = claim["id"]
+                creators[claim["id"]] = row
+                first_claim = first_claim or {**marker, "claim_id": claim["id"], "observation_id": claim["observation_id"]}
+            consumed = []
+            if receipt["admitted"] and parsed:
+                if parsed["kind"] == "action" and event.get("execution") is not None:
+                    consumed = [ref["ref_id"] for ref in parsed["inputs"] if ref["kind"] == "claim"]
+                elif parsed["kind"] == "final" and qualification["qa_valid"] is True:
+&gt;                   consumed = [parsed["answer"]["answer_claim_id"]]
+                                ^^^^^^^^^^^^^^^^
+E                   KeyError: 'answer'
+
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/measurement.py:67: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_six_real_entry_loop_and_readonly_measurements[unknown]" time="8.543"><failure message="KeyError: 'answer'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_six_real_entry_loop_and_r2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5ddb0d72f0&gt;
+behavior = 'unknown'
+
+    @pytest.mark.parametrize("behavior", ["success", "known_failure", "unknown", "correction", "reject"])
+    def test_six_real_entry_loop_and_readonly_measurements(tmp_path, monkeypatch, behavior):
+&gt;       preparation, prepared, sends, report = synthetic_run(tmp_path, monkeypatch, behavior=behavior)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:148: in synthetic_run
+    report = runner.run(ROOT, preparation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:142: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:273: in analyze
+    progression = progress(session, qualification)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom..._id': 'finance_qa_vnext_observation:94168c12daf2f24a3684fed4057937be2077978f4084e23dbbabde83a8366787', ...}, ...], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...9b053', 'session_id': 'finance_qa_vnext_session:c639402cb1b2945602653facdf61d45499faf53cadea99cd232d49d97e86061d', ...}
+
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        if session is None or not qualification["evidence_complete"]:
+            return record("repaired_progress", evidence_measured=False, observations=[],
+                          first_executed_action=None, first_accepted_claim=None,
+                          first_claim_consumption=None, complete_success=qualification["end_to_end_success"],
+                          first_blocking_evidence={"qualification_reason": qualification["reason"]})
+        observations: dict[str, dict[str, Any]] = {}
+        creators: dict[str, dict[str, Any]] = {}
+        first_action = first_claim = first_consumption = first_failure = None
+        for event in session["events"]:
+            parsed, receipt, sequence = event["parsed"], event["receipt"], event["sequence"]
+            marker = {"sequence": sequence, "submission_id": event["submission"]["id"],
+                      "receipt_id": receipt["id"]}
+            if not receipt["admitted"] and first_failure is None:
+                first_failure = {**marker, "kind": "unadmitted_submission", "error_code": receipt["error_code"],
+                                 "public_update_contract_present": event["request"].get("public_update_contract") == public_update_contract()}
+            observation = event.get("observation")
+            if observation is not None:
+                require(receipt["admitted"] and event.get("execution") is not None, "six.actual_observation")
+                first_action = first_action or {**marker, "operation": observation["selected_action"]["operation"],
+                                                "observation_id": observation["id"]}
+                observations[observation["id"]] = {
+                    "observation_id": observation["id"], "created_sequence": sequence,
+                    "operation": observation["selected_action"]["operation"],
+                    "obligation_id": observation["obligation_id"], "pending_model_submission_count": 0,
+                    "first_pending_submission_admitted": None, "first_typed_update_admitted": None,
+                    "first_typed_update_sequence": None, "first_rejection": None,
+                    "eventual_disposition": None, "committed_claim_id": None, "later_consumers": [],
+                }
+            pending = event["request"]["state"]["pending_observation"]
+            if pending is not None:
+                row = observations[pending["id"]]
+                row["pending_model_submission_count"] += 1
+                if row["first_pending_submission_admitted"] is None:
+                    row["first_pending_submission_admitted"] = receipt["admitted"]
+                if parsed and parsed["kind"] == "update" and row["first_typed_update_sequence"] is None:
+                    row["first_typed_update_sequence"] = sequence
+                    row["first_typed_update_admitted"] = receipt["admitted"]
+                if not receipt["admitted"] and row["first_rejection"] is None:
+                    row["first_rejection"] = {**marker, "error_code": receipt["error_code"]}
+                if receipt["admitted"] and parsed and parsed["kind"] == "update":
+                    row["eventual_disposition"] = parsed["disposition"]
+            claim = event.get("claim")
+            if claim is not None:
+                row = observations[claim["observation_id"]]
+                row["committed_claim_id"] = claim["id"]
+                creators[claim["id"]] = row
+                first_claim = first_claim or {**marker, "claim_id": claim["id"], "observation_id": claim["observation_id"]}
+            consumed = []
+            if receipt["admitted"] and parsed:
+                if parsed["kind"] == "action" and event.get("execution") is not None:
+                    consumed = [ref["ref_id"] for ref in parsed["inputs"] if ref["kind"] == "claim"]
+                elif parsed["kind"] == "final" and qualification["qa_valid"] is True:
+&gt;                   consumed = [parsed["answer"]["answer_claim_id"]]
+                                ^^^^^^^^^^^^^^^^
+E                   KeyError: 'answer'
+
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/measurement.py:67: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_six_real_entry_loop_and_readonly_measurements[correction]" time="12.537"><failure message="KeyError: 'answer'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_six_real_entry_loop_and_r3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5c2732d520&gt;
+behavior = 'correction'
+
+    }
+    monkeypatch.setattr(runner, "_prepared", lambda root, directory: prepared)
+&gt;   monkeypatch.setattr(runner, "verify_source_snapshot", lambda root, value: None)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:148: in synthetic_run
+    "panel": panel, "config": plan.configuration(), "coverage": panel.coverage,
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:142: in run
+    )
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:273: in analyze
+    require(
+             
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom...ation_id': 'finance_qa_vnext_observation:1ec264c3ebceee6caa3d5b413852904dc90e305ab51fb1cc32568dfe625c9f48', ...}], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...06784', 'session_id': 'finance_qa_vnext_session:aafc5737cdfe306f8f0b54538e809acad60920b50e013acc16cb6e8785210edb', ...}
+
+    
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        if session is None or not qualification["evidence_complete"]:
+            return record("repaired_progress", evidence_measured=False, observations=[],
+                          first_executed_action=None, first_accepted_claim=None,
+                          first_claim_consumption=None, complete_success=qualification["end_to_end_success"],
+                          first_blocking_evidence={"qualification_reason": qualification["reason"]})
+        observations: dict[str, dict[str, Any]] = {}
+        creators: dict[str, dict[str, Any]] = {}
+        first_action = first_claim = first_consumption = first_failure = None
+        for event in session["events"]:
+            parsed, receipt, sequence = event["parsed"], event["receipt"], event["sequence"]
+            marker = {"sequence": sequence, "submission_id": event["submission"]["id"],
+                      "receipt_id": receipt["id"]}
+            if not receipt["admitted"] and first_failure is None:
+                first_failure = {**marker, "kind": "unadmitted_submission", "error_code": receipt["error_code"],
+                                 "public_update_contract_present": event["request"].get("public_update_contract") == public_update_contract()}
+            observation = event.get("observation")
+            if observation is not None:
+                require(receipt["admitted"] and event.get("execution") is not None, "six.actual_observation")
+                first_action = first_action or {**marker, "operation": observation["selected_action"]["operation"],
+                                                "observation_id": observation["id"]}
+                observations[observation["id"]] = {
+                    "observation_id": observation["id"], "created_sequence": sequence,
+                    "operation": observation["selected_action"]["operation"],
+                    "obligation_id": observation["obligation_id"], "pending_model_submission_count": 0,
+                    "first_pending_submission_admitted": None, "first_typed_update_admitted": None,
+                    "first_typed_update_sequence": None, "first_rejection": None,
+                    "eventual_disposition": None, "committed_claim_id": None, "later_consumers": [],
+                }
+            pending = event["request"]["state"]["pending_observation"]
+            if pending is not None:
+                row = observations[pending["id"]]
+                row["pending_model_submission_count"] += 1
+                if row["first_pending_submission_admitted"] is None:
+                    row["first_pending_submission_admitted"] = receipt["admitted"]
+                if parsed and parsed["kind"] == "update" and row["first_typed_update_sequence"] is None:
+                    row["first_typed_update_sequence"] = sequence
+                    row["first_typed_update_admitted"] = receipt["admitted"]
+                if not receipt["admitted"] and row["first_rejection"] is None:
+                    row["first_rejection"] = {**marker, "error_code": receipt["error_code"]}
+                if receipt["admitted"] and parsed and parsed["kind"] == "update":
+                    row["eventual_disposition"] = parsed["disposition"]
+            claim = event.get("claim")
+            if claim is not None:
+                row = observations[claim["observation_id"]]
+                row["committed_claim_id"] = claim["id"]
+                creators[claim["id"]] = row
+                first_claim = first_claim or {**marker, "claim_id": claim["id"], "observation_id": claim["observation_id"]}
+            consumed = []
+            if receipt["admitted"] and parsed:
+                if parsed["kind"] == "action" and event.get("execution") is not None:
+                    consumed = [ref["ref_id"] for ref in parsed["inputs"] if ref["kind"] == "claim"]
+&gt;               elif parsed["kind"] == "final" and qualification["qa_valid"] is True:
+                                ^^^^^^^^^^^^^^^^
+E               KeyError: 'answer'
+
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/measurement.py:67: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_repaired_full_task" name="test_six_real_entry_loop_and_readonly_measurements[reject]" time="13.488"><failure message="KeyError: 'answer'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-398/test_six_real_entry_loop_and_r4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7b5c28c608c0&gt;
+behavior = 'reject'
+
+        )
+    
+&gt;   monkeypatch.setattr(HttpxSender, "send", synthetic_send)
+                                           ^^^^^^^^^^^^^^^^^^
+
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+trusted_data_synthesis/tests/test_qa_vnext_repaired_full_task.py:148: in synthetic_run
+    }
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:142: in run
+    )
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/runner.py:273: in analyze
+    require(
+             
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom...ation_id': 'finance_qa_vnext_observation:a685656a0ebf4bbe12ec7cd108589e6c6299bf65cc8cb817733e5b79d99717bb', ...}], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...06784', 'session_id': 'finance_qa_vnext_session:9bf92e242fe21ef1da4bf1dc6f0754ae709ff0801e27b4579622aa64272e457b', ...}
+
+    
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        if session is None or not qualification["evidence_complete"]:
+            return record(
+                "repaired_progress",
+                evidence_measured=False,
+                observations=[],
+                first_executed_action=None,
+                first_accepted_claim=None,
+                first_claim_consumption=None,
+                complete_success=qualification["end_to_end_success"],
+                first_blocking_evidence={"qualification_reason": qualification["reason"]},
+            )
+        observations: dict[str, dict[str, Any]] = {}
+        creators: dict[str, dict[str, Any]] = {}
+        first_action = first_claim = first_consumption = first_failure = None
+        for event in session["events"]:
+            parsed, receipt, sequence = event["parsed"], event["receipt"], event["sequence"]
+            marker = {
+                "sequence": sequence,
+                "submission_id": event["submission"]["id"],
+                "receipt_id": receipt["id"],
+            }
+            if not receipt["admitted"] and first_failure is None:
+                first_failure = {
+                    **marker,
+                    "kind": "unadmitted_submission",
+                    "error_code": receipt["error_code"],
+                    "public_update_contract_present": event["request"].get("public_update_contract")
+                    == public_update_contract(),
+                }
+            observation = event.get("observation")
+            if observation is not None:
+                require(
+                    receipt["admitted"] and event.get("execution") is not None, "six.actual_observation"
+                )
+                first_action = first_action or {
+                    **marker,
+                    "operation": observation["selected_action"]["operation"],
+                    "observation_id": observation["id"],
+                }
+                observations[observation["id"]] = {
+                    "observation_id": observation["id"],
+                    "created_sequence": sequence,
+                    "operation": observation["selected_action"]["operation"],
+                    "obligation_id": observation["obligation_id"],
+                    "pending_model_submission_count": 0,
+                    "first_pending_submission_admitted": None,
+                    "first_typed_update_admitted": None,
+                    "first_typed_update_sequence": None,
+                    "first_rejection": None,
+                    "eventual_disposition": None,
+                    "committed_claim_id": None,
+&gt;                   "later_consumers": [],
+                                ^^^^^^^^^^^
+                }
+E               KeyError: 'answer'
+
+trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_repaired_full_task/measurement.py:67: KeyError</failure></testcase></testsuite></testsuites>

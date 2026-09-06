@@ -1,0 +1,35 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:be82fed512cc8704ffc591fcec191be59a706baa7aeafc0ee9b3022ab2d6f8f2",
+  "decision": {
+    "obligation_id": "revenue_later_value",
+    "subgoal": "resolve_evidence",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:f92bd68c0cb60d304a890a56601ba4f2c7497f9f3deef24987d147a239c1a508"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:f92bd68c0cb60d304a890a56601ba4f2c7497f9f3deef24987d147a239c1a508",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43"
+      ],
+      "claim_refs": []
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "revenue_later_value",
+      "output_schema": "payload"
+    }
+  },
+  "operation": "lookup",
+  "inputs": [
+    {
+      "kind": "evidence",
+      "ref_id": "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43",
+      "role": "evidence_role_2",
+      "selector": null
+    }
+  ],
+  "parameters": {}
+}

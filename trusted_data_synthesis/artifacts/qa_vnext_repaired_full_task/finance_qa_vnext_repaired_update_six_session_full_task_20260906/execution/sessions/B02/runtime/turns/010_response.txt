@@ -1,0 +1,42 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:14926e9fe170140b89cd2f9486193a68bf3000de47ac32c49d40ca2a2bd92112",
+  "decision": {
+    "obligation_id": "revenue_growth",
+    "subgoal": "derive_quantity",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:a59569afe5564e36130012ee130b3383c45f52a9274a1447b4c57aa0d301014b"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:a59569afe5564e36130012ee130b3383c45f52a9274a1447b4c57aa0d301014b",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [],
+      "claim_refs": [
+        "finance_qa_vnext_claim:94a615a72da1ff2686af6b26f82428f092a538a60e953d1a7db53397b579270a",
+        "finance_qa_vnext_claim:d46e38bb3b26031b6228020cb205619c02bf145f9d1a28314e69a336e53c8c8e"
+      ]
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "revenue_growth",
+      "output_schema": "percentage"
+    }
+  },
+  "operation": "growth",
+  "inputs": [
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:94a615a72da1ff2686af6b26f82428f092a538a60e953d1a7db53397b579270a",
+      "role": "revenue_earlier_value",
+      "selector": "payload.value"
+    },
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:d46e38bb3b26031b6228020cb205619c02bf145f9d1a28314e69a336e53c8c8e",
+      "role": "revenue_later_value",
+      "selector": "payload.value"
+    }
+  ],
+  "parameters": {}
+}

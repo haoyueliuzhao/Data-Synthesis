@@ -1,0 +1,44 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:933c10ddda3a813b1705d5e114c075e74afaea896aed216ab538a466da8032f7",
+  "observation_id": "finance_qa_vnext_observation:9e22fa0a54f650cc8e78accbcf30134b6af39d5eb03e05d1a1186b07bbbbb07b",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a"
+    ],
+    "operation": "share_ratio",
+    "operation_contract_id": "operation_semantic_contract:81f63807f37b07aba56742f314c21088458095cbd2f9110ed8dc4ba55f4332c8",
+    "output": {
+      "currency": "dollar_as_disclosed",
+      "definition": "freight divided by legitimate operating revenue total",
+      "lineage": [
+        "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+        "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a"
+      ],
+      "metric": "freight_share_ratio",
+      "period": "2015",
+      "scope": "consolidated_issuer",
+      "subject": "Union Pacific Corporation and subsidiaries",
+      "unit": "ratio",
+      "value": "0.93508458258836473662494842525099711181405583826159"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:9e22fa0a54f650cc8e78accbcf30134b6af39d5eb03e05d1a1186b07bbbbb07b"
+    ],
+    "evidence_refs": [
+      "part_whole_share_numeric_evidence:033a430a60a5d3243f701d231a10b71564b48b2abeae58d635c42a2811e7638f",
+      "part_whole_share_numeric_evidence:f8ad13511fa22b6d64183fb4b5f5cd114faaf185520d57b0d1f4c7571573ad7a"
+    ],
+    "fulfills_obligation": "ratio"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [
+    "percent"
+  ],
+  "next_subgoal": "percent"
+}
