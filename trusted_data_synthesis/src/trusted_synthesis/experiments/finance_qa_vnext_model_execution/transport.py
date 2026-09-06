@@ -58,7 +58,8 @@ class TransportConfig(BaseModel):
     input_overhead_allowance: Literal[1024] = 1024
     maximum_http_response_bytes: Literal[2097152] = 2097152
     maximum_public_response_bytes: Literal[1048576] = 1048576
-    attempts_per_session: Literal[32] = 32
+    attempts_per_session: int = Field(default=32, ge=1, le=32)
+    maximum_pilot_attempts: int = Field(default=384, ge=1, le=384)
     system_prompt: str = SYSTEM_PROMPT
 
     def as_record(self) -> dict[str, Any]:
@@ -75,8 +76,8 @@ class TransportConfig(BaseModel):
             redirects=0,
             trust_env=False,
             maximum_request_reserved_tokens=107520,
-            maximum_session_reserved_tokens=3440640,
-            maximum_pilot_reserved_tokens=41287680,
+            maximum_session_reserved_tokens=self.attempts_per_session * 107520,
+            maximum_pilot_reserved_tokens=self.maximum_pilot_attempts * 107520,
             messages_policy="neutral system plus canonical current public request; stateless",
             input_token_admission_rule=(
                 "actual serialized HTTP body UTF-8 bytes plus 1024 allowance"

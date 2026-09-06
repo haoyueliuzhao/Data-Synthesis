@@ -5,13 +5,70 @@ from __future__ import annotations
 import copy
 import hashlib
 import os
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canonical_hash
 from trusted_synthesis.core.operations.registry import OperationRegistry
 
 from .protocol import ProtocolError, contract, parse, record, require
+from .update_public_contract import publish_update_contract, rejection_feedback
+
+
+@dataclass(frozen=True)
+class _ReadonlyUpdateContext:
+    pending: dict[str, Any] | None
+    terminal: bool
+
+
+def evaluate_update_readonly(raw: bytes, request: dict[str, Any]) -> dict[str, Any]:
+    """Use the unchanged real admission branch without constructing or running a Runtime.
+
+    A copied, frozen two-field view has no adapter, store, counters or Claim methods.
+    Non-Update kinds are stopped before dispatch. This is NOT session qualification.
+    """
+    before = canonical_json_bytes(request)
+    challenge = copy.deepcopy(request)
+    view = _ReadonlyUpdateContext(
+        copy.deepcopy(challenge["state"]["pending_observation"]), challenge["state"]["terminal"]
+    )
+    pending_before = canonical_json_bytes(view.pending)
+    submitted = None
+    parsed = False
+    code: str | None
+    try:
+        submitted = parse(raw)
+        parsed = True
+        require(submitted["kind"] == "update", "calibration.update_required")
+        PublicQARuntime._admit(cast(Any, view), submitted, challenge)
+    except (ProtocolError, ValueError, KeyError, TypeError) as error:
+        admitted, code = False, str(error)
+    else:
+        admitted, code = True, None
+    require(
+        canonical_json_bytes(request) == before == canonical_json_bytes(challenge)
+        and canonical_json_bytes(view.pending) == pending_before,
+        "calibration.readonly_violation",
+    )
+    return record(
+        "update_calibration_evaluation",
+        request_id=request["id"],
+        state_id=request["state"]["id"],
+        raw_sha256=hashlib.sha256(raw).hexdigest(),
+        structure_valid=parsed,
+        submitted_kind=submitted["kind"] if submitted else None,
+        disposition=submitted.get("disposition") if submitted else None,
+        update_admitted=admitted,
+        complete_accept=admitted and submitted is not None and submitted["disposition"] == "accept",
+        error_code=code,
+        feedback=rejection_feedback(code, request, submitted) if code else None,
+        readonly=True,
+        action_executions=0,
+        update_commits=0,
+        new_claims=0,
+        qualified_session_not_measured=True,
+    )
 
 
 class Callback(Protocol):
@@ -153,15 +210,17 @@ class PublicQARuntime:
                         after | ({"submit_final"} if finals else set())
                     ),
                 }
-        return record(
-            "request",
-            protocol_id=self.rules["id"],
-            context=self.adapter.context,
-            state=state,
-            available_actions=offered,
-            final_claim_ids=self.adapter.final_claims(self.claims) if not self.pending else [],
-            update_transition_options=transition_options,
-            response_schemas=self.rules["submission_schemas"],
+        return publish_update_contract(
+            record(
+                "request",
+                protocol_id=self.rules["id"],
+                context=self.adapter.context,
+                state=state,
+                available_actions=offered,
+                final_claim_ids=self.adapter.final_claims(self.claims) if not self.pending else [],
+                update_transition_options=transition_options,
+                response_schemas=self.rules["submission_schemas"],
+            )
         )
 
     def _claim(self, observation: dict[str, Any]) -> dict[str, Any]:
@@ -311,7 +370,7 @@ class PublicQARuntime:
         }
         self.submissions += 1
         if prepared is None:
-            self.feedback = {"code": code, "admitted": False}
+            self.feedback = rejection_feedback(code, request, submitted)
         elif submitted is not None and submitted["kind"] == "action":
             # These exact persisted bytes must exist before any numeric executor runs.
             require(

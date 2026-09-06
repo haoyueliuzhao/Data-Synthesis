@@ -16,6 +16,28 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Update Public-Contract Repair and Paired Calibration
+
+The next bounded stage is now implemented, with its design fixed before any new Provider call.
+It publishes the complete existing Update proposition, assessment and transition conditions;
+the public Parser/canonicalizer bytes and both admission-function ASTs remain unchanged.
+The reference fixture reads the versioned public mapping; an isolated local receiver tests
+accept/reject and strict negative controls without private Runtime fields or old callback helpers.
+
+The planned population is twelve historical first-Observation requests × original/repaired
+presentation once each, not twelve new long sessions. Both arms share an explicit accept-only
+calibration instruction; six pairs use O→R and six use R→O. Actions and Update commits are zero.
+Each call has one attempt, no retry or replacement, and the total reserved allowance is 2,580,480.
+The engineering continuation gate is complete evidence plus R≥10/12 and each C/B/S R≥3/4;
+it is not a statistical lower confidence bound. This stage stops after 24 calls, without Student
+training or automatically starting the separate six-full-session follow-up.
+
+At this implementation checkpoint, no new real Provider calls have begun. The previous
+1/12 result, 374-call evidence and three C03 Token candidates remain immutable. Historical
+sections below retain their point-in-time results and recommendations.
+
+See [the detailed repair and preregistered calibration design](finance_qa_vnext_update_public_contract_calibration.md).
+
 ## QA vNext Representative Real-Model Execution and Original Supervision Export
 
 Completed on 2026-09-06 under source commit `bbc713c6ee1c6c3ef6c0ce57dd9c67c4bbc13955`

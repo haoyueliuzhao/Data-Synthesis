@@ -21,6 +21,9 @@ from trusted_synthesis.domains.finance.qa_vnext.measurement import (
     compare_sessions,
 )
 from trusted_synthesis.domains.finance.qa_vnext.protocol import contract, record
+from trusted_synthesis.domains.finance.qa_vnext.update_public_contract import (
+    publish_update_contract,
+)
 
 
 class _StaticAdapter:
@@ -237,15 +240,17 @@ class _WrittenTrace:
                         after | ({"submit_final"} if self.adapter.final_claims(preview) else set())
                     ),
                 }
-        return record(
-            "request",
-            protocol_id=self.rules["id"],
-            context=self.adapter.context,
-            state=self.state(),
-            available_actions=[] if self.pending else self.adapter.offers(self.claims),
-            final_claim_ids=[] if self.pending else self.adapter.final_claims(self.claims),
-            update_transition_options=transitions,
-            response_schemas=self.rules["submission_schemas"],
+        return publish_update_contract(
+            record(
+                "request",
+                protocol_id=self.rules["id"],
+                context=self.adapter.context,
+                state=self.state(),
+                available_actions=[] if self.pending else self.adapter.offers(self.claims),
+                final_claim_ids=[] if self.pending else self.adapter.final_claims(self.claims),
+                update_transition_options=transitions,
+                response_schemas=self.rules["submission_schemas"],
+            )
         )
 
     def append(

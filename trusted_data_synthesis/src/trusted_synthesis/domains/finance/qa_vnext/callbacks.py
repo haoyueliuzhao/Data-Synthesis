@@ -13,6 +13,7 @@ from trusted_synthesis.canonical_json import canonical_json_bytes
 from .program_adapter import public_program_answer
 from .protocol import record, require
 from .share_adapter import public_share_answer
+from .update_public_contract import reference_update
 
 
 def action_response(request: dict[str, Any], option: dict[str, Any]) -> dict[str, Any]:
@@ -36,32 +37,7 @@ def action_response(request: dict[str, Any], option: dict[str, Any]) -> dict[str
 
 
 def update_response(request: dict[str, Any], disposition: str = "accept") -> dict[str, Any]:
-    observation = request["state"]["pending_observation"]
-    transition = request["update_transition_options"][disposition]
-    return {
-        "kind": "update",
-        "state_id": request["state"]["id"],
-        "observation_id": observation["id"],
-        "disposition": disposition,
-        "proposed_claim": copy.deepcopy(observation["proposition"])
-        if disposition == "accept"
-        else None,
-        "assessment": {
-            "relation": "accepts_observed_proposition"
-            if disposition == "accept"
-            else "declines_observation",
-            "observation_refs": [observation["id"]],
-            "evidence_refs": observation["proposition"]["lineage"],
-            "fulfills_obligation": observation["obligation_id"]
-            if disposition == "accept"
-            else None,
-        },
-        "remaining_uncertainty_refs": copy.deepcopy(transition["remaining_uncertainty_refs"]),
-        "newly_enabled_obligation_ids": copy.deepcopy(transition["newly_enabled_obligation_ids"]),
-        "next_subgoal": "submit_final"
-        if "submit_final" in transition["allowed_next_subgoals"]
-        else transition["allowed_next_subgoals"][0],
-    }
+    return reference_update(request, disposition)
 
 
 class PublicFixtureCallback:
