@@ -418,6 +418,28 @@ def _candidate(row: dict[str, Any]) -> None:
 def _tokenize_candidate(
     row: dict[str, Any], binding: dict[str, Any], tokenizer: Any
 ) -> dict[str, Any]:
+    """Historical 24,576 policy; binding, output identity and default stay unchanged."""
+    return encode_original_candidate(
+        row, binding, tokenizer, maximum_sequence_length=MAXIMUM_SEQUENCE_LENGTH
+    )
+
+
+def encode_original_candidate(
+    row: dict[str, Any],
+    binding: dict[str, Any],
+    tokenizer: Any,
+    *,
+    maximum_sequence_length: int,
+) -> dict[str, Any]:
+    """Shared exact encoder; callers own a separately validated length policy.
+
+    A larger cap is not a mutation of the historical tokenizer binding. New-policy
+    callers must give their returned record a new condition-bound identity.
+    """
+    require(
+        type(maximum_sequence_length) is int and maximum_sequence_length > 0,
+        "representation.sequence_cap",
+    )
     messages, target = row["messages"], row["target_text"]
     prefix = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     full = tokenizer.apply_chat_template(
@@ -484,7 +506,7 @@ def _tokenize_candidate(
         ids[target_end:] == frozen_tokenizer_assets.SUFFIX_TOKEN_IDS, "representation.suffix_tokens"
     )
     require(encoded["attention_mask"] == [1] * len(ids), "representation.unexpected_padding")
-    fits = len(ids) <= MAXIMUM_SEQUENCE_LENGTH
+    fits = len(ids) <= maximum_sequence_length
     mask = [int(target_start <= index < target_end) for index in range(len(ids))]
     labels = [token if mask[index] else -100 for index, token in enumerate(ids)]
     require(sum(mask[1:]) == len(selected) and mask[0] == 0, "representation.causal_shift")
@@ -499,7 +521,7 @@ def _tokenize_candidate(
         tokenrepresentation_status="fit" if fits else "not_fit",
         reason=None if fits else "maximum_sequence_length_exceeded",
         consumable_token_representation=fits,
-        maximum_sequence_length=MAXIMUM_SEQUENCE_LENGTH,
+        maximum_sequence_length=maximum_sequence_length,
         sequence_length=len(ids),
         prompt_token_count=len(prefix_ids),
         target_token_count=len(target_ids),

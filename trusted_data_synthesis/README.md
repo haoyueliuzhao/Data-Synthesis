@@ -141,6 +141,13 @@ supervision candidates, 32 fit the Token limit; two overlength Updates remain un
 No C/S repeat, cross-condition success pooling or Student training occurred.
 See the [Action contract repair and original B reachability report](docs/finance_qa_vnext_action_public_contract_branch_reachability.md).
 
+The original-content representation follow-up uses
+`python -m trusted_synthesis.experiments.finance_qa_vnext_length_adaptation {prepare,run,verify}`.
+It is strictly CPU-only: reuse all 34 existing B candidates under one separately frozen
+32,768 policy after exact local configuration checks, with no new Provider, Runtime,
+Student or GPU execution. The old 24,576 binding and overlength results remain immutable.
+See the [full-trajectory representation adaptation design](docs/finance_qa_vnext_full_trajectory_length_adaptation.md).
+
 ## Canonical Experiment
 
 ```bash

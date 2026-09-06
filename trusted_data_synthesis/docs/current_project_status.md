@@ -16,6 +16,16 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Full-Trajectory Representation Length Adaptation
+
+The accepted Action/B reachability audit requires no historical rerun. The next bounded
+implementation uses the existing two Qualified B sessions and all 34 original candidates,
+with zero Provider, Finance Runtime, Student or GPU execution. It freezes a separate 32,768
+representation policy only after checking the same local five-file tokenizer/model-config
+assets, preserving the old 24,576 binding and `contains_not_fit` result. No new task panel,
+class weighting or training is started. Formal adaptation results are not yet recorded.
+See the [frozen adaptation design](finance_qa_vnext_full_trajectory_length_adaptation.md).
+
 ## QA vNext Action Contract and Two Fresh B Sessions
 
 The Action repair completed under frozen source `1cf4d520`, preserving original
