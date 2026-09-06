@@ -16,6 +16,16 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Action Contract and Two Fresh B Sessions
+
+The next audited scope repairs only the existing Action full-candidate-set and selected-offer
+correspondence publication, preserving original Runtime/independent admission and Update/Final
+standards. It preregisters two fresh original B sessions, concurrent at most two, with 64 total
+Provider attempts; no C/S rerun, extra calibration, replacement or training. Local dynamic-set
+controls and real-entry tests precede execution. See the
+[Action repair and B reachability report](finance_qa_vnext_action_public_contract_branch_reachability.md).
+Historical results below remain separate conditions, never pooled into a new all-success panel.
+
 ## QA vNext Repaired-Presentation Six Full Sessions
 
 The separately authorized follow-up completed under frozen source `1d4a7c87`: two fresh

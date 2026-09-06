@@ -14,6 +14,9 @@ import pytest
 from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canonical_hash
 from trusted_synthesis.core.operations.registry import default_registry
 from trusted_synthesis.core.operations.schema import OperationInput
+from trusted_synthesis.domains.finance.qa_vnext.action_public_contract import (
+    publish_action_contract,
+)
 from trusted_synthesis.domains.finance.qa_vnext.measurement import (
     _depths,
     _isomorphism,
@@ -240,16 +243,18 @@ class _WrittenTrace:
                         after | ({"submit_final"} if self.adapter.final_claims(preview) else set())
                     ),
                 }
-        return publish_update_contract(
-            record(
-                "request",
-                protocol_id=self.rules["id"],
-                context=self.adapter.context,
-                state=self.state(),
-                available_actions=[] if self.pending else self.adapter.offers(self.claims),
-                final_claim_ids=[] if self.pending else self.adapter.final_claims(self.claims),
-                update_transition_options=transitions,
-                response_schemas=self.rules["submission_schemas"],
+        return publish_action_contract(
+            publish_update_contract(
+                record(
+                    "request",
+                    protocol_id=self.rules["id"],
+                    context=self.adapter.context,
+                    state=self.state(),
+                    available_actions=[] if self.pending else self.adapter.offers(self.claims),
+                    final_claim_ids=[] if self.pending else self.adapter.final_claims(self.claims),
+                    update_transition_options=transitions,
+                    response_schemas=self.rules["submission_schemas"],
+                )
             )
         )
 

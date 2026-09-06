@@ -19,8 +19,9 @@ from pydantic import BaseModel, ValidationError
 
 from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canonical_hash
 
+from .action_public_contract import publish_action_contract, rejection_feedback
 from .protocol import Action, Final, ProtocolError, Update, contract, record, require
-from .update_public_contract import publish_update_contract, rejection_feedback
+from .update_public_contract import publish_update_contract
 
 
 def _equal(left: Any, right: Any) -> bool:
@@ -180,16 +181,18 @@ def _request(adapter: Any, state: dict[str, Any], rules: dict[str, Any]) -> dict
                 "remaining_uncertainty_refs": [],
                 "allowed_next_subgoals": sorted(after | ({"submit_final"} if final_ids else set())),
             }
-    return publish_update_contract(
-        record(
-            "request",
-            protocol_id=rules["id"],
-            context=adapter.context,
-            state=state,
-            available_actions=offers,
-            final_claim_ids=adapter.final_claims(copy.deepcopy(claims)) if not pending else [],
-            update_transition_options=options,
-            response_schemas=rules["submission_schemas"],
+    return publish_action_contract(
+        publish_update_contract(
+            record(
+                "request",
+                protocol_id=rules["id"],
+                context=adapter.context,
+                state=state,
+                available_actions=offers,
+                final_claim_ids=adapter.final_claims(copy.deepcopy(claims)) if not pending else [],
+                update_transition_options=options,
+                response_schemas=rules["submission_schemas"],
+            )
         )
     )
 

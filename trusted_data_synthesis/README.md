@@ -132,6 +132,12 @@ Token candidates. B remains blocked on Action candidate-set enumeration, not Upd
 The previous twelve-session and 24-call results remain separate; no post-pilot calls or training.
 See the [six-session design and execution record](docs/finance_qa_vnext_repaired_update_six_session_full_task.md).
 
+The next bounded entry is
+`python -m trusted_synthesis.experiments.finance_qa_vnext_action_branch {prepare,run,analyze}`.
+It publishes the existing Action full-candidate and selected-offer relations, then measures only
+two fresh B sessions (64 Provider attempts maximum), without repeating C/S or changing admission.
+See the [Action contract repair and original B reachability report](docs/finance_qa_vnext_action_public_contract_branch_reachability.md).
+
 ## Canonical Experiment
 
 ```bash

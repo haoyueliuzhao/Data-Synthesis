@@ -12,8 +12,9 @@ from typing import Any, Protocol, cast
 from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canonical_hash
 from trusted_synthesis.core.operations.registry import OperationRegistry
 
+from .action_public_contract import publish_action_contract, rejection_feedback
 from .protocol import ProtocolError, contract, parse, record, require
-from .update_public_contract import publish_update_contract, rejection_feedback
+from .update_public_contract import publish_update_contract
 
 
 @dataclass(frozen=True)
@@ -210,16 +211,20 @@ class PublicQARuntime:
                         after | ({"submit_final"} if finals else set())
                     ),
                 }
-        return publish_update_contract(
-            record(
-                "request",
-                protocol_id=self.rules["id"],
-                context=self.adapter.context,
-                state=state,
-                available_actions=offered,
-                final_claim_ids=self.adapter.final_claims(self.claims) if not self.pending else [],
-                update_transition_options=transition_options,
-                response_schemas=self.rules["submission_schemas"],
+        return publish_action_contract(
+            publish_update_contract(
+                record(
+                    "request",
+                    protocol_id=self.rules["id"],
+                    context=self.adapter.context,
+                    state=state,
+                    available_actions=offered,
+                    final_claim_ids=self.adapter.final_claims(self.claims)
+                    if not self.pending
+                    else [],
+                    update_transition_options=transition_options,
+                    response_schemas=self.rules["submission_schemas"],
+                )
             )
         )
 
