@@ -111,6 +111,7 @@ class PublicQARuntime:
         self.feedback: dict[str, Any] | None = None
         self.terminal = False
         self.final: dict[str, Any] | None = None
+        self.callback_stop: dict[str, Any] | None = None
         self.store.json("protocol.json", self.rules)
         self.store.json("context.json", adapter.context)
         self.store.json("callback_binding.json", callback.binding)
@@ -415,6 +416,21 @@ class PublicQARuntime:
                 raw = self.callback.generate(copy.deepcopy(request))
                 require(isinstance(raw, bytes), "callback.raw_bytes")
             except Exception as error:
+                external_id = getattr(error, "evidence_id", None)
+                reason = getattr(error, "code", "callback.untyped_failure")
+                self.callback_stop = record(
+                    "callback_stop",
+                    sequence=self.submissions,
+                    request_id=request["id"],
+                    state_id=request["state"]["id"],
+                    callback_binding_id=self.callback.binding["id"],
+                    reason=reason if isinstance(reason, str) else "callback.untyped_failure",
+                    external_evidence_id=external_id if isinstance(external_id, str) else None,
+                    exception_type=type(error).__name__,
+                )
+                self.store.json(
+                    f"turns/{self.submissions:03d}_callback_stop.json", self.callback_stop
+                )
                 self.terminal = True
                 self.feedback = {"code": "callback_failure", "detail": type(error).__name__}
                 break
@@ -434,6 +450,7 @@ class PublicQARuntime:
             final=self.final,
             terminal_state=self.state(),
             accepted_claim_revision_supported=False,
+            **({"callback_stop": self.callback_stop} if self.callback_stop is not None else {}),
         )
         self.store.json("session.json", result)
         files = {

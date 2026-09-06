@@ -94,6 +94,38 @@ from trusted_synthesis.runtime import (
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
+    if args.command == "finance-qa-vnext-model":
+        from trusted_synthesis.experiments.finance_qa_vnext_model_execution.runner import (
+            analyze,
+            prepare,
+            run,
+        )
+
+        if args.phase == "prepare":
+            if args.output_dir is None or args.design is None:
+                parser.error("prepare requires --output-dir and --design")
+            model_report = prepare(
+                args.repo_root, args.output_dir, args.design, run_tag=args.run_tag
+            )
+        elif args.phase == "run":
+            if args.prepared_dir is None:
+                parser.error("run requires --prepared-dir")
+            if args.output_dir is not None:
+                parser.error("run uses the preregistered execution directory; omit --output-dir")
+            model_report = run(args.repo_root, args.prepared_dir)
+        else:
+            if args.prepared_dir is None or args.output_dir is None:
+                parser.error("analyze requires --prepared-dir and --output-dir")
+            model_report = analyze(
+                args.repo_root,
+                args.prepared_dir,
+                args.prepared_dir.resolve().parent / "execution",
+                args.output_dir,
+            )
+        _emit(model_report, None)
+        return (
+            0 if model_report.get("prepared", model_report.get("workflow_evidence_complete")) else 1
+        )
     if args.command == "finance-qa-vnext":
         from trusted_synthesis.domains.finance.qa_vnext.runner import run_finance_qa_vnext
 
@@ -304,6 +336,16 @@ def _parser() -> argparse.ArgumentParser:
     qa_vnext.add_argument("--output-dir", type=Path, required=True)
     qa_vnext.add_argument("--task-type", action="append")
     qa_vnext.add_argument("--output", type=Path)
+    qa_model = subparsers.add_parser(
+        "finance-qa-vnext-model",
+        help="frozen three-task/twelve-session online pilot",
+    )
+    qa_model.add_argument("phase", choices=("prepare", "run", "analyze"))
+    qa_model.add_argument("--repo-root", type=Path, default=Path.cwd())
+    qa_model.add_argument("--output-dir", type=Path)
+    qa_model.add_argument("--prepared-dir", type=Path)
+    qa_model.add_argument("--design", type=Path)
+    qa_model.add_argument("--run-tag", default="representative_v1_20260906")
     pilot = subparsers.add_parser("finance-pilot")
     pilot.add_argument("--config", required=True)
     pilot.add_argument("--pilot-config", required=True)

@@ -619,13 +619,45 @@ def _validate(adapter: Any, session: dict[str, Any], directory: Path) -> dict[st
         )
         require(_equal(expected_event, event), "event.state_transition_or_unexpected_record")
         saved.use(prefix + "event.json", expected_event)
+    callback_stop = session.get("callback_stop")
     if not terminal:
-        require(
-            counts["submissions"] == bounds["submissions"],
-            "session.unwitnessed_early_stop_or_callback_failure",
-        )
+        if callback_stop is not None:
+            require(counts["submissions"] < bounds["submissions"], "session.callback_stop_bound")
+            state = _state(adapter.context["id"], claims, pending, counts, feedback, terminal)
+            request = _request(adapter, state, rules)
+            prefix = f"turns/{counts['submissions']:03d}_"
+            saved.use(prefix + "request.json", request)
+            require(
+                isinstance(callback_stop["reason"], str)
+                and isinstance(callback_stop["exception_type"], str)
+                and (
+                    callback_stop["external_evidence_id"] is None
+                    or isinstance(callback_stop["external_evidence_id"], str)
+                ),
+                "session.callback_stop_shape",
+            )
+            expected_stop = record(
+                "callback_stop",
+                sequence=counts["submissions"],
+                request_id=request["id"],
+                state_id=state["id"],
+                callback_binding_id=session["callback_binding"]["id"],
+                reason=callback_stop["reason"],
+                external_evidence_id=callback_stop["external_evidence_id"],
+                exception_type=callback_stop["exception_type"],
+            )
+            require(_equal(callback_stop, expected_stop), "session.callback_stop_binding")
+            saved.use(prefix + "callback_stop.json", expected_stop)
+            feedback = {"code": "callback_failure", "detail": callback_stop["exception_type"]}
+        else:
+            require(
+                counts["submissions"] == bounds["submissions"],
+                "session.unwitnessed_early_stop_or_callback_failure",
+            )
+            feedback = {"code": "submission_budget_exhausted"}
         terminal = True
-        feedback = {"code": "submission_budget_exhausted"}
+    else:
+        require(callback_stop is None, "session.callback_stop_after_terminal")
     expected_session = record(
         "session",
         context_id=adapter.context["id"],
@@ -638,6 +670,7 @@ def _validate(adapter: Any, session: dict[str, Any], directory: Path) -> dict[st
         final=final,
         terminal_state=_state(adapter.context["id"], claims, pending, counts, feedback, terminal),
         accepted_claim_revision_supported=False,
+        **({"callback_stop": callback_stop} if callback_stop is not None else {}),
     )
     require(_equal(session, expected_session), "session.terminal_claim_final_binding")
     saved.use("session.json", session)
@@ -679,6 +712,9 @@ def _validate(adapter: Any, session: dict[str, Any], directory: Path) -> dict[st
         "update_count": counts["updates"],
         "accepted_claim_count": len(claims),
         "independent_output_checks": counts["actions"],
+        "depth_is_completed_session": qualified,
+        "external_callback_stop_present": callback_stop is not None,
+        "external_callback_stop_reason_verified_by_domain_audit": False,
     }
 
 
