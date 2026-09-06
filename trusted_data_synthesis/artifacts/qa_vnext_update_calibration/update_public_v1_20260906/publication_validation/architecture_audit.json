@@ -1,0 +1,25 @@
+{
+  "audit_hash": "generalization_audit:03d512bcc278fd678448ce5b635ff8769b957186c03786342383fd87b5b63e05",
+  "contract_version": "generalization_contract.v1.2",
+  "core_domain_branch_count": 0,
+  "core_domain_field_access_count": 0,
+  "core_domain_import_count": 0,
+  "discovered_domains": [
+    "finance",
+    "legal",
+    "science"
+  ],
+  "domain_dispatch_count": 0,
+  "dynamic_domain_import_count": 0,
+  "exempted_files": [
+    "trusted_synthesis/architecture/generalization.py"
+  ],
+  "scanned_file_count": 197,
+  "scanned_packages": [
+    "core",
+    "runtime",
+    "architecture"
+  ],
+  "violation_counts": {},
+  "violations": []
+}

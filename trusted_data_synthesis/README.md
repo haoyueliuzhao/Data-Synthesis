@@ -118,6 +118,12 @@ masks. It does not establish broad task completion, quotient weights or Student 
 Do not rerun its existing execution directory. See the [frozen conditions, real results and
 Update presentation gap](docs/finance_qa_vnext_representative_model_execution_and_export.md).
 
+The subsequent Update repair uses
+`python -m trusted_synthesis.experiments.finance_qa_vnext_update_calibration.runner {prepare,run,analyze}`.
+Its fixed 24-call paired calibration completed with original presentation O 0/12 and repaired
+presentation R 12/12, without Action execution, Update commits or new full sessions. The old
+1/12 outcome is unchanged. See the [public-contract repair, frozen design and bounded results](docs/finance_qa_vnext_update_public_contract_calibration.md).
+
 ## Canonical Experiment
 
 ```bash

@@ -2,7 +2,7 @@
 
 日期：2026-09-06。阶段：`finance_qa_vnext_update_public_contract_repair_and_paired_calibration`。
 
-本文件首先记录发送前的设计和实现约束；实际执行结果将另节追加，并明确区分准备检查、真实模型输出、模型工程门槛。准备检查通过不是模型结果。
+本轮已完成：原呈现 O 为 **0/12**，修复呈现 R 为 **12/12**，12 对均为仅 R 成功；固定 24 调用全部证据完整。修复正确性、执行完整性与预设工程门槛均通过，但完整任务成功尚未重新测量。以下 1–8 节是发送前设计，9 节为实际结果。准备检查通过不是模型结果。
 
 ## 1. 审计决定与本轮边界
 
@@ -136,4 +136,81 @@ trusted_data_synthesis/.venv/bin/python -m trusted_synthesis.experiments.finance
 
 ## 9. 实际结果
 
-尚未开始真实 Provider 调用。本节将在固定总体执行与独立只读重建后追加实际值；不把前述设计与局部控制写成模型改善证据。
+### 9.1 实现冻结与发送前验证
+
+实现提交为 `0e8d92ed6d297d07dacdece385f441fca3839e64`；随后增加真实准备／读回测试的提交为 `98157c09ad9b761e5a3eaf680ba815669bfa0c6c`。正式准备绑定后者，共 857 个 Python 源文件。整个真实执行和只读重建期间源码未改变。
+
+正式准备一次完成，全部 24 个实际 HTTP 请求均已在发送前保存及读回。O 的完整 body 范围为 50,642–61,751 bytes；R 为 55,409–66,518 bytes。每个配对的 R 比 O 增加 4,767 bytes，所有请求均低于 98,304-byte 上限，没有截断。
+
+实际公开规则控制为 **118 项，全部通过**，覆盖四种原命题形态；这是零 Provider 的有限控制，不是 118 个模型样本。新增校准测试先通过 51 项，真实源码快照／历史输入／prepare／24 次 adapter_mock／readback／analyze 全流程另通过 1 项；其 socket、真实凭据读取、Runtime 构造均为零，24 个 adapter_mock 响应均不标记为 model sample。
+
+最终相关全量回归为 **386/386 通过**，耗时 285.17 秒。另有 Ruff 通过、8 个相关源码文件的 mypy 检查通过。架构检查实际扫描 core/runtime/architecture 的 197 个文件、0 项违规；不将这个范围误写成扫描全部 857 个源文件。
+
+开发中的失败也保留：最初独立测量测试的 11 项失败来自其手工 Request 仍使用旧呈现，同步测试输入后相关 122 项通过；后来全量检查为 382/383，通过其中 1 个失败发现 Action 阶段的无效 JSON 被附加 Update 专用诊断。修订诊断适用阶段、增加两个边界测试后，原监督表示回归 57 项通过，最终全量 386 项通过。此前零 Provider 控制还发现并修正过新评估记录的 `kind` 命名冲突。所有这些修订均发生在正式调用前，不是失败模型调用的替换，也没有放宽准入函数。
+
+### 9.2 固定总体结果
+
+真实 run 开始于 2026-09-06 07:17:47.274052 UTC，最后一轮完成于 07:18:59.459047 UTC，约 72.18 秒。四轮全部完成，没有触发完整性停止。24 项均启动并完成一次实际请求，未知、未启动、HTTP 失败、自动重试、fallback 和替换均为零。
+
+| 分层 | O 完整合法 accept | R 完整合法 accept | Δ（R−O） |
+| --- | ---: | ---: | ---: |
+| C：注册跨指标比较 | 0/4 | 4/4 | +1.00 |
+| B：分支任务首次 lookup | 0/4 | 4/4 | +1.00 |
+| S：部分／整体占比首次观察态 | 0/4 | 4/4 | +1.00 |
+| **合计** | **0/12** | **12/12** | **+1.00（100 个百分点）** |
+
+配对格数为：仅 R 成功 12、仅 O 成功 0、两者成功 0、两者均未成功 0、未知 0。
+
+命题形态分层：registered_compare 为 O 0/4、R 4/4；lookup 为 O 0/4、R 4/4；relation_sum 为 O 0/3、R 3/3；share_ratio 为 O 0/1、R 1/1。这里不能把 ratio 的一次观察扩写为稳定的一般成功率。
+
+24 个原始响应全部通过 JSON／结构 Schema，全部提交 `disposition=accept`，没有通过 reject 绕开命题复制。R 的 12 个响应均经原同一个准入分支通过完整 proposition、assessment 和 transition 检查。O 的 12 个响应全部首先失败于 `admission.exact_observation_acceptance`，而不是 JSON 生成失败。
+
+O 的实际形态为：11 次 `proposed_claim=null`，另一次 C03_O 在正确 proposition 外另套自建 Claim 对象，带 `claim_id`、`obligation_id`、`proposition`、`citations`。其内部 proposition 含正确的 comparison 输出及 lineage，但外层对象不是契约要求的 proposition 本身，因此被拒绝。不能因首错统计而声称 O 的其余所有 assessment／transition 字段均正确。
+
+### 9.3 模型条件与真实用量
+
+24 个保存的 Provider 响应均报告 `deepseek-v4-pro`；已观察的模型条件违例为零。没有据此宣称此别名跨时间绑定不可变权重。
+
+| 实际 Provider usage | O | R | 合计 |
+| --- | ---: | ---: | ---: |
+| prompt_tokens | 197,293 | 210,421 | 407,714 |
+| completion_tokens | 4,694 | 7,841 | 12,535 |
+| total_tokens | 201,987 | 218,262 | 420,249 |
+
+总 prompt cache hit 为 267,904、miss 为 139,810，合计与 prompt_tokens 一致。reasoning_tokens 未提供，保留 null，不填零。全部 24 次均各预留 107,520，总预留 2,580,480；这与 420,249 的实际报告消耗是不同口径。
+
+### 9.4 独立复核、历史不变与工件
+
+对正式目录两次执行真实 `analyze`，并同时禁止凭据读取、Provider send、socket 连接、Runtime 构造、Program 和 Share 执行器。六类 guard 计数全部为零，没有新增 Provider 请求。两次重建的 report、audits 和 manifest 三个文件逐字节一致；report、audits 也与正式 execution 对应文件逐字节一致。每次重建均重新检查源码快照、旧树全部 6,401 个工件及每个调用的真实 HTTP 证据。
+
+核心工件目录为 `artifacts/qa_vnext_update_calibration/update_public_v1_20260906/`：
+
+| 子目录 | 文件数 | 字节数 | 角色 |
+| --- | ---: | ---: | --- |
+| preparation | 94 | 9,888,375 | 原审计、注册、来源、规则控制、24 个冻结输入与 HTTP body |
+| execution | 420 | 8,074,056 | 实际 24 调用原始传输、只读评分、调度与报告 |
+| reanalysis | 3 | 51,858 | 第一次独立重建 |
+| guarded_reanalysis | 3 | 51,858 | 第二次独立重建 |
+| readonly_checks | 2 | 1,186 | guard 计数和逐字节一致性检查 |
+| publication_validation | 12 | 2,266,803 | 历次测试、架构检查、描述统计、历史不变与密钥检查 |
+
+新目录合计 534 个文件、20,334,136 bytes。以实际 API key 对新工件逐字节扫描，匹配数为 0；未导出 .env 或模型权重。旧实验目录没有增删或改写；其 6,401 个文件、227,427,292 bytes 保持不变，历史 1/12、374 次提交、C03 三条原始监督及 Token 结果全部保持原定义。
+
+主要身份：
+
+- Condition：`qa_vnext_update_calibration_condition:b42514d5eca6971cc7b6ab262d3ef96df4c7cef46b207d349febb5e2e8f7b3f0`。
+- Preparation manifest：`qa_vnext_model_execution_update_calibration_preparation_manifest:d652abbc25ad946790f6b5bf62576c0b41f90af31966493fc41833bc6216a46a`。
+- Execution manifest：`qa_vnext_model_execution_update_calibration_execution_manifest:be00977c358516a8df8cb2019a03d98c33abadc4d54b08afe03cdb8834a78a02`。
+- Result：`qa_vnext_update_calibration_summary:f1a343ea8b7c4be4e859e84753eba3181cd511d018544a79c7adee810611c5bf`。
+- Readonly checks：`qa_vnext_update_calibration_readonly_checks:cc4a934cf59266a23fa852cdb7fbf3883dbd2e544f3f89ecfec3ad020ea1cfb9`。
+- Publication validation：`qa_vnext_update_calibration_publication_validation:e23097ce2af08afc3dc97f4d4dc647cb1e7ed907c8c2d2f30f2c5497df833a7f`。
+
+### 9.5 结论与下一边界
+
+三个决定均通过：原准入标准未变且公开接收端控制通过；24 项模型证据完整；R 12/12 且 C/B/S 各 4/4，超过预设的 10/12 与各 3/4 工程门槛。当前有限配对对照支持：完整公开既有 Update 条件，对指定 accept 的一次合法完整提交产生了明确的观察改善。
+
+这不证明全部旧失败都只由该缺口造成，也不证明模型数学／任务深度能力已经普遍成立。两组共享新增 accept-only 指令，O 不是历史逐字复跑；观察态来自已有任务且重复相似，样本少，模型别名与服务条件并非不可变；没有检验自主 accept/reject、反馈交互纠错、后续 Claim 消费、深度三运算、完整 Final 或新商类。
+
+本轮实际 Action 执行、Update commit、创建 Claim、完整 Qualified 会话、监督训练行、Student／GPU 作业均为零。**R 的 12 次单步接受成功不等于 12 个完整 QA 会话成功，更不替换历史 q=1/12。**
+
+当前已具备进入后继有限完整任务检验的预设工程条件。建议下一阶段单独冻结原三个任务各 2 个新完整会话，共 6 个，恢复 accept/reject 自由选择，观察后续实际语义操作、Claim 消费及有效 Final；本轮没有执行这些后继会话，没有继续补样。

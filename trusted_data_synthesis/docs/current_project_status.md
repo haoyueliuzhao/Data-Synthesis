@@ -18,13 +18,14 @@ messages are not treated as experimental evidence.
 
 ## QA vNext Update Public-Contract Repair and Paired Calibration
 
-The next bounded stage is now implemented, with its design fixed before any new Provider call.
+The bounded stage completed on 2026-09-06 under frozen source commit
+`98157c09ad9b761e5a3eaf680ba815669bfa0c6c`, with its design fixed before any new Provider call.
 It publishes the complete existing Update proposition, assessment and transition conditions;
 the public Parser/canonicalizer bytes and both admission-function ASTs remain unchanged.
 The reference fixture reads the versioned public mapping; an isolated local receiver tests
 accept/reject and strict negative controls without private Runtime fields or old callback helpers.
 
-The planned population is twelve historical first-Observation requests × original/repaired
+The completed population is twelve historical first-Observation requests × original/repaired
 presentation once each, not twelve new long sessions. Both arms share an explicit accept-only
 calibration instruction; six pairs use O→R and six use R→O. Actions and Update commits are zero.
 Each call has one attempt, no retry or replacement, and the total reserved allowance is 2,580,480.
@@ -32,9 +33,20 @@ The engineering continuation gate is complete evidence plus R≥10/12 and each C
 it is not a statistical lower confidence bound. This stage stops after 24 calls, without Student
 training or automatically starting the separate six-full-session follow-up.
 
-At this implementation checkpoint, no new real Provider calls have begun. The previous
-1/12 result, 374-call evidence and three C03 Token candidates remain immutable. Historical
-sections below retain their point-in-time results and recommendations.
+All 24 calls have complete independently verified HTTP evidence: O 0/12, R 12/12,
+paired R-only successes 12, with each C/B/S group O 0/4 and R 4/4. All responses are
+structurally valid accepts; the twelve O responses first fail exact-proposition acceptance
+(eleven nulls and one extra Claim wrapper). There are no unknown/not-started calls, retries,
+replacements, observed condition deviations or HTTP failures. Actual usage is 420,249 tokens.
+The 118 public-contract controls and 386 related regression tests pass. Two guarded read-only
+analyses reproduce all audits and the report byte-for-byte, with zero network, credential,
+Runtime-construction or financial-executor calls.
+
+The engineering gate passes. This supports the bounded single-step presentation repair,
+not complete task success, new quotient classes or Student utility. The previous 1/12 result,
+all 6,401 old experiment files, 374-call evidence and three C03 Token candidates remain immutable.
+Six new full sessions are the next separately frozen measurement, not run in this stage.
+Historical sections below retain their point-in-time results and recommendations.
 
 See [the detailed repair and preregistered calibration design](finance_qa_vnext_update_public_contract_calibration.md).
 
