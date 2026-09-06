@@ -167,7 +167,7 @@ trusted_data_synthesis/.venv/bin/trusted-synthesis finance-qa-vnext-model analyz
   --output-dir <new-readonly-analysis-output>
 ```
 
-prepare 和 analyze 不使用 API key。run 只在进程内从项目 .env 读取 DEEPSEEK_API_KEY，
+prepare 和 analyze 不使用 API key。run 只在进程内从现有 `trusted_data_synthesis/.env` 读取 DEEPSEEK_API_KEY，
 不写入参数、日志、请求证据或 Git。analyze 仅读已有字节，不调用 callback 或 Task executor，
 不通过再次运行 12 会话来声称结果可复现。
 
@@ -215,3 +215,14 @@ Token 统计字段提供 `records`，并非真实 Token 数据缺该字段；补
 新增真实读回回归通过（1 passed，13.13 秒），包括 tuple/list 正常读回及 false→0 篡改拒绝；
 源快照/Git和dummy设计输入仅在测试中隔离，其余 Catalog、四个控制、软件、tokenizer 与 `_prepared`
 均实际运行，网络与凭据读取被禁止。相关唯一测试的最终通过数因此增至338。
+
+第二次源码冻结 `45db3b4b0f333e81d2569576e98a9620bf5d47b4` 的真实读回已通过，
+但首次密钥读取使用了错误的仓库根 `.env` 路径，因此触发 FileNotFoundError；
+现有、已被 `.gitignore` 排除的文件实际为 `trusted_data_synthesis/.env`。
+该次仍未创建 execution 目录、启动会话或发送 HTTP。入口随后只修正这一已存在配置文件的路径，
+不复制、不打印密钥，不更改生成条件，再于首个实际 Provider attempt 前冻结源码与准备工件。
+实际配置位置检查不发送 HTTP，只确认项目现有文件可由同一解析器读取。
+增加调用前路径解析测试，并更新隔离 fixture 对配置位置的断言后，完整编排测试
+24 passed（132.43 秒），包括100条合成候选的真实分词和只读再分析。
+加上真实prepare读回与既有回归，相关唯一测试最终状态为339项通过；
+两个准备轮的0-call诊断分别保留，最终只有修复后启动的12会话进入模型总体。

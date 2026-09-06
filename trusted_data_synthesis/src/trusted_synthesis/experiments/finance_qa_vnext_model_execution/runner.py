@@ -234,7 +234,7 @@ def run(root: Path, preparation_directory: Path) -> dict[str, Any]:
     prepared = _prepared(root, preparation_directory)
     directory = Path(prepared["report"]["execution_directory"])
     require(not directory.exists(), "run.population_already_started")
-    api_key = _credential(root / ".env")
+    api_key = _credential(root / "trusted_data_synthesis/.env")
     store = DurableStore(directory)
     registrations = prepared["registrations"]
     store.json("registrations.json", registrations)

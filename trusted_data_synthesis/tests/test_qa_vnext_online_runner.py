@@ -87,7 +87,7 @@ def _fixture(
         assert root == ROOT and snapshot == implementation
 
     def local_credential(path: Path) -> str:
-        assert path == ROOT / ".env"
+        assert path == ROOT / "trusted_data_synthesis/.env"
         credential_accesses.append(path)
         return "synthetic-runner-dummy-not-a-credential"
 
@@ -417,3 +417,24 @@ def test_credential_reader_rejects_missing_ambiguous_or_malformed_dummy_values(
     path.write_text(contents, encoding="utf-8")
     with pytest.raises(ProtocolError, match="run.credential_unavailable"):
         REAL_CREDENTIAL(path)
+
+
+def test_run_resolves_the_existing_package_environment_before_starting_sessions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "isolated-repository"
+    execution = tmp_path / "execution"
+    monkeypatch.setattr(
+        runner, "_prepared", lambda *_: {"report": {"execution_directory": str(execution)}}
+    )
+    seen = []
+
+    def stop_before_credential_read(path: Path) -> str:
+        seen.append(path)
+        raise ProtocolError("test.stop_before_credential_read")
+
+    monkeypatch.setattr(runner, "_credential", stop_before_credential_read)
+    with pytest.raises(ProtocolError, match="test.stop_before_credential_read"):
+        runner.run(root, tmp_path / "preparation")
+    assert seen == [root / "trusted_data_synthesis/.env"]
+    assert not execution.exists()
