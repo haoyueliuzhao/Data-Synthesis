@@ -194,3 +194,24 @@ Token 统计字段提供 `records`，并非真实 Token 数据缺该字段；补
 真实深度、Share 最终支持、usage、比较关系、候选／Token 数量、只读重建和分层 Gate。
 本节尚不宣称真实模型成功。历史 V26.113 已确认的旧 scripted-fixture 基线失败与 18 个旧严格类型诊断
 不是本轮模型执行前提；本轮不修改它们或将其隐去。
+
+### 8.1 首次发送前的真实入口读回修复
+
+首次源码提交 `e83c7f0abf8cf9c0113b867b7160def223489b56` 的正式零调用 preparation 已成功封存，
+但实际 CLI run 在 `_prepared` 的 `run.frozen_population` 检查退出，尚未读取 .env、
+创建 execution 目录、启动任何会话或进行 Provider attempt。原 preparation 原样保留，
+不删除其初始登记，也不把它当作正式12会话中的模型失败。
+
+具体原因：公开 Registry manifest 中5类 tuple 字段经过 JSON 后成为 list；三个context、
+13个Operation共195处表示类型差异。重新计算的 condition.id 和 canonical JSON 字节均完全一致，
+只有 Python 内存 `==` 为 false；registrations 和 coverage 没有差异。
+修复仅将已序列化总体对象的复核改为 canonical JSON 字节比较，同时避免 bool/int 宽松相等。
+不改模型配置、公开 Task/context/protocol、预算或选择规则。
+
+先前完整编排测试为了隔离 scheduler 替代了 `_prepared`，所以没有覆盖这一真实入口读回路径。
+新增零网络 prepare→真实 `_prepared` 回归补上该覆盖；首次响应前重新提交源码并使用新的准备目录，
+原零调用准备轮标记为 superseded。正式模型总体仅来自修复后首次实际执行的12个会话，
+不存在已失败模型会话替换或额外模型采样。
+新增真实读回回归通过（1 passed，13.13 秒），包括 tuple/list 正常读回及 false→0 篡改拒绝；
+源快照/Git和dummy设计输入仅在测试中隔离，其余 Catalog、四个控制、软件、tokenizer 与 `_prepared`
+均实际运行，网络与凭据读取被禁止。相关唯一测试的最终通过数因此增至338。

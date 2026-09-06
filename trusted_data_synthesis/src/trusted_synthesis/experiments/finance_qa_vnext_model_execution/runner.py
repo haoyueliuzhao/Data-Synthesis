@@ -10,6 +10,7 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any
 
+from trusted_synthesis.canonical_json import canonical_json_bytes
 from trusted_synthesis.domains.finance.qa_vnext.protocol import contract
 from trusted_synthesis.domains.finance.qa_vnext.runtime import DurableStore, PublicQARuntime
 
@@ -117,9 +118,9 @@ def _prepared(root: Path, directory: Path) -> dict[str, Any]:
         root, config.as_record(), values["implementation"], run_tag=values["condition"]["run_tag"]
     )
     require(
-        condition == values["condition"]
-        and registrations == values["registrations"]
-        and panel.coverage == values["coverage"],
+        canonical_json_bytes(condition) == canonical_json_bytes(values["condition"])
+        and canonical_json_bytes(registrations) == canonical_json_bytes(values["registrations"])
+        and canonical_json_bytes(panel.coverage) == canonical_json_bytes(values["coverage"]),
         "run.frozen_population",
     )
     require(register_tokenizer(root) == values["tokenizer_binding"], "run.frozen_tokenizer_assets")
