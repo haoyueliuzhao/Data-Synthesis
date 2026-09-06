@@ -159,6 +159,14 @@ frequencies remain null. Five supported pairs are equivalent. No replacement, tr
 or cross-condition pooling occurred; three uninstantiated types remain visible. See the
 [eight-task panel design and actual results](docs/finance_qa_vnext_fixed_task_panel_collection.md).
 
+The additive, correction-aware measurement entry is
+`python -m trusted_synthesis.experiments.finance_qa_vnext_panel_quotient {prepare,run}`.
+It uses only those frozen sixteen sessions, preserving qualification and all original
+candidate/Token bytes. The new rule interprets D01/B01/S02 without clearing their ledgers,
+retains S02's rejected ratio proposal → actual sum/Claim → disclosed-total ratio relation,
+and separates fixed-denominator success from conditional class frequencies.
+See the [finite correction-history rules and measurement record](docs/finance_qa_vnext_panel_correction_aware_quotient.md).
+
 ## Canonical Experiment
 
 ```bash
