@@ -164,7 +164,11 @@ The additive, correction-aware measurement entry is
 It uses only those frozen sixteen sessions, preserving qualification and all original
 candidate/Token bytes. The new rule interprets D01/B01/S02 without clearing their ledgers,
 retains S02's rejected ratio proposal → actual sum/Claim → disclosed-total ratio relation,
-and separates fixed-denominator success from conditional class frequencies.
+and separates fixed-denominator success from conditional class frequencies. Completed
+under source `dd2df2a4`: 15 Assignments, seven equivalent pairs (five reused, two new),
+and one observed class per task. S remains 1/2 successful despite conditional π=1/1;
+overall success stays 15/16. All 102 tests and 24 direct controls pass; new execution
+and tokenization remain zero. No class-reallocation freedom or Student benefit is claimed.
 See the [finite correction-history rules and measurement record](docs/finance_qa_vnext_panel_correction_aware_quotient.md).
 
 ## Canonical Experiment

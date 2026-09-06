@@ -125,7 +125,77 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=trusted_data_synthesis/src truste
 
 新工件位于 `artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907`。`preparation/` 保存规则、条件、实现快照、原来源与表示引用、历史清单和零执行 guards；`measurement/` 保存十六个独立投影 sidecar、七个比较、Assignment、类引用、分布、四类控制及报告。成功封存后的再次入口只核对封存和源码后读回结果，不产生第二次正式测量。部分未封存目录不覆盖、不悄然重建。
 
-正式物化结果将在执行完成后补入本节；冻结设计时不预填成功、等价或闭合结论。
+### 8.1 正式执行与身份
+
+正式准备和测量均成功，源码冻结提交为 `dd2df2a4f9e47ef2e9b588753a33a4c129234939`。没有在源码冻结后调整规则或重建原资格。以下为实测输出，不是冻结前预填的期望：
+
+| 绑定对象 | 正式 ID 的哈希部分 |
+| --- | --- |
+| 新测量条件 | `6b763289d5be4b41c43f6fdc4dbca1f35064464da41c91702f081aa3d536e8f3` |
+| 新规则 | `0af6d8446a28f48387d6ea5697d9284c65907dc633422ee85393699b62d7cfb2` |
+| 准备 manifest | `1f7701a86d342f22a341a2fc380fe7b59c7a728fa2630c5a211ab95d41911bc9` |
+| 测量 manifest | `b0810c0293ea4f719ebf38dd9f5b89ca0ecf6bb91d6cac556060bc6f871ca939` |
+| 最终报告 | `8f7d35fe662e4924c2b936f622a8da9e5557deaf266f19f1493ef97226c79c1b` |
+
+完整带类型 ID 可在[正式报告](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/report.json)、[规则](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/preparation/rule.json)和[条件](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/preparation/condition.json)读取。
+
+正式输出为 15 个 supported 有效投影、15 个 Assignment、0 个未映射有效样本；S01 的 sidecar 为 `ineligible`，不获得有效 Assignment。七个同任务配对均 equivalent，其中五个复用既有对应证明，D/B 两个是本轮新增实际图搜索。S 无配对，也没有补采或借入历史 S 会话。
+
+### 8.2 七条事件的实际处置
+
+| 会话与原提交 | 原支持标志 | 本轮处置 | 最近准入后继 |
+| --- | --- | --- | --- |
+| D01 T7 | false | 同一答案 Claim 的公开 Final 对齐，不单独分类 | T8 Final |
+| B01 T5 | false | 同一实际 growth Action 的公开 basis 补足，不单独分类 | T6 growth |
+| S02 T1 | false | 保留 ratio 提案、反馈、sum/Claim、后续实际 ratio 的关系 | T3 sum |
+| S02 T2 | false | 同一保留关系的连续重复；原始事件仍独立保存 | T3 sum |
+| S02 T9 | false | 同一 percent Claim 的公开投影/字段/citation 对齐 | T12 Final |
+| S02 T10 | false | 同一 percent Claim 的公开字段/citation 对齐 | T12 Final |
+| S02 T11 | false | 同一 percent Claim 的公开投影/字段对齐 | T12 Final |
+
+因此七条原始未准入记录形成五条非分类的协议对齐解释，以及两条共同绑定一个保留行为关系的事件解释。不是删除七条错误后只比较最终答案。三个新 sidecar 中的 `old_projection_supported` 仍为 false；原资格对象和完整 `source_non_accept_ledger` 也保留。S01 的三十条未准入账本不转成有效行为。
+
+直接证据：[D01 投影与账本](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/projections/D01.json)、[B01 投影与账本](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/projections/B01.json)、[S02 保留关系](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/projections/S02.json)、[七个比较证明](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/comparisons.json)。
+
+### 8.3 八任务经验分布
+
+每行的类只属于该行固定 Task/Context，不跨任务归并；`u` 和 `π` 均指该任务唯一已观察类的频率。
+
+| 任务 | 原 n | 原有效 m | 原 supported → 新 mapped | 正式 Assignment | 观察类数 | q | u | π（有效条件） |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| F 事实检索 | 2 | 2 | 2 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| C 跨指标比较 | 2 | 2 | 2 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| G 跨期增长率 | 2 | 2 | 2 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| A 跨期平均 | 2 | 2 | 2 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| D 跨期绝对变化 | 2 | 2 | 1 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| R 注册比率 | 2 | 2 | 2 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| B 两增长率绝对差 | 2 | 2 | 1 → 2 | 2 | 1 | 2/2 | 2/2 | 2/2 |
+| S 部分／整体占比 | 2 | 1 | 0 → 1 | 1 | 1 | 1/2 | 1/2 | 1/1 |
+
+总体成功仍为 `15/16=0.9375`；固定 `μ=1/8` 下，各任务类的面板联合质量为前七任务各 `2/16`，S 为 `1/16`，合计 `15/16`。S01 对应剩余失败质量 `1/16`，没有被有效条件归一化“变成成功”。当前八任务各自的观察支持都是单点，类间重分配自由度总计 0。
+
+机器可读：[十五个正式 Assignment](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/assignments.json)、[八个有限类引用](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/classes.json)、[完整分布及分母](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/distribution.json)。
+
+### 8.4 控制、测试与保存性结果
+
+正式测量内的 24 项控制全部符合预期、全部实际执行、0 项不适用：
+
+| 控制族 | 数量 | 实际结果 |
+| --- | ---: | --- |
+| 十二投影基底兼容与旧五对证明复用 | 2 个集合控制 | 全部逐项满足 |
+| 伪无效果、实际支持/答案 Claim 变更、非法近似值与跨 sum 归约 | 15 | 均拒绝错误归约 |
+| S02 删除真实 sum、将 ratio 分母改成 total Claim | 2 | Final 不变仍为 not_equivalent，有差异见证 |
+| 失败晋升、重新封装假资格、删有效样本、缩分母、未映射质量保留 | 5 | 前四拒绝；后一保留 `n=2,m=2,unmapped=1,π=null` |
+
+[控制报告](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/measurement/controls.json)中的反事实图只用于测量边界检查，并非经过 Runtime/QA 验证的新合法模型轨迹。组件另覆盖 S02 真未定时的安全处理：不运行相应图差异控制、不晋升投影、保留 S 的 `n=2,m=1,π=null`，报告不闭合；这个对照不是本轮正式结果。
+
+最终六组新增组件测试 **102/102 通过，27.27 秒**：source 16、comparison 32、projection 14、distribution 25、stage 11、controls 4。Ruff 全部通过，mypy 对新增 10 个源码文件通过。[最终 JUnit](../artifacts/qa_vnext_panel_quotient/correction_aware_v1_20260907/validation/final_component_tests.xml)保留各用例结果；较早 101 项汇总日志也保留，差一项来自最后补入的未定分支控制，而非删除失败测试。未重跑旧 76 项面板测试。
+
+准备与正式测量的 24 个禁止入口计数均为 0：包括 Provider、模型 callback、凭据读取、Runtime、两种 Operation execute、旧 qualification/audit/validation、Tokenizer 加载/注册/编码、Student 构造/权重读取与 CUDA 初始化。`cuda_initialized=false`。这些是被插桩入口的实测边界，不宣称任意代码的形式化隔离证明。
+
+历史 12,947 个文件以及原面板 2,771 个已发布 Git blob 全部未变，888 个前驱 Python 文件未变；113 个原候选/Token 记录和 15 个完整包仍原字节引用。新阶段共 37 个文件、5,689,454 字节：准备 manifest 绑定 9 个成员，测量 manifest 绑定 24 个成员，另有两个 manifest 本身及两份组件 JUnit。封存后的检查仅核对完整成员、哈希和记录读回，没有追加同内容的独立语义审计。
+
+结论：`complete_panel_quotient_measurement_closed=true`。这批既定数据的有限纠正历史与商分布对象已经完成，可以收口；不需要为 S01 重新采样，也不需要再次 Token 化。
 
 ## 9. 允许结论与下一步边界
 
