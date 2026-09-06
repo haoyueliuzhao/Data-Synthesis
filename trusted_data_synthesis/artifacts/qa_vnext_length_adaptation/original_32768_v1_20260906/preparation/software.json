@@ -1,0 +1,1 @@
+{"cpu_only":true,"id":"qa_vnext_length_adaptation_software:ec129164614fc5cb0337b3326d64cd6eb670f0b5779bea73954b3004f7bf6957","packages":{"huggingface-hub":"1.25.1","jinja2":"3.1.6","numpy":"2.5.1","tokenizers":"0.22.2","torch":"2.7.1+cu128","transformers":"5.14.1"},"python":"3.12.13","schema_version":"qa_vnext_length_adaptation_software.v1"}

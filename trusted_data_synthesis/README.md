@@ -143,10 +143,12 @@ See the [Action contract repair and original B reachability report](docs/finance
 
 The original-content representation follow-up uses
 `python -m trusted_synthesis.experiments.finance_qa_vnext_length_adaptation {prepare,run,verify}`.
-It is strictly CPU-only: reuse all 34 existing B candidates under one separately frozen
-32,768 policy after exact local configuration checks, with no new Provider, Runtime,
-Student or GPU execution. The old 24,576 binding and overlength results remain immutable.
-See the [full-trajectory representation adaptation design](docs/finance_qa_vnext_full_trajectory_length_adaptation.md).
+Completed under source `7ad17013`: all 34 existing B candidates are consumable under one
+separately frozen 32,768 policy, yielding two complete 17-unit packages including both T16
+Updates. Eighteen small CPU batches, 27 tests and 21 local controls pass. The old 24,576
+binding and 32-fit/2-not-fit result remain immutable, with zero new Provider, Runtime,
+Student or GPU execution. GPU training feasibility is not claimed.
+See the [full-trajectory representation adaptation results](docs/finance_qa_vnext_full_trajectory_length_adaptation.md).
 
 ## Canonical Experiment
 

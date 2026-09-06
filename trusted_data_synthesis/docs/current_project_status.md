@@ -18,13 +18,19 @@ messages are not treated as experimental evidence.
 
 ## QA vNext Full-Trajectory Representation Length Adaptation
 
-The accepted Action/B reachability audit requires no historical rerun. The next bounded
-implementation uses the existing two Qualified B sessions and all 34 original candidates,
-with zero Provider, Finance Runtime, Student or GPU execution. It freezes a separate 32,768
-representation policy only after checking the same local five-file tokenizer/model-config
-assets, preserving the old 24,576 binding and `contains_not_fit` result. No new task panel,
-class weighting or training is started. Formal adaptation results are not yet recorded.
-See the [frozen adaptation design](finance_qa_vnext_full_trajectory_length_adaptation.md).
+Completed under source `7ad17013`, reusing the existing two Qualified B sessions and all
+34 original candidates with zero new Provider, Finance Runtime, Student or GPU execution.
+A separate 32,768 condition is supported by the unchanged five-file local tokenizer/config
+assets: actual positions 32,768, no RoPE extension. All 34 records are consumable; both
+17-unit session packages include T16 and Final. The old 32 fit arrays are identical, and
+the two original overlength T16 responses remain unchanged at 24,885 / 24,924 tokens.
+
+The historical 24,576 binding and `contains_not_fit` (32/34, zero complete packages) remain
+unchanged. Eighteen small CPU batches pass actual mask, padding, causal-shift and disk-array
+checks; this does not validate GPU training feasibility or Student benefit. All 27 tests
+and 21 representation controls pass; 9,514 historical files / 420,810,288 bytes are unchanged.
+No qualification rerun, new task panel, class weighting or training is started.
+See the [design, actual results and artifact links](finance_qa_vnext_full_trajectory_length_adaptation.md).
 
 ## QA vNext Action Contract and Two Fresh B Sessions
 
