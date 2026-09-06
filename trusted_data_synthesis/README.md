@@ -124,6 +124,12 @@ Its fixed 24-call paired calibration completed with original presentation O 0/12
 presentation R 12/12, without Action execution, Update commits or new full sessions. The old
 1/12 outcome is unchanged. See the [public-contract repair, frozen design and bounded results](docs/finance_qa_vnext_update_public_contract_calibration.md).
 
+The separately authorized six-full-session follow-up uses
+`python -m trusted_synthesis.experiments.finance_qa_vnext_repaired_full_task {prepare,run,analyze}`.
+It freezes two fresh C/B/S rounds, restores the neutral full-task instruction, and caps all
+Provider attempts at 192. The previous twelve-session and 24-call results remain separate.
+See the [six-session design and execution record](docs/finance_qa_vnext_repaired_update_six_session_full_task.md).
+
 ## Canonical Experiment
 
 ```bash

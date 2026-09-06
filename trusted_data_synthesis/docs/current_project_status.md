@@ -16,6 +16,19 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Repaired-Presentation Six Full Sessions
+
+The audit accepts the prior bounded Update repair and authorizes its next scoped experiment:
+two fresh complete sessions for each of the original C/B/S tasks. The new entry freezes two
+three-way concurrent rounds, neutral full-task instructions, actual Runtime commits and a
+192-Provider-attempt global bound. It does not continue historical pending states or inject
+calibration responses. Source freezing and bounded wiring tests precede real calls.
+
+The pre-execution design and subsequent actual results are recorded in the
+[six-session report](finance_qa_vnext_repaired_update_six_session_full_task.md).
+Old 1/12 and single-step O 0/12 versus R 12/12 remain independent historical results;
+the old mainline stays paused, with no Student or GPU training.
+
 ## QA vNext Update Public-Contract Repair and Paired Calibration
 
 The bounded stage completed on 2026-09-06 under frozen source commit
