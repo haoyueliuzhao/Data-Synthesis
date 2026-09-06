@@ -16,6 +16,20 @@ messages are not treated as experimental evidence.
 - Credentials remain process-environment inputs and are not tracked or serialized
 
 
+## QA vNext Fixed Eight-Task Panel
+
+The next authorized stage freezes eight existing source-bound tasks, two fresh sessions
+per task, exact design marginal 1/8, and a unified Action/Update publication, teacher and
+32,768 representation policy. Two fixed rounds use four fixed two-session waves each,
+with at most 512 Provider attempts and 55,050,240 reserved allowance. There is no retry,
+replacement, Share-route preassignment, new source, Student work or GPU execution.
+Three uninstantiated registered types remain visible outside the eight-task denominator.
+
+Success, actual depth, finite projection and complete supervision representation are measured
+separately. Prior success is not pooled, unknown/not-started are not failures, and observed
+success/row pools do not inherit the fixed task marginal automatically. Formal outcomes are
+not yet recorded. See the [frozen collection design](finance_qa_vnext_fixed_task_panel_collection.md).
+
 ## QA vNext Full-Trajectory Representation Length Adaptation
 
 Completed under source `7ad17013`, reusing the existing two Qualified B sessions and all

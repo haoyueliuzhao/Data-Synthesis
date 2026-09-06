@@ -150,6 +150,14 @@ binding and 32-fit/2-not-fit result remain immutable, with zero new Provider, Ru
 Student or GPU execution. GPU training feasibility is not claimed.
 See the [full-trajectory representation adaptation results](docs/finance_qa_vnext_full_trajectory_length_adaptation.md).
 
+The next fixed-panel collection entry is
+`python -m trusted_synthesis.experiments.finance_qa_vnext_task_panel {prepare,run,analyze}`.
+It freezes eight existing tasks × two fresh sessions under unified publication, teacher
+and 32,768 representation policies, with at most 512 attempts, concurrency two, no
+replacement or training. Success, actual depth, finite mappings and complete packages
+remain separate; three uninstantiated types stay visible. See the
+[eight-task panel design](docs/finance_qa_vnext_fixed_task_panel_collection.md).
+
 ## Canonical Experiment
 
 ```bash
