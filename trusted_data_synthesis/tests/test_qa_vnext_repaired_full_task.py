@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import socket
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -26,6 +27,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_model_execution.transport im
     TransportConfig,
 )
 from trusted_synthesis.experiments.finance_qa_vnext_repaired_full_task import plan, runner
+from trusted_synthesis.experiments.finance_qa_vnext_repaired_full_task.__main__ import main
 from trusted_synthesis.experiments.finance_qa_vnext_repaired_full_task.controls import run_controls
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -172,7 +174,23 @@ def install_synthetic_http(monkeypatch, registrations, *, behavior="success"):
 def synthetic_run(tmp_path, monkeypatch, *, behavior="success", actual_prepare=False):
     preparation = tmp_path / "preparation"
     if actual_prepare:
-        plan.prepare(ROOT, preparation, DESIGN, run_tag="actual-committed-six-local-http")
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "six",
+                "prepare",
+                "--root",
+                str(ROOT),
+                "--preparation",
+                str(preparation),
+                "--design",
+                str(DESIGN),
+                "--run-tag",
+                "actual-committed-six-local-http",
+            ],
+        )
+        main()
         prepared = plan._prepared(ROOT, preparation)
     else:
         implementation, condition, registrations, panel = population()

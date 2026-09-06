@@ -4,7 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from .runner import analyze, prepare, run
+from .plan import prepare
+from .runner import analyze, run
 
 
 def main() -> None:
