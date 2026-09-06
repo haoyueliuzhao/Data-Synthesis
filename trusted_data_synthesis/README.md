@@ -171,6 +171,14 @@ overall success stays 15/16. All 102 tests and 24 direct controls pass; new exec
 and tokenization remain zero. No class-reallocation freedom or Student benefit is claimed.
 See the [finite correction-history rules and measurement record](docs/finance_qa_vnext_panel_correction_aware_quotient.md).
 
+The next bounded support-exploration entry is
+`python -m trusted_synthesis.experiments.finance_qa_vnext_support_exploration {prepare,run}`.
+It preregisters four neutral and four soft-guided fresh sessions on the same Share Task,
+in four fixed N/E waves with at most two parallel sessions and 256 Provider attempts.
+Prompt preference does not change legal actions or qualification; actual denominator
+production and Claim consumption, not profile names, establish the target support witness.
+See the [stratified same-task support exploration design and record](docs/finance_qa_vnext_same_task_support_exploration.md).
+
 ## Canonical Experiment
 
 ```bash
