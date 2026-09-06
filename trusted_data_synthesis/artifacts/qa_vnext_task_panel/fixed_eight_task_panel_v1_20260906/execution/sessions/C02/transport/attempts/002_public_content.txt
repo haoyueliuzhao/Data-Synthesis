@@ -1,0 +1,17 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:2332fedd18987a2ca7f72bef689a3c8e3f945a83e3258a94503f6dbfaeae765e",
+  "answer_claim_id": "finance_qa_vnext_claim:026c7a972bdce371d7c1c74227c873f3ea567759f67bbaa79259c3dc83c109fb",
+  "result": {
+    "higher_ref": "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+    "difference": "1783",
+    "result_context": {
+      "currency": "USD",
+      "unit": "million USD"
+    }
+  },
+  "citations": [
+    "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+    "evidence:finqa_archive_cell:ccd49ee8d862ad04084ab6cd20612cc3364d8c1ebc290c14e7e537eb7b8f160b"
+  ]
+}

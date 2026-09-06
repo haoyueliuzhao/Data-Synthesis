@@ -1,0 +1,14 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:4aa140e7e60f59f678e7c75fe9870c19bee24f3d71aa586e6d82fa7313135f59",
+  "answer_claim_id": "finance_qa_vnext_claim:4a262f978e12a1fd172c931fdd1feea835037837363a1747b862f6ed00a170d1",
+  "result": {
+    "value": "125",
+    "unit": "million USD",
+    "currency": "USD"
+  },
+  "citations": [
+    "evidence:finqa_archive_cell:2c9d98f23788a9f71e14b8c2a5022792c8473653ddf6f076006b4cac55dc3248",
+    "evidence:finqa_archive_cell:ca9ce1ceea0443d63f15b182b0dde8ed2385973453748d0790b9ec53ac84e28b"
+  ]
+}

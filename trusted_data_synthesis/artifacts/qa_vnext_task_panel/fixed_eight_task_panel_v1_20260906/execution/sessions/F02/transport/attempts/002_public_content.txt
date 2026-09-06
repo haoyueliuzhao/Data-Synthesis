@@ -1,0 +1,17 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:78febbe5a94050e1a0c65b5da5938650e83e841ea03c27a7fc7a9665692119af",
+  "answer_claim_id": "finance_qa_vnext_claim:3715bb63d3a944dec059fec1453f288251500efba39688d8c91ad89b113d365f",
+  "result": {
+    "payload": {
+      "currency": "USD",
+      "kind": "scalar_observation",
+      "unit": "million USD",
+      "value": "1594"
+    },
+    "source_id": "qa_frozen_finqa_source_archive:831dbfb2e785dbc227f895ce3f24046433467aec67b09db2bd6ac7692a8a30dc"
+  },
+  "citations": [
+    "evidence:finqa_archive_cell:ca9ce1ceea0443d63f15b182b0dde8ed2385973453748d0790b9ec53ac84e28b"
+  ]
+}

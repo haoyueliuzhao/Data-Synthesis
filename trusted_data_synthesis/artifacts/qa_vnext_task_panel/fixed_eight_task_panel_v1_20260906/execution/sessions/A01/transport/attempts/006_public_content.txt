@@ -1,0 +1,55 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:bae36bb7c437faf0e103522f741d564345d0bba93a10aef910104acc51f05d18",
+  "decision": {
+    "obligation_id": "result",
+    "subgoal": "derive_quantity",
+    "candidate_action_ids": [
+      "finance_qa_vnext_offered_action:9710f2a72efac65d4ae76792f6eac91c262ac07107944a809d7972a8bf09d38b"
+    ],
+    "selected_action_id": "finance_qa_vnext_offered_action:9710f2a72efac65d4ae76792f6eac91c262ac07107944a809d7972a8bf09d38b",
+    "selection_rule": "dependency_ready",
+    "basis": {
+      "relation": "requires",
+      "evidence_refs": [
+        "evidence:finqa_archive_cell:2c9d98f23788a9f71e14b8c2a5022792c8473653ddf6f076006b4cac55dc3248",
+        "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+        "evidence:finqa_archive_cell:cd72687d37467085a8d5a7b6c3160c12a2a1d0fba03052e6e8cd01345af7851e"
+      ],
+      "claim_refs": [
+        "finance_qa_vnext_claim:28da9b6ae136d21bfdb76a35851a49583382eb6ebf6c876d0765f653ca78d50c",
+        "finance_qa_vnext_claim:bd8a6220feb4e1f7bf9de4e05399da26a9ea802b4d5fa7e427aca823b4584e35",
+        "finance_qa_vnext_claim:ce2d71ad950f67e549f8142a09b53a0a59c2838a44beb295b83cd5f0badc25de"
+      ]
+    },
+    "unresolved_uncertainty_refs": [],
+    "expected_effect": {
+      "establishes_obligation": "result",
+      "output_schema": "scalar"
+    }
+  },
+  "operation": "aggregate",
+  "inputs": [
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:ce2d71ad950f67e549f8142a09b53a0a59c2838a44beb295b83cd5f0badc25de",
+      "role": "value_1",
+      "selector": "payload.value"
+    },
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:bd8a6220feb4e1f7bf9de4e05399da26a9ea802b4d5fa7e427aca823b4584e35",
+      "role": "value_2",
+      "selector": "payload.value"
+    },
+    {
+      "kind": "claim",
+      "ref_id": "finance_qa_vnext_claim:28da9b6ae136d21bfdb76a35851a49583382eb6ebf6c876d0765f653ca78d50c",
+      "role": "value_3",
+      "selector": "payload.value"
+    }
+  ],
+  "parameters": {
+    "method": "mean"
+  }
+}

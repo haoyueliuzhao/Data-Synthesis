@@ -1,0 +1,34 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:692badc3fa5a7f0954c9b527eff5edf8262dc68e7d96f1459871529c00aa8db4",
+  "observation_id": "finance_qa_vnext_observation:744364b97830598c8c9c83a9ee35db9af5ea408b0dd1c7a17b10ad6effebb169",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "evidence:finqa_archive_cell:2c9d98f23788a9f71e14b8c2a5022792c8473653ddf6f076006b4cac55dc3248",
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:cd72687d37467085a8d5a7b6c3160c12a2a1d0fba03052e6e8cd01345af7851e"
+    ],
+    "operation": "aggregate",
+    "operation_contract_id": "operation_semantic_contract:ccf1c2edcd452bf512bc61d3ca7aa2eec3d12e94b67ef1e7aec41d868ba7e17b",
+    "output": {
+      "method": "mean",
+      "value": "1787.666666666666666666666667"
+    }
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:744364b97830598c8c9c83a9ee35db9af5ea408b0dd1c7a17b10ad6effebb169"
+    ],
+    "evidence_refs": [
+      "evidence:finqa_archive_cell:2c9d98f23788a9f71e14b8c2a5022792c8473653ddf6f076006b4cac55dc3248",
+      "evidence:finqa_archive_cell:46bfce1e3799e0f8c46406cb97049fb88da37b513f2e02c438d3e6fb171b5c9c",
+      "evidence:finqa_archive_cell:cd72687d37467085a8d5a7b6c3160c12a2a1d0fba03052e6e8cd01345af7851e"
+    ],
+    "fulfills_obligation": "result"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

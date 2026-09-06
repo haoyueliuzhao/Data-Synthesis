@@ -150,13 +150,14 @@ binding and 32-fit/2-not-fit result remain immutable, with zero new Provider, Ru
 Student or GPU execution. GPU training feasibility is not claimed.
 See the [full-trajectory representation adaptation results](docs/finance_qa_vnext_full_trajectory_length_adaptation.md).
 
-The next fixed-panel collection entry is
+The fixed-panel collection entry is
 `python -m trusted_synthesis.experiments.finance_qa_vnext_task_panel {prepare,run,analyze}`.
-It freezes eight existing tasks × two fresh sessions under unified publication, teacher
-and 32,768 representation policies, with at most 512 attempts, concurrency two, no
-replacement or training. Success, actual depth, finite mappings and complete packages
-remain separate; three uninstantiated types stay visible. See the
-[eight-task panel design](docs/finance_qa_vnext_fixed_task_panel_collection.md).
+Completed under source `555a7610`: 15/16 Qualified across eight existing tasks, 152 actual
+calls, 113/113 fit positive candidates and 15 complete CPU packages. S01 is a retained
+known failure; D01/B01/S02 are valid but projection-undetermined, so D/B/S conditional
+frequencies remain null. Five supported pairs are equivalent. No replacement, training
+or cross-condition pooling occurred; three uninstantiated types remain visible. See the
+[eight-task panel design and actual results](docs/finance_qa_vnext_fixed_task_panel_collection.md).
 
 ## Canonical Experiment
 

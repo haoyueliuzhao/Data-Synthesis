@@ -1,0 +1,12 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:28fe07fbd1d0b3c0b6336b4eef58c83db7d2a4249036c66ceb320a2581b89e52",
+  "answer_claim_id": "finance_qa_vnext_claim:fa0ef4c39e6a50951c6c57544014cf16790cf5cbcc1161758141467535289208",
+  "result": {
+    "value": "0.05859003425857716047175276608"
+  },
+  "citations": [
+    "evidence:finqa_archive_cell:ffaccdc5c07a6b746edb92488f1eb1323ac7aab6380dd7f0c4cff079b7301773",
+    "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43"
+  ]
+}

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="156.334" timestamp="2026-09-06T22:25:15.788263+08:00" hostname="lyg0310"><testcase classname="tests.test_qa_vnext_task_panel_runner" name="test_eight_task_sixteen_session_constructed_http_roundtrip_and_readonly_reanalysis" time="61.545"><failure message="KeyError: 'selector'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-409/test_eight_task_sixteen_sessio0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7dff080a3530&gt;
+
+    def test_eight_task_sixteen_session_constructed_http_roundtrip_and_readonly_reanalysis(
+        tmp_path, monkeypatch
+    ):
+        from trusted_synthesis.experiments.finance_qa_vnext_task_panel import runner
+    
+        preparation, prepared = prepare_population(tmp_path, monkeypatch)
+        sends = install_constructed_http(monkeypatch, prepared)
+&gt;       result = runner.run(ROOT, preparation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_qa_vnext_task_panel_runner.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/trusted_synthesis/experiments/finance_qa_vnext_task_panel/runner.py:185: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/trusted_synthesis/experiments/finance_qa_vnext_task_panel/runner.py:259: in analyze
+    progression = progress(session, qualification)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom...ation_id': 'finance_qa_vnext_observation:f487fe560bb35694e16ef49435d01944712c4c90f762f8a342c8763d2edcc6f4', ...}], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...0ad43', 'session_id': 'finance_qa_vnext_session:593179fef10a5facc1a3d5cbb7340c7b6e892095f2f8904765ccf1682f2b5841', ...}
+
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        base = observation_progress(session, qualification)
+        candidates, nontransparent, consumptions, merges, absolute = [], [], [], [], []
+        first_lookup = None
+        if base["evidence_measured"]:
+            assert session is not None
+            producers = {
+                e["observation"]["id"]: e["observation"]["selected_action"]
+                for e in session["events"]
+                if e.get("observation")
+            }
+            for event in session["events"]:
+                value, receipt = event["parsed"], event["receipt"]
+                marker = {
+                    "sequence": event["sequence"],
+                    "submission_id": event["submission"]["id"],
+                    "receipt_id": receipt["id"],
+                    "request_id": event["request"]["id"],
+                }
+                if event.get("claim") and event["claim"]["proposition"]["operation"] == "lookup":
+                    first_lookup = first_lookup or {**marker, "claim_id": event["claim"]["id"]}
+                if not value or value["kind"] != "action":
+                    continue
+                offered = {a["id"] for a in event["request"]["available_actions"]}
+                declared = value["decision"]["candidate_action_ids"]
+                candidates.append(
+                    {
+                        **marker,
+                        "available_count": len(offered),
+                        "declared_count": len(declared),
+                        "full_set_and_unique": set(declared) == offered
+                        and len(declared) == len(set(declared)),
+                        "selected_current": value["decision"]["selected_action_id"] in offered,
+                        "admitted": receipt["admitted"],
+                        "error_code": receipt["error_code"],
+                    }
+                )
+                if not receipt["admitted"] or event.get("execution") is None:
+                    continue
+                accepted = {
+                    c["id"]: c
+                    for c in event["request"]["state"]["accepted_claims"]
+                    if c["status"] == "accepted"
+                }
+                dependencies = []
+                for ref in value["inputs"]:
+                    if ref["kind"] != "claim":
+                        continue
+                    require(ref["ref_id"] in accepted, "branch_measurement.actual_accepted_input")
+                    claim = accepted[ref["ref_id"]]
+                    producer = producers[claim["observation_id"]]
+                    dependencies.append(
+                        {
+                            "claim_id": claim["id"],
+                            "role": ref["role"],
+&gt;                           "selector": ref["selector"],
+                                        ^^^^^^^^^^^^^^^
+                            "producer_operation": producer["operation"],
+                            "producer_obligation": producer["obligation_id"],
+                            "observation_id": claim["observation_id"],
+                        }
+                    )
+E                   KeyError: 'selector'
+
+src/trusted_synthesis/experiments/finance_qa_vnext_action_branch/measurement.py:72: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_task_panel_runner" name="test_known_model_failure_is_not_replaced_or_a_halt_for_other_fifteen" time="62.229"><failure message="KeyError: 'selector'">tmp_path = PosixPath('/tmp/pytest-of-zhuxinrui/pytest-409/test_known_model_failure_is_no0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7dfd55038560&gt;
+
+    def test_known_model_failure_is_not_replaced_or_a_halt_for_other_fifteen(tmp_path, monkeypatch):
+        from trusted_synthesis.experiments.finance_qa_vnext_task_panel import runner
+    
+        preparation, prepared = prepare_population(tmp_path, monkeypatch)
+        sends = install_constructed_http(monkeypatch, prepared, malformed_label="F01")
+&gt;       result = runner.run(ROOT, preparation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_qa_vnext_task_panel_runner.py:220: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/trusted_synthesis/experiments/finance_qa_vnext_task_panel/runner.py:185: in run
+    report = analyze(root, preparation_directory, directory, directory / "analysis")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/trusted_synthesis/experiments/finance_qa_vnext_task_panel/runner.py:259: in analyze
+    progression = progress(session, qualification)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+session = {'accepted_claim_revision_supported': False, 'bounds': {'actions': 12, 'submissions': 32}, 'callback_binding': {'autom...ation_id': 'finance_qa_vnext_observation:f487fe560bb35694e16ef49435d01944712c4c90f762f8a342c8763d2edcc6f4', ...}], ...}
+qualification = {'schema_version': 'qa_vnext_model_execution_qualification.v1', 'registration_id': 'qa_vnext_model_execution_session_r...0ad43', 'session_id': 'finance_qa_vnext_session:593179fef10a5facc1a3d5cbb7340c7b6e892095f2f8904765ccf1682f2b5841', ...}
+
+    def progress(session: dict[str, Any] | None, qualification: dict[str, Any]) -&gt; dict[str, Any]:
+        base = observation_progress(session, qualification)
+        candidates, nontransparent, consumptions, merges, absolute = [], [], [], [], []
+        first_lookup = None
+        if base["evidence_measured"]:
+            assert session is not None
+            producers = {
+                e["observation"]["id"]: e["observation"]["selected_action"]
+                for e in session["events"]
+                if e.get("observation")
+            }
+            for event in session["events"]:
+                value, receipt = event["parsed"], event["receipt"]
+                marker = {
+                    "sequence": event["sequence"],
+                    "submission_id": event["submission"]["id"],
+                    "receipt_id": receipt["id"],
+                    "request_id": event["request"]["id"],
+                }
+                if event.get("claim") and event["claim"]["proposition"]["operation"] == "lookup":
+                    first_lookup = first_lookup or {**marker, "claim_id": event["claim"]["id"]}
+                if not value or value["kind"] != "action":
+                    continue
+                offered = {a["id"] for a in event["request"]["available_actions"]}
+                declared = value["decision"]["candidate_action_ids"]
+                candidates.append(
+                    {
+                        **marker,
+                        "available_count": len(offered),
+                        "declared_count": len(declared),
+                        "full_set_and_unique": set(declared) == offered
+                        and len(declared) == len(set(declared)),
+                        "selected_current": value["decision"]["selected_action_id"] in offered,
+                        "admitted": receipt["admitted"],
+                        "error_code": receipt["error_code"],
+                    }
+                )
+                if not receipt["admitted"] or event.get("execution") is None:
+                    continue
+                accepted = {
+                    c["id"]: c
+                    for c in event["request"]["state"]["accepted_claims"]
+                    if c["status"] == "accepted"
+                }
+                dependencies = []
+                for ref in value["inputs"]:
+                    if ref["kind"] != "claim":
+                        continue
+                    require(ref["ref_id"] in accepted, "branch_measurement.actual_accepted_input")
+                    claim = accepted[ref["ref_id"]]
+                    producer = producers[claim["observation_id"]]
+                    dependencies.append(
+                        {
+                            "claim_id": claim["id"],
+                            "role": ref["role"],
+&gt;                           "selector": ref["selector"],
+                                        ^^^^^^^^^^^^^^^
+                            "producer_operation": producer["operation"],
+                            "producer_obligation": producer["obligation_id"],
+                            "observation_id": claim["observation_id"],
+                        }
+                    )
+E                   KeyError: 'selector'
+
+src/trusted_synthesis/experiments/finance_qa_vnext_action_branch/measurement.py:72: KeyError</failure></testcase><testcase classname="tests.test_qa_vnext_task_panel_runner" name="test_internal_worker_exception_keeps_unknown_and_fourteen_unstarted" time="30.603" /></testsuite></testsuites>

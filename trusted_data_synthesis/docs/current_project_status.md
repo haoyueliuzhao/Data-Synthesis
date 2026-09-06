@@ -1,6 +1,6 @@
 # Current Project Status
 
-Audit date: 2026-09-06
+Audit date: 2026-09-07
 
 This status is reconstructed only from the current Git tree, immutable experiment artifacts,
 credential-redacted recovery records, and checks rerun on the migrated server. Missing chat
@@ -18,17 +18,25 @@ messages are not treated as experimental evidence.
 
 ## QA vNext Fixed Eight-Task Panel
 
-The next authorized stage freezes eight existing source-bound tasks, two fresh sessions
-per task, exact design marginal 1/8, and a unified Action/Update publication, teacher and
-32,768 representation policy. Two fixed rounds use four fixed two-session waves each,
-with at most 512 Provider attempts and 55,050,240 reserved allowance. There is no retry,
-replacement, Share-route preassignment, new source, Student work or GPU execution.
-Three uninstantiated registered types remain visible outside the eight-task denominator.
+Completed under source `555a7610`: eight exact existing tasks × two fresh sessions under one
+generation and 32,768 representation condition, with design marginal 1/8 and no replacement.
+F/C/G/A/D/R/B are each 2/2 Qualified; S is 1/2. All sixteen outcomes are decidable:
+15/16 successes, 152 actual Provider calls (bound 512), and at least one complete witness per
+task. S01 exhausts 32 submissions, principally repeating a one-character candidate-ID omission.
+Its failure is retained, not replaced; no new source or historical result is pooled.
 
-Success, actual depth, finite projection and complete supervision representation are measured
-separately. Prior success is not pooled, unknown/not-started are not failures, and observed
-success/row pools do not inherit the fixed task marginal automatically. Formal outcomes are
-not yet recorded. See the [frozen collection design](finance_qa_vnext_fixed_task_panel_collection.md).
+All 113 positive candidates fit and form 15 complete CPU packages. D01/B01/S02 remain Qualified
+but projection-undetermined due to unquotiented correction history; D/B/S conditional frequencies
+are null. Five supported same-task pairs are equivalent, not evidence of multiple classes.
+Success/package task shares are 2/15 for seven tasks and 1/15 for S; row shares differ further,
+so the planned 1/8 marginal is not silently inherited by flattened data. Training materialization
+and weights remain unimplemented, although all eight tasks have usable support.
+
+All 76 new tests and 28 request-shape controls pass. Actual read-only reanalysis reproduces 155
+files byte-for-byte; 10,176 historical files remain unchanged. Actual usage is 2,946,229 tokens.
+There is no Student, GPU, retry or post-population sampling. Three uninstantiated types stay
+visible, sources remain development data rather than blind evaluation. See the
+[frozen design, actual outcomes and artifact links](finance_qa_vnext_fixed_task_panel_collection.md).
 
 ## QA vNext Full-Trajectory Representation Length Adaptation
 

@@ -1,6 +1,6 @@
 # QA vNext：统一条件八任务面板与十六会话采集
 
-日期：2026-09-06。阶段：
+预登记与采集日期：2026-09-06；结果整理日期：2026-09-07。阶段：
 `finance_qa_vnext_fixed_task_panel_collection_and_representation_pilot`。
 
 ## 1. 当前审计与新阶段的授权边界
@@ -204,10 +204,265 @@ F01 完整失败但其余会话继续、F01 内部异常且 C01 完成/剩余十
 上述场景及只读重分析均通过，旧 B 观察器、Runtime、Schema 和准入标准没有修改。
 这些测试不是本轮十六个新模型会话，也不是通过测试扩大样本数。
 
-## 8. 实测结果（运行后填写）
+## 8. 正式采集与实测结果
 
-本节保留为空，待新增接线测试和冻结源下的正式采集、资格及表示结果完成后填写。
-不预填成功率、商类数、实际深度或全量表示通过。上一轮已通过条件不再次作为新样本。
+### 8.1 冻结与总体结果
 
-本阶段完成即收口。后续任务扩展、独立评价集、有限分布优化、实际事件的 Mapper
-补充或 Student 实验，只能基于本轮实际结果选择，不自动补采至期待结果。
+第 1–7 节及实现先于真实调用冻结并推送。源提交为
+`555a76100c8c3f197cb9fc1058e838f2f6a0d6e1`，源码树
+`563de0bfb68361abec83e9e5e446812899649820`，绑定全部 888 个 Python 实现文件。
+其中父提交的 879 个实现文件逐字节保持不变，只有新面板包装被加入。
+
+本轮生成条件：
+`qa_vnext_model_execution_task_panel_condition:eef6edd96efb988b605a80108e9331e31d6e6e7c78624bb6bb8d6d2818568355`。
+表示政策：
+`qa_vnext_model_execution_task_panel_representation_policy:6e324a447eecc9e5e975044ffbf923be43231a7795e7cdb0c5762bf4b92dc856`。
+正式报告：
+`qa_vnext_model_execution_task_panel_report:3173425beb07bccba47b47aafa53229817bad07c613f9030b6eb140399bb987a`。
+
+全部十六个会话按预登记两轮/八波次完成：15 个 Qualified、1 个已判定失败，
+unknown/not_started 均为 0。没有替换、额外探测、网络重试、模型回退或停止后的补采。
+失败会话 S01 用满 32 次提交；其他会话在有效 Final 后立即停止。
+
+因此本固定面板的有限观察为 `q_panel=15/16=0.9375`，八个任务均至少有一个完整
+成功见证。它不是稳定总体能力的精确估计，也不与历史 B、C/S 或其他条件拼接。
+
+| 任务 | 成功／登记 | 调用数 01，02 | 正向候选／fit | 完整包 | 可映射成功 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| F 事实检索 | 2/2 | 3，3 | 6/6 | 2 | 2 |
+| C 注册跨指标比较 | 2/2 | 3，3 | 6/6 | 2 | 2 |
+| G 跨期增长率 | 2/2 | 7，7 | 14/14 | 2 | 2 |
+| A 跨期平均 | 2/2 | 9，9 | 18/18 | 2 | 2 |
+| D 跨期绝对变化 | 2/2 | 8，7 | 14/14 | 2 | 1 |
+| R 注册比率 | 2/2 | 7，7 | 14/14 | 2 | 2 |
+| B 两增长率绝对差 | 2/2 | 18，17 | 34/34 | 2 | 1 |
+| S 来源明确部分／整体占比 | 1/2 | 32，12 | 7/7 | 1 | 0 |
+| 合计 | 15/16 | 152 次 | 113/113 | 15 | 12 |
+
+三类来源未实例化仍保留为未测量，而不是失败任务；它们没有进入八任务的 1/8 边际。
+
+### 8.2 实际执行、依赖深度与拒绝
+
+总量闭合为：
+
+```text
+152 次实际调用／提交
+  = 50 次准入 Action + 50 次准入 Update + 15 次准入 Final + 37 次未准入提交
+
+115 次准入
+  - S01 失败前缀中的 1 Action、1 Update
+  = 113 条正向监督候选（49 Action + 49 Update + 15 Final）
+```
+
+50 个实际 Observation 的首次后继提交均为合格 accept Update，产生 50 个 Claim；
+其中 48 个随后由准入 Action 或有效 Final 消费。未消费的是 S01 和 S02 的两个
+求和 total Claim。37 次拒绝是 Runtime 准入拒绝，不是模型主动 reject Observation。
+
+拒绝分布为 D01 1 次、B01 1 次、S01 30 次、S02 5 次；错误码汇总为
+`admission.alternative_set` 29 次、`admission.public_judgment` 4 次、
+`admission.final_qa` 4 次。没有观察到 Update 错误。
+
+下表深度依次为“实际结构／实际语义操作／可观察选择依赖”，不是解释长度或隐藏推理。
+
+| 任务 | 01 深度 | 02 深度 | 实际范围 |
+| --- | --- | --- | --- |
+| F | 1／0／0 | 1／0／0 | 两个完整会话；lookup 在当前语义权重中透明 |
+| C | 1／1／0 | 1／1／0 | 两个完整会话 |
+| G | 2／1／0 | 2／1／0 | lookup Claim 被 growth 实际消费 |
+| A | 2／1／0 | 2／1／0 | 多个 lookup Claim 被汇聚运算消费 |
+| D | 2／1／0 | 2／1／0 | 两个完整会话；D01 额外 Final 拒绝不增加深度 |
+| R | 2／1／0 | 2／1／0 | 两个完整会话 |
+| B | 4／3／0 | 4／3／0 | 均完成 lookup→growth→signed gap→absolute |
+| S | 1／1／1 | 2／2／1 | S01 仅为失败前缀；S02 为完整会话 |
+
+除了 S01 的 `reached_prefix`，其余十五条均为 `complete_session`。
+本轮确实测到不同登记结构的统一接入，但任务间的来源、输入、操作和输出同时变化，
+不能把成功率差异单独解释为深度效应。
+
+### 8.3 S01：已知失败及反复错写的候选 ID
+
+S01 的证据完整、真实模型来源可核验、已到达前缀的轨迹有效，但没有 Final，
+`qa_valid=null`、`Qualified=false`，终止原因为 `submission_budget_exhausted`。
+
+| 提交 | 实际事件 |
+| --- | --- |
+| T1 | `share_ratio` 被拒，`admission.public_judgment`：basis 的两项 evidence_refs 顺序与所选候选相反。 |
+| T2–T3 | `relation_sum` Action、accept Update 准入，形成一个 total Claim。 |
+| T4–T32 | 29 次 `share_ratio` Action 被 `admission.alternative_set` 拒绝，完整候选列表持续包含同一个错误 ID。 |
+
+正确 ID 与错误 ID 分别是：
+
+```text
+正确：finance_qa_vnext_offered_action:7edc356d1ae7b1592fc0d099579983cee41dea3745868fa4567e7a9f4fbb3f40
+错误：finance_qa_vnext_offered_action:7edc356d1ae7b1592fc0d099579983cee41dea3745868fa4567e7a9f4bb3f40
+```
+
+错误串少一个 `f`，哈希部分为 63 而非 64 字符。29 次对应的 missing/extra ID 相同，
+T5–T32 的全部 28 个请求均已给出这组精确反馈。T13、T17、T25、T31 曾改选合法的
+reconstructed-total 候选，但完整列表仍含错误 disclosed-total ID，因此仍被拒。
+不能将这一现象写成“29 次响应完全相同”或“模型从未改变选择”。
+
+最终没有实际后继 Claim 消费或比例运算执行，不能据此断言模型不会计算占比。
+32/32 实际请求都含冻结的 Action/Update publication，唯一 Update 也已通过；
+现有证据支持公开规则下的内容复制/提交合规失败，不支持将其改写成缺失 Update
+公开合同。为什么持续错写仍属未测量的模型内部原因。
+
+### 8.4 三个成功但投影未定的会话
+
+D01 的 T7 Final 被拒，T8 后准入。两次 result 分别为带 `currency`、`unit` 的
+`{value:"125",...}` 和 `{value:"125"}`；answer Claim 相同、citation 集合相同但顺序
+发生变化。已接受 difference Claim 的 output 为 `{value:"125"}`。
+记录的错误是聚合 `admission.final_qa`，不把观察到的字段差异冒称为分别落盘的
+验证子项结果。D01 最终完成 3 Action、3 Update、1 Final，另有 1 次拒绝。
+
+B01 的 T5 revenue-growth Action 被拒：basis.claim_refs 正确，但 evidence_refs
+为空，公开所选候选要求两个 evidence refs。T6 保留同一 operation/inputs/parameters，
+补齐所要求的 basis 后准入，T7 接受其 Observation。被拒步骤没有执行或 Observation，
+拒绝前后 accepted Claims 均为两个。最终仍完整执行 8 Action、8 Update 和有效 Final；
+绝对差为 `2.757665967870018967554982530 percentage_points`。额外调用不是更深推理。
+
+S02 的 12 次提交中有 7 次准入、5 次拒绝：
+
+| 提交 | 实际事件 |
+| --- | --- |
+| T1–T2 | `share_ratio` 的 decision.obligation_id 写成 total，候选要求 ratio；basis 两项 evidence_refs 同时逆序，被 public_judgment 拒绝。 |
+| T3–T4 | 求和 20,397＋1,416 并 accept，得到 total=21,813 Claim。 |
+| T5–T6 | `share_ratio` 使用分子 Evidence 20,397 和披露总额 Evidence 21,813，随后 accept。 |
+| T7–T8 | `scale_percent` 消费 ratio Claim，随后 accept。 |
+| T9–T11 | 三次 Final 被 `admission.final_qa` 拒绝。 |
+| T12 | Final 准入，result 为 `{"unit":"percent","value":"93.508458"}`。 |
+
+求和 total Claim 没有被后继准入 Action/Final 消费；实际答案路线为 disclosed_total，
+不是因为调用过求和就归为 reconstructed_total。ratio Claim 为
+`0.93508458258836473662494842525099711181405583826159`，percent Claim 为
+`93.508458258836473662494842525099711181405583826159`，最终按公开的
+`share_percent_quantized`、`final_quantum="0.000001"` 投影至六位小数。
+
+失败 Final 的具体差异保留如下，四次 unit 始终为 percent，并没有单位修正：
+
+| Final | result 相对最后准入版本的差异 | citations 差异 |
+| --- | --- | --- |
+| T9 | 完整精度数值，另有 currency/definition/metric/period/scope/subject | 多出 relation Evidence |
+| T10 | 数值已六位小数，仍有上述六项字段 | 多出 relation Evidence 和三个 Claim ID |
+| T11 | 完整精度、上述字段及 lineage | 已是最终正确的两项 Evidence |
+| T12 | 仅 unit/value，六位小数 | 实际分子与披露总额 Evidence |
+
+源码可核对 Final checker 对 result 对象及最终 Claim lineage 引用集合的要求；
+本次诊断没有重跑 checker，也不把聚合错误解释为已经分别实测每个子条件。
+
+上述 D01、B01、S02 保存的投影限制均为
+`reject_or_unadmitted_effect_not_quotiented`。当前 Mapper 未解释拒绝、反馈和预算
+历史的商关系，因此三个 Qualified 成功保持有效，同时 projection 为 undetermined。
+没有通过忽略这些事件、删除有效轨迹或临时扩展 Mapper 填满类数。
+
+### 8.5 有限比较与真实任务池比例
+
+F/C/G/A/R 的各两个 Qualified 轨迹均 supported，共五个实际同任务配对，关系全部
+为 equivalent。这五个任务可报告各自本有限样本的点质量频率 `2/2`，不称为全体可能
+行为仅有一类，也不把五个不同任务合并为一个统一商分布。
+
+D/B 各有一个未映射成功；S 的唯一成功本身未映射。因此三组条件经验 π 均为 null。
+没有用 D02/B02 单独重新归一，也没有给 S02 强行分配已确认类。十二个 mapped 成功
+与十五个 Qualified 是不同计数。
+
+| 任务 | 预登记 μ | 成功池／完整包池比例 | fit 行池比例 |
+| --- | ---: | ---: | ---: |
+| F | 1/8 | 2/15 | 6/113 |
+| C | 1/8 | 2/15 | 6/113 |
+| G | 1/8 | 2/15 | 14/113 |
+| A | 1/8 | 2/15 | 18/113 |
+| D | 1/8 | 2/15 | 14/113 |
+| R | 1/8 | 2/15 | 14/113 |
+| B | 1/8 | 2/15 | 34/113 |
+| S | 1/8 | 1/15 | 7/113 |
+
+本轮所有正向行均 fit，因此 fit 行池和完整包内行池比例相同，但二者均不等于
+预登记 1/8。S 的失败改变成功池比例；不同会话的准入单元数又改变平铺行比例。
+八任务都已有可消费包，所以基础监督素材的全支持条件可用；没有生成最终任务/类
+权重，`full_support_training_materialized=false`、`final_training_weights=null`。
+这也不意味着尚未完整映射的 D/B/S 条件分布已经可用于商类优化。
+
+### 8.6 原样监督表示、CPU 与实际资源
+
+113 条正向候选均从本轮十五个 Qualified 会话的原 HTTP messages/原响应导出，
+全部 fit，形成十五个完整的逐请求监督包。S01 两条准入前缀原始证据保留，但由于
+会话未 Qualified，不进入正向池；没有把它们拼入 S02。
+
+新 DATA BINDING：
+`qa_vnext_model_execution_task_panel_representation_data_binding:b0058a319fc5903747151b2b0bfc1675b2a88cda0fd7af31ff1ec5a67ee67f83`。
+新 Token 数据集：
+`qa_vnext_model_execution_task_panel_token_representation_dataset:4f039114de5e2638ee70ebc92180b17af9789a5f531db08015670a240dde4bf2`。
+它们没有冒用上一轮固定 34 条候选的 condition 或数据身份。
+
+实际序列长度为 14,219–24,950，统一上限仍为 32,768，无截断、删字段、重写 target
+或超限重定义。64 个同会话小批次覆盖全部 113 行，磁盘 NPZ 数组逐行与正式记录一致。
+本地 tokenizer 计数如下，不能与 DeepSeek usage 混用：
+
+```text
+prompt                2,132,942
+target                   75,368
+suffix                      226
+完整序列位置           2,208,536
+动态 padding              26,165
+含 padding 的序列位置   2,234,701
+```
+
+实际 Provider usage 为 prompt 2,861,564、completion 84,665、total 2,946,229；
+cache hit 1,571,968、cache miss 1,289,596，两者之和等于 prompt。
+152 次响应都没有提供 reasoning_tokens，因此其总量为 null，不填成 0。
+观察到的模型名均为 `deepseek-v4-pro`，生成条件违规计数为空；没有 HTTP 失败或隐式重试。
+
+152 次 reservation 对应 allowance 16,343,040，低于冻结的 55,050,240；它不是实际
+usage 或费用。最大实际 body 78,532 bytes、输入代理 79,556，均在原预算内。
+reservation 的 UTC 范围为 `2026-09-06T14:54:35.838877+00:00` 至
+`2026-09-06T15:04:04.362244+00:00`，不是精确会话结束时间或性能基准。
+
+没有加载 Student 权重、运行 forward、更新参数或使用 GPU。CPU 加载通过不等于
+显存、训练栈可运行性或学习收益已经验证。
+
+### 8.7 检查、复现与历史不变
+
+最终通过的新增测试为 `72 + 3 + 1 = 76` 项：组件/进度控制、三个构造 HTTP 集成场景、
+冻结提交上的真实入口接线测试。最后一项使用真实 source snapshot/Catalog/adapter/
+Runtime/qualification/Tokenizer，只有外部 HTTP/凭据输入被替换为测试 I/O；仍不计作
+实际模型样本。最初两个 Share 观察器接线失败的 JUnit 一并保留，未掩盖开发修订过程。
+
+正式准备的 28 个请求形态控制全部通过。真实 152/152 个 HTTP 请求包含同一中性
+提示及两种 publication。只读重分析生成与原分析逐字节一致的全部 155 个文件、
+49,636,814 字节，包括完整报告、候选、Token 和 CPU NPZ；未重新调用 Provider 或执行
+Finance Operation。发布回读又核对了 52 个嵌套清单和磁盘数组/候选/实际事件绑定。
+
+全部 10,176 个历史工件、451,228,279 字节保持不变；父提交 879 个 Python 实现文件
+和本轮冻结的全部 888 个 Python 文件均未漂移。准备、只读分析和回读的禁用执行入口
+计数为 0，在线阶段 Student/CUDA 禁用入口计数也为 0。发布前另作本地精确密钥字节
+检查，匹配数为 0；密钥没有进入工件或文档。
+
+发布核验记录：
+`qa_vnext_model_execution_task_panel_publication_verification:4449279beaad5aadd3fb241ead671aba5f37ccf7058bb251030ab7dfb63d4b96`。
+本轮未重跑完整历史 Action/Update 审计链、旧长度实验或 P/Q 预检。
+
+### 8.8 工件入口
+
+新根目录 `artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/` 共
+2,771 个文件、196,734,857 字节。所有实际原始响应、失败证据、资格、正向候选、
+非映射状态和完整表示都保留。
+
+- [正式报告](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/report.json)
+- [逐任务测量与边际](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/measurement.json)
+- [十六会话结果](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/session_outcomes.json)
+- [完整包清单](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/session_packages.json)
+- [有限配对](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/finite_comparisons.json)
+- [CPU 批次索引](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/cpu_loading.json)
+- [发布核验与测试日志索引](../artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/publication_validation/report.json)
+
+## 9. 收口与下一科学对象
+
+本轮固定面板采集、分层测量和完整监督接口已完成，不因 S01 失败或三个成功投影未定
+追加样本、换题或修改旧结论。获得多类型成功和完整 CPU 包，不意味着 VTDO 概率更新、
+任务/类权重物化或 Student 效用已经成立。
+
+本轮具体保留的后续问题，是 D/B/S 中已实际出现的拒绝/反馈/修正历史的有限商解释，
+以及 S01 在公开规则下的提交可靠性。若下一阶段补 Mapper，应针对这些实际事件定义
+明确的有限解释，不重开来源、Action/Update publication 或长度适配来重复已关闭问题。
+更多真实任务绑定、真正独立评价集和新协议有限分布优化仍需各自固定对象。
+本轮不启动这些后续实验，旧主线保持暂停。

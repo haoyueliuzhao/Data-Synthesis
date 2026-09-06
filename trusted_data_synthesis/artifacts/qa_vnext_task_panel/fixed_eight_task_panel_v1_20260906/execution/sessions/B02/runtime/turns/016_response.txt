@@ -1,0 +1,15 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:3b0aec4bbd879436c74ee0d35bf1c3d7cf46cf74350b71322b3bdfde2993f4db",
+  "answer_claim_id": "finance_qa_vnext_claim:7459daeba0da9844431f386a3bbcb692a33a60fc32b070140ad6d3b0f82b27c9",
+  "result": {
+    "value": "2.757665967870018967554982530",
+    "unit": "percentage_points"
+  },
+  "citations": [
+    "evidence:finqa_archive_cell:f790dc224358212537acab84aa0d0647bc8d26aa3952c9284cf22aad3370281e",
+    "evidence:finqa_archive_cell:20af3344a283d18bce2a746ae229a3d6858012f0872c6f92ff1b1139a5c26a43",
+    "evidence:finqa_archive_cell:809dca76084da983b8f7f0f40865512eb49875cdb76603314e0ba370725315e2",
+    "evidence:finqa_archive_cell:ffaccdc5c07a6b746edb92488f1eb1323ac7aab6380dd7f0c4cff079b7301773"
+  ]
+}
