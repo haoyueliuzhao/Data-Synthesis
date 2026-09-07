@@ -1,0 +1,16 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:9fc4467b59939ddd4092896b400d88c5bcd009d33e60e44069010608761f4a47",
+  "answer_claim_id": "finance_qa_vnext_claim:015ee986ae65de00595a9d60eaf7ae2978d364171db25b6dca064e9db8115efa",
+  "result": {
+    "metric": "noninterest_revenue_share_percent",
+    "value": "53.486631816383909004415081834022855798937387084015",
+    "unit": "percent"
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:72365f38f09a556f0c74fd3eb40617ce352a865ba7fc73c044278760e88fefb7",
+    "finance_qa_vnext_cross_binding_numeric_evidence:e073a8ba755341e33c37c84bf7750b4743238488e4b0db9b56f853d08bdbabc3",
+    "finance_qa_vnext_cross_binding_numeric_evidence:dc5a8122d4f2bca7f5c27f23f3b59bb973d6d978b11e23e1be50646d2d101751",
+    "finance_qa_vnext_cross_binding_relation_evidence:2ec47c421991ed80375bcf5eb1daa6136700f0ca9a039a339647b8f8b41033c1"
+  ]
+}

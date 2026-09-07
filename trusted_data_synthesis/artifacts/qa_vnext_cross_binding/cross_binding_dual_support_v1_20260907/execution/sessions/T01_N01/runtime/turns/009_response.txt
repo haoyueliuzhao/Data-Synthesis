@@ -1,0 +1,16 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:f8070ba430a71ce90d33e9cd5075c346098f1570cba3273f21ef06b305034bba",
+  "answer_claim_id": "finance_qa_vnext_claim:55cd23b11a8a24d253233692e2fadc51055b7fea8a697282f0e15e174888468c",
+  "result": {
+    "metric": "total_freight_revenues_share_percent",
+    "value": "93.280177",
+    "unit": "percent",
+    "period": "2016",
+    "subject": "Union Pacific Corporation and subsidiaries"
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:291b0c6871573edbfe83e6d34a33b74dba1b3ef6f525877b1904fa9cd97699bb",
+    "finance_qa_vnext_cross_binding_numeric_evidence:d3953ea2e38065e776a2d4c4ee896a4966649954f975db24b57abd15943209a6"
+  ]
+}

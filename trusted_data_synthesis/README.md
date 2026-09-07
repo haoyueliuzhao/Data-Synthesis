@@ -205,6 +205,9 @@ with two neutral and two soft-guided sessions each, use one prospectively frozen
 parameterized measurement rule. The bound is 12 sessions / 384 Provider attempts,
 with no resampling, Student or GPU; comparisons and class probabilities remain per task.
 Known-source contamination is registered and independent evaluation remains unbound.
+The frozen real run used all 384 attempts: 0/12 Qualified, all evidence-complete
+submission-budget failures without an admitted Final. No new valid class, D/R witness
+or positive supervision package was produced; this is a bounded negative result.
 See the [cross-binding design and experiment record](docs/finance_qa_vnext_cross_binding_dual_support_transfer_pilot.md).
 
 ## Canonical Experiment

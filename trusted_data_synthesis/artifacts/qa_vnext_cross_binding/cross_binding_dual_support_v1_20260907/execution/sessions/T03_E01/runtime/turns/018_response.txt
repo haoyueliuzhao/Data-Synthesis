@@ -1,0 +1,13 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:49856f097ed44f4b91ac364481fed69f71bda86f1ad396740fe9d472622524cd",
+  "answer_claim_id": "finance_qa_vnext_claim:02c33537ec2179502eb9bc49b6dd9f5df1505c5ae764a6a9f616f29fe7d0a67d",
+  "result": {
+    "answer": "53.486632%",
+    "calculation": "Noninterest revenue / Total net revenue = 50033 / 93543 = 0.53486631816383909004415081834022855798937387084015, scaled to percent = 53.486631816383909004415081834022855798937387084015%",
+    "support": "Total net revenue was derived by summing Net interest income (43,510) and Noninterest revenue (50,033) using the disclosed composition relation, yielding 93,543; ratio and percent claims were computed on this legitimate total."
+  },
+  "citations": [
+    "finance_qa_vnext_claim:02c33537ec2179502eb9bc49b6dd9f5df1505c5ae764a6a9f616f29fe7d0a67d"
+  ]
+}

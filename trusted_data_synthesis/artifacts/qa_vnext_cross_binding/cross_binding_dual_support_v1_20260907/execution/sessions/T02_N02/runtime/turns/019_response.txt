@@ -1,0 +1,12 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:fa5ece1af69bc805b525b4a2a3d3c13c0046990177bd4660226c4ec77a23194e",
+  "answer_claim_id": "finance_qa_vnext_claim:aad8c739dc6af274c5a62b2c1ccdd418b897bdfeab8aae48d465f2657a19435c",
+  "result": {
+    "value": "53.681864"
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+    "finance_qa_vnext_cross_binding_numeric_evidence:b510d7f41d39dbbe177c7898090d949dc06a936bacd7fe665fcb2eb2aed13106"
+  ]
+}

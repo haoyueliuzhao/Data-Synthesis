@@ -1,0 +1,48 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:40aa1ef6b758ac9af29eb125850a9d45b3a2718bacb831fec8a37f974bfafbc6",
+  "observation_id": "finance_qa_vnext_observation:98ba503d54e11e914e0152293477cb57c7291f06c959f8408c627d93fb90a8cb",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:dc5a8122d4f2bca7f5c27f23f3b59bb973d6d978b11e23e1be50646d2d101751",
+      "finance_qa_vnext_cross_binding_numeric_evidence:e073a8ba755341e33c37c84bf7750b4743238488e4b0db9b56f853d08bdbabc3",
+      "finance_qa_vnext_cross_binding_relation_evidence:2ec47c421991ed80375bcf5eb1daa6136700f0ca9a039a339647b8f8b41033c1"
+    ],
+    "operation": "scale_percent",
+    "operation_contract_id": "operation_semantic_contract:8832d6ba262b746111eacb4336e90335eddcc8840ad1ce8ef235c47036f31b07",
+    "output": {
+      "currency": "dollar_as_disclosed",
+      "definition": "Noninterest revenue share in percent",
+      "lineage": [
+        "finance_qa_vnext_cross_binding_numeric_evidence:dc5a8122d4f2bca7f5c27f23f3b59bb973d6d978b11e23e1be50646d2d101751",
+        "finance_qa_vnext_cross_binding_numeric_evidence:e073a8ba755341e33c37c84bf7750b4743238488e4b0db9b56f853d08bdbabc3",
+        "finance_qa_vnext_cross_binding_relation_evidence:2ec47c421991ed80375bcf5eb1daa6136700f0ca9a039a339647b8f8b41033c1"
+      ],
+      "metric": "noninterest_revenue_share_percent",
+      "period": "2015",
+      "scope": "consolidated_issuer",
+      "subject": "JPMorgan Chase & Co. consolidated issuer",
+      "unit": "percent",
+      "value": "53.486631816383909004415081834022855798937387084015"
+    },
+    "semantic_contract_id": "finance_qa_vnext_cross_binding_semantic_contract:303f4d1ad52af95cf295b28ae249a44958c3fcf097afdb4a29af73a7ec28d2f7",
+    "source_binding_id": "finance_qa_vnext_cross_binding_source_binding:e3a16ce8305651219e9e9e3add169463160d31cca6d3fc14dc00e3384163b107",
+    "task_id": "finance_qa_vnext_cross_binding_task:f9631ab3e60d51a3809092147fa5a47836b91cc25541e5825ae88a18c61f6df0"
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:98ba503d54e11e914e0152293477cb57c7291f06c959f8408c627d93fb90a8cb"
+    ],
+    "evidence_refs": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:dc5a8122d4f2bca7f5c27f23f3b59bb973d6d978b11e23e1be50646d2d101751",
+      "finance_qa_vnext_cross_binding_numeric_evidence:e073a8ba755341e33c37c84bf7750b4743238488e4b0db9b56f853d08bdbabc3",
+      "finance_qa_vnext_cross_binding_relation_evidence:2ec47c421991ed80375bcf5eb1daa6136700f0ca9a039a339647b8f8b41033c1"
+    ],
+    "fulfills_obligation": "percent"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "submit_final"
+}

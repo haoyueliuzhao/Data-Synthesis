@@ -1,0 +1,17 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:a62ad47a143e5925d10f319045cf44164a0da05a4ff97e26872d674d5fbc2d52",
+  "answer_claim_id": "finance_qa_vnext_claim:7cb4fb6f5336093c20d2ad6800f74f7a97d68205cc49bd946575f68f20ee9878",
+  "result": {
+    "percent": "93.280177",
+    "ratio": "0.932802",
+    "total_freight_revenues": "18601",
+    "total_operating_revenues": "19941",
+    "support": "Total freight revenues / Total operating revenues = 18,601 / 19,941 = 0.932801765..., expressed as 93.280177% to six decimal places."
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:d3953ea2e38065e776a2d4c4ee896a4966649954f975db24b57abd15943209a6",
+    "finance_qa_vnext_cross_binding_numeric_evidence:291b0c6871573edbfe83e6d34a33b74dba1b3ef6f525877b1904fa9cd97699bb",
+    "finance_qa_vnext_cross_binding_relation_evidence:a803e48cbc05c09889907ee1f4f12368c49babd7524b6703678e5081c365bcb0"
+  ]
+}

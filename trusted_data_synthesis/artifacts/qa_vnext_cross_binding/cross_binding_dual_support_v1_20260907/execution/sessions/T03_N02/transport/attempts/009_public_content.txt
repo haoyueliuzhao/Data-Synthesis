@@ -1,0 +1,21 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:3e88477701726ad3c68b681eb37b56e507ea8ab733bbce631305dab03f702cde",
+  "answer_claim_id": "finance_qa_vnext_claim:822ccb4b41a2568bea5a9f05db2e9f3eb1af3520a1dc1cb6a44e13557beb669c",
+  "result": {
+    "value": 53.486632,
+    "unit": "percent",
+    "metric": "noninterest_revenue_share_percent",
+    "period": "2015",
+    "scope": "consolidated_issuer",
+    "subject": "JPMorgan Chase & Co. consolidated issuer"
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:dc5a8122d4f2bca7f5c27f23f3b59bb973d6d978b11e23e1be50646d2d101751",
+    "finance_qa_vnext_cross_binding_numeric_evidence:e073a8ba755341e33c37c84bf7750b4743238488e4b0db9b56f853d08bdbabc3",
+    "finance_qa_vnext_cross_binding_relation_evidence:2ec47c421991ed80375bcf5eb1daa6136700f0ca9a039a339647b8f8b41033c1",
+    "finance_qa_vnext_claim:76103594cd1d8ed20de97bf141c29984132199d888987d3c12d4a6f26a8b5ee3",
+    "finance_qa_vnext_claim:bd3ab8e1eab0d2cfeff1997414017ecda1bdcad261e7c8af9c64f11abd26443c",
+    "finance_qa_vnext_claim:822ccb4b41a2568bea5a9f05db2e9f3eb1af3520a1dc1cb6a44e13557beb669c"
+  ]
+}

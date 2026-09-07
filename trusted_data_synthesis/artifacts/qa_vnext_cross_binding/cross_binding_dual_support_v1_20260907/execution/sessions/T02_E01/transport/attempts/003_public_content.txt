@@ -1,0 +1,47 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c3bffad2b5d685bcd54234c7591028d09dcde9263ea6f8b753f953566bc6c589",
+  "observation_id": "finance_qa_vnext_observation:4a627e8e0b7ade563151d9de95c6375972013e2fad0a062c8cdc80489e04c9e2",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+      "finance_qa_vnext_cross_binding_numeric_evidence:b510d7f41d39dbbe177c7898090d949dc06a936bacd7fe665fcb2eb2aed13106"
+    ],
+    "operation": "share_ratio",
+    "operation_contract_id": "operation_semantic_contract:7d11abd8c480a587a5cd0342c78e897af67aeb4e423ab55e8016fd479abf8c48",
+    "output": {
+      "currency": "dollar_as_disclosed",
+      "definition": "Noninterest revenue divided by legitimate Total net revenue",
+      "lineage": [
+        "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+        "finance_qa_vnext_cross_binding_numeric_evidence:b510d7f41d39dbbe177c7898090d949dc06a936bacd7fe665fcb2eb2aed13106"
+      ],
+      "metric": "noninterest_revenue_share_ratio",
+      "period": "2014",
+      "scope": "consolidated_issuer",
+      "subject": "JPMorgan Chase & Co. consolidated issuer",
+      "unit": "ratio",
+      "value": "0.53681864019956477893954673318825964651557772941988"
+    },
+    "semantic_contract_id": "finance_qa_vnext_cross_binding_semantic_contract:495cb05666e5f7b9becc15c909e3ace6990c7dfd4baa3f895c3abc4972a1984c",
+    "source_binding_id": "finance_qa_vnext_cross_binding_source_binding:c41e444579264664a3921b33591ff2e4d5cfdf6233cac9d3815c6f5e375ba1d5",
+    "task_id": "finance_qa_vnext_cross_binding_task:f00ffb9b4497c63b3f9016694dc2dfea60320e526447b338cf033df2e7d8d1ae"
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:4a627e8e0b7ade563151d9de95c6375972013e2fad0a062c8cdc80489e04c9e2"
+    ],
+    "evidence_refs": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+      "finance_qa_vnext_cross_binding_numeric_evidence:b510d7f41d39dbbe177c7898090d949dc06a936bacd7fe665fcb2eb2aed13106"
+    ],
+    "fulfills_obligation": "ratio"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [
+    "percent"
+  ],
+  "next_subgoal": "percent"
+}

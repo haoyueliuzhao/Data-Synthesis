@@ -1,0 +1,15 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:dadcfde3d9a1d5ebec61590872fec855f990292805c8a54ddba98524818f06c3",
+  "answer_claim_id": "finance_qa_vnext_claim:0710adf386ee0dd6575107254ee054b6250a1e44a45c836aeec35bdd70175fb9",
+  "result": {
+    "value": "93.280176520736171706534276114537886765959580763252",
+    "unit": "percent",
+    "metric": "total_freight_revenues_share_percent"
+  },
+  "citations": [
+    "finance_qa_vnext_cross_binding_numeric_evidence:291b0c6871573edbfe83e6d34a33b74dba1b3ef6f525877b1904fa9cd97699bb",
+    "finance_qa_vnext_cross_binding_numeric_evidence:d3953ea2e38065e776a2d4c4ee896a4966649954f975db24b57abd15943209a6",
+    "finance_qa_vnext_claim:0710adf386ee0dd6575107254ee054b6250a1e44a45c836aeec35bdd70175fb9"
+  ]
+}

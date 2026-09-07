@@ -1,0 +1,21 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:e384529788d2489575c2b553131ab64ea4af9d42935b05ca7080a3004c727ca0",
+  "answer_claim_id": "finance_qa_vnext_claim:015ee986ae65de00595a9d60eaf7ae2978d364171db25b6dca064e9db8115efa",
+  "result": {
+    "answer": "53.486632%",
+    "calculation": "Noninterest revenue / Total net revenue = 50,033 / 93,543 = 0.53486631816383909004415081834022855798937387084015; times 100 = 53.486631816383909004415081834022855798937387084015%",
+    "final_quantum": "0.000001",
+    "numeric": {
+      "answer_tolerance": "0",
+      "final_quantum": "0.000001",
+      "precision": 50,
+      "rounding": "ROUND_HALF_EVEN",
+      "source_reconciliation_tolerance": "0"
+    }
+  },
+  "citations": [
+    "finance_qa_vnext_claim:05628672892a6ed512b74bec92ff1000c3527d532e5d9c0a8140bcc26422b51f",
+    "finance_qa_vnext_claim:015ee986ae65de00595a9d60eaf7ae2978d364171db25b6dca064e9db8115efa"
+  ]
+}
