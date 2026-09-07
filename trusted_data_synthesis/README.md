@@ -91,6 +91,8 @@ pytest -q
 
 ## Finance QA vNext Public-Decision Entry
 
+当前整体设计、QA覆盖与深度、轨迹合成机制及已知缺陷，见[简明设计概览](docs/current_agent_qa_design_overview.md)。
+
 The versioned domain entry connects one Catalog and Registry to source-bound tasks,
 callback-owned typed Action/Update/Final submissions, the common Runtime, independent QA
 and trajectory validation, and actual dependency-graph depth/finite comparison:
