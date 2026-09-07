@@ -1,0 +1,561 @@
+{
+  "schema_version": "revised_qa_trajectory_export_manifest.v1",
+  "cohorts": {
+    "task_panel": {
+      "sessions": 16,
+      "qualified_sessions": 15,
+      "supervision_rows": 113,
+      "events": 152
+    },
+    "support_exploration": {
+      "sessions": 8,
+      "qualified_sessions": 3,
+      "supervision_rows": 21,
+      "events": 202
+    }
+  },
+  "files": {
+    "trajectories.all.jsonl.gz": {
+      "rows": 24,
+      "bytes": 4629244,
+      "sha256": "d165fa6fbb52b5d3eea56efa759987287490b1fccf37ee853b0ced43a50ac5f6",
+      "uncompressed_bytes": 28301350
+    },
+    "trajectories.qualified.jsonl.gz": {
+      "rows": 18,
+      "bytes": 2268995,
+      "sha256": "12786777ddf700072dc4a3c3aff621d0336d2999122796c671b8e78f42f99b40",
+      "uncompressed_bytes": 13364500
+    },
+    "supervision.jsonl.gz": {
+      "rows": 134,
+      "bytes": 1750470,
+      "sha256": "4bc29c2ce434d1629a85001b9c5fecc55406b073a32c03c721cf670ebd511f2f",
+      "uncompressed_bytes": 9590228
+    }
+  },
+  "sources": {
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/manifest.json": {
+      "bytes": 19872,
+      "sha256": "2979d306469519169f4a00196c15b2e2c5001ade388b85d72cd071afe0a8b8f9"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/session_outcomes.json": {
+      "bytes": 317802,
+      "sha256": "9fe7717e63beea953b89973a2fbe89c68ff4df781894c3f4fdfbc6b254eb0111"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/session_packages.json": {
+      "bytes": 79694,
+      "sha256": "0e5959468c965f997e6ef27653c344e4a2d08734211735ef5f7673968764c1ae"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/analysis/supervision_candidates.json": {
+      "bytes": 7964172,
+      "sha256": "601ad56c2471d9f5c9786dbed865c942f9c7960efe55a494f537bab7ac7dd54b"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F01/runtime/manifest.json": {
+      "bytes": 6504,
+      "sha256": "bab156ce610eb85f96391b01117530278c9f9dce36fe293e9e20f860660bc542"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F01/runtime/session.json": {
+      "bytes": 171131,
+      "sha256": "e2d871869e550dd1772ef0051a5acad83231bbf16830288a0334a29f4017b835"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F01/runtime/context.json": {
+      "bytes": 32515,
+      "sha256": "b44adf24b248bb041fdbf624ed922c641bb08b1cc6e2ecc5d1a746b5bedcaf82"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C01/runtime/manifest.json": {
+      "bytes": 6504,
+      "sha256": "7e18134c9e1d14ce0e7eb77d0f51e95e9d5a56c6c5c961a67a20aa5265a1981c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C01/runtime/session.json": {
+      "bytes": 189450,
+      "sha256": "fde9600f5f903d28cb1b7a7e44068634f7918f8aab50540428d11169917f9693"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C01/runtime/context.json": {
+      "bytes": 37540,
+      "sha256": "029571dc74a8ca67d67ef36c18dd86f37aa5f58d3e9b4294992099881784d0f5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G01/runtime/manifest.json": {
+      "bytes": 13544,
+      "sha256": "d8c537f2c4f3fe6b77941233ad34ab464ff368d252264ce02dfc614327adb29d"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G01/runtime/session.json": {
+      "bytes": 455106,
+      "sha256": "969e1e8dd8a45b6cb4f32726503a1594fc4ffbfc9dad99b830d4c72619da4ff3"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G01/runtime/context.json": {
+      "bytes": 37708,
+      "sha256": "0a2d7abc71a7c6dc32711c90385f35c41ef712f54706f3681248087aa5b9be03"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A01/runtime/manifest.json": {
+      "bytes": 17064,
+      "sha256": "e5f1d38e1ecaad4acbfe0213afb4cc2b00df16f94e40d5a880e995011afd6db2"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A01/runtime/session.json": {
+      "bytes": 643739,
+      "sha256": "a4716f39ea9a6dd2f787d1a83da58fee587b89fd07ceb1a92f32e76fc0084d53"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A01/runtime/context.json": {
+      "bytes": 42690,
+      "sha256": "db0b5488d90d36de65799c17620b13cae58f52d3b65b9361b8d3f7564aeb73c7"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D01/runtime/manifest.json": {
+      "bytes": 14727,
+      "sha256": "d998fb2372e9a27d575d3375ab5583a69db011c31c3f39d1883f6ff9f13c89b9"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D01/runtime/session.json": {
+      "bytes": 516642,
+      "sha256": "6e432fa30c0066862def54bff8a8743080a2fb4ce5e188662f1e25d20a53d5c7"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D01/runtime/context.json": {
+      "bytes": 37831,
+      "sha256": "2113084744f49bd2a27ae5093bce5137d99a68634dfe2180c9e089185ffc3970"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R01/runtime/manifest.json": {
+      "bytes": 13544,
+      "sha256": "fcdd80d4b73c8b9e557f410a92a575a526c4009c1a21fa2a3f99e96de9989ea7"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R01/runtime/session.json": {
+      "bytes": 456226,
+      "sha256": "b0fb539af6bf2e2fd39a8dcabade2408a8f149d1f226f435c24259021b8eac86"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R01/runtime/context.json": {
+      "bytes": 37780,
+      "sha256": "592362811fbd308de714be20a2962743b49cf5dc2816093ce4d380adec2cb867"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B01/runtime/manifest.json": {
+      "bytes": 32340,
+      "sha256": "86718a57ba60c911ebeb6fb66a30b81652cd819711ad848f669805572271076e"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B01/runtime/session.json": {
+      "bytes": 1453225,
+      "sha256": "ed43a13117b7151317588d5b3adb2cc72412284ead49ad23843337d8527e774a"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B01/runtime/context.json": {
+      "bytes": 47909,
+      "sha256": "46d04785eedb5773ebe9a3a165489681f9aa2014bb7ed28a9fce695330543f1c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S01/runtime/manifest.json": {
+      "bytes": 40614,
+      "sha256": "b784e6884af2a2547c74ca9e5f0ccf31c510d870ad2a186460a481f7b3cbbf12"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S01/runtime/session.json": {
+      "bytes": 2394752,
+      "sha256": "85453f63c955fb3712bed51a6015f1ac582b8a1e22548a574ad0f143e648ce83"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S01/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F02/runtime/manifest.json": {
+      "bytes": 6504,
+      "sha256": "057e762c99ad3f7772d529f85642cf6bd9b409658bba1bbba515f8fc60b9877a"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F02/runtime/session.json": {
+      "bytes": 171131,
+      "sha256": "9b4d097e13f553ea72d31bab52f2aab4c116e96acfd990778cb584800e0cb656"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F02/runtime/context.json": {
+      "bytes": 32515,
+      "sha256": "b44adf24b248bb041fdbf624ed922c641bb08b1cc6e2ecc5d1a746b5bedcaf82"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/F02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C02/runtime/manifest.json": {
+      "bytes": 6504,
+      "sha256": "e64435644aa7ed6f33668848f55f584746b76f3c71758e58c269952cba790043"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C02/runtime/session.json": {
+      "bytes": 189450,
+      "sha256": "1eea303b44b364f93633784975d0d504b6bafe7155c575ea7c839214ab593c8d"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C02/runtime/context.json": {
+      "bytes": 37540,
+      "sha256": "029571dc74a8ca67d67ef36c18dd86f37aa5f58d3e9b4294992099881784d0f5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/C02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G02/runtime/manifest.json": {
+      "bytes": 13544,
+      "sha256": "0ac677bfd19064e02b646b618c72836c97d430e639f8eabfbdb64130b50e6e2d"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G02/runtime/session.json": {
+      "bytes": 455106,
+      "sha256": "5af93254fdee1cece141bbd891bc3177f221f9ff3ab59875bac2d6f07f5c4051"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G02/runtime/context.json": {
+      "bytes": 37708,
+      "sha256": "0a2d7abc71a7c6dc32711c90385f35c41ef712f54706f3681248087aa5b9be03"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/G02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A02/runtime/manifest.json": {
+      "bytes": 17064,
+      "sha256": "baffa929ccb2e8d565af773f7ade340112b044b93866955582af9d022e9e196d"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A02/runtime/session.json": {
+      "bytes": 643739,
+      "sha256": "31b0e0ba268e147ad8bd3ad1f506e8b8b3209c089d887a8202462448a4b092c9"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A02/runtime/context.json": {
+      "bytes": 42690,
+      "sha256": "db0b5488d90d36de65799c17620b13cae58f52d3b65b9361b8d3f7564aeb73c7"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/A02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D02/runtime/manifest.json": {
+      "bytes": 13544,
+      "sha256": "0a41c78a40864ae777f4285ec4dc68465fa6528a1029a3b301cfa49c3ab010fa"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D02/runtime/session.json": {
+      "bytes": 455617,
+      "sha256": "89f034933af676c0f5f77edba6f6514110b988436720c09af5a9e26e5b713513"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D02/runtime/context.json": {
+      "bytes": 37831,
+      "sha256": "2113084744f49bd2a27ae5093bce5137d99a68634dfe2180c9e089185ffc3970"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/D02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R02/runtime/manifest.json": {
+      "bytes": 13544,
+      "sha256": "852a71d478a3ddc46c24c86054261552bced5d720c28357e5bc476fdd6513bcd"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R02/runtime/session.json": {
+      "bytes": 456226,
+      "sha256": "0a50280ec0022c38f725e69a9ec9d0ecd06a0b65bc1e3d9ae127674cd9361279"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R02/runtime/context.json": {
+      "bytes": 37780,
+      "sha256": "592362811fbd308de714be20a2962743b49cf5dc2816093ce4d380adec2cb867"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/R02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B02/runtime/manifest.json": {
+      "bytes": 31156,
+      "sha256": "cb59a4cb0e09085fb1b19f49448766c21dec99f82756c5fdfcf4201068e21429"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B02/runtime/session.json": {
+      "bytes": 1377510,
+      "sha256": "9044895c3fd970e8bd9a1527b6108db3e187ae16846a352491fcfee15aa0be98"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B02/runtime/context.json": {
+      "bytes": 47909,
+      "sha256": "46d04785eedb5773ebe9a3a165489681f9aa2014bb7ed28a9fce695330543f1c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/B02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S02/runtime/manifest.json": {
+      "bytes": 19467,
+      "sha256": "92366eff763eec2ecf0b1392324e4ee29c8a39e39ce863fb38e68196b80f74d2"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S02/runtime/session.json": {
+      "bytes": 921410,
+      "sha256": "9ca1d0c9f002bca1071bc32ff3fc44b6cb1c9e25b8dac5f0f758d86630736aee"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S02/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_task_panel/fixed_eight_task_panel_v1_20260906/execution/sessions/S02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/manifest.json": {
+      "bytes": 4782,
+      "sha256": "8bef1e85efd64e8637e4fbda4cf76eaf8c89db2a6782bc68baa72808531fee64"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/session_outcomes.json": {
+      "bytes": 7585,
+      "sha256": "208dd81377fbfaf9e0e0c43ab4e5c830e409f0e149553c82b63619f2f551ca9d"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/session_packages.json": {
+      "bytes": 23197,
+      "sha256": "92f238900efd3aa2543f2a16152f096602635af1577dd2f626d6333d03d85a32"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/analysis/supervision_candidates.json": {
+      "bytes": 1611390,
+      "sha256": "e2bd23b01d6df651ff62eb16de5eb6224e11d834da5e43365f3cd1f93c0ee5e1"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N01/runtime/manifest.json": {
+      "bytes": 40614,
+      "sha256": "0002b4300976cf548a8069f34e4a432fae7454396085fe37826e59e6e4ac9c6b"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N01/runtime/session.json": {
+      "bytes": 2395294,
+      "sha256": "3b4e7c0fc8e3a9cb171083ae54fe387eea23153b4eea01650b8ba92e03212709"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N01/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E01/runtime/manifest.json": {
+      "bytes": 42902,
+      "sha256": "3bb152a12a55f6636457af0743deb6089aaea42ea91e2d1ae97512bf194cee49"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E01/runtime/session.json": {
+      "bytes": 2425958,
+      "sha256": "035f5f66bdf5f1fbf06d40348969a1ac59d3e75a9f456f4392c496c273ccb1c3"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E01/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E01/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E01/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N02/runtime/manifest.json": {
+      "bytes": 42905,
+      "sha256": "1553d886aad6584bc46f0d0c3e734928b3fabe200c52bf6bc195c4227178e69a"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N02/runtime/session.json": {
+      "bytes": 2415062,
+      "sha256": "ea6779e3c678375ef8f3f8f36ad26277341335f6aee960d87b45f53451e16b5b"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N02/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/manifest.json": {
+      "bytes": 24199,
+      "sha256": "3d9ba4ff84725931692fe94f51f44cea6f7e110ab04f227289614beddff31dc4"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/session.json": {
+      "bytes": 1228287,
+      "sha256": "cf58d402e4d10c12fcff949958221984196cb84719477bcac6324248ca08aaa0"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E02/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/manifest.json": {
+      "bytes": 14732,
+      "sha256": "89987fc5cd8a56deb8d033c766edc13fd9bbb45453ac3506f9b98365fc6e4f9f"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/session.json": {
+      "bytes": 637179,
+      "sha256": "3e232886c8988cd585975cc3f1a49d27b7d89e07e136cf16676d58cf11d3dc66"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N03/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E03/runtime/manifest.json": {
+      "bytes": 42899,
+      "sha256": "09b376739faba93b846c88f7e4f2426c2ff5abb973d71e8e09ac4fa4865ed27e"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E03/runtime/session.json": {
+      "bytes": 2424443,
+      "sha256": "2462a131e315d613161fe97c5ac2c21000d5e3fdc91dfddebe4ea2e1ccf8864f"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E03/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E03/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E03/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N04/runtime/manifest.json": {
+      "bytes": 40614,
+      "sha256": "ed9ab207ea2faf9148bf3851295aaa7fb17479821b3e283796fe8088af9bfa3f"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N04/runtime/session.json": {
+      "bytes": 2399885,
+      "sha256": "295d326bcaa4ca9625f698e5026424a941d9d14c6a37c514533f5ee92f77771f"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N04/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N04/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/N04/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/manifest.json": {
+      "bytes": 26567,
+      "sha256": "19b1e07388ef2207164c5bd51c5f51a0374d535fad27b944b60f6f3d4692d0c1"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/session.json": {
+      "bytes": 1365134,
+      "sha256": "8984df51d974a2ea08e8f60a13d56cfcb1ad1a5e86a4b040b6d09375122c5df4"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/context.json": {
+      "bytes": 47026,
+      "sha256": "7c259abf52d0c23e380f09c06d7b0f2291d48e5868e3d75418fa031ed36968d5"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/protocol.json": {
+      "bytes": 5014,
+      "sha256": "d0391d2462913a03b34737d7c1c1cad7a8abb3ab277b182a845e248c1f1c1ace"
+    },
+    "trusted_data_synthesis/artifacts/qa_vnext_support_exploration/share_four_neutral_four_guided_v1_20260907/execution/sessions/E04/runtime/registry.json": {
+      "bytes": 20368,
+      "sha256": "d9b704a501a74e4497687d5987ecb479b6354bd2b8802e72d63028e8840b098c"
+    }
+  },
+  "qualification_recomputed": false,
+  "new_model_calls": 0,
+  "class_weights_assigned": false,
+  "validation": [
+    "source analysis and runtime manifest member hashes",
+    "session and submission/receipt bindings",
+    "positive package candidate coverage",
+    "exact UTF-8 response bytes and hashes",
+    "gzip JSONL roundtrip"
+  ]
+}
