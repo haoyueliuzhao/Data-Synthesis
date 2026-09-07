@@ -1,0 +1,48 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f50136d73fa249c6b1e82ef5fff1f9a848366a9c244e425e2a04a8260429c6a3",
+  "observation_id": "finance_qa_vnext_observation:6ce12559aefd777084d838c85122f4d450dc088f00e3793a8eebb55ee121e5e2",
+  "disposition": "accept",
+  "proposed_claim": {
+    "lineage": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+      "finance_qa_vnext_cross_binding_numeric_evidence:9c02ed80386ab923f66fbb195f6db6747e46c7c0c49cb658f7e4ffb854fac92f",
+      "finance_qa_vnext_cross_binding_relation_evidence:75b8082227027fff55234286e9be85966454345f7b6e6960560158a76e82ff52"
+    ],
+    "operation": "relation_sum",
+    "operation_contract_id": "operation_semantic_contract:16063f8dcbc6ea707905c5ed73ce5dfcaecb58e126898707e7fd5fee85992590",
+    "output": {
+      "currency": "dollar_as_disclosed",
+      "definition": "Total net revenue",
+      "lineage": [
+        "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+        "finance_qa_vnext_cross_binding_numeric_evidence:9c02ed80386ab923f66fbb195f6db6747e46c7c0c49cb658f7e4ffb854fac92f",
+        "finance_qa_vnext_cross_binding_relation_evidence:75b8082227027fff55234286e9be85966454345f7b6e6960560158a76e82ff52"
+      ],
+      "metric": "total_net_revenue",
+      "period": "2014",
+      "scope": "consolidated_issuer",
+      "subject": "JPMorgan Chase & Co. consolidated issuer",
+      "unit": "millions",
+      "value": "94205"
+    },
+    "semantic_contract_id": "finance_qa_vnext_cross_binding_semantic_contract:495cb05666e5f7b9becc15c909e3ace6990c7dfd4baa3f895c3abc4972a1984c",
+    "source_binding_id": "finance_qa_vnext_cross_binding_source_binding:c41e444579264664a3921b33591ff2e4d5cfdf6233cac9d3815c6f5e375ba1d5",
+    "task_id": "finance_qa_vnext_cross_binding_task:f00ffb9b4497c63b3f9016694dc2dfea60320e526447b338cf033df2e7d8d1ae"
+  },
+  "assessment": {
+    "relation": "accepts_observed_proposition",
+    "observation_refs": [
+      "finance_qa_vnext_observation:6ce12559aefd777084d838c85122f4d450dc088f00e3793a8eebb55ee121e5e2"
+    ],
+    "evidence_refs": [
+      "finance_qa_vnext_cross_binding_numeric_evidence:05b70cf7fb07dbdad507a7c94d6a8428b26805dc22ba9a82537835359de9c6c5",
+      "finance_qa_vnext_cross_binding_numeric_evidence:9c02ed80386ab923f66fbb195f6db6747e46c7c0c49cb658f7e4ffb854fac92f",
+      "finance_qa_vnext_cross_binding_relation_evidence:75b8082227027fff55234286e9be85966454345f7b6e6960560158a76e82ff52"
+    ],
+    "fulfills_obligation": "total"
+  },
+  "remaining_uncertainty_refs": [],
+  "newly_enabled_obligation_ids": [],
+  "next_subgoal": "ratio"
+}

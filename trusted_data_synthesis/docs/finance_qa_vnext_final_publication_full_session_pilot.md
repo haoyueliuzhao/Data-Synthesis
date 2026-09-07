@@ -165,4 +165,159 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=trusted_data_synthesis/src truste
 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=trusted_data_synthesis/src trusted_data_synthesis/.venv/bin/python -m trusted_synthesis.experiments.finance_qa_vnext_final_publication run
 ```
 
-新目录：`artifacts/qa_vnext_final_publication/final_publication_v1_20260907`。这份设计写入时尚未启动真实模型采集；后续按原固定条件记录全部结果，不补样到成功或双支持。
+新目录：`artifacts/qa_vnext_final_publication/final_publication_v1_20260907`。以上设计在真实采集前冻结；实际一次性运行结果记录如下，未补样到成功或双支持。
+
+## 11. 正式完整结果与首次 Final
+
+源码冻结提交为 `29b152635088819d580ef6d2273b135825e12966`，直接 Git 父为 `69a0a6fd2b6c7fa42b86db8c4c4b55d8cd757a09`。实验历史保存锚点仍为上一轮结果提交 `7a750ad92dd91601461161b53ab686c6bf3eeff8`，不混淆实际 Git 祖先与实验历史对象。
+
+正式 prepare 成功后只启动一次六会话完整 run。六会话全部成功，共 **51 次 Provider attempts／Runtime submissions**，远低于 192 的硬上限；未重试、回退、替换、补样或恢复旧会话。
+
+| 任务 | N 的 q | E 的 q | 任务 q | 新 N 实际支持 | 新 E 实际支持 | 任务内类数 | W_i |
+| --- | --- | --- | --- | --- | --- | ---: | --- |
+| T01：UNP 2016 | 1/1 | 1/1 | 2/2 | R | D | 2 | true |
+| T02：JPM 2014 | 1/1 | 1/1 | 2/2 | D | R | 2 | true |
+| T03：JPM 2015 | 1/1 | 1/1 | 2/2 | D | R | 2 | true |
+
+面板在固定 μ=1/3 下为 `q=6/6`；known_failure、unknown、not_started 均为 0。所有资格记录的 qa_valid、trajectory_valid、end_to_end_success、evidence_complete、model_origin_verified 与 qualified 均为 true。旧十二会话仍为 0/12，不进入新分母。
+
+A/U/F 表示实际 Action／accept Update／准入 Final；步骤从 1 起：
+
+| 会话 | 调用 | A/U/F | 未准入 Action | percent Claim accept | 首次 Final | 最终 Qualified |
+| --- | ---: | --- | ---: | --- | --- | --- |
+| T01_N01 | 12 | 3/3/1 | 5 | T11 | T12，通过 | true |
+| T01_E01 | 7 | 3/3/1 | 0 | T6 | T7，通过 | true |
+| T02_N01 | 9 | 3/3/1 | 2 | T8 | T9，通过 | true |
+| T02_E01 | 8 | 3/3/1 | 1 | T7 | T8，通过 | true |
+| T03_N01 | 8 | 3/3/1 | 1 | T7 | T8，通过 | true |
+| T03_E01 | 7 | 3/3/1 | 0 | T6 | T7，通过 | true |
+| 合计 | 51 | 18/18/6 | 9 | 6/6 | 6/6 首次通过 | 6/6 |
+
+`51 = 18 Action + 18 Update + 6 Final + 9 未准入 Action`。没有未准入 Update 或 Final。**首次 Final 全通过不等于全程无纠错**；前序九次 Action 拒绝全部是 `admission.public_judgment`。
+
+三个任务的最终 value 分别是字符串 `"93.280177"`、`"53.681864"`、`"53.486632"`，unit 均为 `"percent"`。六个原始 result 都恰好只有 value/unit，citations 唯一且精确等于所选已接受答案 Claim 的真实 lineage，State ID 与本次请求一致。Host 未重写这些响应。
+
+逐会话证据及三个推进位置见[正式报告](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/report.json)和[实际进展](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/actual_progress.json)。例如 T01_N01 的[原始首次 Final](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/sessions/T01_N01/runtime/turns/011_response.txt)与[对应公开请求](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/sessions/T01_N01/runtime/turns/011_request.json)均已保存。
+
+## 12. 呈现、反馈与因果解释
+
+只读逐字对照确认，51/51 实际 HTTP 请求的 user 内容等于对应原公共 Request，system 内容等于相应 N/E 的冻结 prompt；每个 Request 都包含与准备工件相同的 Final contract 和完整专用 Schema。新增说明并非只存在于离线文档或准备副本中。
+
+本轮六次 Final 都首次准入，**在线 Final 专用 public_diagnostic 实际触发 0 次**。九次真实拒绝的诊断均来自原 Action 合同。不能声称“新 Final 反馈促成了这六条轨迹的实际纠错”。
+
+Final 诊断分支的功能证据来自封存的本地控制：132 个负控制中，108 个触发 final_qa、12 个触发 final_accepted_claim、12 个触发 current_state；24 个合法控制无需拒绝诊断。这与真实模型结果是不同证据层。
+
+旧条件 0/12 与新条件 6/6 是两个不同批次的观察。没有同期旧呈现对照，也未证明远端权重快照固定，因此不报告“呈现修复造成了某个精确百分比的因果改善”。本轮直接支持的是：在实际完整公开的 Final 条件下，三个任务均出现了从初态完成的模型可达见证。
+
+## 13. 原规则下的纠正历史与正式分区
+
+原资格记录的直接 domain projection 仍保留 **4 undetermined／2 supported**。四条未定原因均为 `reject_or_unadmitted_effect_not_quotiented`，原 qualifier 的 quotient_assignment_id 仍为 null。它不否定 Qualified，也没有被本轮改写为已经有类。
+
+本轮随后调用的、预先冻结的纠正感知商规则没有变化：原规则 ID 仍为 `922cd2d213677fb9f8d0f1be3695b13e4da0896104ecbe8313aa800c4ecc3a84`。新独立投影结果是 **6 supported、0 undetermined、6 Assignments、6 个 Task／Context 绑定的有限类**。
+
+九个未准入事件按已有适用域保留为四段关系：
+
+| 会话 | 原步骤 | 被拒公开判断字段 | 既有规则给出的保留解释 |
+| --- | --- | --- | --- |
+| T01_N01 | T1–T5 | /decision/basis | 未准入 D 提议后，真实 sum、accept total Claim，随后 ratio 实际使用 R |
+| T02_N01 | T1–T2 | /decision/obligation_id | 最近实际执行 sum 并接受结果，之后 ratio 仍使用披露 Evidence；sum Claim 无实际消费者 |
+| T02_E01 | T1 | /decision/obligation_id | 未准入 D 提议后转到真实重建与消费链 |
+| T03_N01 | T1 | /decision/basis、/decision/obligation_id | 先实际 sum／accept，之后仍实际使用 D，保留未消费 Claim |
+
+九条完整 ledger 的 disposition 都是 `retained_behavior_relation`，errors 为空。重复提议次数的有限归一化不删除原始事件、反馈或预算记录。未准入提议没有被伪装成已执行 Action；顺序关系与实际数据依赖仍分开。
+
+三个 D 会话也都真实执行过 sum；六个会话的 Action 数都等于 3。因此 D/R 差异**不是多做一步运算造成的标签区别**，而是后续 ratio 是否真正消费 accepted total Claim。R 的结构／语义依赖深度为 3，D 为 2；可观察选择依赖深度分别为 2／1，这些是实际图指标，不是模型内部思维深度。
+
+三对同任务比较均为 `not_equivalent`、proof_verified=true；独立的 execution_support_contrast 均确立真实 denominator Evidence 与 accepted relation_sum Claim 的生产—消费差异。跨任务比较为 0。
+
+| Task | 同任务配对 ID 哈希 | 实际分母差异证明 ID 哈希 |
+| --- | --- | --- |
+| T01 | `2aee1d47bf2d7d135b8d4e7c1b77b0b1c020f7f0dde323c05972eba01bd19d78` | `3006acda8ad495043920f48ab28d41f38fbd3d57c9b86937af763907873182e1` |
+| T02 | `9696203ff106de7558567667cb25648c595eedbaeab367543078dd26dadc0deb` | `da4d73a6d862bf77eb4c2e6d2510f5e14b2e9fe318d5dac6a5c549de86666cab` |
+| T03 | `3b2759aa8cfbbdfc4f3ba90c73e17040b552e847ff36d591778f16873afaba4d` | `02b94a1bfb0b798617dacec12309d31f24b17247a3ead33d63af31e8d3d77c29` |
+
+完整图、逐事件解释、原 domain 层与新商层身份分别保存在[新投影](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/projections.json)及[正式有限测量](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/measurement.json)，没有在看到结果后扩展归约规则。
+
+## 14. 三个任务内的分布与材料身份
+
+每任务当前两类各一个成员，`u_i(z)=1/2`、`π_i(z|success)=1/2`；N/E 成功条件权重也各为 1/2，是本批每层一个成功的结果。三个任务各自的 π 完整闭合，不合并成一个跨任务条件分布。
+
+面板质量为：
+
+```text
+mapped valid 6/6 + unmapped valid 0/6 + failure 0/6 + missing 0/6 = 1
+```
+
+六个 `(Task, class)` 的联合频率各为 `μ_i × u_i = 1/6`。D/R 描述性数量为 3/3，但不是两个跨任务通用 State ID。T01 的 N 实际为 R、E 实际为 D，直接说明 N/E 不等于固定支持类型，软引导没有变成资格约束。
+
+| 会话／支持 | 正式类 ID 哈希 | 原样目标 Token 数 |
+| --- | --- | ---: |
+| T01_N01／R | `b6f932d8729a1a41a5a436eb6a9b7c7b03f7c081947fed369d2eaabd2785b2b4` | 7,212 |
+| T01_E01／D | `15cd003efff3407c68f2c140bec80b13422edb009483f823c16554a791e756c0` | 6,432 |
+| T02_N01／D | `489294bf754c683ba7dc49383a29e46236dee31efea9c8e785d0e3d3a0a754d1` | 6,362 |
+| T02_E01／R | `24b68dca25ddb2634fda6c1db3a0b457d4b0fb6af2ab80cc6fcb1409635d5018` | 7,098 |
+| T03_N01／D | `360500df6f7b5a63c5315a90f9d002cc97f10728b2e581656a8be40943e72800` | 6,413 |
+| T03_E01／R | `d55cf85083d6c0e77ae35fdd4d45957af595d449ba93d31f1de205738266c2bb` | 7,123 |
+
+类由精确语义配对与差异证明建立，表中的支持描述不是赋类依据。完整类成员记录还引用实际 profile/config、qualification、projection、完整 package 和 Token 数；没有引用旧十二会话或构造控制作为新成员。
+
+## 15. 原样正向表示与执行成本
+
+**42 个原始正候选 = 18 Action + 18 Update + 6 Final**，N/E 各 21。逐条只读对照原传输后确认，candidate.messages 等于实际 HTTP messages，target UTF-8 字节等于原 Runtime response，父 ID、原 raw SHA、byte count 和 admitted receipt 全部匹配。
+
+51 个实际请求中，9 个带有此前拒绝反馈；42 个正候选中，4 个保留此前拒绝反馈。它们是 Action 纠正上下文，不是本次在线 Final 纠正。未准入的九个 Action 响应未被导入正目标，完整公共行为仍在原事件及投影 ledger 中保存。
+
+| 正向表示／CPU 对象 | 实际结果 |
+| --- | --- |
+| candidate／Token records／fit／not-fit | 42／42／42／0 |
+| 序列长度 | 17,080–21,640，均低于 32,768 |
+| 截断／目标改写／旧行导入 | 全部 0 |
+| 完整监督包 | 6 个，每包 7 个 admitted units |
+| 目标 Token 合计 | 40,640 |
+| CPU batch | 24：18 个双条、6 个单条 |
+| CPU 已加载记录 | 42，batch size≤2 |
+| Student 权重加载／forward／更新／GPU | 全部 0 |
+
+原候选／Token 的 quotient_assignment_id 仍为 null，因为原样导出与表示先于独立投影；正式类与包的关系在测量 sidecar 中建立，不回写原始候选。42 条 Token 和六个 package 的原父链、class member package ID 与目标 Token 汇总一致。
+
+40,640 是冻结监督 tokenizer 与掩码政策下的目标计数，不等于 Provider completion usage。表示与 CPU 加载已通过，不代表 Student 效用、训练可行性或 GPU 显存可行性通过。
+
+[新候选](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/supervision_candidates.json)、[Token 数据集](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/token_representations.json)、[完整包](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/session_packages.json)和[CPU 记录](../artifacts/qa_vnext_final_publication/final_publication_v1_20260907/execution/analysis/cpu_loading.json)分别封存。
+
+| Provider 资源 | 实际值 |
+| --- | ---: |
+| attempts／submissions | 51／51 |
+| 最大 HTTP body | 58,890 bytes |
+| 已用 reserved allowance／上限 | 5,483,520／20,643,840 |
+| prompt_tokens | 801,794 |
+| completion_tokens | 38,012 |
+| total_tokens | 839,806 |
+| cache-hit／cache-miss tokens | 334,464／467,330 |
+| reasoning_tokens | 全部 51 条未提供，observed_total=null |
+
+上述五个已知 usage 字段各有 51 条完整记录。reasoning usage 未知，不能按 thinking disabled 配置补成 0；reserved allowance 不是实际 Token 或货币账单。51 个原 outcome 都是 deepseek-v4-pro／public_content／finish_reason=stop，host_repairs 与 condition_flags 为空。模型别名不证明远端权重快照固定。
+
+## 16. 封存身份与收口
+
+| 对象 | ID 哈希部分 |
+| --- | --- |
+| 新生成条件 | `7f104964cad3808ed037eb5a32369f9a39b5c461794e4b50b388affc5b19793c` |
+| Final 公开合同 | `83b6f2c7ad0f18c9225cb71e44eed9086eb610be63f4c43adaf09f5488b30801` |
+| 测量适用合同 | `09870d7986fa72244a8c7345d21e1a034f773841ef50ce35792a72c1a33459ca` |
+| 比较合同 | `52acfacb599ed574fa5a17cbdbdc67bf67ae64d0942ba6cfe703c184e5a39443` |
+| 十二状态只读控制 | `6a6e4ed48338cd751767949a724de48bd7006816b3333387d25c651a1c973d20` |
+| 准备 manifest | `a5dfd63658706df25a8de01e1acde312c6fa073d9f8774c8a85221fbb515899f` |
+| 执行 manifest | `e0f13c8f7412faa36ba3aa592156893f93726e3f98f9d16db99ef4fd192a19d1` |
+| 分析 manifest | `3203cc4295e7ad5b73b5b77cca0936f066c6e73b06145311e4065a665de4fad2` |
+| 正式报告 | `80e7b6fcca2683b320e6189ec62a4de54182c60b7fca81fd663f94728fe2f054` |
+| 有限测量 | `58fd1f0729f7c5f85808f51f8a3621063daad97940af5f7499bcf6db871f9475` |
+| Token 数据集 | `dc2816f7e5efd8cb69e9251bba7957438efccd3e23882321749ae974fb84e3d9` |
+| 六个完整包的集合 | `20f4d38f667d305c3b0a03c0b85c1579b4962b59ecabf0641fe32f9e9c2d678d` |
+
+正式目录共 **909 个文件、57,424,499 字节**；最大文件是 10,411,959 字节的 Token JSON。准备 manifest 有 36 个成员、10,816,832 字节；执行 manifest 有 870 个成员、46,459,405 字节；分析 manifest 的 44 个成员已包含在执行树中，不重复相加。
+
+在线与分析后只做封存字节、父身份及统计回读，没有重新资格、重新投影或重新分词。旧 21,269 文件／980,870,310 字节保持不变；全 src 冻结快照为 947 个 Python 文件。三处旧核心发布接线与所有新增源码在首次新响应后均未再修改，原严格函数体保护和阶段 guards 均通过。
+
+**本轮可以关闭这三个开发绑定上的 Final 完整公开与完整执行接入问题。** 同时在不扩商规则的条件下，三个绑定均得到实际有效 D/R 分离见证和完整有限经验分布。这里的六会话成功、三个严格见证与 42 条原样表示是分别检查的结果，未相互替代。
+
+本轮没有新增来源、同期旧呈现对照、独立评价任务、Student 训练、Contribution 或 VTDO 更新；仍不能称为一般金融泛化或训练效用验证。各类当前只有一个观察成员，复制不会增加独立样本。旧 0/12 与既有 UNP/2015 结论不改写，旧主线继续暂停；后续评价与训练干预须另行固定对象和范围，不在本轮自动启动。

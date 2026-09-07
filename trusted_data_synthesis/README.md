@@ -219,6 +219,11 @@ and field-specific rejection feedback are fully published in actual requests.
 Twelve historical ready states are read-only local controls, not resumed sessions;
 the fresh population is six complete N/E sessions, capped at 192 Provider attempts.
 The quotient rule and 32,768-token policy are unchanged, with no resampling or Student/GPU.
+The sealed real run used 51 attempts: all six sessions qualified and all first Finals
+were admitted. Each task has verified D/R separation, two finite classes and complete
+within-task frequencies of 1/2 each. All 42 original candidates fit and form six complete
+packages. No online Final diagnostic was triggered, so this does not establish its causal
+correction effect or a controlled improvement over the historical 0/12 batch.
 See the [Final publication design and experiment record](docs/finance_qa_vnext_final_publication_full_session_pilot.md).
 
 ## Canonical Experiment
