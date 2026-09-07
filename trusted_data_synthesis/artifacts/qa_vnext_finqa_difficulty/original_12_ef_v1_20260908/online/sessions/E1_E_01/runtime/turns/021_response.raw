@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b006a2b906343d6ee7606d0df2af23de90be2d61e85c9c1c7a5e4a2976c50697",
+  "observation": "The division result is correct. We need to multiply by 100 to get percent.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:56f719ceb972ff7045deeaaf4b02d99809edf16edf75055fe01079cb70e415b6",
+  "observation": "The division result is correct and relevant for computing the percentage.",
+  "disposition": "accept"
+}

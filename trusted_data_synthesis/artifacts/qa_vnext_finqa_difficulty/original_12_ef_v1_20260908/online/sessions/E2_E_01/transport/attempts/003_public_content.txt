@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5dc9abce94ecd0e93395218afa2221109de7d890754989d275321dba9c397da4",
+  "observation": "Read value 53.8 from source:q10n4 as the exercise price per share.",
+  "disposition": "accept"
+}

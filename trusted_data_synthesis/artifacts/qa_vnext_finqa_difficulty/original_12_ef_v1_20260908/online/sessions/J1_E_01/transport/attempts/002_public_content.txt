@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:72711b41b5d27b64097d54fce111bc10f4a3fd082a40aabda2c24dd40020f84c",
+  "subgoal": "Read the 2009 share-based compensation cost from the source.",
+  "reason": "To compute the percentage change, we need both the 2010 and 2009 share-based compensation cost. The 2010 value is already accepted as claim finance_qa_vnext_claim:7403d0ac331f96e85c16f3d0f87f57efa22df5660c0981b8b33fa30a9ac6cf58. Now read the 2009 value from source:t1c2n0.",
+  "operation": "read",
+  "inputs": ["source:t1c2n0"],
+  "parameters": {}
+}

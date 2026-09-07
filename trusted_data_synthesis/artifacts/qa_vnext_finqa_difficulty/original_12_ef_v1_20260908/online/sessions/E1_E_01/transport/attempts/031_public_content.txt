@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:29a776509aebe3460fac0a30ab621a7f2354db8a9f97f208f8e5dc8d73ed8c64",
+  "observation": "Accepted the division result.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:50da8e4230114e3a4e997c28fd08ce791dcf9ef5b735a339b60959356f37e4e6",
+  "observation": "The pending observation for divide has exact value 3581/21813 = 0.164168... and is numeric and source verified. It should be accepted.",
+  "disposition": "accept"
+}

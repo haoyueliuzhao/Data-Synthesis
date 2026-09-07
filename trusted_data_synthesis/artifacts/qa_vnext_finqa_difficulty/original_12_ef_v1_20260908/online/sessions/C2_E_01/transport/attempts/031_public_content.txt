@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c47d41a0fc5b8c851959894eadfe0e8c8e23f2d5ce7cf14f6d6e9261a162fcda",
+  "observation": "We have a pending observation for the division of agricultural products revenue by total operating revenues. The ratio is 0.16416815660386008343648283133910970522165681015908. We need to multiply this by 100 to get the percentage.",
+  "disposition": "accept"
+}

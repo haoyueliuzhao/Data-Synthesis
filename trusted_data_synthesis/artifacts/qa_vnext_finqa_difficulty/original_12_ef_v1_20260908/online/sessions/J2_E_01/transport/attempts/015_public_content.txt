@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:ce4eff61f791fcaf4af1c4fdeb4308c884f74ae7a4ac98de4fcdbab0ec58fdf8",
+  "observation": "Read 2016 stock options value 13.",
+  "disposition": "accept"
+}

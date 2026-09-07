@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:3606f8363b5ae04d56109e37186f5daa27450d18390f984ec6229f6db3ff73be",
+  "observation": "The read of source:t9c1n0 produced value 21813, matching the source total operating revenues for 2015.",
+  "disposition": "accept"
+}

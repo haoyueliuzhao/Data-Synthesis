@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:ec83fbc85459229bc4d673b780de93fd87937d9861ef380b127ecb9bc9d6a03b",
+  "observation": "Accepted after-tax share-based compensation cost for 2010: 11.8.",
+  "disposition": "accept"
+}

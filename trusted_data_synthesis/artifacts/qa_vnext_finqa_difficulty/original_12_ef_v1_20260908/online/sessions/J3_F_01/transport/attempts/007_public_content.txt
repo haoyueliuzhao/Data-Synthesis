@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2b312c4d0126ee7c17e5fe78af4ab304972001ac0da49ff38e68d3189700f957",
+  "observation": "The pending observation for reading source:p1n3 (2018) is not relevant to the financial target because it is a year label, not a payment amount. The actual 2018 payment is represented by source:p1n2, which has value 22.3.",
+  "disposition": "reject"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:573507ff26a5d622830b31c0abcaaef78a951fbf959f9d740d6ec3b4f7bd4b85",
+  "observation": "Read total operating revenues for 2015 as 21813",
+  "disposition": "accept"
+}

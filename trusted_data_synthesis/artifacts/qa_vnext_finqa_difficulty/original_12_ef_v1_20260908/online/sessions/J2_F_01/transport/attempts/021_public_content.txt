@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:66ca9da907c3e8c30c4e8ded92339370f14e32b99906dc25629a93cc59efd24d",
+  "subgoal": "Read the number of stock options for 2016 from the table.",
+  "reason": "We need the number of stock options in 2016 to calculate the total value of stock options for that year. The table row 'stock options ( 1 )' has 2016 value 13, already read as claim 41cdfbf3... We also need 2017 value, which is 11, but not yet read. Need to read 2017 stock options count.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

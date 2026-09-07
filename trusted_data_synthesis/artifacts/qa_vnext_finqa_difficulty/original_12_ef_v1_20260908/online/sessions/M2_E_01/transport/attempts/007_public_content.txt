@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ff89242b9e82401885a303a5b4dcd6522a353c3e0b79454c93967e3c460f7568",
+  "subgoal": "Read the remaining annual maturities for 2020-2022.",
+  "reason": "We need all five years to compute the sum. Only two claims are accepted so far; read the other three source values.",
+  "operation": "read",
+  "inputs": ["source:t3c1n0"],
+  "parameters": {}
+}

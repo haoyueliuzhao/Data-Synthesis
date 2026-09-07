@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:bf07c37022e9d3a5bc2cf185e658e02a308174d055d97349ad5083967b11053d",
+  "subgoal": "Read the 2010 share-based compensation cost from the table.",
+  "reason": "We need the after-tax share-based compensation cost for 2010 and 2009. The table provides share-based compensation cost and income tax benefit. After-tax cost = compensation cost + income tax benefit (since benefit is negative). First, read the 2010 compensation cost.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

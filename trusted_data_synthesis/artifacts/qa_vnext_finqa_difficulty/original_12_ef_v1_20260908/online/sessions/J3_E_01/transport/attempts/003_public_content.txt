@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:92f1e44aabbb9dc2a4e298806290e47f6553b63b3e0f1184aa8008cac174a529",
+  "subgoal": "Read the principal payment amount for 2018.",
+  "reason": "Need all five yearly payment amounts to sum the total expected payments over the next 5 years. We already read 2017 ($21.7M). Now read 2018 amount ($22.3M) from source:p1n2.",
+  "operation": "read",
+  "inputs": ["source:p1n2"],
+  "parameters": {}
+}

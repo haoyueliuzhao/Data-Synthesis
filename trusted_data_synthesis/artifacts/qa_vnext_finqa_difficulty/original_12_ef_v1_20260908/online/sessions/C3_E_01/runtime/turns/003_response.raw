@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:5bf29c93fa96485eda63048a32792201fd8d5a52a937be3d50d5a399fcd73386",
+  "subgoal": "Read the 2016 cash instruments value from source:t1c2n0.",
+  "reason": "The question asks for the minimum balance of cash instruments for 2017 and 2016. We have already read the 2017 value (15395). Now we need the 2016 value to compute the minimum.",
+  "operation": "read",
+  "inputs": ["source:t1c2n0"],
+  "parameters": {}
+}

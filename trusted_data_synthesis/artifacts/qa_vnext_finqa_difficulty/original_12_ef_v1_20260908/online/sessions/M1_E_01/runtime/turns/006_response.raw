@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:81f1a0f9d9fd1e11f4b416c8c5634321fd50fe7d640799c97768f968a35956f7",
+  "observation": "Accepted read of 2010 value 3625 from source:t11c2n0.",
+  "disposition": "accept"
+}

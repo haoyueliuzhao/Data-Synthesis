@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8ccf0add579619d2b26a9b560b163cc58f5f40c2781411bf36c7925c71592c16",
+  "observation": "Accept the read of source:t1c2n0 value 18035 for 2016 cash instruments.",
+  "disposition": "accept"
+}

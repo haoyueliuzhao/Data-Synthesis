@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:202a632230a95a2c0c0656a7a442a1f27f6f8e6ef9f360dfedf8c8265e7955f2",
+  "observation": "Accept the pending observation: after-tax 2010 = 11.8",
+  "disposition": "accept"
+}

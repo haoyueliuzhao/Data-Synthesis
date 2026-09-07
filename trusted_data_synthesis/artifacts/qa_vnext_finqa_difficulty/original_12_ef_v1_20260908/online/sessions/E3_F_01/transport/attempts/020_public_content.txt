@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d82fb6569c541e3c97e776ddc8daf7fefceb85d5ab33a834a411e2f73f857693",
+  "subgoal": "Convert cash and equivalents from billions to millions.",
+  "reason": "Cash and equivalents is $7.0 billion, but the cash held on behalf of GE is in millions ($997 million). To compute the percentage, both must be in the same unit. Multiply the $7.0 billion claim by 1000 to get millions.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:458d604aebfab250471453ebb2c0a1127aca9143a0784824ba6c175482fb38c3",
+    "constant:1000"
+  ],
+  "parameters": {}
+}

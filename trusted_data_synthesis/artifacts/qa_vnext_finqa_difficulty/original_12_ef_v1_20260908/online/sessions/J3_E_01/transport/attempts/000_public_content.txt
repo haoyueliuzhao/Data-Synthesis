@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:8b6efd5400ceea17d14a56195fefc9bc9e8f511dacc24c81e55c35254b4231f9",
+  "subgoal": "Read the five principal payment amounts from the source",
+  "reason": "The question asks for total expected payments on the bonds for the next 5 years. The source provides principal payment amounts for 2017-2021. We need to read each amount to sum them.",
+  "operation": "read",
+  "inputs": ["source:p1n0"],
+  "parameters": {}
+}

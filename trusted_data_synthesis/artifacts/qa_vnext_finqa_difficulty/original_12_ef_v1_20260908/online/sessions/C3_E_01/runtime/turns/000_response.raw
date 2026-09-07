@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:c555c306e84454fb3bc4e31a9e5d28dcce9d437d0f4ef94d393896b899bf9a66",
+  "subgoal": "Read the cash instruments values for 2017 and 2016.",
+  "reason": "The question asks for the minimum balance of cash instruments in millions for 2017 and 2016. The numeric catalog contains two values: 15395 (as of December 2017) and 18035 (as of December 2016). We need to read both source values to compute the minimum.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0", "source:t1c2n0"],
+  "parameters": {}
+}

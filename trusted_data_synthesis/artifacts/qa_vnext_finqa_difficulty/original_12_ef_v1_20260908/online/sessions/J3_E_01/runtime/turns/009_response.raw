@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:eed14999d636b453fc00b1828e91c6e832e3a40d6e0552b1b552ef3527ffc74e",
+  "observation": "Read source:p1n2, value 22.3. This is the 2018 principal payment amount in USD millions. Accepting as a valid numeric read.",
+  "disposition": "accept"
+}

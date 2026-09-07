@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:10a72cb8195dfd240b7964fb332157613581436953374ae59d0065eaa2936840",
+  "observation": "Accepted source:q10n4 with value 53.8.",
+  "disposition": "accept"
+}

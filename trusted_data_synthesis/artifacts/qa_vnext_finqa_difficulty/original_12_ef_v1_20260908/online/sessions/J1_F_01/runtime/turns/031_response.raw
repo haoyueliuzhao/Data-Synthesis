@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8d5928681412839d709b492f4eb4b54198f732c48ec660676224fa03bff09808",
+  "observation": "After-tax 2010 cost = 18.1 + (-6.3) = 11.8. This is correct arithmetic and source-anchored.",
+  "disposition": "accept"
+}

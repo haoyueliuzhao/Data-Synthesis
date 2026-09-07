@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a0582e1618bd447bb28f501d2684ec1ede794abcf1fef7c1e065ba6ebb21acec",
+  "observation": "Accepted read of source:p1n2 value 22.3 (2018 principal payment).",
+  "disposition": "accept"
+}

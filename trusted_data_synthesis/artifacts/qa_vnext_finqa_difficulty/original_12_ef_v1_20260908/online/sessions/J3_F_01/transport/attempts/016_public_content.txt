@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:63e6ba4ca5fca9aac1d74d583240991eaa68c060d8d470afb9c52bf0c5da0f97",
+  "observation": "Read 2019 expected principal payment for Entergy Louisiana investment recovery funding: 22.7",
+  "disposition": "accept"
+}

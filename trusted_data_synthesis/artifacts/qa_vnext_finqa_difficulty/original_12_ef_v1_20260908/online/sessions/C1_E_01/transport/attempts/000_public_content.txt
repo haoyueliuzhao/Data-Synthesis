@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:9964f13cd894c2a98eb7c5c9ba94b4c5b6738016efa4d04b0193355c1961f737",
+  "subgoal": "Read the 2015 net revenue value",
+  "reason": "Need the 2015 net revenue to compute change from 2014.",
+  "operation": "read",
+  "inputs": ["source:t8c1n0"],
+  "parameters": {}
+}

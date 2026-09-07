@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:5b2b6312eb05c82a71a864efe707dec0293676193347cb649cd5d07d5d52a4fe",
+  "subgoal": "Read total operating revenues for 2015",
+  "reason": "Need denominator for percentage calculation. From table, total operating revenues 2015 is in source:t9c1n0.",
+  "operation": "read",
+  "inputs": ["source:t9c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f4363b07f1cf391e2908c92c90c14acf715ac80179a5663a52ee5973a204e0de",
+  "observation": "After-tax 2010 cost: 11.8 accepted.",
+  "disposition": "accept"
+}

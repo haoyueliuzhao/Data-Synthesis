@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1056531fce379f27cb16b7231f8130f40f092285a7f15d2ccf1d0276017a3747",
+  "observation": "The read of source:t1c1n0 produced value 5735, which is the 2014 net revenue in USD millions. This is needed to compute the net change.",
+  "disposition": "accept"
+}

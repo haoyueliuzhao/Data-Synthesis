@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a3fc4d186c2899f9b4d0bb59e0da994c0a03f2e31ef96dcef7ca18c0f12e7769",
+  "subgoal": "Read the 2019 expected principal payment for Entergy Louisiana investment recovery funding.",
+  "reason": "Need all five annual expected principal payments for Entergy Louisiana investment recovery funding: 2017-2021. Already have 2017 (21.7), 2018 (22.3). Next read 2019 from source:p1n4.",
+  "operation": "read",
+  "inputs": ["source:p1n4"],
+  "parameters": {}
+}

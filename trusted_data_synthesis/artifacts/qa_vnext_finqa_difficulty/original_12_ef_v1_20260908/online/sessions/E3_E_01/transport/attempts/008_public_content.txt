@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:793c637fd6012782c2cb65a2c20fc3d59e77516b9301856acdb2e5b9b683e8b0",
+  "observation": "Read of source:p1n2 gives value 7 (billion).",
+  "disposition": "accept"
+}

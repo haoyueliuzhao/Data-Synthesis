@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:06e7874df3ba2e2064434a769486bdcf1ecd4694436e2470fc19d9a024f0041b",
+  "observation": "The read of source:t1c2n0 returned value 18035 with exact value 18035. It is numerically and source-verified.",
+  "disposition": "accept"
+}

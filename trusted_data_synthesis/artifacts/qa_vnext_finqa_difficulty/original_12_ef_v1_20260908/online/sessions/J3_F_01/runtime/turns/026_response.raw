@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5ae66486af7863337f8563e0a709b5b062f168597111054995f8f734ef137bca",
+  "observation": "The sum of the five principal payment amounts for 2017-2021 is 100.9, which matches the expected total from the source paragraph.",
+  "disposition": "accept"
+}

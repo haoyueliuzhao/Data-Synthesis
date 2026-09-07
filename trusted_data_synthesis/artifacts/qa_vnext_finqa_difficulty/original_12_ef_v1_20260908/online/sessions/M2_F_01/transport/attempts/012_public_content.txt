@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c08c3fba75bc1ae7efd9437cd2883588da5f15bd609483e68d864d73ec73945f",
+  "observation": "The 2022 amount read is 1304431.",
+  "disposition": "accept"
+}

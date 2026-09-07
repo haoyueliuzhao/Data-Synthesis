@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:3c23a8ea1519ac8ac8f0f4ac828c04c2a972c84fbc3d47354f5697e367d9d109",
+  "observation": "Accepted read of 2019 amount: 857679",
+  "disposition": "accept"
+}

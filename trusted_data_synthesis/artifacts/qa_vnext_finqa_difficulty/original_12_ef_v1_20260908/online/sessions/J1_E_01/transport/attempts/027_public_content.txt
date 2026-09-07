@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:0436094adbcb70fe2af93d49137448ef39f35e087164e9ade7d5cebd48e00f87",
+  "observation": "Read source:t2c1n0 with value -6.3. This is the income tax benefit for 2010, not yet used in after-tax calculation.",
+  "disposition": "accept"
+}

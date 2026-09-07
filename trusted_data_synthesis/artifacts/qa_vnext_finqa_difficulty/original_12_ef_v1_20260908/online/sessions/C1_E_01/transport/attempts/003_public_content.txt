@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:52ebf1372056bee99f067754b15d528c6682205d60f0cb1687fc21baa99eb81f",
+  "subgoal": "Read the 2014 net revenue value from the source.",
+  "reason": "To compute the net change in net revenue from 2014 to 2015, we need the 2014 value. The source provides 2014 net revenue as 5735 (in millions). We will read that numeric value.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

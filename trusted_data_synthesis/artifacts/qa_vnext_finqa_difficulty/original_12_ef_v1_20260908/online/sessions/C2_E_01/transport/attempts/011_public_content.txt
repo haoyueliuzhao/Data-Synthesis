@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5a1f674f71bbaa6b6b2231d48832d717cbc0e06df468fc33703cd4463e305685",
+  "observation": "Accepting read of total operating revenues for 2015",
+  "disposition": "accept"
+}

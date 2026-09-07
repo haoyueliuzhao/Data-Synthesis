@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b8e149d0c710e09d117402ca1569b1befa546383dc83d8d202bccf729cb07157",
+  "subgoal": "Read the net change for 2011",
+  "reason": "The table has a row 'net change for the year' with values 4648, 3625, 1620 for 2011, 2010, 2009 respectively. Need to read each value to compute average.",
+  "operation": "read",
+  "inputs": ["source:t11c1n0"],
+  "parameters": {}
+}

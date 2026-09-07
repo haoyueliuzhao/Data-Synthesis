@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8ee5c7df67aacc6d5286a525f84aab43ccce96e2e8b449b7d318faaa543eed13",
+  "observation": "Read of source:t4c1n0 yields 960764, matching the 2021 maturity amount in the provided context.",
+  "disposition": "accept"
+}

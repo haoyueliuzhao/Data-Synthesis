@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:6c81655820c5b8987cbcfbefa32d17b4dcde8bee519711fda1069795b43f7ba3",
+  "observation": "Accepted read of source:t1c1n0 with value 3581.",
+  "disposition": "accept"
+}

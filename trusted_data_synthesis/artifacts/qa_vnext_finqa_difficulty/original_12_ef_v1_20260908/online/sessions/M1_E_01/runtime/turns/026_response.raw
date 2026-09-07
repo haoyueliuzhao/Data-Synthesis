@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:0bca09fe4f6f7cdcb888084ff1a0364f2ac2f46b0b4b395a5c095ca6e37e6c97",
+  "observation": "The average of the three net changes is 3297.6666666666666666666666666666666666666666666667, which is the correct arithmetic mean of the three accepted source values.",
+  "disposition": "accept"
+}

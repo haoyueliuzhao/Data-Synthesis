@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:bfe94ad546f74e9b9f491beea68a025e15a78da1c1f7ee123a55cbae0bfaf7a9",
+  "observation": "Accept read of total operating revenues 21813 from source:t9c1n0.",
+  "disposition": "accept"
+}

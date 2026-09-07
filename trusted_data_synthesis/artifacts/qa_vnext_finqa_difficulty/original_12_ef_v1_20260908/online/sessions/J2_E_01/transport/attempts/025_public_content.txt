@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f989f1cad9fa9bbc52a7bccd9b5423f66d3e0024ea24e02361a9c5a4bd84db10",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017 using average exercise prices and shares outstanding.",
+  "reason": "Question asks for increase in total value of stock options from 2016 to 2017. We have average exercise prices for 2017 and 2016 from source q0, and stock option share counts for 2017 and 2016 from t3c2 and t3c3. Total value = average exercise price * number of options. Need to read q0n2 (2017 price) and q0n3 (2016 price), multiply each by respective share counts, then subtract 2016 total from 2017 total.",
+  "operation": "read",
+  "inputs": ["source:q0n2"],
+  "parameters": {}
+}

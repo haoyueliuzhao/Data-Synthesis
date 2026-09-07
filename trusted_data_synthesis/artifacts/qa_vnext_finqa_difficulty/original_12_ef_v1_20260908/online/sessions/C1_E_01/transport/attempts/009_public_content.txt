@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c1e0cf50b5ebef0bc449966fb9b17d1e442d324736e5ab29a679f454e4a9116e",
+  "observation": "Read 2014 net revenue value 5735 (USD million).",
+  "disposition": "accept"
+}

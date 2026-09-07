@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5e5ae173203634d1ed12281eb80f5d8f9c67cfef7eddc2cbf7ab9720ad2ae5bc",
+  "observation": "The value 53.80 has been read from source:q10n4 and is pending acceptance.",
+  "disposition": "accept"
+}

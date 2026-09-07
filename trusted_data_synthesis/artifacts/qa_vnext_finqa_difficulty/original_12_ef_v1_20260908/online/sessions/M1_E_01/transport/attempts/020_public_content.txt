@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:4be0f36f5adda4f3e4061822401f24d708327f55b91757c2eb0ca1944cef116c",
+  "observation": "Computed average of accepted annual net change claims: (4648 + 3625 + 1620) / 3 = 3297.6666666666666666666666666666666666666666666667.",
+  "disposition": "accept"
+}

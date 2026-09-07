@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:3e979fe5e8be013fad6fdcb3a307d565a8dbab819a15111319c7a702573aee61",
+  "subgoal": "Read the net change for year values for 2011, 2010, and 2009.",
+  "reason": "The question asks for the average net annual change for the years 2011, 2010, and 2009. The table row 'net change for the year' provides these values in columns 2011, 2010, and 2009. We need to read these three numeric values from the numeric_catalog.",
+  "operation": "read",
+  "inputs": [
+    "source:t11c1n0",
+    "source:t11c2n0",
+    "source:t11c3n0"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f8ab62ab438df25203528bfe8beff7423a33c8fab42d79f6e27e99a805f62011",
+  "subgoal": "Compute difference between 2017 and 2016 average exercise prices",
+  "reason": "The question asks for increase in total value of stock options during 2016 and 2017. The average exercise price per share is given for both years. To find the increase in total value, we need the difference in average exercise prices multiplied by number of options. First compute difference between 2017 and 2016 average exercise prices.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:d148c3124061b164a79d3a7e42e421eeee938cbe12c32a879145e4afa4fe7dce",
+    "finance_qa_vnext_claim:c3f4225e14412cec729f079e84ee1df18ec7f54a3fe03c9461cecd8019754fb7"
+  ],
+  "parameters": {}
+}

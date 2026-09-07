@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:bbc2244e6adbdec77893d64215c754996308cecb984c4c3d344bb2c51cc08a6d",
+  "observation": "The average calculation is correct and uses the three accepted annual change claims. The result 3297.666... is the arithmetic mean.",
+  "disposition": "accept"
+}

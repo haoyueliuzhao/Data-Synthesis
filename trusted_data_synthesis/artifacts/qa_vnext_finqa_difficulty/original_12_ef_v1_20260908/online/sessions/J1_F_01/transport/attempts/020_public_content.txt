@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:80816da3ab1a2de00423e3023372b417d549eafe931d44aae6ada76931d0be4e",
+  "observation": "After-tax 2010 cost = 18.1 + (-6.3) = 11.8, derived from accepted claims. This is needed for the percentage change.",
+  "disposition": "accept"
+}

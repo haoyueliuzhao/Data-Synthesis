@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:08449742215e6604bcf92b0c3f3230d9728aa3d01a61e55f82a9a91ffb2e1d90",
+  "subgoal": "Read the 2021 long-term debt maturity amount.",
+  "reason": "The question asks for the sum of the next five years' maturities as of December 31, 2017, which are 2018-2022. We have read 2018, 2019, and 2020 amounts. Need to read 2021 and 2022 amounts to compute the sum.",
+  "operation": "read",
+  "inputs": ["source:t4c1n0"],
+  "parameters": {}
+}

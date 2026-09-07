@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1eab524ae60d75e41268246e4231c81aa395d8a657d64f29dc0c77c2123ecbe4",
+  "observation": "Read 2009 net change for the year: 1620.",
+  "disposition": "accept"
+}

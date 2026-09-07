@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:797fea73a314c19e2263d6db7d7f666e9a7b4655a3478b46e3a30df20c8a961d",
+  "subgoal": "Read the 2020 principal payment for Entergy Louisiana investment recovery funding.",
+  "reason": "The question asks for total expected payments on the bonds for the next 5 years for Entergy Louisiana investment recovery funding. The text lists payments for 2017, 2018, 2019, 2020, and 2021. We have already read 2017, 2018, 2019. Need 2020 and 2021.",
+  "operation": "read",
+  "inputs": [
+    "source:p1n6"
+  ],
+  "parameters": {}
+}

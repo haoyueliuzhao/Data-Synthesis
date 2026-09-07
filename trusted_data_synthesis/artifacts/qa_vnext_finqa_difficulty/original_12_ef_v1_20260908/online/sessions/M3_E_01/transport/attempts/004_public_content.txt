@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:39fdc66c5dc7d505c562674ee75567a819d295d184c8d4e3ebcd5fb29319b357",
+  "observation": "Accepted read of source:t4c2n0 as coal revenue for 2015.",
+  "disposition": "accept"
+}

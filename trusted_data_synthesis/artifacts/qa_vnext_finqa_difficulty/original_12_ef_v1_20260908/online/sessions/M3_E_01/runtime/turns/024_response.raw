@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1cac26392bbcc4a53747800a7da90cedaea4bd5d57d51a9d5b64b0e5b3c57c7b",
+  "observation": "Read value 4127 from source:t4c3n0. It is a valid numeric source entry.",
+  "disposition": "accept"
+}

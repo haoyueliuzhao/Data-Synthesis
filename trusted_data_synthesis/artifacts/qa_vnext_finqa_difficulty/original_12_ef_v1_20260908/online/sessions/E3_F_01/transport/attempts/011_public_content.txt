@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:9310c0cbe24f86fd02074a6cd87a68ae3dc089e8f13ed687976fe2c8344bb1fd",
+  "observation": "The division 997 / 1000 yields 0.997, but the denominator should be 7000 (million) rather than 1000. The pending observation is rejected because it does not correctly scale the total cash and equivalents from billions to millions.",
+  "disposition": "reject"
+}

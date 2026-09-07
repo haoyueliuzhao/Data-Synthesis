@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:da7a90a6015808bdd87336cc9afc9fb10fdb227c3024d4571442af2ff1e7d6f8",
+  "observation": "The numeric catalog token source:t3c3n0 has value 13.",
+  "disposition": "accept"
+}

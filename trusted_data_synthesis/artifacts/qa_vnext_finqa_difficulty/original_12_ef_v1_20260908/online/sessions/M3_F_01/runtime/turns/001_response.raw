@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ebfc760a8b4f0fd00606a5513b0455f1778b09c8b3c1f71b81a59eb34f4ba2e9",
+  "subgoal": "Read coal revenue for 2016 from table row coal, column 2016.",
+  "reason": "Need coal revenue for 2016 to compute total over 2014-2016. Source t4c1n0 is coal row, column 2016.",
+  "operation": "read",
+  "inputs": ["source:t4c1n0"],
+  "parameters": {}
+}

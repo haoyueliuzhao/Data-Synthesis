@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a57316c4bfb43bf2a05408fc07ff8ea2226d5ea0c36822cff62d6fbba63cf75d",
+  "observation": "The division result 0.16416815660386 is the ratio of agricultural products revenue to total operating revenues. To express as percent, multiply by 100.",
+  "disposition": "accept"
+}

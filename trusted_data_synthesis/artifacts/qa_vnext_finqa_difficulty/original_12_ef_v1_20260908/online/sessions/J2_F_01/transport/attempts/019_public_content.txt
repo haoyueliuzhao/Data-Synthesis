@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:d2c50f9931759302ab306bbc6416e750b1d64cc9285a190638f80f51ec0b358d",
+  "observation": "Read of source:t3c3n0 yields value 13. This is the number of stock options in 2016 (millions of shares).",
+  "disposition": "accept"
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:aa54c36d1ac1d425649a4fd2cdd20d27a1429a942b6b52124f3194e5c3099dd2",
+  "subgoal": "Compute the percentage change in share-based compensation cost from 2009 to 2010.",
+  "reason": "The question asks for percentage change, which is (2010 value - 2009 value) / 2009 value * 100. We have the 2010 and 2009 values as accepted claims, and the difference is already accepted as claim with value 3.5. Now divide the difference by the 2009 value.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:bce68f95812efddb3589c464c622f5e19be4687d8b51a226dbb78566fe048aa1",
+    "finance_qa_vnext_claim:69cd68b2d98b70c709b1f347b0822d01b4c5e4af061297efa83832c98a86ec2f"
+  ],
+  "parameters": {}
+}

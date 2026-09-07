@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:196b573c24712a1fbb79189abc5119abef2d7a1ac3f01547e59b43c7a27dec12",
+  "subgoal": "Read the total ending balance from the source table.",
+  "reason": "Need the denominator for the percentage calculation. The table cell t6c1 contains the ending balance as of Nov 28, 2008, with numeric value 139549 (in thousands).",
+  "operation": "read",
+  "inputs": [
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

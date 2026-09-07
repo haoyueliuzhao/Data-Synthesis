@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:da47c896b2a90bddc35002ffd9365a931626189e500694ea344f0d9e90858e36",
+  "observation": "Accept the 2016 cash instruments value (18035) from source:t1c2n0.",
+  "disposition": "accept"
+}

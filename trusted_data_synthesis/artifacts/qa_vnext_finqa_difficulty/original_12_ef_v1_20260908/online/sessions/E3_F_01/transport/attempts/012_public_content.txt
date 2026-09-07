@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2ff102220172d775a730efe1c483cdf814329f5212ecee0705cb4eec4f538b0f",
+  "observation": "Accepted claim for division result: value 0.997, expression source:p2n0 / constant:1000",
+  "disposition": "accept"
+}

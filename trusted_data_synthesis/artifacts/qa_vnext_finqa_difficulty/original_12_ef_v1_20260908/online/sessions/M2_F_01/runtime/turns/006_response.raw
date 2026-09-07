@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ec316d6b5df91effd06b7af8a21c1b0387adbfcf9edcda42a6dbc80a0d4f6602",
+  "subgoal": "Read the 2021 long-term debt maturity amount from the table.",
+  "reason": "The table lists annual long-term debt maturities for the next five years. We have read 2018, 2019, and 2020 amounts. Next is 2021.",
+  "operation": "read",
+  "inputs": ["source:t4c1n0"],
+  "parameters": {}
+}

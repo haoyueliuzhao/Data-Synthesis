@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f05b78eb7ea64849a17ffef2c6a11eb2b77a10a3041504d772d4085d17c8d386",
+  "observation": "The sum of the five annual long-term debt maturities (760000 + 857679 + 898500 + 960764 + 1304431) equals 4781374. The derivation is numerically correct and all source operands are accepted claims.",
+  "disposition": "accept"
+}

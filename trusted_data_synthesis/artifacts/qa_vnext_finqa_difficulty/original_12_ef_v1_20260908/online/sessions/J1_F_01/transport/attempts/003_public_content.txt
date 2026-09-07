@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:5952a7741bba06062b47bc88e2046b7c576306d923c3dc3b74823d9b5fdb489b",
+  "subgoal": "Read the 2009 share-based compensation cost from the table.",
+  "reason": "The question asks for the percentage change in after-tax share-based compensation cost from 2009 to 2010. We need both figures. After-tax cost = share-based compensation cost minus income tax benefit. We have the 2010 cost read; next read 2009 cost and then the tax benefits.",
+  "operation": "read",
+  "inputs": ["source:t1c2n0"],
+  "parameters": {}
+}

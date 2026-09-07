@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a5bbce78fb2737ef503efab8ecbb6f1bd717e889b776e498f40daa6b1047ad3b",
+  "observation": "Value 3625 from source:t11c2n0 is correct. Accepting claim.",
+  "disposition": "accept"
+}

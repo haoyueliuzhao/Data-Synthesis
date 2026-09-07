@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:e4680ac5c41ed1b783b68f44746e9aa984da8a5999d072485aa8ea146781b895",
+  "observation": "Accepted claim: source:t2c1n0 with value -6.3.",
+  "disposition": "accept"
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e4865605f4c08180964d834b5c4d199708193940b23c63b025820891f12b9cb3",
+  "subgoal": "Read the ending balance as of November 28, 2008 from the table.",
+  "reason": "The ending balance is the denominator for the percentage computation. It is in the last row of the table, second column, value $139,549. The numeric catalog entry source:t6c1n0 has token '139549' with value 139549.",
+  "operation": "read",
+  "inputs": [
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

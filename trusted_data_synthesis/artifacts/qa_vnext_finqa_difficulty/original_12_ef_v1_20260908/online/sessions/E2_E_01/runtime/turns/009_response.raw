@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f90dbd340117ed780e44674b5aa0731d9a2dd6c7033239fc07f57cbec40ed7e6",
+  "observation": "The multiplication result is 299999990.4, which is the total value in dollars.",
+  "disposition": "accept"
+}

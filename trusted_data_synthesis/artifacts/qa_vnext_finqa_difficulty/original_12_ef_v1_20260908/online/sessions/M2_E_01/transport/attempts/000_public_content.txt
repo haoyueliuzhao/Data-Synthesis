@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6218bdb74f5c3d2eccb3c98e901e7f8d56e22b58a2ab9d568f533017e48194a6",
+  "subgoal": "Read the long-term debt maturities for 2018-2022 from the source.",
+  "reason": "We need the five annual maturity amounts from the numeric catalog to sum them.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0", "source:t2c1n0", "source:t3c1n0", "source:t4c1n0", "source:t5c1n0"],
+  "parameters": {}
+}

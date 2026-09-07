@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2c1c92d22e475bf30722bcfed09b74faab29fd9d4a9c45329e026ead87322a04",
+  "observation": "Need to accept the 2016 stock options value of 13 before computing the increase.",
+  "disposition": "accept"
+}

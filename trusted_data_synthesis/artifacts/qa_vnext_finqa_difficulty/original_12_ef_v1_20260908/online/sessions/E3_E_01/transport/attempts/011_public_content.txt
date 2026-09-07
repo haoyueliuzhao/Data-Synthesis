@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f2a5c9742b5937553cc33be5e6f8bf4b29042b970f546fcd2eb320b4ce5270fc",
+  "observation": "Read value 7 from source:p1n2. This is cash and equivalents in billions for 2017.",
+  "disposition": "accept"
+}

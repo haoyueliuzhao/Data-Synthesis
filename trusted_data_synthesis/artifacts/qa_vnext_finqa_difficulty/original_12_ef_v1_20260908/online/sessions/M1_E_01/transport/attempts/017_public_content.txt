@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:e42bc79b6a80f464c9edcb842215cb334881befdfec0a048f9bdda7111ab05b6",
+  "observation": "The average of 4648, 3625, and 1620 is 3297.666..., which matches the pending observation value.",
+  "disposition": "accept"
+}

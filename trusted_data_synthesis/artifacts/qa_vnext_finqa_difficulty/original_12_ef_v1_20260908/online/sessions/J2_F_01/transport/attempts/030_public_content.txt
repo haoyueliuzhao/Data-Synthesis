@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fdc432109fc93aa3ec7d7dfaa183310bca5de7def1635b679817c57ee9a3837e",
+  "subgoal": "Calculate the total value of stock options for 2016 and 2017, then find the increase.",
+  "reason": "We need the total value for each year. We have 2016 options count (11) and average price (26.93), and 2017 count (13) and average price (33.32). We need products for each year, then subtract. We already have 2016 product: 350.09. Need 2017 product: multiply 13 by 33.32.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:41cdfbf3a2074e49558f375a1b268c60ababbdff4aae57fc83b882980d727d97",
+    "finance_qa_vnext_claim:d148c3124061b164a79d3a7e42e421eeee938cbe12c32a879145e4afa4fe7dce"
+  ],
+  "parameters": {}
+}

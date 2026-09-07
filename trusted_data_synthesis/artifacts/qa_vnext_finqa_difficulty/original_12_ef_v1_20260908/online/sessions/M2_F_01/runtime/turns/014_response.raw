@@ -1,0 +1,15 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:57fba631cb4e4303202c1aba8227a5ada683108b2cf29caeee0f2a42ba108066",
+  "subgoal": "Sum the five annual long-term debt maturities for 2018-2022 from the table.",
+  "reason": "The question asks for the sum of annual long-term debt maturities for the next five years as of December 31, 2017. The table provides values for 2018 through 2022: 760000, 857679, 898500, 960764, 1304431. These are already accepted as claims. A sum operation over these five claims yields the answer.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:a99eb5d759a9442a523eba666d147b2458c3bc68dcdeefaeeec866e280680a3c",
+    "finance_qa_vnext_claim:65f736556044ecee90545170a67ebe2f5c6e0136089bc258479ca8020f9992fc",
+    "finance_qa_vnext_claim:ed80d46053aa8f4c7d58954f89b1c089534e8926f9aae36aaf65ceaad0346d6f",
+    "finance_qa_vnext_claim:0269a7f2fdab6f5673e3a2aac1dcf0154e38fe822eafc64ec667e5d6046d06de",
+    "finance_qa_vnext_claim:af99cb34f0f6477c13935a53615894f329d6439d2f550f9d5476631135659880"
+  ],
+  "parameters": {}
+}

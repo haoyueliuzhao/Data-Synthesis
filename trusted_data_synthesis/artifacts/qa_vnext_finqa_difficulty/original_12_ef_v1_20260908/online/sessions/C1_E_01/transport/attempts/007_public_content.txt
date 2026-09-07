@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:91dcd720d94e8d20f25c906c00aade7a0e6f5a662b2d0412e98d2c8ed9c37905",
+  "observation": "Accepting the read of 2014 net revenue source:t1c1n0 with value 5735.",
+  "disposition": "accept"
+}

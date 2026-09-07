@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:88239a0ec3c1375b6e15089046f504cdaf499c51348243ece39aa194e8fccbb2",
+  "observation": "Read source:p1n2 value 22.3. This is the 2018 expected principal payment amount.",
+  "disposition": "accept"
+}

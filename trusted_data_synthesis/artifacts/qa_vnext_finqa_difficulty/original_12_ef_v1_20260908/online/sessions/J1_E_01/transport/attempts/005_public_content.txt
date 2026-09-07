@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:265db950f8144e2621ff7f1be1a66426e88f04125d929949a5ae46bc7dbf6ba4",
+  "observation": "The subtraction result is 3.5, which matches the expected difference between 2010 (18.1) and 2009 (14.6).",
+  "disposition": "accept"
+}

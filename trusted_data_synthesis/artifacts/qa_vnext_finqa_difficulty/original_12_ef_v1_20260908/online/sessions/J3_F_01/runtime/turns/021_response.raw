@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:1eff50490b189c929ce58ae2e053cc872d5699ce432a8ad94e3a63ff6043d08e",
+  "subgoal": "Read the remaining principal payment for 2021 for Entergy Louisiana investment recovery funding.",
+  "reason": "Need the fifth year payment ($11 million for 2021) to sum all five annual expected principal payments.",
+  "operation": "read",
+  "inputs": ["source:p1n8"],
+  "parameters": {}
+}

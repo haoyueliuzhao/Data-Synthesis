@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1659bd94d4c9f3dea2e8358955ef99407444cc25a92d1bd0ee40b850578771cb",
+  "observation": "The read of source:t9c1n0 returned value 21813, matching the source. Accepted as a numeric derivation.",
+  "disposition": "accept"
+}

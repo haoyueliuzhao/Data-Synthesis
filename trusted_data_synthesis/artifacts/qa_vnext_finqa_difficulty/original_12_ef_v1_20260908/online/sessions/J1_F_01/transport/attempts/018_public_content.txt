@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:0f097848c9f50824744a60cdb315e6916bf9d0af20aa5464215431e0e90237ec",
+  "observation": "Computed after-tax share-based compensation cost for 2010: 18.1 + (-6.3) = 11.8.",
+  "disposition": "accept"
+}

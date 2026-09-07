@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:01e04e4ac2aca8301bce377e56dd45b9d2a284befd07c5008016c8337eae4f2e",
+  "observation": "Compute 18.1 - 14.6 = 3.5",
+  "disposition": "accept"
+}

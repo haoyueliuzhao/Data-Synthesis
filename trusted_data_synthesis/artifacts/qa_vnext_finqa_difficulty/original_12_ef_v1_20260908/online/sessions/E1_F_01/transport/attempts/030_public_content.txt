@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:89f14801af78144ef6b2ac75ed6e5bb62d3e21387d43532f1dcef2d34cd33762",
+  "subgoal": "Compute percent ratio of combined accrued interest and penalties to total ending balance.",
+  "reason": "We have accepted claims for the numerator (source:q2n2 = 15.3) and denominator (source:t6c1n0 = 139549). Need to divide numerator by denominator and multiply by 100 to get percentage. The existing claims already contain this computation but need to ensure the final answer claim is certified and cited correctly.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:70fe6339a4523dd9f690e6db9f4a8dd105c3168268dd8e223dd8a0243a51a044",
+    "finance_qa_vnext_claim:e714e29307520774438f5d1138a59a68d9b3c0f9e695914915c7041bc2dd3a84"
+  ],
+  "parameters": {}
+}

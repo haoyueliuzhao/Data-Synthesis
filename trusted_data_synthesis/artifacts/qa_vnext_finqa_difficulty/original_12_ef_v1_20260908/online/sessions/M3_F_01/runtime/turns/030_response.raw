@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2815618b531505f0a58cc4b39b012984eb74759ed5add071e10d1b52763c8f02",
+  "observation": "The multiplication of the accepted ratio by 100 is numerically correct and the resulting percentage is 12.2360964846. However, this computation only covers 2016, while the question asks for the percentage of total operating revenues from coal over the period 2014-2016. The accepted coal revenue (2440) and total operating revenue (19941) are for 2016 only. To answer the question, we need to sum coal revenues for 2014, 2015, and 2016, and sum total operating revenues for those same years, then divide and multiply by 100.",
+  "disposition": "reject"
+}

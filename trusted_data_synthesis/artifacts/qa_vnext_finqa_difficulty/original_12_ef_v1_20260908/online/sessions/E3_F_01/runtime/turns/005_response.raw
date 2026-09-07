@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1183ad74355c6ef02b8af029a113a9eb04dfcd34d017cf1b111c69c9b0f6015d",
+  "observation": "The pending observation has been rejected because the division used 997 / 1000 instead of 997 / 7000. The correct denominator should be 7000 million (total cash and equivalents).",
+  "disposition": "reject"
+}

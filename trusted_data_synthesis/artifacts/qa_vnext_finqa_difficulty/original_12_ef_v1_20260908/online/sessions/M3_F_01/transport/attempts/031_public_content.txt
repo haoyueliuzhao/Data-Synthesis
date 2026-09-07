@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:699ca15f0bdc6346612ec5458bf5a480c3fb27b5da89c4404ebebd847f6124e1",
+  "observation": "The multiplication result 244000/19941 is accepted as claim finance_qa_vnext_claim:<new_id>.",
+  "disposition": "accept"
+}

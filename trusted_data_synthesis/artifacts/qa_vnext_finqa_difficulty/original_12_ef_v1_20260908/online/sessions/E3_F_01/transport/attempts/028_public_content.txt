@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6e8cda01a474d3aaf7aca759a99937bd96e966fe2b1d7112beb81bf5749a5a28",
+  "subgoal": "Divide cash held on behalf of GE by total cash and equivalents",
+  "reason": "Cash held on behalf of GE is 997 million (claim fbcc...). Total cash and equivalents is 7.0 billion (claim 458d...), which equals 7000 million (claim 76ee...). Divide 997 by 7000 to get the ratio.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:fbcc7d979afdccc97e25dc20aca7a3e74e04a3180f6a3fe25030755e5b5d2f33",
+    "finance_qa_vnext_claim:76ee903919de4a65f71e6ccbe235d7cc5767d942587a3bb3031e93c404c99d53"
+  ],
+  "parameters": {}
+}

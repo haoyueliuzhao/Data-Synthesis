@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:e134cf55ada7096b9ca09d46148011bdf2fe43117c8d008d16d235095d4469dd",
+  "observation": "The pending observation has value 0.997. We need to convert this to a percentage by multiplying by 100. However, the operation inputs currently divide 997 by 1000, which is incorrect because total cash and equivalents is 7.0 billion = 7000 million. We should divide 997 by 7000. The claim for 7.0 billion is expressed as 7, but we need to scale it to millions. We can multiply the 7 claim by 1000 to get 7000, then divide. Alternatively, we can divide 997 by 7 and then divide by 1000. Let's reject this observation and perform the correct operations.",
+  "disposition": "reject"
+}

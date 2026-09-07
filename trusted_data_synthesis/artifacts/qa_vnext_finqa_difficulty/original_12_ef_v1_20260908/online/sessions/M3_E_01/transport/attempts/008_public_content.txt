@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:061e0ee8713bd8a0e490f1e24c5c0bb0e9300e9f3818630ae4437d655b6528cf",
+  "observation": "Accepted reading of coal revenue for 2015: value 3237.",
+  "disposition": "accept"
+}

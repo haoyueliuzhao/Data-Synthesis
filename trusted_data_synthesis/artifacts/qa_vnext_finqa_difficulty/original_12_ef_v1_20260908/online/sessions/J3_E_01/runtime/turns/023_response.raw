@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8206b0422c4bdd3c0846bdc3998139ab29624c9178acf6b396c3d0c7706fbdd5",
+  "observation": "Accept the read of source:p1n2 (value 22.3) as a valid numeric derivation.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b308fe1a2b628459439ebf72402bb8a4a57dc7a987a24c84505d89fe7459d30f",
+  "observation": "Read coal 2014 value 4127 from source:t4c3n0.",
+  "disposition": "accept"
+}

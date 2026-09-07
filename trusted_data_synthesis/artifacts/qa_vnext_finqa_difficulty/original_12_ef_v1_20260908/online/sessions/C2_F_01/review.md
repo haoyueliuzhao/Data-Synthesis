@@ -1,0 +1,20 @@
+# C2_F_01
+
+状态：complete；完整有效：True。
+
+逐轮内容来自原始模型提交，未重写；数值 Claim 不自动认证其财务角色。
+
+| 提交 | 类型 | 操作／拒绝 |
+| --- | --- | --- |
+| 1 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:cc0d047ad7f1a7be328735d0b4123cc2269b55a327ac949116712271df542e71", "subgoal": "Read the agricultural products revenue for 2015", "reason": "Need to compute percentage of total operating revenues from agricultural products in 2015. First read the agricultural products revenue for 2015 from the table.", "operation": "read", "inputs": ["source:t1c1n0"], "parameters": {}} |
+| 2 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:41485e3dc6923185296988bc976cd2b0d434c9c18ba65e704c342688eebe1a2a", "observation": "finance_qa_vnext_observation:990607c15c19daba1ae4315b6e12970565afeace84730ae7290da1ee0203ff29", "disposition": "accept"} |
+| 3 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:5b2b6312eb05c82a71a864efe707dec0293676193347cb649cd5d07d5d52a4fe", "subgoal": "Read total operating revenues for 2015", "reason": "Need denominator for percentage calculation. From table, total operating revenues 2015 is in source:t9c1n0.", "operation": "read", "inputs": ["source:t9c1n0"], "parameters": {}} |
+| 4 | update | lifecycle.observation_binding |
+| 5 | update | lifecycle.observation_binding |
+| 6 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:a40e6cc3de2bc65024cc6f42d2faf54982c5e6f74e108d09ad6538e4bb2d6863", "observation": "finance_qa_vnext_observation:c1b923ed613c8943c9e28f07766e275a260002565d5b9ff3e3acbaa6e3b533ec", "disposition": "accept"} |
+| 7 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:534aa6c53ad4c92ff955c7855246fd3042773aee6eafcccf2d09feca7a70d0f2", "subgoal": "Compute percentage: agricultural products revenue divided by total operating revenues, multiplied by 100", "reason": "Need to divide the agricultural products revenue (claim f0a18cf4) by total operating revenues (claim 5dc94ab9) to get the ratio, then multiply by 100 for percent.", "operation": "divide", "inputs": ["finance_qa_vnext_claim:f0a18cf4c2bd109d2fc112d58b6fa2364e72ad3e5db7bfbb23674598ae7e6fb8", "finance_qa_vnext_claim:5dc94ab956989e2ee16c40df6230764adf1d2ed726be8c2b8503c49e56061a67"], "parameters": {}} |
+| 8 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:05b0f95d34b20986443358696b79a26b2deca31e10c626a67e57c6b8e38c2b33", "observation": "finance_qa_vnext_observation:184bdeb5b444d61ca76c0eb5422a82081d9846d67fbb52d69430066d4c79bdba", "disposition": "accept"} |
+| 9 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:0b1205502a73eccbb3203915ef9b76f6abc6f1f13803c1a74a18c020ce3b7b41", "subgoal": "Convert the ratio of agricultural products revenue to total operating revenues into a percentage.", "reason": "The question asks for the percent of total operating revenues associated with agriculture products in 2015. We have the ratio 3581/21813 as an accepted claim. To express as a percentage, multiply by 100.", "operation": "multiply", "inputs": ["finance_qa_vnext_claim:73eea25515701367f2ea049331b8e4c58040d051bd19e70bf1ed50e5e5a18a40", "constant:100"], "parameters": {}} |
+| 10 | update | lifecycle.observation_binding |
+| 11 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:c4a76e68c602a1115755fc2f642dbe8f8ff1d6c0f1aa1414aaa2781e6696ffe5", "observation": "finance_qa_vnext_observation:73be71be640067a9b4f775434cf858b948b398adba0daace654fae5db4985ecb", "disposition": "accept"} |
+| 12 | final | {"kind": "final", "state_id": "finance_qa_vnext_state:e0d0d4660e147f407eb14e3a60f394bb7bf14e92846d1780b99909f63aab328d", "answer_claim": "finance_qa_vnext_claim:c2f3e6179c5636356a81132bf711383c7ffc41d2ca4947a68845c5161b93ec04", "result": {"value": "16.416815660386008343648283133910970522165681015908", "unit": "percent"}, "citations": ["source:t1c1n0", "source:t9c1n0"]} |

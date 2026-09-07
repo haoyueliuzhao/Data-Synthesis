@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:65cbd0683b11d074dd876eb6cbbe970eab3d8917d2d04c381403edb3df1d1ab9",
+  "observation": "The pending result 12.236096484629657489594303194423549470939270849005 is the coal percentage for 2016 only, but the question asks for 2014-2016. Need aggregate.",
+  "disposition": "reject"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:61c76ecabce1603fa1deb36d2e7a035a5c635cc62e6e7e18e1d9124def58a4e0",
+  "observation": "Read source:p1n2, value 22.3, exact 223/10. This is the 2018 principal payment amount.",
+  "disposition": "accept"
+}

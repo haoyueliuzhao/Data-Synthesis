@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:6b19556d808e94969d36958a774d79a10713703cf19befeb7ea089ae1a9e2b6b",
+  "observation": "The calculation is incorrect because 7.0 billion is not 1000 million; it is 7000 million. The denominator used was 1000 instead of 7000.",
+  "disposition": "reject"
+}

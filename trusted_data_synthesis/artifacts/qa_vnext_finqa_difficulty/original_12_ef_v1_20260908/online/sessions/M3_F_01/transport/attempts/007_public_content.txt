@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:eb07071e4ae0a020de054079f2e65cce3c798b02b31cb19070fc5e5fe826354a",
+  "subgoal": "Calculate coal revenue as a percentage of total operating revenues for 2016.",
+  "reason": "Divide coal revenue (2440) by total operating revenues (19941) and multiply by 100 to get a percentage. Use the two accepted claims.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:6f47e6db5aa1527f1e2bfdcf3eb58a1f63d75e7082a29fc7ba82063b70e91acd",
+    "finance_qa_vnext_claim:814cc368d89d695ff2d6931fae7320a3ca20cfeea9bd381ce8270ff0dab75ebe"
+  ],
+  "parameters": {}
+}

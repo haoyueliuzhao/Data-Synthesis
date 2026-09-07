@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:4de51726170a1841129ebeb38db398a351b5a1891adc0cc2305ac4cdaf6113ad",
+  "observation": "Pending observation accepted: read source:t1c2n0 produced value 18035.",
+  "disposition": "accept"
+}

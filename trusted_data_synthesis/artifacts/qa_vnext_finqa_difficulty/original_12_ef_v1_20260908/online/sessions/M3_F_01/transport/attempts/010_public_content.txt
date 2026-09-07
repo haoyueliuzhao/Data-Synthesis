@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5f5096d2388151b1cf77337db2b4478a77badceca76651cd69c09b5496d61aa4",
+  "observation": "Accept pending observation for divide operation.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:692bb0bb68fd38571bf30f62f86d0e66ce04ca2cda0c7ae6fd7b0fc8ac35f692",
+  "observation": "The average of 4648, 3625, and 1620 is 3297.6666666666666666666666666666666666666666666667, which is the correct arithmetic mean. The source values correspond to the net annual change in discounted future net cash flows for 2011, 2010, and 2009, matching the question.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a8a3e5dd0dd20be3950e9def0f474f06d4a49847b1630b0d479ffcdd824aaa01",
+  "observation": "The difference between 2017 and 2016 average exercise prices is 6.39 USD per share. This is a valid arithmetic derivation but does not yet represent a total value in millions of dollars; further multiplication by the number of options is needed.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:6376f883a8a040fab71e332ff3ff2548b9ca05dce6a6b69c57b07ddf023d3168",
+  "observation": "Read source:t11c3n0 with value 1620. This is the 2009 net change for the year, and we need all three years for the average.",
+  "disposition": "accept"
+}

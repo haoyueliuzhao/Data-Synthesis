@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:260c2a54c85323ed8b5d1cf67ffefa5d1383cf6d92c2fae87a81c4581c057d98",
+  "observation": "Pending observation for multiply of $7.0 billion by 1000 to get 7000 million. The multiplication is correct and the source is valid. The result is in millions, which is the same unit as the cash held on behalf of GE ($997 million).",
+  "disposition": "accept"
+}

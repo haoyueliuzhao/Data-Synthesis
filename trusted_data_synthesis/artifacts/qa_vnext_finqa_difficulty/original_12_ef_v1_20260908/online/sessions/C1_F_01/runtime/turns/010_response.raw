@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b3a7a48d86c5c155e0efb2eed97c6da331c01f8da06ca7d3907993d95b3b9e6f",
+  "subgoal": "Compute the net change in net revenue from 2014 to 2015",
+  "reason": "Net change = 2015 net revenue - 2014 net revenue. We have accepted claims for 2014 (5735) and 2015 (5829).",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:1c230c3146e1bc53e9a3555f7d6e4070fe90cbb3bffacc21d12c054f707e2e89",
+    "finance_qa_vnext_claim:1e3c9d1019619679dc2485a632f9f2ed701fd7bfad27daaf62b5cad1498d5dae"
+  ],
+  "parameters": {}
+}

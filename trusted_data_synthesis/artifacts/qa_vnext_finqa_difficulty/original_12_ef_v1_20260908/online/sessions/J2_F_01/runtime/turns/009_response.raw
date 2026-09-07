@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8af9101db363ddd72f9367cb70b50b943e4b8712537ff3f58c655f0f72fbe6cb",
+  "observation": "Read source:q0n2 as 33.32 (exact value 833/25).",
+  "disposition": "accept"
+}

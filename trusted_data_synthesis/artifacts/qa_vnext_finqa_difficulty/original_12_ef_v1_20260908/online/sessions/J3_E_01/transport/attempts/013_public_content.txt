@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:9b68493c946efa2191a10720d0e2754e892e48d028faf9e721e80eef3323c6cb",
+  "observation": "Read claim for source:p1n2 with value 22.3. This is the 2018 principal payment amount.",
+  "disposition": "accept"
+}

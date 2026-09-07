@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5f73c7048fcb2c801bda11550bc7698bc06fbb9ae171b76ec58cb3c8ed700033",
+  "observation": "Read value 7 from source:p1n2, which is 7.0 billion cash and equivalents for 2017.",
+  "disposition": "accept"
+}

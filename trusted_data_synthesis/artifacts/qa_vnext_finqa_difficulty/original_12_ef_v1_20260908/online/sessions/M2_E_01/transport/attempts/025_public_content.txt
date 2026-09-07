@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:4ccff763eea03827d9555cdacd94b2f17999f6b12596c6a3c95b0515c4e32c1b",
+  "observation": "Accepting the read of source:t4c1n0 (960764) as a valid numeric derivation for the 2021 maturity.",
+  "disposition": "accept"
+}

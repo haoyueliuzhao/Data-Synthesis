@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:4e181b803376ce4ee689da9f393a34350dbfc5ac7f12e1a9db546a038e4a6b4d",
+  "observation": "Multiplying the ratio by 100 gives the percentage for 2016 only. The question asks for 2014-2016, so we need to compute the total coal revenue over the three years divided by total operating revenues over the three years, then multiply by 100.",
+  "disposition": "reject"
+}

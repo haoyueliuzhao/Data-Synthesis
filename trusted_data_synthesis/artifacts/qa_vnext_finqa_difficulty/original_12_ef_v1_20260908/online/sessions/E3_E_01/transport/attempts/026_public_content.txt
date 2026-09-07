@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:7c10768d50938a999dd884ace6b77a593f65b8f4023e4566764fb4a8abecb084",
+  "observation": "Read of source:p1n2 yields value 7 (billion). This is the cash and equivalents for 2017, but note it is in billions while the numerator is in millions. We need to convert to consistent units before division.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:16ce3b665f784df5c1d3bf3c041a4acfa0e7e1084aedf2a13d2831f0b64c0e9d",
+  "observation": "Accept the pending multiplication result: 5,576,208 shares * $53.80 = $299,999,990.4, which is the total value of shares purchasable under the warrant.",
+  "disposition": "accept"
+}

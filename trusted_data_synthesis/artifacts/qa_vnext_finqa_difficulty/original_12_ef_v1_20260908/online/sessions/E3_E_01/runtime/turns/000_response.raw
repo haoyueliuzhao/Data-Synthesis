@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:51e98beec77d63617fafdda4674369be486a5f090114916373f5274e15064039",
+  "subgoal": "Read the cash held on behalf of GE amount.",
+  "reason": "The source numeric catalog contains the cash held on behalf of GE as source:p2n0 with value 997 (million). Read this value to use in the percentage calculation.",
+  "operation": "read",
+  "inputs": ["source:p2n0"],
+  "parameters": {}
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:4ac518452e679a106d9014c6c380e0dc799e2eeef7c21705ee40acc8d06de81e",
+  "answer_claim": "finance_qa_vnext_claim:bb8b3b0aaf6ff7e274b9601d4242f13fea6247832306497665b1ed50031c774a",
+  "result": {
+    "value": "15395",
+    "unit": "USD_million"
+  },
+  "citations": [
+    "source:t1c1n0",
+    "source:t1c2n0"
+  ]
+}

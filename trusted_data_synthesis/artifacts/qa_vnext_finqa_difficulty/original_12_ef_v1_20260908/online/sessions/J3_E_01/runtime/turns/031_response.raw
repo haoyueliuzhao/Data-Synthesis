@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b162fdf8ffbfb57bb117f8a768577facd3072dff7918b5a08279f83d7c415c3f",
+  "observation": "Read source:p1n2: value 22.3 (USD million) for 2018 principal payment.",
+  "disposition": "accept"
+}

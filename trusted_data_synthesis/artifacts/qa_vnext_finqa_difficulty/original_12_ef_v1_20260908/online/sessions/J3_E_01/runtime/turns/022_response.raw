@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:997059c57fdf21dfc7438fe744c71756926e4f64fb6b968341b89b6f5b716fc7",
+  "observation": "Accepted read of 2018 payment amount 22.3 from source:p1n2.",
+  "disposition": "accept"
+}

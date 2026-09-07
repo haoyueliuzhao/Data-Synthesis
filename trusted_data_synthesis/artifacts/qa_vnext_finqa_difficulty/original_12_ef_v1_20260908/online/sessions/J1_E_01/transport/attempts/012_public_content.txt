@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:97b304ecd51771519dc135436e80039f0d143964da4ed61fbe192050475d20df",
+  "observation": "The pending observation computes percentage change correctly: ratio multiplied by 100 yields 23.9726...",
+  "disposition": "accept"
+}

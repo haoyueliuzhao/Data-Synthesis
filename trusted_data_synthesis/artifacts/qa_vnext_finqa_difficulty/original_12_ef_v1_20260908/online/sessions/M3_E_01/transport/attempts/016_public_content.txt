@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:f27231265e68b320feeeaf0b2cce81556d1ed6167f1d4a1e4232e6baa2455438",
+  "observation": "Coal revenue for 2015 is 3237, verified from source t4c2.",
+  "disposition": "accept"
+}

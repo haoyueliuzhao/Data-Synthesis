@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:81ef90bf6f66bf5663446b3fb8692dead6df05375d050adb248490e0e9080100",
+  "subgoal": "Read the annual long-term debt maturities for 2018 through 2022 from the table.",
+  "reason": "The question asks for the sum of annual long-term debt maturities for the next five years as of Dec 31, 2017. The table provides these values for 2018-2022.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

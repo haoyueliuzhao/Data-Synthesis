@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:8a6e11a14585b053dcedb18ff812c88d8d57fc3f687155634f6b08dd1fec43cf",
+  "observation": "The division of 997 by 1000 gives 0.997, which is not the correct ratio because the total cash and equivalents is $7.0 billion, not 7.0. The claim value 7 is in billions and must be converted to millions (7000) before division.",
+  "disposition": "reject"
+}

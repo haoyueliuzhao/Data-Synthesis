@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ca9fa6355e14ef077f400096a07e62ba66a989a5d1b89c2cee2f339697f3148e",
+  "subgoal": "Compute the ratio of agricultural products revenue to total operating revenues and multiply by 100 to get percent.",
+  "reason": "We have accepted claims for agricultural products revenue (3581) and total operating revenues (21813). Need to divide the former by the latter and then multiply by 100 to obtain percentage. The answer unit is percent, so the final value must be multiplied by 100.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:b721476ecc32f81bdcbbef8786b9b8b2c1a744fe69f82e25e5c062eaed9e1c90",
+    "finance_qa_vnext_claim:00a1e8da0ae83dce30eb695ccbcfc0ec41b01e9400d43d4c8bef2eee83a8aac1"
+  ],
+  "parameters": {}
+}

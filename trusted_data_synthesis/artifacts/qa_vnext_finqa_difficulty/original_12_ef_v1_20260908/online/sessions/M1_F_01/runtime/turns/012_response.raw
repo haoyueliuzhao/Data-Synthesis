@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:37f33ec669f88e0ad5dc2ba08d1123c55c4f44f04bb0011f71971e5d78b23e4f",
+  "subgoal": "Compute average of net annual changes for 2011, 2010, 2009",
+  "reason": "We have accepted claims for net change for each year: 4648, 3625, 1620. Need to compute their average.",
+  "operation": "average",
+  "inputs": [
+    "finance_qa_vnext_claim:886686f882b83d88756ba7bf555aec20d24cd46c6e4291ee0899bb9545f49899",
+    "finance_qa_vnext_claim:72ec1f02fd8d538362db22925fa991a3fde09392d0a15690f8e3d54fed680e2a",
+    "finance_qa_vnext_claim:e9854109983a518755032e61119dce8b71ad221b61d5abe894e1a03c9a6461dc"
+  ],
+  "parameters": {}
+}

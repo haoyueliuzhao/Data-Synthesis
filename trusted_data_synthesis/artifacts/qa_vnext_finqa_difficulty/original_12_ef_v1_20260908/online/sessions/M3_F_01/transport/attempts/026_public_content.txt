@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:12687a226a63e3a4c0ec005be52688a3c5381da7cc5ebd9c30f89bd39e0a7de8",
+  "observation": "Pending observation accepted. Claim value 12.236096484629657489594303194423549470939270849005 corresponds to coal percentage for 2016 only.",
+  "disposition": "accept"
+}

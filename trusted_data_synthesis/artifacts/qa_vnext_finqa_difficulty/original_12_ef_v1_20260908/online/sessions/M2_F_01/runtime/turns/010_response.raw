@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:314facaa741d01c5b7e2b83ce9a037ff090b1485b2dc181f8140afc5c0a81ce4",
+  "observation": "Read source:t5c1n0, exact value 1304431. This is the 2022 annual long-term debt maturity amount from the table.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:9ddeb8977c3b06808111b6f1b965be69946786729b1348f968cb69d30c9e2967",
+  "observation": "The value 22.3 is a valid read from source:p1n2 and corresponds to the 2018 principal payment amount.",
+  "disposition": "accept"
+}

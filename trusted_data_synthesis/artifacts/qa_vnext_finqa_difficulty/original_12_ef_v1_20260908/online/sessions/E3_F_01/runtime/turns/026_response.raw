@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5ee3195a8725e6db456987325112b9b1cfdba88a9bf3887e3592ac4583b2615b",
+  "observation": "Accept the multiplication: 7.0 * 1000 = 7000, now both cash values are in millions.",
+  "disposition": "accept"
+}

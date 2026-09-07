@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0ce908bf5186594cc931d0c74360a202fd69eb18812dadef427365f15ce2fc75",
+  "subgoal": "Compute the percentage of accrued interest and penalties relative to the ending balance.",
+  "reason": "We have accepted claims for the accrued amount (15.3) and ending balance (139549). The division claim gives the ratio, and the multiply by 100 gives the percentage. We need to ensure the answer claim is certified as the financial target. The current percentage claim (e76e...) is accepted but not certified. We need to produce a final with that claim and cite its lineage.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:f1f797c16b3d1077df619bd35fc4998041b8fc9133464552b1a679023eb57d2b",
+    "constant:100"
+  ],
+  "parameters": {}
+}

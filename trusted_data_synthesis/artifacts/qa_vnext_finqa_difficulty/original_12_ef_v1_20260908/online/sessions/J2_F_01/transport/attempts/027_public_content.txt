@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b686005a157c97f62c3c03913f61368c933edb1fe6291e48c29c625436923896",
+  "observation": "Accepted claim 350.09 from multiplying 13 by 26.93.",
+  "disposition": "accept"
+}

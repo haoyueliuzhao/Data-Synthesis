@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:dbc530fbde2f908f8327864e84617999d1e70528752519d506fbf786d46c0db3",
+  "observation": "Accept the pending observation to use the ratio 2440/19941 as a claim for further computation.",
+  "disposition": "accept"
+}

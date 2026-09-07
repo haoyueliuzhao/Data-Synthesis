@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b6547f43a6672b73ee51806b47b6295178e2480bd3982e7f6a382273f589ba9d",
+  "observation": "The 2016 stock options value is 13 million.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:dee15c0f8211e6ba954fbdeebe5c697ff4038fd7656ab109c20e896a07e52ee0",
+  "observation": "The product of 5,576,208 shares and $53.80 per share is $299,999,990.40.",
+  "disposition": "accept"
+}

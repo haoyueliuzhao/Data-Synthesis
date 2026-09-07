@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:ae6dcd78c524e17a94d2369a694878bc7ffd498b264ea6a58fce4b2f367f00bc",
+  "observation": "Read total operating revenues for 2016: 19941 from source:t9c1n0",
+  "disposition": "accept"
+}

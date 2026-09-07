@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0b1205502a73eccbb3203915ef9b76f6abc6f1f13803c1a74a18c020ce3b7b41",
+  "subgoal": "Convert the ratio of agricultural products revenue to total operating revenues into a percentage.",
+  "reason": "The question asks for the percent of total operating revenues associated with agriculture products in 2015. We have the ratio 3581/21813 as an accepted claim. To express as a percentage, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:73eea25515701367f2ea049331b8e4c58040d051bd19e70bf1ed50e5e5a18a40",
+    "constant:100"
+  ],
+  "parameters": {}
+}

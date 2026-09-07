@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2c46d3a060bfb6f9159f6aa01d535666cf79f9ab4711bde3ed1b18648cb5a7e1",
+  "observation": "The read of source:t3c3n0 produced value 13, which is numerically correct and source-lexically valid.",
+  "disposition": "accept"
+}

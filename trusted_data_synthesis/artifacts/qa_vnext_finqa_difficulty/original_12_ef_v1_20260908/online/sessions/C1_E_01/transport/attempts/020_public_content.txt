@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:7c106d978c175014383b1c51b019f879fe2452d652ed6dccbf497e47f8da7dec",
+  "observation": "Accept read of source:t1c1n0 value 5735 as 2014 net revenue.",
+  "disposition": "accept"
+}

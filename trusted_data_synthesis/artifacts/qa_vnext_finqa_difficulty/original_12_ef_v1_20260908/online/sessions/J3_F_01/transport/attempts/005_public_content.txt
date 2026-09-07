@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2708d947feb690a4c825fd73c8dfa1d616e2e816623b09d767843c0427a84304",
+  "observation": "The pending observation has been reviewed.",
+  "disposition": "reject"
+}

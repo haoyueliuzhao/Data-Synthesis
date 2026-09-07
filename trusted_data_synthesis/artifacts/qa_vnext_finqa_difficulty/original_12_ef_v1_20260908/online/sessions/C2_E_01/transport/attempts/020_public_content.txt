@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:82098169f0f31b8bbbedf368c9d3ffb1f36fbf9233b8ee2318ec7a617eb62aa5",
+  "observation": "The division result is 0.16416815660386008343648283133910970522165681015908. This is the ratio, not yet the percentage.",
+  "disposition": "accept"
+}

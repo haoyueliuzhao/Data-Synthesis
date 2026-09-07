@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:9ef6fe5a2cbdbd82bc3473bcc41ccf6b3f379a7f9d7a015bffc48d2a49a760f4",
+  "observation": "The pending observation is verified. Accepting claim.",
+  "disposition": "accept"
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4fb3f0e92e9d0a1c70cdad8cbb294889f1fa5196517dad489d837695895ee507",
+  "subgoal": "Compute total value of shares purchasable under the warrant",
+  "reason": "The warrant allows purchase of 5,576,208 shares at $53.80 per share. Total value is shares * price. Multiply the two accepted claims.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:ef7580031a529cc3e4521914e82e5a1715e95894d985eb17f019daf75d0bbca1",
+    "finance_qa_vnext_claim:547899972b7399eb4bd734bb968b8e92e2b5fe9b25a270a656a3329b5c6e3484"
+  ],
+  "parameters": {}
+}

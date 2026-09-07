@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:7238a168da96f7c6f677f934f0b372ac208d0e941630f7acfd0a181f0d640ad6",
+  "subgoal": "Read cash held on behalf of GE in 2017",
+  "reason": "The question asks for cash held on behalf of GE as a percentage of cash and equivalents in 2017. The pre-text paragraph p2 states 'Cash and equivalents includes $ 997 million of cash held on behalf of ge at december 31 , 2017.' We need this value for the numerator.",
+  "operation": "read",
+  "inputs": ["source:p2n0"],
+  "parameters": {}
+}

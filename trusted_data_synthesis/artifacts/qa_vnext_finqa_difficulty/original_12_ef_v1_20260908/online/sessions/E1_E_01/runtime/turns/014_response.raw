@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:17819938836ac520e00237c1ab65ccbf71c09bc242deb19cc084dada2db01709",
+  "observation": "The division result 0.0001096389 is numerically correct but not yet a percentage. Need to multiply by 100.",
+  "disposition": "accept"
+}

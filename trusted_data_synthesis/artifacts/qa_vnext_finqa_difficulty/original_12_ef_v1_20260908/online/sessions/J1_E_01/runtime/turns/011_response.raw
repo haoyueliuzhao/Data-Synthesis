@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:473fe245e251098f5a939b7673fc3ee8ae3128ab26731d58f30ab0a8c3385526",
+  "subgoal": "Convert the decimal percentage change to a percentage by multiplying by 100.",
+  "reason": "The question asks for percentage change. The computed ratio 0.239726... must be multiplied by 100 to express as percent.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:8d3f3615532beb7b4ad69ac9ac29ecf98f04b96bf7c42a0c6776220c7b2c996f",
+    "constant:100"
+  ],
+  "parameters": {}
+}

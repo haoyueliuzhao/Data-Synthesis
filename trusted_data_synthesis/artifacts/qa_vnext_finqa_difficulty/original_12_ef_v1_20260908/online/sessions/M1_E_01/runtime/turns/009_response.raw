@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:be8d2db9d875d4f83463b5d9576cc524f3b7802b2a7644a7e7cfa8ebdd090328",
+  "subgoal": "Read the 2009 net change value from the source.",
+  "reason": "Need the third annual net change value (2009) to compute the average of the three years.",
+  "operation": "read",
+  "inputs": [
+    "source:t11c3n0"
+  ],
+  "parameters": {}
+}

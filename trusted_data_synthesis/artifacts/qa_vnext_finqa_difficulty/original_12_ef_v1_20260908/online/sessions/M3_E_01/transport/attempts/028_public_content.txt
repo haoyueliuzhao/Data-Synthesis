@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:e5aa16a29f9e1809bcfe16d622c119a2aaddf3c02300be9a33e15b6b474ed581",
+  "observation": "Accepting the read of source:t4c3n0, value 4127 for coal revenue in 2014.",
+  "disposition": "accept"
+}

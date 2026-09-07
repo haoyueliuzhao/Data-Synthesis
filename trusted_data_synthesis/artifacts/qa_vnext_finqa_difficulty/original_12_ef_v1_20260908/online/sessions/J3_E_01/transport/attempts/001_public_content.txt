@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:c157d2f5360ac85fa3b5d11fdec35ef7dd38e2ffde2056bd0a68dcc1216ba4f8",
+  "observation": "Accepted read of source:p1n0 as Claim finance_qa_vnext_observation:1e61b00c90591b8c136f60f4d990bf43f79c5a936c108a52bd8489604df465d5 with value 21.7",
+  "disposition": "accept"
+}

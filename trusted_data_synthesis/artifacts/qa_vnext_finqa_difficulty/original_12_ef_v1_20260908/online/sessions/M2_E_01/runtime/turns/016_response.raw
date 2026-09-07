@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a504de485f2e39bc8b021f25a01cb3347d79833bbb8eb67a965660a48895b576",
+  "observation": "Read of source:t3c1n0 yielded 898500, numeric and source verified.",
+  "disposition": "accept"
+}

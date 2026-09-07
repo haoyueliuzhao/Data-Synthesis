@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:31efb6eb3076c9e65cabc8be01520a7fd4826746329cc25d241b80a8ff5d7065",
+  "observation": "The division of agricultural products revenue by total operating revenues gives 0.1641681566, which is not yet a percentage. We need to multiply by 100 to get the final percent value.",
+  "disposition": "accept"
+}

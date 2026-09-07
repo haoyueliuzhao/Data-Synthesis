@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:494aaed7e36eb21bfebc13f7e891bd059a678135dd2355bc671ae9241982c171",
+  "observation": "Numeric derivation verified: multiplying the ratio by 100 yields 23.9726... which is the percentage change.",
+  "disposition": "accept"
+}

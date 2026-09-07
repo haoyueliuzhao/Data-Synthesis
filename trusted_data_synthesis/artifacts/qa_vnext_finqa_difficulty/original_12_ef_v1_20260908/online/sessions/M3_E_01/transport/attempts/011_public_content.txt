@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:0ff4a1faaaaaffaa7939ce00fa4cec8f667ff719757e434091ab342c6b4d9125",
+  "observation": "Accepted claim for coal revenue 2015 (source:t4c2n0) with value 3237.",
+  "disposition": "accept"
+}

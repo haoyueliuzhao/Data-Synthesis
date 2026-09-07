@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:eeec2c1aea51215a7dfb8680f30f8a1458db024d73e4c21290734b5ec6bfb83f",
+  "observation": "Read 2009 share-based compensation cost from source:t1c2n0; value is 14.6.",
+  "disposition": "accept"
+}

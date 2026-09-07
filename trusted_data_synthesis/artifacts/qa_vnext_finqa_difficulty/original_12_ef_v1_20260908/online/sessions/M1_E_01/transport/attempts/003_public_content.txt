@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a8656a6179f61c9f16823c1874bef49b811d94f641923239106ac0dc635f9342",
+  "subgoal": "Read the 2010 net change value from source t11c2n0",
+  "reason": "Need the 2010 value to compute the average of three years.",
+  "operation": "read",
+  "inputs": ["source:t11c2n0"],
+  "parameters": {}
+}

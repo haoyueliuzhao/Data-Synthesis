@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:20db4b973141b6d78872d6e0622415780b6910c0feefeb1ce69394c1b39647c5",
+  "observation": "Accept division claim 3581/21813.",
+  "disposition": "accept"
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f55e784319be7a056ba4a813c3a80f33bbf8172a6897c40245f44021524c34f1",
+  "subgoal": "Read the number of shares purchasable under the warrant.",
+  "reason": "The warrant allows purchase of 5576208 shares of common stock, as stated in the source. We need this quantity to compute total value.",
+  "operation": "read",
+  "inputs": ["source:q10n3"],
+  "parameters": {}
+}

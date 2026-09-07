@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2d47b69d6a10d1cd2a927b291f7665e276c10a29889deeb5310ee930d4c5557d",
+  "observation": "Accepted the read of 2019 debt maturity amount $857,679 from source:t2c1n0.",
+  "disposition": "accept"
+}

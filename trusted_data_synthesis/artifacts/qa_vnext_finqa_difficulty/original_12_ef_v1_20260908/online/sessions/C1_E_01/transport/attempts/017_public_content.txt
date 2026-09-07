@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:269633ddc17595a13039b7544714fe8458548dc0dcf035901e686cc04908081d",
+  "observation": "The 2014 net revenue value of 5735 (in millions) is read from source:t1c1n0.",
+  "disposition": "accept"
+}

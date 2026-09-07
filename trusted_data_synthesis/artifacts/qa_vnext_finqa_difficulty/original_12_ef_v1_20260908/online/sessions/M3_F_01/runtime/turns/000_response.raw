@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b1a87ee8ba84fd093d9b0610f8a0ce3d8d754863f1e837da1667deaccb436a0a",
+  "subgoal": "Read coal revenue for 2014, 2015, and 2016",
+  "reason": "The question asks for coal revenue as a percentage of total operating revenues over 2014-2016. First, I need the coal revenue numbers for each year from the table. The table shows coal revenue under 'coal' row: 2016: $2440, 2015: $3237, 2014: $4127. I will read each value from numeric_catalog.",
+  "operation": "read",
+  "inputs": [
+    "source:t4c1n0",
+    "source:t4c2n0",
+    "source:t4c3n0"
+  ],
+  "parameters": {}
+}

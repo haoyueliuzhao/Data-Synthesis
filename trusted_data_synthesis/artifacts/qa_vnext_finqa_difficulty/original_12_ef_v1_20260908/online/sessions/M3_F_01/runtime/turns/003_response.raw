@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:165ed4585278f5f8ff0eb5e04882906d709944995330512938865c63a45b1d49",
+  "subgoal": "Read total operating revenues for 2016",
+  "reason": "Need total operating revenues for 2016 to compute percentage of coal revenue. Source t9c1n0 has value 19941.",
+  "operation": "read",
+  "inputs": ["source:t9c1n0"],
+  "parameters": {}
+}

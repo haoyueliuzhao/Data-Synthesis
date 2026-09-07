@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:12adb1303056f840e31d72ccebe6b6763c76f826928ea386e90869e29bcf91e5",
+  "subgoal": "Read cash and equivalents for 2017",
+  "reason": "Need the denominator for the percentage. Source p1n2 has value 7.0 billion, which is 7000 million.",
+  "operation": "read",
+  "inputs": ["source:p1n2"],
+  "parameters": {}
+}

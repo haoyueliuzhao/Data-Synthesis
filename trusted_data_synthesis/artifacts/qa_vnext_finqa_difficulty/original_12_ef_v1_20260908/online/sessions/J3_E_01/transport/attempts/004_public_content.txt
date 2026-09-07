@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:232c3e5e6ce5ce49d336d7eeda6d48de5ce48d8fd03996d8cf292d119312258e",
+  "observation": "Read of source:p1n2 accepted as claim for 2018 payment.",
+  "disposition": "accept"
+}

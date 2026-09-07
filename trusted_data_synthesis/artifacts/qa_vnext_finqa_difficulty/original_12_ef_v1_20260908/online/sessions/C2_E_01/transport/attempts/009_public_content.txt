@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:2b829c95b0f2f9766b93bff3516aaf1d873e686f633edeb6ba95a80e8179a1b1",
+  "observation": "The value 21813 corresponds to total operating revenues for 2015 and is accepted for use in computation.",
+  "disposition": "accept"
+}

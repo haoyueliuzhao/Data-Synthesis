@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:5ebdad5efca89267891808f08e094a7a470ee95c6a052aa193ede129fcded554",
+  "observation": "Rejected. The read source:p1n3 yields the year 2018, not a monetary amount. The intended next five years are already listed in the pre-text for Entergy Louisiana Investment Recovery Funding: 2017 $21.7 million, 2018 $22.3 million, 2019 $22.7 million, 2020 $23.2 million, 2021 $11 million. To obtain the total expected payments, read the monetary amounts for those years: source:p1n1 (22.3), source:p1n2 (22.7), source:p1n3 (23.2), source:p1n4 (11), and then sum them with the already accepted 21.7. Note: source:p1n0 is 21.7 and already accepted.",
+  "disposition": "reject"
+}

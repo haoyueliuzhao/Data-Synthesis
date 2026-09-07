@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:ddd39c7ba8a306ed363c79f53eca1e68b94870efe359474645a50d135ded3b13",
+  "observation": "The pending observation for dividing 997 by 1000 is numerically correct but does not serve the question. We need to divide cash held on behalf of GE (997 million) by total cash and equivalents (7.0 billion = 7000 million). The current expression uses constant:1000 instead of the claim for total cash. Reject this observation.",
+  "disposition": "reject"
+}

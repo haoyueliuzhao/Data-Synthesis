@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:cc0d047ad7f1a7be328735d0b4123cc2269b55a327ac949116712271df542e71",
+  "subgoal": "Read the agricultural products revenue for 2015",
+  "reason": "Need to compute percentage of total operating revenues from agricultural products in 2015. First read the agricultural products revenue for 2015 from the table.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

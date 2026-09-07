@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:00cc84723b325eb2d85d674b6dac933c774a2847fd6babd2af9ccb10a0e349f6",
+  "subgoal": "Multiply the coal-to-total-operating-revenue ratio by 100 to express as a percentage.",
+  "reason": "The question asks for the percentage of total operating revenues from coal for 2014-2016. We have accepted claim 7705d38f... which is the ratio 2440/19941 for 2016. To convert to percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:7705d38f3cfdf03395917ef1c07191f3d202b9f5e74c6c8eb045c96ce917276d",
+    "constant:100"
+  ],
+  "parameters": {}
+}

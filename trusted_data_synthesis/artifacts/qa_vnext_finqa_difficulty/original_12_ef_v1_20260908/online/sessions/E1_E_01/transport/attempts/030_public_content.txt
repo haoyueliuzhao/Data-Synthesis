@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:b6fdf49bcc25255a6cdfa63ec6135009360f00cbb6f24209ed0184c785444a38",
+  "observation": "The division result 0.0001096... is a ratio, not a percentage. To answer the question in percent, we must multiply by 100.",
+  "disposition": "accept"
+}

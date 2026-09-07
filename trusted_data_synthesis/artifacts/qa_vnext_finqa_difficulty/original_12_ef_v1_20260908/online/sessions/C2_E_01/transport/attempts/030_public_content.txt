@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:d992d5471c556e8e825f176c44b9630778e24450d7cb5c78f24930ed71ee813e",
+  "observation": "Accepted ratio of agricultural products revenue to total operating revenues.",
+  "disposition": "accept"
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:1b398720c8c7247b0049f0ec00839242e69262f90cfb3d5a2d0df92feb363551",
+  "observation": "The division of 997 by 1000 yields 0.997, which is not the correct intermediate for percentage calculation. To compute cash held on behalf of GE as a percentage of cash and equivalents, we need to divide 997 million by 7,000 million (since total cash and equivalents is $7.0 billion = 7000 million). The pending observation is rejected because it divides by 1000 instead of converting the total cash to millions.",
+  "disposition": "reject"
+}

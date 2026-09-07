@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0c1d737d4785aad14f37eb2eb5a6824c9f7fa67ce606669e5719eb7921e66a45",
+  "subgoal": "Read the second long-term debt maturity amount for 2019.",
+  "reason": "Need all five annual maturity amounts to sum them. We already read 2018 ($760000). Next read 2019 value from source:t2c1n0.",
+  "operation": "read",
+  "inputs": ["source:t2c1n0"],
+  "parameters": {}
+}
