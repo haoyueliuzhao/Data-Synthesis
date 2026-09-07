@@ -185,6 +185,14 @@ All 21 original positive records fit into three complete packages with E prompts
 63 new tests pass, with no replacement, historical rewrites or Student/GPU execution.
 See the [stratified same-task support exploration design and record](docs/finance_qa_vnext_same_task_support_exploration.md).
 
+The following measurement-only entry is
+`python -m trusted_synthesis.experiments.finance_qa_vnext_support_transition {prepare,run}`.
+It adds typed retention for an unexecuted disclosed proposal followed by actual reconstructed
+Claim consumption, and for incorrect Final support assertions across the complete correction
+segment. Original generation, qualification, all eight outcomes and 21 Token records stay
+unchanged; the new measurement rule and three pairwise comparisons are separately bound.
+See the [support-transition and grounding-assertion measurement record](docs/finance_qa_vnext_support_transition_grounding_measurement.md).
+
 ## Canonical Experiment
 
 ```bash
