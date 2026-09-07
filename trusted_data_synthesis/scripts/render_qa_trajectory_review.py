@@ -3,7 +3,9 @@
 import gzip
 import hashlib
 import json
+import re
 from decimal import Decimal
+from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -182,10 +184,6 @@ FIELD_NAMES = {
 }
 
 
-def table_row(label, text):
-    return f"| **{label}** | {text.replace('|', '&#124;').replace(chr(10), '<br>')} |"
-
-
 def tracking(record, evidence):
     """Bind operation -> observation -> explicit accept -> actual later consumers."""
     events = record["session"]["events"]
@@ -273,76 +271,208 @@ def output_text(event, evidence):
     return f"{approximate}{value}{unit}"
 
 
-def reasoning_steps(record, evidence):
-    operations, claims, ref_name, consumers = tracking(record, evidence)
-    lines = []
+class ReviewGraph:
+    """Small Mermaid graph with explicit node and edge validation."""
+
+    def __init__(self):
+        self.nodes = {}
+        self.edges = []
+
+    def node(self, key, label, style):
+        assert key not in self.nodes, key
+        self.nodes[key] = (label, style)
+
+    def edge(self, source, target, label="", dotted=False):
+        edge = (source, target, label, dotted)
+        if edge not in self.edges:
+            self.edges.append(edge)
+
+    @staticmethod
+    def label(text):
+        # Keep decimal strings, source locators, and HTML entities intact.
+        lines = []
+        for logical_line in text.split("\n"):
+            current = ""
+            for token in re.findall(r"[A-Za-z0-9_./:%+-]+|.", logical_line):
+                if current and len(current) + len(token) > 26:
+                    lines.append(current)
+                    current = ""
+                current += token
+            if current:
+                lines.append(current)
+        return "<br/>".join(escape(line, quote=True) for line in lines)
+
+    def markdown(self):
+        lines = ["```mermaid", "flowchart TD"]
+        for key, (label, style) in self.nodes.items():
+            lines.append(f'    {key}["{self.label(label)}"]:::{style}')
+        for source, target, label, dotted in self.edges:
+            assert source in self.nodes and target in self.nodes, (source, target)
+            arrow = "-.->" if dotted else "-->"
+            suffix = f'|"{self.label(label)}"|' if label else ""
+            lines.append(f"    {source} {arrow}{suffix} {target}")
+        lines += [
+            "    classDef evidence fill:#eff6ff,stroke:#2563eb,color:#172554",
+            "    classDef judgment fill:#f5f3ff,stroke:#7c3aed,color:#2e1065",
+            "    classDef operation fill:#ecfeff,stroke:#0891b2,color:#164e63",
+            "    classDef observation fill:#fffbeb,stroke:#d97706,color:#78350f",
+            "    classDef accepted fill:#f0fdf4,stroke:#16a34a,color:#14532d",
+            "    classDef rejected fill:#fff1f2,stroke:#e11d48,color:#881337",
+            "    classDef unused fill:#f3f4f6,stroke:#6b7280,color:#374151",
+            "```",
+        ]
+        return "\n".join(lines)
+
+
+ROLES = {
+    "numerator": "分子",
+    "denominator": "分母",
+    "ratio": "待转换比例",
+    "member": "组成分项",
+    "relation": "组成关系",
+    "earlier_value": "较早一期金额",
+    "later_value": "较晚一期金额",
+    "revenue_earlier_value": "较早一期收入",
+    "revenue_later_value": "较晚一期收入",
+    "income_earlier_value": "较早一期营业利润",
+    "income_later_value": "较晚一期营业利润",
+    "numerator_value": "分子",
+    "denominator_value": "分母",
+    "income_growth": "营业利润增长率",
+    "revenue_growth": "收入增长率",
+}
+
+
+def reasoning_graph(record, evidence):
+    operations, claims, _, _ = tracking(record, evidence)
+    graph = ReviewGraph()
+    graph.node("Q", "明确问题\n" + QUESTIONS[record["context"]["task_type"]], "judgment")
+    evidence_nodes = {}
+    for n, (ref, item) in enumerate(evidence.items(), 1):
+        key = f"E{n}"
+        evidence_nodes[ref] = key
+        source = item.get("source_record_id", item.get("provenance", {}).get("source_record_id"))
+        if "value" in item or "payload" in item:
+            label = evidence_label(item) + "\n" + number(item) + "百万美元"
+        else:
+            label = "组成关系\n货运收入＋其他收入＝经营收入总额"
+        graph.node(key, label + "\n来源：" + str(source), "evidence")
+    claim_nodes = {ref: f"C{c['step']}" for ref, c in claims.items()}
+    references = {**evidence_nodes, **claim_nodes}
+    consumed = set()
     for n, event in enumerate(operations, 1):
         op = event["execution"]["operation"]
-        claim_id = next(cid for cid, c in claims.items() if c["producer"] is event)
+        claim_id = next(ref for ref, c in claims.items() if c["producer"] is event)
         accept = claims[claim_id]["accept"]
-        basis = event["parsed"]["decision"]["basis"]
-        references = [
-            ref_name(ref) for key in ("evidence_refs", "claim_refs") for ref in basis[key]
-        ]
-        judgment = "已有依据：" + "；".join(references) + "。" + METHODS[op]
+        method = METHODS[op]
+        goal = GOALS[op]
+        if op == "lookup":
+            goal = "取得可引用的" + evidence_label(evidence[event["parsed"]["inputs"][0]["ref_id"]])
         if op == "share_ratio":
             denominator = next(i for i in event["parsed"]["inputs"] if i["role"] == "denominator")
-            judgment += (
-                "分母选择本会话求和并明确接受的总额。"
+            method += (
+                "本次选择已接受的重建总额作分母。"
                 if denominator["kind"] == "claim"
-                else "分母选择资料直接披露的总额，未选用本会话先前的求和结论。"
+                else "本次选择直接披露总额作分母。"
             )
-        lines += [
-            f"\n### 步骤{n}：{OP_NAMES[op]}"
-            f"（操作T{event['sequence'] + 1}，接受T{accept['sequence'] + 1}）\n",
-            "| 部分 | 人工阅读说明 |",
-            "| --- | --- |",
-            table_row(
-                "当前目标",
-                (
-                    "取得可引用的"
-                    + evidence_label(evidence[event["parsed"]["inputs"][0]["ref_id"]])
-                    + "数值；当前还缺少经操作读取并接受的数据结论。"
-                    if op == "lookup"
-                    else GOALS[op]
-                ),
-            ),
-            table_row("主要判断", judgment),
-            table_row("实际操作", operation_text(event, evidence)),
-            table_row(
-                "结果与接受",
-                f"T{event['sequence'] + 1}操作返回{output_text(event, evidence)}；"
-                f"此时只是观察结果。T{accept['sequence'] + 1}模型另行提交明确接受，"
-                "将该结果确立为可引用的中间结论。",
-            ),
-            table_row("后续使用", consumers(claim_id)),
-        ]
+        graph.node(f"J{n}", f"步骤{n}：依据与判断\n目标：{goal}\n选择：{method}", "judgment")
+        graph.node(
+            f"A{n}",
+            f"T{event['sequence'] + 1} 实际操作\n" + operation_text(event, evidence),
+            "operation",
+        )
+        graph.node(f"O{n}", "观察结果（尚未接受）\n" + output_text(event, evidence), "observation")
+        graph.node(
+            f"C{n}",
+            f"T{accept['sequence'] + 1} 明确接受\n"
+            + output_text(event, evidence)
+            + "\n成为可引用结论",
+            "accepted",
+        )
+        graph.edge(f"J{n}", f"A{n}", "选择并执行")
+        graph.edge(f"A{n}", f"O{n}", "返回")
+        graph.edge(f"O{n}", f"C{n}", "模型另行提交接受")
+        inputs = event["parsed"]["inputs"]
+        input_refs = {i["ref_id"] for i in inputs}
+        for item in inputs:
+            ref = item["ref_id"]
+            if item["kind"] == "claim":
+                assert claims[ref]["accept"]["sequence"] < event["sequence"]
+                consumed.add(ref)
+            graph.edge(references[ref], f"J{n}", "采用：" + ROLES.get(item["role"], "计算输入"))
+        basis = event["parsed"]["decision"]["basis"]
+        for field in ("evidence_refs", "claim_refs"):
+            for ref in basis[field]:
+                if ref not in input_refs:
+                    graph.edge(references[ref], f"J{n}", "公开依据", dotted=True)
+        if not any(i["kind"] == "claim" for i in inputs):
+            graph.edge("Q", f"J{n}", "任务目标", dotted=True)
     final = record["session"]["final"]
     final_event = next(
         e for e in record["session"]["events"] if e["submission"]["id"] == final["submission_id"]
     )
-    answer_claim = claims[final["answer"]["answer_claim_id"]]
-    cites = "；".join(ref_name(ref) for ref in final["answer"]["citations"])
-    lines += [
-        f"\n### 最后一步：给出有依据的答案（T{final_event['sequence'] + 1}）\n",
-        "| 部分 | 人工阅读说明 |",
-        "| --- | --- |",
-        table_row("当前目标", "把已接受的最终计算结果整理为题目要求的答案，并给出实际支持依据。"),
-        table_row("主要判断", f"使用步骤{answer_claim['step']}已经接受的结论；实际引用：{cites}。"),
-        table_row(
-            "实际操作",
-            (
-                "将已接受的百分比保留六位小数，整理实际计算依赖的引用。"
-                if record["context"]["task_type"] == "source_explicit_part_whole_share"
-                else "按题目要求整理结果与来源引用，不新增一次数值计算。"
-            ),
-        ),
-        table_row(
-            "结果与接受", answer_text(record, evidence) + "本次最终提交通过既有答案及引用校验。"
-        ),
-        table_row("后续使用", "作为本会话最终答案，会话结束。"),
-    ]
-    return lines
+    answer_claim = final["answer"]["answer_claim_id"]
+    consumed.add(answer_claim)
+    final_operation = (
+        "百分比保留六位小数；引用实际计算依据。"
+        if record["context"]["task_type"] == "source_explicit_part_whole_share"
+        else "按题目要求整理结果；引用实际依据。"
+    )
+    graph.node(
+        "F",
+        f"T{final_event['sequence'] + 1} 给出有依据的答案\n"
+        + final_operation
+        + "\n"
+        + answer_text(record, evidence).replace("**", "")
+        + "\n答案及引用校验通过，会话结束",
+        "accepted",
+    )
+    graph.edge(claim_nodes[answer_claim], "F", "使用已接受的最终结论")
+    for ref in final["answer"]["citations"]:
+        graph.edge(references[ref], "F", "最终引用", dotted=True)
+    for ref, claim in claims.items():
+        if ref not in consumed:
+            key = f"U{claim['step']}"
+            graph.node(key, "已接受但未用于后继运算或有效答案\n保留在状态中，不等于撤销", "unused")
+            graph.edge(claim_nodes[ref], key, "实际使用检查", dotted=True)
+    return graph
+
+
+def correction_graph(record, evidence):
+    changes = correction_records(record, evidence)
+    if not changes:
+        return None
+    graph = ReviewGraph()
+    events = {e["sequence"]: e for e in record["session"]["events"]}
+    proposals = {row["sequence"]: row["proposal"] for row in changes}
+    for row in changes:
+        sequence = row["sequence"]
+        for seq in [sequence, sequence + 1]:
+            key = f"T{seq + 1}"
+            if key in graph.nodes:
+                continue
+            event = events[seq]
+            if seq in proposals:
+                label = proposals[seq]
+            elif event["parsed"]["kind"] == "action":
+                label = (
+                    OP_NAMES[event["parsed"]["operation"]] + "实际执行\n后续观察与接受见上方主图"
+                )
+            else:
+                label = "最终答案通过校验\n" + answer_text(record, evidence).replace("**", "")
+            graph.node(
+                key,
+                f"T{seq + 1} 提交\n" + label,
+                ("accepted" if event["parsed"]["kind"] == "final" else "operation")
+                if event["receipt"]["admitted"]
+                else "rejected",
+            )
+        graph.node(f"R{sequence + 1}", row["feedback"], "rejected")
+        graph.node(f"M{sequence + 1}", "随后调整\n" + row["change"], "judgment")
+        graph.edge(f"T{sequence + 1}", f"R{sequence + 1}", "收到反馈")
+        graph.edge(f"R{sequence + 1}", f"M{sequence + 1}", "随后实际变化")
+        graph.edge(f"M{sequence + 1}", f"T{sequence + 2}", "下一次提交")
+    return graph
 
 
 def action_problem(event, ref_name):
@@ -423,19 +553,14 @@ def final_change(old, new, ref_name):
     return "；".join(changes) or "结果与引用未发生变化，再次提交"
 
 
-def corrections(record, evidence):
+def correction_records(record, evidence):
     events = record["session"]["events"]
     rejected = [e for e in events if not e["receipt"]["admitted"]]
     if not rejected:
-        return ["本会话未发生被拒提案；各次结果接受及后续使用见上表。\n"]
+        return []
     operations, _, ref_name, _ = tracking(record, evidence)
     valid = record["session"]["final"]["answer"]
-    lines = [
-        "下表按真实提交顺序记录调整。动作反馈含公开字段诊断；答案反馈只给出“最终答案未通过校验”。"
-        "具体字段差异来自事后对实际提交与公开候选或有效答案的比较，不是反馈逐字原文，也不推测模型内部动机。\n",
-        "| 未通过的提交 | 原先提出什么／实际差异 | 收到的反馈 | 随后修改及结果 |",
-        "| --- | --- | --- | --- |",
-    ]
+    rows = []
     for event in rejected:
         p = event["parsed"]
         next_event = next(e for e in events if e["sequence"] == event["sequence"] + 1)
@@ -469,23 +594,15 @@ def corrections(record, evidence):
                 else "该次仍未通过。"
             )
             change += "没有重新计算。"
-        values = [
-            f"T{event['sequence'] + 1}",
-            proposal,
-            feedback,
-            f"T{next_event['sequence'] + 1}：{change}",
-        ]
-        lines.append("| " + " | ".join(v.replace("|", "&#124;") for v in values) + " |")
-    if record["context"]["task_type"] == "source_explicit_part_whole_share":
-        ratio = next(e for e in operations if e["execution"]["operation"] == "share_ratio")
-        denominator = next(i for i in ratio["parsed"]["inputs"] if i["role"] == "denominator")
-        used = (
-            "实际执行并接受分项求和，后续真正用该求和结论作分母，采用重建路线。"
-            if denominator["kind"] == "claim"
-            else "虽然实际执行并接受过分项求和，后续除法仍使用披露总额作分母，采用直接披露路线。"
+        rows.append(
+            {
+                "sequence": event["sequence"],
+                "proposal": proposal,
+                "feedback": feedback,
+                "change": change,
+            }
         )
-        lines.append("\n**最后实际采用：**" + used + "\n")
-    return lines
+    return rows
 
 
 def render():
@@ -498,13 +615,14 @@ def render():
         "# 合格 QA 轨迹人工审阅\n",
         "18条轨迹均按“明确问题 → 选择依据与方法 → 执行操作 → "
         "判断并接受结果 → 使用结果继续推导 → 给出有依据的答案”整理。"
-        "每一步分别说明当前目标、主要判断、实际操作、结果与接受、后续使用。文字是基于公开决策、操作和引用关系的说明性转述，不是模型逐字原话。\n",
+        "每条轨迹用Mermaid依赖图展示目标、判断、操作、观察、明确接受和实际使用；另用调整图展示未通过的提案与后续修改。文字是基于公开决策、操作和引用关系的说明性转述，不是模型逐字原话。\n",
         "阅读时可重点比较B01/B02的多步增长率计算，以及Share轨迹中“直接使用披露总额”"
         "与“使用本会话求和结果”两种实际分母来源。\n",
         "| 轨迹 | 问题 | 实际运算次数 |",
         "| --- | --- | ---: |",
     ]
     execution_count = 0
+    graph_count = 0
     for r in rows:
         assert r["package"]["positive_eligible"] and r["package"]["complete"]
         assert r["session"]["final"]["qa_validation"]["qa_valid"]
@@ -523,22 +641,28 @@ def render():
             f"来源：{cohort}" + (f"，{profile}" if profile else "") + "。\n",
             "## 问题\n",
             question + "\n",
-            "## 关键证据\n",
-            "| 数据项 | 数值 | 来源记录 |",
-            "| --- | ---: | --- |",
+            "## 依据、推导与结果使用图\n",
+            "紫色节点说明目标与判断；蓝色节点表示资料或操作；黄色节点表示尚未接受的观察；"
+            "绿色节点表示已接受结论或有效答案；灰色节点标记已接受但未使用的结果。\n",
+            "实线连接实际数据使用与操作—观察—接受；虚线表示任务目标、公开依据、引用或使用检查。"
+            "图展示依赖结构，不表示并行执行；T编号保留真实提交顺序。"
+            "判断文字为说明性转述，不是模型逐字原话。中间约数仅用于展示，实际计算保留完整精度。\n",
         ]
-        for e in items:
-            if "value" not in e and "payload" not in e:
-                continue
-            source_id = e.get("source_record_id", e.get("provenance", {}).get("source_record_id"))
-            lines.append(f"| {evidence_label(e)} | {number(e)}百万美元 | {source_id} |")
-        lines += [
-            "\n## 主要推理与操作\n",
-            "以下是对实际公开决策与依赖关系的说明性转述，不是模型逐字原话。T编号对应原始提交顺序。工具返回结果和模型接受结果分开记录；“后续使用”只记实际引用。中间长小数仅在展示时简化，后续计算使用完整精度，最终答案保留原精度。\n",
-        ]
-        lines.extend(reasoning_steps(r, lookup))
-        lines += ["\n## 发生过的调整\n"]
-        lines.extend(corrections(r, lookup))
+        lines.append(reasoning_graph(r, lookup).markdown())
+        graph_count += 1
+        lines += ["\n## 提案与答案调整图\n"]
+        adjustments = correction_graph(r, lookup)
+        if adjustments:
+            graph_count += 1
+            lines += [
+                "红色节点表示未通过的提案及反馈，紫色节点说明随后实际修改。"
+                "动作未通过时没有执行；答案字段与引用的修改不算重新计算。"
+                "详细字段差异来自事后核对，不是在线反馈逐字原文。"
+                "图中分开的片段发生于不同阶段，T编号与主图一致。\n",
+                adjustments.markdown(),
+            ]
+        else:
+            lines.append("本会话没有被拒提案或答案调整。\n")
         lines += ["\n[原始数据与字段说明](../README.md)\n"]
         text = "\n".join(lines).rstrip() + "\n"
         assert "```json" not in text and "finance_qa_vnext_" not in text
@@ -552,7 +676,10 @@ def render():
         "重建命令：`python trusted_data_synthesis/scripts/render_qa_trajectory_review.py`。\n",
     ]
     (OUT / "README.md").write_text("\n".join(index).rstrip() + "\n", encoding="utf-8")
-    print(f"Rendered {len(rows)} concise reviews; verified {execution_count} accepted operations.")
+    print(
+        f"Rendered {len(rows)} reviews / {graph_count} Mermaid graphs; "
+        f"verified {execution_count} operations."
+    )
 
 
 if __name__ == "__main__":
