@@ -1,31 +1,155 @@
-"""Render every exported qualified QA session into Markdown for human review."""
+"""Render the fixed qualified QA export as concise Chinese reasoning summaries."""
 
 import gzip
 import hashlib
 import json
+from collections import Counter
+from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data/qa_vnext_revised_trajectories"
 OUT = DATA / "review"
-NAMES = {"action": "Action / 动作", "update": "Update / 接受或拒绝观察", "final": "Final / 答案"}
+METRICS = {
+    "revenue": "营业收入",
+    "operating_income": "营业利润",
+    "total_freight_revenues": "货运收入",
+    "other_revenues": "其他收入",
+    "total_operating_revenues": "营业总收入",
+}
+QUESTIONS = {
+    "fact_retrieval": ("Huntington Ingalls Industries 在2014年第一季度的营业收入是多少？"),
+    "registered_cross_metric_comparison": (
+        "Huntington Ingalls Industries 在2014年第四季度的营业收入和营业利润，哪项更高？相差多少？"
+    ),
+    "temporal_growth": (
+        "Huntington Ingalls Industries 的营业收入从2014年第二季度到第三季度变化了百分之多少？"
+    ),
+    "temporal_average": (
+        "Huntington Ingalls Industries 在2014年第二至第四季度的平均营业收入是多少？"
+    ),
+    "temporal_absolute_change": (
+        "Huntington Ingalls Industries 的营业收入从2014年第一季度到第二季度增加或减少了多少金额？"
+    ),
+    "registered_ratio": ("CDW 在2016财年的营业利润与营业收入之比是多少？"),
+    "derived_growth_absolute_spread": (
+        "CDW 从2015财年到2016财年的营业收入增长率和营业利润增长率，相差多少个百分点（取绝对值）？"
+    ),
+    "source_explicit_part_whole_share": (
+        "Union Pacific 及其子公司在2015财年的货运收入占营业总收入的百分比是多少？保留六位小数。"
+    ),
+}
 
 
-def js(value):
-    return json.dumps(value, ensure_ascii=False, indent=2)
+def number(value):
+    if isinstance(value, dict):
+        return number(value.get("payload", value.get("value")))
+    return str(value)
 
 
-def cell(value):
-    text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
-    return text.replace("|", "&#124;").replace("\n", "<br>")
+def brief(value):
+    """Approximate display only; exact values remain in the source and final answer."""
+    value = str(value)
+    return format(Decimal(value), ".6f").rstrip("0").rstrip(".") if len(value) > 18 else value
 
 
-def block(value):
-    return "\n```json\n" + js(value) + "\n```\n"
+def evidence_label(e):
+    period = e.get("period", e.get("temporal_context", {}).get("label", ""))
+    metric = e.get("metric", e.get("predicate"))
+    return f"{period} {METRICS.get(metric, metric)}".strip()
 
 
-def details(title, value):
-    return "\n<details>\n<summary>" + title + "</summary>\n" + block(value) + "\n</details>\n"
+def operation_text(event, evidence):
+    x = event["execution"]
+    op = x["operation"]
+    inputs = x["resolved_inputs"]
+    values = [number(i["value"]) for i in inputs]
+    out = x["proposition"]["output"]
+    result = brief(number(out)) if "value" in out or "payload" in out else None
+    if op == "lookup":
+        label = evidence_label(evidence[inputs[0]["ref_id"]])
+        return f"读取{label}：{values[0]}百万美元。"
+    if op == "registered_compare":
+        higher = evidence_label(evidence[out["higher_ref"]])
+        return (
+            f"比较同一季度的两个指标：{values[0]} − {values[1]} = "
+            f"{out['difference']}百万美元，{higher}更高。"
+        )
+    if op == "growth":
+        return (
+            f"计算增长率，以前一期为基数：（{values[1]} − {values[0]}）"
+            f"÷ {values[0]} × 100 ≈ {result}%。"
+        )
+    if op == "aggregate":
+        assert out["method"] == "mean"
+        return f"将三个季度等权平均：（{' + '.join(values)}）÷ {len(values)} ≈ {result}百万美元。"
+    if op == "difference":
+        return f"用后一期减前一期：{values[1]} − {values[0]} = {result}百万美元，表示收入增加。"
+    if op == "ratio":
+        return f"营业利润除以营业收入：{values[0]} ÷ {values[1]} ≈ {result}。这是比值。"
+    if op == "signed_percentage_point_gap":
+        return (
+            f"按本次操作顺序，营业收入增长率减去营业利润增长率："
+            f"{brief(values[1])}% − {brief(values[0])}% ≈ {result}个百分点。"
+        )
+    if op == "absolute_percentage_point_gap":
+        return f"对差值取绝对值：|{brief(values[0])}| ≈ {result}个百分点，得到题目要求的幅度。"
+    if op == "relation_sum":
+        members = [number(i["value"]) for i in inputs if i["value"].get("role") == "member"]
+        return (
+            f"依据来源中的组成关系，将货运收入和其他收入相加：{' + '.join(members)}"
+            f" = {result}百万美元，得到一个重建的营业总收入。"
+        )
+    if op == "share_ratio":
+        denominator = next(i for i in event["parsed"]["inputs"] if i["role"] == "denominator")
+        support = (
+            "本会话前一步求和并确认的总收入"
+            if denominator["kind"] == "claim"
+            else "来源表直接披露的总收入；先前求和结果未被这次除法使用"
+        )
+        return f"货运收入除以营业总收入：{values[0]} ÷ {values[1]} ≈ {result}。分母使用{support}。"
+    if op == "scale_percent":
+        return f"把前一步比值乘以100，转换为百分比，约为{result}%。"
+    raise ValueError(f"Unsupported operation: {op}")
+
+
+def answer_text(record, evidence):
+    out = record["session"]["final"]["answer"]["result"]
+    kind = record["context"]["task_type"]
+    if "higher_ref" in out:
+        label = evidence_label(evidence[out["higher_ref"]])
+        return f"{label}更高，相差 **{out['difference']}百万美元**。"
+    value = number(out)
+    if kind in {"fact_retrieval", "temporal_average", "temporal_absolute_change"}:
+        unit = "百万美元"
+    elif kind in {"temporal_growth", "source_explicit_part_whole_share"}:
+        unit = "%"
+    elif kind == "derived_growth_absolute_spread":
+        unit = "个百分点"
+    else:
+        unit = "（比值，无量纲）"
+    return f"**{value}{unit}**。"
+
+
+def corrections(events):
+    rejected = [e for e in events if not e["receipt"]["admitted"]]
+    if not rejected:
+        return "本会话未发生提交被拒绝的情况。"
+    groups = Counter(e["receipt"]["error_code"] for e in rejected)
+    texts = []
+    for code, count in groups.items():
+        if code == "admission.public_judgment":
+            texts.append(
+                f"{count}次动作请求因所写的依据或目标与所选动作不一致而被拒绝；修正后才执行。"
+            )
+        elif code == "admission.final_qa":
+            texts.append(
+                f"{count}次最终答案未通过输出或引用校验；后续提交调整后通过。"
+                "这些是答案提交的修订，没有增加新的财务计算。"
+            )
+        else:
+            raise ValueError(f"Unexplained correction: {code}")
+    return "".join(texts)
 
 
 def render():
@@ -33,156 +157,85 @@ def render():
     raw = source.read_bytes()
     manifest = json.loads((DATA / "manifest.json").read_text())
     assert hashlib.sha256(raw).hexdigest() == manifest["files"][source.name]["sha256"]
-    records = [json.loads(line) for line in gzip.decompress(raw).splitlines()]
-    OUT.mkdir(exist_ok=True)
+    rows = [json.loads(line) for line in gzip.decompress(raw).splitlines()]
     index = [
-        "# 合格 QA 轨迹人工审阅索引\n",
-        "本目录展示上次抽取的全部18条合格轨迹：八任务面板15条、Share支持探索3条。"
-        "每条轨迹单独成文，包含公开题目、最终答案、证据、逐次提交与反馈。\n",
-        "合格会话内的未准入提交和纠正历史全部保留。步骤编号T1起算，对应原sequence+1。"
-        "展开区域展示解析后的完整模型提交，JSON经过排版；原始响应字节见数据包及来源工件。"
-        "此处展示公开决策与执行轨迹，资格沿用冻结结果，未新增模型调用或人工审阅结论。\n",
-        "两个实验及Share的N/E提示条件分别标识，不将这些会话视作独立任务或合并统计总体。\n",
-        "| 轨迹 | 任务类型 | 提交数 | 准入 | 未准入 | 题目 |",
-        "| --- | --- | ---: | ---: | ---: | --- |",
+        "# 合格 QA 轨迹人工审阅\n",
+        "18条轨迹均按“问题 → 关键证据 → 主要推理与操作 → 最终答案 → 纠正情况”整理。"
+        "说明依据实际公开执行记录编写；中间长小数以约数展示，最终答案保留原精度。\n",
+        "阅读时可重点比较B01/B02的多步增长率计算，以及Share轨迹中“直接使用披露总额”"
+        "与“使用本会话求和结果”两种实际分母来源。\n",
+        "| 轨迹 | 问题 | 实际运算次数 |",
+        "| --- | --- | ---: |",
     ]
-    total = admitted_total = 0
-    for r in records:
+    execution_count = 0
+    for r in rows:
         assert r["package"]["positive_eligible"] and r["package"]["complete"]
-        context, session = r["context"], r["session"]
-        task = context.get("public_task", context.get("task"))
-        question = task.get("instruction", task.get("question"))
-        assert question and session["final"]["qa_validation"]["qa_valid"]
-        events = session["events"]
-        assert [e["sequence"] for e in events] == list(range(len(events)))
-        admitted = sum(e["receipt"]["admitted"] for e in events)
-        total += len(events)
-        admitted_total += admitted
+        assert r["session"]["final"]["qa_validation"]["qa_valid"]
+        events = r["session"]["events"]
+        operations = [e for e in events if e.get("execution")]
+        evidence = r["context"]["evidence"]
+        items = list(evidence.values()) if isinstance(evidence, dict) else evidence
+        lookup = {e.get("evidence_id", e.get("id")): e for e in items}
         label = r["cohort"] + "_" + r["label"]
-        index.append(
-            f"| [{label}]({label}.md) | {cell(context['task_type'])} | {len(events)} | "
-            f"{admitted} | {len(events) - admitted} | {cell(question)} |"
-        )
+        question = QUESTIONS[r["context"]["task_type"]]
+        cohort = "八任务面板" if r["cohort"] == "task_panel" else "Share支持探索"
+        profile = {"N": "中性提示", "E": "软引导提示"}.get(r["outcome"].get("profile"))
         lines = [
-            f"# {label}：合格 QA 轨迹\n",
-            "[返回审阅索引](README.md)\n",
-            "## 任务与结果\n",
+            f"# {r['label']}：{question}\n",
+            "[返回轨迹索引](README.md)\n",
+            f"来源：{cohort}" + (f"，{profile}" if profile else "") + "。\n",
+            "## 问题\n",
             question + "\n",
-            f"实验：`{r['cohort']}`；会话：`{r['label']}`；"
-            f"提示分层：`{r['outcome'].get('profile', '统一面板条件')}`。\n",
-            f"冻结资格：success；完整提交{len(events)}次，其中准入{admitted}次、"
-            f"未准入{len(events) - admitted}次。\n",
-            "最终答案（原始result字段，保持数值精度和单位）：\n",
-            block(session["final"]["answer"]["result"]),
-            details("展开最终答案、引用及既有验证结果", session["final"]),
-            "## 执行顺序总览\n",
-            "| 步骤 | 提交类型 | 操作或处置 | 准入结果 |",
-            "| --- | --- | --- | --- |",
+            "## 关键证据\n",
+            "| 数据项 | 数值 | 来源记录 |",
+            "| --- | ---: | --- |",
         ]
-        for e in events:
-            p = e.get("parsed") or {}
-            status = (
-                "准入" if e["receipt"]["admitted"] else "未准入：" + str(e["receipt"]["error_code"])
+        for e in items:
+            if "value" not in e and "payload" not in e:
+                continue
+            source_id = e.get("source_record_id", e.get("provenance", {}).get("source_record_id"))
+            lines.append(f"| {evidence_label(e)} | {number(e)}百万美元 | {source_id} |")
+        lines += [
+            "\n## 主要推理与操作\n",
+            "以下按实际执行顺序整理；结果经后续提交确认后用于下一步。长小数仅在展示时简化，实际后续计算使用完整精度。\n",
+        ]
+        for n, event in enumerate(operations, 1):
+            # Bind every narrated operation to its actual accepted observation/claim.
+            assert event["receipt"]["admitted"] and event["execution"]["success"]
+            assert any(
+                c["action_submission_id"] == event["submission"]["id"]
+                for c in r["session"]["claims"]
             )
+            lines.append(f"{n}. {operation_text(event, lookup)}")
+        if r["context"]["task_type"] == "source_explicit_part_whole_share":
             lines.append(
-                f"| [T{e['sequence'] + 1}](#t{e['sequence'] + 1}) | "
-                f"{cell(p.get('kind', 'parse_failure'))} | "
-                f"{cell(p.get('operation', p.get('disposition', '提交答案')))} | {cell(status)} |"
+                f"{len(operations) + 1}. 按题目要求，将百分比保留六位小数，"
+                "提交实际计算所用证据的引用。"
             )
-        lines += ["\n## 公开证据\n", "以下为同一任务的实际证据对象，包含数值、定义及来源定位。\n"]
-        evidence = context["evidence"]
-        items = evidence.items() if isinstance(evidence, dict) else enumerate(evidence, 1)
-        for name, item in items:
-            title = (
-                str(name)
-                + "："
-                + str(item.get("metric", item.get("predicate", item.get("kind", "证据"))))
+        else:
+            lines.append(
+                f"{len(operations) + 1}. 使用上述结果形成最终答案，并提交来源引用；最终校验通过。"
             )
-            lines.append(details(title, item))
         lines += [
-            details("展开公开任务与数值条件", {"task": task, "numeric": context.get("numeric")}),
-            "\n## 逐次提交与反馈\n",
-            "动作产生Observation；只有后续准入的Update才建立Claim。"
-            "未准入的动作不会被写成已执行运算；每次纠正仍独立展示。\n",
-        ]
-        for e in events:
-            turn = e["sequence"] + 1
-            p = e.get("parsed") or {}
-            kind = p.get("kind", "parse_failure")
-            lines += [
-                f'\n<a id="t{turn}"></a>\n',
-                f"### T{turn} — {NAMES.get(kind, kind)}\n",
-                (
-                    "准入。\n"
-                    if e["receipt"]["admitted"]
-                    else f"**未准入**：`{e['receipt']['error_code']}`。\n"
-                ),
-            ]
-            if kind == "action":
-                lines += [f"模型请求操作：`{p.get('operation')}`。\n", block(p.get("inputs", []))]
-                execution = e.get("execution")
-                if execution:
-                    lines += [
-                        "实际解析输入：\n",
-                        block(execution["resolved_inputs"]),
-                        "实际执行输出：\n",
-                        block(execution["proposition"]["output"]),
-                    ]
-                else:
-                    lines.append("本次没有执行结果。\n")
-            elif kind == "update":
-                lines += [
-                    f"模型处置：`{p.get('disposition')}`；后续子目标：`{p.get('next_subgoal')}`。\n"
-                ]
-                if e.get("claim"):
-                    claim = e["claim"]
-                    lines += [f"实际建立Claim：`{claim['id']}`。\n", block(claim["proposition"])]
-                else:
-                    lines.append("本次没有建立新的Claim。\n")
-            elif kind == "final":
-                lines += ["本次提交的答案（是否被接受以上方回执为准）：\n", block(p.get("result"))]
-            lines += [
-                "提交后实际反馈：\n",
-                block(e["post_state"]["last_feedback"]),
-                details("展开完整模型提交（parsed，保留全部字段）", e.get("parsed")),
-                details(
-                    "展开本次回执、观察及状态引用",
-                    {
-                        "sequence": e["sequence"],
-                        "request_id": e["request"]["id"],
-                        "submission": e["submission"],
-                        "receipt": e["receipt"],
-                        "observation": e.get("observation"),
-                        "post_state_id": e["post_state"]["id"],
-                    },
-                ),
-            ]
-        lines += [
-            "\n## 来源与审阅记录\n",
-            f"来源实验：`{r['source_run']}`。\n",
-            f"Session ID：`{session['id']}`。\n",
-            f"Qualification ID：`{r['package']['qualification_id']}`。\n",
-            "本页为审阅视图；完整请求、候选与状态在[合格轨迹数据包](../trajectories.qualified.jsonl.gz)中。\n",
-            "人工审阅结论：待填写。\n\n审阅备注：待填写。\n",
+            "\n## 最终答案\n",
+            answer_text(r, lookup) + "\n",
+            "## 纠正情况\n",
+            corrections(events) + "\n",
+            "[原始数据与字段说明](../README.md)\n",
         ]
         text = "\n".join(lines).rstrip() + "\n"
-        assert text.count('<a id="t') == len(events)
-        assert all(js(e.get("parsed")) in text for e in events)
+        assert "```json" not in text and "finance_qa_vnext_" not in text
         (OUT / f"{label}.md").write_text(text, encoding="utf-8")
+        index.append(f"| [{label}]({label}.md) | {question} | {len(operations)} |")
+        execution_count += len(operations)
     index += [
-        f"\n合计展示{len(records)}条合格轨迹、{total}次提交，"
-        f"其中{admitted_total}次准入、{total - admitted_total}次未准入。\n",
-        "## 生成与验证\n",
-        "源文件：`../trajectories.qualified.jsonl.gz`。SHA-256："
-        f"`{hashlib.sha256(raw).hexdigest()}`。\n",
-        "生成时校验源文件哈希、每条完整合格包及最终QA验证标记、连续事件序号，"
-        "并确认每次提交均有独立步骤且完整parsed对象出现在对应页面。"
-        "这验证审阅视图覆盖性，不重新判定模型或答案质量。\n",
-        "仓库根目录重建命令：\n\n```bash\n"
-        "python trusted_data_synthesis/scripts/render_qa_trajectory_review.py\n```\n",
+        "\n计数中的运算包括读取数据和数值计算；接受中间结果、修改提交和提交最终答案不单独算作运算。\n",
+        "各页说明对应各自会话的实际路径，未将重复执行合并为同一个会话。"
+        "原始输入、精确数值与完整纠正历史保存在[数据包](../README.md)。\n",
+        "重建命令：`python trusted_data_synthesis/scripts/render_qa_trajectory_review.py`。\n",
     ]
     (OUT / "README.md").write_text("\n".join(index).rstrip() + "\n", encoding="utf-8")
-    print(f"Rendered {len(records)} sessions, {total} submissions, {admitted_total} admitted.")
+    print(f"Rendered {len(rows)} concise reviews; verified {execution_count} accepted operations.")
 
 
 if __name__ == "__main__":
