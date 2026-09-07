@@ -40,4 +40,3 @@
 ```bash
 python trusted_data_synthesis/scripts/render_qa_trajectory_review.py
 ```
-

@@ -165,7 +165,7 @@ def render():
             "本页为审阅视图；完整请求、候选与状态在[合格轨迹数据包](../trajectories.qualified.jsonl.gz)中。\n",
             "人工审阅结论：待填写。\n\n审阅备注：待填写。\n",
         ]
-        text = "\n".join(lines) + "\n"
+        text = "\n".join(lines).rstrip() + "\n"
         assert text.count('<a id="t') == len(events)
         assert all(js(e.get("parsed")) in text for e in events)
         (OUT / f"{label}.md").write_text(text, encoding="utf-8")
@@ -181,7 +181,7 @@ def render():
         "仓库根目录重建命令：\n\n```bash\n"
         "python trusted_data_synthesis/scripts/render_qa_trajectory_review.py\n```\n",
     ]
-    (OUT / "README.md").write_text("\n".join(index) + "\n", encoding="utf-8")
+    (OUT / "README.md").write_text("\n".join(index).rstrip() + "\n", encoding="utf-8")
     print(f"Rendered {len(records)} sessions, {total} submissions, {admitted_total} admitted.")
 
 
