@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Compute the share of Total net revenue that is Noninterest revenue.",
+  "reason": "We need the percentage of Total net revenue that was Noninterest revenue. First compute the ratio of Noninterest revenue (E1, value 50033) to Total net revenue (E3, value 93543) using share_ratio. Then multiply by 100 to get percent.",
+  "operation": "share_ratio",
+  "inputs": ["E1", "E3"],
+  "parameters": {}
+}

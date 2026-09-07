@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T5",
+  "subgoal": "Calculate the signed percentage-point gap between revenue growth and operating income growth.",
+  "reason": "We have accepted claims C1 (revenue growth=12.10005817335660267597440372%) and C2 (operating income growth=-20.44198895027624309392265193%). The signed_percentage_point_gap tool computes observed minus reference. We choose reference=C1 and observed=C2, yielding a negative gap; the final absolute_percentage_point_gap will make it positive. Inputs are C1 and C2.",
+  "operation": "signed_percentage_point_gap",
+  "inputs": ["C1", "C2"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Calculate operating-income growth from 2014 Q2 to 2014 Q4 using E3 and E4.",
+  "reason": "We need operating-income growth to compute the absolute percentage-point spread against the already accepted revenue growth (C1). E3 and E4 are raw monetary evidence items for operating income in 2014 Q2 and 2014 Q4 respectively.",
+  "operation": "growth",
+  "inputs": ["E3", "E4"],
+  "parameters": {}
+}

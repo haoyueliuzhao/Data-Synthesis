@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T6",
+  "subgoal": "Take the absolute value of the signed percentage-point gap C3.",
+  "reason": "The question asks for the absolute percentage-point spread. C3 is the signed gap between revenue growth and operating-income growth; applying absolute_percentage_point_gap to C3 yields the required non-negative percentage_points result.",
+  "operation": "absolute_percentage_point_gap",
+  "inputs": ["C3"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Calculate Noninterest revenue as a percentage of Total net revenue for 2015.",
+  "reason": "Need a share ratio of target_component E1 (50033) over disclosed_total E3 (93543), then scale to percent.",
+  "operation": "share_ratio",
+  "inputs": ["E1", "E3"],
+  "parameters": {}
+}

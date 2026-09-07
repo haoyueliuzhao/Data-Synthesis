@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Compute operating income growth from 2014 Q2 to Q4 using E3 and E4.",
+  "reason": "Need operating income growth to later compute spread against revenue growth (C1). E3=181 (Q2), E4=144 (Q4).",
+  "operation": "growth",
+  "inputs": ["E3", "E4"],
+  "parameters": {}
+}

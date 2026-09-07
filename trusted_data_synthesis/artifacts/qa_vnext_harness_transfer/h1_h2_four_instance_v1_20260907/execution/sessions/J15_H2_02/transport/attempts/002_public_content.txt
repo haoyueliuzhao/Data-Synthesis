@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Convert the accepted share ratio to a percentage.",
+  "reason": "The question asks for the percentage of Total net revenue that Noninterest revenue represents. We have an accepted share ratio claim C1 with value 0.53486631816383909004415081834022855798937387084015. The scale_percent tool converts a share ratio to a percent.",
+  "operation": "scale_percent",
+  "inputs": ["C1"],
+  "parameters": {}
+}

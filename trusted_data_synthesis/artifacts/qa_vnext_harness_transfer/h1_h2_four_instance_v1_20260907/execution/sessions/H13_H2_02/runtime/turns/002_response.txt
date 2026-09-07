@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Calculate operating-income growth from Q1 to Q3 using E3 and E4",
+  "reason": "We need the operating-income growth to compare with revenue growth. E3 (Q1 operating income 159) and E4 (Q3 operating income 171) are the relevant raw evidence items.",
+  "operation": "growth",
+  "inputs": ["E3", "E4"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T4",
+  "subgoal": "Compute the absolute percentage-point spread between revenue growth (C1) and operating-income growth (C2).",
+  "reason": "The question requires the absolute difference between the two growth percentages. The signed_percentage_point_gap operation takes two accepted percent results: C1 (revenue growth) and C2 (operating-income growth). Then absolute_percentage_point_gap will take the absolute value. Since the final unit is percentage_points, we can directly apply absolute_percentage_point_gap to the signed gap. However, the tools list has both signed_percentage_point_gap and absolute_percentage_point_gap. The absolute_percentage_point_gap rule says 'One accepted percentage_points result; absolute value, same unit.' So we first need a signed gap in percentage_points, then take absolute. Alternatively, we could use signed_percentage_point_gap with reference=C1, observed=C2 to get a signed gap, then absolute_percentage_point_gap. But the absolute_percentage_point_gap expects a percentage_points result as input, not percent. So we need two steps: first signed gap, then absolute. To minimize steps, we could directly compute absolute difference using absolute_percentage_point_gap if it could accept two percent inputs, but its rule says one percentage_points result. So we must first produce a signed gap. We'll propose signed_percentage_point_gap with inputs C1 and C2.",
+  "operation": "signed_percentage_point_gap",
+  "inputs": ["C1", "C2"],
+  "parameters": {}
+}

@@ -1,0 +1,5 @@
+{
+  "kind": "action",
+  "state_id": "T6",
+  "action": "A4"
+}

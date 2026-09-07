@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "T6",
+  "observation": "O3",
+  "disposition": "accept"
+}

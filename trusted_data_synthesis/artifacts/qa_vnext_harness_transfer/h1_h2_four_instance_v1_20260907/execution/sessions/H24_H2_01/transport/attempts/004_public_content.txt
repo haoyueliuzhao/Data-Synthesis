@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T4",
+  "subgoal": "Compute the signed percentage-point gap between revenue growth (C1) and operating-income growth (C2).",
+  "reason": "The question asks for the absolute percentage-point spread between the two growth rates. The signed_percentage_point_gap operation accepts two percent results and outputs observed minus reference. Using revenue growth as reference and operating-income growth as observed gives the signed gap, then absolute_percentage_point_gap yields the final spread.",
+  "operation": "signed_percentage_point_gap",
+  "inputs": ["C1", "C2"],
+  "parameters": {}
+}

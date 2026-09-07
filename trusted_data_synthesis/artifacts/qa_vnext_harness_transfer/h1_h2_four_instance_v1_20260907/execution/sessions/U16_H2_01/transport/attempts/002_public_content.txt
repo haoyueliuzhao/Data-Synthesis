@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Convert the accepted share ratio to a percentage.",
+  "reason": "The accepted claim C1 provides the share ratio. The scale_percent operation can convert this ratio to a percentage, which is required by the final answer schema.",
+  "operation": "scale_percent",
+  "inputs": ["C1"],
+  "parameters": {}
+}

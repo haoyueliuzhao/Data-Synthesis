@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Calculate revenue growth from 2014 Q2 to 2014 Q4 using E1 and E2.",
+  "reason": "Revenue growth requires earlier (Q2) and later (Q4) revenue values. E1 provides 2014 Q2 revenue 1719 million USD, E2 provides 2014 Q4 revenue 1927 million USD. They share metric, subject, scope, unit, currency, source, and periods are strictly increasing.",
+  "operation": "growth",
+  "inputs": ["E1", "E2"],
+  "parameters": {}
+}

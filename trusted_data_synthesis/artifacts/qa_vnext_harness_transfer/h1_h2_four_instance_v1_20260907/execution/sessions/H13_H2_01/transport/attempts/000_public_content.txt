@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Compute revenue growth from 2014 Q1 to 2014 Q3.",
+  "reason": "Need revenue growth rate first. Use E1 (Q1 revenue 1594) and E2 (Q3 revenue 1717) with growth operation.",
+  "operation": "growth",
+  "inputs": ["E1", "E2"],
+  "parameters": {}
+}

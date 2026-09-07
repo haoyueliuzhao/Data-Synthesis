@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Calculate revenue growth from Q1 to Q3 using E1 and E2",
+  "reason": "We need revenue growth first, which requires earlier (Q1) and later (Q3) revenue values. E1 is revenue for 2014 Q1 (1594) and E2 is revenue for 2014 Q3 (1717). They match metric, subject, scope, unit, currency, source, and periods are increasing.",
+  "operation": "growth",
+  "inputs": ["E1", "E2"],
+  "parameters": {}
+}

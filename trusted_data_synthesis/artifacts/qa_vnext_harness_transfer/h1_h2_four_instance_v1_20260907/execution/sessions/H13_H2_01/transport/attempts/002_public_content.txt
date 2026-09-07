@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Compute operating-income growth from 2014 Q1 to 2014 Q3.",
+  "reason": "Use the growth operation on the operating income evidence for 2014 Q1 (E3) and 2014 Q3 (E4) to calculate the percentage growth.",
+  "operation": "growth",
+  "inputs": ["E3", "E4"],
+  "parameters": {}
+}

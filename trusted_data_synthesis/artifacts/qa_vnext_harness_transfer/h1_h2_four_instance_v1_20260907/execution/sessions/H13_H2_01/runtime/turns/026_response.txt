@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T26",
+  "subgoal": "Compute the absolute percentage-point gap between C1 and C2.",
+  "reason": "The accepted revenue growth C1 and operating-income growth C2 are both percent values over the same interval. The absolute_percentage_point_gap operation takes the signed gap from C3 and returns its absolute value in percentage_points.",
+  "operation": "absolute_percentage_point_gap",
+  "inputs": ["C3"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T4",
+  "subgoal": "Calculate the absolute percentage-point spread between revenue growth and operating-income growth.",
+  "reason": "Use the absolute percentage point gap operation on the accepted percent results C1 and C2. The operation accepts two accepted percent results with matching subject/scope/period interval and outputs absolute percentage_points.",
+  "operation": "absolute_percentage_point_gap",
+  "inputs": ["C1", "C2"],
+  "parameters": {}
+}
