@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Compute the share ratio of total freight revenues to total operating revenues.",
+  "reason": "The question asks for the percentage of total operating revenues that was total freight revenues. The part-whole relation E3 has total_operating_revenues as total_id (E4) and total_freight_revenues as a member (E1). The share_ratio tool divides a source member by its legitimate total. Use E1 as numerator and E4 as denominator.",
+  "operation": "share_ratio",
+  "inputs": ["E1", "E4"],
+  "parameters": {}
+}

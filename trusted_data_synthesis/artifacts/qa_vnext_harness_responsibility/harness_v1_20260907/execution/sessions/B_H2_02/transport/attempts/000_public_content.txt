@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Calculate revenue growth from FY2015 to FY2016.",
+  "reason": "The task requires revenue growth and operating-income growth. Start with revenue growth using the two revenue evidence items E1 (FY2015) and E2 (FY2016).",
+  "operation": "growth",
+  "inputs": ["E1", "E2"],
+  "parameters": {}
+}

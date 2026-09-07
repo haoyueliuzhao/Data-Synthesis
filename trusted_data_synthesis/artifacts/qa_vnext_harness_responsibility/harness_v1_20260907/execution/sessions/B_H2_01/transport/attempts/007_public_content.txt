@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T7",
+  "subgoal": "Compute the absolute percentage-point spread between revenue growth and operating-income growth.",
+  "reason": "C3 holds the signed gap. Apply absolute_percentage_point_gap to C3 to get the absolute spread.",
+  "operation": "absolute_percentage_point_gap",
+  "inputs": ["C3"],
+  "parameters": {}
+}

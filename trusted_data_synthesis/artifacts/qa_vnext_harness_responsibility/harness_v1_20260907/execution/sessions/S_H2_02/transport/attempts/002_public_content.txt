@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Convert the accepted freight share ratio to a percentage.",
+  "reason": "The task asks for percentage of total operating revenues that was total freight revenues. We have accepted share_ratio C1 with value 0.93508458258836473662494842525099711181405583826159. Applying scale_percent to that ratio yields percent.",
+  "operation": "scale_percent",
+  "inputs": ["C1"],
+  "parameters": {}
+}

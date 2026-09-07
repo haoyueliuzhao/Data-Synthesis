@@ -1,0 +1,10 @@
+{
+  "kind": "final",
+  "state_id": "T6",
+  "answer_claim_id": "C3",
+  "result": {
+    "value": "93.508458",
+    "unit": "percent"
+  },
+  "citations": ["E4", "E1"]
+}

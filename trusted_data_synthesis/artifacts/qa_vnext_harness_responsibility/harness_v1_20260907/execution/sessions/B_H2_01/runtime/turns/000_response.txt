@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Calculate revenue growth from FY2015 to FY2016.",
+  "reason": "Use growth operation with earlier=E1 (FY2015 revenue) and later=E2 (FY2016 revenue) to get revenue growth percentage.",
+  "operation": "growth",
+  "inputs": ["E1", "E2"],
+  "parameters": {}
+}

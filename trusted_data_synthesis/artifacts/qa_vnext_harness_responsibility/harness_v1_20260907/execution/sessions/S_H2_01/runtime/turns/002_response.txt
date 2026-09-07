@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Convert the accepted freight share ratio to a percentage.",
+  "reason": "The accepted claim C1 provides the ratio of freight revenues to total operating revenues. The required answer is a percentage, so apply scale_percent to that ratio.",
+  "operation": "scale_percent",
+  "inputs": ["C1"],
+  "parameters": {}
+}

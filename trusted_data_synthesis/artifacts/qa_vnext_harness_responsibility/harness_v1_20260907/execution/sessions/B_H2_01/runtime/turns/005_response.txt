@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T5",
+  "subgoal": "Compute the signed percentage-point gap between revenue growth and operating-income growth.",
+  "reason": "Use signed_percentage_point_gap with reference_percent=C1 (revenue growth) and observed_percent=C2 (operating-income growth) to get observed - reference.",
+  "operation": "signed_percentage_point_gap",
+  "inputs": ["C1", "C2"],
+  "parameters": {}
+}

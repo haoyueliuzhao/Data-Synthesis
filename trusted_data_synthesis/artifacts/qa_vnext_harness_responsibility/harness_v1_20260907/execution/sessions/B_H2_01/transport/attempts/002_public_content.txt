@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T2",
+  "subgoal": "Calculate operating-income growth from FY2015 to FY2016.",
+  "reason": "Use the growth operation on operating income evidence E3 (FY2015) and E4 (FY2016) to get the second growth rate needed for the spread.",
+  "operation": "growth",
+  "inputs": ["E3", "E4"],
+  "parameters": {}
+}

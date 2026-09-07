@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T0",
+  "subgoal": "Compute total freight revenues as a share of total operating revenues.",
+  "reason": "The question asks for percentage of total operating revenues attributable to total freight revenues. We have numeric evidence for total freight revenues (E1) and total operating revenues (E4). Use share_ratio with numerator E1 and denominator E4, then scale_percent.",
+  "operation": "share_ratio",
+  "inputs": ["E1", "E4"],
+  "parameters": {}
+}

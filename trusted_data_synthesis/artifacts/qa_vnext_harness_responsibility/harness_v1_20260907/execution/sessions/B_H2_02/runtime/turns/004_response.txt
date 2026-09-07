@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "T4",
+  "subgoal": "Compute the signed percentage-point gap between operating-income growth (C2) and revenue growth (C1) for the same FY2015-FY2016 interval.",
+  "reason": "Use signed_percentage_point_gap with C2 as reference and C1 as observed, yielding the spread in percentage points. Then apply absolute_percentage_point_gap to get the final answer.",
+  "operation": "signed_percentage_point_gap",
+  "inputs": ["C2", "C1"],
+  "parameters": {}
+}
