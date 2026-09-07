@@ -13,6 +13,7 @@ from trusted_synthesis.canonical_json import canonical_json_bytes, strict_canoni
 from trusted_synthesis.core.operations.registry import OperationRegistry
 
 from .action_public_contract import publish_action_contract, rejection_feedback
+from .final_public_contract import publish_final_contract
 from .protocol import ProtocolError, contract, parse, record, require
 from .update_public_contract import publish_update_contract
 
@@ -211,7 +212,7 @@ class PublicQARuntime:
                         after | ({"submit_final"} if finals else set())
                     ),
                 }
-        return publish_action_contract(
+        request = publish_action_contract(
             publish_update_contract(
                 record(
                     "request",
@@ -226,6 +227,11 @@ class PublicQARuntime:
                     response_schemas=self.rules["submission_schemas"],
                 )
             )
+        )
+        return (
+            publish_final_contract(request)
+            if getattr(self.adapter, "public_final_contract_enabled", False)
+            else request
         )
 
     def _claim(self, observation: dict[str, Any]) -> dict[str, Any]:

@@ -8,6 +8,7 @@ from typing import Any
 
 from trusted_synthesis.canonical_json import canonical_json_bytes
 
+from .final_public_contract import rejection_feedback as final_rejection_feedback
 from .protocol import record, require
 from .update_public_contract import pointer
 from .update_public_contract import rejection_feedback as update_rejection_feedback
@@ -193,6 +194,11 @@ def rejection_feedback(
     code: str | None, request: dict[str, Any], submitted: dict[str, Any] | None
 ) -> dict[str, Any]:
     """Current public constraints only; never return a corrected Submission or choose an Action."""
+    if "public_final_contract" in request and (
+        (submitted is not None and submitted.get("kind") == "final")
+        or (submitted is None and bool(request.get("final_claim_ids")))
+    ):
+        return final_rejection_feedback(code, request, submitted)
     if (
         submitted is None
         or submitted.get("kind") != "action"

@@ -212,6 +212,15 @@ submission-budget failures without an admitted Final. No new valid class, D/R wi
 or positive supervision package was produced; this is a bounded negative result.
 See the [cross-binding design and experiment record](docs/finance_qa_vnext_cross_binding_dual_support_transfer_pilot.md).
 
+Final-publication full-session pilot:
+`python -m trusted_synthesis.experiments.finance_qa_vnext_final_publication {prepare,run}`.
+The original three tasks and strict verifier are retained while Final requirements
+and field-specific rejection feedback are fully published in actual requests.
+Twelve historical ready states are read-only local controls, not resumed sessions;
+the fresh population is six complete N/E sessions, capped at 192 Provider attempts.
+The quotient rule and 32,768-token policy are unchanged, with no resampling or Student/GPU.
+See the [Final publication design and experiment record](docs/finance_qa_vnext_final_publication_full_session_pilot.md).
+
 ## Canonical Experiment
 
 ```bash
