@@ -142,7 +142,100 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONPATH=trusted_data_synthesis/src truste
 
 新工件目录为 `artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907`。准备目录保存新条件/规则、原生成条件引用、比较合同、源绑定和表示引用、历史清单、实现及 guard；测量目录保存八个状态 sidecar、三对、类/Assignment/分布、控制、保存性结果及报告。旧工件不修改，成功封存后入口只核对并读回，不重建。
 
-正式结果将在测量完成后补入，不在冻结设计中预填类数或 W。
+### 9.1 正式结果及版本绑定
+
+正式测量在源码提交 `2fe2681a0df96f48e8ef537d69bed8289d3f7fe4` 下完成。三条原 Qualified 轨迹全部映射，七条新事件解释完成，十四条旧解释复用，三对比较全部确定且均为 `not_equivalent`，得到三个正式 Assignment 和三个有限商类。
+
+```text
+new_W_support                         = true
+complete_quotient_measurement_closed   = true
+mapped / original Qualified           = 3 / 3
+unmapped Qualified                    = 0
+determinate / registered pairs        = 3 / 3
+newly interpreted / reused events     = 7 / 14
+new Provider / Runtime / Tokenization  = 0 / 0 / 0
+historical q_N / q_E / q_explore       = 1/4 / 2/4 / 3/8
+```
+
+| 对象 | 正式 ID 的哈希部分 |
+| --- | --- |
+| 新测量条件 | `74d50e91ddf0d0ad075941bac025fa6a3e09f749b04bd675eb7e846bfa379036` |
+| 新规则 | `40d0a50f1e3fdc4d530050d77939b2283df5ba88146dcddf7d72ec91b529a111` |
+| 新比较合同 | `2c00d302f21f22d0a27679fd8f69b43728dfee20bd33e7d4dcf1b851eccc5828` |
+| 准备 manifest | `dddd9d38645b3e7699f53d7d6c5993e1d68d790fb8a456b2e894bc794a8e853e` |
+| 测量 manifest | `34113d7de2017020a40ff521aeeca5c80af43003243961d218f8e882fd1eb002` |
+| 新报告 | `251c907d1eb689e8df047fa9b7eca729e8e01e87455da1f3849b160d978f334f` |
+| 新分布 | `b2b2978b5b14a7ce6b726b5c69b43eafe64118ca2fb7e980d2bdb0c6cc4a7c9d` |
+
+完整带类型身份见[正式报告](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/report.json)、[新规则](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/preparation/rule.json)和[新测量条件](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/preparation/condition.json)。旧探索条件、旧 `W_support=false`、旧两个 undetermined 与旧 π=null 原字节保留，新结论没有覆盖旧报告。
+
+### 9.2 三条轨迹的实际新解释
+
+| 会话 | 新解释事件 | 复用旧解释 | 行为投影中的保留关系 | 结果 |
+| --- | ---: | ---: | --- | --- |
+| N03 | 1：T1 | 0 | 一段 D 提案 → 实际 R 的支持转换 | supported |
+| E02 | 6：T1、T2、T9、T11、T12、T14 | 3 | 一段支持转换，加一段完整 Final 支持断言修正 | supported |
+| E04 | 0 | 11 | 原 D 提案 → sum → 实际 D 的关系完全复用 | supported |
+
+E02 T1/T2 的连续相同提案在行为层折叠次数，原两个事件各自保留。Final 段保留八次原始声明；规范序列有六个状态，保留三次从正确 lineage 又返回错误替换的变化，不把这段过程压成一个最终正确声明。
+
+N03 与 E02 的实际 ratio 均消费 accepted total Claim，但其原被拒提案的公开判断不同，且只有 E02 有上述错误支持断言往复。三个原实际 Action 节点及 Final 在所有新投影中保持不变。E04 的真实 sum 与未消费 total Claim 没有因新比较而被删除。
+
+原始位置、前后 State、旧未定原因、新关系和完整 Final 段均见 [N03 sidecar](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/projections/N03.json)、[E02 sidecar](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/projections/E02.json)、[E04 sidecar](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/projections/E04.json)。五个失败仍只有 ineligible sidecar，没有有效 Assignment。
+
+### 9.3 三对比较与严格双支持见证
+
+| 配对 | 结果 | 明确的保留差异 | 是否构成 D/R 见证 |
+| --- | --- | --- | --- |
+| N03 / E04 | not_equivalent | denominator 来自 accepted sum Claim / 披露 Evidence，真实输入依赖不同 | 是 |
+| N03 / E02 | not_equivalent | 实际重建基底相同，但原提案公开判断及 Final 支持断言历史不同 | 否，二者均为 R |
+| E02 / E04 | not_equivalent | denominator 的实际 Evidence/Claim 类型和生产—消费链不同 | 是 |
+
+两个 D/R 配对的通用差异见证为 `retained_action_semantics`，并分别有明确的 `execution_support_contrast`，以 `decisive_input_role=denominator`、原 Evidence ID / accepted Claim 的 sum producer、原 Action/Observation/Update/Claim 与真实 input dependencies 绑定。三个成功均执行三次 Action，因此这一差异不依赖“多一步计算”或错误数量。
+
+N03/E02 的通用见证为 `retained_dependency_or_final_structure`，完整对象进一步展示保留关系中的公开判断及 grounding assertion segment 差异。它不构成新的分母机制，也不说明哪个行为更有价值；本轮未预设 R/R 必须合并。
+
+新的 W 由 N03/E04 和 E02/E04 两个实际 D/R 配对共同支持，其记录为 `qa_vnext_model_execution_support_transition_target_witness:5f445b62934c5ad7f72be8bf2be0d2baed679e637c7da9226a1145c402292546`。详细证据见[三对完整比较](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/comparisons.json)及[分布中的目标见证](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/distribution.json)。
+
+### 9.4 完整有限经验分布
+
+以下 z 名称只是本报告对来源绑定类的简称，不表示按 profile 或会话名字赋类。
+
+| 类简称 | 当前成员 | 实际分母支持 | 原 profile 构成 | u_Γ | π_Γ（有效条件） |
+| --- | --- | --- | --- | ---: | ---: |
+| z_N03 | N03 | 重建 Claim | N：1 | 1/8 | 1/3 |
+| z_E02 | E02 | 重建 Claim | E：1 | 1/8 | 1/3 |
+| z_E04 | E04 | 披露 Evidence | E：1 | 1/8 | 1/3 |
+
+三个类的正式引用哈希分别为 `c59c9ee40012a4fe41635412b859e224f0b40556893680fd518822947ebd141c`、`60bbc78d206ebec07f3073b9c293ff2b7b4dfaa6b9ce89d2592a2ed2956dc177`、`2820263cb2c5fe2c0169f79bcd56c6a8ebee2bfee201927822f57166343a4eb1`。见[正式类引用](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/classes.json)及[三个 Assignment](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/assignments.json)。
+
+分层条件分布为：N 的唯一已观察类 z_N03 占 `1/1`；E 的 z_E02、z_E04 各占 `1/2`。按成功质量混合，N 权重 `1/3`、E 权重 `2/3`，得到探索源三个类各 `1/3`。如果错误使用各 `1/2` 的成功条件混合权重，会得到 z_N03=`1/2`、另外两类各 `1/4`，不符合当前三条成功计数。
+
+总联合有效质量 `3×1/8=3/8`，未映射有效质量 0，失败质量仍为 `5/8`；有效条件质量 `3×1/3=1`。按支持类型聚合后仍是 R=`2/3`、D=`1/3`，但这两个支持类型不等于三个完整商类。
+
+在当前三个已观察类上，概率单纯形维数为 2，这是有限支持上的数学自由度，不是已实施 VTDO 优化或训练收益。完整类数从旧测量的 null 变为新测量的 3，不意味着已经穷尽此任务的全部可能行为。
+
+### 9.5 控制、测试与保存性
+
+正式测量内共 22 项直接控制全部实际执行并符合预期，0 项不适用：
+
+| 控制 | 数量 | 实际结果 |
+| --- | ---: | --- |
+| E04 整体兼容与十四条旧解释字节复用 | 2 | 原样成立 |
+| 两条 R 的被拒提案伪执行、伪准入、错误扩张无效果区间 | 6 | 均拒绝 |
+| 两条 R 的 sum 删除、未接受 Claim、resolved input 伪造 | 6 | 均拒绝错误依赖 |
+| 旧 citation 归约仍拒绝、本次完整声明段保留、非法近似数值 | 3 | 新旧边界及完整上下文均保持 |
+| 有效分母/失败/旧生成条件篡改、profile、局部 W 与全量未定 | 5 | 拒绝伪造，或正确保留未定及独立存在性 |
+
+局部未定控制故意让 E02 保持未映射时，N03/E04 的新 W 仍成立，而完整类数和 π 保持 null；该控制不是正式结果。对于真正未定而不适用的检查会明确记为 not_applicable，但“声称 supported 却缺少必要 grounding 证明”不能用不适用掩盖。所有反事实副本均未被写成新的有效模型轨迹或正式 Assignment。[直接控制报告](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/measurement/controls.json)保存逐项来源及结果。
+
+新增组件测试 **83/83 通过，77.83 秒**：source 19、projection 14、comparison 26、distribution 19、controls 5。Ruff 全部通过，mypy 新增 10 个源码文件通过。[JUnit](../artifacts/qa_vnext_support_transition/support_transition_grounding_v1_20260907/validation/component_tests.xml)保留结果。未重跑旧 63 项在线接线测试或旧八任务测试。
+
+准备与测量的 29 个禁止入口计数均为 0：包括 Provider、凭据、Runtime/Operation、资格/audit、旧支持重分类、旧投影/quotient 重算、候选重新导出、Tokenizer/表示重做、Student 构造/权重读取及 CUDA 初始化。`cuda_initialized=false`。这里只对已绑定值做规范化、引用连接、精确比较与既有 Decimal 表示投影，不执行 Finance 运算或 QA 复验；插桩也不声称对任意代码提供形式化隔离证明。
+
+15,877 个历史文件、797,477,854 字节及 908 个前驱 Python 文件全部保持原字节。原 21 候选、21 Token 和 3 完整包只作身份/哈希引用，未创建新的 Token 数组。新阶段共 31 个文件、8,086,067 字节：准备 manifest 12 个成员、测量 manifest 16 个成员，加两个 manifest 自身和一份 JUnit。发布检查仅核对封存成员、字节和报告读回，没有新增同内容独立语义审计。
+
+结论：当前三条轨迹的有限商测量与严格 D/R 支持见证均已闭合，可关闭这一批 Share 的支持存在性问题。五条原失败和 `3/8` 成功率没有改变，旧测量的未定状态也没有回写。没有新增采样、训练权重、Student 效用、Contribution 或 VTDO 更新。
 
 ## 10. 后继边界
 

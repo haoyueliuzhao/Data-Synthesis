@@ -191,6 +191,11 @@ It adds typed retention for an unexecuted disclosed proposal followed by actual 
 Claim consumption, and for incorrect Final support assertions across the complete correction
 segment. Original generation, qualification, all eight outcomes and 21 Token records stay
 unchanged; the new measurement rule and three pairwise comparisons are separately bound.
+Completed under source `2fe2681a`: all three valid trajectories now have Assignments,
+the three pairs are non-equivalent, and two explicit denominator contrasts establish
+the new `W_support=true`. The three observed classes each have conditional frequency
+1/3 and joint frequency 1/8; historical success stays 3/8. All 83 new tests and 22 local
+controls pass, with zero Provider/Runtime/qualification replay/tokenization/Student/GPU.
 See the [support-transition and grounding-assertion measurement record](docs/finance_qa_vnext_support_transition_grounding_measurement.md).
 
 ## Canonical Experiment
