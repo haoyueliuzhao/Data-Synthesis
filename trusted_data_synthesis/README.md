@@ -198,6 +198,15 @@ the new `W_support=true`. The three observed classes each have conditional frequ
 controls pass, with zero Provider/Runtime/qualification replay/tokenization/Student/GPU.
 See the [support-transition and grounding-assertion measurement record](docs/finance_qa_vnext_support_transition_grounding_measurement.md).
 
+Cross-binding dual-support transfer pilot:
+`python -m trusted_synthesis.experiments.finance_qa_vnext_cross_binding {prepare,run}`.
+Three independently instantiated source-bound tasks (UNP 2016, JPM 2014 and JPM 2015),
+with two neutral and two soft-guided sessions each, use one prospectively frozen
+parameterized measurement rule. The bound is 12 sessions / 384 Provider attempts,
+with no resampling, Student or GPU; comparisons and class probabilities remain per task.
+Known-source contamination is registered and independent evaluation remains unbound.
+See the [cross-binding design and experiment record](docs/finance_qa_vnext_cross_binding_dual_support_transfer_pilot.md).
+
 ## Canonical Experiment
 
 ```bash
