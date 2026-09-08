@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a589cdbd43f9aff7a32cb10c303b69dbfada52623f423700f082bbd8743c587b",
+  "subgoal": "Read 2009 share-based compensation cost",
+  "reason": "Need the 2009 value to compute percentage change from 2009 to 2010.",
+  "operation": "read",
+  "inputs": ["source:t1c2n0"],
+  "parameters": {}
+}

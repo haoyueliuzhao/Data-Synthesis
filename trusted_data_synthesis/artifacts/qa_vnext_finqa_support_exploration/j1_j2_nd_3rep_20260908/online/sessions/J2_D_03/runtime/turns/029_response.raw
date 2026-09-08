@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d74fa80741e37c0ca9fd788b75301da4e92d0d544f20153a7afee5c84b8ea046",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017 in millions of dollars.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017. We have the stock options in millions for 2017 (11) and 2016 (13), and the average exercise price for 2017 ($33.32). The total value for each year is the number of options (in millions) times the average exercise price. The increase is the 2017 total minus the 2016 total. However, the 2016 average exercise price is available as source:q0n3 ($26.93), which we have not yet read. Reading it will allow correct computation.",
+  "operation": "read",
+  "inputs": ["source:q0n3"],
+  "parameters": {}
+}

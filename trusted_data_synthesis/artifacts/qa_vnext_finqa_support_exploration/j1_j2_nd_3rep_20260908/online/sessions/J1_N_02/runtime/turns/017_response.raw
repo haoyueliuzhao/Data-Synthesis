@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f42633ed62df5d4a99609f8654c6ceee1e30353d0b2e77718337a57cc56e2b45",
+  "subgoal": "Multiply the ratio by 100 to convert to percentage.",
+  "reason": "The question asks for percentage change. The accepted claim 4372438810aed42b4d895e36b14183be83402fff959807616f1ea0c2f4bb5d1f is 0.255319..., which is the ratio of change to base. Multiplying by 100 yields the percentage value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:4372438810aed42b4d895e36b14183be83402fff959807616f1ea0c2f4bb5d1f",
+    "constant:100"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:596336ee21f2445121dc855c35bf49e6771b2c42981ba11d9f3e1ced7dfab24a",
+  "subgoal": "Compute the difference between 2010 and 2009 after-tax share-based compensation cost",
+  "reason": "Percentage change requires (2010 - 2009) / 2009. After-tax cost = share-based compensation cost minus income tax benefit. Need to derive after-tax values first.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:00372917bd82666d4170f6b16de5d6e5128cdfa74cb524afdd5152493d41af15",
+    "constant:0"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d8319c03310b33f872f4e28041d1fd5e5f132adff01b2955357bf9ab20700765",
+  "subgoal": "Multiply the after-tax change ratio by 100 to express as percent",
+  "reason": "Convert the ratio 12/47 to percentage by multiplying by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:caafed34eebbdbb5fd2278b553db7751ab0b9931d23be51b3de5378e86c3e300",
+    "constant:100"
+  ],
+  "parameters": {}
+}

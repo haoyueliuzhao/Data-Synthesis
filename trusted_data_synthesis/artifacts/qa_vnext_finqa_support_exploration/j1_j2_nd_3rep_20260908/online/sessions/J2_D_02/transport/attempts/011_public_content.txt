@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e09885559ee2cec09f0e115f25ad3eb9bd77b1b2c3d8f0f7e5d27c394f694ed4",
+  "subgoal": "Compute 2016 total value = 26.93 * 13",
+  "reason": "Need total value for 2016 to compare with 2017.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:aa823d463cfbf03044bad440f22b685013e4d8aed4f05f0c9f2f5da94a68111a",
+    "finance_qa_vnext_claim:a8ed425ccff771a738329ca4ca69baef2aa32bb2b7ca9d95f8bc8ba8db462f9d"
+  ],
+  "parameters": {}
+}

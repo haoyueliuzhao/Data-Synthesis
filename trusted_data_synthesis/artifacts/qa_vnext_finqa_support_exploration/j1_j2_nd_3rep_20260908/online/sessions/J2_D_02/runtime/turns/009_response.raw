@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d74e81a0e5594b8e3427404cfb793b3a54558549c4123ba0f4fba5963255716f",
+  "subgoal": "Read the 2016 stock option shares from the table.",
+  "reason": "Need the number of stock options for 2016 to compute total value and then the increase.",
+  "operation": "read",
+  "inputs": [
+    "source:t3c3n0"
+  ],
+  "parameters": {}
+}

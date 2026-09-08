@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:433a20fe882c608fa3f86f02d8300ddcf9dab981139ae05f9dd9491af1921537",
+  "subgoal": "Convert the after-tax change ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for percentage change. We have the ratio 0.255319... as claim 889f...; multiplying by constant:100 yields the percentage value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:889f908f4bdd0bccba1f1850e806f85db484a73879aab4779fa967ad8b5c3982",
+    "constant:100"
+  ],
+  "parameters": {}
+}

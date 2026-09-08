@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:013579984537a39099c8693e645f6ba86485c92ad7c8401da9d1989838140c98",
+  "subgoal": "Compute the difference in total stock option value between 2017 and 2016.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017. The values are 11 (2017) and 13 (2016). The increase from 2016 to 2017 is 11 - 13 = -2, but the question likely expects absolute increase, so we compute 13 - 11 = 2. However, we need to follow source arithmetic: we will subtract 2017 from 2016 or vice versa. Since the question says 'increase in the total value of stock options observed during 2016 and 2017', it might be ambiguous. Let's compute the difference as 2017 value minus 2016 value: 11 - 13 = -2. But the answer unit is USD_million, and the final result should be a positive increase? Actually, increase from 2016 to 2017 is negative, but the question may be asking for the change in value, which could be negative. We'll compute 11 - 13 = -2. However, the final answer might require a positive number. We'll decide later. For now, perform subtraction.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:bb79d277b0ec475d7e4526bcc4d2f75d5c9a4caf5444c943a7124c8a3e8a629d",
+    "finance_qa_vnext_claim:de509acbc811741b0b2bf8d8c9f375b7e43c40b97424042ba71311327a0ddea5"
+  ],
+  "parameters": {}
+}

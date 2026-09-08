@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a551624ea38149620c9e11e94f91c1e9a09c837004fbf8fdcba7093eb6c8e6fe",
+  "subgoal": "Compute the after-tax share-based compensation cost for 2010 by adding the share-based compensation cost and the income tax benefit for 2010.",
+  "reason": "The question asks for the percentage change in after-tax share-based compensation cost. After-tax cost is the sum of the share-based compensation cost and the income tax benefit (which is negative). We need to read the 2010 income tax benefit source first.",
+  "operation": "read",
+  "inputs": ["source:t2c1n0"],
+  "parameters": {}
+}

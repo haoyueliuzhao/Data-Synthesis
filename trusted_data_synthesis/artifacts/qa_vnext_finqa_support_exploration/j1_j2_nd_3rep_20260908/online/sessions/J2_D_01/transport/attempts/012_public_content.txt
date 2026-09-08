@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:92f5f5f3d5e5cf077a50137788be51306d685427220c446af394849810811ffe",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017.",
+  "reason": "Need to subtract 2016 total value from 2017 total value.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:6f6e0e01a03acb057c5bfc5e39b721a5ad5c956e32a981d05661ebca92450b88",
+    "finance_qa_vnext_claim:68407313a9651f79f183ab510c313b6d2d3c1ab2911a9850fd5b3dc0be754e0e"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:cd8390c47accc3a42882ca6aaf3f698323d1cc78931c81dc28999ea57f85e4f1",
+  "subgoal": "Compute after-tax share-based compensation cost for 2010 and 2009.",
+  "reason": "After-tax cost = share-based compensation cost + income tax benefit (which is negative).",
+  "operation": "add",
+  "inputs": [
+    "finance_qa_vnext_claim:00372917bd82666d4170f6b16de5d6e5128cdfa74cb524afdd5152493d41af15",
+    "finance_qa_vnext_claim:d1c051fd046908064dd9211eeab7d5aea361a40ac18fb8e5cda758ac50cda866"
+  ],
+  "parameters": {}
+}

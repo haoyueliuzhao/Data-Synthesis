@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:092d12071a8be64e10ee8767691296112920c867f01ab822f014ea980554e9fd",
+  "subgoal": "Compute after-tax share-based compensation cost for 2009.",
+  "reason": "Add share-based compensation cost and income tax benefit for 2009.",
+  "operation": "add",
+  "inputs": [
+    "finance_qa_vnext_claim:d8ded2cdc28c0c655ae882a2485672628ad4201c288fdf952cdfd96e13ff0166",
+    "finance_qa_vnext_claim:df4fc371ce3554981ccdc447fdc64207f87d20cd4fa4377859c4ee97a8c16036"
+  ],
+  "parameters": {}
+}

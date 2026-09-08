@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:10f0df5919c2bec9105d21a2ad793bca1b9deb19cd58125b8259f6df313bde5d",
+  "subgoal": "Read 2010 share-based compensation cost",
+  "reason": "Need the after-tax share-based compensation cost for 2010.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

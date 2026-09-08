@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:755d83ff412754d9f0f5679f6e1cbad9f7f2349981dc3fc1c1b45fc1b62a77a3",
+  "subgoal": "Read the 2016 stock options value (13) to enable computing the increase from 2016 to 2017.",
+  "reason": "Need both 2016 and 2017 stock option values to compute increase.",
+  "operation": "read",
+  "inputs": [
+    "source:t3c3n0"
+  ],
+  "parameters": {}
+}

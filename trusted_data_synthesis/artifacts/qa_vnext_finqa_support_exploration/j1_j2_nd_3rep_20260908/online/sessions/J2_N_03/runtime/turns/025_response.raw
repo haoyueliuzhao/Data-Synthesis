@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b1fffeade311bb8b08a4485be0b9fc50e05aaf866ece10870695a94b17905b3a",
+  "subgoal": "Compute total value of stock options for 2016 (13 million shares * $26.93) and for 2017 (11 million shares * $33.32), then find the increase from 2016 to 2017.",
+  "reason": "Need total value for 2016 = shares * average exercise price. We have 13 (source:t3c3n0) and 26.93 (source:q0n3).",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:de509acbc811741b0b2bf8d8c9f375b7e43c40b97424042ba71311327a0ddea5",
+    "finance_qa_vnext_claim:f737e10d5e2c7170c399e8c8a43ccc13225d80ca84e41c7f1ab83f28de754d27"
+  ],
+  "parameters": {}
+}

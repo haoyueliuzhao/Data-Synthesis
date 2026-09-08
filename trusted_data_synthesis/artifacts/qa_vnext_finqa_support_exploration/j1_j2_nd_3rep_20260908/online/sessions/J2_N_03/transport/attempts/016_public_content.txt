@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:aa05ac6c9a67c4369a94db1b0b96c9a4569eec2a7cdfe18239e5c3e6a489a011",
+  "subgoal": "Read the average exercise price of options for 2017 and 2016 to compute the increase in total value of stock options.",
+  "reason": "The question asks for the increase in the total value of stock options during 2016 and 2017, considering average exercise price. The table values are 11 (2017) and 13 (2016). The average exercise prices are 33.32 (2017) and 26.93 (2016) from the post_text. Total value = number of options * average exercise price. We need to read those prices.",
+  "operation": "read",
+  "inputs": ["source:q0n2"],
+  "parameters": {}
+}

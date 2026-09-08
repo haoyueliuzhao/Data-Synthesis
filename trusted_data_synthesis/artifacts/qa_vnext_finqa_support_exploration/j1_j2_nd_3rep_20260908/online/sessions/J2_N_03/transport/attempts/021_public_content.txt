@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:2549ecd260e653d20f4089a1dd925b8534af1b33343fa4112edacc8f79fcf854",
+  "subgoal": "Compute total value of stock options for 2017 by multiplying shares (11 million) by average exercise price ($33.32).",
+  "reason": "Need total value for 2017: shares 11 million × price 33.32 = 366.52 million. Already computed as claim ce20...; use it.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

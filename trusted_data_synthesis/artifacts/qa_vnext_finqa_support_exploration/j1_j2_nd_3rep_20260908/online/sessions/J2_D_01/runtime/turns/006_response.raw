@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b809b4e754c1ed994cc92afe6d95697080439158315159552b65d1669da2dadd",
+  "subgoal": "Read 2016 stock options count (13 million) from source:t3c3n0",
+  "reason": "Need 2016 options count to compute total value for 2016.",
+  "operation": "read",
+  "inputs": ["source:t3c3n0"],
+  "parameters": {}
+}

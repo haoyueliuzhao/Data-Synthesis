@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:563d2be1294a9dcb11b242579276425d974eab30934e200cd7fce46f3fd98c42",
+  "subgoal": "Read the 2010 share-based compensation cost.",
+  "reason": "First read the 2010 value from the numeric catalog.",
+  "operation": "read",
+  "inputs": [
+    "source:t1c1n0"
+  ],
+  "parameters": {}
+}

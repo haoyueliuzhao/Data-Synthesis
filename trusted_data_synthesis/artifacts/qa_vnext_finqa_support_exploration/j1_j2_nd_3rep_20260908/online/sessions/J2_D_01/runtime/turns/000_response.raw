@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:62d302c52b5a566bff183519d71db0a9e878bd007e17c68cddb2129910eb9d04",
+  "subgoal": "Read the 2017 average exercise price of options.",
+  "reason": "Need the 2017 average exercise price to compute total value increase for 2017.",
+  "operation": "read",
+  "inputs": ["source:q0n2"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:9a89b01322537d03039fc440fb17689a3b42b3378bcb0c809d4ddf4fac2927a6",
+  "subgoal": "Compute percentage change in after-tax share-based compensation cost from 2009 to 2010",
+  "reason": "Need to divide the change (2.4) by the 2009 after-tax cost (9.4) and multiply by 100.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:3e572cd5f3d5e7b8a68dcdb3e289ef2a36727ec5619b8ff846a63abdce49c26b",
+    "finance_qa_vnext_claim:6fd381771ae370faa5e3579bca04a1913c6b6969ed4a33ceff22ba2463fa5a1f"
+  ],
+  "parameters": {}
+}

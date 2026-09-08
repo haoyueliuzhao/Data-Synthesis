@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6d2a42ccb5029b3128a2d18914bbb1f60d20b6d9d7d14e53485ae6f9d1d99f62",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017 in millions of dollars.",
+  "reason": "The question asks for the increase in total value, not the decrease. We need to compute 2017 total value minus 2016 total value. Existing claim 574f... is 2017 minus 2016 and is negative. We need the absolute value or reverse subtraction. Since operation absolute is available, take absolute of claim 574f... to get 66.64.",
+  "operation": "absolute",
+  "inputs": [
+    "finance_qa_vnext_claim:574f48b6317cad0ea135cbf8b220a7e8a780caa2eebbeb94119275346c20c39e"
+  ],
+  "parameters": {}
+}

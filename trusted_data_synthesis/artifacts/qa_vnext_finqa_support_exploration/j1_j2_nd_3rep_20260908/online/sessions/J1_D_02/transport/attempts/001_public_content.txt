@@ -1,0 +1,6 @@
+{
+  "kind": "update",
+  "state_id": "finance_qa_vnext_state:a6ca953237d7d95db060a43e0c037b82c1caa096d65ae860ad1053e5fcd1e9d5",
+  "observation": "finance_qa_vnext_observation:2ca4fe5362296f8df46bc00f88609bf3ffa1f59644bd12a79f894820c1536fb4",
+  "disposition": "accept"
+}

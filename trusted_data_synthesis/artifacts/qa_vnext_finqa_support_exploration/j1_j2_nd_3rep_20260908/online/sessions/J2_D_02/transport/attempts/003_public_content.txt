@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:00191b17e7cea6c95f8323ffa3457e3ea22ad0b1b03ee8c3f2566427526b6663",
+  "subgoal": "Read the 2017 stock options count from the table.",
+  "reason": "We need the number of stock options in 2017 to compute 2017 total value.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

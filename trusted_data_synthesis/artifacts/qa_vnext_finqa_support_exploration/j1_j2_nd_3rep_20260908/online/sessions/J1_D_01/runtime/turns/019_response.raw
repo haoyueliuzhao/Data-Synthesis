@@ -1,0 +1,15 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:59f5e8888b8543755ce9bf04396ad0bb7033eae7e45a86d436b286ec420ddd02",
+  "answer_claim": "finance_qa_vnext_claim:2477cfac5b8e4ba6e3cb7e43512f53dac14d3a73abf6f1e757c19df941ddf8d8",
+  "result": {
+    "value": "25.531914893617021276595744680851063829787234042553",
+    "unit": "percent"
+  },
+  "citations": [
+    "source:t1c1n0",
+    "source:t1c2n0",
+    "source:t2c1n0",
+    "source:t2c2n0"
+  ]
+}

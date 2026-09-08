@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:694dfce7bc2626c58d357f68d322b962d9b987e7f07c71647ef5196299a7d29b",
+  "subgoal": "Read the average exercise price for 2016 to enable total value calculation.",
+  "reason": "Question requires 2016 average exercise price; read source:q0n3.",
+  "operation": "read",
+  "inputs": ["source:q0n3"],
+  "parameters": {}
+}

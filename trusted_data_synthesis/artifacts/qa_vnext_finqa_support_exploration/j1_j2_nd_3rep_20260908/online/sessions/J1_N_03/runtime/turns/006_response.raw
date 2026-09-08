@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b69af8825aac940f229d843db8e3ea4baa470eb35745753155e61ae3556372e3",
+  "subgoal": "Read the 2009 income tax benefit value from source:t2c2n0.",
+  "reason": "Need the 2009 income tax benefit to compute after-tax share-based compensation for 2009.",
+  "operation": "read",
+  "inputs": ["source:t2c2n0"],
+  "parameters": {}
+}

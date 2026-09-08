@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fc26c14986fe7a71c3b47c74ab86fcfd157ae8c0fa1390f1c737874fdaf7ff25",
+  "subgoal": "Read 2010 income tax benefit",
+  "reason": "Need 2010 income tax benefit to compute after-tax cost",
+  "operation": "read",
+  "inputs": ["source:t2c1n0"],
+  "parameters": {}
+}

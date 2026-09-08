@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:42c77b2293b1cf5b0f8dbeca08071c89378fe14220021bed760e2ea63de964b9",
+  "subgoal": "Read the number of stock options for 2017 and 2016 from the table.",
+  "reason": "Need the quantities of stock options to compute total value for each year.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

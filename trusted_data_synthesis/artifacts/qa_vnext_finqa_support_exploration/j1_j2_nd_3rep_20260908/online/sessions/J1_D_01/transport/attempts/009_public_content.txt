@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:9cb97e637d50e69aabd0bcb6e1832966bfc083d617e5132f9ec760bef50df985",
+  "subgoal": "Read the 2009 income tax benefit source value.",
+  "reason": "Need the 2009 after-tax share-based compensation cost to compute percentage change.",
+  "operation": "read",
+  "inputs": ["source:t2c2n0"],
+  "parameters": {}
+}

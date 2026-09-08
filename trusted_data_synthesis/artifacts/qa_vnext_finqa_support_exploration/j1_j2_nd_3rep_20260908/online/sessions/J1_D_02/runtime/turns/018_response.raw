@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e20c9d90a432f738a63922df63d9a50bd7335fa3378d2126e761242905f06e80",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for percentage change. The accepted ratio claim d9f3b1c62be82f3d8775ed524ba85474409b0cbeb6aff6ecffbb7ebf69440418 is 0.255319..., which must be multiplied by 100 to express as percent.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:d9f3b1c62be82f3d8775ed524ba85474409b0cbeb6aff6ecffbb7ebf69440418",
+    "constant:100"
+  ],
+  "parameters": {}
+}

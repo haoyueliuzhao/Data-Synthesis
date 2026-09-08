@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:12eaa828ccea1db4413b051d8166efa056ecd856bdae3bd9801aaf4a8632fffa",
+  "subgoal": "Compute the change in total value of stock options from 2016 to 2017 by multiplying the change in shares by the average exercise price for 2017.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017. The change in number of shares is 2017 minus 2016, which is already derived as -2. To get total value change, multiply this change by the average exercise price for 2017 (33.32).",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:f6e2c991012b2c1c04fdd960ce36cd1002ddb051a4fda96c1a148328ca4455fe",
+    "source:q0n2"
+  ],
+  "parameters": {}
+}

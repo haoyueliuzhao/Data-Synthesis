@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:660d32265f66c632769969c8b1358733e8c099b7e3020cddba570bd5278b78e1",
+  "subgoal": "Read the 2009 income tax benefit for share-based compensation to compute after-tax cost.",
+  "reason": "Need the 2009 tax benefit to derive after-tax share-based compensation cost for both years.",
+  "operation": "read",
+  "inputs": [
+    "source:t2c2n0"
+  ],
+  "parameters": {}
+}

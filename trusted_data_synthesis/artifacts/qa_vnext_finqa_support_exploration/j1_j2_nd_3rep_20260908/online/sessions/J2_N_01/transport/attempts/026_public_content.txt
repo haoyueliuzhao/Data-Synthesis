@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:072c74c17c7286e4fa97c750280cb175b350041e133e0d768678ea0025356d40",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017 by subtracting 2016 total value from 2017 total value.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017. We have computed total values for each year: 2017 = 11 million * $33.32 = $366.52 million, 2016 = 13 million * $26.93 = $350.09 million. Increase = 366.52 - 350.09 = 16.43 million.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:23fb60648b5a46b84f16a0a79067425103544811b4962fba69d9d1c7618b5bcf",
+    "finance_qa_vnext_claim:8b3f8e9176ae14a9c4d513e19f38a8916c76894f9ed1af3ea345cb83f6b13903"
+  ],
+  "parameters": {}
+}
