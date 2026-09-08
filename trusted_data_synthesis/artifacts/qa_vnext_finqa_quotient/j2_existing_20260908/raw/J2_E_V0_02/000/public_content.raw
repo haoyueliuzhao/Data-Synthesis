@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e50daf3f51e46b088b90ab3c379d07b37e3b07c9202fde5122cbc0c11ecdd533",
+  "subgoal": "Read the number of stock options in 2017 and 2016 to compute the change in total value.",
+  "reason": "The question asks for the increase in total value of stock options from 2016 to 2017. We need the option counts for both years and the average exercise prices.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

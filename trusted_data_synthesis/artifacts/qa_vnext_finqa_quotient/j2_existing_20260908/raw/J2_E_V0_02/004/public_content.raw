@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:456ff51ef931144dd633119a6036a2e602a4009d203562b309a07b416f9a8218",
+  "subgoal": "Compute increase in total value of stock options from 2016 to 2017 using average exercise prices.",
+  "reason": "Need to multiply stock option counts by average exercise prices for each year to get total values, then subtract 2016 from 2017.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3f0c916c38981af1fddeae6f57499ee5243e623499d9e8248c309655b2730592",
+    "source:q0n2"
+  ],
+  "parameters": {}
+}

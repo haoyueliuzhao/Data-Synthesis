@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f728f61d503c633a3f9c201ff8d76bfb575e23fdeffb70f9d7759fc05429b63d",
+  "subgoal": "Read the 2017 and 2016 stock option counts from the source.",
+  "reason": "Need stock option counts to compute total value using exercise prices.",
+  "operation": "read",
+  "inputs": [
+    "source:t3c2n0"
+  ],
+  "parameters": {}
+}
