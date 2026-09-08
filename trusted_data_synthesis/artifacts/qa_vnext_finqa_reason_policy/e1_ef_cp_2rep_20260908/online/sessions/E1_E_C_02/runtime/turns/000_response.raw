@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:2646951ade7f71391becd84bb37cf0858175967b77d727c79b242575ba438724",
+  "subgoal": "Read the accrued interest and penalties amount.",
+  "reason": "Need the $15.3 million accrued interest and penalties figure from source:q2n2.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

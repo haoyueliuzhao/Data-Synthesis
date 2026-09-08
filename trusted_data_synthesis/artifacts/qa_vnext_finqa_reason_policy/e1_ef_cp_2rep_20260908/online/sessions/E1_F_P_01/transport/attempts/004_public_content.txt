@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:5fc390379cf8ffba02181f07cbe0d39bc626e473c6c8363cf44a9fa3e2daa363",
+  "subgoal": "Divide accrued interest and penalties by ending balance to get ratio",
+  "reason": "Compute ratio of 15.3 to 139549.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:05604421506bc40f4d01fdfba8101821df62864a866d1bc9d530da2bbfa64055",
+    "finance_qa_vnext_claim:111bc670fc323b4eb2473bcb33bb0b221535a92bfa68fc5c5228714b39034e8d"
+  ],
+  "parameters": {}
+}

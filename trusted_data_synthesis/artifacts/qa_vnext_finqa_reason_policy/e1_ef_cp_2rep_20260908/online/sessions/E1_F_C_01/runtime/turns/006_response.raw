@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:65973ad07d02ca3cc89a19e622ba3e7278ddc9ede0d40031b11e2c661b6fc632",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The ratio 15.3 / 139549 is currently a fraction. To express it as a percentage, multiply by 100. The accepted claim finance_qa_vnext_claim:55207439a4f6261bff03cfca1d828d432f6e1099d6a7e3fb256c728d0d420804 holds that ratio. Use constant:100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:55207439a4f6261bff03cfca1d828d432f6e1099d6a7e3fb256c728d0d420804",
+    "constant:100"
+  ],
+  "parameters": {}
+}

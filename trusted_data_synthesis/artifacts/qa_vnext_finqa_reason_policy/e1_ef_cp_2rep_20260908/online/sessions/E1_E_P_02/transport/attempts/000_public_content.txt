@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:68351c128891f59b66cd554711f9dc829605ba4718cf405fd8589b9058381991",
+  "subgoal": "Read the combined accrued interest and penalties amount of $15.3 million.",
+  "reason": "Need the numerator for the percentage calculation.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

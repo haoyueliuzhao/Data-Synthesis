@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:218f233c3ae14830104bb365c798c62fc5ab48fa7f6bc9df7051de7c103e208b",
+  "subgoal": "Read accrued interest and penalties amount ($15.3 million)",
+  "reason": "The question asks for the combined amount of accrued interest and penalties as a percent of the total ending balance. The amount is given in post_text segment q2 as $15.3 million.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

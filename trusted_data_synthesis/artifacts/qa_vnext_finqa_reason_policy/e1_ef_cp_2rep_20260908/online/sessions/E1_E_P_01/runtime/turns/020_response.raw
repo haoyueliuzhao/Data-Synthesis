@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:af1b2b9ae5e83e4cce29ac808d0a366b63e009d3c056a508dde78a584b1d824c",
+  "subgoal": "Compute the percentage: (15.3 / 139,549) * 100. Note: 139,549 is in thousands, so adjust for correct ratio.",
+  "reason": "The question asks for the percentage of accrued interest and penalties relative to total ending balance. We have 15.3 million and 139,549 thousand. Need to convert to same units before dividing.",
+  "operation": "multiply",
+  "inputs": [
+    "constant:1000",
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

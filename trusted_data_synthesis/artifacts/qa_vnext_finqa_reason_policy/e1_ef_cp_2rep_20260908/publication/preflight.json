@@ -1,0 +1,45 @@
+{
+  "verified_at_utc": "2026-09-08T06:17:20.147493+00:00",
+  "destination": "https://github.com/haoyueliuzhao/Data-Synthesis.git",
+  "branch": "main",
+  "user_authorized_commit_and_push": true,
+  "frozen_source_commit": "98918b2afae485dc0913499a136142bbe05dae13",
+  "source_snapshot_exact": true,
+  "history_guard": {
+    "parent_commit": "dbf0afb97dfacac8ceab86139844ecc4079db1e3",
+    "historical_files_unchanged": true,
+    "historical_controls_rerun": false
+  },
+  "sealed_directories": {
+    "preparation": "qa_vnext_model_execution_e1_reason_policy_preparation_manifest:a01a7c720ce66910cec19ea9c43869240dfb7e5fa7234addcbd9e9c4b48b34ca",
+    "online": "qa_vnext_model_execution_e1_reason_policy_online_manifest:3ae2a0670cfac241befc727881ac168ee4c7720a28017bdc65b06c32a241379a",
+    "closeout": "qa_vnext_model_execution_e1_reason_policy_closeout_manifest:d477dd9e44242d59f25e662cc86efea4c28d4992d4cb8d4850fb7718f1ee081b"
+  },
+  "env_file_included": false,
+  "only_new_batch_and_new_code_report_files_in_scope": true,
+  "artifact_files_before_publication_record": 2925,
+  "artifact_bytes_before_publication_record": 35378083,
+  "maximum_artifact_file_bytes": 710815,
+  "total_files_scanned": 2933,
+  "credential_scan_hits": {
+    "exact_active_api_key": 0,
+    "provider_key_pattern": 0,
+    "github_token_pattern": 0,
+    "private_key": 0,
+    "authorization_value": 0,
+    "cookie_header_value": 0
+  },
+  "public_dataset": {
+    "local_sha256": "831dbfb2e785dbc227f895ce3f24046433467aec67b09db2bd6ac7692a8a30dc",
+    "local_bytes": 14395143,
+    "same_as_previously_verified_public_dataset": true,
+    "prior_publication_proof": "trusted_data_synthesis/artifacts/qa_vnext_finqa_final_recovery/e1_ef_br_2rep_20260908/publication/preflight.json",
+    "network_reverification_this_batch": false
+  },
+  "provider_finish_reasons": {
+    "stop": 256
+  },
+  "raw_responses_rewritten": false,
+  "online_source_modified_after_freeze": false,
+  "provider_calls_after_original_eight_sessions": 0
+}

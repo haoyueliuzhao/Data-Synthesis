@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:62ca75868e5643babb20053e4e6964d9e002da3a71c2ec5d59be155bbd72c954",
+  "subgoal": "Compute the percentage by dividing accrued interest and penalties by the total ending balance.",
+  "reason": "The question asks for the percentage of accrued interest and penalties relative to the total ending balance. We have accepted claims for $15.3 million (accrued interest and penalties) and $139,549 (ending balance). We will divide the first by the second to get the ratio.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:7bad8d9186c50a381781f9639409eea3c98bd7b18ccab58bc3a5707ee71319f4",
+    "finance_qa_vnext_claim:2d1da753b290aebf315a96ff2b10727e3a0afcaf2f84659dd37affc17f651aed"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ba851890a2b11635534412c3c343c4509cd407ddcbbaf09322f32108ef65637b",
+  "subgoal": "Compute percentage: (combined accrued interest and penalties / ending balance) * 100",
+  "reason": "Need to multiply ratio by 100 to express as percent.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3b0d8eefdd173723e41b39fc4bb5d22381fed441543eafc5d19eea24701a3d95",
+    "constant:100"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:78c12788e376fab8525e0347468fa38506201f1af6cb2044aa6885f25089caff",
+  "subgoal": "Compute the percentage of the total ending balance represented by accrued interest and penalties.",
+  "reason": "The question asks for the combined amount of accrued interest and penalties as a percent of the total ending balance. We have the amount $15.3 million and the total ending balance $139,549 thousand. Need to convert units to consistent scale and compute percentage.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:18fae532a56cea7b3b44887d184501e3009ae5396be9367f44c9b4b884046ee4",
+    "finance_qa_vnext_claim:73a5471ceed975614bf45afbbf7035172c5a141b5949d5adc0d8b288b4c18d0d"
+  ],
+  "parameters": {}
+}

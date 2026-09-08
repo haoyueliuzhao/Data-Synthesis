@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d1b25a8e01907faefe46f5ef446330f3ddddbbcf3d2f409f021cf79a609ed647",
+  "subgoal": "Compute combined accrued interest and penalties as percent of ending balance.",
+  "reason": "Need percentage: (15.3 / 139549) * 100. Use accepted claims for numerator and denominator, then multiply by constant:100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3b0d8eefdd173723e41b39fc4bb5d22381fed441543eafc5d19eea24701a3d95",
+    "constant:100"
+  ],
+  "parameters": {}
+}

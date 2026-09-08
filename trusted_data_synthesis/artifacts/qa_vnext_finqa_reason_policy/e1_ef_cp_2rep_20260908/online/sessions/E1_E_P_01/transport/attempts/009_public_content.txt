@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:86c28d334f5f0e9f621cc06da9106f4d7b4c14abab41516c6c53072ce2e7daf3",
+  "subgoal": "Compute the percentage by scaling the ratio to 100.",
+  "reason": "The accepted ratio is 0.000109638908..., multiply by 100 to get percentage.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:6eb363765a2170e93a29826ebbe77c9696dcfa5f0b8ac7247382061bb9ee426f",
+    "constant:100"
+  ],
+  "parameters": {}
+}

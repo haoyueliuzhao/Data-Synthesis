@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:994319357197b9dd3e5099b5df52d9b51b5950d5a784025f9ee42a91cdbd4a41",
+  "subgoal": "Read the accrued interest and penalties amount, $15.3 million.",
+  "reason": "Need the numerator for the percentage: combined accrued interest and penalties as of Nov 28, 2008.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:28064c60b79e90c77c45a6489112a762d9d49efe2f3b072c1bc53def9db2fc90",
+  "subgoal": "Read the ending balance as of November 28, 2008 from the table.",
+  "reason": "The question asks for the combined interest and penalties as a percent of the total ending balance. We need the ending balance value.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

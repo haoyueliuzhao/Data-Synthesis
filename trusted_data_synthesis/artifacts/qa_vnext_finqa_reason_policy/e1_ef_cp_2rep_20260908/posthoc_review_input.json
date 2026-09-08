@@ -1,0 +1,165 @@
+{
+  "E1_E_C_01": {
+    "first_error": "第 9 次 Final 发布 (15.3 /139549) ×100≈0.01096389082 percent，未对齐原来源尺度。首次拒绝后剩 8 次操作、23 次提交。",
+    "executed_adjustment": "第 11 次理由写出分母应为139.549，但仍使用15.3与139549直接相除。第17次raw source:q2n2×1000、第21次已接受分母×1000、第32次已接受分子×1000，都因reason超长被结构拒绝。只有第32次原输入核心命中分子换到分母尺度的检查点。",
+    "acceptance_and_consumption": "5个实际观察均接受；后续仅重复比值，没有尺度对齐观察或有效Final消费。最后的合适原始提议没有执行、观察或Claim。",
+    "terminal_point": "32次请求/提交、5次操作，budget_exhausted；第31次仍旧错Final，第32次是reason超长的Action拒绝，不是有效Final。",
+    "reason_contract_layers": "原始合法JSON Action形状8，schema合法5，准入/执行5；长reason为17(570字符)、21(1467)、32(643)，均未通过C。32时提交预算已用完，不能推断即使该单步可执行也能继续接受与完成。",
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      12,
+      17,
+      21,
+      31,
+      32
+    ],
+    "interpretation_and_limits": "结构长度阻断与真实输入选择偏差同时存在。第17次另有raw source算术问题；第21次分母换美元尚需其他配套转换，不自动标记为错误工具操作。只读核心检查不补算恢复。"
+  },
+  "E1_E_C_02": {
+    "first_error": "第9次初始坏百分比Final目标拒绝，后续原预算8操作/23提交。",
+    "executed_adjustment": "第12和25次重复原比值×100。第17次将raw source:t6c1n0作为乘法输入，被accepted_claim_input_only拒绝。第20次原文给出正确的已接受分母/1000核心，但reason1077字符而被C拒绝；第30次raw source/1000又有长reason1010字符。",
+    "acceptance_and_consumption": "6个实际观察全accept，接受的是原错表达式的重复。无尺度对齐观察、正确新Claim或有效最终消费。",
+    "terminal_point": "第32次仍选择重复计算的坏百分比Claim，目标拒绝；32请求/提交、6操作，budget_exhausted。",
+    "reason_contract_layers": "原始合法JSON Action形状9，schema合法7，语义准入/执行6；第22次JSON不合法不晋升为Action。第20次在结构层被reason单字段上限拒绝，操作核心本身符合尺度检查；未截短或重新执行。",
+    "evidence_submissions": [
+      9,
+      12,
+      13,
+      17,
+      20,
+      22,
+      25,
+      26,
+      30,
+      32
+    ],
+    "interpretation_and_limits": "重复生成新Claim ID没有修正依赖。该条支持C可阻断合适提议的事实，不证明P在这条原状态后一定能完成。正式P为独立新会话，并未继续此状态。"
+  },
+  "E1_E_P_01": {
+    "first_error": "第9次初始坏百分比目标拒绝；原剩余8操作/23提交。",
+    "executed_adjustment": "第10次重算错百分比，18次重复读分母。第21次把raw source传给multiply而被原输入规则拒绝。第25次理由说分母/1000，真实输入却是分子Claim，执行15.3/1000=0.0153。第29次使用567字符reason，实际执行分母×1000=139549000。",
+    "acceptance_and_consumption": "8个观察7accept、1reject；第26次明确reject第25次结果；第30次明确accept第29次长理由的新值，但该Claim没有后续Action消费者，也没有被选择为Final。31、32仍回到旧错百分比。",
+    "terminal_point": "第32次目标拒绝；32请求/提交、8操作，budget_exhausted。无全局资源停止或reason长度拒绝。",
+    "reason_contract_layers": "9个合法JSON Action形状均schema合法，8个准入执行。567字符长reason原样进入真实Observation并被接受，确认P解析器生效；其分母换美元尚未与分子尺度对齐，不是完成恢复。",
+    "evidence_submissions": [
+      9,
+      10,
+      18,
+      19,
+      21,
+      25,
+      26,
+      29,
+      30,
+      31,
+      32
+    ],
+    "interpretation_and_limits": "P没有被旧480解析器继续阻断，但实际输入与公开方案仍可不一致。分母换美元本身可属于合法长路径，本会话未完成双方同尺度比较；不能把接受了新量等同有效使用。"
+  },
+  "E1_E_P_02": {
+    "first_error": "第9次Final发布初始未对齐的百分比，目标拒绝，剩8操作/23提交。",
+    "executed_adjustment": "第10、16、30次反复原比值×100，第27次重复15.3/139549。第30次理由希望重复计算得到财务目标认证，但实际来源表达式仍然不变。",
+    "acceptance_and_consumption": "8个实际观察全accept。第27次新比值被接受后，第30次仍引用较早的等价比值；第31次新百分比接受后，第32次仍选择初始坏Claim。没有任何尺度对齐量。",
+    "terminal_point": "第32次仍target_not_established；32请求/提交、8操作，budget_exhausted。",
+    "reason_contract_layers": "8个合法JSON Action形状均schema合法且执行；没有合法JSON Action的reason超过480。第19次JSON语法不合法，保持原始失败，不抽取动作或估测其结构。",
+    "evidence_submissions": [
+      9,
+      10,
+      11,
+      16,
+      17,
+      19,
+      27,
+      28,
+      30,
+      31,
+      32
+    ],
+    "interpretation_and_limits": "本条没有长理由门槛的实际暴露，不能用它单独证明取消上限的效果。重复合法计算没有为相同坏依赖建立目标认证。"
+  },
+  "E1_F_C_01": {
+    "first_error": "第9次未对齐百分比目标拒绝；剩8操作/23提交。",
+    "executed_adjustment": "首次拒绝后无准入执行；第30次原始合法JSON Action尝试重复读取分母，reason810字符，C结构拒绝。",
+    "acceptance_and_consumption": "初始4个观察全接受，始终复用原错误百分比Claim，无新尺度量或有效消费。",
+    "terminal_point": "第32次目标拒绝；32请求/提交、4操作，budget_exhausted。",
+    "reason_contract_layers": "Action形状5、schema合法4、实际执行4。首次拒绝后的raw_action位置30，schema/准入/实际执行位置均null；预注册分层指标保留了这一差别，没有再误报为从未提出Action。",
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      26,
+      30,
+      32
+    ],
+    "interpretation_and_limits": "长理由提议存在，但它只是重复读分母，不是已经提出完整尺度恢复。当前负结果与首提议位置不能混成一个能力标签。"
+  },
+  "E1_F_C_02": {
+    "first_error": "第9次初始坏百分比Final目标拒绝，剩8操作/23提交。",
+    "executed_adjustment": "第10次重复比值×100，第25次重复15.3/139549；没有新的尺度表达式。",
+    "acceptance_and_consumption": "6个观察均accept，最终持续在原/重复坏百分比Claim之间选择。第25次新比值并未转为正确尺度依赖。",
+    "terminal_point": "第32次仍选择原错误百分比，目标拒绝；32请求/提交、6操作，budget_exhausted。",
+    "reason_contract_layers": "6个原始Action均schema合法并执行，无长reason、无JSON/schema失败；两次Final出现引用不匹配，原验证正常拒绝。",
+    "evidence_submissions": [
+      9,
+      10,
+      11,
+      13,
+      25,
+      26,
+      27,
+      32
+    ],
+    "interpretation_and_limits": "该条失败并非被480字符门槛直接阻断。它保留在完整分母，不用其他C长理由失败替它归因。"
+  },
+  "E1_F_P_01": {
+    "first_error": "第9次未对齐百分比目标拒绝，原剩8操作/23提交。",
+    "executed_adjustment": "第10和24次仅重复原比值×100，始终未调整单位尺度。",
+    "acceptance_and_consumption": "6个观察均accept，Final在三个等价坏百分比Claim间切换，没有有效目标消费。",
+    "terminal_point": "第32次仍target_not_established；32请求/提交、6操作，budget_exhausted。",
+    "reason_contract_layers": "6个Action形状均schema合法且实际执行；无长reason、无JSON/schema失败，也无其他接口拒绝，所有20次未准入均是目标拒绝。",
+    "evidence_submissions": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      24,
+      25,
+      27,
+      32
+    ],
+    "interpretation_and_limits": "解除理由局部上限未使此条产生新的正确尺度提议。不能继续将这条失败归因于480限制，也不能外推为P对其他任务无用。"
+  },
+  "E1_F_P_02": {
+    "first_error": "第9次初始坏百分比目标拒绝，剩8操作/23提交。",
+    "executed_adjustment": "第10次将坏百分比再×100得到1.096389…，仍比正确目标小十倍。第13次以529字符reason执行坏百分比×1，数值不变；第16、23、30次又重算原百分比，第20次重复原比值。",
+    "acceptance_and_consumption": "10个观察全部accept。第14次明确接受长理由×1结果，第15次选择该新Claim做Final仍目标拒绝；第25次选择1.096389的新结果也被拒。所有这些是失败Final选择，不是有效目标消费。",
+    "terminal_point": "第31次接受又一个坏百分比，第32次选回初始Claim且citations不匹配，被原Final引用验证拒绝；32请求/提交、10操作，budget_exhausted。",
+    "reason_contract_layers": "10个合法JSON Action均schema合法并实际执行；其中529字符reason完整保存并接受，P不再用480上限阻断。第26次JSON不合法，不从其中提取动作。",
+    "evidence_submissions": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      20,
+      23,
+      25,
+      26,
+      30,
+      31,
+      32
+    ],
+    "interpretation_and_limits": "长理由操作的执行与接受只是机械接线见证；×1没有新符号依赖，再×100也没有正确尺度。更多操作、接受或更少目标拒绝均不能算恢复。"
+  }
+}

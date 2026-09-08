@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:043a6872f55d846fe429a80a7c46152dd1f1c16517af872626cf1d252362d610",
+  "subgoal": "Correct the denominator to the total ending balance in thousands of dollars.",
+  "reason": "The prior calculation used source:t6c1n0 (139549) as denominator, but the question asks for percent of total ending balance. The source indicates the ending balance is $139,549 thousand, so the denominator must be 139549 * 1000. I will multiply source:t6c1n0 by constant:1000 and then divide source:q2n2 by that product, finally multiply by 100.",
+  "operation": "multiply",
+  "inputs": ["source:t6c1n0", "constant:1000"],
+  "parameters": {}
+}

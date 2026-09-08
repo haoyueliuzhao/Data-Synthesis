@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e13a2a13bbe10cbc805a41315de4f96e6a4f51f5e459c4384b091f4eba76583e",
+  "subgoal": "Multiply the ratio by 100 to express as percent.",
+  "reason": "The question asks for a percent. The accepted claim 532389adb8d4bcc6f05a425bde2751941ba4c0e2e0d7353e8fb09253ce9ab622 is the raw ratio of 15.3 / 139549. To express as percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:532389adb8d4bcc6f05a425bde2751941ba4c0e2e0d7353e8fb09253ce9ab622",
+    "constant:100"
+  ],
+  "parameters": {}
+}

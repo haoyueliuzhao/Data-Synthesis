@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:67afeca1fcfd3a0b7e0b2ac51fcea7ecebd0116e3e0f0eb035a88653b50abf20",
+  "subgoal": "Read the total ending balance of unrecognized tax benefits from the table.",
+  "reason": "Need the denominator for the percentage calculation.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

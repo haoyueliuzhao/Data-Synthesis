@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:1e6a26e233242bfc0426e27afde0654133cc7526a62ab12705323fac05d72987",
+  "subgoal": "Read the ending balance as of November 28, 2008 from the table.",
+  "reason": "The ending balance is in the last table row, numeric catalog source:t6c1n0.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

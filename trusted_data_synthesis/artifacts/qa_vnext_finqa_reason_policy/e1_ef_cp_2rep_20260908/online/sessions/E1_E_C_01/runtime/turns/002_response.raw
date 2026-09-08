@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:55488a7520869370cc193c722b1d926408fe46b843b451b3511865cf64e1d92c",
+  "subgoal": "Read the total ending balance from source t6c1n0",
+  "reason": "Need the denominator for the percentage calculation. The total ending balance as of November 28, 2008 is $139,549 (in thousands) according to numeric_catalog source:t6c1n0.",
+  "operation": "read",
+  "inputs": [
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

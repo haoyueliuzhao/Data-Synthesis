@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:88015977f9e1b319a90141bb77b5a946653223e8a6468ce391ea1527e8e20072",
+  "subgoal": "Read the combined amount of accrued interest and penalties as of November 28, 2008.",
+  "reason": "The question asks for the combined amount of accrued interest and penalties as a percent of total ending balance. The amount is approximately $15.3 million, sourced from q2n2.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

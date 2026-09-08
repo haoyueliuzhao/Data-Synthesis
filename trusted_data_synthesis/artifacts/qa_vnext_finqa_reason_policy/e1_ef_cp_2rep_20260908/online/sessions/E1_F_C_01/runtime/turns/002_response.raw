@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b4b1ccd02a29e18c780be69de55230f1cb6cdf48984889b83a0fd1546a89c74b",
+  "subgoal": "Read the total ending balance from the table.",
+  "reason": "The ending balance as of November 28, 2008 is listed in the table as $139,549 (in thousands). The numeric catalog entry for source:t6c1n0 has value 139549.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

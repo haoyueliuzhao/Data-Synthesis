@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:579de715c0a14c42574aa6ed42e0ae7f1309fb3c67e8fd767c404c5a0f12dc6d",
+  "subgoal": "Read the total ending balance of unrecognized tax benefits from the source.",
+  "reason": "The total ending balance as of November 28, 2008 is given as $139,549 thousand in source t6c1n0. We need this value to compute the percentage of accrued interest and penalties relative to the total.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

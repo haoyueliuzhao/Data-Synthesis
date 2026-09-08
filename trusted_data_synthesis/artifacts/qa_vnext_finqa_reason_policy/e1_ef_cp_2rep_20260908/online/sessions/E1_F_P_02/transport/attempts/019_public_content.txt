@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:934db491b77e0fc67e4a18e76ac728e04b1c4ccb0226c75bb55a0d92390fabbc",
+  "subgoal": "Divide accrued interest and penalties by ending balance and multiply by 100 to get percent.",
+  "reason": "Question asks for percent. Accrued interest is source:q2n2 (15.3 million), ending balance is source:t6c1n0 (139,549 thousand). Need to divide and multiply by 100.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:cc4169689e94968cd2e15388604e1719db94acd66b3f75f883cc5fea2b9ae979",
+    "finance_qa_vnext_claim:f3910721e8d613b65c947fca8ff54f28759129ad0a808490b4be24a2bdc92d27"
+  ],
+  "parameters": {}
+}

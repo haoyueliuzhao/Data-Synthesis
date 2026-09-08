@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d550e994dfb12d664d252c4a3f051e37ad19f95db3b4a20614a3b0b078d5824d",
+  "subgoal": "Read the total ending balance for unrecognized tax benefits as of November 28, 2008.",
+  "reason": "Need the denominator to compute the percentage.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}
