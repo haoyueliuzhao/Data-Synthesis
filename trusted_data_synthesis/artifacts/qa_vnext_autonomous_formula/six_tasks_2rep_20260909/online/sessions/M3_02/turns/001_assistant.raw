@@ -1,0 +1,10 @@
+{
+  "message": "The ratio is approximately 0.149128. I will convert this to a percentage.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "ratio * 100",
+    "variables": {
+      "ratio": {"result_id": "tool:1"}
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "message": "The percentage is approximately 10.96%. I will round to one decimal place, giving 11.0%.",
+  "final": {
+    "answer": "11.0%",
+    "value": 10.963890819712072,
+    "unit": "%",
+    "sources": ["source:q2n2", "source:t6c1n0"],
+    "calculation": "(15.3 / 139.549) * 100"
+  }
+}

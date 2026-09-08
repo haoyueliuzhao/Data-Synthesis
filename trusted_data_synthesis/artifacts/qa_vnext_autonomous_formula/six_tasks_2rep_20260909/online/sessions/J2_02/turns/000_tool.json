@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":2,"exact_value":"1643/100","expression":"(11 * 33.32) - (13 * 26.93)","financial_meaning_certified":false,"model_supplied_sources":null,"operation_count":3,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"16.43"},"status":"ok","tool":"calculate"}

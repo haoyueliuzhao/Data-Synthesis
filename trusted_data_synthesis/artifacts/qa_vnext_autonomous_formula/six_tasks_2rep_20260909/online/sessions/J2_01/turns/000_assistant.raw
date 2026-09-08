@@ -1,0 +1,19 @@
+{
+  "message": "The question asks for the increase in total value of stock options during 2016 and 2017, considering the average exercise price. We have average exercise prices: $26.79 (2018), $33.32 (2017), $26.93 (2016). The table shows stock options anti-dilutive shares in millions: 2016: 13, 2017: 11, 2018: 9. Total value = shares × exercise price. Increase during 2016 and 2017 likely means change from 2016 to 2017. Compute 2017 value minus 2016 value.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "11 * 33.32 - 13 * 26.93",
+    "variables": {
+      "shares_2017": {"value": 11, "source": "source:t3c2n0", "unit": "millions of shares"},
+      "price_2017": {"value": 33.32, "source": "source:q0n2", "unit": "USD"},
+      "shares_2016": {"value": 13, "source": "source:t3c3n0", "unit": "millions of shares"},
+      "price_2016": {"value": 26.93, "source": "source:q0n3", "unit": "USD"}
+    },
+    "sources": {
+      "shares_2017": "source:t3c2n0",
+      "price_2017": "source:q0n2",
+      "shares_2016": "source:t3c3n0",
+      "price_2016": "source:q0n3"
+    }
+  }
+}

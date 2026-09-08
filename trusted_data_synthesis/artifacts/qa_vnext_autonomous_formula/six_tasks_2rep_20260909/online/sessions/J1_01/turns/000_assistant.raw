@@ -1,0 +1,14 @@
+{
+  "message": "The question asks for the percentage change in after-tax share-based compensation cost from 2009 to 2010. The table shows share-based compensation cost and income tax benefit. After-tax cost = share-based compensation cost + income tax benefit (since benefit reduces cost). For 2009: 14.6 + (-5.2) = 9.4. For 2010: 18.1 + (-6.3) = 11.8. Percentage change = ((11.8 - 9.4) / 9.4) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((18.1 + (-6.3) - (14.6 + (-5.2))) / (14.6 + (-5.2))) * 100",
+    "variables": {},
+    "sources": {
+      "18.1": "source:t1c1n0",
+      "-6.3": "source:t2c1n0",
+      "14.6": "source:t1c2n0",
+      "-5.2": "source:t2c2n0"
+    }
+  }
+}

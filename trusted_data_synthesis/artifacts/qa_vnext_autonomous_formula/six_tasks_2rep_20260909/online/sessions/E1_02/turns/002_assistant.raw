@@ -1,0 +1,10 @@
+{
+  "message": "The percentage is about 10.96%.",
+  "final": {
+    "answer": "10.96%",
+    "value": 10.963890819712072,
+    "unit": "%",
+    "sources": ["source:q2n2", "source:t6c1n0"],
+    "result_id": "tool:1"
+  }
+}

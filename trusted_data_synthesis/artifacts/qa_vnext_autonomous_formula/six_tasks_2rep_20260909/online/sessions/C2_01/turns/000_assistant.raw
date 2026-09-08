@@ -1,0 +1,11 @@
+{
+  "message": "To find the percent of total operating revenues associated with agricultural products in 2015, I need agricultural products revenue (2015) and total operating revenues (2015). From the table: agricultural products 2015 = 3581, total operating revenues 2015 = 21813. The percent = (3581 / 21813) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(3581 / 21813) * 100",
+    "variables": {
+      "3581": {"value": 3581, "source": "source:t1c1n0", "unit": "millions USD"},
+      "21813": {"value": 21813, "source": "source:t9c1n0", "unit": "millions USD"}
+    }
+  }
+}

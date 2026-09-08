@@ -1,0 +1,14 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "15.3 / 139.549 * 100",
+    "variables": {
+      "interest_penalties": {"value": "15.3", "source": "source:q2n2", "unit": "million USD"},
+      "ending_balance": {"value": "139.549", "source": "source:t6c1n0", "unit": "million USD"}
+    },
+    "sources": {
+      "interest_penalties": "source:q2n2",
+      "ending_balance": "source:t6c1n0"
+    }
+  }
+}

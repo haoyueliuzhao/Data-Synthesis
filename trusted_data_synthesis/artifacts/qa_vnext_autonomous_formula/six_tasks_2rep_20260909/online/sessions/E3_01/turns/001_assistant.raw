@@ -1,0 +1,9 @@
+{
+  "final": {
+    "answer": "14.24%",
+    "value": 14.242857142857142,
+    "unit": "%",
+    "sources": ["source:p2n0", "source:p1n2"],
+    "result_id": "tool:1"
+  }
+}

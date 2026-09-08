@@ -1,0 +1,42 @@
+{
+  "schema_version": "autonomous_formula_continuous.v1.release_checks",
+  "source_commit": "a3389ef0b70ac22a992db84a46ccb491b9614228",
+  "source_snapshot_id": "qa_vnext_model_execution_implementation:703d1e44f773de270a7b574c0dcd21ef2dc6eef7f343c7f01e762964fcb42f3f",
+  "source_bytes_still_frozen": true,
+  "design_freeze_matches_git": true,
+  "test_bytes_match_preparation": true,
+  "history_guard": {
+    "baseline": "a84ba9b46ac35e1d4322b253ac757fa366515b27",
+    "historical_files_unchanged": true
+  },
+  "manifests": {
+    "preparation": "qa_vnext_model_execution_autonomous_preparation_manifest:0513dee65c2945789908d9e7ca588fc7637054af5f2785976627e9231e9a7d2c",
+    "online": "qa_vnext_model_execution_autonomous_online_manifest:1081451372fb1c49f9116e665a7e5f6e970b8f26f4c8e963f2702734c4de5cad",
+    "assessment": "qa_vnext_model_execution_autonomous_assessment_manifest:20ce010827de05e6bb94e726166d8218a5fa3efee167705de417c28be8c5ae00",
+    "closeout": "qa_vnext_model_execution_autonomous_closeout_manifest:b6f3d05c13145f20753f4d0e6e4ba7bb8cad99f4ac05b59a9d29362489358880"
+  },
+  "all_four_manifests_verified": true,
+  "review_input_matches_sealed_copy": true,
+  "raw_costs_recomputed_equal": true,
+  "credential_bytes_absent": true,
+  "actual_requests": 26,
+  "actual_http_200": 26,
+  "actual_deepseek_v4_pro_responses": 26,
+  "isolated_workers": 12,
+  "private_read_denials": 24,
+  "all_workers_have_no_repository_modules": true,
+  "post_generation_provider_calls": 0,
+  "answer_counts": {
+    "FAIL": 2,
+    "PASS": 10
+  },
+  "formula_driven_verified": 10,
+  "manual_formula_counts": {
+    "PASS": 12
+  },
+  "scoring_rule_unchanged": true,
+  "student": false,
+  "gpu": false,
+  "vtdo": false,
+  "id": "release_checks:491e92e7f61d62060b060ff483415e15a5e19b0ec3c80cf94f7bdcba826c26c7"
+}

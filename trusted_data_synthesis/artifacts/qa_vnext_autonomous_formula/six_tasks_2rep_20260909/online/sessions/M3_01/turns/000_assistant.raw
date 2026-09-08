@@ -1,0 +1,15 @@
+{
+  "message": "I will compute the coal revenue as a percentage of total operating revenues for 2014-2016.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((2440+3237+4127)/(19941+21813+23988))*100",
+    "variables": {
+      "coal_2016": {"value": 2440, "source": "source:t4c1n0"},
+      "coal_2015": {"value": 3237, "source": "source:t4c2n0"},
+      "coal_2014": {"value": 4127, "source": "source:t4c3n0"},
+      "total_2016": {"value": 19941, "source": "source:t9c1n0"},
+      "total_2015": {"value": 21813, "source": "source:t9c2n0"},
+      "total_2014": {"value": 23988, "source": "source:t9c3n0"}
+    }
+  }
+}

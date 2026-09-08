@@ -1,0 +1,15 @@
+{
+  "message": "To compute cash held on behalf of GE as a percentage of cash and equivalents in 2017, we need cash held on behalf of GE ($997 million) and total cash and equivalents ($7.0 billion). We'll calculate 997 / 7000 * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(997 / 7000) * 100",
+    "variables": {
+      "997": 997,
+      "7000": 7000
+    },
+    "sources": {
+      "997": "source:p2n0",
+      "7000": "source:p1n2"
+    }
+  }
+}

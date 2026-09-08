@@ -1,0 +1,9 @@
+{
+  "final": {
+    "answer": "Coal revenue was 14.91% of total operating revenues for 2014-2016.",
+    "value": 14.912841106142192,
+    "unit": "%",
+    "sources": ["source:t4c1n0", "source:t4c2n0", "source:t4c3n0", "source:t9c1n0", "source:t9c2n0", "source:t9c3n0"],
+    "result_id": "tool:1"
+  }
+}
