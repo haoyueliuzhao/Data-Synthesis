@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f517bd910f1c6c59e39267ee32bd2d5f30a69e6df2a72e16bb79d4e2cc7372bb",
+  "subgoal": "Read the first annual long-term debt maturity amount.",
+  "reason": "Need to gather the five annual amounts to sum them.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

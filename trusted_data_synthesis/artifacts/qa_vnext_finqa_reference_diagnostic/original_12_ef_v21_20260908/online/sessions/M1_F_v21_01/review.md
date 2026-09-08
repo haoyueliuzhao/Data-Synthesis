@@ -1,0 +1,17 @@
+# M1_F_v21_01
+
+状态：complete；完整有效：True。
+
+逐轮内容来自原始模型提交，未重写；数值 Claim 不自动认证其财务角色。
+
+| 提交 | 类型 | 操作／拒绝 |
+| --- | --- | --- |
+| 1 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:6727b3e0eacdf5e238ebd83251d8badae111d2a6e39087a8273bf8edd7fce09f", "subgoal": "Read the net change for each year from the table", "reason": "We need the annual net changes for 2011, 2010, and 2009 to compute their average.", "operation": "read", "inputs": ["source:t11c1n0"], "parameters": {}} |
+| 2 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:8a9b01f897f05eed040515478ed7fe19ba4bcce51b0dfa2c49b4cdca4f458d87", "observation": "finance_qa_vnext_observation:6c89dd41b901dd19fa4146e4ba9a837f1b0b82b2fd19bb5ca87915e3eac037b6", "disposition": "accept"} |
+| 3 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:8436c44af9716e796b11e4bcac203752d24dc085393a650b3d5fa96e9e328e44", "subgoal": "Read net change for 2010 from table row 11 column 2", "reason": "Need the net annual change values for 2011, 2010, and 2009 to compute their average. Already have 2011 (4648). Read 2010 from source:t11c2n0.", "operation": "read", "inputs": ["source:t11c2n0"], "parameters": {}} |
+| 4 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:0aed0ec1a75121a27a9f7e036b3879ff23c1497901e298b4beec4da64a40115b", "observation": "finance_qa_vnext_observation:dff810039e42bc627de471f4bebbce23ef9ebcfa089123ec19b99d04c87aea66", "disposition": "accept"} |
+| 5 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:85aff2a7437f386b67c84b863906165d45694091bf87964a35e29efc14215d6e", "subgoal": "Read the 2009 net annual change value from the table.", "reason": "We have accepted claims for 2011 (4648) and 2010 (3625). Need 2009 value to compute the average of the three years.", "operation": "read", "inputs": ["source:t11c3n0"], "parameters": {}} |
+| 6 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:3513da6d5c142d3de1cfaf938928ce6eb25b07af9f0eb90aec79c1aeaa44e48f", "observation": "finance_qa_vnext_observation:342d88f2186347c37c846f41bf3dc04c6e66fa116c8cc658361b4c9f7c35971b", "disposition": "accept"} |
+| 7 | action | {"kind": "action", "state_id": "finance_qa_vnext_state:f9f5b131b2375881316971451d33083f83b0bdacf1adc0dcd111a0dcf984d91c", "subgoal": "Compute the average of the three annual net change values.", "reason": "Use the three accepted claims for net change in 2011, 2010, and 2009. The average operation will compute their arithmetic mean.", "operation": "average", "inputs": ["finance_qa_vnext_claim:0870e29ecf1c7215465309bac539e8004bb6c709c021fee92364c2c13e83e9d3", "finance_qa_vnext_claim:af1ae2306c759bf009b66285952e5642cefa26dd97ade90028b3e448dbcd787e", "finance_qa_vnext_claim:2acd432e4ba3c54ad4f9bfe12cad90953ce77078f543e39058ac2e9419939181"], "parameters": {}} |
+| 8 | update | {"kind": "update", "state_id": "finance_qa_vnext_state:e2c2384207f729f4eaadbcbd0462449f351dd08271fff2a04e38a1b1804c5b3f", "observation": "finance_qa_vnext_observation:06e25de8f8f6218e8960a541b6792d8529f86da62bde23d8f9af88ed86869b52", "disposition": "accept"} |
+| 9 | final | {"kind": "final", "state_id": "finance_qa_vnext_state:582a66ae5901f273c44047834d746dbac6ca8e7084640c78a8abcd8d9bccefb9", "answer_claim": "finance_qa_vnext_claim:24f2955721ede053c392c91dc3bfd9eee9e5fe70ee0576818751d2a30c3bddf9", "result": {"value": "3297.6666666666666666666666666666666666666666666667", "unit": "USD_million"}, "citations": ["source:t11c1n0", "source:t11c2n0", "source:t11c3n0"]} |

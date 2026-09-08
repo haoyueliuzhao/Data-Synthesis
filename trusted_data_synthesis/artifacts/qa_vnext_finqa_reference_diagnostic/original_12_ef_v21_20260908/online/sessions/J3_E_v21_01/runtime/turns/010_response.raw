@@ -1,0 +1,15 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0cd75b2e69e0a983f34b24acf6b1edd3538e6104336a3cde330eaf6eb25c8909",
+  "subgoal": "Sum the five principal payment amounts.",
+  "reason": "The question asks for total expected payments over the next five years; the source provides five annual principal payment amounts (2017-2021). Summing these yields the total.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:a077ac7b8ab53de141adb24fde987fc3ba760acec5e98c1edc6095c8d204c6a8",
+    "finance_qa_vnext_claim:60df4784331c4d83c9e4de6936a8917757cdc02c388242f6b47c9176eca26a77",
+    "finance_qa_vnext_claim:e3a9c8caaa34030a9465236e4833a8696b1d51b723fbf5a588643972b564a9ce",
+    "finance_qa_vnext_claim:a4fe6934895eba7637a3ade16d78f56e601a3b1446ee8f7d721931767f9ca5bc",
+    "finance_qa_vnext_claim:aac127e3665d46892b759ca87045297da22282b50e10c8c7b3d5dff85d5bd6be"
+  ],
+  "parameters": {}
+}

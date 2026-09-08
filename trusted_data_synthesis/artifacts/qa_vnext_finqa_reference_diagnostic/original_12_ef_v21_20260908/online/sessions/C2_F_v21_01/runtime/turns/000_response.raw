@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b8cfd4f0b293ef8fced8d3d81fadb25165ea7119336b3e8da3c302e7a2711442",
+  "subgoal": "Read 2015 agricultural products freight revenue",
+  "reason": "Need numerator for percentage: agricultural products revenue in 2015.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

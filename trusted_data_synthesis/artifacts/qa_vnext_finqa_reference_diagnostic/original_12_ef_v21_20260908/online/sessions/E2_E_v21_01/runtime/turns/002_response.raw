@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:1419a2d615589f4d7571a4b954e0a269ecaa0f3822452df32d74ad18420b5d7a",
+  "subgoal": "Read the exercise price per share.",
+  "reason": "To compute total value purchasable under warrant, need the exercise price per share from numeric catalog.",
+  "operation": "read",
+  "inputs": ["source:q10n4"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e570085e63534fd27bd5f22efed53b5e367b1dc79a5ef915203bc26cc647b9b3",
+  "subgoal": "Read average exercise price for 2017 from source q0n2",
+  "reason": "The question asks for the increase in total value of stock options in 2016 and 2017. Average exercise price for 2017 is 33.32 (source:q0n2). Need to read it.",
+  "operation": "read",
+  "inputs": ["source:q0n2"],
+  "parameters": {}
+}

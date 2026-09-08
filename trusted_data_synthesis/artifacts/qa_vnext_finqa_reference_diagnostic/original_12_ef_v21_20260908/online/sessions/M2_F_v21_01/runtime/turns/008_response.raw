@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f4d204341141cc819afc22616696d6ebbc6552c63db984150fadf3a24099a1c0",
+  "subgoal": "Read the 2022 debt maturity value from the table.",
+  "reason": "The question asks for the sum of annual long-term debt maturities for the next five years. We have already read 2018-2021 values. The remaining year is 2022, which is source:t5c1n0 with value 1304431.",
+  "operation": "read",
+  "inputs": ["source:t5c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b3b44b24e1b77ec9c1cedfb7a64c3960d5d6bc8ca282545b34195ef0cffd161f",
+  "subgoal": "Compute 2017 total option value using 2017 exercise price",
+  "reason": "Need 2017 total option value: number of options in 2017 (11 million) times average exercise price for 2017 ($33.32). Use accepted claims for t3c2n0 and q0n2.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:1d4546eda9e5de45046aae167e0a34251f031c3c549d52952522841605f71dde",
+    "finance_qa_vnext_claim:82b45e860bd9a493179a82e6f3e9ba9d415732c6dbea4e3c468b9b2cd24b3f7b"
+  ],
+  "parameters": {}
+}

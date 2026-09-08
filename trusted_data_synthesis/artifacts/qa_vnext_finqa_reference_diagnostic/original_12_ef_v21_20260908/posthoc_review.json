@@ -1,0 +1,287 @@
+{
+  "C1_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2015/2014 净收入 5829、5735，实际执行减法 94，接受后完成 Final；本条未见具体来源/方法错误。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "C1_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2015/2014 净收入 5829、5735，实际执行减法 94，接受后完成 Final；本条未见具体来源/方法错误。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "C2_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2015 农产品收入 3581 与总营业收入 21813，实际除法和乘 100 得 16.416815660386...%，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "C2_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2015 农产品收入 3581 与总营业收入 21813，实际除法和乘 100 得 16.416815660386...%，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "C3_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "分别读取 15395、18035 并实际执行 minimum，得到 15395 后完成 Final；不是直接读到最小值即当作方法完成。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "C3_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "分别读取 15395、18035 并实际执行 minimum，得到 15395 后完成 Final；不是直接读到最小值即当作方法完成。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "E2_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取认股权 5576208 股与单价 53.8，实际相乘得到 299999990.4 USD，完成 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "E2_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取认股权 5576208 股与单价 53.8，实际相乘得到 299999990.4 USD，完成 Final。 第 5、7 次提交重复执行同一乘法，第二次结果用于 Final；重复操作不是另一种财务方法。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "E3_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "concrete_error": "公开 reason 说除以 7000，实际第 5 次提交却用 997/7=142.428571...；存在单位对齐的输入/声称不一致，而非仅凭中间值不同于 Final 判错。",
+    "evidence_submissions": [
+      5,
+      6,
+      7,
+      9,
+      11,
+      13
+    ],
+    "recovery": "RECOVERED_TO_COMPLETE",
+    "terminal_point": "第 13 次提交完整有效 Final",
+    "review": "第 6 次提交精确引用并合法 reject；第 7 次提交将 7*1000=7000，第 9、11 次算正确比例和百分比，最终完成。没有宿主代填拒绝或换算。"
+  },
+  "E3_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "实际对 7 billion 乘 1000 对齐为 7000 million，再用 997/7000*100 得 14.242857142857...%，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "M1_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 4648、3625、1620，实际 average 得 3297.666666...，接受后完成 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "M1_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 4648、3625、1620，实际 average 得 3297.666666...，接受后完成 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "M2_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2018—2022 五个到期金额 760000、857679、898500、960764、1304431，实际 sum 得 4781374，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "M2_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取 2018—2022 五个到期金额 760000、857679、898500、960764、1304431，实际 sum 得 4781374，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "J3_E_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "review": "读取五年还本金额 21.7、22.3、22.7、23.2、11，实际 sum 得 100.9 million USD，完整 Final。",
+    "concrete_error": null,
+    "recovery": "NOT_REQUIRED",
+    "terminal_point": "complete_valid Final"
+  },
+  "J3_F_v21_01": {
+    "inspection_status": "NOT_FOCUS_TASK",
+    "concrete_error": "第 3 次 read 的 reason 要 2018 支付额 22.3，但实际选 source:p1n1 得年份 2017；该错误由数值与意图矛盾确证，不仅因为 off_reference。",
+    "evidence_submissions": [
+      3,
+      4,
+      5,
+      13,
+      15
+    ],
+    "recovery": "RECOVERED_TO_COMPLETE",
+    "terminal_point": "第 15 次提交完整有效 Final",
+    "review": "第 4 次提交合法 reject 年份 Observation，第 5 次改读 source:p1n2 得 22.3，随后读取剩余支付额并求和 100.9。错误读数未被接受，完整负证据保留。"
+  },
+  "E1_E_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "million/thousand 未对齐的百分比作为 Final：15.3/139549*100≈0.01096389082%，而冻结目标≈10.96389082%，少 1000 倍。",
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      32
+    ],
+    "recovery": "NOT_RECOVERED",
+    "terminal_point": "第 32 次提交仍以未换算百分比尝试 Final；budget_exhausted，4 个 Observation 均已接受，无 pending。",
+    "review": "正确读取两项事实，第 5 次原始除法本可以是稍后乘 1000 的合法中间式；但第 7 次只乘 100，并从第 9 次起把这一错误尺度结果作为答案，确证终局错误。期间有 22 次 target 拒绝、1 次 citations 拒绝、1 次未准入单输入 average；未执行任何尺度恢复。 无 Observation 引用错误，不能归为原 v2 合同缺口。"
+  },
+  "E1_F_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "million/thousand 未对齐的百分比作为 Final：15.3/139549*100≈0.01096389082%，而冻结目标≈10.96389082%，少 1000 倍。",
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      32
+    ],
+    "recovery": "NOT_RECOVERED",
+    "terminal_point": "第 32 次提交仍以未换算百分比尝试 Final；budget_exhausted，4 个 Observation 均已接受，无 pending。",
+    "review": "正确读取两项事实，第 5 次原始除法本可以是稍后乘 1000 的合法中间式；但第 7 次只乘 100，并从第 9 次起把这一错误尺度结果作为答案，确证终局错误。期间有 23 次 target 拒绝、1 次 schema 拒绝；未执行任何尺度恢复。 无 Observation 引用错误，不能归为原 v2 合同缺口。"
+  },
+  "M3_E_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "第 16 次将 2016 煤收入 2440 当作 2016 总营业收入 19941，得到错误分母 23988+21813+2440=48241；reason 明确声称其是三年总营业收入。",
+    "evidence_submissions": [
+      9,
+      11,
+      12,
+      15,
+      16,
+      17,
+      18,
+      20,
+      22,
+      24,
+      26
+    ],
+    "recovery": "RECOVERED_TO_COMPLETE",
+    "terminal_point": "第 26 次提交完整有效 Final，14.912841106142...%。",
+    "review": "第 9 次已正确构造三年煤收入合计 9804。三次尝试用原始来源或不存在 Claim 求和未准入；第 16 次的错误角色输入实际执行，但第 17 次合法 reject。第 18 次补读 2016 总额，第 20 次得到正确三年分母 65742，完成比例及百分比。错误值全部来自预选集合，集合内身份不代表角色正确。"
+  },
+  "M3_F_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "第 5、7 次只计算 2016 的 2440/19941*100≈12.23609648%，第 9 次起作为 2014—2016 总占比发布，缺少三年集合覆盖。",
+    "evidence_submissions": [
+      5,
+      7,
+      9,
+      18,
+      23,
+      26,
+      29,
+      31,
+      32
+    ],
+    "recovery": "PARTIAL_NOT_COMPLETE",
+    "terminal_point": "第 32 次读取 2015 总营业收入 21813，产生 pending，因提交预算结束没有后续 Update；不虚构非法首次决策。",
+    "review": "不能仅凭单年中间比率判错，错误证据是随后用其 Final。后续开始修复，第 23、26 次补读 2015/2014 煤收入，第 29 次形成正确三年煤收入合计 9804；第 31 次却仍发布旧单年答案，第 32 次才补读一个分母成员。没有三年总分母、正确占比或完整 Final；不是完全没有识别三年方法。"
+  },
+  "J1_E_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "以税前成本 (18.1-14.6)/14.6*100≈23.97260274% 作为税后成本增长率答案，未纳入 -6.3、-5.2 税收利益。",
+    "evidence_submissions": [
+      5,
+      7,
+      9,
+      11,
+      12,
+      14,
+      21,
+      29,
+      30,
+      32
+    ],
+    "recovery": "PARTIAL_NOT_COMPLETE",
+    "terminal_point": "第 29/30 次才读取并接受 2010 税收利益 -6.3，第 32 次仍提交税前百分比；budget_exhausted，无 pending。",
+    "review": "第 11 次 Final 因 citations 被拒，其答案表达式也不是税后目标；第 12 次 target 拒绝直接确证。第 14、21 次公开 reason 已说明正确税后公式，但直接用尚未读取/接受的原始来源做加法未准入；语句中的方法识别不算实际完成。共 16 次 target、2 次 citations、2 次 Claim 输入拒绝。"
+  },
+  "J1_F_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": null,
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+      21
+    ],
+    "recovery": "NO_SUBSTANTIVE_EXECUTED_ERROR_ESTABLISHED",
+    "terminal_point": "第 21 次提交完整有效 Final，25.531914893617...%。",
+    "review": "读取四个正确成本/负税收利益事实；第 9、11 次分别算出税后 11.8、9.4，第 13、15 次重复算差 2.4，随后除以 9.4 并乘 100。虽然早期 reason 有将负税收利益描述为相减的含混措辞，实际执行是正确 add；不把未执行措辞算成真实税后方法错误。重复差额操作增加成本但不产生新方法。"
+  },
+  "J2_E_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "第 10 次称计算 2016 的 13×26.93，实际却引用 2017 单价 33.32 得 433.16；第 12 次得 -66.64 并尝试 Final，随后 absolute 66.64 也非目标。",
+    "evidence_submissions": [
+      7,
+      9,
+      10,
+      12,
+      14,
+      15,
+      17,
+      18,
+      20,
+      22,
+      23,
+      25,
+      32
+    ],
+    "recovery": "PARTIAL_PRODUCTS_RECOVERED_BUT_STALE_FINAL",
+    "terminal_point": "budget_exhausted；正确年度乘积 366.52、350.09 均已接受，但未对它们执行差额；第 32 次仍以旧错误 absolute 66.64 Final。",
+    "review": "第 7 次已正确得到 2017 总值 366.52；第 9 次用原始来源相乘未准入，第 10 次改用错误已接受价格。第 18 次主动补读 2016 单价，并在第 20、23、25 次恢复正确年度乘积；但继续发布旧错误 Claim，没有构造 16.43。实际只用 11/12 个操作额度，不能解释为必然受实际操作上限阻断。"
+  },
+  "J2_F_v21_01": {
+    "inspection_status": "REACHED",
+    "posthoc_descriptive_not_blind_error_rate": true,
+    "concrete_error": "第 15 次明确声称 2017 股数是 source:t3c3n0=13（实际上是 2016），乘 2017 单价 33.32 得 433.16；末段仍消费该错误乘积，得到 83.07 而非 16.43。",
+    "evidence_submissions": [
+      1,
+      6,
+      10,
+      15,
+      17,
+      18,
+      19,
+      21,
+      23,
+      25,
+      27,
+      32
+    ],
+    "recovery": "PARTIAL_PRODUCTS_RECOVERED_BUT_WRONG_DEPENDENCY_CONSUMED",
+    "terminal_point": "12/12 实际操作、32/32 提交后 budget_exhausted；第 27 次形成错误 433.16-350.09=83.07，第 32 次仍尝试同一错误 Final。",
+    "review": "未准入多值 read 与原始来源乘法保留。第 6 次股数乘百万本身可以是合法单位中间式；不自动判错。第 17 次把 2017 的 11×1000000×33.32 误称 2016 的百万美元总值，第 18 次合法 reject。随后第 19、21/23 次已实际得到正确 2017/2016 百万美元总值 366.52、350.09，却仍在第 27 次选旧错误 433.16 为 2017 总值。错误未被后续正确中间计算覆盖。"
+  }
+}

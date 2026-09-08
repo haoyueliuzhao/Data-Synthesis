@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:3f62b6ef7ccbb2e9d9a21f6cf700502a175fa23ae7ca3e1b1dad5275d26d3a02",
+  "subgoal": "Read the 2016 cash instruments value.",
+  "reason": "To compute the minimum balance of cash instruments for 2017 and 2016, we need both values. The 2017 value is already accepted; read the 2016 value from the catalog.",
+  "operation": "read",
+  "inputs": ["source:t1c2n0"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ac700aabe356845745a28f3fc986aba98b440c0def7621f171b66da50f24947e",
+  "subgoal": "Read the remaining principal payment amounts for Entergy Louisiana investment recovery funding.",
+  "reason": "We have two accepted claims for 2017 and 2018. Need the next three yearly principal payment amounts to sum all five years.",
+  "operation": "read",
+  "inputs": ["source:p1n4"],
+  "parameters": {}
+}

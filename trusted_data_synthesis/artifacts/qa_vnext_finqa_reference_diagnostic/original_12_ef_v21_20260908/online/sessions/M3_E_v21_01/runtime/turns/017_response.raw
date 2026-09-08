@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e04bc2ccecd4d7adc12bab2a964c1d21597a84e685558875c7dd06f73706fdfa",
+  "subgoal": "Sum total operating revenues for 2014-2016",
+  "reason": "Need total operating revenues across the three years as denominator for percentage. Already have 2014 and 2015; need 2016 (source:t9c1n0) and then sum all three.",
+  "operation": "read",
+  "inputs": ["source:t9c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:30022512f28b9ff0e4c777a2c8e388b8aff762f831ee2e8529efd6ece1cf7639",
+  "subgoal": "Convert the ratio 997/7000 to a percentage by multiplying by 100.",
+  "reason": "To express cash held on behalf of GE as a percentage of cash and equivalents, we need to multiply the ratio (997/7000) by 100. The accepted claim d3eab21e39a24cf8ee83f85c5ff4f8904ae511934dbd0f4dc1bf56b833731dbc holds the exact ratio 997/7000. Multiplying by constant:100 will yield the percentage value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:d3eab21e39a24cf8ee83f85c5ff4f8904ae511934dbd0f4dc1bf56b833731dbc",
+    "constant:100"
+  ],
+  "parameters": {}
+}

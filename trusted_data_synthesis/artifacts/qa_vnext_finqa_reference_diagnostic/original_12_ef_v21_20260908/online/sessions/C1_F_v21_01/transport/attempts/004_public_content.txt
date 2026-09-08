@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:86c4a5f5a507f282d441dd38b56444261ed03dc36a8bf5b016b1fde56a7035d4",
+  "subgoal": "Compute net change in net revenue for 2015 by subtracting 2014 net revenue from 2015 net revenue.",
+  "reason": "The table shows 2014 net revenue of $5735 million and 2015 net revenue of $5829 million. Net change during 2015 is the difference: 5829 - 5735.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:5e32b3e6873f3c3a2e022d6fccf81d79ca125592c0775acd13e764b49c3bc203",
+    "finance_qa_vnext_claim:6fe6345f1841b519a1de2a25dfa4659c5a97f1ab7f07ec33d33be602cfc15328"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f2a8720710f156dd630203d8f75c2a5bd8c950b233e417f4043a533cef4c5545",
+  "subgoal": "Compute total value of stock options for 2016 by multiplying shares (11 million) by average exercise price ($33.32).",
+  "reason": "2016 stock options: 11 million shares from source:t3c2n0, average exercise price $33.32 from source:q0n2. Multiply to get total value in millions of dollars.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:4f483db59012340d48c7e1240409e4a5d1f12cb526fb777576b09ac845f3bc51",
+    "finance_qa_vnext_claim:f01793def9411b632b3a50c8c29914b7ae700b945b3f0de25b566de6616bab59"
+  ],
+  "parameters": {}
+}

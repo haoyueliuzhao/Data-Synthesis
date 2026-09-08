@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6a6f83baee929a00cb53cd372a5fcfacbd289ea9b82aa9508e14ac0a5f2fe3ff",
+  "subgoal": "Compute after-tax share-based compensation cost for 2010 and 2009 by subtracting tax benefit from cost.",
+  "reason": "The table gives share-based compensation cost and income tax benefit for 2010 and 2009. After-tax cost = cost - tax benefit. Need to read tax benefit values for both years, then subtract from the already accepted cost claims.",
+  "operation": "read",
+  "inputs": ["source:t2c1n0"],
+  "parameters": {}
+}

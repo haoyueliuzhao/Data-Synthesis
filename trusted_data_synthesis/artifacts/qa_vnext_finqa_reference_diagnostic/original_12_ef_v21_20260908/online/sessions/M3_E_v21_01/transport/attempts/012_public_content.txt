@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:40a2c7936292d78699333d48595c000fa960918608af7509f2b4d54aae62108a",
+  "subgoal": "Read total operating revenues for 2015.",
+  "reason": "Need total operating revenues for 2015 to compute total operating revenues over 2014-2016. Source t9c2n0 provides 21813.",
+  "operation": "read",
+  "inputs": ["source:t9c2n0"],
+  "parameters": {}
+}

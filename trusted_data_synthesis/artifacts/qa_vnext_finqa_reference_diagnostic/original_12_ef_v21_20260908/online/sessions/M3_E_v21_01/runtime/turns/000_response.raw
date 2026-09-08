@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:eabd55cf69c2cd24699b9c7c91856bc2949e58e8f7b626bfe7afdea88d213e98",
+  "subgoal": "Read coal revenue for 2014",
+  "reason": "Need coal revenue for 2014 from source table.",
+  "operation": "read",
+  "inputs": ["source:t4c3n0"],
+  "parameters": {}
+}

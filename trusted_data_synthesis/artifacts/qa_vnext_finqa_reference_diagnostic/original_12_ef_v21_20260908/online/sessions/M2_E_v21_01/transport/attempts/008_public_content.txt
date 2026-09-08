@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f2a893fa84693f0c0c703744b5cc369c6b3f6e3e02b8470c83da9cfa5f331656",
+  "subgoal": "Read the 2022 long-term debt maturity value from the source.",
+  "reason": "The sum of annual long-term debt maturities for the next five years (2018-2022) requires the fifth year's amount, which is not yet in accepted claims.",
+  "operation": "read",
+  "inputs": ["source:t5c1n0"],
+  "parameters": {}
+}

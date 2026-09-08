@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:afa61bdc91ecb9c538062e9d29e722d7f26d4ea0eb09e85c9dc21cb6deca8b43",
+  "subgoal": "Read the cash instruments balances for 2017 and 2016 from the table.",
+  "reason": "The question asks for the minimum balance of cash instruments in millions for 2017 and 2016. The table shows cash instruments as $15,395 million in 2017 and $18,035 million in 2016. We need to read these two values from the numeric catalog to compute the minimum.",
+  "operation": "read",
+  "inputs": [
+    "source:t1c1n0"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:4fe3c83ad9b3e7f4f91da23e2ed88cf237116762300f0ccb6a5be39540d9da2c",
+  "answer_claim": "finance_qa_vnext_claim:8c521234172acf38aa2f0b41f7a537f67015d6104f6504c30072a0c8c6e8916e",
+  "result": {
+    "value": "299999990.4",
+    "unit": "USD"
+  },
+  "citations": [
+    "source:q10n3",
+    "source:q10n4"
+  ]
+}

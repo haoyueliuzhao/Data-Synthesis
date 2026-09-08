@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:7693f20f6b1d79e49050b88690fa911a78007451f1eef360c560b53375385baf",
+  "subgoal": "Sum total operating revenues for 2014-2016",
+  "reason": "Need denominator: total operating revenues across the three years. Read t9c1n0 and t9c2n0, then sum with already accepted t9c3n0.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:393d018440f8dc57dc641616b03cfa3125f74c78ce44e697c3b53d499c3ddce9",
+    "source:t9c2n0",
+    "source:t9c1n0"
+  ],
+  "parameters": {}
+}

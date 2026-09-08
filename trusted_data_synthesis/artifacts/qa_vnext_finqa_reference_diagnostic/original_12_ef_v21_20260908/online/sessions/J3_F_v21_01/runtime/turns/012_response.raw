@@ -1,0 +1,15 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4201029724b732c154f101c9e6a9b6765ef8f444cac6ed326005377100baa6bf",
+  "subgoal": "Sum the five expected principal payments for Entergy Louisiana Investment Recovery Funding.",
+  "reason": "The question asks for total expected payments over the next 5 years. The accepted claims are the individual annual amounts from source p1: 21.7, 22.3, 22.7, 23.2, 11. Summing these gives the total.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:2502a4ece0856efc5d114f8b578dcee116c108b8d285e195dc691774de276159",
+    "finance_qa_vnext_claim:ff9b3896ca27256afccabacdb013416422753ab774994e72ca5433497f74df2d",
+    "finance_qa_vnext_claim:40e368f23eee178a5fd1a28e78ea1a3a89a67a9efefec5be6035f6bdc92c1125",
+    "finance_qa_vnext_claim:e620238e718196c84bc81bb2c57ef4b824846b7837ba45a1469cb3a46cf26737",
+    "finance_qa_vnext_claim:a98bd46c6ed1d9fa264e1e5cd3427e6a7a8e6adc3926aca1942dc75799c2089e"
+  ],
+  "parameters": {}
+}

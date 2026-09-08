@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:790b6aa03a22ec82b314b928a7fab5a42d752f2c027df818ceadd86852138231",
+  "subgoal": "Compute the ratio of coal revenue to total operating revenues, 2014-2016.",
+  "reason": "We have accepted claims for sum of coal revenue (9804) and sum of total operating revenues (65742). Need to divide coal by total, then multiply by 100 to get percentage.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:79686cc7d9ca019bb0889e0f70da4b7bd1f22928ef401bee7e09802fe097dfed",
+    "finance_qa_vnext_claim:56c47c634318a1b3fb3c792cc05f1cbf78ac288154cd0b324474c4517ed687a7"
+  ],
+  "parameters": {}
+}

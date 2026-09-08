@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b0ac11c71352727e3108a71d706175c43a8c06edbe0b37e7c6227efd82d89c48",
+  "subgoal": "Compute absolute value of the decrease to get increase in total value of stock options from 2016 to 2017.",
+  "reason": "The question asks for increase in total value of stock options observed during 2016 and 2017. We have computed 2016 total value minus 2017 total value as -66.64, indicating a decrease. The increase is the absolute value of this difference.",
+  "operation": "absolute",
+  "inputs": [
+    "finance_qa_vnext_claim:f7504a92b6957a4f215a56174e119b97538ce218f16b1830bbb167177587e881"
+  ],
+  "parameters": {}
+}

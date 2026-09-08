@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:15a2500c54c7a3cc9b5d746bc62e7104cd0cd3f6c1d4248636bee9cb90b7639d",
+  "subgoal": "Read the accrued interest and penalties amount",
+  "reason": "Need the combined accrued interest and penalties, given as approximately $15.3 million in source fragment q2.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

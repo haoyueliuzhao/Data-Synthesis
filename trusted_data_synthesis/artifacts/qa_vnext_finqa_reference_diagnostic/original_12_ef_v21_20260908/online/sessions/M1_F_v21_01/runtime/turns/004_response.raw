@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:85aff2a7437f386b67c84b863906165d45694091bf87964a35e29efc14215d6e",
+  "subgoal": "Read the 2009 net annual change value from the table.",
+  "reason": "We have accepted claims for 2011 (4648) and 2010 (3625). Need 2009 value to compute the average of the three years.",
+  "operation": "read",
+  "inputs": ["source:t11c3n0"],
+  "parameters": {}
+}

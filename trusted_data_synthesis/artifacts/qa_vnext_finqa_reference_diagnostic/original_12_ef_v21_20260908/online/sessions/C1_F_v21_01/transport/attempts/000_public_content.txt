@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:036ee413a69fbcbdd724bf6e7ab44dfe96d49a5d2c60129791781d288fda6d81",
+  "subgoal": "Read 2015 net revenue from table",
+  "reason": "The table shows 2015 net revenue as $5829 million. This is one of the values needed to compute net change.",
+  "operation": "read",
+  "inputs": ["source:t8c1n0"],
+  "parameters": {}
+}

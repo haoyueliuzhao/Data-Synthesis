@@ -1,0 +1,15 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0272698da4d81c06d0ab4bd1cddf9813077f0bad8dd70c173da80318f275fc12",
+  "subgoal": "Sum the five annual long-term debt maturity amounts.",
+  "reason": "The question asks for the sum of the next five years' maturities. I have accepted claims for each year: 760000, 857679, 898500, 960764, 1304431. Use sum operation on these five claim IDs.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:7bcf1933457cf5f03ef0cff717a82a9ac23b3dc1e67f2535061f20d2c3bacaff",
+    "finance_qa_vnext_claim:afe2fea029e67eaca06f60d0811015920d15ee4c04bad5d23b8c8aeff765d4a1",
+    "finance_qa_vnext_claim:985d7627e3a1b17f81452c3476df24befd38c66cea0943fef9f90c6742183cc2",
+    "finance_qa_vnext_claim:53085f5051e8c0a36256603c213ada9acffb1fb4efd186b10c22ded3b2d62aca",
+    "finance_qa_vnext_claim:9d762dd8eb49136a182bb03cab7e0c0f567af4728565d39a87acfbf0a02eefc6"
+  ],
+  "parameters": {}
+}

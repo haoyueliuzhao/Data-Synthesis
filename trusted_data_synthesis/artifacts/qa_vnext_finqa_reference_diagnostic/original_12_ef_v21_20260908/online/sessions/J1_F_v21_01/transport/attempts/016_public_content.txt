@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f86762fbd4395920a24aa332866cdf1bfa9be2a661b29fafb1cd6fb3d94ab3ca",
+  "subgoal": "Divide the after-tax change by 2009 after-tax cost to get fractional change.",
+  "reason": "We have accepted claims for after-tax 2010 (11.8), after-tax 2009 (9.4), and the difference (2.4). Percentage change = (difference / 2009) * 100. First compute difference / 2009 using divide.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:769e6afb9a1aced35a82e9848af6d920bb7a2729b8d7b16c4d1c1e8a3a2aeef8",
+    "finance_qa_vnext_claim:e5d8aa597d60577da581f91fb5e0163a13c8ab094b2cd50eee9df700bb3a5714"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:65a26402ce587cd5cbaccbe9d671beb3b75cc610da3a4f45d0d6f534e57383d3",
+  "subgoal": "Read the 2020 maturity amount from the table.",
+  "reason": "The table lists annual long-term debt maturities for 2018-2022. We need the 2020 amount to sum the next five years.",
+  "operation": "read",
+  "inputs": ["source:t3c1n0"],
+  "parameters": {}
+}

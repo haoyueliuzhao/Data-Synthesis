@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ee418211c65b0af63bd45c702c8a4e72a981d86bd4648515be4f9d75ca9d17fa",
+  "subgoal": "Read the exercise price per share from the warrant description.",
+  "reason": "The warrant is to purchase 5,576,208 shares at an exercise price of $53.80 per share. To compute the total value purchasable under the warrant, multiply the number of shares by the exercise price. First, read the exercise price numeric from source:q10n4.",
+  "operation": "read",
+  "inputs": ["source:q10n4"],
+  "parameters": {}
+}

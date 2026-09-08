@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4e744ec4ba7990bbf1357257ead960bb4dccd9b1e643210969cc3a1934eac39c",
+  "subgoal": "Read the average exercise price for 2016 and 2017 from source q0.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017, considering the average exercise price. We need the average exercise prices from the source. q0 contains these values: 2016 = 26.93, 2017 = 33.32. We will read these two numbers.",
+  "operation": "read",
+  "inputs": ["source:q0n2", "source:q0n1"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:409e068e93d33648a990acd31f2f29d9b62312fb7f4da88694b9268958bc7d90",
+  "subgoal": "Read the 2020 principal payment for Entergy Louisiana investment recovery funding.",
+  "reason": "Need the fourth of five principal payment amounts from paragraph 1. The source numeric catalog has source:p1n6 with value 23.2 for 2020.",
+  "operation": "read",
+  "inputs": ["source:p1n6"],
+  "parameters": {}
+}

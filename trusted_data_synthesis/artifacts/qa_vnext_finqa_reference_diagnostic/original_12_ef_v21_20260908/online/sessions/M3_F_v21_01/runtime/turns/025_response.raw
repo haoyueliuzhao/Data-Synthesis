@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:3aa1eeca28c154dc370a018139922a82fb456659801d71fa692ef8b691067b63",
+  "subgoal": "Sum coal revenues for 2014, 2015, and 2016.",
+  "reason": "Question asks for percentage of total operating revenues from 2014-2016 that is coal revenue. Need sum of coal revenues over three years. Already have 2016 (2440) and 2015 (3237). Need 2014 coal revenue from source:t4c3n0 (4127). Then sum all three.",
+  "operation": "read",
+  "inputs": ["source:t4c3n0"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:d314f7a9bdbe576e1b7137033c28636fd0ba6b90e7fb8fba0deaf91ab34dede5",
+  "subgoal": "Compute total stock option value for 2016 using average exercise price and number of options.",
+  "reason": "For 2016, average exercise price is 26.93 and stock options count is 13 million. Multiply to get total value in millions of dollars.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3542d6d815e33b08a2bd232658ab989fa8f497ebf5c858519358d914cbaa7c1a",
+    "finance_qa_vnext_claim:06647051efd3b16954819dabe29322603662401c894150508442ab29067e0e12"
+  ],
+  "parameters": {}
+}

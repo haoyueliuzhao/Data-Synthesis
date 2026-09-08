@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:695fa71ec78a23114cbca1241b89665f2b85705e12892f203f58ee73cb06283d",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for percent of total operating revenues. The accepted claim 3581/21813 is a ratio. To express as percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3cde1e6e59aabc21bcab2807393a678feba658a985ccc47846b4ab9844f66b04",
+    "constant:100"
+  ],
+  "parameters": {}
+}

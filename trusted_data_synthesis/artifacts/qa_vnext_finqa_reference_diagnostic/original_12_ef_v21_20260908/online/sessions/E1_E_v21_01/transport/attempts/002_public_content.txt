@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:403479547bc9fe42614d39892de58816ef8f10d232798db4e7fbe80698587813",
+  "subgoal": "Read the total ending balance from the numeric catalog.",
+  "reason": "Need the denominator for the percentage calculation: combined accrued interest and penalties divided by total ending balance, multiplied by 100.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

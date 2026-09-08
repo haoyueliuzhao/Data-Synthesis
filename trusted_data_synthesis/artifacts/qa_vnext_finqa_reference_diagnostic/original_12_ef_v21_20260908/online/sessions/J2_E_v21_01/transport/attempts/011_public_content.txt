@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0e7e2a5fc70ce849e92523da4f3dfaaeb6b861f482e27089855ca56f554216b7",
+  "subgoal": "Compute the difference in total option value between 2017 and 2016",
+  "reason": "We have total option values for 2017 (366.52) and 2016 (433.16). The question asks for the increase in total value, so we subtract 2016 from 2017.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:09e774c1e2a7768da45ef3e35eecac7fc6814bbdbb8238072965adddd03c6f36",
+    "finance_qa_vnext_claim:bf73e9ee6f2e01b8c407465c68b906ad250c6ebd934c67aaa72283d474a4c08a"
+  ],
+  "parameters": {}
+}

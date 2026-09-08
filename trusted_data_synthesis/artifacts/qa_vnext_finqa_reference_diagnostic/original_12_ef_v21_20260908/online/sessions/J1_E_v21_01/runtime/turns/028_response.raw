@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0f3fd4aa44ba37b6a4f41846e31ee003c85584ebf5e6474c79cb835e16c9fc9f",
+  "subgoal": "Compute after-tax share-based compensation cost for each year by adding the share-based compensation cost and the income tax benefit (which is negative).",
+  "reason": "The question asks for percentage change in after-tax share-based compensation cost. After-tax cost = share-based compensation cost + income tax benefit. Need to read the tax benefit values and add to the compensation cost for each year.",
+  "operation": "read",
+  "inputs": ["source:t2c1n0"],
+  "parameters": {}
+}

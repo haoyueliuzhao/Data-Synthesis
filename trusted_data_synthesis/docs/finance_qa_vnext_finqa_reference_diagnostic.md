@@ -127,5 +127,243 @@ v2.1 与原 v2 只能描述前后变化；没有同期旧版本对照，不能�
 
 ## 本批在线结果
 
-待固定 24 会话实际完成后追加；调用前没有预填成功数或预期改进幅度。
+### 固定批次已完成（2026-09-08）
+
+调用时冻结源码：a5cd967d6a791144d991c2fc256e2f4843840a1e。
+新 condition 身份：
+finance_qa_vnext_finqa_v21_condition:0ebf75045889450ec4e982d3884a7de17c678168dfa03c89871cf5089e1fb0c7。
+三波共 24 个新会话均实际执行一次，没有完整性/条件漂移停波、未知、补样、重试或续跑。
+397 个 Provider 响应均报告模型名 deepseek-v4-pro；该名字不是不可变权重快照证明。
+
+结果与主要证据：
+
+- [调用前登记](../artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/preparation/condition.json)
+- [逐会话在线审计汇总](../artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/online/summary.json)
+- [只读收口报告](../artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/closeout/report.json)
+- [全部实际运算、Observation 与逐轨迹解释](../artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/closeout/trajectory_review.json)
+- [源码、重放和报告程序身份](../artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/closeout/source_integrity.json)
+
+### 端到端与完整成本
+
+| 条件 | 完整有效 | 预算耗尽 | 实际操作 | 显式 accept | 显式 reject | 模型提交/请求 | 未准入提交 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| E | 9/12 | 3 | 67 | 65 | 2 | 200 | 57 |
+| F | 9/12 | 3 | 70 | 67 | 2 | 197 | 49 |
+| 合计 | 18/24 | 6 | 137 | 132 | 4 | 397 | 106 |
+
+注意“模型合法 reject Observation”与“宿主拒绝不合法提交”是不同事件。
+本批提交分解闭合为：
+
+~~~text
+E：200 = 67 action + 65 accept + 2 reject + 9 Final + 57 未准入
+F：197 = 70 action + 67 accept + 2 reject + 9 Final + 49 未准入
+全批：397 = 137 action + 132 accept + 4 reject + 18 Final + 106 未准入
+~~~
+
+实际 397/768 请求；371 次未用额度没有转为补样。实际操作 137/288。
+18 条成功会话消耗 205 请求、999,389 Token；6 条失败消耗 192 请求、990,576 Token，全部保留。
+
+| 条件 | Prompt Token | Completion Token | Total Token |
+| --- | ---: | ---: | ---: |
+| E | 727,490 | 32,712 | 760,202 |
+| F | 1,196,444 | 33,319 | 1,229,763 |
+| 合计 | 1,923,934 | 66,031 | 1,989,965 |
+
+731,904 个缓存命中 Prompt Token + 1,192,030 个缓存未命中 = 1,923,934。
+Provider 的 prompt/completion/total 字段在全部 397 请求均有记录，和数闭合。
+reasoning_tokens 在全部 397 请求未提供，保持 total=null、unknown_attempts=397；
+observed_subtotal=0 仅表示没有观测到可加的明细，**不是声明实际 reasoning Token 为零**。
+HTTP 实际请求体合计 6,917,361 bytes，响应体合计 363,120 bytes。
+本报告不使用当前价格倒算美元账单，也不将 Token 预留上界当作实耗。
+
+### 每题结果
+
+表中记法为“完整有效；操作/提交/未准入”。每个单元的会话分母都是 1。
+
+| 原题 | E | F |
+| --- | --- | --- |
+| C1 | 是；3/7/0 | 是；3/7/0 |
+| C2 | 是；4/9/0 | 是；4/9/0 |
+| C3 | 是；3/7/0 | 是；3/7/0 |
+| E1 | 否；4/32/24 | 否；4/32/24 |
+| E2 | 是；3/7/0 | 是；4/9/0 |
+| E3 | 是；6/13/0 | 是；5/11/0 |
+| M1 | 是；4/9/0 | 是；4/9/0 |
+| M2 | 是；6/13/0 | 是；6/13/0 |
+| M3 | 是；11/26/3 | 否；8/32/17 |
+| J1 | 否；6/32/20 | 是；10/21/0 |
+| J2 | 否；11/32/10 | 否；12/32/8 |
+| J3 | 是；6/13/0 | 是；7/15/0 |
+
+分层完整有效数（每格分母 3）：E 控制 3、证据 2、方法 3、联合 1；
+F 控制 3、证据 2、方法 2、联合 2。总计相同并不意味着逐题行为相同：
+M3 仅 E 成功，J1 仅 F 成功；不能据此建立稳定能力排序。
+
+### 引用执行：首次合法不等于一律接受
+
+| 条件 | 总 Observation | 有首次后续提交 | 首次合法 accept | 首次合法 reject | 首次非法 | 没有后续提交 | 首次合法率 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| E | 67 | 67 | 65 | 2 | 0 | 0 | 67/67 |
+| F | 70 | 69 | 67 | 2 | 0 | 1 | 69/69 |
+| 合计 | 137 | 136 | 132 | 4 | 0 | 1 | 136/136 |
+
+全批 lifecycle.observation_binding=0；同一 pending 的连续引用拒绝最大长度=0。
+全部实际 HTTP 请求中，pending 状态均公开与其 ID 一致的精确 const、字段说明和复制规则；
+全部原始响应通过 v2.1 重放。结论是**本批未观察到引用拒绝**，不是已证明长期零错误。
+
+唯一未观察到首次决策的是 M3_F 第 32 次提交产生的 2015 总收入 Observation。
+它保留在 137 个事件、M3_F 的原分母及 6 个失败中；不能写成“137/137 首次合法”，
+也不能将它记为一次非法 Update。
+
+四次合法 reject 均是真实模型选择：
+
+| 会话 | 产生/拒绝提交序号 | 实际观察与后续 |
+| --- | --- | --- |
+| E3_E | 5/6 | 997/7 的结果被拒；随后显式 7×1000，正确完成 |
+| M3_E | 16/17 | 错把 2016 煤收入当总收入组成分母；拒绝后补读总收入并完成 |
+| J2_F | 17/18 | 一个错误年份/单位目标声称下的乘积被拒；后续有正确乘积，但最终仍失败 |
+| J3_F | 3/4 | 原欲读取金额 22.3，却实际读取年份 2017；拒绝后改读并完成 |
+
+Update 只公开 accept/reject，不包含解释文字，因此这些拒绝的“内在原因”不能直接获知；
+上表描述的是被拒的实际操作、其公开 reason 与随后真实行为，不替模型编写隐藏推理。
+
+### 剩余拒绝与金融诊断
+
+106 次未准入提交分布如下。零 Observation 引用拒绝不等于零生命周期或接口错误。
+
+| 拒绝码 | 次数 |
+| --- | ---: |
+| final.target_not_established | 87 |
+| lifecycle.accepted_claim_input_only | 8 |
+| final.citations | 5 |
+| numeric.arity | 3 |
+| schema.invalid_submission | 2 |
+| lifecycle.no_pending_observation | 1 |
+
+87 次 target 拒绝分别来自 E1_E 22、E1_F 23、M3_F 14、J1_E 16、J2_E 7、J2_F 5。
+原接口引用循环不再出现，但错误答案与错误依据被重复提交，错误恢复仍是实质问题。
+所有金融归类是逐轨迹后验描述，不是独立能力错误率。
+
+四焦点共八条轨迹都到达了调用前冻结的可检查位置（REACHED=8，NOT_REACHED=0）。
+这只是说明本批可检查，不证明所有方法都已充分探索。
+
+**E1：尺度错误与重复错误 Final。**
+E/F 都正确读取 15.3 百万元和 139549 千元，第 5 次直接相除，第 7 次只乘 100，
+从第 9 次起发布约 0.01096389082%。冻结目标是
+15.3/(139549/1000)×100≈10.96389082%，相差一千倍。
+第 5 次除法本身可以是后续再乘 1000 的合法中间式；**确证错误的是将未换算结果作为 Final**。
+两条都没有执行尺度恢复，全部四个 Observation 已接受，无 pending，最后停在第 32 次错误 Final。
+E1_E 的公开 reason 曾写出 139.549，却实际引用 139549 Claim，体现说明与实际依赖并不等价。
+E1_E 还尝试用单输入 average“认证”答案，因 arity 未准入；宿主未代做任何认证操作。
+
+**M3：期间集合与分母输入，既有错误也有真实恢复。**
+E 第 9 次正确求三年煤收入 9804；第 16 次宣称求三年总营业收入，
+却把 2016 煤收入 2440 与 23988、21813 相加，得到 48241。
+第 17 次合法 reject 后，第 18 次补读 19941，第 20 次得到正确分母 65742，
+最终第 26 次完整发布 9804/65742×100≈14.912841106142%。
+F 则先将 2016 单年 2440/19941×100≈12.23609648% 当三年结果 Final，
+后来才补读并在第 29 次正确求三年煤收入；第 31 次仍发布旧单年答案，
+第 32 次读取 2015 总收入后预算结束。记录为“部分恢复、未完成”，
+不能说它完全没识别三年方法，也不能把单年比率这个中间式本身一律判错。
+
+**J1：税后定义与执行差异。**
+E 第 5—9 次计算税前增长率 (18.1−14.6)/14.6×100≈23.97260274%，并以此 Final。
+第 14、21 次公开 reason 已说明应计入负税收利益，但用尚未读取/接受的 source 直接做加法未准入；
+第 29/30 次才读取并接受 −6.3，最终第 32 次仍发布税前结果。
+因此有明确目标口径错误和未完成恢复，不是“从未说出正确公式”。
+F 读取四项事实，实际算出 18.1+(−6.3)=11.8、14.6+(−5.2)=9.4，
+再算差额、比例及百分比，最终第 21 次完整发布约 25.531914893617%。
+差额重复执行一次增加成本，但未见具体已执行的税后口径错误。
+
+**J2：错误配对可在得到正确中间结果后继续污染 Final。**
+E 第 7 次正确构造 2017 值 11×33.32=366.52，
+第 10 次却把 2016 股数 13 配上 2017 单价 33.32，称其为 2016 值，
+得到 433.16；随后发布 −66.64，又取绝对值发布 66.64。
+第 18 次补读 26.93 后，实际恢复正确年度乘积 366.52 与 350.09，
+但没有把它们相减，而在第 32 次继续发布旧错误 absolute Claim。
+实际操作只用 11/12，不宜把失败归为必然被实际操作上限卡住。
+
+F 第 15 次同样将 13×33.32=433.16 声称为 2017 值。
+它合法拒绝过第 17 次的另一乘积，随后第 19、21/23 次已经得到正确的 366.52、350.09，
+但第 27 次仍选择旧错误 433.16，形成 83.07 并持续 Final；
+12/12 操作与 32/32 提交耗尽。正确目标为 366.52−350.09=16.43 百万美元。
+这些是实际输入与目标年份声称矛盾、错误终局依赖的证据，
+不是把任何跨期乘积或股数乘百万的中间换算都自动判错。
+两条都属于“局部正确结果已出现，但未形成并消费正确终局依赖”，不能笼统称为不会乘法。
+
+额外恢复例 E3_E、J3_F 如上表。唯一 off_reference_source_ids 非空的是 J3_F 的 source:p1n1：
+确定其为错误读取的依据是公开 reason 想读金额而实际读到年份，并非单纯因不在参考集合。
+反过来，M3_E 的错误分母和 J2 的错误配对都只用了参考集合内数值。
+
+### 与旧 v2 的描述性前后变化
+
+| 记录 | 原 v2（保留） | 新 v2.1 |
+| --- | ---: | ---: |
+| E 完整有效 | 2/12 | 9/12 |
+| F 完整有效 | 7/12 | 9/12 |
+| Observation 引用拒绝 | 410 | 0 |
+| 真实请求 | 636 | 397 |
+| 实际 Total Token | 2,769,305 | 1,989,965 |
+
+新批观察到了更顺畅的引用执行，以及更多完整结果和可检查的真实金融行为。
+**没有同期 v2 对照，也没有每题重复采样，因此不能把这些差值宣称为修复的精确因果效应。**
+尤其不能从旧 636 中机械减去 410 来预测新成本；实际新轨迹消耗的是独立测得的 397 请求。
+E/F 本批都为 9/12，不证明条件等价，也不建立稳定成功率或金融能力水平。
+
+### 接线验证、报告修订与封存边界
+
+调用前 15 项新增离线控制通过；只检查新 v2.1 入口、HTTP 字节公开 const、
+完整原响应重放、合法 reject、重复引用段、无后续提交、零 Observation 及 transport 无响应。
+未重跑旧 67 项控制、全量 census 或旧 H1/H2，也未新增 24 次静态可达实验。
+收口重新校验了全部 24 个 session/transport seal、全部原始 HTTP/content、v2.1 transition、
+独立有理数算术与 Final，以及所有冻结源码成员和成员集合；在线工件没有被改写。
+
+首次运行冻结的 closeout.py 时发现报告字节统计将整数 stat.st_size 写成了 stat.st_size()，
+导致 TypeError。它是只读报告代码的笔误，不在 stage.run 的在线路径上；
+首次报告未生成 closeout 目录，也未请求 Provider，全部 online 已提前完整封存。
+为了保留调用时整个源码快照，未修改该冻结文件，而新增独立批后脚本
+[scripts/finqa_v21_closeout.py](../scripts/finqa_v21_closeout.py)，
+除绝对导入和脚本身份元数据外，计算修订仅为将上述调用改为属性读取。
+脚本 SHA-256 与原因写入 source_integrity.json。该脚本完成了最终全部重放与字节统计。
+这不是新 Runtime 版本、模型合同改动、结果替换或重新采样。
+
+收口报告身份：
+finance_qa_vnext_finqa_v21_closeout:7507cd22bb4ebcacff3a6317d620e8a0600f87e69868f50b25600c2c11b8235b。
+
+只读复核现有会话可以运行以下代码，不使用 API，不写入原目录：
+
+~~~bash
+trusted_data_synthesis/.venv/bin/python - <<'PY'
+from pathlib import Path
+from trusted_synthesis.experiments.finance_qa_vnext_finqa_difficulty.panel import Panel
+from trusted_synthesis.experiments.finance_qa_vnext_finqa_reference_diagnostic.audit import read, verify_session
+from trusted_synthesis.experiments.finance_qa_vnext_finqa_reference_diagnostic.stage import OUTPUT
+from trusted_synthesis.experiments.finance_qa_vnext_harness_responsibility.audit import manifest
+from trusted_synthesis.experiments.finance_qa_vnext_model_execution.plan import verify_source_snapshot
+root = Path.cwd()
+p = root / OUTPUT
+for name in ("preparation", "online", "closeout"):
+    manifest(p / name)
+verify_source_snapshot(root, read(p / "preparation/implementation.json"))
+panel = Panel(root)
+for r in read(p / "preparation/registrations.json"):
+    d = p / "online/sessions" / r["label"]
+    manifest(d)
+    assert verify_session(panel, r, d) == read(d / "audit.json")
+print("24 frozen v2.1 sessions verified; 0 Provider calls")
+PY
+~~~
+
+### 本批结论与建议的下一焦点
+
+本批可按 PASS_AS_SCOPED 收口：新条件登记、固定 24 会话执行、完整分母与失败、
+引用事件及缺失后续决策、全部实耗和对应版本重放均已闭合。
+范围内结论是：**本批明确合同下未见 Observation 引用循环；剩余失败呈现可定位的金融目标、
+期间/输入配对与错误终局依赖消费问题，同时也出现合法 reject 后自主恢复的完整轨迹。**
+
+最小后继建议优先针对 E1 的单位对齐与错误 Final 后恢复：它在两条件下均有具体失败见证，
+且不再被引用循环遮蔽。若另做 J2，应聚焦“已有正确中间结果时为什么仍消费旧错误 Claim”，
+而不是笼统扩充乘法工具。上述只是根据轨迹提出的后续实验对象，并未在本批再改反馈、
+增加工具、扩题或发起额外请求；也不据此声称一般失败概率、Oracle 穷尽性、行为商闭合
+或 VTDO/Student 收益。
 

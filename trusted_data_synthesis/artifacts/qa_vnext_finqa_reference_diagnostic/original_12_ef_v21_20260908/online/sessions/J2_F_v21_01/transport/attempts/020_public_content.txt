@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fd876c8860fe850481429db70f800194adc1b8d5078b3560849590e9197fa066",
+  "subgoal": "Compute increase in total value of stock options from 2016 to 2017",
+  "reason": "Need 2016 options value: 2016 shares (13M) * 2016 exercise price ($26.93). Have 2017 value claim 909d1ed4 (433.16). Then subtract 2016 value from 2017 value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:06647051efd3b16954819dabe29322603662401c894150508442ab29067e0e12",
+    "finance_qa_vnext_claim:3542d6d815e33b08a2bd232658ab989fa8f497ebf5c858519358d914cbaa7c1a"
+  ],
+  "parameters": {}
+}

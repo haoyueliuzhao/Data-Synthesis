@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b923da8bb8819f610f1823e7369981d329d69ee31e5b0ec65695c19fc56efe31",
+  "subgoal": "Compute the ratio of the change to the 2009 value.",
+  "reason": "We need the percentage change from 2009 to 2010. We have the difference (2010 - 2009) as claim 3.5 and the 2009 value as claim 14.6. Divide the difference by the 2009 value to get the relative change.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:34663ab1ee1f1b1b0e0ac6d812bfaff3da0e55f64116d7b476b276123b168a25",
+    "finance_qa_vnext_claim:c0434d272dadf80840788ba97fc8be8959ef9b44b78e5e7bb68e370e2cef1167"
+  ],
+  "parameters": {}
+}

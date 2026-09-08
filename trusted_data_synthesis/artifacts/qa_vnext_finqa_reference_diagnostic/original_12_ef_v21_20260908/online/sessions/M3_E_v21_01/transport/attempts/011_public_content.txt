@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b9a6089fd69d85edc92f57201af439d478d48cb6094fb343dc4777db7875436d",
+  "subgoal": "Sum total operating revenues for 2014-2016",
+  "reason": "Need total operating revenues for 2014-2016 to compute percentage. Use accepted claims for 23988, 21813, 19941.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:393d018440f8dc57dc641616b03cfa3125f74c78ce44e697c3b53d499c3ddce9",
+    "finance_qa_vnext_claim:???",
+    "finance_qa_vnext_claim:???"
+  ],
+  "parameters": {}
+}

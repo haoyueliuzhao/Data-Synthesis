@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ce4ac07274cc891d06769acbcb5e3de0cb83aa27caaa39ab4bb140d0a9736bcd",
+  "subgoal": "Read the total cash and equivalents for 2017.",
+  "reason": "The question asks for cash held on behalf of GE as a percentage of cash and equivalents in 2017. We have already read the cash held on behalf of GE (997). Now we need the total cash and equivalents for 2017, which is 7.0 billion. The numeric catalog contains source:p1n2 with value 7.0 (interpreted as 7000 million).",
+  "operation": "read",
+  "inputs": ["source:p1n2"],
+  "parameters": {}
+}

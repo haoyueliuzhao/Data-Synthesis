@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:59d2576724032a08a1d42ef5d2b542909bec607fa63c382c9174905b50f4a1ff",
+  "subgoal": "Read the 2020 long-term debt maturity amount",
+  "reason": "Need all five annual maturities to sum them for the answer.",
+  "operation": "read",
+  "inputs": ["source:t3c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e9d41d5b09a93a2a104f31f6a9498211e0f9a8e59faed4b31ddb1d53645372aa",
+  "subgoal": "Read the 2017 cash instruments value.",
+  "reason": "Need the value for 2017 to compare with 2016.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

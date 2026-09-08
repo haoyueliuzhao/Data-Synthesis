@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:54748e0814fed194a48683e3b1a7c2a2d3909d5e21e43faeb9314f817f74de2c",
+  "subgoal": "Read total operating revenues for 2014.",
+  "reason": "Need the denominator for 2014 total operating revenues to compute coal percentage for that year.",
+  "operation": "read",
+  "inputs": ["source:t9c3n0"],
+  "parameters": {}
+}

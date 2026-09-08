@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:aca19332834fdb0008367fabf8140dceab96c3f74656171e93d2447156a32485",
+  "subgoal": "Read 2010 share-based compensation cost",
+  "reason": "Need the 2010 cost from the table to compute after-tax cost. The table row 'share-based compensation cost' has value $18.1 for 2010.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

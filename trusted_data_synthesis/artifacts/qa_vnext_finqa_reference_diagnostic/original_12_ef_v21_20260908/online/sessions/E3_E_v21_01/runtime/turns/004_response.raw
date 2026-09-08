@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e8093a5b9366edec63c9a8556362cdcd76cad6f5d83d63600dda5f6572e6caba",
+  "subgoal": "Compute cash held on behalf of GE as percentage of cash and equivalents in 2017.",
+  "reason": "We have cash held on behalf of GE = 997 (from source:p2n0) and total cash and equivalents = 7.0 billion = 7000 million (from source:p1n2). To express as percentage, divide 997 by 7000 and multiply by 100.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:125dc9bdbee3f243ca0c35a5d828f14dacca41c03f5f0d7f6fa9e4a07b41caa9",
+    "finance_qa_vnext_claim:200410a1a5dbeb30ffbb3375b440955834817dc21b756aa23f8e7249f80bad9a"
+  ],
+  "parameters": {}
+}

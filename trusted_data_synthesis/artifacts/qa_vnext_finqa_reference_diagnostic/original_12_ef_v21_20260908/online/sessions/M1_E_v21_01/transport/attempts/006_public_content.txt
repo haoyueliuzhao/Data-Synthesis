@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:43e026bb47f92e7628d08a59c7354c3162bb7a40422ec4f5ab46a32f129fcfb9",
+  "subgoal": "Compute the average of the three accepted net change values.",
+  "reason": "We have accepted claims for 2011 (4648), 2010 (3625), and 2009 (1620). The question asks for the average net annual change, so we use the average operation on these three claim IDs.",
+  "operation": "average",
+  "inputs": [
+    "finance_qa_vnext_claim:e4aab317853219c6ddaf902fda5eb89bd0d183f5e444f1eded9f5816c9ca24ec",
+    "finance_qa_vnext_claim:102f8525460153667889a875ce1d90ab9ed3801d6e65bdaeb25de58a2462432a",
+    "finance_qa_vnext_claim:173fcd33b1687fc02fcfb47044b8547f4768816c626c0f2b8a024171356e9844"
+  ],
+  "parameters": {}
+}

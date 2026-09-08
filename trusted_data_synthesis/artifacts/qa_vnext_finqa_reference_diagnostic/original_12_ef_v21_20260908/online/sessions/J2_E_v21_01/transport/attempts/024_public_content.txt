@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:bb64b42eecec096541df269080029584f8978a384f6858c37af4ab6f0bbdfb76",
+  "subgoal": "Compute 2016 total value using 2016 option count and 2016 average exercise price",
+  "reason": "We have accepted 2016 count 13 and 2016 average exercise price 26.93. Multiply to get total value for 2016.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:202ed8f18015a90ffb34f950e8cc72109352bfa8226b6460148d1ab8ca221978",
+    "finance_qa_vnext_claim:efca927f71dd8a3d53bd9684cf02662df9d89e0753ddfe9230d4ac3794496f57"
+  ],
+  "parameters": {}
+}

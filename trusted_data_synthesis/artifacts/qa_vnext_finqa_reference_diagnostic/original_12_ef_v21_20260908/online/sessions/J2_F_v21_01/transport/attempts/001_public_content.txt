@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:61bb71dd7019aa401b8019fcff530552be2742c36174310c3d2f215d4c060766",
+  "subgoal": "Read the number of stock options for 2016 from the table.",
+  "reason": "The question asks for the increase in total value of stock options during 2016 and 2017. We need the quantity of options and the average exercise price for each year. From numeric_catalog, source:t3c3n0 gives 13 (stock options for 2016).",
+  "operation": "read",
+  "inputs": ["source:t3c3n0"],
+  "parameters": {}
+}

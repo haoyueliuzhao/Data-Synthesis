@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6727b3e0eacdf5e238ebd83251d8badae111d2a6e39087a8273bf8edd7fce09f",
+  "subgoal": "Read the net change for each year from the table",
+  "reason": "We need the annual net changes for 2011, 2010, and 2009 to compute their average.",
+  "operation": "read",
+  "inputs": ["source:t11c1n0"],
+  "parameters": {}
+}

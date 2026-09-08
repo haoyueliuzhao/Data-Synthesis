@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:96f5c1644ef24ce99000b4cd1bfa9d0870f963d818eb155af217e5bccd9c3ed1",
+  "subgoal": "Read 2021 long-term debt maturity amount",
+  "reason": "Need the fourth year's maturity amount to sum all five years.",
+  "operation": "read",
+  "inputs": ["source:t4c1n0"],
+  "parameters": {}
+}

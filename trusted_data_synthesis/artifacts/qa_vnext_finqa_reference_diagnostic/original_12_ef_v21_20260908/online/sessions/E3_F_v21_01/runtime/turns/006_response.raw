@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:27620a55abb0ee3aa8232fc1a01e9ca09a0a41e56a9144b4f7c7e46523553db9",
+  "subgoal": "Divide cash held on behalf of GE by total cash and equivalents to get the ratio.",
+  "reason": "We have 997 million cash held on behalf of GE and 7000 million total cash and equivalents. Dividing gives the proportion, then we'll multiply by 100 for percent.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:8b24c822e0538f37fc92bf4f48b572caaa611c8df449d1d3095d3863efc34e02",
+    "finance_qa_vnext_claim:b38b8d7c0cfc9b38c7d588e05bc4495397f27999b3699bff7f6e05938db23ae5"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f7d0ad4ed8446782ab5c91c528a1e4cd4653de99e8de62cde7bca8b3aeda5d2b",
+  "subgoal": "Multiply the coal-to-total ratio by 100 to express as a percentage.",
+  "reason": "The question asks for a percentage. The accepted claim is the ratio 0.149128... (coal sum / total sum). To convert to percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:04f6d26a35a00383a22f27f02313ed6fd340dbd3f8cbd0bfda920074e40ec24e",
+    "constant:100"
+  ],
+  "parameters": {}
+}

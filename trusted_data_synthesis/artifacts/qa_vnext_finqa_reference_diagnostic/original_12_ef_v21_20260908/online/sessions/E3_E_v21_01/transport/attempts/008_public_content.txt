@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:8835a022601d49424297a3c8738bbc5212103f61ea46add55f5bd7a9cec1459e",
+  "subgoal": "Compute the percentage: (997 / 7000) * 100",
+  "reason": "We need to divide cash held on behalf of GE (997) by total cash and equivalents (7000) and then multiply by 100 to get a percentage. The numerator is claim 125dc9bd... and denominator is claim 1f73e41f... (7000).",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:125dc9bdbee3f243ca0c35a5d828f14dacca41c03f5f0d7f6fa9e4a07b41caa9",
+    "finance_qa_vnext_claim:1f73e41f3816cc44db721082c71ddc03a3f33fe69adebc81b8beb63ae17de01a"
+  ],
+  "parameters": {}
+}

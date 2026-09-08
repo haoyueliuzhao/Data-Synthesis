@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:7828a8938c7788cd5d734d4c53d53056c96f95b79783bea6eb58ca9107c4bcf1",
+  "subgoal": "Compute total coal revenue for 2014-2016 by summing coal revenues across the three years.",
+  "reason": "Question asks percentage of total operating revenues from 2014-2016 that is from coal. Total coal revenue = 2440 (2016) + 3237 (2015) + 4127 (2014). Need sum operation on accepted claims.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:c2ba6b3771ad8447eb1fae03e2fe4b3458da3184e2281a42922d5ddf01405644",
+    "finance_qa_vnext_claim:cda27cb9b012544e8c3fef759bf5d8f1c04795111ed0b6d4e151d3901dac1b4e",
+    "finance_qa_vnext_claim:e6002957f14ab778db79f4bb4c70cc8773b83f95df3543f09c870abb36381b83"
+  ],
+  "parameters": {}
+}

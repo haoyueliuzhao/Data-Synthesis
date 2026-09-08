@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:74f66a84199f63df2af0172494d344b3a228a99bd10fb422e9990b70a5f2a1f8",
+  "subgoal": "Read the 2016 stock options value 13 from the table.",
+  "reason": "We need the 2016 stock options count to compute total value. The table row 'stock options' has 13 for 2016, which is in source:t3c3n0.",
+  "operation": "read",
+  "inputs": ["source:t3c3n0"],
+  "parameters": {}
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6dd7219f9d07d4eb8942ab52053291b057bf5d8519c85a9eebeaf1029525f98e",
+  "subgoal": "Compute total operating revenues for 2014-2016 by summing the three total operating revenue values.",
+  "reason": "We need the denominator: total operating revenues over 2014-2016. The three total operating revenue values are 19941 (2016), 21813 (2015), and 23988 (2014). Summing them gives the total.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:09f6545961d6d525d90f91aabe4eab7c33ac9dcb931c91a9992114a1e6b1c6dd",
+    "finance_qa_vnext_claim:557c79990f5c9b67e4c43ad9989f1d869acc546d06185a8f809284eb18a94997",
+    "finance_qa_vnext_claim:393d018440f8dc57dc641616b03cfa3125f74c78ce44e697c3b53d499c3ddce9"
+  ],
+  "parameters": {}
+}

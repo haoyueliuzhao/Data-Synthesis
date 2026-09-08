@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f9f5b131b2375881316971451d33083f83b0bdacf1adc0dcd111a0dcf984d91c",
+  "subgoal": "Compute the average of the three annual net change values.",
+  "reason": "Use the three accepted claims for net change in 2011, 2010, and 2009. The average operation will compute their arithmetic mean.",
+  "operation": "average",
+  "inputs": [
+    "finance_qa_vnext_claim:0870e29ecf1c7215465309bac539e8004bb6c709c021fee92364c2c13e83e9d3",
+    "finance_qa_vnext_claim:af1ae2306c759bf009b66285952e5642cefa26dd97ade90028b3e448dbcd787e",
+    "finance_qa_vnext_claim:2acd432e4ba3c54ad4f9bfe12cad90953ce77078f543e39058ac2e9419939181"
+  ],
+  "parameters": {}
+}

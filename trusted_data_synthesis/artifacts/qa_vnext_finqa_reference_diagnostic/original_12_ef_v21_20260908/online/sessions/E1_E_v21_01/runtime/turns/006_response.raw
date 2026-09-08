@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:453ebf423763f152810cbd76a06e4e562b13a5f6681ec47746e4a41b07b4b8ae",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for a percent. The current claim is the ratio of interest/penalties to total ending balance. To express as percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:fc3849753a324ff29a49a0baee0b09e15f361458d7a19d71ec66604d0992d3b3",
+    "constant:100"
+  ],
+  "parameters": {}
+}

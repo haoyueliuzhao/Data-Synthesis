@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:7af7f46e2b491c18e67d3f8c57e7048314eb34f1c500d301ca03335f3afb54d1",
+  "subgoal": "Compute total value of stock options for 2016 and 2017 using average exercise price and number of options.",
+  "reason": "We have 2017 average exercise price 33.32 (claim f01793...) and 2017 stock options count 11 million (claim 4f483d...). Need 2016 average exercise price and options count. Read 2016 price from source q0n3 and 2016 options count from source t3c2n0.",
+  "operation": "read",
+  "inputs": [
+    "source:q0n3"
+  ],
+  "parameters": {}
+}

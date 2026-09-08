@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ad410b0dd51cf6fade3f51afeb6ac2d7961886ee1b30d287f252dac232045067",
+  "subgoal": "Compute net change in net revenue from 2014 to 2015",
+  "reason": "Question asks net change during 2015 for Entergy Corporation. We have accepted claims for 2015 net revenue (5829) and 2014 net revenue (5735). Net change is 2015 - 2014.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:40f7285583bf19b0923a5d6f27bc2b1e408e35e4f7214925258874fba1e02f51",
+    "finance_qa_vnext_claim:fe0aabe7926d07eeb629edd3278436d06dfe76b7203722de862ffef862d9adf4"
+  ],
+  "parameters": {}
+}

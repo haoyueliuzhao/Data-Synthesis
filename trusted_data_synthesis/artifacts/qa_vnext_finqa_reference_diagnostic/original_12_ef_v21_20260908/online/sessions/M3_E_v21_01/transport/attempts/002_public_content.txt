@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6bd414a1c2cf6c22e54ac660d38bc4bfed96e931176a2d455cf1f6fe8c94723a",
+  "subgoal": "Read coal revenue for 2016",
+  "reason": "To compute total coal revenue over 2014-2016, read the 2016 coal revenue value.",
+  "operation": "read",
+  "inputs": ["source:t4c1n0"],
+  "parameters": {}
+}

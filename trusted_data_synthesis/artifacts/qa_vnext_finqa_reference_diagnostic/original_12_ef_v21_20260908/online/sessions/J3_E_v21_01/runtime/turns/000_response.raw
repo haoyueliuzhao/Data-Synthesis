@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:2f233a28465af3154eebaa822c67210642b514ec9b81c2c019e08ce54889e57f",
+  "subgoal": "Read the first principal payment amount from the source.",
+  "reason": "We need to sum the principal payments for the next five years. Start by reading the first amount.",
+  "operation": "read",
+  "inputs": ["source:p1n0"],
+  "parameters": {}
+}

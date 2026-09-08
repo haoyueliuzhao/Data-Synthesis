@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:83b278cf1b00ce59fd721a01040c454265599f94b4c841da1e406de9082a97e7",
+  "subgoal": "Read cash and equivalents value for 2017",
+  "reason": "To compute the percentage, we need the total cash and equivalents, which is $7.0 billion. Reading source:p1n2 provides this value.",
+  "operation": "read",
+  "inputs": ["source:p1n2"],
+  "parameters": {}
+}

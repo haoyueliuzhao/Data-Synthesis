@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:26cbbbd70f146c52a9b94282cd409dbc60d5c1c3cf3300285e09ec8c6fe637af",
+  "subgoal": "Read the 2021 expected payment amount from the source.",
+  "reason": "The question asks for total expected payments over five years. We have accepted claims for 2017-2020. Need to read 2021 amount ($11 million) from source:p1n8.",
+  "operation": "read",
+  "inputs": ["source:p1n8"],
+  "parameters": {}
+}

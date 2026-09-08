@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:38f724fe8a9b6f27bf4e72a1b397c5805d6b50b142421b5dc4c9f7ea92647e59",
+  "subgoal": "Read the 2020 principal payment amount from the source.",
+  "reason": "To compute the total expected payments for the next five years, we need all five annual amounts. We already have 2017, 2018, and 2019; now read 2020.",
+  "operation": "read",
+  "inputs": ["source:p1n6"],
+  "parameters": {}
+}

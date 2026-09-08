@@ -1,0 +1,13 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:92485a88adcc1e6225befea726bed297217059b5b260f6524d649a8cf758c79c",
+  "subgoal": "Sum coal revenues across 2014-2016.",
+  "reason": "We have read coal values for 2014 (4127), 2015 (3237), and 2016 (2440). Sum them to get total coal revenue.",
+  "operation": "sum",
+  "inputs": [
+    "finance_qa_vnext_claim:1aa7581bbe52141f001a9f842640f41cc56c7970ae23925ce5bd0db7c3917b2c",
+    "finance_qa_vnext_claim:bc3167c529b880c3bb2d2624aa62c73818d9c8b97b3e40f2c5c61614eeabc22e",
+    "finance_qa_vnext_claim:f0da537374f86f9a28b8016871d1984422ca49e2958c5be6319e95335e9df5b5"
+  ],
+  "parameters": {}
+}

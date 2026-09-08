@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:0d947db1ad873384724e2b6fc641543c90039c35a4cda5f8317754a3505543c5",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for a percentage. The accepted claim 95febbb0 is the ratio 2440/19941. Multiplying by constant:100 gives the percentage value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:95febbb01ab0c6c3f041c340f84da405cd920463bdb086aac830d85d68b192d0",
+    "constant:100"
+  ],
+  "parameters": {}
+}

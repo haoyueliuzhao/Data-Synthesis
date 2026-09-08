@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:35f9a668a7c363f145490ebf49616d04449f23e5a78bd494ad5abc75a50d1732",
+  "subgoal": "Read the 2016 stock options value from the table.",
+  "reason": "Need the 2016 stock options amount to compute the increase from 2016 to 2017. The table row 'stock options ( 1 )' has 2016 value 13 million shares (already read as claim 13). The 2017 value is 11 million shares.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}

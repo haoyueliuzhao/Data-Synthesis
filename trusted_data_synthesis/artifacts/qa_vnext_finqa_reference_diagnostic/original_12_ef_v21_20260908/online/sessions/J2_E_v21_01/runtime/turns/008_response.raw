@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:8ff95c67083adcaf0db4d53f6a3901cbd2012b50b2fb24b4ba34b092bda47c92",
+  "subgoal": "Compute total value of stock options for 2016 and 2017, then find increase.",
+  "reason": "We have accepted values for 2017 options (11 million shares) and 2016 options (13 million shares). We have accepted average exercise prices for 2017 (33.32) and need 2016 (26.93). Multiply 2016 options by 2016 price to get total value for 2016, then subtract from 2017 total value.",
+  "operation": "multiply",
+  "inputs": [
+    "source:t3c3n0",
+    "source:q0n3"
+  ],
+  "parameters": {}
+}

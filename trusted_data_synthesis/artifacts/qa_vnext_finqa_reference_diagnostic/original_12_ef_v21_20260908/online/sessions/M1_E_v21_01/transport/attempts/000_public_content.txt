@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:489db0e56d5cbf18d127e0744fb2a6d77d5f9bb5fad47f4d62a28e2b4b97ab03",
+  "subgoal": "Read net change for 2011",
+  "reason": "Need the net change for 2011 to compute the average.",
+  "operation": "read",
+  "inputs": ["source:t11c1n0"],
+  "parameters": {}
+}

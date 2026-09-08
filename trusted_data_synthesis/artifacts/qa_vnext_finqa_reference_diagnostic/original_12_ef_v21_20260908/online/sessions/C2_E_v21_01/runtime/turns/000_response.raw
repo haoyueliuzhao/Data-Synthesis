@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a5d3cb9ce21ff8be1e6d3f4a1253ac43317da71384597238ccd93e403ac73925",
+  "subgoal": "Read agriculture products revenue for 2015",
+  "reason": "Need the numerator for the percentage calculation.",
+  "operation": "read",
+  "inputs": ["source:t1c1n0"],
+  "parameters": {}
+}

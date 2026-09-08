@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b1ade520d6a50001da9a00241df37e6cda6bff130385a794d34b238cb533471c",
+  "subgoal": "Read the remaining three annual principal payment amounts from the source.",
+  "reason": "Need all five payment values to sum. Already read 2017 and 2018. Next read 2019 (source:p1n4), 2020 (source:p1n6), and 2021 (source:p1n8).",
+  "operation": "read",
+  "inputs": ["source:p1n4"],
+  "parameters": {}
+}

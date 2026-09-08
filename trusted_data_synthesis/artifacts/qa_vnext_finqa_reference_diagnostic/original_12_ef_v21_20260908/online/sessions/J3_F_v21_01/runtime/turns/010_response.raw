@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:05e2c0394a1f09b3803d0c3ccc91296751ee3bafb5510c0d568c2a57751b4d92",
+  "subgoal": "Read the 2021 expected principal payment for Entergy Louisiana Investment Recovery Funding.",
+  "reason": "The question asks for total expected payments over next five years. We have accepted claims for 2017-2020 payments: 21.7, 22.3, 22.7, 23.2. Need the 2021 payment of $11 million from source:p1n8.",
+  "operation": "read",
+  "inputs": ["source:p1n8"],
+  "parameters": {}
+}

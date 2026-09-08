@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:859baebef0876f63ae40720e9436e94590e85fdc185251615a4069c2eecde1ca",
+  "subgoal": "Divide agricultural products revenue by total operating revenues for 2015",
+  "reason": "To compute the percentage, divide the 2015 agricultural products revenue claim by the 2015 total operating revenues claim.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:108a0ea46d09b8e0ca02e6e13f49ae58f754c96f298435efbd51d89589dea579",
+    "finance_qa_vnext_claim:b8f11f723333e6a9f7f0d8a5a496148d21e41a3ac813f9aa1d2b63c6cdc80735"
+  ],
+  "parameters": {}
+}

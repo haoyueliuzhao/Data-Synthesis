@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:410e73fa7306ab3f614d5b111a65ce0fdb536d435a8f984943e0e0dd8a13f1cf",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for a percentage. The accepted claim finance_qa_vnext_claim:b76c69a103d663756b2c530f0fe10c647c724109cde9626d8654859003caf360 is the ratio 997/7000. To express as percent, multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:b76c69a103d663756b2c530f0fe10c647c724109cde9626d8654859003caf360",
+    "constant:100"
+  ],
+  "parameters": {}
+}
