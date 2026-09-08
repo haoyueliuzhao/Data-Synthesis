@@ -150,6 +150,269 @@ artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909。准备、�
 本轮不开展新商、旧 Token 包再物化、Student、GPU 或 VTDO。使用 CPU 隔离进程和远程教师
 并行完成有限诊断；新的错误不触发额外预选菜单或强制格式协议。完整记录后收口，不补满分。
 
-## 8. 正式结果（生成与遮蔽复核结束后追加）
+## 8. 正式结果与结论
 
-冻结时尚未启动本批正式 Provider 调用。
+本节及后续章节为生成、遮蔽评价封存和模型标签解码后追加，**不改变前置登记或原始评分**。
+首次调用前已提交并推送的冻结实现为 `cd317baa2d2c18b1817966cb8bf4125e79a341b3`。
+前置设计原字节保存在 [design_at_freeze.md][frozen-design]，与本结果追加版区分。
+
+**本轮观察：Flash/high 答案通过 9/12、完整公式驱动轨迹 5/12；Pro/high 分别为 12/12、
+11/12。** Flash 确实产生了有效自主轨迹，但本批还观察到四次直接 Final、一次发布尺度
+错误、一次低精度来源选择引起的发布失败，以及一次空公开响应。不能据此声称 Flash 已
+满足无筛选批量轨迹合成要求，也不能把这个小样本差异升级成一般模型能力排名。
+
+### 8.1 固定分母下的逐题结果
+
+| 任务 | Flash 答案 | Flash 完整轨迹 | Pro 答案 | Pro 完整轨迹 | 未通过完整轨迹的主要原因 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| C2 农业产品占比 | 1/2 | 1/2 | 2/2 | 1/2 | Flash 一条无 Final；Pro 一条只有裸算式，来源到 Final 才出现 |
+| E1 利息罚款占比 | 1/2 | 1/2 | 2/2 | 2/2 | Flash 一条选择正文 139.5 million，未用表格 139.549 million |
+| E3 代 GE 现金占比 | 2/2 | 1/2 | 2/2 | 2/2 | Flash 一条直接 Final，无实际计算 |
+| M3 三年煤炭收入占比 | 1/2 | 1/2 | 2/2 | 2/2 | Flash 一条正确计算后把 fraction 数值标成 percent |
+| J1 税后成本增长率 | 2/2 | 1/2 | 2/2 | 2/2 | Flash 一条直接 Final，且 result_id 指向原文而非计算结果 |
+| J2 年度期权总额差 | 2/2 | 0/2 | 2/2 | 2/2 | Flash 两条均直接 Final，无实际计算 |
+| **合计** | **9/12** | **5/12** | **12/12** | **11/12** | 不删除未知，不补充成功样本 |
+
+Flash 的答案计数为 PASS 9、FAIL 2、UNDETERMINED 1；Pro 为 PASS 12。
+合计 23 条 Final、21 条答案 PASS、2 条 FAIL、1 条未知、16 条完整轨迹。表中的“答案”
+允许没有工具计算的正确 Final；“完整轨迹”要求公开关系、数据／单位对应、真实执行及
+正确发布同时成立。不能把二者互换。
+
+完整逐会话结果见 [正式收口报告][closeout-report]；按模型加和的成本、遥测、执行统计见
+[零 Provider 描述性汇总][derived-summary]。后者在解码后生成，不修改冻结 evaluator 或评价输入。
+
+### 8.2 三类失败／未知的具体证据
+
+**Flash / M3_01（R017）：终局百分数尺度错误。** 实际 calculate 表达式为
+`(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100`，结果精确等于
+`163400/10957`，即约 14.912841%。Final 同时包含：
+
+```json
+{"answer":"14.91284%","value":0.14912841106142192,"unit":"percent"}
+```
+
+公式、三年汇总、代入数据与实际单位处理均可复核；错在把比例小数发布为百分点数值。
+保留 value 优先，发布一致性 FAIL、任务 FAIL，不用正确 answer 字符串覆盖它。不存在
+工具计算错误，也没有模型收到错误反馈后自主修订的过程。[原公开 Final][m3-failure]
+
+**Flash / E1_02（R003）：真实但已舍入的分母选择，与精确参考发布不等价。** 模型在
+执行前明确选取原正文 q0 的 139.5 million，与 q2 的 15.3 million 同尺度相除。公式
+`15.3 / 139.5 * 100` 的实际结果为 `340/31`；Final value 为 `10.96774193548387`，
+answer 为 `10.97%`。这两者内部相容，引用的科目、期间及原文数值也真实存在，因此不
+把它描述为来源捏造或千／百万尺度错误。[原始计算请求][e1-request]
+
+登记参考使用更精细的表格余额 139549 thousand，精确答案为 `1530000/139549`，约
+10.963890819712072%。两种计算结果相差约 0.003851115772 个百分点：对主要长小数
+value 的 1e-12 容差不合格；10.97 的误差约 0.00610918，又超出该展示精度的半末位
+0.005。故任务 FAIL。**这不是 E3 式的 1e-15 表示误差**，不能由新增表示误差下限修复。
+
+这里有一个应明确披露的测量命名限制：自动 reason 字符串为
+`inconsistent_final_numeric_fields`，因为 secondary 答案对同一精确参考未通过；但本条
+人工 `final_answer_consistency` 为 PASS，表示模型自己的数值字段彼此相容。
+不能把该自动 reason 误读成“模型的 answer 与 value 自相矛盾”。任务的精确参考失败
+不回写；其研究解释是**公开来源精度选择／发布政策敏感性**，不是公式或单位推断失败。
+
+**Flash / C2_02（R014）：空公开响应，保留未知。** 首次 calculate 正确执行
+`3581/21813*100`。第二次 HTTP 状态 200，模型名匹配，finish_reason 为 stop，但
+公开 content 是空字符串；completion 58、reasoning_tokens 58。worker 记录
+`provider_envelope_or_condition_failure`，无 Final，终止为 unknown_transport_or_condition。
+不能填入前一工具的正确结果，也不能把它说成超时或 finish_reason=length 截断；仅凭
+投影无法进一步定位服务端为何未返回公开内容。本轮不重试。[安全响应投影][empty-projection]
+
+### 8.3 答对但公开轨迹不完整
+
+Flash 的 E3_02、J1_01、J2_01、J2_02 共四条直接提交 Final，全部数字答案通过。公开
+文字确实有相应算式、年度配对或单位转换，但实际 calculate 调用数均为零。私有 Thinking
+的存在和长度不能补成工具轨迹。其中 J1_01 的 result_id 是 `public_document:…`，不是
+实际工具结果，因此其 publication_alignment 为 FAIL；这项执行引用缺陷与数字答案正确
+分别保留，不通过 Host 生成 tool:1 修复。
+
+Pro 的 C2_02（R021）实际请求只有 `3581 / 21813 * 100` 与空 variables，无执行前角色、
+来源或单位声明；Final 才列出正确 source IDs。算术及答案都正确，但本次有限语义复核把
+执行前变量对应、单位处理记为 NOT_ESTABLISHED，故不计完整轨迹。**这是证据可见性边界，
+不是判断两个字面数本身算错。**[裸算式原请求][bare-request]
+
+这一边界不是要求每个变量强制满足某个新在线 schema：例如 Pro / J2_02 虽然也用字面
+算式、没有 message，但同一次请求中的未消费变量注释已经公开了年度、股份数、价格和
+单位，足以进行有限语义复核。J1_02 的分数形式亦有执行前财务关系和年度说明。上述区别
+在模型标签遮蔽状态下已写入逐条评价，没有解码后为某个模型调整标准。
+
+## 9. 实际行为与来源绑定：成立的范围
+
+全批 44 次真实模型请求可以核对为：
+
+```text
+44 = 20 次 calculate 请求 + 23 次 Final + 1 次空公开响应
+```
+
+Flash 为 20 次请求、8 次实际计算；Pro 为 24 次请求、12 次实际计算。20 次计算的独立
+SymPy 复算全部与实际工具输出一致；**这是执行算术正确，不是说所有表达式都等于财务
+参考答案**。全部计算都是单次完整表达式；80 个表达式运算节点不是 80 次旧原子动作。
+实际跨计算 result_id 复用为 0，没有调用 read_source 或 notebook，没有工具错误，也没有
+失败方法后的自主修订。最多两个模型响应便终止；不宣称复杂规划、搜索或纠错已建立。
+
+| 分开统计的证据 | Flash | Pro | 解释范围 |
+| --- | ---: | ---: | --- |
+| 有实际执行前表达式的会话 | 8/12 | 12/12 | 不把仅在 Final 出现的算式算入 |
+| 独立算术复算通过 | 8/8 | 12/12 | 校验实际执行的表达式，不等于任务全通过 |
+| 自动 source_symbolic_target_match | 1/8 | 6/12 | 仅实际计算为分母；其余不自动判财务错误 |
+| 有限公式适用性复核 PASS | 12/12 | 12/12 | 包含仅 Final 可见的关系，不代表执行前轨迹 |
+| 有限变量／来源对应 PASS | 12/12 | 11/12 | Flash 的 E1 舍入来源真实但精度不同；Pro 一条执行前未建立 |
+| 有限单位处理 PASS | 12/12 | 11/12 | 评价关系本身／执行前单位；M3 的后续发布尺度错误另记 |
+| 执行—发布对应 PASS | 6/12 | 12/12 | Flash 另有 2 FAIL、4 NOT_ESTABLISHED |
+| 正确发布且完整公式轨迹 | 5/12 | 11/12 | 最终联合条件，才是本轮有效轨迹产量 |
+
+20 次计算中，8 次实际消费命名变量、12 次消费字面算式。Pro / E1_01 使用了
+`source:t6c1` 而非数字跨度 `source:t6c1n0`；自动系统保持该输入为未链接数值常量，
+没有替模型补 n0。但它的执行前公开文字及 cell 定位明确指向 139549 的期末余额，因此
+有限语义对应 PASS。其它字面算式即使带了未使用的 source／variables 注释，也不因此
+获得机器绑定认证。
+
+E1 三条选择表格精细余额的会话都作了相容尺度转换，其中千美元尺度主要由相邻 139.5
+million 正文和 139549 表格共同支持；抽取表格本身没有显式千美元表头。不要把“执行了
+合理尺度转换”扩写成已经观测到完整单位推断过程。
+
+遮蔽过程：执行代理阅读全部 R001—R024 公开视图和原题材料，完成引证后于北京时间
+2026-09-09 02:30:54 封存输入；其 SHA-256 为
+`56421672b9b3a61efbfb93e3bc2a3665939803b5e8fdeadd3377646236d06cca`。
+随后才调用解码收口、读取模型报告与成本；收口复制与锁定输入逐字相同。
+见 [评价锁][review-lock]、[遮蔽评价输入][masked-reviews] 和 [评价编写记录][review-authoring]。
+原公开内容中未观察到自报模型名称；仍不声称风格完全不可猜测、独立专家复核或第三方
+盲态认证。逐字引文检查保证原文真实性，不保证语义判断客观无偏。
+
+## 10. 成本、时延与 Thinking 遥测
+
+### 10.1 全部分母下的原始用量
+
+| 实测项目 | Flash/high | Pro/high | 合计 |
+| --- | ---: | ---: | ---: |
+| 注册会话 | 12 | 12 | 24 |
+| 模型请求／已记录 outcome | 20 | 24 | 44 |
+| 输入 Token | 118,516 | 139,340 | 257,856 |
+| 其中缓存命中 | 81,536 | 99,840 | 181,376 |
+| 其中缓存未命中 | 36,980 | 39,500 | 76,480 |
+| completion Token | 59,848 | 24,938 | 84,786 |
+| 其中 reasoning Token | 56,906 | 21,131 | 78,037 |
+| total Token | 178,364 | 164,278 | 342,642 |
+| 实际计算 | 8 | 12 | 20 |
+| 工具错误 | 0 | 0 | 0 |
+| 收到非空公开 content | 19 | 24 | 43 |
+| 非空私有推理存在遥测 | 20 | 24 | 44 |
+
+44 次请求的所有上述 usage 字段均有实测值，缺失次数为 0；空公开响应的 58 个输出 Token
+也已计入。每次满足 cache hit + miss = prompt、prompt + completion = total、reasoning
+不大于 completion。**78,037 不再加到 342,642 上。** Flash 在本批消耗的 Thinking Token
+更多，但不能把跨模型的 Token／字符长度解释为可比较的推理深度或质量。
+
+Flash 与 Pro 的私有推理字符长度遥测分别为 224,509 和 78,786，总计 303,295；只是
+接收时的存在、长度统计，未保存文本或其摘要。原公开 content 合计 19,267 字节；安全响应
+投影合计 53,664 字节。HTTP 接收长度合计 354,445 字节是内存接收计数，不是某个保存着
+私有内容的原响应文件大小。
+
+全部响应返回本名 deepseek-v4-flash／deepseek-v4-pro，各自观察到一个 fingerprint；
+正式 44 次 finish_reason 均为 stop，generation_truncated_length 为 0。单请求最大
+completion 分别为 13,921 和 3,418，均小于 16,384。没有通过延长预算消除失败。
+全批实际预留 allowance 5,091,328，44 次请求 body 合计 982,267 字节，单次最大 27,075
+字节；这些资源计数不冒充收费 Token。
+
+### 10.2 费用：整批更便宜不等于有效轨迹更便宜
+
+| 人民币官方费率估算 | Flash/high | Pro/high |
+| --- | ---: | ---: |
+| 本批空闲时段估算 | ¥0.3288628 | ¥0.5293890 |
+| 若同用量均按高峰费率 | ¥0.6577256 | ¥1.0587780 |
+| 空闲估算／全部注册会话 | ¥0.0274052 | ¥0.0441158 |
+| 空闲估算／答案 PASS | ¥0.0365403 | ¥0.0441158 |
+| 空闲估算／完整轨迹 | ¥0.0657726 | ¥0.0481263 |
+
+公式为 `(cache_hit × 命中价 + cache_miss × 未命中价 + completion × 输出价) / 1e6`。
+本批请求处于北京时间 02:15—02:19，按同日 [官方价格规则][price-source] 属空闲时段；
+相应合计估算为 ¥0.8582518。高峰一行是相同用量的费率敏感性参照，不是第二张实际账单。
+账户结算账单没有接入，actual_billed_cost 均为 null，不能称为已扣款。
+
+后两行将**整个条件的成本**除以通过数，包括失败、未知、直接 Final 和不完整轨迹的
+费用，不是只加成功会话的成本。Flash 整批空闲估算比 Pro 低约 37.9%，但每条完整轨迹
+成本高约 36.7%。这只是 12 会话／条件和本次缓存状态下的描述，不是稳定的单位成本预测。
+两模型运行交错、第二波缓存命中更多；不能由价格或延迟差异单独推导计算效率因果结论。
+
+### 10.3 时延和稳定性
+
+| 请求耗时，秒 | Flash/high | Pro/high |
+| --- | ---: | ---: |
+| 全部请求耗时之和 | 443.771 | 471.086 |
+| 每请求均值 | 22.189 | 19.629 |
+| 每请求中位数 | 3.712 | 14.357 |
+| 最慢单请求 | 96.327 | 64.776 |
+
+Flash / E1_01 两次请求合计 163.952 秒、completion 23,552、reasoning 23,215，是本批
+明显长尾；该 23,552 是两次之和，不是单请求突破 16K。Flash 的低中位数与较高均值可以
+同时成立，不能只报告其中一个。
+
+按请求开始 UTC 加实测单调时钟耗时推得，第一波请求窗口约 163.965 秒，第二波约
+81.401 秒，互不重叠；全批请求窗口约 245.506 秒。它包括固定波次间隙，不包括准备、
+测试、离线评价和提交时间，也不是两个条件分别占用独立服务器的墙钟基准。
+没有超时、HTTP 非 200 或长度截断；唯一未知为前述 stop + 空公开内容。
+
+## 11. 历史侧表、核验与工件索引
+
+旧 Pro/off 十二条仅按新数值规则形成 [历史评价侧表][historical-side-table]：旧严格计数
+仍为 10 PASS、2 FAIL，新版本侧表为 12 PASS。变化仅是原 E3 两条末位误差，**没有新的
+Provider 会话、没有重标旧公式语义、没有把旧 10/12 覆盖成 12/12，也不计入本批 24 条**。
+
+本轮核验记录如下：
+
+- 新命名空间的 32 项控制在冻结前、准备时和收口检查中通过；收口重跑为 32 passed in
+  1.92s。Ruff 检查新正式源码与测试通过；没有声称重跑整个历史仓库测试。
+- preparation、online、assessment、closeout 四份清单的全部成员长度、摘要及身份核验
+  通过；全仓冻结 Python 源码、冻结测试均未在正式生成之后改变。
+- 24 个独立 worker 全部记录 Landlock ABI 4、isolated/no-site、无仓库 evaluator 模块、
+  禁用 core dump；48 次私有目标／canary 读取探测都在请求前被拒绝。
+- 44 份投影检查通过；公开 content 与各自 assistant.raw 字节相同，包含那个空字符串；
+  没有保存 `*_http_response.body`。记录已明确标注投影，不声称具有原 HTTP 原文的取证强度。
+- 当前 API Key 字节未出现在发布工件；没有输出 Key 或保存其摘要。这是发布扫描，不是
+  对任何未来未知 Provider 字段的全能安全证明。
+- 旧基线 `858f8a4…` 覆盖的历史文件保持不变；新旧 SYSTEM、calculator、isolate
+  字节相同；评价锁中的输入与编写记录摘要保持不变。核验详情在 [描述性汇总][derived-summary]。
+
+复核入口（`closeout` 已执行，不能在同一目录覆盖重做；`verify` 可重复执行）：
+
+```bash
+PYTHONPATH=trusted_data_synthesis/src trusted_data_synthesis/.venv/bin/python \
+  -m trusted_synthesis.experiments.finance_qa_vnext_thinking_comparison.stage verify
+```
+
+原始采集、投影、来源材料、隔离记录及逐次 usage 在新工件根目录下完整保留。
+`review/blinded_review_authoring.py` 是生成结束后、解码前写定的有限复核编写记录，不是
+前置冻结的自动评价器；`analysis/post_generation_summary.py` 仅在解码后作加和、核验与
+描述性整理，不新增模型调用，也不替换任何语义判定。
+
+## 12. 本轮收口与后续选型边界
+
+结论分成三层：
+
+1. **工程适配完成。** 固定自主 Harness 已支持两模型 Thinking/high、投影先于落盘、
+   真实推理用量和独立截断分类；没有恢复 accept、在线答案反馈或强制公式阶段。
+2. **Flash 有有限正证据，也有明确缺口。** 5 条完整轨迹证明它能在现接口自主完成有效
+   公式执行；但 9/12 答案、5/12 轨迹和本批单位有效轨迹费用，尚不足以确认无筛选合成
+   默认配置就绪。保留 Flash 为主研究候选，不因 12 个样本直接否定整条 Flash 路线。
+3. **Pro 仍只是本轮参照。** 它本批 12/12 答案、11/12 轨迹的表现更完整，但不是替换
+   主 Explorer 的普遍必要性证明；本轮没有改写其它模型适配器为 Pro，也没有以 Pro
+   的答案补成 Flash 成功。
+
+若继续，优先在新的、未用于上述开发的任务上确认公开轨迹产量，并把正文舍入分母、
+终局百分数尺度、空公开响应、缺执行证据分别作为离线误差类别。此处只是后续研究建议，
+本轮不追加采样、不补满分、不导出训练目标或启动 Student／GPU／VTDO，不重建强制协议。
+Thinking 的独立增益、广泛稳定优劣、复杂自主规划与训练收益均仍未测量。
+
+[frozen-design]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/preparation/design_at_freeze.md
+[closeout-report]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/closeout/report.json
+[derived-summary]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/analysis/summary.json
+[m3-failure]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/online/sessions/F_M3_01/turns/001_assistant.raw
+[e1-request]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/online/sessions/F_E1_02/turns/000_assistant.raw
+[empty-projection]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/online/sessions/F_C2_02/turns/001_response_projection.json
+[bare-request]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/online/sessions/P_C2_02/turns/000_assistant.raw
+[review-lock]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/review/review_lock.json
+[masked-reviews]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/review/masked_reviews.json
+[review-authoring]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/review/blinded_review_authoring.py
+[historical-side-table]: ../artifacts/qa_vnext_thinking_comparison/flash_pro_high_2rep_20260909/preparation/historical_evaluation_side_table.json
+[price-source]: https://api-docs.deepseek.com/zh-cn/quick_start/pricing/

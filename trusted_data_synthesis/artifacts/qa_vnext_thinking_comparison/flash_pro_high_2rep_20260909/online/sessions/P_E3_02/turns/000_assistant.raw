@@ -1,0 +1,19 @@
+{
+  "message": "Cash held on behalf of GE is $997 million, and 2017 cash and equivalents were $7.0 billion. I will convert the $7.0 billion to millions for the percentage.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(cash_ge_millions / (cash_equiv_billions * 1000)) * 100",
+    "variables": {
+      "cash_ge_millions": {
+        "value": "997",
+        "source": "source:p2n0",
+        "unit": "$ million"
+      },
+      "cash_equiv_billions": {
+        "value": "7.0",
+        "source": "source:p1n2",
+        "unit": "$ billion"
+      }
+    }
+  }
+}

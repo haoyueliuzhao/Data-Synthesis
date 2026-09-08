@@ -1,0 +1,10 @@
+{
+  "message": "Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.",
+  "final": {
+    "answer": "14.24%",
+    "calculation": "(997 / 7000) * 100",
+    "value": 14.242857142857,
+    "unit": "%",
+    "sources": ["source:p1n2", "source:p2n0"]
+  }
+}

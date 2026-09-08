@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "Cash held on behalf of GE was approximately 14.2% of cash and equivalents in 2017.",
+    "value": "14.242857142857142857142857142857142857142857142857",
+    "unit": "%",
+    "sources": [
+      "source:p2n0",
+      "source:p1n2"
+    ],
+    "result_id": "tool:1"
+  }
+}

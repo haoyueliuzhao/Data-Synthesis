@@ -1,0 +1,17 @@
+{
+  "message": "Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.",
+  "final": {
+    "answer": "14.91284%",
+    "value": 0.14912841106142192,
+    "unit": "percent",
+    "calculation": "((2440+3237+4127)/(19941+21813+23988))*100",
+    "sources": [
+      "source:t4c1n0",
+      "source:t4c2n0",
+      "source:t4c3n0",
+      "source:t9c1n0",
+      "source:t9c2n0",
+      "source:t9c3n0"
+    ]
+  }
+}

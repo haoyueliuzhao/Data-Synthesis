@@ -1,0 +1,35 @@
+{
+  "all_review_inputs_complete_before_condition_decode": true,
+  "condition_mapping_reports_costs_not_read_by_reviewer_before_this_lock": true,
+  "created_utc": "2026-09-08T18:30:54.687972+00:00",
+  "files": {
+    "blinded_review_authoring.py": {
+      "bytes": 25488,
+      "sha256": "2ceb521cc7eb655b032981bd65330993bdc4e6f9dcfddf6dd8f0afcb41f4f64c"
+    },
+    "masked_reviews.json": {
+      "bytes": 155124,
+      "sha256": "56421672b9b3a61efbfb93e3bc2a3665939803b5e8fdeadd3377646236d06cca"
+    }
+  },
+  "frozen_implementation_commit": "cd317baa2d2c18b1817966cb8bf4125e79a341b3",
+  "kind": "model_label_masked_review_lock",
+  "masked_validation": {
+    "actual_Final_only_extractions": [
+      "R001",
+      "R011",
+      "R015"
+    ],
+    "actual_quote_checks": "all_passed",
+    "answer_FAIL": 2,
+    "answer_PASS": 21,
+    "answer_UNDETERMINED": 1,
+    "formula_driven_verified": 16,
+    "primary_value_priority": "all_present_values_unchanged"
+  },
+  "no_independent_blinding_attestation": true,
+  "reference_task_answers_known": true,
+  "registered_reviews": 24,
+  "reviewer": "executing_agent",
+  "reviewer_is_independent": false
+}

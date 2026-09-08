@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "10.96%",
+    "value": 10.963890819712072,
+    "unit": "percent",
+    "sources": {
+      "interest_and_penalties": "source:q2n2",
+      "ending_balance": "source:t6c1"
+    },
+    "calculation": "15.3 / (139549/1000) * 100"
+  }
+}

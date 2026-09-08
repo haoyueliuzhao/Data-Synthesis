@@ -1,0 +1,15 @@
+{
+  "message": "Summing coal revenue and total operating revenue for 2014, 2015, and 2016, then dividing coal by total: coal = 2,440 + 3,237 + 4,127 = 9,804; total operating revenue = 19,941 + 21,813 + 23,988 = 65,742. 9,804 / 65,742 ≈ 14.91%.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100",
+    "variables": {
+      "coal_2016": {"value": 2440, "source": "source:t4c1n0"},
+      "coal_2015": {"value": 3237, "source": "source:t4c2n0"},
+      "coal_2014": {"value": 4127, "source": "source:t4c3n0"},
+      "total_2016": {"value": 19941, "source": "source:t9c1n0"},
+      "total_2015": {"value": 21813, "source": "source:t9c2n0"},
+      "total_2014": {"value": 23988, "source": "source:t9c3n0"}
+    }
+  }
+}

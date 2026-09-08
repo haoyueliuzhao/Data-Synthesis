@@ -1,0 +1,9 @@
+{
+  "final": {
+    "answer": "16.4%",
+    "value": 16.416815660386008,
+    "unit": "percent",
+    "sources": ["source:t1c1n0", "source:t9c1n0"],
+    "calculation": "3581 / 21813 * 100"
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "by_model": {
+    "F": {
+      "actual_billed_cost": null,
+      "actual_cross_calculation_reuse_count": 0,
+      "actual_response_model_counts": {
+        "deepseek-v4-flash": 20
+      },
+      "additive_cost_metrics": {
+        "http_request_bytes": 452214,
+        "http_response_bytes": 249102,
+        "raw_assistant_bytes": 8469,
+        "reasoning_characters_observed": 224509,
+        "reasoning_nonempty_responses": 20,
+        "recorded_outcomes": 20,
+        "reserved_attempts": 20,
+        "response_projection_bytes": 23915,
+        "successful_calculations": 8,
+        "successful_expression_operations": 29,
+        "summed_request_elapsed_ns": 443771298951,
+        "tool_errors": 0
+      },
+      "answer_counts": {
+        "FAIL": 2,
+        "PASS": 9,
+        "UNDETERMINED": 1
+      },
+      "by_task": {
+        "C2": {
+          "PASS": 1,
+          "UNDETERMINED": 1
+        },
+        "E1": {
+          "FAIL": 1,
+          "PASS": 1
+        },
+        "E3": {
+          "PASS": 2
+        },
+        "J1": {
+          "PASS": 2
+        },
+        "J2": {
+          "PASS": 2
+        },
+        "M3": {
+          "FAIL": 1,
+          "PASS": 1
+        }
+      },
+      "by_task_formula_driven_verified": {
+        "C2": 1,
+        "E1": 1,
+        "E3": 1,
+        "J1": 1,
+        "J2": 0,
+        "M3": 1
+      },
+      "finish_reason_counts": {
+        "stop": 20
+      },
+      "formula_driven_verified": 5,
+      "independent_calculation_pass_count": 8,
+      "maximum_single_completion_tokens": 13921,
+      "nonempty_public_contents": 19,
+      "offpeak_cny_per_passing_answer": "0.03654031111111111111111111111",
+      "offpeak_cny_per_registered_session": "0.02740523333333333333333333333",
+      "offpeak_cny_per_verified_trace": "0.06577256",
+      "price_estimate_cny": {
+        "offpeak": "0.3288628",
+        "peak": "0.6577256"
+      },
+      "registered": 12,
+      "request_latency_seconds": {
+        "maximum": 96.327234968,
+        "mean": 22.18856494755,
+        "median": 3.7121384920000002,
+        "minimum": 0.738771459,
+        "sum": 443.771298951
+      },
+      "response_fingerprint_counts": {
+        "a26a7955944dc5c60445bff77fac9c8e": 20
+      },
+      "semantic_review_counts": {
+        "final_answer_consistency": {
+          "FAIL": 1,
+          "PASS": 10,
+          "UNDETERMINED": 1
+        },
+        "formula_applicability": {
+          "PASS": 12
+        },
+        "publication_alignment": {
+          "FAIL": 2,
+          "NOT_ESTABLISHED": 4,
+          "PASS": 6
+        },
+        "unit_handling": {
+          "PASS": 12
+        },
+        "variable_correspondence": {
+          "PASS": 12
+        }
+      },
+      "source_symbolic_target_match_count": 1,
+      "terminal_counts": {
+        "model_final": 11,
+        "unknown_transport_or_condition": 1
+      },
+      "unit_costs_include_all_failed_unknown_and_nontrace_sessions": true,
+      "usage": {
+        "completion_tokens": 59848,
+        "prompt_cache_hit_tokens": 81536,
+        "prompt_cache_miss_tokens": 36980,
+        "prompt_tokens": 118516,
+        "reasoning_tokens": 56906,
+        "total_tokens": 178364
+      }
+    },
+    "P": {
+      "actual_billed_cost": null,
+      "actual_cross_calculation_reuse_count": 0,
+      "actual_response_model_counts": {
+        "deepseek-v4-pro": 24
+      },
+      "additive_cost_metrics": {
+        "http_request_bytes": 530053,
+        "http_response_bytes": 105343,
+        "raw_assistant_bytes": 10798,
+        "reasoning_characters_observed": 78786,
+        "reasoning_nonempty_responses": 24,
+        "recorded_outcomes": 24,
+        "reserved_attempts": 24,
+        "response_projection_bytes": 29749,
+        "successful_calculations": 12,
+        "successful_expression_operations": 51,
+        "summed_request_elapsed_ns": 471086221118,
+        "tool_errors": 0
+      },
+      "answer_counts": {
+        "PASS": 12
+      },
+      "by_task": {
+        "C2": {
+          "PASS": 2
+        },
+        "E1": {
+          "PASS": 2
+        },
+        "E3": {
+          "PASS": 2
+        },
+        "J1": {
+          "PASS": 2
+        },
+        "J2": {
+          "PASS": 2
+        },
+        "M3": {
+          "PASS": 2
+        }
+      },
+      "by_task_formula_driven_verified": {
+        "C2": 1,
+        "E1": 2,
+        "E3": 2,
+        "J1": 2,
+        "J2": 2,
+        "M3": 2
+      },
+      "finish_reason_counts": {
+        "stop": 24
+      },
+      "formula_driven_verified": 11,
+      "independent_calculation_pass_count": 12,
+      "maximum_single_completion_tokens": 3418,
+      "nonempty_public_contents": 24,
+      "offpeak_cny_per_passing_answer": "0.04411575",
+      "offpeak_cny_per_registered_session": "0.04411575",
+      "offpeak_cny_per_verified_trace": "0.04812627272727272727272727273",
+      "price_estimate_cny": {
+        "offpeak": "0.5293890",
+        "peak": "1.0587780"
+      },
+      "registered": 12,
+      "request_latency_seconds": {
+        "maximum": 64.775933483,
+        "mean": 19.628592546583334,
+        "median": 14.356511603000001,
+        "minimum": 4.296311826,
+        "sum": 471.086221118
+      },
+      "response_fingerprint_counts": {
+        "a307abda487cd1b463329ccb945ce396": 24
+      },
+      "semantic_review_counts": {
+        "final_answer_consistency": {
+          "PASS": 12
+        },
+        "formula_applicability": {
+          "PASS": 12
+        },
+        "publication_alignment": {
+          "PASS": 12
+        },
+        "unit_handling": {
+          "NOT_ESTABLISHED": 1,
+          "PASS": 11
+        },
+        "variable_correspondence": {
+          "NOT_ESTABLISHED": 1,
+          "PASS": 11
+        }
+      },
+      "source_symbolic_target_match_count": 6,
+      "terminal_counts": {
+        "model_final": 12
+      },
+      "unit_costs_include_all_failed_unknown_and_nontrace_sessions": true,
+      "usage": {
+        "completion_tokens": 24938,
+        "prompt_cache_hit_tokens": 99840,
+        "prompt_cache_miss_tokens": 39500,
+        "prompt_tokens": 139340,
+        "reasoning_tokens": 21131,
+        "total_tokens": 164278
+      }
+    }
+  },
+  "closeout_report_id": "final_report:af858681c60c680f4a763c329a0d3320bcb83445f1245cbc71f557e54499a053",
+  "frozen_source_commit": "cd317baa2d2c18b1817966cb8bf4125e79a341b3",
+  "historical_side_table": {
+    "id": "historical_evaluation_side_table:5ae24b6be31a524883672f70c9bf7186356219cfed09ec76bd8d10cd73a2f0ae",
+    "known_data_measurement_revision_only": true,
+    "old_records_unchanged": true,
+    "old_strict_counts": {
+      "FAIL": 2,
+      "PASS": 10
+    },
+    "provider_calls": 0,
+    "revised_counts": {
+      "PASS": 12
+    },
+    "schema_version": "autonomous_formula_thinking.v1.historical_evaluation_side_table"
+  },
+  "interpretation": {
+    "flash_remains_primary_research_candidate": true,
+    "no_new_sampling_or_pro_answer_rescue": true,
+    "no_thinking_on_off_effect_estimated": true,
+    "pro_not_automatically_promoted_to_default": true,
+    "six_known_tasks_two_repeats_not_statistical_noninferiority": true,
+    "unfiltered_flash_high_default_readiness_not_established": true
+  },
+  "kind": "post_generation_descriptive_summary_not_new_evaluation",
+  "overall_request_window_seconds": 245.506455,
+  "provider_calls": 0,
+  "request_end_times_derived_from_utc_start_plus_monotonic_duration": true,
+  "request_waves": {
+    "1": {
+      "first_request_start_utc": "2026-09-08T18:15:00.984034+00:00",
+      "last_request_end_utc_derived": "2026-09-08T18:17:44.949299+00:00",
+      "request_window_seconds": 163.965265
+    },
+    "2": {
+      "first_request_start_utc": "2026-09-08T18:17:45.089172+00:00",
+      "last_request_end_utc_derived": "2026-09-08T18:19:06.490489+00:00",
+      "request_window_seconds": 81.401317
+    }
+  },
+  "request_window_excludes_preparation_scoring_and_commit_time": true,
+  "review_input_sha256": "56421672b9b3a61efbfb93e3bc2a3665939803b5e8fdeadd3377646236d06cca",
+  "verification": {
+    "all_24_isolation_records_and_48_read_denials_checked": true,
+    "all_44_projection_allowlists_and_exact_public_bytes_checked": true,
+    "all_44_usage_arithmetic_and_completion_limits_checked": true,
+    "all_frozen_source_bytes_and_test_unchanged": true,
+    "artifact_files_scanned_before_summary_creation": 562,
+    "closeout_review_copy_byte_identical": true,
+    "credential_bytes_absent_from_scanned_artifacts": true,
+    "historical": {
+      "baseline": "858f8a4ecb86f49c59c2d37ae769b6a3d4d68362",
+      "historical_files_unchanged": true
+    },
+    "manifest_ids": {
+      "assessment": "qa_vnext_model_execution_autonomous_assessment_manifest:f73ec7368c0ce0a7a6ad6c2467e5fb6266b680df85f3ae71109fc966f1788894",
+      "closeout": "qa_vnext_model_execution_autonomous_closeout_manifest:b8cd90a7aaf811067f29d02990ee289fb2fbdbc09d906d0cc370b9eacaed28b2",
+      "online": "qa_vnext_model_execution_autonomous_online_manifest:654b4af6ff105d4641fe3dde15b1ad0a28cebb2f0a69f76a58e478072b6950de",
+      "preparation": "qa_vnext_model_execution_autonomous_preparation_manifest:ed2eeb95e78995df129ad7f71d0fc38e4fe1be3491edccc8242d4649620f98a9"
+    },
+    "old_system_calculator_isolate_byte_identical": true,
+    "raw_http_response_body_file_count": 0,
+    "review_input_and_authoring_hashes_unchanged": true
+  }
+}

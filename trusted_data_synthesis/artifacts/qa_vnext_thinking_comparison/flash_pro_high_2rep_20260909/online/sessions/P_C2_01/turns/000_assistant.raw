@@ -1,0 +1,15 @@
+{
+  "message": "I'll compute 2015 agricultural products revenue divided by 2015 total operating revenues, expressed as a percentage.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "3581 / 21813 * 100",
+    "variables": {
+      "agricultural_products_2015": {"value": "3581", "source": "source:t1c1n0", "unit": "millions"},
+      "total_operating_revenues_2015": {"value": "21813", "source": "source:t9c1n0", "unit": "millions"}
+    },
+    "sources": {
+      "agricultural_products_2015": "source:t1c1n0",
+      "total_operating_revenues_2015": "source:t9c1n0"
+    }
+  }
+}

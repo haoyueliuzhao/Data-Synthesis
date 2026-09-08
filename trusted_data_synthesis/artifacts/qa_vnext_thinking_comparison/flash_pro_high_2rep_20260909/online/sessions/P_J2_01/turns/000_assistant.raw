@@ -1,0 +1,19 @@
+{
+  "message": "Computing total option value for 2017 and 2016 as anti-dilutive stock option shares multiplied by average exercise price, then taking the increase.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(shares_2017 * price_2017) - (shares_2016 * price_2016)",
+    "variables": {
+      "shares_2017": {"value": 11, "source": "source:t3c2n0", "unit": "million shares"},
+      "price_2017": {"value": 33.32, "source": "source:q0n2", "unit": "USD per share"},
+      "shares_2016": {"value": 13, "source": "source:t3c3n0", "unit": "million shares"},
+      "price_2016": {"value": 26.93, "source": "source:q0n3", "unit": "USD per share"}
+    },
+    "sources": {
+      "shares_2017": "source:t3c2n0",
+      "price_2017": "source:q0n2",
+      "shares_2016": "source:t3c3n0",
+      "price_2016": "source:q0n3"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "message": "Calculating after-tax share-based compensation cost as compensation cost minus income tax benefit, then the percentage change from 2009 to 2010.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((181/10 - 63/10) - (73/5 - 26/5)) / (73/5 - 26/5) * 100",
+    "variables": {},
+    "sources": {}
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "message": "The combined accrued interest and penalties is $15.3 million. The table ending balance as of November 28, 2008 is $139,549 thousand, or $139.549 million. I will compute the percentage using these values.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "15300 / 139549 * 100",
+    "variables": {
+      "15300": {"value": 15300, "source": "source:q2n2", "unit": "thousands"},
+      "139549": {"value": 139549, "source": "source:t6c1n0", "unit": "thousands"}
+    }
+  }
+}

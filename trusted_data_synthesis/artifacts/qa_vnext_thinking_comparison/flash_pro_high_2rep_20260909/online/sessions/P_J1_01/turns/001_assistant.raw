@@ -1,0 +1,15 @@
+{
+  "message": "After-tax cost for 2010 is 18.1 - 6.3 = 11.8; for 2009 it is 14.6 - 5.2 = 9.4. The percentage change is (11.8 - 9.4) / 9.4 = 25.5%.",
+  "final": {
+    "answer": "25.5%",
+    "value": "25.531914893617021",
+    "unit": "%",
+    "sources": [
+      "source:t1c1n0",
+      "source:t1c2n0",
+      "source:t2c1n0",
+      "source:t2c2n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

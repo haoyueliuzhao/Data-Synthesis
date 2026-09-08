@@ -1,0 +1,1 @@
+{"message":"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.","tool":"calculate","arguments":{"expression":"3581/21813*100","sources":{"x":"source:t1c1n0","y":"source:t9c1n0"}}}

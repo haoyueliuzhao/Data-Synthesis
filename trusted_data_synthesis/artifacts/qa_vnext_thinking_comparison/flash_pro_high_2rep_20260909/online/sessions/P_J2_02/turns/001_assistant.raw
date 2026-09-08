@@ -1,0 +1,15 @@
+{
+  "final": {
+    "answer": "$16.43 million",
+    "value": "16.43",
+    "unit": "millions of dollars",
+    "sources": [
+      "source:t3c2n0",
+      "source:q0n2",
+      "source:t3c3n0",
+      "source:q0n3"
+    ],
+    "result_id": "tool:1"
+  },
+  "message": "Total stock option value is calculated as shares times average exercise price: 2017 = 11 million × $33.32 = $366.52 million; 2016 = 13 million × $26.93 = $350.09 million. The increase is $16.43 million."
+}

@@ -1,0 +1,19 @@
+{
+  "message": "I’ll use the accrued interest and penalties amount of $15.3 million and divide it by the FIN 48 ending balance of $139,549 thousand ($139.549 million), then convert to a percentage.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "interest_penalties_millions / (ending_balance_thousands / 1000) * 100",
+    "variables": {
+      "interest_penalties_millions": {
+        "value": "15.3",
+        "source": "source:q2n2",
+        "unit": "USD millions"
+      },
+      "ending_balance_thousands": {
+        "value": 139549,
+        "source": "source:t6c1",
+        "unit": "USD thousands"
+      }
+    }
+  }
+}

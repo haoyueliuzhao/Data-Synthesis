@@ -1,0 +1,1887 @@
+{
+  "R001": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"Agricultural products revenue was $3,581 million in 2015, and total operating revenues were $21,813 million; $3,581/$21,813 is approximately 16.42%.\",\"final\":{\"answer\":16.41681566038601,\"unit\":\"percent\",\"calculation\":\"3581/21813*100\",\"sources\":[\"source:t1c1n0\",\"source:t9c1n0\"],\"result_id\":\"tool:1\"}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Agricultural products revenue was $3,581 million in 2015, and total operating revenues were $21,813 million; $3,581/$21,813 is approximately 16.42%.\",\"final\":{\"answer\":16.41681566038601,\"unit\":\"percent\",\"calculation\":\"3581/21813*100\",\"sources\":[\"source:t1c1n0\",\"source:t9c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate share of agricultural products revenue in 2015 total operating revenues: 3581 / 21813 * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "2015 agricultural revenue divided by 2015 total operating revenue, times 100, is the requested share.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate share of agricultural products revenue in 2015 total operating revenues: 3581 / 21813 * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\"}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Agricultural products revenue was $3,581 million in 2015, and total operating revenues were $21,813 million; $3,581/$21,813 is approximately 16.42%.\",\"final\":{\"answer\":16.41681566038601,\"unit\":\"percent\",\"calculation\":\"3581/21813*100\",\"sources\":[\"source:t1c1n0\",\"source:t9c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete literal expression was executed, then Final; no actual result reuse, source lookup, notebook, or revision is present."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Agricultural products revenue was $3,581 million in 2015, and total operating revenues were $21,813 million; $3,581/$21,813 is approximately 16.42%.\",\"final\":{\"answer\":16.41681566038601,\"unit\":\"percent\",\"calculation\":\"3581/21813*100\",\"sources\":[\"source:t1c1n0\",\"source:t9c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "16.41681566038601",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Agricultural products revenue was $3,581 million in 2015, and total operating revenues were $21,813 million; $3,581/$21,813 is approximately 16.42%.\",\"final\":{\"answer\":16.41681566038601,\"unit\":\"percent\",\"calculation\":\"3581/21813*100\",\"sources\":[\"source:t1c1n0\",\"source:t9c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "16.42"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate share of agricultural products revenue in 2015 total operating revenues: 3581 / 21813 * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both table amounts use the same millions scale, which cancels, and the public expression multiplies by 100. No cross-period or percentage-scale conversion is needed.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate share of agricultural products revenue in 2015 total operating revenues: 3581 / 21813 * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message names agricultural and total 2015 revenues and places 3581/21813 in that order. Table rows t1/t9, column 1 agree. This is a finite prose/literal review; source IDs appear only in Final and no named source variable was consumed.",
+      "status": "PASS"
+    }
+  },
+  "R002": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.2% of cash and equivalents in 2017.\",\n    \"value\": \"14.242857142857142857142857142857142857142857142857\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:p2n0\",\n      \"source:p1n2\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million, and 2017 cash and equivalents were $7.0 billion. I will convert the $7.0 billion to millions for the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_equiv_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": \"997\",\n        \"source\": \"source:p2n0\",\n        \"unit\": \"$ million\"\n      },\n      \"cash_equiv_billions\": {\n        \"value\": \"7.0\",\n        \"source\": \"source:p1n2\",\n        \"unit\": \"$ billion\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "GE-held cash divided by total cash and equivalents in 2017, times 100, is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million, and 2017 cash and equivalents were $7.0 billion. I will convert the $7.0 billion to millions for the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_equiv_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": \"997\",\n        \"source\": \"source:p2n0\",\n        \"unit\": \"$ million\"\n      },\n      \"cash_equiv_billions\": {\n        \"value\": \"7.0\",\n        \"source\": \"source:p1n2\",\n        \"unit\": \"$ billion\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.2% of cash and equivalents in 2017.\",\n    \"value\": \"14.242857142857142857142857142857142857142857142857\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:p2n0\",\n      \"source:p1n2\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One named-variable calculation with explicit source bindings, followed by Final referencing tool:1; no intermediate-result reuse or revision."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.2% of cash and equivalents in 2017.\",\n    \"value\": \"14.242857142857142857142857142857142857142857142857\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:p2n0\",\n      \"source:p1n2\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "%",
+    "published_value": "14.242857142857142857142857142857142857142857142857",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.2% of cash and equivalents in 2017.\",\n    \"value\": \"14.242857142857142857142857142857142857142857142857\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:p2n0\",\n      \"source:p1n2\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "%",
+        "value": "14.2"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million, and 2017 cash and equivalents were $7.0 billion. I will convert the $7.0 billion to millions for the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_equiv_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": \"997\",\n        \"source\": \"source:p2n0\",\n        \"unit\": \"$ million\"\n      },\n      \"cash_equiv_billions\": {\n        \"value\": \"7.0\",\n        \"source\": \"source:p1n2\",\n        \"unit\": \"$ billion\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The denominator is explicitly converted from billions to millions by 1000; the final multiplication produces percentage points.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million, and 2017 cash and equivalents were $7.0 billion. I will convert the $7.0 billion to millions for the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_equiv_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": \"997\",\n        \"source\": \"source:p2n0\",\n        \"unit\": \"$ million\"\n      },\n      \"cash_equiv_billions\": {\n        \"value\": \"7.0\",\n        \"source\": \"source:p1n2\",\n        \"unit\": \"$ billion\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Before execution, cash_ge_millions binds 997 to p2n0 and cash_equiv_billions binds 7.0 to p1n2; the source prose gives those roles and year.",
+      "status": "PASS"
+    }
+  },
+  "R003": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"10.97%\",\"value\":10.96774193548387,\"unit\":\"percent\",\"sources\":[\"source:q2n2\",\"source:q0n2\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Answer 10.97% and value 10.96774193548387 are internally consistent with the actual rounded-denominator calculation, with no sign or unit contradiction. They are not equivalent to the finer registered reference 15.3/139.549*100 at the frozen publication precisions; the independent numeric/secondary checks retain that failure.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The combined accrued interest and penalties was approximately $15.3 million (source q2), and the total ending unrecognized tax benefit balance as of November 28, 2008 was $139.5 million (source q0). Dividing gives about 10.97%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"15.3 / 139.5 * 100\",\"variables\":{\"accrued_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"$ million\"},\"total_ending_balance\":{\"value\":139.5,\"source\":\"source:q0n2\",\"unit\":\"$ million\"}},\"sources\":{\"accrued_interest_penalties\":\"source:q2n2\",\"total_ending_balance\":\"source:q0n2\"},\"unit\":\"percent\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Accrued interest and penalties divided by ending gross unrecognized tax benefits, times 100, is an applicable percentage relation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The combined accrued interest and penalties was approximately $15.3 million (source q2), and the total ending unrecognized tax benefit balance as of November 28, 2008 was $139.5 million (source q0). Dividing gives about 10.97%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"15.3 / 139.5 * 100\",\"variables\":{\"accrued_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"$ million\"},\"total_ending_balance\":{\"value\":139.5,\"source\":\"source:q0n2\",\"unit\":\"$ million\"}},\"sources\":{\"accrued_interest_penalties\":\"source:q2n2\",\"total_ending_balance\":\"source:q0n2\"},\"unit\":\"percent\"}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"10.97%\",\"value\":10.96774193548387,\"unit\":\"percent\",\"sources\":[\"source:q2n2\",\"source:q0n2\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One calculation on 15.3/139.5, then Final. The tool faithfully executes that lower-precision source choice; no corrective iteration occurs. Its long value is retained and is not replaced by a target-derived value."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"10.97%\",\"value\":10.96774193548387,\"unit\":\"percent\",\"sources\":[\"source:q2n2\",\"source:q0n2\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "10.96774193548387",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":\"10.97%\",\"value\":10.96774193548387,\"unit\":\"percent\",\"sources\":[\"source:q2n2\",\"source:q0n2\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "10.97"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The combined accrued interest and penalties was approximately $15.3 million (source q2), and the total ending unrecognized tax benefit balance as of November 28, 2008 was $139.5 million (source q0). Dividing gives about 10.97%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"15.3 / 139.5 * 100\",\"variables\":{\"accrued_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"$ million\"},\"total_ending_balance\":{\"value\":139.5,\"source\":\"source:q0n2\",\"unit\":\"$ million\"}},\"sources\":{\"accrued_interest_penalties\":\"source:q2n2\",\"total_ending_balance\":\"source:q0n2\"},\"unit\":\"percent\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both actually substituted amounts are in millions, so the scale cancels. The discrepancy is rounded-denominator precision, not a million/thousand error.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The combined accrued interest and penalties was approximately $15.3 million (source q2), and the total ending unrecognized tax benefit balance as of November 28, 2008 was $139.5 million (source q0). Dividing gives about 10.97%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"15.3 / 139.5 * 100\",\"variables\":{\"accrued_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"$ million\"},\"total_ending_balance\":{\"value\":139.5,\"source\":\"source:q0n2\",\"unit\":\"$ million\"}},\"sources\":{\"accrued_interest_penalties\":\"source:q2n2\",\"total_ending_balance\":\"source:q0n2\"},\"unit\":\"percent\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model explicitly selected 15.3 million from q2 and the rounded 139.5 million from q0. Both are authentic same-period financial items. It did not select the finer table ending balance 139549 thousand. Thus this passes item/source correspondence only, not equivalence to the registered exact reference or full-precision data selection. Unused declarations do not create machine bindings.",
+      "status": "PASS"
+    }
+  },
+  "R004": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The percentage change in after-tax share-based compensation cost from 2009 to 2010 is 25.5%.\",\n    \"value\": \"25.5319148936\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t2c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Calculating after-tax share-based compensation cost as compensation cost minus income tax benefit, then the percentage change from 2009 to 2010.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((181/10 - 63/10) - (73/5 - 26/5)) / (73/5 - 26/5) * 100\",\n    \"variables\": {},\n    \"sources\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "After-tax cost is compensation cost less the positive magnitude of the tax benefit; change is (2010 minus 2009)/2009 times 100.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Calculating after-tax share-based compensation cost as compensation cost minus income tax benefit, then the percentage change from 2009 to 2010.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((181/10 - 63/10) - (73/5 - 26/5)) / (73/5 - 26/5) * 100\",\n    \"variables\": {},\n    \"sources\": {}\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The percentage change in after-tax share-based compensation cost from 2009 to 2010 is 25.5%.\",\n    \"value\": \"25.5319148936\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t2c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One full rational-literal expression, then Final. The representation has extra arithmetic nodes, not additional autonomous planning stages or result reuse."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The percentage change in after-tax share-based compensation cost from 2009 to 2010 is 25.5%.\",\n    \"value\": \"25.5319148936\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t2c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "%",
+    "published_value": "25.5319148936",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The percentage change in after-tax share-based compensation cost from 2009 to 2010 is 25.5%.\",\n    \"value\": \"25.5319148936\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t2c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "%",
+        "value": "25.5"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Calculating after-tax share-based compensation cost as compensation cost minus income tax benefit, then the percentage change from 2009 to 2010.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((181/10 - 63/10) - (73/5 - 26/5)) / (73/5 - 26/5) * 100\",\n    \"variables\": {},\n    \"sources\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The cost and benefit terms share a monetary scale; the 2009-based ratio cancels it and multiplies by 100. Rational spellings are exact conversions of the source decimals.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Calculating after-tax share-based compensation cost as compensation cost minus income tax benefit, then the percentage change from 2009 to 2010.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((181/10 - 63/10) - (73/5 - 26/5)) / (73/5 - 26/5) * 100\",\n    \"variables\": {},\n    \"sources\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation names cost, tax benefit and years; ordered literal fractions 181/10, 63/10, 73/5 and 26/5 represent 18.1, 6.3, 14.6 and 5.2 in the respective table positions. Subtracting positive benefit magnitudes agrees with the signed negative benefit lines. No actual named-source binding is claimed.",
+      "status": "PASS"
+    }
+  },
+  "R005": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The relation 997/7000 times 100 is applicable, but is visible only in the same response as Final, with no actual calculate call.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with a self-reported calculation. There is no executed calculation to verify or pre-execution tool trajectory to certify."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual calculate call exists; final-only arithmetic is not an execution/publication alignment certificate.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "%",
+    "published_value": "14.242857142857",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        },
+        "unit": "%",
+        "value": "14.24"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The public Final explanation explicitly converts 7.0 billion to 7000 million and reports a percentage.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the 2017 Form 10-K disclosures: cash and equivalents at December 31, 2017 was $7.0 billion (source p1n2 = 7.0, in billions), and cash held on behalf of GE was $997 million (source p2n0). Since $7.0 billion equals 7,000 million, the percentage is (997 / 7,000) × 100 = 14.24%.\",\n  \"final\": {\n    \"answer\": \"14.24%\",\n    \"calculation\": \"(997 / 7000) * 100\",\n    \"value\": 14.242857142857,\n    \"unit\": \"%\",\n    \"sources\": [\"source:p1n2\", \"source:p2n0\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final response explicitly identifies 2017 cash of 7.0 billion at p1n2 and GE-held 997 million at p2n0. These agree with the original prose; this is final-only source evidence.",
+      "status": "PASS"
+    }
+  },
+  "R006": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the ending gross unrecognized tax benefit balance from the reconciliation table ($139,549 thousand, approximately $139.5 million) and the stated $15.3 million of accrued interest and penalties, the percentage is: 15.3 / 139.549 × 100 ≈ 10.96%.\",\"final\":{\"answer\":\"The combined amount of accrued interest and penalties was approximately 10.96% of the ending balance as of November 28, 2008.\",\"value\":\"10.963890819712072\",\"unit\":\"percent\",\"sources\":{\"combined_accrued_interest_penalties\":\"source:q2n2\",\"ending_balance_unrecognized_tax_benefits\":\"source:t6c1n0\"},\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I interpret total ending balance as the table's ending balance of $139,549 thousand ($139.5 million). The combined interest/penalties is $15.3 million. Compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"q_interest_penalties / (ending_balance_thousands / 1000) * 100\",\"variables\":{\"q_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"million_USD\"},\"ending_balance_thousands\":{\"value\":139549,\"source\":\"source:t6c1n0\",\"unit\":\"thousand_USD\"}},\"sources\":{\"q_interest_penalties\":\"source:q2n2\",\"ending_balance_thousands\":\"source:t6c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Interest/penalties divided by the ending balance, times 100, is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I interpret total ending balance as the table's ending balance of $139,549 thousand ($139.5 million). The combined interest/penalties is $15.3 million. Compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"q_interest_penalties / (ending_balance_thousands / 1000) * 100\",\"variables\":{\"q_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"million_USD\"},\"ending_balance_thousands\":{\"value\":139549,\"source\":\"source:t6c1n0\",\"unit\":\"thousand_USD\"}},\"sources\":{\"q_interest_penalties\":\"source:q2n2\",\"ending_balance_thousands\":\"source:t6c1n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Using the ending gross unrecognized tax benefit balance from the reconciliation table ($139,549 thousand, approximately $139.5 million) and the stated $15.3 million of accrued interest and penalties, the percentage is: 15.3 / 139.549 × 100 ≈ 10.96%.\",\"final\":{\"answer\":\"The combined amount of accrued interest and penalties was approximately 10.96% of the ending balance as of November 28, 2008.\",\"value\":\"10.963890819712072\",\"unit\":\"percent\",\"sources\":{\"combined_accrued_interest_penalties\":\"source:q2n2\",\"ending_balance_unrecognized_tax_benefits\":\"source:t6c1n0\"},\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One named-variable formula, then Final linked to tool:1; no source-tool retrieval or corrective iteration."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the ending gross unrecognized tax benefit balance from the reconciliation table ($139,549 thousand, approximately $139.5 million) and the stated $15.3 million of accrued interest and penalties, the percentage is: 15.3 / 139.549 × 100 ≈ 10.96%.\",\"final\":{\"answer\":\"The combined amount of accrued interest and penalties was approximately 10.96% of the ending balance as of November 28, 2008.\",\"value\":\"10.963890819712072\",\"unit\":\"percent\",\"sources\":{\"combined_accrued_interest_penalties\":\"source:q2n2\",\"ending_balance_unrecognized_tax_benefits\":\"source:t6c1n0\"},\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "10.963890819712072",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Using the ending gross unrecognized tax benefit balance from the reconciliation table ($139,549 thousand, approximately $139.5 million) and the stated $15.3 million of accrued interest and penalties, the percentage is: 15.3 / 139.549 × 100 ≈ 10.96%.\",\"final\":{\"answer\":\"The combined amount of accrued interest and penalties was approximately 10.96% of the ending balance as of November 28, 2008.\",\"value\":\"10.963890819712072\",\"unit\":\"percent\",\"sources\":{\"combined_accrued_interest_penalties\":\"source:q2n2\",\"ending_balance_unrecognized_tax_benefits\":\"source:t6c1n0\"},\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "10.96"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I interpret total ending balance as the table's ending balance of $139,549 thousand ($139.5 million). The combined interest/penalties is $15.3 million. Compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"q_interest_penalties / (ending_balance_thousands / 1000) * 100\",\"variables\":{\"q_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"million_USD\"},\"ending_balance_thousands\":{\"value\":139549,\"source\":\"source:t6c1n0\",\"unit\":\"thousand_USD\"}},\"sources\":{\"q_interest_penalties\":\"source:q2n2\",\"ending_balance_thousands\":\"source:t6c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model explicitly interprets 139549 as thousands and converts it to millions by dividing by 1000. This inference is supported by the adjacent rounded 139.5 million disclosure, not an explicit thousand header in the extracted table.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I interpret total ending balance as the table's ending balance of $139,549 thousand ($139.5 million). The combined interest/penalties is $15.3 million. Compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"q_interest_penalties / (ending_balance_thousands / 1000) * 100\",\"variables\":{\"q_interest_penalties\":{\"value\":15.3,\"source\":\"source:q2n2\",\"unit\":\"million_USD\"},\"ending_balance_thousands\":{\"value\":139549,\"source\":\"source:t6c1n0\",\"unit\":\"thousand_USD\"}},\"sources\":{\"q_interest_penalties\":\"source:q2n2\",\"ending_balance_thousands\":\"source:t6c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Pre-call named variables select q2n2 = 15.3 and t6c1n0 = 139549. The period and roles agree with the source table/prose; both named inputs were actually consumed.",
+      "status": "PASS"
+    }
+  },
+  "R007": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = compensation cost + income tax benefit (using the signed benefit figures shown): 2010 = 18.1 + (-6.3) = 11.8; 2009 = 14.6 + (-5.2) = 9.4. The percentage change is (11.8 - 9.4) / 9.4, about 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"calculation\":\"( (18.1 + (-6.3)) - (14.6 + (-5.2)) ) / (14.6 + (-5.2)) * 100\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculating after-tax share-based compensation as (compensation cost) less (income tax benefit), then percentage change from 2009 to 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(( (18.1 - 6.3) - (14.6 - 5.2) ) / (14.6 - 5.2)) * 100\",\"variables\":{\"2010_after_tax\":{\"value\":\"18.1 - 6.3\",\"source\":\"table: share-based compensation cost 18.1 and income tax benefit -6.3\"},\"2009_after_tax\":{\"value\":\"14.6 - 5.2\",\"source\":\"table: share-based compensation cost 14.6 and income tax benefit -5.2\"}},\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Subtract tax-benefit magnitudes from compensation costs, then divide the increase by the 2009 after-tax cost and multiply by 100.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculating after-tax share-based compensation as (compensation cost) less (income tax benefit), then percentage change from 2009 to 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(( (18.1 - 6.3) - (14.6 - 5.2) ) / (14.6 - 5.2)) * 100\",\"variables\":{\"2010_after_tax\":{\"value\":\"18.1 - 6.3\",\"source\":\"table: share-based compensation cost 18.1 and income tax benefit -6.3\"},\"2009_after_tax\":{\"value\":\"14.6 - 5.2\",\"source\":\"table: share-based compensation cost 14.6 and income tax benefit -5.2\"}},\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"After-tax cost = compensation cost + income tax benefit (using the signed benefit figures shown): 2010 = 18.1 + (-6.3) = 11.8; 2009 = 14.6 + (-5.2) = 9.4. The percentage change is (11.8 - 9.4) / 9.4, about 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"calculation\":\"( (18.1 + (-6.3)) - (14.6 + (-5.2)) ) / (14.6 + (-5.2)) * 100\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal calculation; Final rewrites the same signed arithmetic in prose. This is not an actual second calculation or revision after a failed method."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = compensation cost + income tax benefit (using the signed benefit figures shown): 2010 = 18.1 + (-6.3) = 11.8; 2009 = 14.6 + (-5.2) = 9.4. The percentage change is (11.8 - 9.4) / 9.4, about 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"calculation\":\"( (18.1 + (-6.3)) - (14.6 + (-5.2)) ) / (14.6 + (-5.2)) * 100\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "25.53191489361702",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"After-tax cost = compensation cost + income tax benefit (using the signed benefit figures shown): 2010 = 18.1 + (-6.3) = 11.8; 2009 = 14.6 + (-5.2) = 9.4. The percentage change is (11.8 - 9.4) / 9.4, about 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"calculation\":\"( (18.1 + (-6.3)) - (14.6 + (-5.2)) ) / (14.6 + (-5.2)) * 100\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "25.5"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculating after-tax share-based compensation as (compensation cost) less (income tax benefit), then percentage change from 2009 to 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(( (18.1 - 6.3) - (14.6 - 5.2) ) / (14.6 - 5.2)) * 100\",\"variables\":{\"2010_after_tax\":{\"value\":\"18.1 - 6.3\",\"source\":\"table: share-based compensation cost 18.1 and income tax benefit -6.3\"},\"2009_after_tax\":{\"value\":\"14.6 - 5.2\",\"source\":\"table: share-based compensation cost 14.6 and income tax benefit -5.2\"}},\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Same-scale monetary differences and the percent multiplier are correct. Final restates subtraction as adding the signed negative benefits without changing the relationship.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculating after-tax share-based compensation as (compensation cost) less (income tax benefit), then percentage change from 2009 to 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(( (18.1 - 6.3) - (14.6 - 5.2) ) / (14.6 - 5.2)) * 100\",\"variables\":{\"2010_after_tax\":{\"value\":\"18.1 - 6.3\",\"source\":\"table: share-based compensation cost 18.1 and income tax benefit -6.3\"},\"2009_after_tax\":{\"value\":\"14.6 - 5.2\",\"source\":\"table: share-based compensation cost 14.6 and income tax benefit -5.2\"}},\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call annotations explicitly pair 2010 with 18.1 and -6.3 and 2009 with 14.6 and -5.2. Literal subtraction of positive benefit magnitudes is appropriate. Annotation values such as '18.1 - 6.3' are unused metadata, not executed named variables.",
+      "status": "PASS"
+    }
+  },
+  "R008": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The percentage is calculated by summing coal freight revenue (2,440 + 3,237 + 4,127 = $9,804 million) over 2014–2016 and dividing by total operating revenue (19,941 + 21,813 + 23,988 = $65,742 million) over the same period, then multiplying by 100.\",\"final\":{\"answer\":\"14.9%\",\"value\":14.912841106142192,\"unit\":\"percent\",\"description\":\"Coal freight revenue as a percentage of total operating revenue for 2014-2016 combined.\",\"calculation\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":[\"source:t4c1n0\",\"source:t4c2n0\",\"source:t4c3n0\",\"source:t9c1n0\",\"source:t9c2n0\",\"source:t9c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll calculate the share of coal revenue over total operating revenues for 2014–2016 using the aggregate amounts in the table.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":{\"x2016\":\"source:t4c1n0\",\"x2015\":\"source:t4c2n0\",\"x2014\":\"source:t4c3n0\",\"t2016\":\"source:t9c1n0\",\"t2015\":\"source:t9c2n0\",\"t2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The sum of coal revenues over 2014-2016 divided by the sum of total operating revenues over those years is the aggregate share, not an average of yearly percentages.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll calculate the share of coal revenue over total operating revenues for 2014–2016 using the aggregate amounts in the table.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":{\"x2016\":\"source:t4c1n0\",\"x2015\":\"source:t4c2n0\",\"x2014\":\"source:t4c3n0\",\"t2016\":\"source:t9c1n0\",\"t2015\":\"source:t9c2n0\",\"t2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"The percentage is calculated by summing coal freight revenue (2,440 + 3,237 + 4,127 = $9,804 million) over 2014–2016 and dividing by total operating revenue (19,941 + 21,813 + 23,988 = $65,742 million) over the same period, then multiplying by 100.\",\"final\":{\"answer\":\"14.9%\",\"value\":14.912841106142192,\"unit\":\"percent\",\"description\":\"Coal freight revenue as a percentage of total operating revenue for 2014-2016 combined.\",\"calculation\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":[\"source:t4c1n0\",\"source:t4c2n0\",\"source:t4c3n0\",\"source:t9c1n0\",\"source:t9c2n0\",\"source:t9c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete sum-over-sum expression, then Final. The two sums occur inside one actual calculator call, not a multi-call plan."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The percentage is calculated by summing coal freight revenue (2,440 + 3,237 + 4,127 = $9,804 million) over 2014–2016 and dividing by total operating revenue (19,941 + 21,813 + 23,988 = $65,742 million) over the same period, then multiplying by 100.\",\"final\":{\"answer\":\"14.9%\",\"value\":14.912841106142192,\"unit\":\"percent\",\"description\":\"Coal freight revenue as a percentage of total operating revenue for 2014-2016 combined.\",\"calculation\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":[\"source:t4c1n0\",\"source:t4c2n0\",\"source:t4c3n0\",\"source:t9c1n0\",\"source:t9c2n0\",\"source:t9c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.912841106142192",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"The percentage is calculated by summing coal freight revenue (2,440 + 3,237 + 4,127 = $9,804 million) over 2014–2016 and dividing by total operating revenue (19,941 + 21,813 + 23,988 = $65,742 million) over the same period, then multiplying by 100.\",\"final\":{\"answer\":\"14.9%\",\"value\":14.912841106142192,\"unit\":\"percent\",\"description\":\"Coal freight revenue as a percentage of total operating revenue for 2014-2016 combined.\",\"calculation\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":[\"source:t4c1n0\",\"source:t4c2n0\",\"source:t4c3n0\",\"source:t9c1n0\",\"source:t9c2n0\",\"source:t9c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.9"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll calculate the share of coal revenue over total operating revenues for 2014–2016 using the aggregate amounts in the table.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":{\"x2016\":\"source:t4c1n0\",\"x2015\":\"source:t4c2n0\",\"x2014\":\"source:t4c3n0\",\"t2016\":\"source:t9c1n0\",\"t2015\":\"source:t9c2n0\",\"t2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "All six inputs share the table's millions scale, which cancels; the expression multiplies by 100.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll calculate the share of coal revenue over total operating revenues for 2014–2016 using the aggregate amounts in the table.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\"sources\":{\"x2016\":\"source:t4c1n0\",\"x2015\":\"source:t4c2n0\",\"x2014\":\"source:t4c3n0\",\"t2016\":\"source:t9c1n0\",\"t2015\":\"source:t9c2n0\",\"t2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message identifies coal/total and period; the literal groups and source mapping agree with rows t4/t9, columns 1-3. The source map is visible metadata, not a consumed variable binding.",
+      "status": "PASS"
+    }
+  },
+  "R009": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.24% of cash and equivalents in 2017.\",\n    \"value\": 14.242857142857142,\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:p1n2\",\n      \"source:p2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million and 2017 cash and equivalents is $7.0 billion; converting billion to million (×1000) and computing the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_eq_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": 997,\n        \"source\": \"source:p2n0\",\n        \"unit\": \"million USD\"\n      },\n      \"cash_eq_billions\": {\n        \"value\": 7.0,\n        \"source\": \"source:p1n2\",\n        \"unit\": \"billion USD\"\n      }\n    },\n    \"sources\": {\n      \"cash_ge_millions\": \"source:p2n0\",\n      \"cash_eq_billions\": \"source:p1n2\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "GE-held cash as a share of the 2017 total cash and equivalents is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million and 2017 cash and equivalents is $7.0 billion; converting billion to million (×1000) and computing the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_eq_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": 997,\n        \"source\": \"source:p2n0\",\n        \"unit\": \"million USD\"\n      },\n      \"cash_eq_billions\": {\n        \"value\": 7.0,\n        \"source\": \"source:p1n2\",\n        \"unit\": \"billion USD\"\n      }\n    },\n    \"sources\": {\n      \"cash_ge_millions\": \"source:p2n0\",\n      \"cash_eq_billions\": \"source:p1n2\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.24% of cash and equivalents in 2017.\",\n    \"value\": 14.242857142857142,\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:p1n2\",\n      \"source:p2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One named-variable calculation; Final publishes the same result without an explicit tool result_id. No false result reference is introduced."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.24% of cash and equivalents in 2017.\",\n    \"value\": 14.242857142857142,\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:p1n2\",\n      \"source:p2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.242857142857142",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Cash held on behalf of GE was approximately 14.24% of cash and equivalents in 2017.\",\n    \"value\": 14.242857142857142,\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:p1n2\",\n      \"source:p2n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.24"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million and 2017 cash and equivalents is $7.0 billion; converting billion to million (×1000) and computing the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_eq_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": 997,\n        \"source\": \"source:p2n0\",\n        \"unit\": \"million USD\"\n      },\n      \"cash_eq_billions\": {\n        \"value\": 7.0,\n        \"source\": \"source:p1n2\",\n        \"unit\": \"billion USD\"\n      }\n    },\n    \"sources\": {\n      \"cash_ge_millions\": \"source:p2n0\",\n      \"cash_eq_billions\": \"source:p1n2\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The denominator is converted from billions to millions by 1000 before the percentage is taken.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Cash held on behalf of GE is $997 million and 2017 cash and equivalents is $7.0 billion; converting billion to million (×1000) and computing the percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(cash_ge_millions / (cash_eq_billions * 1000)) * 100\",\n    \"variables\": {\n      \"cash_ge_millions\": {\n        \"value\": 997,\n        \"source\": \"source:p2n0\",\n        \"unit\": \"million USD\"\n      },\n      \"cash_eq_billions\": {\n        \"value\": 7.0,\n        \"source\": \"source:p1n2\",\n        \"unit\": \"billion USD\"\n      }\n    },\n    \"sources\": {\n      \"cash_ge_millions\": \"source:p2n0\",\n      \"cash_eq_billions\": \"source:p1n2\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The consumed variables explicitly associate 997 with p2n0 and 7.0 with p1n2, matching the public prose roles and year.",
+      "status": "PASS"
+    }
+  },
+  "R010": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The total value of stock options increased by $16.43 million from 2016 to 2017, using the average exercise price and anti-dilutive option share amounts.\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:q0n2\", \"source:t3c3n0\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Computing total option value for 2017 and 2016 as anti-dilutive stock option shares multiplied by average exercise price, then taking the increase.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(shares_2017 * price_2017) - (shares_2016 * price_2016)\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": 11, \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"price_2017\": {\"value\": 33.32, \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": 13, \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"price_2016\": {\"value\": 26.93, \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    },\n    \"sources\": {\n      \"shares_2017\": \"source:t3c2n0\",\n      \"price_2017\": \"source:q0n2\",\n      \"shares_2016\": \"source:t3c3n0\",\n      \"price_2016\": \"source:q0n3\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The 2017 shares times 2017 average exercise price minus the corresponding 2016 product is the requested exercise-value increase; it is not an option fair-value valuation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Computing total option value for 2017 and 2016 as anti-dilutive stock option shares multiplied by average exercise price, then taking the increase.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(shares_2017 * price_2017) - (shares_2016 * price_2016)\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": 11, \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"price_2017\": {\"value\": 33.32, \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": 13, \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"price_2016\": {\"value\": 26.93, \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    },\n    \"sources\": {\n      \"shares_2017\": \"source:t3c2n0\",\n      \"price_2017\": \"source:q0n2\",\n      \"shares_2016\": \"source:t3c3n0\",\n      \"price_2016\": \"source:q0n3\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The total value of stock options increased by $16.43 million from 2016 to 2017, using the average exercise price and anti-dilutive option share amounts.\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:q0n2\", \"source:t3c3n0\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One source-bound expression with two products and one subtraction, then Final. No intermediate tool result or independent option-pricing model is used."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The total value of stock options increased by $16.43 million from 2016 to 2017, using the average exercise price and anti-dilutive option share amounts.\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:q0n2\", \"source:t3c3n0\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "16.43",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"The total value of stock options increased by $16.43 million from 2016 to 2017, using the average exercise price and anti-dilutive option share amounts.\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:q0n2\", \"source:t3c3n0\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "millions of dollars",
+        "value": "16.43"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Computing total option value for 2017 and 2016 as anti-dilutive stock option shares multiplied by average exercise price, then taking the increase.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(shares_2017 * price_2017) - (shares_2016 * price_2016)\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": 11, \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"price_2017\": {\"value\": 33.32, \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": 13, \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"price_2016\": {\"value\": 26.93, \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    },\n    \"sources\": {\n      \"shares_2017\": \"source:t3c2n0\",\n      \"price_2017\": \"source:q0n2\",\n      \"shares_2016\": \"source:t3c3n0\",\n      \"price_2016\": \"source:q0n3\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Million shares times USD per share yields million USD; taking the later-minus-earlier product gives a positive increase.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Computing total option value for 2017 and 2016 as anti-dilutive stock option shares multiplied by average exercise price, then taking the increase.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(shares_2017 * price_2017) - (shares_2016 * price_2016)\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": 11, \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"price_2017\": {\"value\": 33.32, \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": 13, \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"price_2016\": {\"value\": 26.93, \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    },\n    \"sources\": {\n      \"shares_2017\": \"source:t3c2n0\",\n      \"price_2017\": \"source:q0n2\",\n      \"shares_2016\": \"source:t3c3n0\",\n      \"price_2016\": \"source:q0n3\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The executed variables pair 11 million shares with 33.32 for 2017 and 13 with 26.93 for 2016, with the exact t3c2/t3c3 and q0n2/q0n3 source spans.",
+      "status": "PASS"
+    }
+  },
+  "R011": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final-only public formula multiplies annual option shares by the same year's exercise price and takes 2017 minus 2016, appropriate for this task.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with arithmetic in public prose, but no calculate call. A correct answer does not establish an executed formula trajectory."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual calculate call exists; final-only arithmetic is not an execution/publication alignment certificate.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "16.43",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        },
+        "unit": "millions of dollars",
+        "value": "16.43"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final states million-dollar totals and a positive 16.43 million increase; the share-count/price scales agree.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total anti-dilutive stock option value = shares × average exercise price. 2017: 11 × $33.32 = $366.52 million; 2016: 13 × $26.93 = $350.09 million. Increase = $366.52 − $350.09 = $16.43 million.\",\n  \"final\": {\n    \"answer\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c2n0\", \"source:t3c3n0\", \"source:q0n2\", \"source:q0n3\"]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final prose pairs 11 with 33.32 and 13 with 26.93, and lists the corresponding source spans. This is final-only evidence, not a preceding tool request.",
+      "status": "PASS"
+    }
+  },
+  "R012": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": \"14.912841106142192\",\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll sum coal revenue and total operating revenues for 2014–2016, then compute coal’s percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(c2016+c2015+c2014)/(t2016+t2015+t2014)*100\",\n    \"variables\": {\n      \"c2016\": {\"value\": \"2440\", \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"},\n      \"c2015\": {\"value\": \"3237\", \"source\": \"source:t4c2n0\", \"unit\": \"$ millions\"},\n      \"c2014\": {\"value\": \"4127\", \"source\": \"source:t4c3n0\", \"unit\": \"$ millions\"},\n      \"t2016\": {\"value\": \"19941\", \"source\": \"source:t9c1n0\", \"unit\": \"$ millions\"},\n      \"t2015\": {\"value\": \"21813\", \"source\": \"source:t9c2n0\", \"unit\": \"$ millions\"},\n      \"t2014\": {\"value\": \"23988\", \"source\": \"source:t9c3n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"c2016\": \"source:t4c1n0\",\n      \"c2015\": \"source:t4c2n0\",\n      \"c2014\": \"source:t4c3n0\",\n      \"t2016\": \"source:t9c1n0\",\n      \"t2015\": \"source:t9c2n0\",\n      \"t2014\": \"source:t9c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The aggregate three-year coal share is the ratio of the two three-year sums times 100.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll sum coal revenue and total operating revenues for 2014–2016, then compute coal’s percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(c2016+c2015+c2014)/(t2016+t2015+t2014)*100\",\n    \"variables\": {\n      \"c2016\": {\"value\": \"2440\", \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"},\n      \"c2015\": {\"value\": \"3237\", \"source\": \"source:t4c2n0\", \"unit\": \"$ millions\"},\n      \"c2014\": {\"value\": \"4127\", \"source\": \"source:t4c3n0\", \"unit\": \"$ millions\"},\n      \"t2016\": {\"value\": \"19941\", \"source\": \"source:t9c1n0\", \"unit\": \"$ millions\"},\n      \"t2015\": {\"value\": \"21813\", \"source\": \"source:t9c2n0\", \"unit\": \"$ millions\"},\n      \"t2014\": {\"value\": \"23988\", \"source\": \"source:t9c3n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"c2016\": \"source:t4c1n0\",\n      \"c2015\": \"source:t4c2n0\",\n      \"c2014\": \"source:t4c3n0\",\n      \"t2016\": \"source:t9c1n0\",\n      \"t2015\": \"source:t9c2n0\",\n      \"t2014\": \"source:t9c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": \"14.912841106142192\",\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete expression with six bound inputs, followed by Final with tool:1. No multi-call result reuse or revision."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": \"14.912841106142192\",\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.912841106142192",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": \"14.912841106142192\",\n    \"unit\": \"percent\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.9"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll sum coal revenue and total operating revenues for 2014–2016, then compute coal’s percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(c2016+c2015+c2014)/(t2016+t2015+t2014)*100\",\n    \"variables\": {\n      \"c2016\": {\"value\": \"2440\", \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"},\n      \"c2015\": {\"value\": \"3237\", \"source\": \"source:t4c2n0\", \"unit\": \"$ millions\"},\n      \"c2014\": {\"value\": \"4127\", \"source\": \"source:t4c3n0\", \"unit\": \"$ millions\"},\n      \"t2016\": {\"value\": \"19941\", \"source\": \"source:t9c1n0\", \"unit\": \"$ millions\"},\n      \"t2015\": {\"value\": \"21813\", \"source\": \"source:t9c2n0\", \"unit\": \"$ millions\"},\n      \"t2014\": {\"value\": \"23988\", \"source\": \"source:t9c3n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"c2016\": \"source:t4c1n0\",\n      \"c2015\": \"source:t4c2n0\",\n      \"c2014\": \"source:t4c3n0\",\n      \"t2016\": \"source:t9c1n0\",\n      \"t2015\": \"source:t9c2n0\",\n      \"t2014\": \"source:t9c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "All six variables declare millions and the ratio multiplies by 100; no unweighted average or mixed-year denominator.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll sum coal revenue and total operating revenues for 2014–2016, then compute coal’s percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(c2016+c2015+c2014)/(t2016+t2015+t2014)*100\",\n    \"variables\": {\n      \"c2016\": {\"value\": \"2440\", \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"},\n      \"c2015\": {\"value\": \"3237\", \"source\": \"source:t4c2n0\", \"unit\": \"$ millions\"},\n      \"c2014\": {\"value\": \"4127\", \"source\": \"source:t4c3n0\", \"unit\": \"$ millions\"},\n      \"t2016\": {\"value\": \"19941\", \"source\": \"source:t9c1n0\", \"unit\": \"$ millions\"},\n      \"t2015\": {\"value\": \"21813\", \"source\": \"source:t9c2n0\", \"unit\": \"$ millions\"},\n      \"t2014\": {\"value\": \"23988\", \"source\": \"source:t9c3n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"c2016\": \"source:t4c1n0\",\n      \"c2015\": \"source:t4c2n0\",\n      \"c2014\": \"source:t4c3n0\",\n      \"t2016\": \"source:t9c1n0\",\n      \"t2015\": \"source:t9c2n0\",\n      \"t2014\": \"source:t9c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "All six consumed variables explicitly bind coal and total revenues to the corresponding 2016, 2015 and 2014 table cells.",
+      "status": "PASS"
+    }
+  },
+  "R013": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final-only expression (11*33.32)-(13*26.93) is the appropriate later-minus-earlier exercise-value difference.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final, with calculation text and no actual tool execution. Its self-reported intermediate values are not calculator outputs."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual calculate call exists; final-only arithmetic is not an execution/publication alignment certificate.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "16.43",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        },
+        "unit": "millions of dollars",
+        "value": "16.43"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final prose states million-dollar annual totals and increase, consistent with million shares times USD/share.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the anti-dilutive stock option share counts and the average exercise prices: 2017 total exercise value = 11 × $33.32 = $366.52M; 2016 total exercise value = 13 × $26.93 = $350.09M. Increase = $16.43M.\",\n  \"final\": {\n    \"answer\": \"16.43\",\n    \"value\": 16.43,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:q0n2\",\n      \"source:q0n3\",\n      \"source:t3c2n0\",\n      \"source:t3c3n0\"\n    ],\n    \"calculation\": \"(11 * 33.32) - (13 * 26.93) = 16.43\"\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The public Final explanation explicitly pairs option counts and average exercise prices for 2017 and 2016 and cites the matching source spans.",
+      "status": "PASS"
+    }
+  },
+  "R014": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [],
+      "explanation": "No actual Final exists; publication consistency is unknown.",
+      "status": "UNDETERMINED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\",\"sources\":{\"x\":\"source:t1c1n0\",\"y\":\"source:t9c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The submitted expression computes 2015 agricultural revenue over total operating revenue times 100, which is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\",\"sources\":{\"x\":\"source:t1c1n0\",\"y\":\"source:t9c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "text": "A valid calculation completed, but no Final was received; the second public raw entry is empty and the packet terminal is unknown_transport_or_condition. The tool result is not promoted into a model answer."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\",\"sources\":{\"x\":\"source:t1c1n0\",\"y\":\"source:t9c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "A calculation exists but no Final was published. Do not fill the answer from the correct tool result.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "percent",
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\",\"sources\":{\"x\":\"source:t1c1n0\",\"y\":\"source:t9c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both amounts are explicitly in millions and the expression multiplies the ratio by 100.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table: agricultural products in 2015 were $3,581 million and total operating revenues were $21,813 million. I will compute the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"3581/21813*100\",\"sources\":{\"x\":\"source:t1c1n0\",\"y\":\"source:t9c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Before the real calculation, the model explicitly names 3581 million agricultural and 21813 million total 2015 revenues and provides their source spans as metadata.",
+      "status": "PASS"
+    }
+  },
+  "R015": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion, so the percentage is 997 / 7000 * 100 = 14.24%.\",\"final\":{\"answer\":\"14.24%\",\"calculation\":\"997/7000*100\",\"sources\":[\"source:p1n2\",\"source:p2n0\"]}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion, so the percentage is 997 / 7000 * 100 = 14.24%.\",\"final\":{\"answer\":\"14.24%\",\"calculation\":\"997/7000*100\",\"sources\":[\"source:p1n2\",\"source:p2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion. Dividing $997 million by $7,000 million gives 14.24%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"997/7000*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "GE-held 997 million divided by 2017 total cash 7000 million, times 100, is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion. Dividing $997 million by $7,000 million gives 14.24%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"997/7000*100\"}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion, so the percentage is 997 / 7000 * 100 = 14.24%.\",\"final\":{\"answer\":\"14.24%\",\"calculation\":\"997/7000*100\",\"sources\":[\"source:p1n2\",\"source:p2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal expression then Final. Since Final has no value, the actual quoted answer 14.24% supplies the published number under the registered fallback rule."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion, so the percentage is 997 / 7000 * 100 = 14.24%.\",\"final\":{\"answer\":\"14.24%\",\"calculation\":\"997/7000*100\",\"sources\":[\"source:p1n2\",\"source:p2n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.24",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion, so the percentage is 997 / 7000 * 100 = 14.24%.\",\"final\":{\"answer\":\"14.24%\",\"calculation\":\"997/7000*100\",\"sources\":[\"source:p1n2\",\"source:p2n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.24"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion. Dividing $997 million by $7,000 million gives 14.24%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"997/7000*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation converts 7.0 billion to 7000 million and uses a percentage multiplier.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion. Dividing $997 million by $7,000 million gives 14.24%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"997/7000*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly identifies both financial roles, the 2017 date and the amounts 997 and 7.0 billion. Final source spans agree; the literal expression has no machine source binding.",
+      "status": "PASS"
+    }
+  },
+  "R016": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax cost for 2010 is 18.1 - 6.3 = 11.8; for 2009 it is 14.6 - 5.2 = 9.4. The percentage change is (11.8 - 9.4) / 9.4 = 25.5%.\",\n  \"final\": {\n    \"answer\": \"25.5%\",\n    \"value\": \"25.531914893617021\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c1n0\",\n      \"source:t2c2n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax share-based compensation cost = share-based compensation cost + income tax benefit (where the benefit is shown as a negative amount). For 2010: 18.1 + (-6.3) = 11.8. For 2009: 14.6 + (-5.2) = 9.4. Percentage change = ((11.8 - 9.4) / 9.4) * 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((cost2010 + tax2010) - (cost2009 + tax2009)) / (cost2009 + tax2009) * 100\",\n    \"variables\": {\n      \"cost2010\": {\"value\": \"181/10\", \"source\": \"source:t1c1n0\"},\n      \"cost2009\": {\"value\": \"73/5\", \"source\": \"source:t1c2n0\"},\n      \"tax2010\": {\"value\": \"-63/10\", \"source\": \"source:t2c1n0\"},\n      \"tax2009\": {\"value\": \"-26/5\", \"source\": \"source:t2c2n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "After-tax cost adds the signed negative tax benefit to compensation cost; the percent change uses the 2009 after-tax denominator.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax share-based compensation cost = share-based compensation cost + income tax benefit (where the benefit is shown as a negative amount). For 2010: 18.1 + (-6.3) = 11.8. For 2009: 14.6 + (-5.2) = 9.4. Percentage change = ((11.8 - 9.4) / 9.4) * 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((cost2010 + tax2010) - (cost2009 + tax2009)) / (cost2009 + tax2009) * 100\",\n    \"variables\": {\n      \"cost2010\": {\"value\": \"181/10\", \"source\": \"source:t1c1n0\"},\n      \"cost2009\": {\"value\": \"73/5\", \"source\": \"source:t1c2n0\"},\n      \"tax2010\": {\"value\": \"-63/10\", \"source\": \"source:t2c1n0\"},\n      \"tax2009\": {\"value\": \"-26/5\", \"source\": \"source:t2c2n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"After-tax cost for 2010 is 18.1 - 6.3 = 11.8; for 2009 it is 14.6 - 5.2 = 9.4. The percentage change is (11.8 - 9.4) / 9.4 = 25.5%.\",\n  \"final\": {\n    \"answer\": \"25.5%\",\n    \"value\": \"25.531914893617021\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c1n0\",\n      \"source:t2c2n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete source-bound expression then Final linked to tool:1. Prose mentions intermediate costs but no separate tool calls occur."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax cost for 2010 is 18.1 - 6.3 = 11.8; for 2009 it is 14.6 - 5.2 = 9.4. The percentage change is (11.8 - 9.4) / 9.4 = 25.5%.\",\n  \"final\": {\n    \"answer\": \"25.5%\",\n    \"value\": \"25.531914893617021\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c1n0\",\n      \"source:t2c2n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "%",
+    "published_value": "25.531914893617021",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"After-tax cost for 2010 is 18.1 - 6.3 = 11.8; for 2009 it is 14.6 - 5.2 = 9.4. The percentage change is (11.8 - 9.4) / 9.4 = 25.5%.\",\n  \"final\": {\n    \"answer\": \"25.5%\",\n    \"value\": \"25.531914893617021\",\n    \"unit\": \"%\",\n    \"sources\": [\n      \"source:t1c1n0\",\n      \"source:t1c2n0\",\n      \"source:t2c1n0\",\n      \"source:t2c2n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "%",
+        "value": "25.5"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax share-based compensation cost = share-based compensation cost + income tax benefit (where the benefit is shown as a negative amount). For 2010: 18.1 + (-6.3) = 11.8. For 2009: 14.6 + (-5.2) = 9.4. Percentage change = ((11.8 - 9.4) / 9.4) * 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((cost2010 + tax2010) - (cost2009 + tax2009)) / (cost2009 + tax2009) * 100\",\n    \"variables\": {\n      \"cost2010\": {\"value\": \"181/10\", \"source\": \"source:t1c1n0\"},\n      \"cost2009\": {\"value\": \"73/5\", \"source\": \"source:t1c2n0\"},\n      \"tax2010\": {\"value\": \"-63/10\", \"source\": \"source:t2c1n0\"},\n      \"tax2009\": {\"value\": \"-26/5\", \"source\": \"source:t2c2n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The same-scale monetary terms cancel in the growth ratio and the executed formula multiplies by 100. The Final ratio is expressed as a percentage, consistent with its value.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"After-tax share-based compensation cost = share-based compensation cost + income tax benefit (where the benefit is shown as a negative amount). For 2010: 18.1 + (-6.3) = 11.8. For 2009: 14.6 + (-5.2) = 9.4. Percentage change = ((11.8 - 9.4) / 9.4) * 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"((cost2010 + tax2010) - (cost2009 + tax2009)) / (cost2009 + tax2009) * 100\",\n    \"variables\": {\n      \"cost2010\": {\"value\": \"181/10\", \"source\": \"source:t1c1n0\"},\n      \"cost2009\": {\"value\": \"73/5\", \"source\": \"source:t1c2n0\"},\n      \"tax2010\": {\"value\": \"-63/10\", \"source\": \"source:t2c1n0\"},\n      \"tax2009\": {\"value\": \"-26/5\", \"source\": \"source:t2c2n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Four consumed exact-fraction variables bind cost2010, tax2010, cost2009 and tax2009 to the correct table spans and retain benefit signs.",
+      "status": "PASS"
+    }
+  },
+  "R017": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.\",\n  \"final\": {\n    \"answer\": \"14.91284%\",\n    \"value\": 0.14912841106142192,\n    \"unit\": \"percent\",\n    \"calculation\": \"((2440+3237+4127)/(19941+21813+23988))*100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The answer 14.91284% and prose 14.91% contradict primary value 0.14912841106142192 labelled percent. Preserve value priority and the factor-100 publication failure.",
+      "status": "FAIL"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Summing coal revenue and total operating revenue for 2014, 2015, and 2016, then dividing coal by total: coal = 2,440 + 3,237 + 4,127 = 9,804; total operating revenue = 19,941 + 21,813 + 23,988 = 65,742. 9,804 / 65,742 ≈ 14.91%.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"variables\": {\n      \"coal_2016\": {\"value\": 2440, \"source\": \"source:t4c1n0\"},\n      \"coal_2015\": {\"value\": 3237, \"source\": \"source:t4c2n0\"},\n      \"coal_2014\": {\"value\": 4127, \"source\": \"source:t4c3n0\"},\n      \"total_2016\": {\"value\": 19941, \"source\": \"source:t9c1n0\"},\n      \"total_2015\": {\"value\": 21813, \"source\": \"source:t9c2n0\"},\n      \"total_2014\": {\"value\": 23988, \"source\": \"source:t9c3n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual calculation correctly uses summed coal revenue divided by summed total operating revenue for 2014-2016, times 100.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Summing coal revenue and total operating revenue for 2014, 2015, and 2016, then dividing coal by total: coal = 2,440 + 3,237 + 4,127 = 9,804; total operating revenue = 19,941 + 21,813 + 23,988 = 65,742. 9,804 / 65,742 ≈ 14.91%.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"variables\": {\n      \"coal_2016\": {\"value\": 2440, \"source\": \"source:t4c1n0\"},\n      \"coal_2015\": {\"value\": 3237, \"source\": \"source:t4c2n0\"},\n      \"coal_2014\": {\"value\": 4127, \"source\": \"source:t4c3n0\"},\n      \"total_2016\": {\"value\": 19941, \"source\": \"source:t9c1n0\"},\n      \"total_2015\": {\"value\": 21813, \"source\": \"source:t9c2n0\"},\n      \"total_2014\": {\"value\": 23988, \"source\": \"source:t9c3n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.\",\n  \"final\": {\n    \"answer\": \"14.91284%\",\n    \"value\": 0.14912841106142192,\n    \"unit\": \"percent\",\n    \"calculation\": \"((2440+3237+4127)/(19941+21813+23988))*100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One correct full calculation followed by inconsistent Final: value is a fraction near 0.149, yet unit is percent and answer/prose are near 14.91%. The value-first policy is retained; no repair, feedback or additional call."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.\",\n  \"final\": {\n    \"answer\": \"14.91284%\",\n    \"value\": 0.14912841106142192,\n    \"unit\": \"percent\",\n    \"calculation\": \"((2440+3237+4127)/(19941+21813+23988))*100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual tool result is approximately 14.912841 percent, but primary value 0.14912841106142192 with unit percent is 100 times smaller. A correct answer string cannot replace the value field.",
+      "status": "FAIL"
+    },
+    "published_unit": "percent",
+    "published_value": "0.14912841106142192",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.\",\n  \"final\": {\n    \"answer\": \"14.91284%\",\n    \"value\": 0.14912841106142192,\n    \"unit\": \"percent\",\n    \"calculation\": \"((2440+3237+4127)/(19941+21813+23988))*100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.91284"
+      },
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Revenue from coal for 2014-2016 is 2,440 + 3,237 + 4,127 = 9,804. Total operating revenues for 2014-2016 are 19,941 + 21,813 + 23,988 = 65,742. Coal revenue is therefore 9,804 / 65,742 ≈ 14.91% of total operating revenues over the three-year period.\",\n  \"final\": {\n    \"answer\": \"14.91284%\",\n    \"value\": 0.14912841106142192,\n    \"unit\": \"percent\",\n    \"calculation\": \"((2440+3237+4127)/(19941+21813+23988))*100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.91"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Summing coal revenue and total operating revenue for 2014, 2015, and 2016, then dividing coal by total: coal = 2,440 + 3,237 + 4,127 = 9,804; total operating revenue = 19,941 + 21,813 + 23,988 = 65,742. 9,804 / 65,742 ≈ 14.91%.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"variables\": {\n      \"coal_2016\": {\"value\": 2440, \"source\": \"source:t4c1n0\"},\n      \"coal_2015\": {\"value\": 3237, \"source\": \"source:t4c2n0\"},\n      \"coal_2014\": {\"value\": 4127, \"source\": \"source:t4c3n0\"},\n      \"total_2016\": {\"value\": 19941, \"source\": \"source:t9c1n0\"},\n      \"total_2015\": {\"value\": 21813, \"source\": \"source:t9c2n0\"},\n      \"total_2014\": {\"value\": 23988, \"source\": \"source:t9c3n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The executed inputs are same-scale monetary values and the expression correctly converts the ratio to percent. This PASS concerns pre-execution handling only; Final later introduces a separate factor-100 publication error.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Summing coal revenue and total operating revenue for 2014, 2015, and 2016, then dividing coal by total: coal = 2,440 + 3,237 + 4,127 = 9,804; total operating revenue = 19,941 + 21,813 + 23,988 = 65,742. 9,804 / 65,742 ≈ 14.91%.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"variables\": {\n      \"coal_2016\": {\"value\": 2440, \"source\": \"source:t4c1n0\"},\n      \"coal_2015\": {\"value\": 3237, \"source\": \"source:t4c2n0\"},\n      \"coal_2014\": {\"value\": 4127, \"source\": \"source:t4c3n0\"},\n      \"total_2016\": {\"value\": 19941, \"source\": \"source:t9c1n0\"},\n      \"total_2015\": {\"value\": 21813, \"source\": \"source:t9c2n0\"},\n      \"total_2014\": {\"value\": 23988, \"source\": \"source:t9c3n0\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message labels both aggregate roles and the six literal inputs; accompanying year/source annotations match the table. Those annotations were not consumed as named variables.",
+      "status": "PASS"
+    }
+  },
+  "R018": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"$16.43 million\",\n    \"value\": \"16.43\",\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t3c2n0\",\n      \"source:q0n2\",\n      \"source:t3c3n0\",\n      \"source:q0n3\"\n    ],\n    \"result_id\": \"tool:1\"\n  },\n  \"message\": \"Total stock option value is calculated as shares times average exercise price: 2017 = 11 million × $33.32 = $366.52 million; 2016 = 13 million × $26.93 = $350.09 million. The increase is $16.43 million.\"\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"11 * 33.32 - 13 * 26.93\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": \"11\", \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2017\": {\"value\": \"33.32\", \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": \"13\", \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2016\": {\"value\": \"26.93\", \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The submitted two annual share-price products, subtracted in 2017-minus-2016 order, form the requested exercise-value difference.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"11 * 33.32 - 13 * 26.93\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": \"11\", \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2017\": {\"value\": \"33.32\", \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": \"13\", \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2016\": {\"value\": \"26.93\", \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"$16.43 million\",\n    \"value\": \"16.43\",\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t3c2n0\",\n      \"source:q0n2\",\n      \"source:t3c3n0\",\n      \"source:q0n3\"\n    ],\n    \"result_id\": \"tool:1\"\n  },\n  \"message\": \"Total stock option value is calculated as shares times average exercise price: 2017 = 11 million × $33.32 = $366.52 million; 2016 = 13 million × $26.93 = $350.09 million. The increase is $16.43 million.\"\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal calculation with informative unused annotations, then Final linked to tool:1. No separate calculation of intermediate totals was called."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"$16.43 million\",\n    \"value\": \"16.43\",\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t3c2n0\",\n      \"source:q0n2\",\n      \"source:t3c3n0\",\n      \"source:q0n3\"\n    ],\n    \"result_id\": \"tool:1\"\n  },\n  \"message\": \"Total stock option value is calculated as shares times average exercise price: 2017 = 11 million × $33.32 = $366.52 million; 2016 = 13 million × $26.93 = $350.09 million. The increase is $16.43 million.\"\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "16.43",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"$16.43 million\",\n    \"value\": \"16.43\",\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t3c2n0\",\n      \"source:q0n2\",\n      \"source:t3c3n0\",\n      \"source:q0n3\"\n    ],\n    \"result_id\": \"tool:1\"\n  },\n  \"message\": \"Total stock option value is calculated as shares times average exercise price: 2017 = 11 million × $33.32 = $366.52 million; 2016 = 13 million × $26.93 = $350.09 million. The increase is $16.43 million.\"\n}",
+          "response_index": 1
+        },
+        "unit": "millions of dollars",
+        "value": "16.43"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"11 * 33.32 - 13 * 26.93\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": \"11\", \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2017\": {\"value\": \"33.32\", \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": \"13\", \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2016\": {\"value\": \"26.93\", \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Pre-call annotations give million shares and USD per share; the literal products therefore use million USD and the final positive difference agrees.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"11 * 33.32 - 13 * 26.93\",\n    \"variables\": {\n      \"shares_2017\": {\"value\": \"11\", \"source\": \"source:t3c2n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2017\": {\"value\": \"33.32\", \"source\": \"source:q0n2\", \"unit\": \"USD per share\"},\n      \"shares_2016\": {\"value\": \"13\", \"source\": \"source:t3c3n0\", \"unit\": \"million shares\"},\n      \"exercise_price_2016\": {\"value\": \"26.93\", \"source\": \"source:q0n3\", \"unit\": \"USD per share\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Although there is no message field, the pre-call unused variable annotations explicitly pair the four values with their year, role and source span. The executed expression uses literals, so this is finite semantic review rather than machine source binding.",
+      "status": "PASS"
+    }
+  },
+  "R019": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Approximately 10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"%\",\n    \"sources\": [\"source:q2n2\", \"source:t6c1n0\"],\n    \"result_id\": \"tool:1\",\n    \"calculation\": \"15.3 million accrued interest and penalties / 139.549 million ending balance * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The combined accrued interest and penalties is $15.3 million. The table ending balance as of November 28, 2008 is $139,549 thousand, or $139.549 million. I will compute the percentage using these values.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"15300 / 139549 * 100\",\n    \"variables\": {\n      \"15300\": {\"value\": 15300, \"source\": \"source:q2n2\", \"unit\": \"thousands\"},\n      \"139549\": {\"value\": 139549, \"source\": \"source:t6c1n0\", \"unit\": \"thousands\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Accrued interest/penalties over ending unrecognized tax benefits times 100 is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The combined accrued interest and penalties is $15.3 million. The table ending balance as of November 28, 2008 is $139,549 thousand, or $139.549 million. I will compute the percentage using these values.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"15300 / 139549 * 100\",\n    \"variables\": {\n      \"15300\": {\"value\": 15300, \"source\": \"source:q2n2\", \"unit\": \"thousands\"},\n      \"139549\": {\"value\": 139549, \"source\": \"source:t6c1n0\", \"unit\": \"thousands\"}\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Approximately 10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"%\",\n    \"sources\": [\"source:q2n2\", \"source:t6c1n0\"],\n    \"result_id\": \"tool:1\",\n    \"calculation\": \"15.3 million accrued interest and penalties / 139.549 million ending balance * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One full literal calculation and Final referencing tool:1. Visible unit conversion is part of that one call, not a separate result reuse."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Approximately 10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"%\",\n    \"sources\": [\"source:q2n2\", \"source:t6c1n0\"],\n    \"result_id\": \"tool:1\",\n    \"calculation\": \"15.3 million accrued interest and penalties / 139.549 million ending balance * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "%",
+    "published_value": "10.963890819712072",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Approximately 10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"%\",\n    \"sources\": [\"source:q2n2\", \"source:t6c1n0\"],\n    \"result_id\": \"tool:1\",\n    \"calculation\": \"15.3 million accrued interest and penalties / 139.549 million ending balance * 100\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "%",
+        "value": "10.96"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The combined accrued interest and penalties is $15.3 million. The table ending balance as of November 28, 2008 is $139,549 thousand, or $139.549 million. I will compute the percentage using these values.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"15300 / 139549 * 100\",\n    \"variables\": {\n      \"15300\": {\"value\": 15300, \"source\": \"source:q2n2\", \"unit\": \"thousands\"},\n      \"139549\": {\"value\": 139549, \"source\": \"source:t6c1n0\", \"unit\": \"thousands\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both substituted values are in thousands: the model scales 15.3 million to 15300 and retains 139549. The extracted table lacks an explicit thousand header; the rounded prose balance supports that scale inference.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The combined accrued interest and penalties is $15.3 million. The table ending balance as of November 28, 2008 is $139,549 thousand, or $139.549 million. I will compute the percentage using these values.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"15300 / 139549 * 100\",\n    \"variables\": {\n      \"15300\": {\"value\": 15300, \"source\": \"source:q2n2\", \"unit\": \"thousands\"},\n      \"139549\": {\"value\": 139549, \"source\": \"source:t6c1n0\", \"unit\": \"thousands\"}\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call prose identifies 15.3 million and the table balance 139549 thousand; 15300 is the openly scaled numerator in the actual expression. Numeric-looking variable keys are unused annotations, not consumed bindings.",
+      "status": "PASS"
+    }
+  },
+  "R020": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"percent\",\n    \"sources\": {\n      \"interest_and_penalties\": \"source:q2n2\",\n      \"ending_balance\": \"source:t6c1\"\n    },\n    \"calculation\": \"15.3 / (139549/1000) * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll use the accrued interest and penalties amount of $15.3 million and divide it by the FIN 48 ending balance of $139,549 thousand ($139.549 million), then convert to a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"interest_penalties_millions / (ending_balance_thousands / 1000) * 100\",\n    \"variables\": {\n      \"interest_penalties_millions\": {\n        \"value\": \"15.3\",\n        \"source\": \"source:q2n2\",\n        \"unit\": \"USD millions\"\n      },\n      \"ending_balance_thousands\": {\n        \"value\": 139549,\n        \"source\": \"source:t6c1\",\n        \"unit\": \"USD thousands\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The named expression computes the interest/penalties percentage of the ending balance.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll use the accrued interest and penalties amount of $15.3 million and divide it by the FIN 48 ending balance of $139,549 thousand ($139.549 million), then convert to a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"interest_penalties_millions / (ending_balance_thousands / 1000) * 100\",\n    \"variables\": {\n      \"interest_penalties_millions\": {\n        \"value\": \"15.3\",\n        \"source\": \"source:q2n2\",\n        \"unit\": \"USD millions\"\n      },\n      \"ending_balance_thousands\": {\n        \"value\": 139549,\n        \"source\": \"source:t6c1\",\n        \"unit\": \"USD thousands\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"percent\",\n    \"sources\": {\n      \"interest_and_penalties\": \"source:q2n2\",\n      \"ending_balance\": \"source:t6c1\"\n    },\n    \"calculation\": \"15.3 / (139549/1000) * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One named calculation with one unresolved machine source identifier but explicit public financial correspondence; Final agrees. No retry or host binding repair occurred."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"percent\",\n    \"sources\": {\n      \"interest_and_penalties\": \"source:q2n2\",\n      \"ending_balance\": \"source:t6c1\"\n    },\n    \"calculation\": \"15.3 / (139549/1000) * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "10.963890819712072",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"10.96%\",\n    \"value\": 10.963890819712072,\n    \"unit\": \"percent\",\n    \"sources\": {\n      \"interest_and_penalties\": \"source:q2n2\",\n      \"ending_balance\": \"source:t6c1\"\n    },\n    \"calculation\": \"15.3 / (139549/1000) * 100\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "10.96"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll use the accrued interest and penalties amount of $15.3 million and divide it by the FIN 48 ending balance of $139,549 thousand ($139.549 million), then convert to a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"interest_penalties_millions / (ending_balance_thousands / 1000) * 100\",\n    \"variables\": {\n      \"interest_penalties_millions\": {\n        \"value\": \"15.3\",\n        \"source\": \"source:q2n2\",\n        \"unit\": \"USD millions\"\n      },\n      \"ending_balance_thousands\": {\n        \"value\": 139549,\n        \"source\": \"source:t6c1\",\n        \"unit\": \"USD thousands\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual denominator divides thousands by 1000 to align with the 15.3 million numerator, then multiplies by 100. The table scale is inferred using the adjacent rounded balance disclosure.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I’ll use the accrued interest and penalties amount of $15.3 million and divide it by the FIN 48 ending balance of $139,549 thousand ($139.549 million), then convert to a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"interest_penalties_millions / (ending_balance_thousands / 1000) * 100\",\n    \"variables\": {\n      \"interest_penalties_millions\": {\n        \"value\": \"15.3\",\n        \"source\": \"source:q2n2\",\n        \"unit\": \"USD millions\"\n      },\n      \"ending_balance_thousands\": {\n        \"value\": 139549,\n        \"source\": \"source:t6c1\",\n        \"unit\": \"USD thousands\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model's source:t6c1 declaration omits the n0 numeric-span suffix, so the automatic numeric-source link is unestablished for the denominator. However the pre-call prose explicitly identifies 139549 as the FIN 48 ending balance and source t6c1 is the correct cell; a finite source-text/role review supports correspondence without silently repairing the machine binding.",
+      "status": "PASS"
+    }
+  },
+  "R021": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"16.4%\",\n    \"value\": 16.416815660386008,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"],\n    \"calculation\": \"3581 / 21813 * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The bare 3581/21813*100 expression is numerically the applicable agricultural/total revenue share for this task. This limited formula check does not establish a public operand-to-source explanation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {}\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"16.4%\",\n    \"value\": 16.416815660386008,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"],\n    \"calculation\": \"3581 / 21813 * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One bare literal expression, then a correct Final with source IDs. Actual arithmetic is verified, but pre-execution data/unit correspondence is not established from its public request; this is not a numeric task failure."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"16.4%\",\n    \"value\": 16.416815660386008,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"],\n    \"calculation\": \"3581 / 21813 * 100\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "16.416815660386008",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"16.4%\",\n    \"value\": 16.416815660386008,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"],\n    \"calculation\": \"3581 / 21813 * 100\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "16.4"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED: multiplying a bare ratio by 100 is visible, but the model does not identify the monetary units or roles of either operand before execution. Final's percent label is not pre-execution unit evidence.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {}\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED: the pre-call response has only a literal expression and an empty variables object, with no role, year or source declaration. Correct source IDs first appear in Final. Do not backdate them or infer a declared binding solely from matching numbers.",
+      "status": "NOT_ESTABLISHED"
+    }
+  },
+  "R022": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"In 2015, agricultural products were approximately 16.4% of total operating revenues.\",\n    \"value\": \"16.416815660386008\",\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I'll compute 2015 agricultural products revenue divided by 2015 total operating revenues, expressed as a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {\n      \"agricultural_products_2015\": {\"value\": \"3581\", \"source\": \"source:t1c1n0\", \"unit\": \"millions\"},\n      \"total_operating_revenues_2015\": {\"value\": \"21813\", \"source\": \"source:t9c1n0\", \"unit\": \"millions\"}\n    },\n    \"sources\": {\n      \"agricultural_products_2015\": \"source:t1c1n0\",\n      \"total_operating_revenues_2015\": \"source:t9c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly describes the 2015 agricultural/total operating revenue percentage and the actual expression implements it.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I'll compute 2015 agricultural products revenue divided by 2015 total operating revenues, expressed as a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {\n      \"agricultural_products_2015\": {\"value\": \"3581\", \"source\": \"source:t1c1n0\", \"unit\": \"millions\"},\n      \"total_operating_revenues_2015\": {\"value\": \"21813\", \"source\": \"source:t9c1n0\", \"unit\": \"millions\"}\n    },\n    \"sources\": {\n      \"agricultural_products_2015\": \"source:t1c1n0\",\n      \"total_operating_revenues_2015\": \"source:t9c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"In 2015, agricultural products were approximately 16.4% of total operating revenues.\",\n    \"value\": \"16.416815660386008\",\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One annotated literal expression, then Final with 16.4% display and a more precise value. No result reuse or revision."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"In 2015, agricultural products were approximately 16.4% of total operating revenues.\",\n    \"value\": \"16.416815660386008\",\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "16.416815660386008",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"In 2015, agricultural products were approximately 16.4% of total operating revenues.\",\n    \"value\": \"16.416815660386008\",\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t1c1n0\", \"source:t9c1n0\"]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "16.4"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I'll compute 2015 agricultural products revenue divided by 2015 total operating revenues, expressed as a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {\n      \"agricultural_products_2015\": {\"value\": \"3581\", \"source\": \"source:t1c1n0\", \"unit\": \"millions\"},\n      \"total_operating_revenues_2015\": {\"value\": \"21813\", \"source\": \"source:t9c1n0\", \"unit\": \"millions\"}\n    },\n    \"sources\": {\n      \"agricultural_products_2015\": \"source:t1c1n0\",\n      \"total_operating_revenues_2015\": \"source:t9c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both pre-call annotations declare millions and the literal ratio multiplies by 100.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"I'll compute 2015 agricultural products revenue divided by 2015 total operating revenues, expressed as a percentage.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"3581 / 21813 * 100\",\n    \"variables\": {\n      \"agricultural_products_2015\": {\"value\": \"3581\", \"source\": \"source:t1c1n0\", \"unit\": \"millions\"},\n      \"total_operating_revenues_2015\": {\"value\": \"21813\", \"source\": \"source:t9c1n0\", \"unit\": \"millions\"}\n    },\n    \"sources\": {\n      \"agricultural_products_2015\": \"source:t1c1n0\",\n      \"total_operating_revenues_2015\": \"source:t9c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Unused annotations map agricultural_products_2015=3581 and total_operating_revenues_2015=21813 to the correct source spans; the pre-call message gives the same roles. Literal execution is not a machine-bound named-variable trace.",
+      "status": "PASS"
+    }
+  },
+  "R023": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final-only public after-tax calculation correctly adds signed negative tax benefits and uses 2009 as the percent-change baseline.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final. Its result_id points to the public document, not an actual calculator result. The numeric answer is separately assessable, but the claimed result reference does not certify an executed calculation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final result_id names a public_document, not an actual tool result; there was no calculate call. This is an invalid execution reference, separately reported from the correct numeric answer.",
+      "status": "FAIL"
+    },
+    "published_unit": "percent",
+    "published_value": "25.53191489361702",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        },
+        "unit": "percent",
+        "value": "25.5"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Same-scale after-tax cost differences and the percentage multiplier are correct in the Final-only prose.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"After-tax cost = share-based compensation cost plus the income-tax-benefit line (i.e., less the tax benefit). 2010: 18.1 + (-6.3) = 11.8; 2009: 14.6 + (-5.2) = 9.4. Percentage change = (11.8 - 9.4) / 9.4 * 100 = 25.5%.\",\"final\":{\"answer\":\"25.5% increase\",\"value\":25.53191489361702,\"unit\":\"percent\",\"sources\":[\"source:t1c1n0\",\"source:t2c1n0\",\"source:t1c2n0\",\"source:t2c2n0\"],\"result_id\":\"public_document:6701df9d5151a6a1160a399e1f46ce2191072bee11ae1421feab66914edcf10a\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final response explicitly pairs 18.1/-6.3 with 2010 and 14.6/-5.2 with 2009 and gives their source spans. No preceding calculate request exists.",
+      "status": "PASS"
+    }
+  },
+  "R024": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": 14.912841106142192,\n    \"unit\": \"%\",\n    \"calculation\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantities, direction, period and units are internally consistent at each stated display precision. This internal check does not change the separate reference-based numeric score or certify a nonexistent tool result.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll compute coal revenue for 2014-2016 as a percentage of total operating revenues for 2014-2016.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(coal_2016 + coal_2015 + coal_2014) / (total_op_rev_2016 + total_op_rev_2015 + total_op_rev_2014) * 100\",\"variables\":{\"coal_2016\":{\"value\":\"2440\",\"source\":\"source:t4c1n0\"},\"coal_2015\":{\"value\":\"3237\",\"source\":\"source:t4c2n0\"},\"coal_2014\":{\"value\":\"4127\",\"source\":\"source:t4c3n0\"},\"total_op_rev_2016\":{\"value\":\"19941\",\"source\":\"source:t9c1n0\"},\"total_op_rev_2015\":{\"value\":\"21813\",\"source\":\"source:t9c2n0\"},\"total_op_rev_2014\":{\"value\":\"23988\",\"source\":\"source:t9c3n0\"}},\"sources\":{\"coal_2016\":\"source:t4c1n0\",\"coal_2015\":\"source:t4c2n0\",\"coal_2014\":\"source:t4c3n0\",\"total_op_rev_2016\":\"source:t9c1n0\",\"total_op_rev_2015\":\"source:t9c2n0\",\"total_op_rev_2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Coal revenue summed across 2014-2016 divided by total operating revenue summed over those years, times 100, is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll compute coal revenue for 2014-2016 as a percentage of total operating revenues for 2014-2016.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(coal_2016 + coal_2015 + coal_2014) / (total_op_rev_2016 + total_op_rev_2015 + total_op_rev_2014) * 100\",\"variables\":{\"coal_2016\":{\"value\":\"2440\",\"source\":\"source:t4c1n0\"},\"coal_2015\":{\"value\":\"3237\",\"source\":\"source:t4c2n0\"},\"coal_2014\":{\"value\":\"4127\",\"source\":\"source:t4c3n0\"},\"total_op_rev_2016\":{\"value\":\"19941\",\"source\":\"source:t9c1n0\"},\"total_op_rev_2015\":{\"value\":\"21813\",\"source\":\"source:t9c2n0\"},\"total_op_rev_2014\":{\"value\":\"23988\",\"source\":\"source:t9c3n0\"}},\"sources\":{\"coal_2016\":\"source:t4c1n0\",\"coal_2015\":\"source:t4c2n0\",\"coal_2014\":\"source:t4c3n0\",\"total_op_rev_2016\":\"source:t9c1n0\",\"total_op_rev_2015\":\"source:t9c2n0\",\"total_op_rev_2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": 14.912841106142192,\n    \"unit\": \"%\",\n    \"calculation\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One source-bound aggregate expression and Final. No read_source, notebook, intermediate-result reuse or method revision is observed."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": 14.912841106142192,\n    \"unit\": \"%\",\n    \"calculation\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final's primary published number agrees with the actually executed tool:1 result at its display precision; direction and unit agree. An omitted result_id is not invented. This does not by itself establish correctness against the task reference.",
+      "status": "PASS"
+    },
+    "published_unit": "%",
+    "published_value": "14.912841106142192",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": \"14.9%\",\n    \"value\": 14.912841106142192,\n    \"unit\": \"%\",\n    \"calculation\": \"(2440 + 3237 + 4127) / (19941 + 21813 + 23988) * 100\",\n    \"sources\": [\n      \"source:t4c1n0\",\n      \"source:t4c2n0\",\n      \"source:t4c3n0\",\n      \"source:t9c1n0\",\n      \"source:t9c2n0\",\n      \"source:t9c3n0\"\n    ]\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "%",
+        "value": "14.9"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll compute coal revenue for 2014-2016 as a percentage of total operating revenues for 2014-2016.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(coal_2016 + coal_2015 + coal_2014) / (total_op_rev_2016 + total_op_rev_2015 + total_op_rev_2014) * 100\",\"variables\":{\"coal_2016\":{\"value\":\"2440\",\"source\":\"source:t4c1n0\"},\"coal_2015\":{\"value\":\"3237\",\"source\":\"source:t4c2n0\"},\"coal_2014\":{\"value\":\"4127\",\"source\":\"source:t4c3n0\"},\"total_op_rev_2016\":{\"value\":\"19941\",\"source\":\"source:t9c1n0\"},\"total_op_rev_2015\":{\"value\":\"21813\",\"source\":\"source:t9c2n0\"},\"total_op_rev_2014\":{\"value\":\"23988\",\"source\":\"source:t9c3n0\"}},\"sources\":{\"coal_2016\":\"source:t4c1n0\",\"coal_2015\":\"source:t4c2n0\",\"coal_2014\":\"source:t4c3n0\",\"total_op_rev_2016\":\"source:t9c1n0\",\"total_op_rev_2015\":\"source:t9c2n0\",\"total_op_rev_2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The referenced table puts all six amounts on the same millions scale, which cancels; the public expression multiplies by 100. Unit strings are not required to infer this from the explicit source/role declarations.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll compute coal revenue for 2014-2016 as a percentage of total operating revenues for 2014-2016.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(coal_2016 + coal_2015 + coal_2014) / (total_op_rev_2016 + total_op_rev_2015 + total_op_rev_2014) * 100\",\"variables\":{\"coal_2016\":{\"value\":\"2440\",\"source\":\"source:t4c1n0\"},\"coal_2015\":{\"value\":\"3237\",\"source\":\"source:t4c2n0\"},\"coal_2014\":{\"value\":\"4127\",\"source\":\"source:t4c3n0\"},\"total_op_rev_2016\":{\"value\":\"19941\",\"source\":\"source:t9c1n0\"},\"total_op_rev_2015\":{\"value\":\"21813\",\"source\":\"source:t9c2n0\"},\"total_op_rev_2014\":{\"value\":\"23988\",\"source\":\"source:t9c3n0\"}},\"sources\":{\"coal_2016\":\"source:t4c1n0\",\"coal_2015\":\"source:t4c2n0\",\"coal_2014\":\"source:t4c3n0\",\"total_op_rev_2016\":\"source:t9c1n0\",\"total_op_rev_2015\":\"source:t9c2n0\",\"total_op_rev_2014\":\"source:t9c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The six consumed variables explicitly associate coal and total revenues, years and the corresponding t4/t9 table numeric spans.",
+      "status": "PASS"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "final": {
+    "answer": "The total value of stock options increased by $16.43 million from 2016 to 2017, using the average exercise price and anti-dilutive option share amounts.",
+    "value": 16.43,
+    "unit": "millions of dollars",
+    "sources": ["source:t3c2n0", "source:q0n2", "source:t3c3n0", "source:q0n3"]
+  }
+}

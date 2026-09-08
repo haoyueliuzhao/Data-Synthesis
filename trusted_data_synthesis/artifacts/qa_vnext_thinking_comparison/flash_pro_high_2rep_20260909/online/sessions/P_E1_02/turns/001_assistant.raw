@@ -1,0 +1,10 @@
+{
+  "final": {
+    "answer": "Approximately 10.96%",
+    "value": 10.963890819712072,
+    "unit": "%",
+    "sources": ["source:q2n2", "source:t6c1n0"],
+    "result_id": "tool:1",
+    "calculation": "15.3 million accrued interest and penalties / 139.549 million ending balance * 100"
+  }
+}

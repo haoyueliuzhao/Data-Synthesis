@@ -1,0 +1,7 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "3581 / 21813 * 100",
+    "variables": {}
+  }
+}

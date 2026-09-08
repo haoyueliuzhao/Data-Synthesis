@@ -1,0 +1,1 @@
+{"message":"Cash held on behalf of GE was $997 million and total cash and equivalents at December 31, 2017 was $7.0 billion. Dividing $997 million by $7,000 million gives 14.24%.","tool":"calculate","arguments":{"expression":"997/7000*100"}}
