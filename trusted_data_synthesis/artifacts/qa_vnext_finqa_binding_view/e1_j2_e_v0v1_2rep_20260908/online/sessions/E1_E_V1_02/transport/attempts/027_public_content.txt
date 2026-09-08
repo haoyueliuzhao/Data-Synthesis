@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e5f9444082a4795cc9cd18713b066c1d1ea38343d5ce3b5bf89a7bf79df15e0f",
+  "subgoal": "Multiply the percentage by 100 to get the answer as a percent value.",
+  "reason": "The answer unit is percent. The current claim is the ratio, so multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:c8b2ed2dcaf2979276546a91e312345a510afcc1975b3f442f26ba1311f43a66",
+    "constant:100"
+  ],
+  "parameters": {}
+}

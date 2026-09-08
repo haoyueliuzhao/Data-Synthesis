@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:70b636155a50c8c77445066414dc39f6f4142b097a2f5d258ece7f18d59e27a6",
+  "subgoal": "Correct the percentage by multiplying the ratio by 100.",
+  "reason": "The question asks for a percentage of total ending balance. The accepted ratio claim is 15.3 / 139549, which must be multiplied by 100 to express as a percent. A new claim will be created from the accepted ratio claim and constant:100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:9641c97f66bde06f25b1d2efcae14de690354102f9101b0aa7d78bf2afee2dd8",
+    "constant:100"
+  ],
+  "parameters": {}
+}

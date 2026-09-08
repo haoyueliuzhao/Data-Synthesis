@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fde3660a24ae7cf8e8d794269fa58078fb80a751b557e5dd7fab6a2e903620ce",
+  "subgoal": "Compute percentage: (accrued interest and penalties / total ending balance) * 100",
+  "reason": "Divide accrued interest and penalties by total ending balance, then multiply by 100 to express as percent.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:bf47cea0062aecb3982c346c496cf4ad7ad448b24014e4989f6501a77e0f5d3a",
+    "finance_qa_vnext_claim:9616999e46c004568ac00c28810b97dad047724189ff282c89687e069fdd1cb5"
+  ],
+  "parameters": {}
+}

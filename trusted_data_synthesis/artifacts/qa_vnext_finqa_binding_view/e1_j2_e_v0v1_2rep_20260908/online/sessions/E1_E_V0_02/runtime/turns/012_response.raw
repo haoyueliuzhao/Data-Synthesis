@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:ed05e5715422773581e6ae5829025c9af0ec3341554c95315d0e2a2742a7e8f3",
+  "subgoal": "Multiply the accepted percentage claim by 100 to express it as a percent.",
+  "reason": "The answer is required in percent, so the ratio must be multiplied by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:2778290a78b4221a930cc63392d0c9f8f0868ec3218139a38af8d9cbabfe7f58",
+    "constant:100"
+  ],
+  "parameters": {}
+}

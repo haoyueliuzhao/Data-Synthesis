@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:74ce59aa96cc1209394d3ebcec87918b523a40795e2ee0e4f2a6ac2f7c1da6a4",
+  "subgoal": "Read the accrued interest and penalties value.",
+  "reason": "Need the numerator for the percentage calculation.",
+  "operation": "read",
+  "inputs": ["source:q2n2"],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6a1f68742b3a32346c08d646e07a228a39027a88789cb06b93c7202878e9ccc0",
+  "subgoal": "Read the 2016 stock options count (13 million) from the numeric catalog.",
+  "reason": "Need the 2016 stock options count to compute the change from 2016 to 2017.",
+  "operation": "read",
+  "inputs": ["source:t3c3n0"],
+  "parameters": {}
+}

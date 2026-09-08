@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:9eb653ce5986c01c47f0f2d14678daef89906111ac50616bc60ded5a0014401a",
+  "subgoal": "Compute the increase in total value of stock options from 2016 to 2017 using shares and average exercise prices.",
+  "reason": "Need to read the average exercise prices for 2016 and 2017 from source q0n3 and q0n2.",
+  "operation": "read",
+  "inputs": ["source:q0n3"],
+  "parameters": {}
+}

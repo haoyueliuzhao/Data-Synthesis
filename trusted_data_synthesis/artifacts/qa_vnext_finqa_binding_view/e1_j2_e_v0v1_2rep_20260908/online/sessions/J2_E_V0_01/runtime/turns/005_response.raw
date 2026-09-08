@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:90dfb956e88bea9b48108fcf9c6a2f6d1699939bc11ebfa6c12df5b4cb1f0f2b",
+  "subgoal": "Read the 2017 and 2016 average exercise prices per share from the source.",
+  "reason": "Need the per-share prices for 2017 and 2016 to compute total value of stock options and the increase.",
+  "operation": "read",
+  "inputs": ["source:q0n2"],
+  "parameters": {}
+}

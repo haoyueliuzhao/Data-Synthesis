@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a34f1010ba587d09455e4839a77d8348da59b2884fc6609f422f526adacefdd4",
+  "subgoal": "Compute total value of stock options for 2016 by multiplying average exercise price and number of options.",
+  "reason": "Use multiply on accepted claims for 2016 average price and 2016 options count.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3b7bed17557fff98dc2f52b74d4876616478b1c04830df6f1ad886810adbe088",
+    "finance_qa_vnext_claim:a50c97f038b168b532007b13e5fa7d904d7972eec4743b2a509d33e84a3a21e6"
+  ],
+  "parameters": {}
+}

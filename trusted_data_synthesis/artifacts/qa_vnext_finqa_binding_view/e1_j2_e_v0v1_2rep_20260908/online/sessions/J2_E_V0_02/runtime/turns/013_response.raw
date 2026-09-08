@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:08b11c3dad69b7d7e677e4e14d6ed805ef68cc5420e3044d5684a1ec4a381bad",
+  "subgoal": "Compute 2016 total value of stock options by multiplying average exercise price 26.93 by shares 13.",
+  "reason": "Need 2016 total value for comparison with 2017. Use accepted claims for 2016 average exercise price (26.93) and stock options shares (13).",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:d4dba16c0fe5f52fba4f2afcee45ce55cd8414daeb2af6962b1b0ac73510164a",
+    "finance_qa_vnext_claim:54afcc424c59de0c8784513dfa2b40c520ab4515b81a80d386dfb4375081ed4f"
+  ],
+  "parameters": {}
+}

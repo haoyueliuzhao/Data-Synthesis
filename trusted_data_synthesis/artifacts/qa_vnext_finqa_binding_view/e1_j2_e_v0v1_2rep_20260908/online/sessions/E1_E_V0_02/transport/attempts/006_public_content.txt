@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:75c90919eb66f18f37029f1bd05ad9b5d4a751991cb409a13bad08e44cbb7a31",
+  "subgoal": "Multiply the ratio by 100 to express as a percentage.",
+  "reason": "Question asks for percent of total ending balance, so ratio must be converted to percentage.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:b61bffbe3458bb1c7e5091f7febf40bb04638ccff780a2b0f046571bbeee1f4c",
+    "constant:100"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:901211499ece0999f799fd2816e21bf5887ad879a95d6f8c64c25057c0178016",
+  "subgoal": "Compute the difference between 2017 and 2016 stock options values.",
+  "reason": "We have accepted values for 2017 (11) and 2016 (13). The question asks for the increase in total value, which is 2017 - 2016.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:3f0c916c38981af1fddeae6f57499ee5243e623499d9e8248c309655b2730592",
+    "finance_qa_vnext_claim:54afcc424c59de0c8784513dfa2b40c520ab4515b81a80d386dfb4375081ed4f"
+  ],
+  "parameters": {}
+}

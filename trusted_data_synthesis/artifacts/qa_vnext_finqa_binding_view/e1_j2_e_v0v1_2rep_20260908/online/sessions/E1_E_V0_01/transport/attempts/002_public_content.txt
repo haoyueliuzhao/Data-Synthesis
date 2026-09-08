@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f4e6e2c348ba3b7f829923f364a5b466c530cb21f13724cdb2475443ba480f54",
+  "subgoal": "Read total ending balance as of November 28, 2008 from source t6c1.",
+  "reason": "Need the denominator to compute the percentage.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a48797f325bcf6551392cce3c4712bb44dc5b7c4fc8df7fc24fc243ce24fba99",
+  "subgoal": "Compute increase in total value of stock options from 2016 to 2017",
+  "reason": "Need to find the difference between total value in 2017 and 2016, which are claims 495f33f4 and a52be585.",
+  "operation": "subtract",
+  "inputs": [
+    "finance_qa_vnext_claim:495f33f4829c9a9c72d0b7ce304e8e5c0ce56fc370712ebeb706b39c7492eda6",
+    "finance_qa_vnext_claim:a52be585fcb9ac87d8ca74c112a3dcd57fef58ce1fb223446deefef583e1a56e"
+  ],
+  "parameters": {}
+}

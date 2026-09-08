@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:80bf13a8ef4f509785ac9b6f6b366be92bf72ac566dc57b40e27831174040b4a",
+  "subgoal": "Read the total ending balance value from source t6c1n0.",
+  "reason": "Need the denominator for percentage calculation.",
+  "operation": "read",
+  "inputs": [
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

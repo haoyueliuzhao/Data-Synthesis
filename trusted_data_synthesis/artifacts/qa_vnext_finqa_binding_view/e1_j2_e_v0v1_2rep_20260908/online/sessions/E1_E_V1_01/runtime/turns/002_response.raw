@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:f6b8e9223e1d6a4f4e2e359cc8c724d9c2652dec03da88fec9649d41cde08a22",
+  "subgoal": "Read the total ending balance from source t6c1n0.",
+  "reason": "Need the total ending balance to compute percentage.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

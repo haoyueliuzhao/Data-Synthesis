@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:acd2bff7eb2140d8ca952c8857499b75e9c1b52215dc09cc74f4f13165fce1ba",
+  "subgoal": "Compute total value of stock options for 2017 and 2016.",
+  "reason": "Multiply shares by average exercise price for each year.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:030b448672dd8fc263da1646c58dcb256e2fb53036823a7571fead24fa6f5090",
+    "finance_qa_vnext_claim:3b2806b9d0fcc9231e0f71a31769344054a475112e21d521d70c2599b2e1c7e6"
+  ],
+  "parameters": {}
+}

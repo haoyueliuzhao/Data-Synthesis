@@ -1,0 +1,11 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fd9f6ac3a9cfc8182fac2501e669fb370629dc6d59df2a7c4303296958a6d3ac",
+  "subgoal": "Read the total ending balance of unrecognized tax benefits from the table.",
+  "reason": "We need the denominator for the percentage calculation. The numeric catalog has source:t6c1n0 with value 139549, which corresponds to the total ending balance as of November 28, 2008.",
+  "operation": "read",
+  "inputs": [
+    "source:t6c1n0"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:3b0699ea4388a68bf0663904117ac43a3268d478d5a987b9bd20f8fc8541c30d",
+  "subgoal": "Compute the percentage of accrued interest and penalties relative to the total ending balance of unrecognized tax benefits.",
+  "reason": "The question asks for the combined amount of accrued interest and penalties as a percent of the total ending balance. We have the combined amount ($15.3 million) and the total ending balance ($139,549 thousand). We need to divide the combined amount by the total ending balance and multiply by 100 to get the percentage.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:75cae96d0ba0273e00aa67ec0215efc28febaca0015aa647d340b19b14868254",
+    "finance_qa_vnext_claim:ba70bfb59060594874415721b34cd2c97dc77d5d9faa99f0609ea9225adad079"
+  ],
+  "parameters": {}
+}

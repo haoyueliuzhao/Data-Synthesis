@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4192e3ca3d87a74ab7f066060fc88880d9ca33b332ba4d6f77d482e639b9469a",
+  "subgoal": "Read the stock options values for 2017 and 2016 from the table.",
+  "reason": "We need the number of stock options (in millions) for 2017 and 2016 to compute the change in total value using average exercise prices.",
+  "operation": "read",
+  "inputs": ["source:t3c2n0"],
+  "parameters": {}
+}
