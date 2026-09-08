@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:cbeedbb8ee9d9097d76e358b7812081315d2c3a811de6acd39f81411ce9228d1",
+  "subgoal": "Read the ending balance of unrecognized tax benefits as of November 28, 2008 from the table.",
+  "reason": "The question asks for the percent of accrued interest and penalties relative to the total ending balance. The ending balance is in the table's last row, column 1, which is source:t6c1n0 with value 139549 (in thousands). We need to read this value.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

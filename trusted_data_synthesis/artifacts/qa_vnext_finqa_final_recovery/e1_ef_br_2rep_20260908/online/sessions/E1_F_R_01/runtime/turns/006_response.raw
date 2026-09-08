@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:a7245b09ed7ac7a4529d56d2fd34a4df7b00c6866ecc2cbd1bba88faa95906d0",
+  "subgoal": "Multiply the ratio by 100 to convert to percent.",
+  "reason": "The question asks for the percent, so the ratio of accrued interest and penalties to total ending balance must be multiplied by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3c7ad6b0e4415484c6779774f4ecaecbee4c7cfdbf5ae3f70000ec1e9bf122f8",
+    "constant:100"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,34 @@
+{
+  "verified_at_utc": "2026-09-08T03:45:40.832711+00:00",
+  "destination": "https://github.com/haoyueliuzhao/Data-Synthesis.git",
+  "branch": "main",
+  "user_authorized_commit_and_push": true,
+  "frozen_source_commit": "09315838df7240561365235fc4ffc6ae7a384516",
+  "source_snapshot_exact": true,
+  "historical_stages_unchanged": true,
+  "env_file_included": false,
+  "only_new_batch_and_new_report_files_in_scope": true,
+  "artifact_files_before_publication_record": 2927,
+  "artifact_bytes_before_publication_record": 33461680,
+  "prior_full_scan_files": 2936,
+  "credential_scan_hits": {
+    "exact_active_api_key": 0,
+    "provider_key_pattern": 0,
+    "github_token_pattern": 0,
+    "private_key": 0,
+    "authorization_value": 0,
+    "cookie_header_value": 0
+  },
+  "public_dataset": {
+    "local_sha256": "831dbfb2e785dbc227f895ce3f24046433467aec67b09db2bd6ac7692a8a30dc",
+    "local_bytes": 14395143,
+    "same_as_previously_verified_public_dataset": true,
+    "prior_publication_proof": "trusted_data_synthesis/artifacts/qa_vnext_finqa_reference_diagnostic/original_12_ef_v21_20260908/publication/preflight.json",
+    "public_url": "https://raw.githubusercontent.com/haoyueliuzhao/Data-Synthesis/main/trusted_data_synthesis/benchmarks/finqa/frozen/test.json",
+    "network_reverification_this_batch": false
+  },
+  "postbatch_script_sha256_matches_recorded": true,
+  "raw_responses_rewritten": false,
+  "online_source_modified_after_freeze": false,
+  "provider_calls_after_original_eight_sessions": 0
+}

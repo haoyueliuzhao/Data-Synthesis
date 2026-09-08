@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:88e45fa11124714c0d73d8bb2b69a1c6bb50c874ad9007a6df0a6af504146f24",
+  "subgoal": "Read the total ending balance from the table.",
+  "reason": "The question asks for the percentage of accrued interest and penalties relative to the total ending balance as of November 28, 2008. We have the accrued amount ($15.3 million) from source:q2n2. Now we need the total ending balance from source:t6c1n0, which is $139,549 (in thousands, per column label $ 201808).",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

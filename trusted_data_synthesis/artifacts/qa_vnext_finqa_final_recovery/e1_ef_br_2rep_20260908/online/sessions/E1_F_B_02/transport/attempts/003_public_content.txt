@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:1b932b8bbad919ebcabed4bb9c7f3a8642f9b9ab99671dceba55aaebf8b12931",
+  "subgoal": "Read the total ending balance as of November 28, 2008 from the table (source:t6c1n0).",
+  "reason": "Need the denominator for the percentage calculation. The table has 'ending balance as of november 28 2008' as $139549 (in thousands). The numeric catalog entry source:t6c1n0 has token '139549' and value 139549.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:8ba3c4898bfff9bcb3e100dd265df067abe757371e31ee3f159add31ae7220ce",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for the combined amount of accrued interest and penalties as a percent of the total ending balance. We have the ratio as a decimal claim (153/1395490). To express it as a percentage, multiply by 100 using the constant:100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:5ed3417619149f76ad658a6eddfc6403607ecf96d7107ecc2fef56b90202b5ca",
+    "constant:100"
+  ],
+  "parameters": {}
+}

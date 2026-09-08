@@ -1,0 +1,15 @@
+{
+  "kind": "final",
+  "state_id": "finance_qa_vnext_state:3094d4b78ed2ce5a8fd3ac5b4643de31cb8eaa8e77be94786dfeee39fc21c757",
+  "answer_claim": "finance_qa_vnext_claim:a86e2ec4cca0f580788ab270427a559b718bafa64112007f7722eeddd2b3e42b",
+  "result": {
+    "value": "0.010963890819712072462002594070899827300804735254283",
+    "unit": "percent"
+  },
+  "citations": [
+    "source:q2n2",
+    "source:t6c1n0",
+    "finance_qa_vnext_claim:f24f2aaf436a77399a10fb2bc6306e7f7bf5e505ac12f9b5199cc6c1a21927f8",
+    "finance_qa_vnext_claim:a86e2ec4cca0f580788ab270427a559b718bafa64112007f7722eeddd2b3e42b"
+  ]
+}

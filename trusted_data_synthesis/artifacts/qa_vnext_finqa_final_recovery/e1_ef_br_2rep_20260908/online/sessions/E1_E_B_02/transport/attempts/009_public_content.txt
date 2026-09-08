@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4f957abcf54d7b274ede2a4683e5a6709abe54c942238d1aacba56cdd3b93a9e",
+  "subgoal": "Compute percentage of interest and penalties relative to total ending balance.",
+  "reason": "Divide the accepted claim for interest and penalties ($15.3M) by the accepted claim for total ending balance ($139,549K) and multiply by 100 to get percent.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:422ca26eb928f5fe9e5921d306e7210919d222a60a3c8ebaf8a6809a42e28cb9",
+    "constant:100"
+  ],
+  "parameters": {}
+}

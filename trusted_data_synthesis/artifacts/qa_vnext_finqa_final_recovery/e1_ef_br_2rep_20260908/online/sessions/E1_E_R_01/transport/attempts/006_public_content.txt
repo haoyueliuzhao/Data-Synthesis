@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:806d5b7538a88b5cbddecb9bf9cdd4622f2110553b6802bd371c034ca348ae4f",
+  "subgoal": "Convert the ratio to a percentage by multiplying by 100.",
+  "reason": "The question asks for a percent. The accepted claim f24f2aaf is the decimal ratio 153/1395490. Multiplying by constant:100 yields the percentage value.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:f24f2aaf436a77399a10fb2bc6306e7f7bf5e505ac12f9b5199cc6c1a21927f8",
+    "constant:100"
+  ],
+  "parameters": {}
+}

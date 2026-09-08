@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:b52d149633e131d76deeb37f80306c75c3a6b0c539c258b39ad65b43253b5d6d",
+  "subgoal": "Compute percentage: (15.3 / 139.549) * 100 using accepted claims.",
+  "reason": "We have accepted claims for $15.3M accrued interest and penalties (claim 422ca26e) and total ending balance $139.549M (claim 5a0fd7cd). To get percent, divide first by second then multiply by 100. Need to execute division and multiplication to satisfy publication rules.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:422ca26eb928f5fe9e5921d306e7210919d222a60a3c8ebaf8a6809a42e28cb9",
+    "finance_qa_vnext_claim:5a0fd7cd5f797adfd8dd978f8504973ca25ac5163537ab19485144c78d403cc2"
+  ],
+  "parameters": {}
+}

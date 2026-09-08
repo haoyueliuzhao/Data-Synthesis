@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:4904d31d3258595e710854f53f0c2e5213560de1f46e4575cc3842ed9c5fc0e4",
+  "subgoal": "Read the total ending balance of unrecognized tax benefits.",
+  "reason": "Need the denominator for the percentage calculation. The source numeric catalog contains source:t6c1n0 with value 139549, likely the ending balance in thousands. Read it as a raw scalar.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

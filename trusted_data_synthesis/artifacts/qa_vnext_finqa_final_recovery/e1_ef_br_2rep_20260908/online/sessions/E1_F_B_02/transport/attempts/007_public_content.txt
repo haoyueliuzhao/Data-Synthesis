@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:1ea75fca52ad368ed424092ec2bb64a240f078b03fa5e32f280e54cb6b42d478",
+  "subgoal": "Multiply the ratio by 100 to convert to percent.",
+  "reason": "The question asks for the amount as a percent of the total ending balance. We have the ratio 153/1395490 (claim 0f25b6dd). Need to multiply by constant:100 to get percent.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:0f25b6dd4b3b77e47603b260bf2000d3d534060c1bd3c270d450683770e4dd67",
+    "constant:100"
+  ],
+  "parameters": {}
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:368cb07f7511be8dc149d6bcff8160cd082da6d7a66c3caefe5e7931b7600d7e",
+  "subgoal": "Read the total ending balance from the table.",
+  "reason": "The question asks for the percent of the total ending balance. We have the accrued interest and penalties amount (15.3 million) from source:q2n2. The ending balance is in the table at source:t6c1n0 (139549). We already read that, but to ensure a clean derivation we will read it again.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

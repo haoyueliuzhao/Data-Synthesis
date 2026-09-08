@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:9a42ba76750196710f9218da0d93b351e9157cd4dcc56a8b8e01fa8816cd390c",
+  "subgoal": "Calculate the percentage of accrued interest and penalties relative to the ending balance of unrecognized tax benefits.",
+  "reason": "The combined amount of accrued interest and penalties is $15.3 million (source:q2n2), and the total ending balance as of November 28, 2008 is $139,549 thousand (source:t6c1n0). To express as a percentage, divide the interest/penalties by the ending balance and multiply by 100. Note: $139,549 thousand = $139.549 million, so the calculation is (15.3 / 139.549) * 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:fb873dbed9aaa80c742e79e5835337f36d84672034590d11bad64866aafe0707",
+    "constant:100"
+  ],
+  "parameters": {}
+}

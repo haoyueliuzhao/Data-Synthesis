@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:2eddb97442f60e4ff2c9838926b1bbaffaa7846181a32cae3bfdcc76c576e99b",
+  "subgoal": "Compute percentage: (15.3 / 139.549) * 100, where 139.549 is 139549 thousand dollars converted to millions.",
+  "reason": "The total ending balance is $139,549 thousand, which equals $139.549 million. The combined interest and penalties is $15.3 million. The percentage is (15.3 / 139.549) * 100.",
+  "operation": "divide",
+  "inputs": [
+    "source:t6c1n0",
+    "constant:1000"
+  ],
+  "parameters": {}
+}

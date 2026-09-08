@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:170179b9a03274bb089bdc65849d5357c5330f02e9b1d6d791b63c4975d1dc10",
+  "subgoal": "Read the ending balance as of November 28, 2008 from the table.",
+  "reason": "The question asks for the combined accrued interest and penalties as a percentage of the total ending balance as of November 28, 2008. The ending balance is available in the table row 'ending balance as of november 28, 2008' with value $139,549 (in thousands). We need to read that numeric value from the catalog. The source ID for that number is source:t6c1n0.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

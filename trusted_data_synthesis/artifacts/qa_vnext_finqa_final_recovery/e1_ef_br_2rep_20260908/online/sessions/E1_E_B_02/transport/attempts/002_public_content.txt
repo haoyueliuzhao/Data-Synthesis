@@ -1,0 +1,9 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:e638f3394d6c71fd56f0374d0c5be67bf7a0da6eda121d88793d1f2d162d02bc",
+  "subgoal": "Read the total ending balance of unrecognized tax benefits.",
+  "reason": "Need the denominator for the percentage calculation. The total ending balance is given as $139,549 (thousand) in the table, which is 139.549 million.",
+  "operation": "read",
+  "inputs": ["source:t6c1n0"],
+  "parameters": {}
+}

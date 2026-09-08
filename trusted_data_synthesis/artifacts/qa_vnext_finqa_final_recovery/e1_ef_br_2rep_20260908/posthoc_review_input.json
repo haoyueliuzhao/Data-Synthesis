@@ -1,0 +1,147 @@
+{
+  "E1_E_B_01": {
+    "first_error": "第 10 次 Final 将 (15.3 / 139549) × 100 的已接受 Claim 发布为 0.0109638908197… percent，原目标验证拒绝。",
+    "executed_adjustment": "目标拒绝后无准入执行。第 24 次原始 JSON 提议以已接受分母 Claim 除 constant:1000，但 reason 为 1209 字符，超过原 480 字符上限，未形成 Observation。冻结 first_post_trigger_action_proposal=null 仅代表无 schema 解析成功的 Action；原始 Action 形状首次出现在 24。",
+    "acceptance_and_consumption": "4 次观察全被明确接受；拒绝后的合适换算提议未执行，也无新量接受或有效 Final 消费。不能把该原始提议当作已经恢复。",
+    "terminal_point": "第 32 次仍使用同一错误百分比 Claim，final.target_not_established；32 次请求/提交、4 次实际操作，budget_exhausted。",
+    "evidence_submissions": [
+      5,
+      6,
+      8,
+      10,
+      12,
+      24,
+      32
+    ],
+    "interpretation_and_limits": "本条同时有长理由接口失败和旧答案重复。适当换算动作核心已经出现在原文，不能称为完全不懂单位；忽略长度限制后能否完成未测量，也未修复或重跑。"
+  },
+  "E1_E_B_02": {
+    "first_error": "第 14 次首次目标拒绝发布 15.3 / 139549 = 0.000109638908… percent，既未尺度对齐也尚未执行最终百分比乘法。此前第 6 次合法 reject 原直接比值，第 7 次却计算 1000 / 139549，第 10 次只计算 15.3 × 100。",
+    "executed_adjustment": "第 15 次重复原比值，第 17 次实际计算比值 × 100，第 24 次再次重复这一错误百分比。首次新相关执行为 17，但只完成百分比乘法，不是单位尺度恢复。第 20 次原文提议错误百分比 Claim × 1000，reason 3571 字符被 schema 拒绝；第 29 次用 Claim ID 执行 read 被 source.visible_numeric_id 拒绝。",
+    "acceptance_and_consumption": "9 个观察中 8 accept、1 reject。重复计算的新 Claim 被接受，但未形成尺度对齐量，最终仍选择约 0.01096389 的 Claim。合适的第 20 次原始动作核心没有执行、接受或消费。",
+    "terminal_point": "第 32 次最终仍被目标拒绝；32 请求/提交、9 操作，budget_exhausted。",
+    "evidence_submissions": [
+      5,
+      6,
+      7,
+      9,
+      10,
+      12,
+      14,
+      15,
+      17,
+      20,
+      24,
+      29,
+      32
+    ],
+    "interpretation_and_limits": "减少重复目标拒绝次数的一部分来自更多其他操作和较晚首次 Final，不等于质量改善。合法 reject 本身不证明完成语义纠错。"
+  },
+  "E1_E_R_01": {
+    "first_error": "第 9 次 Final 使用未对齐的 (15.3 / 139549) × 100，值 0.0109638908197… percent。",
+    "executed_adjustment": "第 15 次原始 Action 给出已接受分母 Claim / constant:1000，但 reason 2245 字符而失败。冻结指标的首个 schema 可解析 Action 是 18，它直接把 source:t6c1n0 传给 divide，被 accepted_claim_input_only 拒绝。首次执行为 21，仅重复原比值 × 100；25、28 次原始提议又有长理由和 raw source 输入问题。",
+    "acceptance_and_consumption": "5 个实际观察全 accept。没有尺度对齐观察、对应新 Claim 或有效 Final 消费；第 21 次重复错误表达式产生的另一 Claim 仍用于后续失败 Final。",
+    "terminal_point": "第 32 次选择重复计算的错误百分比 Claim，被目标拒绝；32 请求/提交、5 操作，budget_exhausted。实际 R 曝光 16 次。",
+    "evidence_submissions": [
+      9,
+      15,
+      16,
+      18,
+      21,
+      22,
+      25,
+      28,
+      32
+    ],
+    "interpretation_and_limits": "提示已进入真实请求，但适当换算操作核心未越过 schema 层；随后有原始来源/accepted Claim 混淆。不能只归因为没有单位知识，也不能把过长提议视作执行见证。原始 Action 首次 15 与冻结可解析 Action 首次 18 分开报告。"
+  },
+  "E1_E_R_02": {
+    "first_error": "第 9 次 Final 的 (15.3 / 139549) × 100 未成立目标。",
+    "executed_adjustment": "第 11 次理由写出分母 /1000 的方案，但真实输入仍为两个原 Claim，重复直接相除。第 18 次原文提议已接受分子 ×1000，reason 965 字符而未执行；第 20 次 raw source /1000 被 accepted_claim_input_only 拒绝。第 23 次重复原百分比；第 29 次再乘 100 提议因 reason 904 字符失败。",
+    "acceptance_and_consumption": "6 个观察中 5 accept、1 reject；第 24 次合法 reject 第 23 次重复结果。无新语义尺度对齐观察，继续使用旧错误 Claim；合法拒绝不自动构成恢复。",
+    "terminal_point": "第 32 次仍选择初始坏百分比 Claim，目标拒绝；32 请求/提交、6 操作，budget_exhausted。R 曝光 14 次。",
+    "evidence_submissions": [
+      9,
+      11,
+      12,
+      18,
+      20,
+      23,
+      24,
+      25,
+      26,
+      29,
+      32
+    ],
+    "interpretation_and_limits": "可见公开方案与实际输入不一致，也可见适当的原始分子换算提议受原长度限制拦截。两者应区分；没有改变冻结限制或模型原文。"
+  },
+  "E1_F_B_01": {
+    "first_error": "第 9 次使用 (15.3 /139549) ×100 作为百分比，原目标拒绝。",
+    "executed_adjustment": "首次目标拒绝后没有任何实际 Action，也没有可解析原始 JSON Action 形状提议；仅继续 Final，部分改动引用导致 final.citations。",
+    "acceptance_and_consumption": "4 个观察都 accept；始终使用同一个原错误百分比 Claim，没有新量、尺度对齐或有效消费。",
+    "terminal_point": "第 32 次仍 target_not_established；32 请求/提交、4 操作，budget_exhausted。",
+    "evidence_submissions": [
+      1,
+      3,
+      5,
+      7,
+      9,
+      32
+    ],
+    "interpretation_and_limits": "这是原反馈下重复旧结果的有限见证；单条不能推出所有 B 会话都不会尝试调整。"
+  },
+  "E1_F_B_02": {
+    "first_error": "第 10 次使用未尺度对齐的百分比 Claim，值约 0.01096389。第 3 次原读取提议 reason 557 字符过长，随后第 4 次合法读取。",
+    "executed_adjustment": "首次目标拒绝后无实际新操作。第 15 次只将 Final 数值舍入为 0.011，偏离 Claim 超过原 0.00001 容差，故 unexecuted_value_change；这不是把数值改成正确目标。",
+    "acceptance_and_consumption": "4 个观察均明确接受；没有新修正量或真实消费，后续仍复用同一个错误百分比 Claim。",
+    "terminal_point": "第 32 次目标拒绝，32 请求/提交、4 操作，budget_exhausted。",
+    "evidence_submissions": [
+      3,
+      4,
+      6,
+      8,
+      10,
+      15,
+      32
+    ],
+    "interpretation_and_limits": "显示表面发布改动没有改变实际推导。不能把这次舍入拒绝叙述为模型已经给出正确答案却被阻止。"
+  },
+  "E1_F_R_01": {
+    "first_error": "第 9 次首次拒绝未对齐的 (15.3 /139549) ×100。",
+    "executed_adjustment": "第 12 次只是重复比值 ×100。第 26 次首次新相关执行为分母 ×1000 =139549000，理由是转成美元；这可以是某条合法更长路径的中间步骤，不自动称为错误工具计算，但本会话未同步换算分子。第 29 次原文提议已接受分母 /1000，reason 513 字符超过 480，未执行。",
+    "acceptance_and_consumption": "6 个观察中 5 accept、1 reject；26 次的新值在 27 次被明确 reject，未成为 Claim。没有完成兼容尺度的新依赖，更无有效 Final 消费。",
+    "terminal_point": "第 32 次选择重复计算的旧坏表达式 Claim，目标拒绝；32 请求/提交、6 操作，budget_exhausted。R 曝光 17 次。",
+    "evidence_submissions": [
+      9,
+      12,
+      13,
+      15,
+      26,
+      27,
+      29,
+      32
+    ],
+    "interpretation_and_limits": "“新相关操作”只是检查位置，不是尺度对齐。第 26 次没有给出对齐见证；第 29 次合适核心因长度限制未执行。不能推断去掉限制后一定会恢复。"
+  },
+  "E1_F_R_02": {
+    "first_error": "第 9 次把 (15.3 /139549) ×100 发布为 0.01096389… percent，被拒绝。",
+    "executed_adjustment": "第 12 次在坏百分比上再乘 100，实际变为约 1.096389；第 13 次接受，第 14 次 Final 再被目标拒绝，仍比正确目标少十倍。第 22 次重算旧百分比，第 27 次重复读取分母。第 18 次 Action 把 operation 写成 final 且 inputs 为空、reason 631 字符；第 25 次公开原文 JSON 因 reason 中未转义引号而语法不合法。",
+    "acceptance_and_consumption": "8 个观察中 7 accept，最后 1 个 unresolved。新但错误的 1.096389 Claim 确实接受并用于失败 Final，不是有效目标消费；无尺度对齐量。",
+    "terminal_point": "第 32 次再执行坏百分比 ×100，得到约 1.096389 的新 pending Observation，没有第 33 次提交。32 请求/提交、8 操作，budget_exhausted。R 曝光 14 次。",
+    "evidence_submissions": [
+      9,
+      12,
+      13,
+      14,
+      18,
+      22,
+      23,
+      25,
+      27,
+      28,
+      29,
+      32
+    ],
+    "interpretation_and_limits": "实际后续依赖改变不等于正确恢复。最后观察没有后续模型决策，不能算非法 Update 或接受成功。两次百分比放大都没有达到原目标。"
+  }
+}

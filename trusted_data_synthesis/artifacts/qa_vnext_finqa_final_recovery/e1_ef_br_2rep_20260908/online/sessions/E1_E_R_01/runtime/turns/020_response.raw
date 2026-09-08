@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:673633b7399b91e318f64e5116eba25ca533440a6d6e8b6ecc9f74fd5492200c",
+  "subgoal": "Compute percentage: divide accrued interest and penalties by total ending balance, then multiply by 100.",
+  "reason": "The question asks for the percentage of accrued interest and penalties relative to total ending balance. Source q2n2 provides $15.3 million and source t6c1n0 provides $139,549 thousand. Need to divide and multiply by 100.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:f24f2aaf436a77399a10fb2bc6306e7f7bf5e505ac12f9b5199cc6c1a21927f8",
+    "constant:100"
+  ],
+  "parameters": {}
+}

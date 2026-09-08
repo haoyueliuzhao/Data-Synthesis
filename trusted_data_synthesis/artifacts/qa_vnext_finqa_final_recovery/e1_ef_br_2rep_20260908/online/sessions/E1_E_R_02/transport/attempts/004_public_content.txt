@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:fcf7e7aa72e7e37fcc74a3e2a4bf8551de962907974d2feb1d89bef3efd54dff",
+  "subgoal": "Compute percentage: accrued interest and penalties divided by total ending balance, then multiply by 100.",
+  "reason": "We have accepted claims for accrued interest/penalties ($15.3 million) and total ending balance ($139,549 thousand). Need to divide and multiply by 100 to express as percent. Note units: $15.3 million = $15,300 thousand, but numeric values are 15.3 and 139549; ratio then *100 yields percent.",
+  "operation": "divide",
+  "inputs": [
+    "finance_qa_vnext_claim:d69a6a87a8de9cb11564842ac986e57503dd00196899a94789ac17ba7249d25d",
+    "finance_qa_vnext_claim:8022f5afd2bb19530ad6438d83219a1514854cec53de7fe18a128c60bb7e9b53"
+  ],
+  "parameters": {}
+}

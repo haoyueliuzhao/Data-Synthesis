@@ -1,0 +1,12 @@
+{
+  "kind": "action",
+  "state_id": "finance_qa_vnext_state:6f39daecb20f6326bc54d93029c5d29967c3f0f580034d75c570ca92f769503c",
+  "subgoal": "Multiply the ratio by 100 to convert to percent, using the accepted division claim and constant:100.",
+  "reason": "The question asks for a percent. The accepted claim finance_qa_vnext_claim:3c7ad6b0e4415484c6779774f4ecaecbee4c7cfdbf5ae3f70000ec1e9bf122f8 is the ratio of 15.3 to 139549, but it is not multiplied by 100. I will multiply it by constant:100 to get the percentage.",
+  "operation": "multiply",
+  "inputs": [
+    "finance_qa_vnext_claim:3c7ad6b0e4415484c6779774f4ecaecbee4c7cfdbf5ae3f70000ec1e9bf122f8",
+    "constant:100"
+  ],
+  "parameters": {}
+}
