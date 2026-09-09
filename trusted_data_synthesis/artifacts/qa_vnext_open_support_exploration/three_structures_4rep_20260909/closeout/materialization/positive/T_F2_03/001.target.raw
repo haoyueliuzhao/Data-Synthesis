@@ -1,0 +1,9 @@
+{
+  "final": {
+    "answer": 282,
+    "unit": "millions of dollars",
+    "sources": ["source:t4c2n0", "source:t4c3n0"],
+    "message": "Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282).",
+    "result_id": "tool:1"
+  }
+}

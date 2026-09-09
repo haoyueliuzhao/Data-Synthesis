@@ -1,0 +1,14 @@
+{
+  "message": "Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.",
+  "final": {
+    "answer": "14.46%",
+    "value": 14.464285714285714,
+    "unit": "percent",
+    "calculation": "8.1 / 56.0 × 100",
+    "sources": {
+      "leased_total_sqft": "source:t2c3n0",
+      "total_facilities_sqft": "source:t3c3n0"
+    },
+    "result_id": "tool:1"
+  }
+}

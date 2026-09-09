@@ -1,0 +1,10 @@
+{
+  "message": "The net change in asset retirement liability for the year ended September 27, 2003 is $1.7 million, calculated as the ending liability at September 27, 2003 ($7.2 million) minus the beginning liability at September 29, 2002 ($5.5 million).",
+  "final": {
+    "answer": "1.7",
+    "unit": "million dollars",
+    "value": 1.7,
+    "sources": ["source:t0c1n0", "source:t3c1n0"],
+    "result_id": "tool:1"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "message": "2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.",
+  "final": {
+    "answer": "Approximately 11.69% of future minimum rental payments are due in 2018.",
+    "value": 11.6893203883495,
+    "unit": "percent",
+    "sources": ["source:t3c1n0", "source:t7c1n0"],
+    "result_id": "tool:1"
+  }
+}

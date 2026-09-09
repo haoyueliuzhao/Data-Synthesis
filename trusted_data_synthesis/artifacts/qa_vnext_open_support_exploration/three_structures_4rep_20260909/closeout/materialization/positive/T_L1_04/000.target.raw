@@ -1,0 +1,11 @@
+{
+  "message": "Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "134 - 116",
+    "sources": {
+      "134": "source:t8c1n0",
+      "116": "source:t4c1n0"
+    }
+  }
+}

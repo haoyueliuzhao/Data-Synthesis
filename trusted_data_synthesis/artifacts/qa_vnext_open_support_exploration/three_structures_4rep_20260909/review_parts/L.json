@@ -1,0 +1,1108 @@
+{
+  "T_L1_01": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "response_index": 1,
+        "quote": "{\"final\":{\"answer\":\"$18 million increase\",\"value\":18,\"unit\":\"millions\",\"sources\":[\"source:t4c1n0\",\"source:t8c1n0\"],\"calculation\":\"Net change = 2006 ending balance (134) - 2005 ending/2006 beginning balance (116) = 18\"}}"
+      }
+    ],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":{\"answer\":\"$18 million increase\",\"value\":18,\"unit\":\"millions\",\"sources\":[\"source:t4c1n0\",\"source:t8c1n0\"],\"calculation\":\"Net change = 2006 ending balance (134) - 2005 ending/2006 beginning balance (116) = 18\"}}"
+        }
+      ],
+      "explanation": "Final.value remains the original 18. The automatic parser does not canonicalize bare Final.unit=\"millions\"; actual Final.answer=\"$18 million increase\" explicitly supplies dollar-million meaning. The reviewer extracts USD_million from that same Final statement, with no parser change or rewritten response. The Final net-increase direction and all repeated answer quantities agree with the source-grounded scalar; balance or movement inputs appearing inside explanatory arithmetic are not misread as additional answers."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t8c1n0",
+            "role": "closing unpaid restructuring liability",
+            "period": "December 31 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "134"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c1n0",
+            "role": "opening unpaid restructuring liability for 2006",
+            "period": "December 31 2005 / beginning 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "116"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "Final.value remains the original 18. The automatic parser does not canonicalize bare Final.unit=\"millions\"; actual Final.answer=\"$18 million increase\" explicitly supplies dollar-million meaning. The reviewer extracts USD_million from that same Final statement, with no parser change or rewritten response. This Final is consistent with the single preceding executed result; no additional executed support is inferred from its explanatory arithmetic.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"final\":{\"answer\":\"$18 million increase\",\"value\":18,\"unit\":\"millions\",\"sources\":[\"source:t4c1n0\",\"source:t8c1n0\"],\"calculation\":\"Net change = 2006 ending balance (134) - 2005 ending/2006 beginning balance (116) = 18\"}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":{\"answer\":\"$18 million increase\",\"value\":18,\"unit\":\"millions\",\"sources\":[\"source:t4c1n0\",\"source:t8c1n0\"],\"calculation\":\"Net change = 2006 ending balance (134) - 2005 ending/2006 beginning balance (116) = 18\"}}"
+        }
+      ],
+      "explanation": "The actual Final publishes 18 in dollar millions and preserves the target period and direction. It equals the independently verified sole successful tool result 18. No result_id is required here; the reviewer links the Final to the sole same-session successful calculation through its explicit matching relation and quantities."
+    },
+    "published_unit": "USD_million",
+    "published_value": 18,
+    "secondary_answer_values": [
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "$18 million increase"
+        }
+      },
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "2006 ending balance (134) - 2005 ending/2006 beginning balance (116) = 18"
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The selected balance entries share the original table scale of millions (public segment p1, with dollar signs in the monetary table); subtracting them requires no conversion. The calculation preserves the displayed values and the direction closing minus opening. Where response 0 does not repeat the unit word, the unit attribution comes from these referenced original table amounts, not a claimed quotation of an omitted label."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change in unpaid restructuring liabilities during 2006 = ending balance 2006 minus beginning balance 2006. Beginning balance is balance at Dec 31 2005 = 116; ending balance at Dec 31 2006 = 134. Also equals activity: 155 - 141 + 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"variables\":{\"134\":{\"value\":134,\"source\":\"source:t8c1n0\"},\"116\":{\"value\":116,\"source\":\"source:t4c1n0\"}},\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L1_02": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "UNDETERMINED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t8c1n0",
+            "role": "closing unpaid restructuring liability",
+            "period": "December 31 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "134"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c1n0",
+            "role": "opening unpaid restructuring liability for 2006",
+            "period": "December 31 2005 / beginning 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "116"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "executed_calculation_without_Final",
+          "interpretation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support. The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory. The empty response has no parsed event and no nonempty model quote to annotate.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "NOT_ESTABLISHED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "published_unit": null,
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The selected balance entries share the original table scale of millions (public segment p1, with dollar signs in the monetary table); subtracting them requires no conversion. The calculation preserves the displayed values and the direction closing minus opening. Where response 0 does not repeat the unit word, the unit attribution comes from these referenced original table amounts, not a claimed quotation of an omitted label."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Net change during 2006 equals ending balance at Dec 31, 2006 ($134 million) less beginning balance at Dec 31, 2005 / Jan 1, 2006 ($116 million). 134 - 116 = 18 million. This also equals 2006 expensed 155 - cash payments 141 + foreign currency revaluation 4 = 18.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"134 - 116\",\"sources\":{\"134\":\"source:t8c1n0\",\"116\":\"source:t4c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L1_03": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Net increase of $18 million\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t5c1n0\",\n      \"source:t6c1n0\",\n      \"source:t7c1n0\"\n    ],\n    \"message\": \"For 2006, Aon's unpaid restructuring liability activity consisted of expense of $155M, cash payments of $141M, and foreign currency revaluation of $4M. Net change = 155 - 141 + 4 = $18M increase, consistent with the December 31, 2005 balance of $116M rising to $134M.\"\n  }\n}"
+        }
+      ],
+      "explanation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. The Final net-increase direction and all repeated answer quantities agree with the source-grounded scalar; balance or movement inputs appearing inside explanatory arithmetic are not misread as additional answers."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+        }
+      ],
+      "explanation": "The same-call public message identifies the complete signed 2006 activity: expense +155, cash payments -141, and currency revaluation +4. The actual named-variable expression sums these three movements; it does not execute a balance subtraction."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "kind": "source",
+            "source_id": "source:t5c1n0",
+            "role": "restructuring expense increasing the unpaid liability",
+            "period": "during 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "expensed"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+              }
+            ]
+          },
+          "body.left.right": {
+            "kind": "source",
+            "source_id": "source:t6c1n0",
+            "role": "signed cash payments reducing the unpaid liability",
+            "period": "during 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "cash_payments"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t7c1n0",
+            "role": "foreign-currency revaluation increasing the unpaid liability",
+            "period": "during 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "foreign_currency_revaluation"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The same-call public message identifies the complete signed 2006 activity: expense +155, cash payments -141, and currency revaluation +4. The actual named-variable expression sums these three movements; it does not execute a balance subtraction. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. This Final is consistent with the single preceding executed result; no additional executed support is inferred from its explanatory arithmetic.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\n  \"final\": {\n    \"answer\": \"Net increase of $18 million\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t5c1n0\",\n      \"source:t6c1n0\",\n      \"source:t7c1n0\"\n    ],\n    \"message\": \"For 2006, Aon's unpaid restructuring liability activity consisted of expense of $155M, cash payments of $141M, and foreign currency revaluation of $4M. Net change = 155 - 141 + 4 = $18M increase, consistent with the December 31, 2005 balance of $116M rising to $134M.\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation using the three signed 2006 movements. The later Final also describes the 116-to-134 balance change as consistent, but no second calculation is executed, so this prose does not constitute an independent cross-check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Net increase of $18 million\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t5c1n0\",\n      \"source:t6c1n0\",\n      \"source:t7c1n0\"\n    ],\n    \"message\": \"For 2006, Aon's unpaid restructuring liability activity consisted of expense of $155M, cash payments of $141M, and foreign currency revaluation of $4M. Net change = 155 - 141 + 4 = $18M increase, consistent with the December 31, 2005 balance of $116M rising to $134M.\"\n  }\n}"
+        }
+      ],
+      "explanation": "The actual Final publishes 18 in dollar millions and preserves the target period and direction. It equals the independently verified sole successful tool result 18. No result_id is required here; the reviewer links the Final to the sole same-session successful calculation through its explicit matching relation and quantities."
+    },
+    "published_unit": "millions of dollars",
+    "published_value": 18,
+    "secondary_answer_values": [
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "Net increase of $18 million"
+        }
+      },
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "Net change = 155 - 141 + 4 = $18M increase"
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+        }
+      ],
+      "explanation": "The same-call message explicitly calls all three inputs dollar millions. The consumed cash_payments variable is -141, matching the single signed accounting-negative source token; its parenthetic OCR repeat is not counted twice. All movements use the same scale without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"expensed + cash_payments + foreign_currency_revaluation\",\n    \"variables\": {\n      \"expensed\": 155,\n      \"cash_payments\": -141,\n      \"foreign_currency_revaluation\": 4\n    },\n    \"sources\": {\n      \"expensed\": \"source:t5c1n0\",\n      \"cash_payments\": \"source:t6c1n0\",\n      \"foreign_currency_revaluation\": \"source:t7c1n0\"\n    }\n  },\n  \"message\": \"Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million.\"\n}"
+        }
+      ],
+      "explanation": "The tool actually consumes the three named values expensed=155, cash_payments=-141 and foreign_currency_revaluation=4. Their explicit same-call sources point to t5c1, t6c1 and t7c1 in the 2006 roll-forward. Period, role and sign agree with the original source."
+    }
+  },
+  "T_L1_04": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Aon's unpaid restructuring liabilities increased by $18 million during 2006.\",\n    \"value\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 (balance at Dec 31, 2006) - 116 (balance at Dec 31, 2005) = 18\",\n    \"sources\": {\n      \"balance_dec31_2006\": \"source:t8c1n0\",\n      \"balance_dec31_2005\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ],
+      "explanation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. The Final net-increase direction and all repeated answer quantities agree with the source-grounded scalar; balance or movement inputs appearing inside explanatory arithmetic are not misread as additional answers."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ],
+      "explanation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t8c1n0",
+            "role": "closing unpaid restructuring liability",
+            "period": "December 31 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "134"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c1n0",
+            "role": "opening unpaid restructuring liability for 2006",
+            "period": "December 31 2005 / beginning 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "116"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The pre/same-calculation public response identifies the 2006 liability net change as December 31 2006 closing balance minus December 31 2005 closing/beginning-2006 balance. The sole actual tool expression is 134 - 116. The verbal activity relation is not a second executed support route. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. This Final is consistent with the single preceding executed result; no additional executed support is inferred from its explanatory arithmetic.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\n  \"final\": {\n    \"answer\": \"Aon's unpaid restructuring liabilities increased by $18 million during 2006.\",\n    \"value\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 (balance at Dec 31, 2006) - 116 (balance at Dec 31, 2005) = 18\",\n    \"sources\": {\n      \"balance_dec31_2006\": \"source:t8c1n0\",\n      \"balance_dec31_2005\": \"source:t4c1n0\"\n    }\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": \"Aon's unpaid restructuring liabilities increased by $18 million during 2006.\",\n    \"value\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 (balance at Dec 31, 2006) - 116 (balance at Dec 31, 2005) = 18\",\n    \"sources\": {\n      \"balance_dec31_2006\": \"source:t8c1n0\",\n      \"balance_dec31_2005\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ],
+      "explanation": "The actual Final publishes 18 in dollar millions and preserves the target period and direction. It equals the independently verified sole successful tool result 18. No result_id is required here; the reviewer links the Final to the sole same-session successful calculation through its explicit matching relation and quantities."
+    },
+    "published_unit": "$ millions",
+    "published_value": 18,
+    "secondary_answer_values": [
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "Aon's unpaid restructuring liabilities increased by $18 million during 2006."
+        }
+      },
+      {
+        "value": "18",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "134 (balance at Dec 31, 2006) - 116 (balance at Dec 31, 2005) = 18"
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ],
+      "explanation": "The selected balance entries share the original table scale of millions (public segment p1, with dollar signs in the monetary table); subtracting them requires no conversion. The calculation preserves the displayed values and the direction closing minus opening. Where response 0 does not repeat the unit word, the unit attribution comes from these referenced original table amounts, not a claimed quotation of an omitted label."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\n  \"message\": \"Net change during 2006 equals the 2006 activities: expensed in 2006 (+155), cash payments in 2006 (-141), and foreign currency revaluation (+4), which total +18. Alternatively, balance at Dec 31, 2006 (134) less balance at Dec 31, 2005 (116) equals 18.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"134 - 116\",\n    \"sources\": {\n      \"134\": \"source:t8c1n0\",\n      \"116\": \"source:t4c1n0\"\n    }\n  }\n}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L2_01": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "response_index": 1,
+        "quote": "{\"final\":{\"answer\":\"1.7\",\"unit\":\"million\",\"meaning\":\"net change in asset retirement liability for fiscal year ended September 27, 2003\",\"sources\":[\"source:t0c1n0\",\"source:t3c1n0\"],\"calculation\":\"7.2 - 5.5 = 1.7\",\"result_id\":\"tool:1\"}}"
+      }
+    ],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":{\"answer\":\"1.7\",\"unit\":\"million\",\"meaning\":\"net change in asset retirement liability for fiscal year ended September 27, 2003\",\"sources\":[\"source:t0c1n0\",\"source:t3c1n0\"],\"calculation\":\"7.2 - 5.5 = 1.7\",\"result_id\":\"tool:1\"}}"
+        }
+      ],
+      "explanation": "There is no Final.value. The scalar 1.7 is extracted from the actual Final.answer=\"1.7\", not from the earlier message or tool result. Final.unit=\"million\" and Final.meaning identify the same fiscal-2003 asset-retirement-liability quantity as the original in-millions question and dollar-denominated source balances. USD_million is contextual unit interpretation for that actual Final, not a parser alteration or a new numeric/scale claim. The Final net-increase direction and all repeated answer quantities agree with the source-grounded scalar; balance or movement inputs appearing inside explanatory arithmetic are not misread as additional answers."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "ending asset retirement liability",
+            "period": "September 27 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "ending_balance"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t0c1n0",
+            "role": "opening asset retirement liability",
+            "period": "September 29 2002 / beginning fiscal 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "beginning_balance"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "There is no Final.value. The scalar 1.7 is extracted from the actual Final.answer=\"1.7\", not from the earlier message or tool result. Final.unit=\"million\" and Final.meaning identify the same fiscal-2003 asset-retirement-liability quantity as the original in-millions question and dollar-denominated source balances. USD_million is contextual unit interpretation for that actual Final, not a parser alteration or a new numeric/scale claim. This Final is consistent with the single preceding executed result; no additional executed support is inferred from its explanatory arithmetic.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"final\":{\"answer\":\"1.7\",\"unit\":\"million\",\"meaning\":\"net change in asset retirement liability for fiscal year ended September 27, 2003\",\"sources\":[\"source:t0c1n0\",\"source:t3c1n0\"],\"calculation\":\"7.2 - 5.5 = 1.7\",\"result_id\":\"tool:1\"}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":{\"answer\":\"1.7\",\"unit\":\"million\",\"meaning\":\"net change in asset retirement liability for fiscal year ended September 27, 2003\",\"sources\":[\"source:t0c1n0\",\"source:t3c1n0\"],\"calculation\":\"7.2 - 5.5 = 1.7\",\"result_id\":\"tool:1\"}}"
+        }
+      ],
+      "explanation": "The actual Final publishes 1.7 in dollar millions and preserves the target period and direction. It equals the independently verified sole successful tool result 17/10. The explicit Final result_id points to tool:1."
+    },
+    "published_unit": "USD_million",
+    "published_value": "1.7",
+    "secondary_answer_values": [
+      {
+        "value": "1.7",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "7.2 - 5.5 = 1.7"
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call response explicitly uses million/M for the two liability amounts, agreeing with public p3 and the dollar-denominated opening/closing table cells. No scaling or unit conversion is performed; the approximately 2 million adoption-related net-income adjustment is not an extra roll-forward movement."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"Calculating net change in asset retirement liability for fiscal 2003 as ending balance minus beginning balance: $7.2M - $5.5M = $1.7M. This also equals additional obligations recognized ($0.5M) plus accretion recognized ($1.2M).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"variables\":{\"ending_balance\":{\"value\":\"7.2\",\"source\":\"source:t3c1n0\",\"unit\":\"millions\"},\"beginning_balance\":{\"value\":\"5.5\",\"source\":\"source:t0c1n0\",\"unit\":\"millions\"}},\"sources\":{\"ending_balance\":\"source:t3c1n0\",\"beginning_balance\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L2_02": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"message\": \"The net change in asset retirement liability for the year ended September 27, 2003 is $1.7 million, calculated as the ending liability at September 27, 2003 ($7.2 million) minus the beginning liability at September 29, 2002 ($5.5 million).\",\n  \"final\": {\n    \"answer\": \"1.7\",\n    \"unit\": \"million dollars\",\n    \"value\": 1.7,\n    \"sources\": [\"source:t0c1n0\", \"source:t3c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ],
+      "explanation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. The Final net-increase direction and all repeated answer quantities agree with the source-grounded scalar; balance or movement inputs appearing inside explanatory arithmetic are not misread as additional answers."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "ending asset retirement liability",
+            "period": "September 27 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "7.2"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t0c1n0",
+            "role": "opening asset retirement liability",
+            "period": "September 29 2002 / beginning fiscal 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "5.5"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "Primary Final.value and its unit are retained without numerical replacement; other answer-bearing Final fields and direction are checked separately. This Final is consistent with the single preceding executed result; no additional executed support is inferred from its explanatory arithmetic.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\n  \"message\": \"The net change in asset retirement liability for the year ended September 27, 2003 is $1.7 million, calculated as the ending liability at September 27, 2003 ($7.2 million) minus the beginning liability at September 29, 2002 ($5.5 million).\",\n  \"final\": {\n    \"answer\": \"1.7\",\n    \"unit\": \"million dollars\",\n    \"value\": 1.7,\n    \"sources\": [\"source:t0c1n0\", \"source:t3c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"message\": \"The net change in asset retirement liability for the year ended September 27, 2003 is $1.7 million, calculated as the ending liability at September 27, 2003 ($7.2 million) minus the beginning liability at September 29, 2002 ($5.5 million).\",\n  \"final\": {\n    \"answer\": \"1.7\",\n    \"unit\": \"million dollars\",\n    \"value\": 1.7,\n    \"sources\": [\"source:t0c1n0\", \"source:t3c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ],
+      "explanation": "The actual Final publishes 1.7 in dollar millions and preserves the target period and direction. It equals the independently verified sole successful tool result 17/10. The explicit Final result_id points to tool:1."
+    },
+    "published_unit": "million dollars",
+    "published_value": "1.7",
+    "secondary_answer_values": [
+      {
+        "value": "1.7",
+        "unit": "million dollars",
+        "evidence": {
+          "response_index": 1,
+          "quote": "\"answer\": \"1.7\""
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call response explicitly uses million/M for the two liability amounts, agreeing with public p3 and the dollar-denominated opening/closing table cells. No scaling or unit conversion is performed; the approximately 2 million adoption-related net-income adjustment is not an extra roll-forward movement."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles changes in asset retirement liability for fiscal 2003. Net change is ending liability at Sept 27 2003 minus beginning liability at Sept 29 2002: 7.2 - 5.5 = 1.7 million. Alternatively, additional obligations of 0.5 plus accretion of 1.2 also equal 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L2_03": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "UNDETERMINED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "ending asset retirement liability",
+            "period": "September 27 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "7.2"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t0c1n0",
+            "role": "opening asset retirement liability",
+            "period": "September 29 2002 / beginning fiscal 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "5.5"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "executed_calculation_without_Final",
+          "interpretation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful balance-subtraction calculation. The public message lists additional-obligation and accretion amounts alongside the balances, but does not issue a movement-based tool request; listing these amounts is not actual alternative support. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The second response is HTTP 200 / stop with empty public content and no parsed event or nonempty quote. No Final or terminal answer is supplied, so the earlier result is not promoted.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "NOT_ESTABLISHED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "published_unit": null,
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call response explicitly uses million/M for the two liability amounts, agreeing with public p3 and the dollar-denominated opening/closing table cells. No scaling or unit conversion is performed; the approximately 2 million adoption-related net-income adjustment is not an extra roll-forward movement."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The table reconciles the asset retirement liability changes: beginning balance $5.5 million, additional obligations $0.5 million, accretion $1.2 million, ending balance $7.2 million. Net change = ending balance - beginning balance = $7.2 - $5.5 = $1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  },
+  "T_L2_04": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "UNDETERMINED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "ending asset retirement liability",
+            "period": "September 27 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "7.2"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t0c1n0",
+            "role": "opening asset retirement liability",
+            "period": "September 29 2002 / beginning fiscal 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "5.5"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "executed_calculation_without_Final",
+          "interpretation": "The same-call public response identifies fiscal-2003 net liability change as ending minus beginning balance. Its explicitly declared source cells are dated September 27 2003 and September 29 2002 in the original reconciliation table. The actual expression is 7.2 - 5.5; these cells are endpoints of the stated fiscal year, not independent cross-year asset snapshots. No independent alternative tool calculation or substantive method revision occurs in this session.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One successful public calculation only. The model verbally mentions an alternative sufficient relation, but does not execute it as a second calculation or explicitly linked independent check. No read_source, notebook, result reuse, format recovery or substantive method revision is observed. The selected executed support is the two balance cells; movement figures in prose are not added to the execution support. The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory. The empty response has no parsed event and no nonempty model quote to annotate.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "NOT_ESTABLISHED",
+      "evidence": [],
+      "explanation": "The second response projection records HTTP 200 / finish_reason stop but its original public content is empty. No Final or published terminal scalar exists. The successful preceding calculation is retained but is not promoted into an answer or a complete valid trajectory."
+    },
+    "published_unit": null,
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The same-call response explicitly uses million/M for the two liability amounts, agreeing with public p3 and the dollar-denominated opening/closing table cells. No scaling or unit conversion is performed; the approximately 2 million adoption-related net-income adjustment is not an extra roll-forward movement."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "{\"message\":\"The net change in the asset retirement liability for fiscal year ended September 27, 2003 is the ending balance minus the beginning balance from the reconciliation table. Ending balance: $7.2 million (source:t3c1n0); beginning balance: $5.5 million (source:t0c1n0). Net change = 7.2 - 5.5 = 1.7 million. This also equals additional obligations recognized (0.5) plus accretion recognized (1.2) = 1.7 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"7.2 - 5.5\",\"sources\":{\"7.2\":\"source:t3c1n0\",\"5.5\":\"source:t0c1n0\"}}}"
+        }
+      ],
+      "explanation": "The actual AST consumes two numeric literals, not the optional variables metadata. The same-call public roles and explicit source declarations identify closing and opening table cells, and the executed values match those particular cells. Source attribution is a model declaration supported by finite source review, not numeric-only source search or tool-certified provenance."
+    }
+  }
+}

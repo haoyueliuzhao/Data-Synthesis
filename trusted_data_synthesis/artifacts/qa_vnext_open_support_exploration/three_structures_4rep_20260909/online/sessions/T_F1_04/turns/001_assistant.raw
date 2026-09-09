@@ -1,0 +1,10 @@
+{
+  "message": "The average cash flow from 2004 to 2006 is calculated as the mean of the annual cash flow figures shown in the table: $957.4 million (2006), $769.1 million (2005), and $950.4 million (2004), giving $892.3 million.",
+  "final": {
+    "answer": "The average cash flow was $892.3 million.",
+    "value": 892.3,
+    "unit": "USD million",
+    "sources": ["source:t3c1n0", "source:t3c2n0", "source:t3c3n0"],
+    "result_id": "tool:1"
+  }
+}

@@ -1,0 +1,1 @@
+{"message":"Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars.","tool":"calculate","arguments":{"expression":"516 - 234","sources":{"516":"source:t4c2n0","234":"source:t4c3n0"}}}

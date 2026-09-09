@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":1,"exact_value":"18","expression":"134 - 116","financial_meaning_certified":false,"model_supplied_sources":{"116":"source:t4c1n0","134":"source:t8c1n0"},"operation_count":1,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"18"},"status":"ok","tool":"calculate"}

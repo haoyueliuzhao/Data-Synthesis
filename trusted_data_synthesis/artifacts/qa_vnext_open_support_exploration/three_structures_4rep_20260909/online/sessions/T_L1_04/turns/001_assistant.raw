@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "Aon's unpaid restructuring liabilities increased by $18 million during 2006.",
+    "value": 18,
+    "unit": "$ millions",
+    "calculation": "134 (balance at Dec 31, 2006) - 116 (balance at Dec 31, 2005) = 18",
+    "sources": {
+      "balance_dec31_2006": "source:t8c1n0",
+      "balance_dec31_2005": "source:t4c1n0"
+    }
+  }
+}

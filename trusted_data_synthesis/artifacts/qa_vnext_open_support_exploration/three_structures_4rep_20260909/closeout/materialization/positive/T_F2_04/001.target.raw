@@ -1,0 +1,1 @@
+{"message":"The reconciliation table shows free cash flow of $516 million in 2006 and $234 million in 2005. The change is $516 - $234 = $282 million, an increase.","final":{"answer":"Free cash flow increased by $282 million from 2005 to 2006.","value":282,"unit":"million dollars","sources":["source:t4c2n0","source:t4c3n0"],"result_id":"tool:1"}}

@@ -1,0 +1,17 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "expensed + cash_payments + foreign_currency_revaluation",
+    "variables": {
+      "expensed": 155,
+      "cash_payments": -141,
+      "foreign_currency_revaluation": 4
+    },
+    "sources": {
+      "expensed": "source:t5c1n0",
+      "cash_payments": "source:t6c1n0",
+      "foreign_currency_revaluation": "source:t7c1n0"
+    }
+  },
+  "message": "Net change in Aon's unpaid restructuring liabilities during 2006 is the sum of activity for 2006: restructuring expense of $155 million, cash payments of $141 million, and foreign currency revaluation of $4 million. This equals a net increase of $18 million."
+}

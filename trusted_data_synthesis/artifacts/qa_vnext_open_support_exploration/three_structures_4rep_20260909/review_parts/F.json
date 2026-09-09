@@ -1,0 +1,1233 @@
+{
+  "T_F1_01": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "UNDETERMINED",
+      "explanation": "There is no actual Final to assess. The terminal state is unknown_transport_or_condition after the empty public response; absence is not a contradictory numeric answer, and no final-response quote is fabricated.",
+      "evidence": []
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation explicitly chooses the arithmetic mean of the three requested annual company-defined cash-flow figures for 2004, 2005 and 2006. This matches the question and the table's cash-flow row; it does not substitute the separate operating-CFO or percentage-change rows. The actual recorded expression has this mean relationship and the tool returned 8923/10. Mentioning the CFO/property-additions definition is not an executed reconstruction.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow from 2004 to 2006: I will use the reported 'cash flow' values from the reconciliation table (net cash provided by operating activities reduced by additions to properties): 2006 = $957.4M, 2005 = $769.1M, 2004 = $950.4M. The average is their sum divided by 3."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {},
+      "event_annotations": [],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "One public explanation accompanies one actual calculation from reported annual cash-flow values. The subsequent attempted response is empty; no actual Final, recovery, reconstruction, source-reading, notebook action or cross-check was observed. The partial calculation and both attempts' usage remain in the original session. Mapping is intentionally uninstantiated because this session is not joint-valid.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow from 2004 to 2006: I will use the reported 'cash flow' values from the reconciliation table (net cash provided by operating activities reduced by additions to properties): 2006 = $957.4M, 2005 = $769.1M, 2004 = $950.4M. The average is their sum divided by 3."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "NOT_ESTABLISHED",
+      "explanation": "The first calculation is real and equals 892.3, but the second HTTP 200/stop response contains an empty public content string and was not returned as a public event. No Final was submitted. The tool result is not copied into a fictitious publication or used to establish a complete valid trace.",
+      "evidence": []
+    },
+    "published_unit": null,
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "All three selected cash-flow cells are USD million under t0c0. The public message states millions or $M, and division by the dimensionless count of three annual observations preserves USD million. The actual input decimals are the one-decimal disclosed amounts, not the corrupted annual-change percentages or a billion-dollar conversion.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow from 2004 to 2006: I will use the reported 'cash flow' values from the reconciliation table (net cash provided by operating activities reduced by additions to properties): 2006 = $957.4M, 2005 = $769.1M, 2004 = $950.4M. The average is their sum divided by 3."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message assigns 957.4 to 2006, 769.1 to 2005 and 950.4 to 2004, with explicit source-ID annotations to t3c1n0, t3c2n0 and t3c3n0. Table row t3 is the company-defined cash-flow measure; headers establish the periods. Actual inputs are the corresponding three numeric literals, with no result references. Source association is an explicit model declaration; financial role interpretation is this offline review, not calculator source certification.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow from 2004 to 2006: I will use the reported 'cash flow' values from the reconciliation table (net cash provided by operating activities reduced by additions to properties): 2006 = $957.4M, 2005 = $769.1M, 2004 = $950.4M. The average is their sum divided by 3."
+        }
+      ]
+    }
+  },
+  "T_F1_02": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "response_index": 1,
+        "quote": "The average cash flow from 2004 to 2006 was **$892.3 million**"
+      }
+    ],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final answers the requested 2004-2006 arithmetic-average cash flow with 892.3 million, equal to the recorded tool result and frozen source arithmetic. Repeated 892.3 answer displays are consistent at their precision. Annual 957.4/769.1/950.4 figures and year numbers are explanatory operands, not competing average-answer values. No incompatible direction, unit or target interpretation appears.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006 was **$892.3 million**, calculated as (950.4 + 769.1 + 957.4) / 3 using the reported cash-flow figures in the table on page 52.\",\"result_id\":\"tool:1\"}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation explicitly chooses the arithmetic mean of the three requested annual company-defined cash-flow figures for 2004, 2005 and 2006. This matches the question and the table's cash-flow row; it does not substitute the separate operating-CFO or percentage-change rows. The actual recorded expression has this mean relationship and the tool returned 8923/10. Mentioning the CFO/property-additions definition is not an executed reconstruction.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left.left.left": {
+            "kind": "source",
+            "source_id": "source:t3c3n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2004",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "950.4"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+              }
+            ]
+          },
+          "body.left.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c2n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "769.1"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+              }
+            ]
+          },
+          "body.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "957.4"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "constant",
+            "value": "3",
+            "reason": "Dimensionless count of the three requested annual observations (2004, 2005, 2006) for an arithmetic mean; not a financial source quantity.",
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of the arithmetic mean of three disclosed annual company-defined cash-flow figures.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The original Final is free text; its answer is 892.3 million and its displayed arithmetic is the same source-grounded mean used by tool:1. A result_id also appears at the top level of the same raw response, outside the retained Final string; the review does not move it into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"final\":\"The average cash flow from 2004 to 2006 was **$892.3 million**, calculated as (950.4 + 769.1 + 957.4) / 3 using the reported cash-flow figures in the table on page 52.\",\"result_id\":\"tool:1\"}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one complete arithmetic mean over the disclosed company cash-flow row, then published the result. There is no separately executed CFO/property-additions reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006 was **$892.3 million**, calculated as (950.4 + 769.1 + 957.4) / 3 using the reported cash-flow figures in the table on page 52.\",\"result_id\":\"tool:1\"}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The original Final is free text; its answer is 892.3 million and its displayed arithmetic is the same source-grounded mean used by tool:1. A result_id also appears at the top level of the same raw response, outside the retained Final string; the review does not move it into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006 was **$892.3 million**, calculated as (950.4 + 769.1 + 957.4) / 3 using the reported cash-flow figures in the table on page 52.\",\"result_id\":\"tool:1\"}"
+        }
+      ]
+    },
+    "published_unit": "USD_million",
+    "published_value": "892.3",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "All three selected cash-flow cells are USD million under t0c0. The public message states millions or $M, and division by the dimensionless count of three annual observations preserves USD million. The actual input decimals are the one-decimal disclosed amounts, not the corrupted annual-change percentages or a billion-dollar conversion.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message assigns 957.4 to 2006, 769.1 to 2005 and 950.4 to 2004, with explicit source-ID annotations to t3c1n0, t3c2n0 and t3c3n0. Table row t3 is the company-defined cash-flow measure; headers establish the periods. Actual inputs are the corresponding three numeric literals, with no result references. Source association is an explicit model declaration; financial role interpretation is this offline review, not calculator source certification.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions."
+        }
+      ]
+    }
+  },
+  "T_F1_03": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "response_index": 1,
+        "quote": "was $892.3 million."
+      }
+    ],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final answers the requested 2004-2006 arithmetic-average cash flow with 892.3 million, equal to the recorded tool result and frozen source arithmetic. Repeated 892.3 answer displays are consistent at their precision. Annual 957.4/769.1/950.4 figures and year numbers are explanatory operands, not competing average-answer values. No incompatible direction, unit or target interpretation appears.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006, as defined in the table (net cash provided by operating activities reduced by additions to properties), was $892.3 million. Annual values used: 2006 $957.4m, 2005 $769.1m, 2004 $950.4m; average = $892.3m.\"}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation explicitly chooses the arithmetic mean of the three requested annual company-defined cash-flow figures for 2004, 2005 and 2006. This matches the question and the table's cash-flow row; it does not substitute the separate operating-CFO or percentage-change rows. The actual recorded expression has this mean relationship and the tool returned 8923/10. Mentioning the CFO/property-additions definition is not an executed reconstruction.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left.left.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2006 cash flow"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+              }
+            ]
+          },
+          "body.left.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c2n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2005 cash flow"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+              }
+            ]
+          },
+          "body.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c3n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2004",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2004 cash flow"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "constant",
+            "value": "3",
+            "reason": "Dimensionless count of the three requested annual observations (2004, 2005, 2006) for an arithmetic mean; not a financial source quantity.",
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of the arithmetic mean of three disclosed annual company-defined cash-flow figures.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The original Final explicitly gives the average as 892.3 million and repeats the same three annual inputs. There is only one actual calculation, and this full public source/formula continuity establishes the finite link to tool:1 without inventing a result_id.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"final\":\"The average cash flow from 2004 to 2006, as defined in the table (net cash provided by operating activities reduced by additions to properties), was $892.3 million. Annual values used: 2006 $957.4m, 2005 $769.1m, 2004 $950.4m; average = $892.3m.\"}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one complete arithmetic mean over the disclosed company cash-flow row, then published the result. There is no separately executed CFO/property-additions reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006, as defined in the table (net cash provided by operating activities reduced by additions to properties), was $892.3 million. Annual values used: 2006 $957.4m, 2005 $769.1m, 2004 $950.4m; average = $892.3m.\"}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The original Final explicitly gives the average as 892.3 million and repeats the same three annual inputs. There is only one actual calculation, and this full public source/formula continuity establishes the finite link to tool:1 without inventing a result_id.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"final\":\"The average cash flow from 2004 to 2006, as defined in the table (net cash provided by operating activities reduced by additions to properties), was $892.3 million. Annual values used: 2006 $957.4m, 2005 $769.1m, 2004 $950.4m; average = $892.3m.\"}"
+        }
+      ]
+    },
+    "published_unit": "USD_million",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "value": "892.3",
+        "unit": "USD_million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "average = $892.3m."
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "All three selected cash-flow cells are USD million under t0c0. The public message states millions or $M, and division by the dimensionless count of three annual observations preserves USD million. The actual input decimals are the one-decimal disclosed amounts, not the corrupted annual-change percentages or a billion-dollar conversion.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message assigns 957.4 to 2006, 769.1 to 2005 and 950.4 to 2004, with explicit source-ID annotations to t3c1n0, t3c2n0 and t3c3n0. Table row t3 is the company-defined cash-flow measure; headers establish the periods. Actual inputs are the corresponding three numeric literals, with no result references. Source association is an explicit model declaration; financial role interpretation is this offline review, not calculator source certification.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The table defines cash flow for each year, with figures in millions of dollars. To get the average cash flow from 2004 to 2006, I will average the three annual cash flow values: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4."
+        }
+      ]
+    }
+  },
+  "T_F1_04": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final answers the requested 2004-2006 arithmetic-average cash flow with 892.3 million, equal to the recorded tool result and frozen source arithmetic. Repeated 892.3 answer displays are consistent at their precision. Annual 957.4/769.1/950.4 figures and year numbers are explanatory operands, not competing average-answer values. No incompatible direction, unit or target interpretation appears.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"message\": \"The average cash flow from 2004 to 2006 is calculated as the mean of the annual cash flow figures shown in the table: $957.4 million (2006), $769.1 million (2005), and $950.4 million (2004), giving $892.3 million.\",\n  \"final\": {\n    \"answer\": \"The average cash flow was $892.3 million.\",\n    \"value\": 892.3,\n    \"unit\": \"USD million\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation explicitly chooses the arithmetic mean of the three requested annual company-defined cash-flow figures for 2004, 2005 and 2006. This matches the question and the table's cash-flow row; it does not substitute the separate operating-CFO or percentage-change rows. The actual recorded expression has this mean relationship and the tool returned 8923/10. Mentioning the CFO/property-additions definition is not an executed reconstruction.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left.left.left": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "957.4"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+              }
+            ]
+          },
+          "body.left.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c2n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "769.1"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+              }
+            ]
+          },
+          "body.left.right": {
+            "kind": "source",
+            "source_id": "source:t3c3n0",
+            "role": "Reported annual company-defined cash flow",
+            "period": "2004",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "950.4"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "constant",
+            "value": "3",
+            "reason": "Dimensionless count of the three requested annual observations (2004, 2005, 2006) for an arithmetic mean; not a financial source quantity.",
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of the arithmetic mean of three disclosed annual company-defined cash-flow figures.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\n  \"message\": \"The average cash flow from 2004 to 2006 is calculated as the mean of the annual cash flow figures shown in the table: $957.4 million (2006), $769.1 million (2005), and $950.4 million (2004), giving $892.3 million.\",\n  \"final\": {\n    \"answer\": \"The average cash flow was $892.3 million.\",\n    \"value\": 892.3,\n    \"unit\": \"USD million\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one complete arithmetic mean over the disclosed company cash-flow row, then published the result. There is no separately executed CFO/property-additions reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision. Redundant supplied variable entries remain in the raw record but were not actually consumed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\n  \"message\": \"The average cash flow from 2004 to 2006 is calculated as the mean of the annual cash flow figures shown in the table: $957.4 million (2006), $769.1 million (2005), and $950.4 million (2004), giving $892.3 million.\",\n  \"final\": {\n    \"answer\": \"The average cash flow was $892.3 million.\",\n    \"value\": 892.3,\n    \"unit\": \"USD million\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\n  \"message\": \"The average cash flow from 2004 to 2006 is calculated as the mean of the annual cash flow figures shown in the table: $957.4 million (2006), $769.1 million (2005), and $950.4 million (2004), giving $892.3 million.\",\n  \"final\": {\n    \"answer\": \"The average cash flow was $892.3 million.\",\n    \"value\": 892.3,\n    \"unit\": \"USD million\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "published_unit": "USD million",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "value": "892.3",
+        "unit": "USD million",
+        "evidence": {
+          "response_index": 1,
+          "quote": "The average cash flow was $892.3 million."
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "All three selected cash-flow cells are USD million under t0c0. The public message states millions or $M, and division by the dimensionless count of three annual observations preserves USD million. The actual input decimals are the one-decimal disclosed amounts, not the corrupted annual-change percentages or a billion-dollar conversion.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message assigns 957.4 to 2006, 769.1 to 2005 and 950.4 to 2004, with explicit source-ID annotations to t3c1n0, t3c2n0 and t3c3n0. Table row t3 is the company-defined cash-flow measure; headers establish the periods. Actual inputs are the corresponding three numeric literals, with no result references. Source association is an explicit model declaration; financial role interpretation is this offline review, not calculator source certification. The supplied x9574/x7691/x9504 variables are not referenced by the expression: the actual tool's resolved_variables is empty, so they are not counted as consumed named variables.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Average cash flow for 2004-2006 is the mean of the cash flow figures for 2006 ($957.4M), 2005 ($769.1M), and 2004 ($950.4M) from the table row labeled 'cash flow'. I will calculate the average of these three annual amounts."
+        }
+      ]
+    }
+  },
+  "T_F2_01": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final gives a +282-million change from 2005 to 2006. Its prose/answer field and any explicit direction agree with the primary published amount and tool:1. Annual 234/516 amounts and year numbers are explanatory operands, not competing change-answer values; repeated 282 answer displays agree under the existing display rule.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The Free Cash Flow table shows $516 million for 2006 and $234 million for 2005. Change = 516 - 234 = 282 million dollars (an increase of $282 million).\",\"final\":{\"answer\":\"Free cash flow increased from $234 million in 2005 to $516 million in 2006, a change of +$282 million.\",\"value\":282,\"unit\":\"millions of dollars\",\"direction\":\"increase\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation chooses 2006 company-defined free cash flow minus 2005 company-defined free cash flow, matching the signed change requested by the original question. The actual recorded expression uses the two disclosed FCF values and returns 282. The company's source definition includes investing cash use and dividends, but no reconstruction from those components was executed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c2n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "fcf2006",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c3n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "fcf2005",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of 2006 disclosed company-defined FCF minus 2005 disclosed company-defined FCF.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"message\":\"The Free Cash Flow table shows $516 million for 2006 and $234 million for 2005. Change = 516 - 234 = 282 million dollars (an increase of $282 million).\",\"final\":{\"answer\":\"Free cash flow increased from $234 million in 2005 to $516 million in 2006, a change of +$282 million.\",\"value\":282,\"unit\":\"millions of dollars\",\"direction\":\"increase\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one calculation of the difference between disclosed company-defined FCF values, then published the increase. There is no executed CFO/investing/dividend reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The Free Cash Flow table shows $516 million for 2006 and $234 million for 2005. Change = 516 - 234 = 282 million dollars (an increase of $282 million).\",\"final\":{\"answer\":\"Free cash flow increased from $234 million in 2005 to $516 million in 2006, a change of +$282 million.\",\"value\":282,\"unit\":\"millions of dollars\",\"direction\":\"increase\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The Free Cash Flow table shows $516 million for 2006 and $234 million for 2005. Change = 516 - 234 = 282 million dollars (an increase of $282 million).\",\"final\":{\"answer\":\"Free cash flow increased from $234 million in 2005 to $516 million in 2006, a change of +$282 million.\",\"value\":282,\"unit\":\"millions of dollars\",\"direction\":\"increase\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "published_unit": "millions of dollars",
+    "published_value": 282,
+    "secondary_answer_values": [
+      {
+        "value": "282",
+        "unit": "millions of dollars",
+        "evidence": {
+          "response_index": 1,
+          "quote": "a change of +$282 million."
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "The public message identifies both annual FCF inputs as million dollars, consistent with t0c0 and the requested in-millions change. Subtraction preserves USD million and gives a positive increase. No signed investment/dividend outflow is consumed or double-negated; 2007's rounded $3.3 billion CFO is not used.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message and variables fcf2006/fcf2005 assign 516 to 2006 (source:t4c2n0) and 234 to 2005 (source:t4c3n0). The tool actually resolves both names to those exact values; neither references an earlier result. The source-ID annotations are model declarations, while validation of the company-defined FCF row and periods is an offline interpretation; the calculator did not certify their source metadata.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234."
+        }
+      ]
+    }
+  },
+  "T_F2_02": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final gives a +282-million change from 2005 to 2006. Its prose/answer field and any explicit direction agree with the primary published amount and tool:1. Annual 234/516 amounts and year numbers are explanatory operands, not competing change-answer values; repeated 282 answer displays agree under the existing display rule.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"Free cash flow for 2006 was $516 million and for 2005 was $234 million, so the change from 2005 to 2006 was 516 - 234 = 282 million dollars.\",\"final\":{\"answer\":\"282\",\"value\":282,\"unit\":\"million dollars\",\"source\":\"source:t4c2n0, source:t4c3n0\",\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation chooses 2006 company-defined free cash flow minus 2005 company-defined free cash flow, matching the signed change requested by the original question. The actual recorded expression uses the two disclosed FCF values and returns 282. The company's source definition includes investing cash use and dividends, but no reconstruction from those components was executed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c2n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "516"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c3n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "234"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of 2006 disclosed company-defined FCF minus 2005 disclosed company-defined FCF.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"message\":\"Free cash flow for 2006 was $516 million and for 2005 was $234 million, so the change from 2005 to 2006 was 516 - 234 = 282 million dollars.\",\"final\":{\"answer\":\"282\",\"value\":282,\"unit\":\"million dollars\",\"source\":\"source:t4c2n0, source:t4c3n0\",\"result_id\":\"tool:1\"}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one calculation of the difference between disclosed company-defined FCF values, then published the increase. There is no executed CFO/investing/dividend reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"Free cash flow for 2006 was $516 million and for 2005 was $234 million, so the change from 2005 to 2006 was 516 - 234 = 282 million dollars.\",\"final\":{\"answer\":\"282\",\"value\":282,\"unit\":\"million dollars\",\"source\":\"source:t4c2n0, source:t4c3n0\",\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"Free cash flow for 2006 was $516 million and for 2005 was $234 million, so the change from 2005 to 2006 was 516 - 234 = 282 million dollars.\",\"final\":{\"answer\":\"282\",\"value\":282,\"unit\":\"million dollars\",\"source\":\"source:t4c2n0, source:t4c3n0\",\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "published_unit": "million dollars",
+    "published_value": 282,
+    "secondary_answer_values": [
+      {
+        "value": "282",
+        "unit": "million dollars",
+        "evidence": {
+          "response_index": 1,
+          "quote": "\"answer\":\"282\""
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "The public message identifies both annual FCF inputs as million dollars, consistent with t0c0 and the requested in-millions change. Subtraction preserves USD million and gives a positive increase. No signed investment/dividend outflow is consumed or double-negated; 2007's rounded $3.3 billion CFO is not used.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message identifies 516 as 2006 FCF and 234 as 2005 FCF, and the same calculation request explicitly maps these literals to source:t4c2n0 and source:t4c3n0. The actual expression consumes those literals in the correct subtraction order. The source table and year headers corroborate the role and period; no source was selected by value matching alone and no component reconstruction is inferred.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Free cash flow is shown directly in the reconciliation table: 2006 = $516 million and 2005 = $234 million. Change = 516 - 234 = 282 million dollars."
+        }
+      ]
+    }
+  },
+  "T_F2_03": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "response_index": 1,
+        "quote": "\"answer\": 282"
+      }
+    ],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final gives a +282-million change from 2005 to 2006. Its prose/answer field and any explicit direction agree with the primary published amount and tool:1. Annual 234/516 amounts and year numbers are explanatory operands, not competing change-answer values; repeated 282 answer displays agree under the existing display rule.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": 282,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t4c2n0\", \"source:t4c3n0\"],\n    \"message\": \"Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282).\",\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation chooses 2006 company-defined free cash flow minus 2005 company-defined free cash flow, matching the signed change requested by the original question. The actual recorded expression uses the two disclosed FCF values and returns 282. The company's source definition includes investing cash use and dividends, but no reconstruction from those components was executed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c2n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "516"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c3n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "234"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of 2006 disclosed company-defined FCF minus 2005 disclosed company-defined FCF.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\n  \"final\": {\n    \"answer\": 282,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t4c2n0\", \"source:t4c3n0\"],\n    \"message\": \"Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282).\",\n    \"result_id\": \"tool:1\"\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one calculation of the difference between disclosed company-defined FCF values, then published the increase. There is no executed CFO/investing/dividend reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": 282,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t4c2n0\", \"source:t4c3n0\"],\n    \"message\": \"Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282).\",\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\n  \"final\": {\n    \"answer\": 282,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t4c2n0\", \"source:t4c3n0\"],\n    \"message\": \"Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282).\",\n    \"result_id\": \"tool:1\"\n  }\n}"
+        }
+      ]
+    },
+    "published_unit": "millions of dollars",
+    "published_value": 282,
+    "secondary_answer_values": [
+      {
+        "value": "282",
+        "unit": "millions of dollars",
+        "evidence": {
+          "response_index": 1,
+          "quote": "Free cash flow increased by $282 million from 2005 to 2006 (516 - 234 = 282)."
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "The public message identifies both annual FCF inputs as million dollars, consistent with t0c0 and the requested in-millions change. Subtraction preserves USD million and gives a positive increase. No signed investment/dividend outflow is consumed or double-negated; 2007's rounded $3.3 billion CFO is not used.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message identifies 516 as 2006 FCF and 234 as 2005 FCF, and the same calculation request explicitly maps these literals to source:t4c2n0 and source:t4c3n0. The actual expression consumes those literals in the correct subtraction order. The source table and year headers corroborate the role and period; no source was selected by value matching alone and no component reconstruction is inferred.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Change in free cash flow from 2005 to 2006 = 2006 free cash flow ($516 million) minus 2005 free cash flow ($234 million)."
+        }
+      ]
+    }
+  },
+  "T_F2_04": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "status": "PASS",
+      "explanation": "The actual Final gives a +282-million change from 2005 to 2006. Its prose/answer field and any explicit direction agree with the primary published amount and tool:1. Annual 234/516 amounts and year numbers are explanatory operands, not competing change-answer values; repeated 282 answer displays agree under the existing display rule.",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The reconciliation table shows free cash flow of $516 million in 2006 and $234 million in 2005. The change is $516 - $234 = $282 million, an increase.\",\"final\":{\"answer\":\"Free cash flow increased by $282 million from 2005 to 2006.\",\"value\":282,\"unit\":\"million dollars\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "explanation": "The pre/same-call public explanation chooses 2006 company-defined free cash flow minus 2005 company-defined free cash flow, matching the signed change requested by the original question. The actual recorded expression uses the two disclosed FCF values and returns 282. The company's source definition includes investing cash use and dividends, but no reconstruction from those components was executed.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+        }
+      ]
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c2n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2006",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "516"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+              }
+            ]
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t4c3n0",
+            "role": "Reported company-defined free cash flow (after investing cash use and dividends)",
+            "period": "2005",
+            "unit": "USD_million",
+            "scale": "1",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "234"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+              }
+            ]
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "One actual calculation of 2006 disclosed company-defined FCF minus 2005 disclosed company-defined FCF.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "{\"message\":\"The reconciliation table shows free cash flow of $516 million in 2006 and $234 million in 2005. The change is $516 - $234 = $282 million, an increase.\",\"final\":{\"answer\":\"Free cash flow increased by $282 million from 2005 to 2006.\",\"value\":282,\"unit\":\"million dollars\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The model autonomously chose one calculation of the difference between disclosed company-defined FCF values, then published the increase. There is no executed CFO/investing/dividend reconstruction, source read, notebook operation, independent cross-check, interface repair or substantive method revision.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The reconciliation table shows free cash flow of $516 million in 2006 and $234 million in 2005. The change is $516 - $234 = $282 million, an increase.\",\"final\":{\"answer\":\"Free cash flow increased by $282 million from 2005 to 2006.\",\"value\":282,\"unit\":\"million dollars\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "explanation": "The actual Final's result_id is tool:1, its answer amount matches that recorded tool result, and its sources/units refer to the same task quantity. No value is moved from an earlier ordinary message into Final.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+        },
+        {
+          "response_index": 1,
+          "quote": "{\"message\":\"The reconciliation table shows free cash flow of $516 million in 2006 and $234 million in 2005. The change is $516 - $234 = $282 million, an increase.\",\"final\":{\"answer\":\"Free cash flow increased by $282 million from 2005 to 2006.\",\"value\":282,\"unit\":\"million dollars\",\"sources\":[\"source:t4c2n0\",\"source:t4c3n0\"],\"result_id\":\"tool:1\"}}"
+        }
+      ]
+    },
+    "published_unit": "million dollars",
+    "published_value": 282,
+    "secondary_answer_values": [
+      {
+        "value": "282",
+        "unit": "million dollars",
+        "evidence": {
+          "response_index": 1,
+          "quote": "Free cash flow increased by $282 million from 2005 to 2006."
+        }
+      }
+    ],
+    "unit_handling": {
+      "status": "PASS",
+      "explanation": "The public message identifies both annual FCF inputs as million dollars, consistent with t0c0 and the requested in-millions change. Subtraction preserves USD million and gives a positive increase. No signed investment/dividend outflow is consumed or double-negated; 2007's rounded $3.3 billion CFO is not used.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+        }
+      ]
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "explanation": "The public message identifies 516 as 2006 FCF and 234 as 2005 FCF, and the same calculation request explicitly maps these literals to source:t4c2n0 and source:t4c3n0. The actual expression consumes those literals in the correct subtraction order. The source table and year headers corroborate the role and period; no source was selected by value matching alone and no component reconstruction is inferred.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Calculating change in free cash flow from 2005 to 2006 using reported free cash flow values in the table: 2006 free cash flow of $516 million minus 2005 free cash flow of $234 million, both in millions of dollars."
+        }
+      ]
+    }
+  }
+}

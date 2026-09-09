@@ -1,0 +1,12 @@
+{
+  "message": "Average cash flow from 2004 to 2006: I will use the reported 'cash flow' values from the reconciliation table (net cash provided by operating activities reduced by additions to properties): 2006 = $957.4M, 2005 = $769.1M, 2004 = $950.4M. The average is their sum divided by 3.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(957.4 + 769.1 + 950.4) / 3",
+    "sources": {
+      "2006": "source:t3c1n0",
+      "2005": "source:t3c2n0",
+      "2004": "source:t3c3n0"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"message":"Free cash flow is directly shown in the reconciliation table: $516M in 2006 and $234M in 2005. Change = 516 - 234.","tool":"calculate","arguments":{"expression":"fcf2006 - fcf2005","variables":{"fcf2006":{"value":516,"source":"source:t4c2n0"},"fcf2005":{"value":234,"source":"source:t4c3n0"}},"sources":{"fcf2006":"source:t4c2n0","fcf2005":"source:t4c3n0"}}}

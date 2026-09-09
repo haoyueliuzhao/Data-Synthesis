@@ -1,0 +1,23 @@
+{
+  "message": "The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "leased_total / total_facilities * 100",
+    "variables": {
+      "leased_total": {
+        "value": "8.1",
+        "source": "source:t2c3n0",
+        "unit": "million square feet"
+      },
+      "total_facilities": {
+        "value": "56.0",
+        "source": "source:t3c3n0",
+        "unit": "million square feet"
+      }
+    },
+    "sources": {
+      "leased_total": "source:t2c3n0",
+      "total_facilities": "source:t3c3n0"
+    }
+  }
+}

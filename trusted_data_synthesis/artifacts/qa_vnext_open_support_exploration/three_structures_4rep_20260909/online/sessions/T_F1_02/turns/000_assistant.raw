@@ -1,0 +1,1 @@
+{"message":"I will compute the average of the reported cash flow (management measure) for 2004, 2005, and 2006 using the table row labeled 'cash flow': (950.4 + 769.1 + 957.4) / 3. Units are U.S. dollars in millions.","tool":"calculate","arguments":{"expression":"(950.4 + 769.1 + 957.4) / 3","sources":{"950.4":"source:t3c3n0","769.1":"source:t3c2n0","957.4":"source:t3c1n0"}}}

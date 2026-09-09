@@ -1,0 +1,13 @@
+{
+  "final": {
+    "answer": "Net increase of $18 million",
+    "value": 18,
+    "unit": "millions of dollars",
+    "sources": [
+      "source:t5c1n0",
+      "source:t6c1n0",
+      "source:t7c1n0"
+    ],
+    "message": "For 2006, Aon's unpaid restructuring liability activity consisted of expense of $155M, cash payments of $141M, and foreign currency revaluation of $4M. Net change = 155 - 141 + 4 = $18M increase, consistent with the December 31, 2005 balance of $116M rising to $134M."
+  }
+}

@@ -1,0 +1,1271 @@
+{
+  "T_G1_01": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":{\"answer\":\"14.46%\",\"calculation\":\"(8.1 million sq ft leased) / (56.0 million sq ft total facilities) × 100\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"14.46%\",\"calculation\":\"(8.1 million sq ft leased) / (56.0 million sq ft total facilities) × 100\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final concerns the leased share of total facility square footage, with the correct numerator/denominator scope and positive percentage. Any coarse primary display is handled by the unchanged numerical rule, not by changing the interpreted task.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio. The same-call prose states the part/whole ratio, and the actual expression supplies the explicit multiplication by 100. Both source IDs are model declarations for consumed literals, not consumed named variables.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":{\"answer\":\"14.46%\",\"calculation\":\"(8.1 million sq ft leased) / (56.0 million sq ft total facilities) × 100\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "Final.answer explicitly publishes 14.46%; this is within the frozen primary 0.005 percentage-point cap of the actual 405/28 result. The actual Final cites tool:1.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "8.1"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide leased facility floor area",
+            "source_id": "source:t2c3n0",
+            "unit": "million square feet"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "56.0"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide total facility floor area",
+            "source_id": "source:t3c3n0",
+            "unit": "million square feet"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"14.46%\",\"calculation\":\"(8.1 million sq ft leased) / (56.0 million sq ft total facilities) × 100\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The same-call prose states the part/whole ratio, and the actual expression supplies the explicit multiplication by 100. Both source IDs are model declarations for consumed literals, not consumed named variables."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"14.46%\",\"calculation\":\"(8.1 million sq ft leased) / (56.0 million sq ft total facilities) × 100\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final.answer explicitly publishes 14.46%; this is within the frozen primary 0.005 percentage-point cap of the actual 405/28 result. The actual Final cites tool:1.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.46",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both source values share the million-square-feet scale, which cancels in the ratio. The actual same-call expression multiplies by 100 for percentage publication. This semantic input-unit judgment is separate from any raw Final-unit alias acceptance.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives leased facilities total as 8.1 million sq ft and total facilities as 56.0 million sq ft. The leased percentage is therefore 8.1 / 56.0.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\",\"sources\":{\"8.1\":\"source:t2c3n0\",\"56.0\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model source declarations identify the leased-total row and the all-facilities-total row in the total column. The actual consumed values are 8.1 and 56.0 (56 is an exact spelling of 56.0), matching those two table cells. The source's p3 establishes the 2015 snapshot; no model claim of separate temporal reasoning is added.",
+      "status": "PASS"
+    }
+  },
+  "T_G1_02": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final concerns the leased share of total facility square footage, with the correct numerator/denominator scope and positive percentage. Any coarse primary display is handled by the unchanged numerical rule, not by changing the interpreted task.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio. Named variables leased and total were actually resolved and consumed. Their source IDs are explicitly declared in both the variables objects and the sources dictionary. No result_id inside the string Final is invented.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "The actual string Final begins with 14.4642857142857%, retained as the primary answer. Its separately marked approximately 14.5% is a secondary display and is checked at its own display precision, not substituted for the primary.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "leased"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide leased facility floor area",
+            "source_id": "source:t2c3n0",
+            "unit": "million square feet"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "total"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide total facility floor area",
+            "source_id": "source:t3c3n0",
+            "unit": "million square feet"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. Named variables leased and total were actually resolved and consumed. Their source IDs are explicitly declared in both the variables objects and the sources dictionary. No result_id inside the string Final is invented."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual string Final begins with 14.4642857142857%, retained as the primary answer. Its separately marked approximately 14.5% is a secondary display and is checked at its own display precision, not substituted for the primary.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.4642857142857",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":\"14.4642857142857% (approximately 14.5%) of total facilities, measured in square feet, are leased.\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.5"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both source values share the million-square-feet scale, which cancels in the ratio. The actual same-call expression multiplies by 100 for percentage publication. This semantic input-unit judgment is separate from any raw Final-unit alias acceptance.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table provides total leased facilities of 8.1 million square feet (source:t2c3n0) and total facilities of 56.0 million square feet (source:t3c3n0). I will divide leased square feet by total square feet and multiply by 100 to find the percentage.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased / total * 100\",\"variables\":{\"leased\":{\"value\":8.1,\"source\":\"source:t2c3n0\"},\"total\":{\"value\":56.0,\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model source declarations identify the leased-total row and the all-facilities-total row in the total column. The actual consumed values are 8.1 and 56.0 (56 is an exact spelling of 56.0), matching those two table cells. The source's p3 establishes the 2015 snapshot; no model claim of separate temporal reasoning is added.",
+      "status": "PASS"
+    }
+  },
+  "T_G1_03": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.\",\n  \"final\": {\n    \"answer\": \"14.46%\",\n    \"value\": 14.464285714285714,\n    \"unit\": \"percent\",\n    \"calculation\": \"8.1 / 56.0 × 100\",\n    \"sources\": {\n      \"leased_total_sqft\": \"source:t2c3n0\",\n      \"total_facilities_sqft\": \"source:t3c3n0\"\n    },\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final concerns the leased share of total facility square footage, with the correct numerator/denominator scope and positive percentage. Any coarse primary display is handled by the unchanged numerical rule, not by changing the interpreted task.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio. Both named variables, their million-square-feet units, and their source IDs appear in the original calculate request and are actually consumed. The sibling final-turn message is retained but not used to replace Final.value.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\n  \"message\": \"Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.\",\n  \"final\": {\n    \"answer\": \"14.46%\",\n    \"value\": 14.464285714285714,\n    \"unit\": \"percent\",\n    \"calculation\": \"8.1 / 56.0 × 100\",\n    \"sources\": {\n      \"leased_total_sqft\": \"source:t2c3n0\",\n      \"total_facilities_sqft\": \"source:t3c3n0\"\n    },\n    \"result_id\": \"tool:1\"\n  }\n}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "The original Final.value 14.464285714285714 is primary. Final.answer 14.46% is separately checked against the same exact reference at its own displayed precision. The actual Final cites tool:1.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "leased_total"
+            ],
+            "evidence": [
+              {
+                "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide leased facility floor area",
+            "source_id": "source:t2c3n0",
+            "unit": "million square feet"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "total_facilities"
+            ],
+            "evidence": [
+              {
+                "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide total facility floor area",
+            "source_id": "source:t3c3n0",
+            "unit": "million square feet"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.\",\n  \"final\": {\n    \"answer\": \"14.46%\",\n    \"value\": 14.464285714285714,\n    \"unit\": \"percent\",\n    \"calculation\": \"8.1 / 56.0 × 100\",\n    \"sources\": {\n      \"leased_total_sqft\": \"source:t2c3n0\",\n      \"total_facilities_sqft\": \"source:t3c3n0\"\n    },\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. Both named variables, their million-square-feet units, and their source IDs appear in the original calculate request and are actually consumed. The sibling final-turn message is retained but not used to replace Final.value."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.\",\n  \"final\": {\n    \"answer\": \"14.46%\",\n    \"value\": 14.464285714285714,\n    \"unit\": \"percent\",\n    \"calculation\": \"8.1 / 56.0 × 100\",\n    \"sources\": {\n      \"leased_total_sqft\": \"source:t2c3n0\",\n      \"total_facilities_sqft\": \"source:t3c3n0\"\n    },\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The original Final.value 14.464285714285714 is primary. Final.answer 14.46% is separately checked against the same exact reference at its own displayed precision. The actual Final cites tool:1.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.464285714285714",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Leased square feet (8.1 million) divided by total facilities square feet (56.0 million) is 14.46%, with the calculation performed as (8.1 / 56.0) × 100.\",\n  \"final\": {\n    \"answer\": \"14.46%\",\n    \"value\": 14.464285714285714,\n    \"unit\": \"percent\",\n    \"calculation\": \"8.1 / 56.0 × 100\",\n    \"sources\": {\n      \"leased_total_sqft\": \"source:t2c3n0\",\n      \"total_facilities_sqft\": \"source:t3c3n0\"\n    },\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.46"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both source values share the million-square-feet scale, which cancels in the ratio. The actual same-call expression multiplies by 100 for percentage publication. This semantic input-unit judgment is separate from any raw Final-unit alias acceptance.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The table reports leased facilities as 8.1 million square feet and total facilities as 56.0 million square feet, so leased percentage of total square feet is (8.1 / 56.0) × 100.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"leased_total / total_facilities * 100\",\n    \"variables\": {\n      \"leased_total\": {\n        \"value\": \"8.1\",\n        \"source\": \"source:t2c3n0\",\n        \"unit\": \"million square feet\"\n      },\n      \"total_facilities\": {\n        \"value\": \"56.0\",\n        \"source\": \"source:t3c3n0\",\n        \"unit\": \"million square feet\"\n      }\n    },\n    \"sources\": {\n      \"leased_total\": \"source:t2c3n0\",\n      \"total_facilities\": \"source:t3c3n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model source declarations identify the leased-total row and the all-facilities-total row in the total column. The actual consumed values are 8.1 and 56.0 (56 is an exact spelling of 56.0), matching those two table cells. The source's p3 establishes the 2015 snapshot; no model claim of separate temporal reasoning is added.",
+      "status": "PASS"
+    }
+  },
+  "T_G1_04": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"14.5\",\"value\":14.5,\"unit\":\"percent (%)\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"message\":\"Leased facilities total 8.1 million square feet; total facilities are 56.0 million square feet. 8.1/56.0 = 14.464...%, so approximately 14.5% of total facility square footage is leased.\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final concerns the leased share of total facility square footage, with the correct numerator/denominator scope and positive percentage. Any coarse primary display is handled by the unchanged numerical rule, not by changing the interpreted task.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes leased total floor area divided by all-facility total floor area, with multiplication by 100 in the same request. That is the requested global area share, not a count of buildings or a regional ratio. The expression consumes only numeric literals. The variables dictionary contains source-ID strings but resolved_variables is empty, so those entries are not portrayed as numerical consumption. The sources dictionary and same-call formula explicitly associate leased and total with the two source IDs. Final prose 14.464...% is an ellipsis continuation, not an exact replacement primary or a newly completed decimal; it remains visible in the original Final evidence.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":{\"answer\":\"14.5\",\"value\":14.5,\"unit\":\"percent (%)\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"message\":\"Leased facilities total 8.1 million square feet; total facilities are 56.0 million square feet. 8.1/56.0 = 14.464...%, so approximately 14.5% of total facility square footage is leased.\"}}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "The original Final.value is 14.5, not the more precise tool result or the explanatory 14.464...%. Its error from 405/28 exceeds the frozen 0.005 primary cap. The raw unit string percent (%) is also outside the unchanged automatic unit-alias dictionary; it is preserved rather than normalized by a new rule.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "leased"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide leased facility floor area",
+            "source_id": "source:t2c3n0",
+            "unit": "million square feet"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "total"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 26 2015 source-table snapshot; reviewer attribution from original p3",
+            "role": "Worldwide total facility floor area",
+            "source_id": "source:t3c3n0",
+            "unit": "million square feet"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"14.5\",\"value\":14.5,\"unit\":\"percent (%)\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"message\":\"Leased facilities total 8.1 million square feet; total facilities are 56.0 million square feet. 8.1/56.0 = 14.464...%, so approximately 14.5% of total facility square footage is leased.\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The expression consumes only numeric literals. The variables dictionary contains source-ID strings but resolved_variables is empty, so those entries are not portrayed as numerical consumption. The sources dictionary and same-call formula explicitly associate leased and total with the two source IDs. Final prose 14.464...% is an ellipsis continuation, not an exact replacement primary or a newly completed decimal; it remains visible in the original Final evidence."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"14.5\",\"value\":14.5,\"unit\":\"percent (%)\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"message\":\"Leased facilities total 8.1 million square feet; total facilities are 56.0 million square feet. 8.1/56.0 = 14.464...%, so approximately 14.5% of total facility square footage is leased.\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The original Final.value is 14.5, not the more precise tool result or the explanatory 14.464...%. Its error from 405/28 exceeds the frozen 0.005 primary cap. The raw unit string percent (%) is also outside the unchanged automatic unit-alias dictionary; it is preserved rather than normalized by a new rule.",
+      "status": "FAIL"
+    },
+    "published_unit": "percent (%)",
+    "published_value": "14.5",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both source values share the million-square-feet scale, which cancels in the ratio. The actual same-call expression multiplies by 100 for percentage publication. This semantic input-unit judgment is separate from any raw Final-unit alias acceptance.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities that are leased = leased total square feet / total facilities square feet = 8.1 / 56.0 * 100.\", \"tool\":\"calculate\", \"arguments\":{\"expression\":\"8.1/56.0*100\",\"variables\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"},\"sources\":{\"leased\":\"source:t2c3n0\",\"total\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model source declarations identify the leased-total row and the all-facilities-total row in the total column. The actual consumed values are 8.1 and 56.0 (56 is an exact spelling of 56.0), matching those two table cells. The source's p3 establishes the 2015 snapshot; no model claim of separate temporal reasoning is added.",
+      "status": "PASS"
+    }
+  },
+  "T_G2_01": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.\",\n  \"final\": {\n    \"answer\": \"Approximately 11.69% of future minimum rental payments are due in 2018.\",\n    \"value\": 11.6893203883495,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t3c1n0\", \"source:t7c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final reports the percentage due in 2018 within the same future-payment table scope. It does not substitute annual rent expense, change the due year, or describe a gross amount from another source. Coarse primary precision is evaluated separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed. The model explicitly names 2018 payments and total future payments in USD millions, and maps the consumed literals through its original sources dictionary.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\n  \"message\": \"2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.\",\n  \"final\": {\n    \"answer\": \"Approximately 11.69% of future minimum rental payments are due in 2018.\",\n    \"value\": 11.6893203883495,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t3c1n0\", \"source:t7c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "The original Final.value 11.6893203883495 is primary; Final.answer approximately 11.69% is a compatible secondary display. The actual Final cites tool:1. The ellipsis in the sibling message is not promoted to an exact answer.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "301"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Future minimum net rental payments due in 2018",
+            "source_id": "source:t3c1n0",
+            "unit": "USD_million"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2575"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Total future minimum net rental payments",
+            "source_id": "source:t7c1n0",
+            "unit": "USD_million"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.\",\n  \"final\": {\n    \"answer\": \"Approximately 11.69% of future minimum rental payments are due in 2018.\",\n    \"value\": 11.6893203883495,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t3c1n0\", \"source:t7c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The model explicitly names 2018 payments and total future payments in USD millions, and maps the consumed literals through its original sources dictionary."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.\",\n  \"final\": {\n    \"answer\": \"Approximately 11.69% of future minimum rental payments are due in 2018.\",\n    \"value\": 11.6893203883495,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t3c1n0\", \"source:t7c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The original Final.value 11.6893203883495 is primary; Final.answer approximately 11.69% is a compatible secondary display. The actual Final cites tool:1. The ellipsis in the sibling message is not promoted to an exact answer.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "11.6893203883495",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"2018 future minimum rental payment is $301 million; total future minimum rental payments is $2,575 million. Calculation: 301 / 2575 × 100 = 11.689320...%.\",\n  \"final\": {\n    \"answer\": \"Approximately 11.69% of future minimum rental payments are due in 2018.\",\n    \"value\": 11.6893203883495,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:t3c1n0\", \"source:t7c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "11.69"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both actual input amounts are USD millions in the same table. Their common scale cancels, and multiplication by 100 supplies percent rather than an unconverted decimal ratio.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table of future minimum rental payments shows 2018 payments of $301 million and total future minimum rental payments of $2,575 million. The percentage due in 2018 is computed as 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model declarations identify the 2018 row (301) and total row (2575), and actual execution consumes those values. Both are in the December 2015 table; original p25 specifies net of minimum sublease rentals. The unrelated annual rent expense is not used. The net/disclosure-time elaboration is reviewer interpretation of the cited source context, not added model wording.",
+      "status": "PASS"
+    }
+  },
+  "T_G2_02": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final reports the percentage due in 2018 within the same future-payment table scope. It does not substitute annual rent expense, change the due year, or describe a gross amount from another source. Coarse primary precision is evaluated separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed. The two named variables due2018 and total are actually consumed with exact values 301 and 2575. Their original variable objects and sources dictionary explicitly declare source IDs and dollar-million units.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "Final.answer starts with 11.6893203883495%, retained as primary. Its about 11.7%, and the actual Final.calculation results 1204/103% and approximately 11.69%, are all recorded as secondary answer displays and checked against the same reference under the frozen secondary rule. None replaces the primary.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "due2018"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Future minimum net rental payments due in 2018",
+            "source_id": "source:t3c1n0",
+            "unit": "USD_million"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "total"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Total future minimum net rental payments",
+            "source_id": "source:t7c1n0",
+            "unit": "USD_million"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The two named variables due2018 and total are actually consumed with exact values 301 and 2575. Their original variable objects and sources dictionary explicitly declare source IDs and dollar-million units."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final.answer starts with 11.6893203883495%, retained as primary. Its about 11.7%, and the actual Final.calculation results 1204/103% and approximately 11.69%, are all recorded as secondary answer displays and checked against the same reference under the frozen secondary rule. None replaces the primary.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "11.6893203883495",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "11.7"
+      },
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "1204/103"
+      },
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":\"11.6893203883495% (about 11.7%)\",\"calculation\":\"301 / 2575 × 100 = 1204/103% ≈ 11.69%\",\"unit\":\"percent\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "11.69"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both actual input amounts are USD millions in the same table. Their common scale cancels, and multiplication by 100 supplies percent rather than an unconverted decimal ratio.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table gives future minimum rental payments of $2,575 million in total and $301 million due in 2018. The percentage due in 2018 is 301 / 2575 × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(due2018 / total) * 100\",\"variables\":{\"due2018\":{\"value\":301,\"source\":\"source:t3c1n0\",\"unit\":\"$ millions\"},\"total\":{\"value\":2575,\"source\":\"source:t7c1n0\",\"unit\":\"$ millions\"}},\"sources\":{\"due2018\":\"source:t3c1n0\",\"total\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model declarations identify the 2018 row (301) and total row (2575), and actual execution consumes those values. Both are in the December 2015 table; original p25 specifies net of minimum sublease rentals. The unrelated annual rent expense is not used. The net/disclosure-time elaboration is reviewer interpretation of the cited source context, not added model wording.",
+      "status": "PASS"
+    }
+  },
+  "T_G2_03": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":{\"answer\":\"Approximately 11.69% of future minimum rental payments are due in 2018.\",\"calculation\":\"301 / 2575 × 100 = 11.69%\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"],\"result_id\":\"tool:1\"}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"Approximately 11.69% of future minimum rental payments are due in 2018.\",\"calculation\":\"301 / 2575 × 100 = 11.69%\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final reports the percentage due in 2018 within the same future-payment table scope. It does not substitute annual rent expense, change the due year, or describe a gross amount from another source. Coarse primary precision is evaluated separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed. The original same-call message names the 2018 and total table rows and says to convert to percentage; arguments.sources supplies the exact source IDs for both consumed literals.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":{\"answer\":\"Approximately 11.69% of future minimum rental payments are due in 2018.\",\"calculation\":\"301 / 2575 × 100 = 11.69%\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"],\"result_id\":\"tool:1\"}}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "Final.answer explicitly publishes approximately 11.69%; Final.calculation repeats the same result. The primary is within the frozen 0.005 cap of 1204/103 and the actual Final cites tool:1.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "301"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Future minimum net rental payments due in 2018",
+            "source_id": "source:t3c1n0",
+            "unit": "USD_million"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2575"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Total future minimum net rental payments",
+            "source_id": "source:t7c1n0",
+            "unit": "USD_million"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"Approximately 11.69% of future minimum rental payments are due in 2018.\",\"calculation\":\"301 / 2575 × 100 = 11.69%\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The original same-call message names the 2018 and total table rows and says to convert to percentage; arguments.sources supplies the exact source IDs for both consumed literals."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"Approximately 11.69% of future minimum rental payments are due in 2018.\",\"calculation\":\"301 / 2575 × 100 = 11.69%\",\"sources\":[\"source:t3c1n0\",\"source:t7c1n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final.answer explicitly publishes approximately 11.69%; Final.calculation repeats the same result. The primary is within the frozen 0.005 cap of 1204/103 and the actual Final cites tool:1.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "11.69",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both actual input amounts are USD millions in the same table. Their common scale cancels, and multiplication by 100 supplies percent rather than an unconverted decimal ratio.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate 2018 minimum rental payment ($301M) as a share of total future minimum rental payments ($2575M), then convert to percentage. Source: table row for 2018 (t3c1n0) and total row (t7c1n0).\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model declarations identify the 2018 row (301) and total row (2575), and actual execution consumes those values. Both are in the December 2015 table; original p25 specifies net of minimum sublease rentals. The unrelated annual rent expense is not used. The net/disclosure-time elaboration is reviewer interpretation of the cited source context, not added model wording.",
+      "status": "PASS"
+    }
+  },
+  "T_G2_04": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":\"11.7% of future minimum rental payments are due in 2018, based on the table showing $301 million due in 2018 out of $2,575 million total future minimum rental payments ($301 / $2,575).\",\"result_id\":\"tool:1\"}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"11.7% of future minimum rental payments are due in 2018, based on the table showing $301 million due in 2018 out of $2,575 million total future minimum rental payments ($301 / $2,575).\",\"result_id\":\"tool:1\"}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final reports the percentage due in 2018 within the same future-payment table scope. It does not substitute annual rent expense, change the due year, or describe a gross amount from another source. Coarse primary precision is evaluated separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed.",
+      "status": "PASS"
+    },
+    "mapping": {
+      "cross_checks": [],
+      "event_annotations": [
+        {
+          "evidence": [
+            {
+              "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+              "response_index": 0
+            }
+          ],
+          "interpretation": "The model proposes 2018-due minimum rental payments divided by total future minimum rental payments, multiplied by 100. This matches the requested maturity share. No time-bucket reconstruction or alternate-route checking was executed. The input pair and conversion to percentage are explicit in the calculate message and sources dictionary. The Final's 301 and 2575 are operands, not alternate answer publications; they are not incorrectly included as secondary answers.",
+          "response_index": 0,
+          "role": "answer_calculation"
+        },
+        {
+          "evidence": [
+            {
+              "quote": "{\"final\":\"11.7% of future minimum rental payments are due in 2018, based on the table showing $301 million due in 2018 out of $2,575 million total future minimum rental payments ($301 / $2,575).\",\"result_id\":\"tool:1\"}",
+              "response_index": 1
+            }
+          ],
+          "interpretation": "The actual string Final publishes only 11.7% as its answer. The error from 1204/103 exceeds the frozen 0.005 primary cap. The exact tool result is not inserted into Final. The top-level sibling result_id is not represented as a result_id field inside the original string Final.",
+          "response_index": 1,
+          "role": "Final"
+        }
+      ],
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "301"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Future minimum net rental payments due in 2018",
+            "source_id": "source:t3c1n0",
+            "unit": "USD_million"
+          },
+          "body.left.right": {
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "sources",
+              "2575"
+            ],
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "source",
+            "period": "December 2015 disclosure; numerator maturity 2018 and denominator all listed future maturities",
+            "role": "Total future minimum net rental payments",
+            "source_id": "source:t7c1n0",
+            "unit": "USD_million"
+          },
+          "body.right": {
+            "evidence": [
+              {
+                "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+                "response_index": 0
+              }
+            ],
+            "kind": "constant",
+            "reason": "Dimensionless ratio-to-percent conversion explicitly present in the original calculation request.",
+            "value": "100"
+          }
+        }
+      },
+      "revisions": []
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":\"11.7% of future minimum rental payments are due in 2018, based on the table showing $301 million due in 2018 out of $2,575 million total future minimum rental payments ($301 / $2,575).\",\"result_id\":\"tool:1\"}",
+          "response_index": 1
+        }
+      ],
+      "text": "One successful calculate request followed by the first terminal Final. The observed method uses the two disclosed total-column/total-row inputs. No read_source, notebook, actual result reuse, interface recovery, substantive revision, or independent cross-check is present. The input pair and conversion to percentage are explicit in the calculate message and sources dictionary. The Final's 301 and 2575 are operands, not alternate answer publications; they are not incorrectly included as secondary answers."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"11.7% of future minimum rental payments are due in 2018, based on the table showing $301 million due in 2018 out of $2,575 million total future minimum rental payments ($301 / $2,575).\",\"result_id\":\"tool:1\"}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual string Final publishes only 11.7% as its answer. The error from 1204/103 exceeds the frozen 0.005 primary cap. The exact tool result is not inserted into Final. The top-level sibling result_id is not represented as a result_id field inside the original string Final.",
+      "status": "FAIL"
+    },
+    "published_unit": "percent",
+    "published_value": "11.7",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both actual input amounts are USD millions in the same table. Their common scale cancels, and multiplication by 100 supplies percent rather than an unconverted decimal ratio.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of future minimum rental payments due in 2018 = (amount due in 2018 / total future minimum rental payments) x 100. Amounts from the future minimum rental payments table: 2018 = $301 million, total = $2575 million.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"301/2575*100\",\"sources\":{\"301\":\"source:t3c1n0\",\"2575\":\"source:t7c1n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The original model declarations identify the 2018 row (301) and total row (2575), and actual execution consumes those values. Both are in the December 2015 table; original p25 specifies net of minimum sublease rentals. The unrelated annual rent expense is not used. The net/disclosure-time elaboration is reviewer interpretation of the cited source context, not added model wording.",
+      "status": "PASS"
+    }
+  }
+}
