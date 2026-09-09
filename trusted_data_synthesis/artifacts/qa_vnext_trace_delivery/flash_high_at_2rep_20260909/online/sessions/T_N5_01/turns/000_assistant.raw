@@ -1,0 +1,17 @@
+{
+  "message": "The net change in unpaid restructuring liabilities during 2006 equals the December 31, 2006 balance minus the December 31, 2005 balance. From the table: balance at Dec 31, 2006 is $134 million, and balance at Dec 31, 2005 is $116 million. Difference = +$18 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "ending_2006 - ending_2005",
+    "variables": {
+      "ending_2006": {
+        "value": 134,
+        "source": "source:t8c1n0"
+      },
+      "ending_2005": {
+        "value": 116,
+        "source": "source:t4c1n0"
+      }
+    }
+  }
+}

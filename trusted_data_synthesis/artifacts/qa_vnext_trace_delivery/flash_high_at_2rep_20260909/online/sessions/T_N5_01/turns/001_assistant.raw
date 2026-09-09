@@ -1,0 +1,10 @@
+{
+  "final": {
+    "message": "Net change during 2006 = Balance at Dec 31, 2006 ($134 million) - Balance at Dec 31, 2005 ($116 million) = $18 million increase.",
+    "answer": "$18 million increase",
+    "value": 18,
+    "unit": "millions of dollars",
+    "source": ["source:t8c1n0", "source:t4c1n0"],
+    "result_id": "tool:1"
+  }
+}

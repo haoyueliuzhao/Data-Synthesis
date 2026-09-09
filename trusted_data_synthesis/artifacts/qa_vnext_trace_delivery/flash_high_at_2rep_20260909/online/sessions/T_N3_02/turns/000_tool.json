@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":1,"exact_value":"347/10","expression":"25.0+9.7","financial_meaning_certified":false,"model_supplied_sources":{"25.0":"source:q16n3","9.7":"source:q16n5"},"operation_count":1,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"34.7"},"status":"ok","tool":"calculate"}

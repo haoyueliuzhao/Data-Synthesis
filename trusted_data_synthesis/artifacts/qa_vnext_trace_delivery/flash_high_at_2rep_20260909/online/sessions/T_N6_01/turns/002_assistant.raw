@@ -1,0 +1,13 @@
+{
+  "message": "The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).",
+  "final": {
+    "answer": 58665,
+    "unit": "millions of dollars",
+    "sources": [
+      "source:t1c2n0",
+      "source:t2c2n0",
+      "source:t1c3n0",
+      "source:t2c3n0"
+    ]
+  }
+}

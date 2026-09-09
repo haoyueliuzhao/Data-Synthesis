@@ -1,0 +1,11 @@
+{
+  "message": "Taking the segregated cash amounts ($25.0B for 2010 and $24.0B for 2009) together with the fair value of segregated securities ($9.7B for 2010 and $10.2B for 2009), I will compute each year's total fair value.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "25.0+9.7",
+    "sources": {
+      "25.0": "source:q16n3",
+      "9.7": "source:q16n5"
+    }
+  }
+}

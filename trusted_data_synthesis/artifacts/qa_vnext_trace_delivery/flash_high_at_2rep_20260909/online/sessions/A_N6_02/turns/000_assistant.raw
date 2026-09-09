@@ -1,0 +1,13 @@
+{
+  "message": "Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.",
+  "final": {
+    "answer": 58665,
+    "unit": "millions of dollars",
+    "sources": [
+      "source:t1c2n0",
+      "source:t2c2n0",
+      "source:t1c3n0",
+      "source:t2c3n0"
+    ]
+  }
+}

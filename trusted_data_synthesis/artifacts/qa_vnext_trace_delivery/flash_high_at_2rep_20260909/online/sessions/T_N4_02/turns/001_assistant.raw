@@ -1,0 +1,10 @@
+{
+  "message": "Using the table's 'cash flow' row (non-GAAP cash flow = operating cash flow minus property additions): (957.4 + 769.1 + 950.4) / 3 = 892.3.",
+  "final": {
+    "answer": "$892.3 million",
+    "value": 892.3,
+    "unit": "millions of dollars",
+    "sources": ["source:t3c1n0", "source:t3c2n0", "source:t3c3n0"],
+    "result_id": "tool:1"
+  }
+}

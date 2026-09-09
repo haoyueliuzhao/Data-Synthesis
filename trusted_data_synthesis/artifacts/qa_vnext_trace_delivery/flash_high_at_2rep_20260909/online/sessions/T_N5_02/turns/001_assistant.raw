@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": 18,
+    "unit": "$ millions",
+    "calculation": "134 - 116 = 18",
+    "sources": [
+      "source:t8c1n0",
+      "source:t4c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

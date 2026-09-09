@@ -1,0 +1,1928 @@
+{
+  "R001": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Net change during 2006 = Balance at Dec 31, 2006 ($134 million) - Balance at Dec 31, 2005 ($116 million) = $18 million increase.\",\n    \"answer\": \"$18 million increase\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"source\": [\"source:t8c1n0\", \"source:t4c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The net change in unpaid restructuring liabilities during 2006 equals the December 31, 2006 balance minus the December 31, 2005 balance. From the table: balance at Dec 31, 2006 is $134 million, and balance at Dec 31, 2005 is $116 million. Difference = +$18 million.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"ending_2006 - ending_2005\",\n    \"variables\": {\n      \"ending_2006\": {\n        \"value\": 134,\n        \"source\": \"source:t8c1n0\"\n      },\n      \"ending_2005\": {\n        \"value\": 116,\n        \"source\": \"source:t4c1n0\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Closing 2006 restructuring liability minus closing 2005/opening 2006 liability is a valid pre-registered alternative to summing the 2006 roll-forward movements.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The net change in unpaid restructuring liabilities during 2006 equals the December 31, 2006 balance minus the December 31, 2005 balance. From the table: balance at Dec 31, 2006 is $134 million, and balance at Dec 31, 2005 is $116 million. Difference = +$18 million.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"ending_2006 - ending_2005\",\n    \"variables\": {\n      \"ending_2006\": {\n        \"value\": 134,\n        \"source\": \"source:t8c1n0\"\n      },\n      \"ending_2005\": {\n        \"value\": 116,\n        \"source\": \"source:t4c1n0\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Net change during 2006 = Balance at Dec 31, 2006 ($134 million) - Balance at Dec 31, 2005 ($116 million) = $18 million increase.\",\n    \"answer\": \"$18 million increase\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"source\": [\"source:t8c1n0\", \"source:t4c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One source-bound balance-difference calculation, then Final referencing tool:1. A shorter valid route was autonomously chosen; no multi-step plan is required."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Net change during 2006 = Balance at Dec 31, 2006 ($134 million) - Balance at Dec 31, 2005 ($116 million) = $18 million increase.\",\n    \"answer\": \"$18 million increase\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"source\": [\"source:t8c1n0\", \"source:t4c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": 18,
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Net change during 2006 = Balance at Dec 31, 2006 ($134 million) - Balance at Dec 31, 2005 ($116 million) = $18 million increase.\",\n    \"answer\": \"$18 million increase\",\n    \"value\": 18,\n    \"unit\": \"millions of dollars\",\n    \"source\": [\"source:t8c1n0\", \"source:t4c1n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "millions of dollars",
+        "value": "18"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The net change in unpaid restructuring liabilities during 2006 equals the December 31, 2006 balance minus the December 31, 2005 balance. From the table: balance at Dec 31, 2006 is $134 million, and balance at Dec 31, 2005 is $116 million. Difference = +$18 million.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"ending_2006 - ending_2005\",\n    \"variables\": {\n      \"ending_2006\": {\n        \"value\": 134,\n        \"source\": \"source:t8c1n0\"\n      },\n      \"ending_2005\": {\n        \"value\": 116,\n        \"source\": \"source:t4c1n0\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The public pre-call message explicitly states both balances in million dollars, giving a positive 18 million change.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The net change in unpaid restructuring liabilities during 2006 equals the December 31, 2006 balance minus the December 31, 2005 balance. From the table: balance at Dec 31, 2006 is $134 million, and balance at Dec 31, 2005 is $116 million. Difference = +$18 million.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"ending_2006 - ending_2005\",\n    \"variables\": {\n      \"ending_2006\": {\n        \"value\": 134,\n        \"source\": \"source:t8c1n0\"\n      },\n      \"ending_2005\": {\n        \"value\": 116,\n        \"source\": \"source:t4c1n0\"\n      }\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation identifies 134 at Dec 31, 2006 and 116 at Dec 31, 2005; actually consumed variables bind t8c1n0 and t4c1n0 correctly. This is not the unrelated OCR opening row.",
+      "status": "PASS"
+    }
+  },
+  "R002": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":{\"answer\":\"$58,665 million\",\"unit\":\"millions of dollars\",\"calculation\":\"(2008 total trading assets: 384,102 + 121,417 = 505,519) minus (2007 total trading assets: 381,415 + 65,439 = 446,854) = 58,665\",\"result_id\":\"tool:1\"}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"$58,665 million\",\"unit\":\"millions of dollars\",\"calculation\":\"(2008 total trading assets: 384,102 + 121,417 = 505,519) minus (2007 total trading assets: 381,415 + 65,439 = 446,854) = 58,665\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total trading assets for each year are the sum of 'trading assets – debt and equity instruments' and 'trading assets – derivative receivables'. For the increase from 2007 to 2008: (2008 debt/equity + 2008 derivative receivables) − (2007 debt/equity + 2007 derivative receivables). Amounts are in millions of dollars.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(384102+121417)-(381415+65439)\",\"sources\":{\"384102\":\"source:t1c2n0\",\"121417\":\"source:t2c2n0\",\"381415\":\"source:t1c3n0\",\"65439\":\"source:t2c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Sum the two trading-asset categories for 2008 and subtract the same two-category sum for 2007; this matches the requested increase.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total trading assets for each year are the sum of 'trading assets – debt and equity instruments' and 'trading assets – derivative receivables'. For the increase from 2007 to 2008: (2008 debt/equity + 2008 derivative receivables) − (2007 debt/equity + 2007 derivative receivables). Amounts are in millions of dollars.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(384102+121417)-(381415+65439)\",\"sources\":{\"384102\":\"source:t1c2n0\",\"121417\":\"source:t2c2n0\",\"381415\":\"source:t1c3n0\",\"65439\":\"source:t2c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":{\"answer\":\"$58,665 million\",\"unit\":\"millions of dollars\",\"calculation\":\"(2008 total trading assets: 384,102 + 121,417 = 505,519) minus (2007 total trading assets: 381,415 + 65,439 = 446,854) = 58,665\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete literal expression, then Final. The missing value field is extracted from the actual Final answer '$58,665 million', not filled from the reference."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":\"$58,665 million\",\"unit\":\"millions of dollars\",\"calculation\":\"(2008 total trading assets: 384,102 + 121,417 = 505,519) minus (2007 total trading assets: 381,415 + 65,439 = 446,854) = 58,665\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "58,665",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":\"$58,665 million\",\"unit\":\"millions of dollars\",\"calculation\":\"(2008 total trading assets: 384,102 + 121,417 = 505,519) minus (2007 total trading assets: 381,415 + 65,439 = 446,854) = 58,665\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "millions of dollars",
+        "value": "58,665"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total trading assets for each year are the sum of 'trading assets – debt and equity instruments' and 'trading assets – derivative receivables'. For the increase from 2007 to 2008: (2008 debt/equity + 2008 derivative receivables) − (2007 debt/equity + 2007 derivative receivables). Amounts are in millions of dollars.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(384102+121417)-(381415+65439)\",\"sources\":{\"384102\":\"source:t1c2n0\",\"121417\":\"source:t2c2n0\",\"381415\":\"source:t1c3n0\",\"65439\":\"source:t2c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation explicitly states million dollars. Both annual sums use the same scale and the later-minus-earlier difference is positive.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total trading assets for each year are the sum of 'trading assets – debt and equity instruments' and 'trading assets – derivative receivables'. For the increase from 2007 to 2008: (2008 debt/equity + 2008 derivative receivables) − (2007 debt/equity + 2007 derivative receivables). Amounts are in millions of dollars.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(384102+121417)-(381415+65439)\",\"sources\":{\"384102\":\"source:t1c2n0\",\"121417\":\"source:t2c2n0\",\"381415\":\"source:t1c3n0\",\"65439\":\"source:t2c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message identifies the two asset categories and annual pairing. Literal amounts and the source metadata match t1c2/t2c2 for 2008 and t1c3/t2c3 for 2007; no liabilities or 2009 values were substituted. Metadata attached to literal arithmetic is not a consumed named-variable binding.",
+      "status": "PASS"
+    }
+  },
+  "R003": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\n  \"final\": {\n    \"answer\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 - 116 = 18\",\n    \"sources\": [\n      \"source:t8c1n0\",\n      \"source:t4c1n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 - 116 = 18\",\n    \"sources\": [\n      \"source:t8c1n0\",\n      \"source:t4c1n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Net change in unpaid restructuring liabilities during 2006 = balance at Dec 31, 2006 (134) minus balance at Dec 31, 2005 / opening balance for 2006 (116). Source rows: t8c1 = balance at December 31, 2006; t4c1 = balance at December 31, 2005.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"closing_2006 - opening_2006\",\n    \"variables\": {\n      \"closing_2006\": {\"value\": 134, \"source\": \"source:t8c1n0\", \"unit\": \"$ millions\"},\n      \"opening_2006\": {\"value\": 116, \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"closing_2006\": \"source:t8c1n0\",\n      \"opening_2006\": \"source:t4c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Closing 2006 minus its opening balance is a valid source-grounded net-change relation, equivalent to the registered roll-forward sum.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Net change in unpaid restructuring liabilities during 2006 = balance at Dec 31, 2006 (134) minus balance at Dec 31, 2005 / opening balance for 2006 (116). Source rows: t8c1 = balance at December 31, 2006; t4c1 = balance at December 31, 2005.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"closing_2006 - opening_2006\",\n    \"variables\": {\n      \"closing_2006\": {\"value\": 134, \"source\": \"source:t8c1n0\", \"unit\": \"$ millions\"},\n      \"opening_2006\": {\"value\": 116, \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"closing_2006\": \"source:t8c1n0\",\n      \"opening_2006\": \"source:t4c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 - 116 = 18\",\n    \"sources\": [\n      \"source:t8c1n0\",\n      \"source:t4c1n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One named-variable subtraction, then Final with tool:1. Final answer=18 is used because value is absent; no host-created computation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"answer\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 - 116 = 18\",\n    \"sources\": [\n      \"source:t8c1n0\",\n      \"source:t4c1n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "$ millions",
+    "published_value": "18",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"answer\": 18,\n    \"unit\": \"$ millions\",\n    \"calculation\": \"134 - 116 = 18\",\n    \"sources\": [\n      \"source:t8c1n0\",\n      \"source:t4c1n0\"\n    ],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "$ millions",
+        "value": "18"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Net change in unpaid restructuring liabilities during 2006 = balance at Dec 31, 2006 (134) minus balance at Dec 31, 2005 / opening balance for 2006 (116). Source rows: t8c1 = balance at December 31, 2006; t4c1 = balance at December 31, 2005.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"closing_2006 - opening_2006\",\n    \"variables\": {\n      \"closing_2006\": {\"value\": 134, \"source\": \"source:t8c1n0\", \"unit\": \"$ millions\"},\n      \"opening_2006\": {\"value\": 116, \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"closing_2006\": \"source:t8c1n0\",\n      \"opening_2006\": \"source:t4c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both variables declare $ millions, and the resulting positive difference retains that unit.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Net change in unpaid restructuring liabilities during 2006 = balance at Dec 31, 2006 (134) minus balance at Dec 31, 2005 / opening balance for 2006 (116). Source rows: t8c1 = balance at December 31, 2006; t4c1 = balance at December 31, 2005.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"closing_2006 - opening_2006\",\n    \"variables\": {\n      \"closing_2006\": {\"value\": 134, \"source\": \"source:t8c1n0\", \"unit\": \"$ millions\"},\n      \"opening_2006\": {\"value\": 116, \"source\": \"source:t4c1n0\", \"unit\": \"$ millions\"}\n    },\n    \"sources\": {\n      \"closing_2006\": \"source:t8c1n0\",\n      \"opening_2006\": \"source:t4c1n0\"\n    }\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Consumed closing_2006=134 and opening_2006=116 bind the correct t8c1n0 and t4c1n0; the model explicitly explains Dec 31, 2005 as the opening balance for 2006.",
+      "status": "PASS"
+    }
+  },
+  "R004": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = $42.5 million money pool operating cash flow use (source:q0n0) divided by $61.592 million receivables (source:t2c0n0, $61,592 thousand) times 100.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.00246785296792,\"unit\":\"percent\",\"calculation\":\"42.5 / (61592 / 1000) * 100\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Computing the 2004 money pool percentage: money pool activity used $42.5 million of operating cash flows in 2004 (source q0n0), and the December 31, 2004 receivable from the money pool was $61,592 thousand, i.e. $61.592 million (table source t2c0n0). The percentage is money pool use divided by receivables, multiplied by 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5 / (61592/1000) * 100\",\"variables\":{\"use_millions\":{\"value\":\"42.5\",\"source\":\"source:q0n0\"},\"receivables_thousands\":{\"value\":\"61592\",\"source\":\"source:t2c0n0\"}},\"sources\":{\"use_millions\":\"source:q0n0\",\"receivables_thousands\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "2004 money-pool operating cash use divided by same-year receivables, times 100, is the applicable percentage relation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Computing the 2004 money pool percentage: money pool activity used $42.5 million of operating cash flows in 2004 (source q0n0), and the December 31, 2004 receivable from the money pool was $61,592 thousand, i.e. $61.592 million (table source t2c0n0). The percentage is money pool use divided by receivables, multiplied by 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5 / (61592/1000) * 100\",\"variables\":{\"use_millions\":{\"value\":\"42.5\",\"source\":\"source:q0n0\"},\"receivables_thousands\":{\"value\":\"61592\",\"source\":\"source:t2c0n0\"}},\"sources\":{\"use_millions\":\"source:q0n0\",\"receivables_thousands\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Percentage = $42.5 million money pool operating cash flow use (source:q0n0) divided by $61.592 million receivables (source:t2c0n0, $61,592 thousand) times 100.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.00246785296792,\"unit\":\"percent\",\"calculation\":\"42.5 / (61592 / 1000) * 100\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One full literal expression followed by Final. The precise value and 69.0% display agree at their respective frozen precisions."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = $42.5 million money pool operating cash flow use (source:q0n0) divided by $61.592 million receivables (source:t2c0n0, $61,592 thousand) times 100.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.00246785296792,\"unit\":\"percent\",\"calculation\":\"42.5 / (61592 / 1000) * 100\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "69.00246785296792",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Percentage = $42.5 million money pool operating cash flow use (source:q0n0) divided by $61.592 million receivables (source:t2c0n0, $61,592 thousand) times 100.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.00246785296792,\"unit\":\"percent\",\"calculation\":\"42.5 / (61592 / 1000) * 100\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "69.0"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Computing the 2004 money pool percentage: money pool activity used $42.5 million of operating cash flows in 2004 (source q0n0), and the December 31, 2004 receivable from the money pool was $61,592 thousand, i.e. $61.592 million (table source t2c0n0). The percentage is money pool use divided by receivables, multiplied by 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5 / (61592/1000) * 100\",\"variables\":{\"use_millions\":{\"value\":\"42.5\",\"source\":\"source:q0n0\"},\"receivables_thousands\":{\"value\":\"61592\",\"source\":\"source:t2c0n0\"}},\"sources\":{\"use_millions\":\"source:q0n0\",\"receivables_thousands\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message and expression convert 61592 thousand to 61.592 million before division and percentage scaling.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Computing the 2004 money pool percentage: money pool activity used $42.5 million of operating cash flows in 2004 (source q0n0), and the December 31, 2004 receivable from the money pool was $61,592 thousand, i.e. $61.592 million (table source t2c0n0). The percentage is money pool use divided by receivables, multiplied by 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5 / (61592/1000) * 100\",\"variables\":{\"use_millions\":{\"value\":\"42.5\",\"source\":\"source:q0n0\"},\"receivables_thousands\":{\"value\":\"61592\",\"source\":\"source:t2c0n0\"}},\"sources\":{\"use_millions\":\"source:q0n0\",\"receivables_thousands\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Before execution the model explicitly names q0n0=42.5 million cash use and t2c0n0=61592 thousand year-end receivables. The positive use magnitude and first data column are correct. Unused variables/source metadata do not create automatic bindings for the literal expression.",
+      "status": "PASS"
+    }
+  },
+  "R005": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":\"Approximately 14.46% of total facilities square footage is leased. Calculation: 8.1 million sq ft leased ÷ 56.0 million sq ft total × 100 = 14.4643%. Source: table totals from INTC 2015 Form 10-K page 41.\"}",
+        "response_index": 2
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"Approximately 14.46% of total facilities square footage is leased. Calculation: 8.1 million sq ft leased ÷ 56.0 million sq ft total × 100 = 14.4643%. Source: table totals from INTC 2015 Form 10-K page 41.\"}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate leased percentage = (total leased square feet / total facilities square feet) * 100, using source table totals.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased_sqft / total_sqft * 100\",\"variables\":{\"leased_sqft\":{\"value\":8.1,\"unit\":\"million sq ft\",\"source\":\"source:t2c3n0\"},\"total_sqft\":{\"value\":56.0,\"unit\":\"million sq ft\",\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased_sqft\":\"source:t2c3n0\",\"total_sqft\":\"source:t3c3n0\"}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Global leased floor area divided by global total area, times 100, is applicable. The successful calculation at response 1 implements that relation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I'll calculate the leased share of total square footage using the table's total column: leased facilities total (8.1 million sq ft) divided by total facilities (56.0 million sq ft), multiplied by 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased_sqft / total_sqft * 100\",\"variables\":{\"leased_sqft\":{\"value\":81/10,\"source\":\"source:t2c3n0\",\"unit\":\"million sq ft\"},\"total_sqft\":{\"value\":56,\"source\":\"source:t3c3n0\",\"unit\":\"million sq ft\"}},\"sources\":{\"leased_sqft\":\"source:t2c3n0\",\"total_sqft\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Calculate leased percentage = (total leased square feet / total facilities square feet) * 100, using source table totals.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased_sqft / total_sqft * 100\",\"variables\":{\"leased_sqft\":{\"value\":8.1,\"unit\":\"million sq ft\",\"source\":\"source:t2c3n0\"},\"total_sqft\":{\"value\":56.0,\"unit\":\"million sq ft\",\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased_sqft\":\"source:t2c3n0\",\"total_sqft\":\"source:t3c3n0\"}}}",
+          "response_index": 1
+        },
+        {
+          "quote": "{\"final\":\"Approximately 14.46% of total facilities square footage is leased. Calculation: 8.1 million sq ft leased ÷ 56.0 million sq ft total × 100 = 14.4643%. Source: table totals from INTC 2015 Form 10-K page 41.\"}",
+          "response_index": 2
+        }
+      ],
+      "text": "Response 0 contains the unquoted fraction 81/10 in a JSON value position and produced no actual calculation. Response 1 represents it as 8.1 and executes the same intended formula once. This is a visible JSON/interface-format repair, not a new financial method. Final is free text; take its first explicit answer 14.46% and separately check its more precise 14.4643% display."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"Approximately 14.46% of total facilities square footage is leased. Calculation: 8.1 million sq ft leased ÷ 56.0 million sq ft total × 100 = 14.4643%. Source: table totals from INTC 2015 Form 10-K page 41.\"}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.46",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":\"Approximately 14.46% of total facilities square footage is leased. Calculation: 8.1 million sq ft leased ÷ 56.0 million sq ft total × 100 = 14.4643%. Source: table totals from INTC 2015 Form 10-K page 41.\"}",
+          "response_index": 2
+        },
+        "unit": "percent",
+        "value": "14.4643"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate leased percentage = (total leased square feet / total facilities square feet) * 100, using source table totals.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased_sqft / total_sqft * 100\",\"variables\":{\"leased_sqft\":{\"value\":8.1,\"unit\":\"million sq ft\",\"source\":\"source:t2c3n0\"},\"total_sqft\":{\"value\":56.0,\"unit\":\"million sq ft\",\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased_sqft\":\"source:t2c3n0\",\"total_sqft\":\"source:t3c3n0\"}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Both corrected input variables declare million square feet; the common scale cancels and the expression multiplies by 100.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Calculate leased percentage = (total leased square feet / total facilities square feet) * 100, using source table totals.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"leased_sqft / total_sqft * 100\",\"variables\":{\"leased_sqft\":{\"value\":8.1,\"unit\":\"million sq ft\",\"source\":\"source:t2c3n0\"},\"total_sqft\":{\"value\":56.0,\"unit\":\"million sq ft\",\"source\":\"source:t3c3n0\"}},\"sources\":{\"leased_sqft\":\"source:t2c3n0\",\"total_sqft\":\"source:t3c3n0\"}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The corrected request consumes leased_sqft=8.1 from t2c3n0 and total_sqft=56.0 from t3c3n0. Both global roles and correct source spans are visible before that actual execution.",
+      "status": "PASS"
+    }
+  },
+  "R006": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final itself publicly states the appropriate same-year money-pool cash-use percentage calculation, but no actual calculator request exists.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with a correct public calculation in prose, not a tool-executed trace. Top-level value outside the final field is not adopted as an alternative schema; extract 69.0 from the actual Final string itself."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "percent",
+    "published_value": "69.0",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        },
+        "unit": "percent",
+        "value": "69.0"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final explicitly converts the receivable to 61.592 million and reports 69.0%, with the correct percentage scale.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"final\": \"The money pool activity used $42.5 million of system energy's operating cash flows in 2004. Receivables from the money pool at December 31, 2004 were $61,592 thousand, or $61.592 million. Thus the percentage is 42.5 / 61.592 × 100 = 69.0%.\", \"answer\": \"69.0%\", \"value\": 69.0, \"unit\": \"percent\", \"sources\": [\"source:q0n0\", \"source:t2c0n0\"]}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final text explicitly identifies 2004 cash use 42.5 million and Dec 31, 2004 receivables 61592 thousand; the same response also lists their source spans. This is final-only source evidence.",
+      "status": "PASS"
+    }
+  },
+  "R007": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities are 8.1 million square feet and total facilities are 56.0 million square feet. Thus leased percentage = 8.1/56.0 × 100 = 14.46%, based on the table's total column.\",\"final\":{\"answer\":\"14.46%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"source\":\"source:t2c3n0, source:t3c3n0\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities (measured in square feet) that are leased = total leased square feet / total facilities square feet x 100 = 8.1 / 56.0 x 100 = 14.4643%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56.0*100\",\"sources\":{\"numerator\":\"source:t2c3n0\",\"denominator\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation identifies leased/total global square footage times 100, and the literal expression implements it.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities (measured in square feet) that are leased = total leased square feet / total facilities square feet x 100 = 8.1 / 56.0 x 100 = 14.4643%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56.0*100\",\"sources\":{\"numerator\":\"source:t2c3n0\",\"denominator\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Total leased facilities are 8.1 million square feet and total facilities are 56.0 million square feet. Thus leased percentage = 8.1/56.0 × 100 = 14.46%, based on the table's total column.\",\"final\":{\"answer\":\"14.46%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"source\":\"source:t2c3n0, source:t3c3n0\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One annotated literal calculation then Final with tool:1, a precise value and a compatible 14.46% display. The coarse original annotation 14% is not substituted as a target."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities are 8.1 million square feet and total facilities are 56.0 million square feet. Thus leased percentage = 8.1/56.0 × 100 = 14.46%, based on the table's total column.\",\"final\":{\"answer\":\"14.46%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"source\":\"source:t2c3n0, source:t3c3n0\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.464285714285714",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Total leased facilities are 8.1 million square feet and total facilities are 56.0 million square feet. Thus leased percentage = 8.1/56.0 × 100 = 14.46%, based on the table's total column.\",\"final\":{\"answer\":\"14.46%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"source\":\"source:t2c3n0, source:t3c3n0\",\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.46"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities (measured in square feet) that are leased = total leased square feet / total facilities square feet x 100 = 8.1 / 56.0 x 100 = 14.4643%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56.0*100\",\"sources\":{\"numerator\":\"source:t2c3n0\",\"denominator\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call roles and referenced table identify the same million-square-feet scale; the ratio cancels it and multiplies by 100.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage of total facilities (measured in square feet) that are leased = total leased square feet / total facilities square feet x 100 = 8.1 / 56.0 x 100 = 14.4643%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56.0*100\",\"sources\":{\"numerator\":\"source:t2c3n0\",\"denominator\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The message pairs 8.1 leased with 56.0 total and source metadata explicitly identifies numerator t2c3n0 and denominator t3c3n0. Literal arithmetic remains distinct from machine-bound source variables.",
+      "status": "PASS"
+    }
+  },
+  "R008": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":\"18 million\"}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately. The actual free-text Final explicitly says '18 million'; in this monetary-liability source context this is a million-dollar answer. This is semantic extraction of its stated quantity/unit, not filling an absent number or inventing a formula from the reference.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED: the only public content is '18 million'; no formula or financial relationship is stated, and none is inferred from a correct number.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "text": "Bare direct Final containing only a number and million unit. This case lacks both a public derivation and actual calculation, unlike other no-tool answers that do contain a derivation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "USD_million",
+    "published_value": "18",
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED: the output's million scale can be interpreted in the monetary task context, but no input units or actual unit handling are visible. This is separate from the numeric answer's published-unit check.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"18 million\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED: no input, year-to-source association or provenance is published. Do not reconstruct a supposed 134-116 plan on the model's behalf.",
+      "status": "NOT_ESTABLISHED"
+    }
+  },
+  "R009": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the table's 'cash flow' row (non-GAAP cash flow = operating cash flow minus property additions): (957.4 + 769.1 + 950.4) / 3 = 892.3.\",\n  \"final\": {\n    \"answer\": \"$892.3 million\",\n    \"value\": 892.3,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the company's defined cash flow row from the table on page 52: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006 cash flow\":\"source:t3c1n0\",\"2005 cash flow\":\"source:t3c2n0\",\"2004 cash flow\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The arithmetic average of the three company-defined cash-flow values is applicable; not the operating-CFO or annual-percentage-change row.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the company's defined cash flow row from the table on page 52: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006 cash flow\":\"source:t3c1n0\",\"2005 cash flow\":\"source:t3c2n0\",\"2004 cash flow\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"Using the table's 'cash flow' row (non-GAAP cash flow = operating cash flow minus property additions): (957.4 + 769.1 + 950.4) / 3 = 892.3.\",\n  \"final\": {\n    \"answer\": \"$892.3 million\",\n    \"value\": 892.3,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One complete literal average then Final linked to tool:1. Final additionally describes the source's non-GAAP definition, without inventing a separately executed capex calculation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the table's 'cash flow' row (non-GAAP cash flow = operating cash flow minus property additions): (957.4 + 769.1 + 950.4) / 3 = 892.3.\",\n  \"final\": {\n    \"answer\": \"$892.3 million\",\n    \"value\": 892.3,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Using the table's 'cash flow' row (non-GAAP cash flow = operating cash flow minus property additions): (957.4 + 769.1 + 950.4) / 3 = 892.3.\",\n  \"final\": {\n    \"answer\": \"$892.3 million\",\n    \"value\": 892.3,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\"source:t3c1n0\", \"source:t3c2n0\", \"source:t3c3n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "millions of dollars",
+        "value": "892.3"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the company's defined cash flow row from the table on page 52: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006 cash flow\":\"source:t3c1n0\",\"2005 cash flow\":\"source:t3c2n0\",\"2004 cash flow\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The referenced table's three same-scale cash-flow values are in million dollars; dividing the three-value sum by the count preserves that scale. Final does not claim a percentage.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the company's defined cash flow row from the table on page 52: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006 cash flow\":\"source:t3c1n0\",\"2005 cash flow\":\"source:t3c2n0\",\"2004 cash flow\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly maps 957.4 to 2006, 769.1 to 2005 and 950.4 to 2004 and names the company's defined cash-flow row, with matching t3 source IDs in metadata.",
+      "status": "PASS"
+    }
+  },
+  "R010": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final-only expression averages the three cash-flow values for the requested 2004-2006 interval.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with a formula and correct answer, but zero actual calculation. Extract the actual answer field because value is absent."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "$ million",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        },
+        "unit": "$ million",
+        "value": "892.3"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final explicitly states $ million and a monetary average, consistent with the source table.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"calculation\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"message\":\"Average cash flow from 2004 to 2006 was $892.3 million.\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final includes the three correct cash-flow source spans and the expression 957.4+769.1+950.4, with a message identifying the requested range. This permits finite final-only correspondence review, not pre-execution certification.",
+      "status": "PASS"
+    }
+  },
+  "R011": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Final gives correctly labelled annual subtotals only, not an unambiguous combined two-year target scalar. The fields do not contradict each other and no wrong combined value is asserted. Retain UNDETERMINED under the frozen missing-number rule; do not add the subtotals or compare different annual quantities as same-target secondary fields.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED for the registered combined two-year quantity: the model proposes and then publishes separate annual cash-plus-securities totals, not a cross-year aggregate. The annual relation is reasonable and its arithmetic is correct; this is not a false-formula finding.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"I will calculate the total segregated assets for each year by adding the stated cash amounts and the securities fair values disclosed in the note.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(25.0 + 9.7) for 2010? I cannot include text\"}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "text": "The first response is incomplete JSON with text inside the expression and produces no actual calculation. Final then gives 2010=34.7 and 2009=34.2. There is no published combined 68.9; do not choose one annual subtotal, treat it as the same semantic quantity, or host-add the pair."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "USD_billion",
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The published component amounts are explicitly dollar billions and their annual sums use that same scale.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The disclosed segregated amounts are cash of $25.0B in 2010 and $24.0B in 2009, plus securities with fair values of $9.7B in 2010 and $10.2B in 2009. Adding these gives $34.7B for 2010 and $34.2B for 2009.\",\"final\":{\"2010_total_billions\":34.7,\"2009_total_billions\":34.2}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Response 1 correctly pairs 2010 cash/securities 25.0/9.7 and 2009 cash/securities 24.0/10.2, as disclosed in q16. These are correct public input associations for annual subtotals.",
+      "status": "PASS"
+    }
+  },
+  "R012": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Money pool activity used $42.5 million of operating cash flows in 2004, while receivables from the money pool at the end of 2004 were $61,592 thousand ($61.592 million). Thus, $42.5 million / $61.592 million ≈ 69.0%.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.0,\"unit\":\"percent\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The money pool activity used $42.5 million in 2004, while receivables from the money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million. Dividing 42.5 by 61.592 gives approximately 69.0%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5/(61592/1000)*100\",\"sources\":{\"42.5\":\"source:q0n0\",\"61592\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Money-pool use divided by same-year receivables, with the thousand/million conversion and percent multiplier, is applicable.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The money pool activity used $42.5 million in 2004, while receivables from the money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million. Dividing 42.5 by 61.592 gives approximately 69.0%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5/(61592/1000)*100\",\"sources\":{\"42.5\":\"source:q0n0\",\"61592\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Money pool activity used $42.5 million of operating cash flows in 2004, while receivables from the money pool at the end of 2004 were $61,592 thousand ($61.592 million). Thus, $42.5 million / $61.592 million ≈ 69.0%.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.0,\"unit\":\"percent\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal calculation and Final with tool:1. The actual Final value 69.0 is kept at its lexical precision; its difference from the exact tool result is within the unchanged 0.005 cap."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Money pool activity used $42.5 million of operating cash flows in 2004, while receivables from the money pool at the end of 2004 were $61,592 thousand ($61.592 million). Thus, $42.5 million / $61.592 million ≈ 69.0%.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.0,\"unit\":\"percent\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "69.0",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Money pool activity used $42.5 million of operating cash flows in 2004, while receivables from the money pool at the end of 2004 were $61,592 thousand ($61.592 million). Thus, $42.5 million / $61.592 million ≈ 69.0%.\",\"final\":{\"answer\":\"69.0%\",\"value\":69.0,\"unit\":\"percent\",\"sources\":[\"source:q0n0\",\"source:t2c0n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "69.0"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The money pool activity used $42.5 million in 2004, while receivables from the money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million. Dividing 42.5 by 61.592 gives approximately 69.0%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5/(61592/1000)*100\",\"sources\":{\"42.5\":\"source:q0n0\",\"61592\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual expression converts the denominator by 1000, then multiplies by 100; Final 69.0 is a percentage-point display, not a raw fraction.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The money pool activity used $42.5 million in 2004, while receivables from the money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million. Dividing 42.5 by 61.592 gives approximately 69.0%.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"42.5/(61592/1000)*100\",\"sources\":{\"42.5\":\"source:q0n0\",\"61592\":\"source:t2c0n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly names the 42.5 million use and 61592 thousand receivable for 2004, with correct source-span metadata.",
+      "status": "PASS"
+    }
+  },
+  "R013": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the disclosures in Note 28, for 2010 the segregated cash is $25.0 billion and the securities fair value is $9.7 billion, giving a total of $34.7 billion. For 2009 the amounts are $24.0 billion and $10.2 billion, giving a total of $34.2 billion.\",\n  \"final\": {\n    \"answer\": \"2010: 34.7 billion; 2009: 34.2 billion\",\n    \"components\": {\n      \"2010\": {\"cash\": 25.0, \"securities_fair_value\": 9.7, \"total\": 34.7},\n      \"2009\": {\"cash\": 24.0, \"securities_fair_value\": 10.2, \"total\": 34.2}\n    },\n    \"unit\": \"USD billions\",\n    \"sources\": [\"source:q16n3\", \"source:q16n4\", \"source:q16n5\", \"source:q16n6\"]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "Final gives correctly labelled annual subtotals only, not an unambiguous combined two-year target scalar. The fields do not contradict each other and no wrong combined value is asserted. Retain UNDETERMINED under the frozen missing-number rule; do not add the subtotals or compare different annual quantities as same-target secondary fields.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Taking the segregated cash amounts ($25.0B for 2010 and $24.0B for 2009) together with the fair value of segregated securities ($9.7B for 2010 and $10.2B for 2009), I will compute each year's total fair value.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"25.0+9.7\",\n    \"sources\": {\n      \"25.0\": \"source:q16n3\",\n      \"9.7\": \"source:q16n5\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"For 2009, segregated cash was $24.0B and securities fair value was $10.2B. I will add them to get the 2009 total.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"24.0+10.2\",\n    \"sources\": {\n      \"24.0\": \"source:q16n4\",\n      \"10.2\": \"source:q16n6\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED for the registered combined two-year total: both actual expressions compute legitimate annual cash-plus-securities subtotals only. Neither an executed nor published cross-year aggregate appears.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Taking the segregated cash amounts ($25.0B for 2010 and $24.0B for 2009) together with the fair value of segregated securities ($9.7B for 2010 and $10.2B for 2009), I will compute each year's total fair value.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"25.0+9.7\",\n    \"sources\": {\n      \"25.0\": \"source:q16n3\",\n      \"9.7\": \"source:q16n5\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"For 2009, segregated cash was $24.0B and securities fair value was $10.2B. I will add them to get the 2009 total.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"24.0+10.2\",\n    \"sources\": {\n      \"24.0\": \"source:q16n4\",\n      \"10.2\": \"source:q16n6\"\n    }\n  }\n}",
+          "response_index": 1
+        },
+        {
+          "quote": "{\n  \"message\": \"Using the disclosures in Note 28, for 2010 the segregated cash is $25.0 billion and the securities fair value is $9.7 billion, giving a total of $34.7 billion. For 2009 the amounts are $24.0 billion and $10.2 billion, giving a total of $34.2 billion.\",\n  \"final\": {\n    \"answer\": \"2010: 34.7 billion; 2009: 34.2 billion\",\n    \"components\": {\n      \"2010\": {\"cash\": 25.0, \"securities_fair_value\": 9.7, \"total\": 34.7},\n      \"2009\": {\"cash\": 24.0, \"securities_fair_value\": 10.2, \"total\": 34.2}\n    },\n    \"unit\": \"USD billions\",\n    \"sources\": [\"source:q16n3\", \"source:q16n4\", \"source:q16n5\", \"source:q16n6\"]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "text": "Two actual independent additions yield 34.7 and 34.2; no earlier-result reference is consumed. Final publishes both annual results but no combined target scalar. The individual tool outputs are real and correct, yet neither is selected as the registered answer calculation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Using the disclosures in Note 28, for 2010 the segregated cash is $25.0 billion and the securities fair value is $9.7 billion, giving a total of $34.7 billion. For 2009 the amounts are $24.0 billion and $10.2 billion, giving a total of $34.2 billion.\",\n  \"final\": {\n    \"answer\": \"2010: 34.7 billion; 2009: 34.2 billion\",\n    \"components\": {\n      \"2010\": {\"cash\": 25.0, \"securities_fair_value\": 9.7, \"total\": 34.7},\n      \"2009\": {\"cash\": 24.0, \"securities_fair_value\": 10.2, \"total\": 34.2}\n    },\n    \"unit\": \"USD billions\",\n    \"sources\": [\"source:q16n3\", \"source:q16n4\", \"source:q16n5\", \"source:q16n6\"]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "USD billions",
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Taking the segregated cash amounts ($25.0B for 2010 and $24.0B for 2009) together with the fair value of segregated securities ($9.7B for 2010 and $10.2B for 2009), I will compute each year's total fair value.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"25.0+9.7\",\n    \"sources\": {\n      \"25.0\": \"source:q16n3\",\n      \"9.7\": \"source:q16n5\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"For 2009, segregated cash was $24.0B and securities fair value was $10.2B. I will add them to get the 2009 total.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"24.0+10.2\",\n    \"sources\": {\n      \"24.0\": \"source:q16n4\",\n      \"10.2\": \"source:q16n6\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Pre-call public statements use dollar billions for each annual calculation, and Final retains USD billions.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Taking the segregated cash amounts ($25.0B for 2010 and $24.0B for 2009) together with the fair value of segregated securities ($9.7B for 2010 and $10.2B for 2009), I will compute each year's total fair value.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"25.0+9.7\",\n    \"sources\": {\n      \"25.0\": \"source:q16n3\",\n      \"9.7\": \"source:q16n5\"\n    }\n  }\n}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"For 2009, segregated cash was $24.0B and securities fair value was $10.2B. I will add them to get the 2009 total.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"24.0+10.2\",\n    \"sources\": {\n      \"24.0\": \"source:q16n4\",\n      \"10.2\": \"source:q16n6\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "Response 0 publicly identifies 2010 cash 25.0 and securities 9.7 with correct source IDs; response 1 identifies 2009 cash 24.0 and securities 10.2. All annual/category pairings are correct.",
+      "status": "PASS"
+    }
+  },
+  "R014": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"The average cash flow from 2004 to 2006 is $892.3 million, based on the table's explicit cash flow figures: 2006 $957.4M, 2005 $769.1M, 2004 $950.4M.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+        "response_index": 1
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The average cash flow from 2004 to 2006 is $892.3 million, based on the table's explicit cash flow figures: 2006 $957.4M, 2005 $769.1M, 2004 $950.4M.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table's 'cash flow' row (defined as net cash provided by operating activities reduced by property additions), the values are 957.4 for 2006, 769.1 for 2005, and 950.4 for 2004. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006\":\"source:t3c1n0\",\"2005\":\"source:t3c2n0\",\"2004\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Average of the three company-defined cash-flow row values is the required quantity; the pre-call explanation also identifies its CFO-less-property-additions meaning.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table's 'cash flow' row (defined as net cash provided by operating activities reduced by property additions), the values are 957.4 for 2006, 769.1 for 2005, and 950.4 for 2004. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006\":\"source:t3c1n0\",\"2005\":\"source:t3c2n0\",\"2004\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"The average cash flow from 2004 to 2006 is $892.3 million, based on the table's explicit cash flow figures: 2006 $957.4M, 2005 $769.1M, 2004 $950.4M.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal average followed by Final referencing tool:1. Extract 892.3 from its actual answer field because no value field is present."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The average cash flow from 2004 to 2006 is $892.3 million, based on the table's explicit cash flow figures: 2006 $957.4M, 2005 $769.1M, 2004 $950.4M.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "$ million",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"The average cash flow from 2004 to 2006 is $892.3 million, based on the table's explicit cash flow figures: 2006 $957.4M, 2005 $769.1M, 2004 $950.4M.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"tool:1\"}}",
+          "response_index": 1
+        },
+        "unit": "$ million",
+        "value": "892.3"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table's 'cash flow' row (defined as net cash provided by operating activities reduced by property additions), the values are 957.4 for 2006, 769.1 for 2005, and 950.4 for 2004. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006\":\"source:t3c1n0\",\"2005\":\"source:t3c2n0\",\"2004\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The source row uses million dollars throughout; the three-year arithmetic average retains that unit, as Final explicitly states.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Using the table's 'cash flow' row (defined as net cash provided by operating activities reduced by property additions), the values are 957.4 for 2006, 769.1 for 2005, and 950.4 for 2004. Average = (957.4 + 769.1 + 950.4) / 3.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(957.4 + 769.1 + 950.4) / 3\",\"sources\":{\"2006\":\"source:t3c1n0\",\"2005\":\"source:t3c2n0\",\"2004\":\"source:t3c3n0\"}}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call text and metadata correctly pair the three values with 2006/2005/2004 and the t3 row. It does not rely on the erroneous hand-written source annotation intermediate.",
+      "status": "PASS"
+    }
+  },
+  "R015": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final response publicly shows the two asset-category sums and the 2008-minus-2007 difference; that is an applicable complete relation.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with correct public arithmetic, but no actual calculate call. The answer remains separately eligible for numeric PASS."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "58665",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        },
+        "unit": "millions of dollars",
+        "value": "58,665"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final explicitly labels the positive increase in million dollars, with same-scale annual sums.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets is the sum of debt/equity instruments and derivative receivables. 2008: 384,102 + 121,417 = 505,519. 2007: 381,415 + 65,439 = 446,854. Increase = 505,519 - 446,854 = 58,665.\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The same Final response explicitly pairs 384102/121417 with 2008 and 381415/65439 with 2007, lists the correct spans and does not subtract liabilities or use 2009.",
+      "status": "PASS"
+    }
+  },
+  "R016": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"2010_total_fair_value_billions\":34.7,\"2009_total_fair_value_billions\":34.2,\"sources\":[\"source:q16n3\",\"source:q16n5\",\"source:q16n4\",\"source:q16n6\"],\"calculation\":\"For each year, total segregated assets = segregated cash + fair value of segregated securities. 2010: 25.0 + 9.7 = 34.7 billion. 2009: 24.0 + 10.2 = 34.2 billion.\"}}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "Final gives correctly labelled annual subtotals only, not an unambiguous combined two-year target scalar. The fields do not contradict each other and no wrong combined value is asserted. Retain UNDETERMINED under the frozen missing-number rule; do not add the subtotals or compare different annual quantities as same-target secondary fields.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Source q16 reports segregated cash and securities: 2010 cash $25.0B and securities fair value $9.7B. Adding these gives total assets segregated for 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2010 + sec2010\",\"variables\":{\"cash2010\":{\"value\":25.0,\"source\":\"source:q16n3\",\"unit\":\"billion\"},\"sec2010\":{\"value\":9.7,\"source\":\"source:q16n5\",\"unit\":\"billion\"}}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"For 2009, cash segregated was $24.0B and securities fair value was $10.2B; combined segregated assets are $34.2B.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2009 + sec2009\",\"variables\":{\"cash2009\":{\"value\":24.0,\"source\":\"source:q16n4\",\"unit\":\"billion\"},\"sec2009\":{\"value\":10.2,\"source\":\"source:q16n6\",\"unit\":\"billion\"}}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED for the registered combined two-year total: cash2010+sec2010 and cash2009+sec2009 are valid annual subtotal relations, but no relation combining the years is delivered.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Source q16 reports segregated cash and securities: 2010 cash $25.0B and securities fair value $9.7B. Adding these gives total assets segregated for 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2010 + sec2010\",\"variables\":{\"cash2010\":{\"value\":25.0,\"source\":\"source:q16n3\",\"unit\":\"billion\"},\"sec2010\":{\"value\":9.7,\"source\":\"source:q16n5\",\"unit\":\"billion\"}}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"For 2009, cash segregated was $24.0B and securities fair value was $10.2B; combined segregated assets are $34.2B.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2009 + sec2009\",\"variables\":{\"cash2009\":{\"value\":24.0,\"source\":\"source:q16n4\",\"unit\":\"billion\"},\"sec2009\":{\"value\":10.2,\"source\":\"source:q16n6\",\"unit\":\"billion\"}}}}",
+          "response_index": 1
+        },
+        {
+          "quote": "{\"final\":{\"2010_total_fair_value_billions\":34.7,\"2009_total_fair_value_billions\":34.2,\"sources\":[\"source:q16n3\",\"source:q16n5\",\"source:q16n4\",\"source:q16n6\"],\"calculation\":\"For each year, total segregated assets = segregated cash + fair value of segregated securities. 2010: 25.0 + 9.7 = 34.7 billion. 2009: 24.0 + 10.2 = 34.2 billion.\"}}",
+          "response_index": 2
+        }
+      ],
+      "text": "Two source-bound independent additions produce correct annual subtotals; Final repeats those two quantities and no combined answer. Do not select tool:1 or tool:2 as if it computed the missing cross-year total, and do not sum them offline into a model answer."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":{\"2010_total_fair_value_billions\":34.7,\"2009_total_fair_value_billions\":34.2,\"sources\":[\"source:q16n3\",\"source:q16n5\",\"source:q16n4\",\"source:q16n6\"],\"calculation\":\"For each year, total segregated assets = segregated cash + fair value of segregated securities. 2010: 25.0 + 9.7 = 34.7 billion. 2009: 24.0 + 10.2 = 34.2 billion.\"}}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "USD_billion",
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Source q16 reports segregated cash and securities: 2010 cash $25.0B and securities fair value $9.7B. Adding these gives total assets segregated for 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2010 + sec2010\",\"variables\":{\"cash2010\":{\"value\":25.0,\"source\":\"source:q16n3\",\"unit\":\"billion\"},\"sec2010\":{\"value\":9.7,\"source\":\"source:q16n5\",\"unit\":\"billion\"}}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"For 2009, cash segregated was $24.0B and securities fair value was $10.2B; combined segregated assets are $34.2B.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2009 + sec2009\",\"variables\":{\"cash2009\":{\"value\":24.0,\"source\":\"source:q16n4\",\"unit\":\"billion\"},\"sec2009\":{\"value\":10.2,\"source\":\"source:q16n6\",\"unit\":\"billion\"}}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "All four consumed inputs are declared billion and the accompanying prose explicitly identifies dollars; both annual results preserve the billion scale.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Source q16 reports segregated cash and securities: 2010 cash $25.0B and securities fair value $9.7B. Adding these gives total assets segregated for 2010.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2010 + sec2010\",\"variables\":{\"cash2010\":{\"value\":25.0,\"source\":\"source:q16n3\",\"unit\":\"billion\"},\"sec2010\":{\"value\":9.7,\"source\":\"source:q16n5\",\"unit\":\"billion\"}}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"For 2009, cash segregated was $24.0B and securities fair value was $10.2B; combined segregated assets are $34.2B.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"cash2009 + sec2009\",\"variables\":{\"cash2009\":{\"value\":24.0,\"source\":\"source:q16n4\",\"unit\":\"billion\"},\"sec2009\":{\"value\":10.2,\"source\":\"source:q16n6\",\"unit\":\"billion\"}}}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The two actual calls consume correctly source-bound year/category variables: q16n3/q16n5 for 2010 and q16n4/q16n6 for 2009. This is not a wrong-source or wrong-year finding.",
+      "status": "PASS"
+    }
+  },
+  "R017": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final response correctly defines total trading assets as the two asset categories and subtracts the 2007 total from 2008.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with correct complete public derivation but no actual tool execution; no inference of a hidden calculator call."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "58665",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        },
+        "unit": "millions of dollars",
+        "value": "58665"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final explicitly requests the result in million dollars and reports a positive later-minus-earlier increase.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Average total trading assets equal trading assets in debt and equity instruments plus trading assets in derivative receivables. 2008 total: 384102 + 121417 = 505519; 2007 total: 381415 + 65439 = 446854; increase: 58665.\",\"final\":{\"answer\":58665,\"unit\":\"millions of dollars\",\"increase_between_years\":{\"from\":2007,\"to\":2008},\"sources\":[\"source:t1c2n0\",\"source:t2c2n0\",\"source:t1c3n0\",\"source:t2c3n0\"]}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Public Final prose labels the balances as averages and correctly maps each year to its two values and source spans.",
+      "status": "PASS"
+    }
+  },
+  "R018": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Leased square feet = 8.1 million; total square feet = 56.0 million. Leased percentage = 8.1 / 56.0 × 100 = 14.46%.\",\"final\":{\"answer\":\"14.464285714285714%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"result_id\":\"tool:1\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table shows total leased facilities of 8.1 million sq ft and total facilities of 56.0 million sq ft. Therefore leased percentage is (8.1 / 56.0) × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Global leased square footage divided by global total square footage, times 100, is applicable and actually executed.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table shows total leased facilities of 8.1 million sq ft and total facilities of 56.0 million sq ft. Therefore leased percentage is (8.1 / 56.0) × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\"}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"message\":\"Leased square feet = 8.1 million; total square feet = 56.0 million. Leased percentage = 8.1 / 56.0 × 100 = 14.46%.\",\"final\":{\"answer\":\"14.464285714285714%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"result_id\":\"tool:1\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "text": "One literal expression then Final. The long value, equally precise answer string and 14.46% prose display are compatible; no host precision repair."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Leased square feet = 8.1 million; total square feet = 56.0 million. Leased percentage = 8.1 / 56.0 × 100 = 14.46%.\",\"final\":{\"answer\":\"14.464285714285714%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"result_id\":\"tool:1\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "14.464285714285714",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Leased square feet = 8.1 million; total square feet = 56.0 million. Leased percentage = 8.1 / 56.0 × 100 = 14.46%.\",\"final\":{\"answer\":\"14.464285714285714%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"result_id\":\"tool:1\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.464285714285714"
+      },
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Leased square feet = 8.1 million; total square feet = 56.0 million. Leased percentage = 8.1 / 56.0 × 100 = 14.46%.\",\"final\":{\"answer\":\"14.464285714285714%\",\"value\":\"14.464285714285714\",\"unit\":\"percent\",\"result_id\":\"tool:1\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"]}}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "14.46"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table shows total leased facilities of 8.1 million sq ft and total facilities of 56.0 million sq ft. Therefore leased percentage is (8.1 / 56.0) × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Both quantities are explicitly identified as million square feet before execution; their common scale cancels and the ratio is converted to percent.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table shows total leased facilities of 8.1 million sq ft and total facilities of 56.0 million sq ft. Therefore leased percentage is (8.1 / 56.0) × 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"8.1/56*100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly associates 8.1 with leased and 56.0 with total table amounts. Final IDs agree, but are not backdated as machine bindings; the literal request had no source declarations.",
+      "status": "PASS"
+    }
+  },
+  "R019": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final-only public relation correctly computes the global leased-area percentage.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with a correct public formula, but result_id points to a public_document rather than any actual tool result. Numeric correctness and invalid execution-reference metadata are separate findings."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final result_id names a public document or task, not an actual calculator result; no calculate call exists. This invalid execution reference does not reverse the separate correct numeric answer.",
+      "status": "FAIL"
+    },
+    "published_unit": "percent",
+    "published_value": "14.46",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        },
+        "unit": "percent",
+        "value": "14.46"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final prose explicitly aligns million square feet and percentage scaling, with a compatible 14.46% answer.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total leased facilities in the table are 8.1 million square feet and total facilities are 56.0 million square feet, so the leased share is (8.1 / 56.0) × 100 ≈ 14.46%.\",\"final\":{\"answer\":14.46,\"unit\":\"percent\",\"sources\":[\"source:t2c3n0\",\"source:t3c3n0\"],\"result_id\":\"public_document:d85cc8ebb1e42cde0d0180d3903614267456df19f80cbba19d14c31cdb96f1fc\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The same Final response identifies 8.1 million leased and 56.0 million total and lists the corresponding total-column source spans.",
+      "status": "PASS"
+    }
+  },
+  "R020": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [
+      {
+        "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+        "response_index": 0
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final response correctly describes averaging the three company-defined cash-flow amounts, not the operating-CFO row.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final containing correct public arithmetic. Its result_id points to a task identifier, not an executed calculator result; no tool execution is manufactured from that field."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final result_id names a public document or task, not an actual calculator result; no calculate call exists. This invalid execution reference does not reverse the separate correct numeric answer.",
+      "status": "FAIL"
+    },
+    "published_unit": "$ million",
+    "published_value": "892.3",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        },
+        "unit": "$ million",
+        "value": "892.3"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The Final and its explanation explicitly use million dollars; taking the three-year average preserves that unit.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"The table on page 52 reports cash flow (net operating cash flow less property additions) of $950.4 million in 2004, $769.1 million in 2005, and $957.4 million in 2006. Their average is ($950.4 + $769.1 + $957.4)/3 = $892.3 million.\",\"final\":{\"answer\":892.3,\"unit\":\"$ million\",\"method\":\"Average of cash flow for 2004, 2005, and 2006\",\"sources\":[\"source:t3c1n0\",\"source:t3c2n0\",\"source:t3c3n0\"],\"result_id\":\"task:K/2006/page_52.pdf-2\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The public message pairs 950.4 with 2004, 769.1 with 2005 and 957.4 with 2006 and cites the correct source spans. Reversing addition order is immaterial.",
+      "status": "PASS"
+    }
+  },
+  "R021": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final gives correctly labelled annual subtotals only, not an unambiguous combined two-year target scalar. The fields do not contradict each other and no wrong combined value is asserted. Retain UNDETERMINED under the frozen missing-number rule; do not add the subtotals or compare different annual quantities as same-target secondary fields.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "NOT_ESTABLISHED for the registered combined quantity: the direct Final correctly explains cash plus securities separately for 2010 and 2009, without giving a cross-year total.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "text": "Direct Final with correct annual derivations but no actual calculation or combined target scalar. The original question can naturally invite per-year reporting; that is a scope-interpretation limitation, not permission to change the pre-registered target after seeing responses."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": "USD_billion",
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Each amount and annual result is explicitly in dollar billions; no scale error is observed.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"In 2010: $34.7 billion ($25.0 billion cash + $9.7 billion securities fair value). In 2009: $34.2 billion ($24.0 billion cash + $10.2 billion securities fair value). Sources: q16n3, q16n5, q16n4, q16n6.\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Final explicitly associates 25.0+9.7 with 2010 and 24.0+10.2 with 2009 and names the correct q16 numeric spans. These annual associations are supported.",
+      "status": "PASS"
+    }
+  },
+  "R022": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.\",\n    \"answer\": \"69.0%\",\n    \"value\": 69.00246785296792,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:q0n0\", \"source:t2c0n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = (money pool activity used in 2004, $42.5 million) / (system energy receivables from money pool at Dec 31 2004, $61,592 thousand converted to $61.592 million) * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(42.5 / (61592 / 1000)) * 100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The submitted expression correctly computes the positive money-pool use percentage of receivables for 2004.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = (money pool activity used in 2004, $42.5 million) / (system energy receivables from money pool at Dec 31 2004, $61,592 thousand converted to $61.592 million) * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(42.5 / (61592 / 1000)) * 100\"}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.\",\n    \"answer\": \"69.0%\",\n    \"value\": 69.00246785296792,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:q0n0\", \"source:t2c0n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "text": "One correct literal expression then Final linked to tool:1. Both additional answer displays are checked separately at their own precision."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.\",\n    \"answer\": \"69.0%\",\n    \"value\": 69.00246785296792,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:q0n0\", \"source:t2c0n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "percent",
+    "published_value": "69.00246785296792",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.\",\n    \"answer\": \"69.0%\",\n    \"value\": 69.00246785296792,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:q0n0\", \"source:t2c0n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "69.0025"
+      },
+      {
+        "evidence": {
+          "quote": "{\n  \"final\": {\n    \"message\": \"Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.\",\n    \"answer\": \"69.0%\",\n    \"value\": 69.00246785296792,\n    \"unit\": \"percent\",\n    \"sources\": [\"source:q0n0\", \"source:t2c0n0\"],\n    \"result_id\": \"tool:1\"\n  }\n}",
+          "response_index": 1
+        },
+        "unit": "percent",
+        "value": "69.0"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = (money pool activity used in 2004, $42.5 million) / (system energy receivables from money pool at Dec 31 2004, $61,592 thousand converted to $61.592 million) * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(42.5 / (61592 / 1000)) * 100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call explanation explicitly converts 61592 thousand to 61.592 million and multiplies the ratio by 100. The Final's 69.0025% and 69.0% displays are consistent percentage representations.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Percentage = (money pool activity used in 2004, $42.5 million) / (system energy receivables from money pool at Dec 31 2004, $61,592 thousand converted to $61.592 million) * 100.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"(42.5 / (61592 / 1000)) * 100\"}}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The pre-call message explicitly names the same-year cash-use and year-end receivable amounts and their financial roles. Later Final source IDs agree, without creating automatic bindings for the literal expression.",
+      "status": "PASS"
+    }
+  },
+  "R023": {
+    "answer_calculation_id": "tool:1",
+    "answer_override_evidence": [
+      {
+        "quote": "{\n  \"message\": \"The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+        "response_index": 2
+      }
+    ],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "The actual Final's answer quantity, sign, time scope and unit are coherent at the stated display precisions. Valid arithmetic without an actual tool call can still be a correct answer; execution-reference validity is checked separately.",
+      "status": "PASS"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets are the sum of trading asset debt/equity instruments and derivative receivables. I calculated 2008 total (384102 + 121417 = 505519) minus 2007 total (381415 + 65439 = 446854), giving an increase of 58,665 million dollars.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(384102+121417) - (381415+65439)\",\n    \"sources\": {\n      \"2008_debt_equity\": \"source:t1c2n0\",\n      \"2008_derivative_receivables\": \"source:t2c2n0\",\n      \"2007_debt_equity\": \"source:t1c3n0\",\n      \"2007_derivative_receivables\": \"source:t2c3n0\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual successful expression computes the correct two-category annual totals and their 2008-minus-2007 difference.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"message\":\"Total trading assets are the sum of 'trading assets - debt and equity instruments' and 'trading assets - derivative receivables.' I will calculate 2008 total minus 2007 total to get the increase in millions of dollars.\",\"tool\":\"calculate\",\"arguments\":{\"expression\":\"total2008 - total2007\",\"variables\":{\"total2008\":{\"value\":384102+121417},\"total2007\":{\"value\":381415+65439}},\"sources\":{\"total2008\":[\"source:t1c2n0\",\"source:t2c2n0\"],\"total2007\":[\"source:t1c3n0\",\"source:t2c3n0\"]}}}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\n  \"message\": \"Total trading assets are the sum of trading asset debt/equity instruments and derivative receivables. I calculated 2008 total (384102 + 121417 = 505519) minus 2007 total (381415 + 65439 = 446854), giving an increase of 58,665 million dollars.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(384102+121417) - (381415+65439)\",\n    \"sources\": {\n      \"2008_debt_equity\": \"source:t1c2n0\",\n      \"2008_derivative_receivables\": \"source:t2c2n0\",\n      \"2007_debt_equity\": \"source:t1c3n0\",\n      \"2007_derivative_receivables\": \"source:t2c3n0\"\n    }\n  }\n}",
+          "response_index": 1
+        },
+        {
+          "quote": "{\n  \"message\": \"The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "text": "Response 0 placed unevaluated sums such as 384102+121417 in JSON value positions and produced no actual calculation. Response 1 moves the same intended arithmetic into expression and executes once. This is JSON/interface repair, not a financially different method or tool-result reuse."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 2
+        }
+      ],
+      "explanation": "The actual Final's primary answer matches the actually executed tool:1 result at the frozen publication precision, with the correct unit and direction. No missing explicit result_id is invented.",
+      "status": "PASS"
+    },
+    "published_unit": "millions of dollars",
+    "published_value": "58665",
+    "secondary_answer_values": [
+      {
+        "evidence": {
+          "quote": "{\n  \"message\": \"The increase in total trading assets from 2007 to 2008 is 58,665 million dollars, calculated as (2008 debt/equity instruments + 2008 derivative receivables) minus (2007 debt/equity instruments + 2007 derivative receivables).\",\n  \"final\": {\n    \"answer\": 58665,\n    \"unit\": \"millions of dollars\",\n    \"sources\": [\n      \"source:t1c2n0\",\n      \"source:t2c2n0\",\n      \"source:t1c3n0\",\n      \"source:t2c3n0\"\n    ]\n  }\n}",
+          "response_index": 2
+        },
+        "unit": "millions of dollars",
+        "value": "58,665"
+      }
+    ],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets are the sum of trading asset debt/equity instruments and derivative receivables. I calculated 2008 total (384102 + 121417 = 505519) minus 2007 total (381415 + 65439 = 446854), giving an increase of 58,665 million dollars.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(384102+121417) - (381415+65439)\",\n    \"sources\": {\n      \"2008_debt_equity\": \"source:t1c2n0\",\n      \"2008_derivative_receivables\": \"source:t2c2n0\",\n      \"2007_debt_equity\": \"source:t1c3n0\",\n      \"2007_derivative_receivables\": \"source:t2c3n0\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The successful pre-call message and Final explicitly use million dollars with a positive increase, consistent with the source's annual average balances.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\n  \"message\": \"Total trading assets are the sum of trading asset debt/equity instruments and derivative receivables. I calculated 2008 total (384102 + 121417 = 505519) minus 2007 total (381415 + 65439 = 446854), giving an increase of 58,665 million dollars.\",\n  \"tool\": \"calculate\",\n  \"arguments\": {\n    \"expression\": \"(384102+121417) - (381415+65439)\",\n    \"sources\": {\n      \"2008_debt_equity\": \"source:t1c2n0\",\n      \"2008_derivative_receivables\": \"source:t2c2n0\",\n      \"2007_debt_equity\": \"source:t1c3n0\",\n      \"2007_derivative_receivables\": \"source:t2c3n0\"\n    }\n  }\n}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "At response 1, the model explicitly identifies each annual pair and source spans. Both categories are assets; no liabilities or 2009 quantities enter the formula.",
+      "status": "PASS"
+    }
+  },
+  "R024": {
+    "answer_calculation_id": null,
+    "answer_override_evidence": [],
+    "final_answer_consistency": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"Task complete.\"}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "The actual Final is only 'Task complete.' and has no answer quantity. The correct 18 in the previous non-Final public message is not eligible for the frozen Final-only extraction rule. No incorrect numeric claim is manufactured; interpretation of a final answer remains unestablished.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "formula_applicability": {
+      "evidence": [
+        {
+          "quote": "{\"answer\":18,\"unit\":\"millions of dollars\",\"message\":\"Net change during 2006 equals December 31, 2006 balance of 134 minus December 31, 2005 balance of 116 = 18 million.\",\"sources\":[\"source:t8c1n0\",\"source:t4c1n0\"],\"result_id\":\"task:AON/2007/page_175.pdf-2\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "The earlier public response correctly states the pre-registered alternative 134 minus 116 for the 2006 restructuring-liability net change.",
+      "status": "PASS"
+    },
+    "planning_observations": {
+      "evidence": [
+        {
+          "quote": "{\"answer\":18,\"unit\":\"millions of dollars\",\"message\":\"Net change during 2006 equals December 31, 2006 balance of 134 minus December 31, 2005 balance of 116 = 18 million.\",\"sources\":[\"source:t8c1n0\",\"source:t4c1n0\"],\"result_id\":\"task:AON/2007/page_175.pdf-2\"}",
+          "response_index": 0
+        },
+        {
+          "quote": "{\"final\":\"Task complete.\"}",
+          "response_index": 1
+        }
+      ],
+      "text": "Response 0 contains a correct public answer and derivation without a final field or tool request. Response 1 then says only 'Task complete.' in Final. Frozen scoring extracts from actual Final only: do not move the earlier 18 into it. There is no actual calculation."
+    },
+    "publication_alignment": {
+      "evidence": [
+        {
+          "quote": "{\"final\":\"Task complete.\"}",
+          "response_index": 1
+        }
+      ],
+      "explanation": "No actual tool execution and Final publication of the registered target quantity can be selected as one complete answer chain. Correct public prose or component calculations are described separately, not promoted.",
+      "status": "NOT_ESTABLISHED"
+    },
+    "published_unit": null,
+    "published_value": null,
+    "secondary_answer_values": [],
+    "unit_handling": {
+      "evidence": [
+        {
+          "quote": "{\"answer\":18,\"unit\":\"millions of dollars\",\"message\":\"Net change during 2006 equals December 31, 2006 balance of 134 minus December 31, 2005 balance of 116 = 18 million.\",\"sources\":[\"source:t8c1n0\",\"source:t4c1n0\"],\"result_id\":\"task:AON/2007/page_175.pdf-2\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Response 0 explicitly labels the net change in million dollars and uses compatible monetary balances. This evidence is about the public method, not a unit published in the later Final.",
+      "status": "PASS"
+    },
+    "variable_correspondence": {
+      "evidence": [
+        {
+          "quote": "{\"answer\":18,\"unit\":\"millions of dollars\",\"message\":\"Net change during 2006 equals December 31, 2006 balance of 134 minus December 31, 2005 balance of 116 = 18 million.\",\"sources\":[\"source:t8c1n0\",\"source:t4c1n0\"],\"result_id\":\"task:AON/2007/page_175.pdf-2\"}",
+          "response_index": 0
+        }
+      ],
+      "explanation": "Response 0 identifies the two closing dates and correct t8c1n0/t4c1n0 source spans. That public financial correspondence is real even though the response is not Final and has no tool call.",
+      "status": "PASS"
+    }
+  }
+}

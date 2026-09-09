@@ -1,0 +1,1 @@
+{"message":"Percentage = (money pool activity used in 2004, $42.5 million) / (system energy receivables from money pool at Dec 31 2004, $61,592 thousand converted to $61.592 million) * 100.","tool":"calculate","arguments":{"expression":"(42.5 / (61592 / 1000)) * 100"}}

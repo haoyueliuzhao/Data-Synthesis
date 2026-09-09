@@ -1,0 +1,42 @@
+{
+  "all_reviews_and_quote_checks_complete_before_condition_decode": true,
+  "behavior_may_reveal_condition": true,
+  "bounded_peer_check_is_not_independent_expert_certification": true,
+  "created_utc": "2026-09-09T12:11:36.969789+00:00",
+  "files": {
+    "blinded_review_authoring.py": {
+      "bytes": 26711,
+      "sha256": "aac0f480944747a99627f8db84215d6c0507315fe4bc7cf0a78e9adb56220cce"
+    },
+    "boundary_peer_check.md": {
+      "bytes": 1622,
+      "sha256": "325f5d688e18720b6309fc1d75c2f595bd440331243e77d55f431a323d16f762"
+    },
+    "masked_reviews.json": {
+      "bytes": 139522,
+      "sha256": "13fc28577db56fdb61cb4f7154b96e4b4809ae2c6ef2300391b58791b8a6c126"
+    }
+  },
+  "frozen_source_commit": "fa81ce3b9da86e6231d32ca220b1bbca8bd2f538",
+  "kind": "condition_label_masked_review_lock",
+  "mapping_labelled_sessions_reports_and_costs_not_read_before_this_lock": true,
+  "masked_validation": {
+    "all_primary_present_values_unchanged": true,
+    "answer_FAIL": 0,
+    "answer_PASS": 19,
+    "answer_UNDETERMINED": 5,
+    "formula_driven_verified": 12,
+    "no_host_sum_or_prior_message_answer_substitution": true,
+    "unknown_without_target_scalar": [
+      "R011",
+      "R013",
+      "R016",
+      "R021",
+      "R024"
+    ]
+  },
+  "reference_task_answers_known": true,
+  "registered_reviews": 24,
+  "reviewer": "executing_agent",
+  "reviewer_is_independent": false
+}

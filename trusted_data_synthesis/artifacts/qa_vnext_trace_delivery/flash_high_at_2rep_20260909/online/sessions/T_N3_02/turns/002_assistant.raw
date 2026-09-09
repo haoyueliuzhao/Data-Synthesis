@@ -1,0 +1,12 @@
+{
+  "message": "Using the disclosures in Note 28, for 2010 the segregated cash is $25.0 billion and the securities fair value is $9.7 billion, giving a total of $34.7 billion. For 2009 the amounts are $24.0 billion and $10.2 billion, giving a total of $34.2 billion.",
+  "final": {
+    "answer": "2010: 34.7 billion; 2009: 34.2 billion",
+    "components": {
+      "2010": {"cash": 25.0, "securities_fair_value": 9.7, "total": 34.7},
+      "2009": {"cash": 24.0, "securities_fair_value": 10.2, "total": 34.2}
+    },
+    "unit": "USD billions",
+    "sources": ["source:q16n3", "source:q16n4", "source:q16n5", "source:q16n6"]
+  }
+}

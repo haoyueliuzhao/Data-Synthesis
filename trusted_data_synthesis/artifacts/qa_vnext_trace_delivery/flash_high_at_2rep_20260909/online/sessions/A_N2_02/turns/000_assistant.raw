@@ -1,0 +1,1 @@
+{"message":"The money pool activity used $42.5 million in 2004, while receivables from the money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million. Dividing 42.5 by 61.592 gives approximately 69.0%.","tool":"calculate","arguments":{"expression":"42.5/(61592/1000)*100","sources":{"42.5":"source:q0n0","61592":"source:t2c0n0"}}}

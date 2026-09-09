@@ -1,0 +1,1 @@
+{"message":"Using the company's defined cash flow row from the table on page 52: 2006 = 957.4, 2005 = 769.1, 2004 = 950.4. Average = (957.4 + 769.1 + 950.4) / 3.","tool":"calculate","arguments":{"expression":"(957.4 + 769.1 + 950.4) / 3","sources":{"2006 cash flow":"source:t3c1n0","2005 cash flow":"source:t3c2n0","2004 cash flow":"source:t3c3n0"}}}
