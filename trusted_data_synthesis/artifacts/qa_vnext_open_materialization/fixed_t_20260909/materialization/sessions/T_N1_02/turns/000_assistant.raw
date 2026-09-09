@@ -1,0 +1,1 @@
+{"message":"Percentage of total facilities (measured in square feet) that are leased = total leased square feet / total facilities square feet x 100 = 8.1 / 56.0 x 100 = 14.4643%.","tool":"calculate","arguments":{"expression":"8.1/56.0*100","sources":{"numerator":"source:t2c3n0","denominator":"source:t3c3n0"}}}

@@ -1,0 +1,15 @@
+{
+  "message": "Net change in unpaid restructuring liabilities during 2006 = balance at Dec 31, 2006 (134) minus balance at Dec 31, 2005 / opening balance for 2006 (116). Source rows: t8c1 = balance at December 31, 2006; t4c1 = balance at December 31, 2005.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "closing_2006 - opening_2006",
+    "variables": {
+      "closing_2006": {"value": 134, "source": "source:t8c1n0", "unit": "$ millions"},
+      "opening_2006": {"value": 116, "source": "source:t4c1n0", "unit": "$ millions"}
+    },
+    "sources": {
+      "closing_2006": "source:t8c1n0",
+      "opening_2006": "source:t4c1n0"
+    }
+  }
+}

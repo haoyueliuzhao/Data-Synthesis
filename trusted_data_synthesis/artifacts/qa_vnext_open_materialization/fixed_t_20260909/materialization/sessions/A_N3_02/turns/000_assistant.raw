@@ -1,0 +1,1 @@
+{"message":"I will calculate the total segregated assets for each year by adding the stated cash amounts and the securities fair values disclosed in the note.","tool":"calculate","arguments":{"expression":"(25.0 + 9.7) for 2010? I cannot include text"}

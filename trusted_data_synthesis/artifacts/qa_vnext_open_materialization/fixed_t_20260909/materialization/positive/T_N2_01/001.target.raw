@@ -1,0 +1,10 @@
+{
+  "final": {
+    "message": "Money pool activity used $42.5 million in 2004 (source q0). Receivables from money pool at Dec 31, 2004 were $61,592 thousand, i.e. $61.592 million (source t2c0). Ratio = 42.5 / 61.592 = 69.0025%, about 69.0%.",
+    "answer": "69.0%",
+    "value": 69.00246785296792,
+    "unit": "percent",
+    "sources": ["source:q0n0", "source:t2c0n0"],
+    "result_id": "tool:1"
+  }
+}

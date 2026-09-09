@@ -1,0 +1,1 @@
+{"message":"For 2009, cash segregated was $24.0B and securities fair value was $10.2B; combined segregated assets are $34.2B.","tool":"calculate","arguments":{"expression":"cash2009 + sec2009","variables":{"cash2009":{"value":24.0,"source":"source:q16n4","unit":"billion"},"sec2009":{"value":10.2,"source":"source:q16n6","unit":"billion"}}}}

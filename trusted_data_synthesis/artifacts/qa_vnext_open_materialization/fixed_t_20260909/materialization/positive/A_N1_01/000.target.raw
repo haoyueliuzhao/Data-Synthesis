@@ -1,0 +1,1 @@
+{"message":"The table shows total leased facilities of 8.1 million sq ft and total facilities of 56.0 million sq ft. Therefore leased percentage is (8.1 / 56.0) × 100.","tool":"calculate","arguments":{"expression":"8.1/56*100"}}

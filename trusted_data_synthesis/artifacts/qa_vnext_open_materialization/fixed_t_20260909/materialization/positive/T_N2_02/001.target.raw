@@ -1,0 +1,1 @@
+{"message":"Percentage = $42.5 million money pool operating cash flow use (source:q0n0) divided by $61.592 million receivables (source:t2c0n0, $61,592 thousand) times 100.","final":{"answer":"69.0%","value":69.00246785296792,"unit":"percent","calculation":"42.5 / (61592 / 1000) * 100","sources":["source:q0n0","source:t2c0n0"],"result_id":"tool:1"}}
