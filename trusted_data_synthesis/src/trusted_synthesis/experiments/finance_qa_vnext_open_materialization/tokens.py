@@ -1,0 +1,308 @@
+"""Exact open-history token representation using existing local tokenizer assets.
+
+The caller binds same-interaction source bytes and selects positive responses.
+This module neither reconstructs financial states nor authorizes a target.  It
+adapts the existing exact-content encoder to real multi-message open histories,
+retaining the already frozen 32,768-token policy without changing old bindings.
+"""
+
+from pathlib import Path
+
+from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.instructions import SYSTEMS
+from trusted_synthesis.experiments.qa_reasoning_share_training_preflight import (
+    tokenization as assets,
+)
+
+from .plan import MAX_SEQUENCE_LENGTH, read_json, record, require, sha
+
+ASSET_PARENT = (
+    "trusted_data_synthesis/artifacts/qa_vnext_finqa_support_exploration/"
+    "j1_j2_nd_3rep_20260908/preparation"
+)
+BINDING_PATH = ASSET_PARENT + "/tokenizer_binding.json"
+PARENT_POLICY_PATH = ASSET_PARENT + "/representation_policy.json"
+BINDING_SHA256 = "05738f570e0c0a2a8cc59dae4b3348bbe62c8fc8b88927a258efa09595531cdb"
+PARENT_POLICY_SHA256 = "e52e97a5ac2b720bee9b02d596b5a667849be1f2d5e85291990197f38b786ef3"
+BINDING_ID = (
+    "share_training_tokenizer_binding:"
+    "19bd113181c70cdc83291facccc25e7bc28ecd789588be5020ba9940d4fbaf58"
+)
+PARENT_POLICY_ID = (
+    "finance_qa_vnext_finqa_numeric_representation_policy:"
+    "173cb50bc4be1438f3b53d39ccad786b1962886028b1e839585cc597c8e56a92"
+)
+SOURCE_HASH_FIELDS = (
+    "request_sha256",
+    "response_projection_sha256",
+    "raw_response_sha256",
+)
+
+
+def _policy(binding):
+    require(MAX_SEQUENCE_LENGTH == 32_768, "open_tokens.existing_length_policy")
+    require(
+        binding["id"] == BINDING_ID
+        and binding["maximum_sequence_length"] == 24_576
+        and binding["model_max_position_embeddings"] == MAX_SEQUENCE_LENGTH
+        and binding["model_rope_scaling"] is None,
+        "open_tokens.existing_assets_and_position_authority",
+    )
+    return record(
+        "open_token_policy",
+        tokenizer_binding_id=BINDING_ID,
+        inherited_representation_policy_id=PARENT_POLICY_ID,
+        tokenizer_binding_path=BINDING_PATH,
+        tokenizer_binding_file_sha256=BINDING_SHA256,
+        inherited_policy_path=PARENT_POLICY_PATH,
+        inherited_policy_file_sha256=PARENT_POLICY_SHA256,
+        historical_binding_length_field=24_576,
+        historical_binding_unchanged=True,
+        maximum_sequence_length=MAX_SEQUENCE_LENGTH,
+        model_max_position_embeddings=binding["model_max_position_embeddings"],
+        model_rope_scaling=None,
+        tokenizer_declared_length_is_authority=False,
+        chat_template_sha256=binding["chat_template_sha256"],
+        chat_suffix=assets.CHAT_SUFFIX,
+        suffix_token_ids=assets.SUFFIX_TOKEN_IDS,
+        input="same-interaction actual HTTP request.messages, including original A/T SYSTEM",
+        target="same-interaction original public assistant.raw UTF-8 content",
+        source_join_authority="new source binding; tokenization does not independently rejoin HTTP",
+        source_projection_is_original_http_response=False,
+        original_json_errors_kept_in_later_input_history=True,
+        positive_targets="structurally legal calculate/Final responses in original valid sessions",
+        mask_policy=assets.MASK_POLICY,
+        automatic_assistant_mask_used=False,
+        target_offset_policy="complete Unicode character coverage; byte-fallback overlaps allowed",
+        target_roundtrip="exact original UTF-8 bytes; no JSON reserialization",
+        truncation=False,
+        overlength="retain original candidate and diagnostics; no consumable token arrays",
+        boundary_failure="reject, never crop prompt or target",
+        padding_side="right",
+        causal_shift=1,
+        arrays_before_collation_are_unpadded=True,
+        package_unit="complete original session; no row-uniform class weighting implied",
+        class_weights_assigned=False,
+        Student_weights=False,
+        Student_forward=False,
+        training=False,
+        GPU=False,
+        Provider=False,
+    )
+
+
+def load_bound_assets(root):
+    """Read the exact existing binding/policy and load only the local tokenizer."""
+    root = Path(root)
+    objects = []
+    for relative, byte_count, digest in (
+        (BINDING_PATH, 5_462, BINDING_SHA256),
+        (PARENT_POLICY_PATH, 1_057, PARENT_POLICY_SHA256),
+    ):
+        path = root / relative
+        require(path.is_file() and not path.is_symlink(), "open_tokens.bound_file")
+        raw = path.read_bytes()
+        require(len(raw) == byte_count and sha(raw) == digest, "open_tokens.bound_file_bytes")
+        objects.append(read_json(path))
+        require(path.read_bytes() == raw, "open_tokens.bound_file_changed")
+    binding, parent = objects
+    require(
+        parent["id"] == PARENT_POLICY_ID
+        and parent["tokenizer_binding_id"] == binding["id"] == BINDING_ID
+        and parent["maximum_sequence_length"] == MAX_SEQUENCE_LENGTH
+        and parent["truncation"] is False
+        and parent["mask_policy"] == assets.MASK_POLICY,
+        "open_tokens.inherited_policy_binding",
+    )
+    tokenizer = assets.load_tokenizer(binding)
+    return binding, _policy(binding), tokenizer
+
+
+def _candidate(candidate):
+    require(isinstance(candidate, dict), "open_tokens.candidate_shape")
+    for key in ("id", "task_key", "session_label", "source_closeout_id"):
+        require(
+            isinstance(candidate.get(key), str) and bool(candidate[key]), "open_tokens.identity"
+        )
+    require(
+        candidate.get("population") in {"A", "T"}
+        and candidate["session_label"].startswith(candidate["population"] + "_")
+        and type(candidate.get("response_index")) is int
+        and candidate["response_index"] >= 0,
+        "open_tokens.population_and_response",
+    )
+    for key in SOURCE_HASH_FIELDS:
+        value = candidate.get(key)
+        require(
+            isinstance(value, str)
+            and len(value) == 64
+            and all(character in "0123456789abcdef" for character in value),
+            "open_tokens.source_digest",
+        )
+    messages = candidate.get("input_messages")
+    require(
+        isinstance(messages, list)
+        and len(messages) >= 2
+        and all(
+            isinstance(message, dict)
+            and set(message) == {"role", "content"}
+            and message["role"] in {"system", "user", "assistant"}
+            and isinstance(message["content"], str)
+            for message in messages
+        )
+        and messages[0]["role"] == "system"
+        and messages[1]["role"] == "user"
+        and messages[-1]["role"] == "user",
+        "open_tokens.original_open_messages",
+    )
+    require(
+        messages[0]["content"] == SYSTEMS[candidate["population"]],
+        "open_tokens.original_condition_system",
+    )
+    target = candidate.get("target_response")
+    require(isinstance(target, str) and bool(target), "open_tokens.target_text")
+    require(
+        sha(target.encode("utf-8")) == candidate["raw_response_sha256"], "open_tokens.target_bytes"
+    )
+    # This checks the whole intermediate candidate, including input history and
+    # source joins, against this stage's record schema and canonical content ID.
+    # Rehashing a target field alone cannot legitimize an unbound input swap.
+    kind = candidate["id"].split(":", 1)[0]
+    require(
+        candidate
+        == record(
+            kind,
+            **{
+                key: value
+                for key, value in candidate.items()
+                if key not in {"id", "schema_version"}
+            },
+        ),
+        "open_tokens.candidate_identity",
+    )
+
+
+def encode_candidate(candidate, binding, policy, tokenizer):
+    """Encode exact messages/content; no old Action/Update or State assumptions.
+
+    Boundary logic follows the existing encode_original_candidate implementation,
+    but output identities refer to the new source binding rather than fabricated
+    qualification or public-runtime State objects.
+    """
+    _candidate(candidate)
+    require(policy == _policy(binding), "open_tokens.frozen_policy")
+    require(tokenizer.chat_template == binding["chat_template"], "open_tokens.runtime_template")
+    messages, target = candidate["input_messages"], candidate["target_response"]
+    prefix = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    full = tokenizer.apply_chat_template(
+        [*messages, {"role": "assistant", "content": target}],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
+    require(full == prefix + target + assets.CHAT_SUFFIX, "open_tokens.rendered_content_changed")
+    start, end = len(prefix), len(prefix) + len(target)
+    prefix_ids = tokenizer(prefix, add_special_tokens=False, truncation=False, padding=False)[
+        "input_ids"
+    ]
+    encoded = tokenizer(
+        full,
+        add_special_tokens=False,
+        truncation=False,
+        padding=False,
+        return_attention_mask=True,
+        return_offsets_mapping=True,
+    )
+    ids, offsets = encoded["input_ids"], encoded["offset_mapping"]
+    require(ids[: len(prefix_ids)] == prefix_ids, "open_tokens.prefix_token_mismatch")
+    require(
+        len(offsets) == len(ids)
+        and all(0 <= left <= right <= len(full) for left, right in offsets),
+        "open_tokens.offset_shape",
+    )
+    require(
+        not any(left < start < right or left < end < right for left, right in offsets),
+        "open_tokens.boundary_crossing",
+    )
+    selected = [
+        index for index, (left, right) in enumerate(offsets) if start <= left < right <= end
+    ]
+    require(bool(selected) and selected[0] > 0, "open_tokens.no_causal_target")
+    require(
+        selected == list(range(len(prefix_ids), len(prefix_ids) + len(selected))),
+        "open_tokens.target_token_interval",
+    )
+    target_start, target_end = selected[0], selected[-1] + 1
+    covered = start
+    for left, right in offsets[target_start:target_end]:
+        require(
+            left <= covered and start <= left < right <= end,
+            "open_tokens.target_offset_coverage",
+        )
+        covered = max(covered, right)
+    require(covered == end, "open_tokens.target_offset_coverage")
+    target_ids = ids[target_start:target_end]
+    require(
+        not set(target_ids) & set(tokenizer.all_special_ids), "open_tokens.target_special_token"
+    )
+    decoded = tokenizer.decode(
+        target_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False
+    )
+    require(decoded.encode("utf-8") == target.encode("utf-8"), "open_tokens.target_decode")
+    require(ids[target_end:] == assets.SUFFIX_TOKEN_IDS, "open_tokens.suffix_tokens")
+    require(encoded["attention_mask"] == [1] * len(ids), "open_tokens.unexpected_padding")
+    mask = [int(target_start <= index < target_end) for index in range(len(ids))]
+    labels = [token if mask[index] else -100 for index, token in enumerate(ids)]
+    require(mask[0] == 0 and sum(mask[1:]) == len(target_ids), "open_tokens.causal_shift")
+    fits = len(ids) <= MAX_SEQUENCE_LENGTH
+    return record(
+        "open_token_representation",
+        candidate_id=candidate["id"],
+        population=candidate["population"],
+        task_key=candidate["task_key"],
+        session_label=candidate["session_label"],
+        response_index=candidate["response_index"],
+        source_closeout_id=candidate["source_closeout_id"],
+        **{key: candidate[key] for key in SOURCE_HASH_FIELDS},
+        tokenizer_binding_id=binding["id"],
+        representation_policy_id=policy["id"],
+        tokenrepresentation_status="fit" if fits else "not_fit",
+        reason=None if fits else "maximum_sequence_length_exceeded",
+        consumable_token_representation=fits,
+        maximum_sequence_length=MAX_SEQUENCE_LENGTH,
+        sequence_length=len(ids),
+        prompt_token_count=len(prefix_ids),
+        target_token_count=len(target_ids),
+        suffix_token_count=len(ids) - target_end,
+        input_ids=ids if fits else None,
+        attention_mask=encoded["attention_mask"] if fits else None,
+        target_mask=mask if fits else None,
+        labels=labels if fits else None,
+        target_token_start=target_start,
+        target_token_end=target_end,
+        target_character_start=start,
+        target_character_end=end,
+        character_offsets_use_unicode_codepoints=True,
+        causal_shift=1,
+        causal_target_token_start=target_start - 1,
+        causal_target_token_end=target_end - 1,
+        rendered_sha256=sha(full.encode("utf-8")),
+        rendered_byte_count=len(full.encode("utf-8")),
+        target_raw_byte_count=len(target.encode("utf-8")),
+        original_candidate_retained=True,
+        truncated=False,
+        class_weights_assigned=False,
+        boundary_checks={
+            "full_render_is_exact_prefix_content_suffix": True,
+            "original_content_utf8_bytes_preserved": True,
+            "full_token_prefix_equals_prompt_tokens": True,
+            "no_token_crosses_content_boundaries": True,
+            "content_offsets_cover_exact_character_interval": True,
+            "content_tokens_decode_to_original_utf8_bytes": True,
+            "content_token_interval_is_contiguous": True,
+            "original_history_and_errors_are_masked_prompt": True,
+            "prompt_and_role_header_have_zero_target_mask": True,
+            "eos_and_suffix_have_zero_target_mask": True,
+            "padding_is_absent_before_collation": True,
+            "all_target_positions_have_causal_predecessor": True,
+            "no_truncation": True,
+        },
+    )
