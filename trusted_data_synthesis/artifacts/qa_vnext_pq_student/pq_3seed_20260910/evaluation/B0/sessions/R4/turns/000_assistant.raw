@@ -1,0 +1,21 @@
+To calculate the percentage change in free cash flow from 2009 to 2010, we need to use the free cash flow values for these years from the table. The free cash flow for 2009 is $699 million and for 2010 is $1415 million.
+
+The formula for percentage change is:
+\[ \text{Percentage Change} = \left( \frac{\text{New Value} - \text{Old Value}}{\text{Old Value}} \right) \times 100 \]
+
+Here, the new value is the free cash flow for 2010, and the old value is the free cash flow for 2009.
+
+Let's calculate this using the calculate tool.
+```json
+{
+  "message": "Calculating the percentage change in free cash flow from 2009 to 2010.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(1415 - 699) / 699 * 100",
+    "variables": {
+      "new_value": 1415,
+      "old_value": 699
+    }
+  }
+}
+```

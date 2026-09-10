@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "The percentage change in the balance of unrecognized tax benefits from 2007 to 2008 is -25%",
+    "value": -25,
+    "unit": "%",
+    "sources": [
+      "source:t2c1n0",
+      "source:t2c0n1"
+    ],
+    "result_id": "tool:1"
+  }
+}

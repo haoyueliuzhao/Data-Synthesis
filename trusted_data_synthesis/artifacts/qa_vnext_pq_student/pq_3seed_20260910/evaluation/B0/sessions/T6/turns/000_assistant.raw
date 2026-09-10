@@ -1,0 +1,22 @@
+The net change in net revenue for Entergy Wholesale Commodities during 2012 can be calculated by subtracting the 2011 net revenue from the 2012 net revenue. 
+
+2011 net revenue = $2045 million
+2012 net revenue = $1854 million
+
+Net change in net revenue = 2012 net revenue - 2011 net revenue
+
+Using the calculate tool:
+```json
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "2012_net_revenue - 2011_net_revenue",
+    "variables": {
+      "2012_net_revenue": 1854,
+      "2011_net_revenue": 2045
+    }
+  }
+}
+```
+
+Final answer: The net change in net revenue for Entergy Wholesale Commodities during 2012 is -191 million dollars.

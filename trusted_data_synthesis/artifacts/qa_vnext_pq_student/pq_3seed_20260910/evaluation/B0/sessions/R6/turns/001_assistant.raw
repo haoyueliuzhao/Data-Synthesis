@@ -1,0 +1,14 @@
+It seems there was an issue with the previous calculation request. Let's try again to calculate the average amortization expense from 2006 to 2008 using the provided values.
+
+The amortization expenses for the years 2006, 2007, and 2008 are $64 million, $77 million, and $90 million, respectively. The formula for the average is the sum of these values divided by 3.
+
+I will use the calculate tool to perform this calculation.
+```json
+{
+  "message": "Calculating the average amortization expense from 2006 to 2008.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(64 + 77 + 90) / 3"
+  }
+}
+```

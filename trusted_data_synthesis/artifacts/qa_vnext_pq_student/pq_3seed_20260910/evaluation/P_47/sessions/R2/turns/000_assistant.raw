@@ -1,0 +1,15 @@
+{
+  "message": "To find the percent of the total TDRs that was associated with commercial loans in 2012, I will use the total TDRs and the commercial lending values from the table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "t3c1 / t2c1 * 100",
+    "variables": {
+      "t3c1": {"value": 2859, "source": "source:t3c1n0", "unit": "in millions"},
+      "t2c1": {"value": 541, "source": "source:t2c1n0", "unit": "in millions"}
+    },
+    "sources": {
+      "t3c1": "source:t3c1n0",
+      "t2c1": "source:t2c1n0"
+    }
+  }
+}

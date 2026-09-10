@@ -1,0 +1,19 @@
+It seems there is a persistent issue with the interface. Let's break down the calculation step-by-step and perform it manually for clarity.
+
+First, we calculate the difference between the working capital values for 2016 and 2015:
+
+\[ 1279337 - 1019953 = 259384 \]
+
+Next, we divide this difference by the working capital value for 2015:
+
+\[ \frac{259384}{1019953} \approx 0.2548 \]
+
+Finally, we multiply by 100 to get the percentage change:
+
+\[ 0.2548 \times 100 \approx 25.48\% \]
+
+So, the percentage change in working capital from 2015 to 2016 is approximately 25.48%.
+
+Here is the final answer:
+
+\[ \boxed{25.48\%} \]

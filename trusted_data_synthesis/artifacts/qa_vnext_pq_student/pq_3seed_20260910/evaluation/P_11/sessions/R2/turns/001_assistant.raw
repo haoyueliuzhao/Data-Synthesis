@@ -1,0 +1,15 @@
+{
+  "message": "There was an error in the expression syntax. The correct expression should be (541 / 2859) * 100 to calculate the percentage of total TDRs that was associated with commercial loans in 2012.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(source:t2c1n0 / source:t3c1n0) * 100",
+    "variables": {
+      "source:t2c1n0": {"value": 541, "unit": "in millions"},
+      "source:t3c1n0": {"value": 2859, "unit": "in millions"}
+    },
+    "sources": {
+      "source:t2c1n0": "PNC/2012/page_174.pdf-5",
+      "source:t3c1n0": "PNC/2012/page_174.pdf-5"
+    }
+  }
+}

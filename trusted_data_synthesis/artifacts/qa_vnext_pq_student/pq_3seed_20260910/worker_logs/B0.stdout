@@ -1,0 +1,13 @@
+evaluation B0 T1 response_budget_exhausted 32
+evaluation B0 T2 response_budget_exhausted 32
+evaluation B0 T3 response_budget_exhausted 32
+evaluation B0 T4 response_budget_exhausted 32
+evaluation B0 T5 response_budget_exhausted 32
+evaluation B0 T6 response_budget_exhausted 32
+evaluation B0 R1 response_budget_exhausted 32
+evaluation B0 R2 context_byte_limit 27
+evaluation B0 R3 response_budget_exhausted 32
+evaluation B0 R4 response_budget_exhausted 32
+evaluation B0 R5 response_budget_exhausted 32
+evaluation B0 R6 response_budget_exhausted 32
+completed student_generation_report:17548b8af9b0826c2635c789e6f2e19109c3c41fd3dcde48d6a8dc5122f66e85 {'schema_version': 'fixed_support_pq_student.v1.offline_student_guards', 'phase': 'baseline', 'calls': {'private_or_credential_file_read': 0, 'socket_connect': 0, 'socket_connect_ex': 0, 'socket_create_connection': 0}, 'all_zero': True, 'provider_calls': 0, 'GPU_explicitly_allowed': True, 'scope': 'instrumented Python entry points, local-only model loading; not arbitrary-code isolation proof', 'id': 'offline_student_guards:6de8b87c12977d6f6fc1ab033b6809a88c5f03d7cda53de60112c36a552de38a'}

@@ -1,0 +1,15 @@
+{
+  "message": "The net change in the balance of employee separations liability during 2004 is calculated by subtracting the liability as of January 1, 2004 from the liability as of December 31, 2004 for the employee separations row in the table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "665 - 2239",
+    "variables": {
+      "665": {"value": 665, "unit": "thousand dollars"},
+      "2239": {"value": 2239, "unit": "thousand dollars"}
+    },
+    "sources": {
+      "665": "source:t0c4n0",
+      "2239": "source:t0c1n1"
+    }
+  }
+}

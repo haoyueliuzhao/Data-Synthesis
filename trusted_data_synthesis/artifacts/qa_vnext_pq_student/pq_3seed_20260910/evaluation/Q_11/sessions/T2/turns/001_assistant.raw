@@ -1,0 +1,10 @@
+{
+  "message": "The net change in the accrued liability for unrecognized tax benefits from 2007 to 2008 is -11 million dollars. This means the liability decreased by 11 million dollars from 2007 to 2008.",
+  "final": {
+    "answer": "The net change in the accrued liability for unrecognized tax benefits from 2007 to 2008 is -11 million dollars.",
+    "value": -11,
+    "unit": "million dollars",
+    "sources": ["source:t9c1n0", "source:t9c2n0"],
+    "result_id": "tool:1"
+  }
+}

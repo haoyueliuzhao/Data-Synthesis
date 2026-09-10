@@ -1,0 +1,20 @@
+It seems there was an issue with the expression format. Let's correct the expression and ensure it is properly formatted for the `calculate` tool. We'll use the correct syntax and ensure the values are correctly referenced.
+
+Here is the corrected calculation:
+
+\[ \text{Percentage Change} = \left( \frac{1279337 - 1019953}{1019953} \right) \times 100 \]
+
+Let's perform the calculation again using the `calculate` tool.
+```json
+{
+  "message": "Calculating the percentage change in working capital from 2015 to 2016.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "( ( 1279337 - 1019953 ) / 1019953 ) * 100",
+    "variables": {
+      "1279337": {"value": 1279337, "unit": "thousand"},
+      "1019953": {"value": 1019953, "unit": "thousand"}
+    }
+  }
+}
+```

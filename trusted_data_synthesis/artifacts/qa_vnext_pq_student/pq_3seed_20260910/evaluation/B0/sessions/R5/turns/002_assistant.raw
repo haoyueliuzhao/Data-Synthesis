@@ -1,0 +1,21 @@
+It appears there is an issue with the JSON format. Let's simplify the request and ensure the JSON is correctly formatted.
+
+We need to calculate the average operating profit for MFC in millions between 2014 and 2016. The values are:
+- 2014: 1344
+- 2015: 1282
+- 2016: 1018
+
+Let's calculate the average.
+```json
+{
+  "message": "Calculating the average operating profit for MFC in millions between 2014 and 2016.",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {
+      "2014": 1344,
+      "2015": 1282,
+      "2016": 1018
+    }
+  }
+}
+```

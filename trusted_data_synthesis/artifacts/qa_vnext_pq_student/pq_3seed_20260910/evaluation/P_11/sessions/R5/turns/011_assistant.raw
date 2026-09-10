@@ -1,0 +1,7 @@
+{
+  "message": "The average operating profit for MFC between 2014 and 2016 is calculated as (1344 + 1282 + 1018) / 3.",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {}
+  }
+}

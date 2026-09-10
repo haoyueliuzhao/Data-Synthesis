@@ -1,0 +1,17 @@
+It appears there is an issue with the interface. Let's break down the calculation step-by-step and ensure the expression is correctly formatted.
+
+The formula for percentage change is:
+\[ \text{Percentage Change} = \left( \frac{\text{New Value} - \text{Old Value}}{\text{Old Value}} \right) \times 100 \]
+
+Here, the new value is the free cash flow for 2010, which is $1415 million, and the old value is the free cash flow for 2009, which is $699 million.
+
+Let's calculate this using the `calculate` tool again, ensuring the expression is correctly formatted.
+```json
+{
+  "message": "Calculating the percentage change in free cash flow from 2009 to 2010.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(1415 - 699) / 699 * 100"
+  }
+}
+```

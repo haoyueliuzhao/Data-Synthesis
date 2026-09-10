@@ -1,0 +1,20 @@
+To find the percent of the total number of shares purchased in December 31, 2012, we need to use the data from the table for December 2012 and the total fourth quarter.
+
+From the table:
+- Total number of shares purchased in December 2012: 102400
+- Total number of shares purchased in the fourth quarter: 619314
+
+The formula to calculate the percentage is:
+\[ \text{Percentage} = \left( \frac{\text{December 2012 shares}}{\text{Fourth quarter shares}} \right) \times 100 \]
+
+Let's calculate this using the calculate tool.
+```json
+{
+  "message": "Calculating the percentage of shares purchased in December 2012 out of the total fourth quarter shares.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(102400 / 619314) * 100",
+    "variables": {}
+  }
+}
+```

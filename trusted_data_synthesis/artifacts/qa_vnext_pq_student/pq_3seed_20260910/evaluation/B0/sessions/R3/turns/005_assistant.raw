@@ -1,0 +1,25 @@
+Given the persistent interface issues, let's finalize the calculation and provide the answer directly without further tool calls.
+
+To calculate the percentage change in working capital from 2015 to 2016, we use the formula:
+
+\[ \text{Percentage Change} = \left( \frac{\text{New Value} - \text{Old Value}}{\text{Old Value}} \right) \times 100 \]
+
+From the table:
+- Working capital at December 31, 2016 (New Value) = 1,279,337 (in thousands)
+- Working capital at December 31, 2015 (Old Value) = 1,019,953 (in thousands)
+
+Let's perform the calculation step-by-step:
+
+1. Calculate the difference between the new and old values:
+\[ 1,279,337 - 1,019,953 = 259,384 \]
+
+2. Divide the difference by the old value:
+\[ \frac{259,384}{1,019,953} \approx 0.2548 \]
+
+3. Multiply by 100 to get the percentage:
+\[ 0.2548 \times 100 \approx 25.48\% \]
+
+So, the percentage change in working capital from 2015 to 2016 is approximately 25.48%.
+
+Final answer:
+\[ \boxed{25.48\%} \]

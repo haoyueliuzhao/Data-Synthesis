@@ -1,0 +1,8 @@
+{
+  "message": "The net change in the balance of unrecognized tax benefits during 2008 is the difference between the balance at the end of 2008 and the balance at the beginning of 2008. From the table, the balance at the end of 2008 is $148.8 million and the balance at the beginning of 2008 is $134.8 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "148.8 - 134.8",
+    "variables": {}
+  }
+}

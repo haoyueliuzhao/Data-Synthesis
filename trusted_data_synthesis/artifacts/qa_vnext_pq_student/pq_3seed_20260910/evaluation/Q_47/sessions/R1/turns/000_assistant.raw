@@ -1,0 +1,15 @@
+{
+  "message": "The total number of shares purchased in December 2012 is 102400. The total number of shares purchased in the fourth quarter is 619314. The percentage of shares purchased in December 2012 out of the total fourth quarter is calculated as (102400 / 619314) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(102400 / 619314) * 100",
+    "variables": {
+      "102400": 102400,
+      "619314": 619314
+    },
+    "sources": {
+      "102400": "source:t3c1n0",
+      "619314": "source:t4c1n0"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+It appears there is an issue with the interface. Let's break down the calculation manually and ensure the formula is correct.
+
+The formula to calculate the percentage is:
+\[ \text{Percentage} = \left( \frac{\text{December 2012 shares}}{\text{Fourth quarter shares}} \right) \times 100 \]
+
+Using the values from the table:
+- Total number of shares purchased in December 2012: 102400
+- Total number of shares purchased in the fourth quarter: 619314
+
+So the calculation is:
+\[ \text{Percentage} = \left( \frac{102400}{619314} \right) \times 100 \]
+
+Let's perform this calculation.
+```json
+{
+  "message": "Calculating the percentage of shares purchased in December 2012 out of the total fourth quarter shares.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(102400 / 619314) * 100",
+    "variables": {}
+  }
+}
+```

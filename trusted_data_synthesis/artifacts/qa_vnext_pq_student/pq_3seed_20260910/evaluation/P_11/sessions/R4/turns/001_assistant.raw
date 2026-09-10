@@ -1,0 +1,15 @@
+{
+  "message": "There was an error in the expression syntax. The correct expression should be: ((source:t1c2n0.value - source:t1c3n0.value) / source:t1c3n0.value) * 100. Let's try again.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((source:t1c2n0.value - source:t1c3n0.value) / source:t1c3n0.value) * 100",
+    "variables": {
+      "source:t1c2n0.value": 4105,
+      "source:t1c3n0.value": 3204
+    },
+    "sources": {
+      "source:t1c2n0.value": "source:t1c2n0",
+      "source:t1c3n0.value": "source:t1c3n0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "message": "The free cash flow for 2010 is $1415 million and for 2009 is $699 million. The percentage change in free cash flow from 2009 to 2010 can be calculated as ((1415 - 699) / 699) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((1415 - 699) / 699) * 100",
+    "variables": {
+      "value": 101.71572827217534,
+      "source": "source:t6c2n0",
+      "unit": "%"
+    }
+  }
+}

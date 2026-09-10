@@ -1,0 +1,15 @@
+{
+  "message": "To find the percent of total TDRs that was associated with commercial loans in 2012, I will use the total TDRs and the total commercial lending values from the table. The formula is (total commercial lending / total TDRs) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "100 * (source:t2c1n0 / source:t3c1n0)",
+    "variables": {
+      "source:t2c1n0": {"value": 541, "unit": "in millions"},
+      "source:t3c1n0": {"value": 2859, "unit": "in millions"}
+    },
+    "sources": {
+      "source:t2c1n0": "PNC/2012/page_174.pdf-5",
+      "source:t3c1n0": "PNC/2012/page_174.pdf-5"
+    }
+  }
+}

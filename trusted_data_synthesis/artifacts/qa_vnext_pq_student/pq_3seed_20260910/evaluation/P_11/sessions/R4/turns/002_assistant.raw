@@ -1,0 +1,15 @@
+{
+  "message": "There seems to be a persistent issue with the expression syntax. Let's break it down step by step. First, we need to find the difference between the 2010 and 2009 free cash flow values, then divide that by the 2009 value, and finally multiply by 100 to get the percentage change.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(source:t1c2n0.value - source:t1c3n0.value) / source:t1c3n0.value",
+    "variables": {
+      "source:t1c2n0.value": 4105,
+      "source:t1c3n0.value": 3204
+    },
+    "sources": {
+      "source:t1c2n0.value": "source:t1c2n0",
+      "source:t1c3n0.value": "source:t1c3n0"
+    }
+  }
+}

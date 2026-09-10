@@ -1,0 +1,15 @@
+{
+  "message": "The net change in the accrued liability for unrecognized tax benefits from 2007 to 2008 is the difference between the balance at December 31, 2008 and 2007. The balance at December 31, 2008 is $99 million and the balance at December 31, 2007 is $110 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "99 - 110",
+    "variables": {
+      "99": {"value": 99, "source": "source:t9c1n0", "unit": "million"},
+      "110": {"value": 110, "source": "source:t9c2n0", "unit": "million"}
+    },
+    "sources": {
+      "99": "source:t9c1n0",
+      "110": "source:t9c2n0"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+It seems there is a persistent issue with the interface. Let's manually perform the calculation and provide the result.
+
+The formula for percentage change is:
+\[ \text{Percentage Change} = \left( \frac{\text{New Value} - \text{Old Value}}{\text{Old Value}} \right) \times 100 \]
+
+Here, the new value is the free cash flow for 2010, which is $1415 million, and the old value is the free cash flow for 2009, which is $699 million.
+
+Let's calculate it step-by-step:
+1. Calculate the difference between the new value and the old value:
+\[ 1415 - 699 = 716 \]
+
+2. Divide the difference by the old value:
+\[ \frac{716}{699} \approx 1.024 \]
+
+3. Multiply by 100 to get the percentage:
+\[ 1.024 \times 100 = 102.4\% \]
+
+So, the percentage change in free cash flow from 2009 to 2010 is approximately 102.4%.
+
+The final answer is:
+```json
+{
+  "final": "102.4%"
+}
+```

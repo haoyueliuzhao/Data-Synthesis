@@ -1,0 +1,12 @@
+{
+  "message": "The percentage change in free cash flow from 2009 to 2010 is approximately 102.43%.",
+  "final": {
+    "answer": "102.43%",
+    "value": 102.43204577968526,
+    "unit": "%",
+    "sources": [
+      "source:t6c2n0",
+      "source:t6c3n0"
+    ]
+  }
+}

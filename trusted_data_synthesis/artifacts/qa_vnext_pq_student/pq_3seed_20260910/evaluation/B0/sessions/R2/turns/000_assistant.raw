@@ -1,0 +1,31 @@
+To find the percent of the total TDRs that was associated with commercial loans in 2012, we need to use the following relationship:
+
+1. Identify the total TDRs in 2012.
+2. Identify the TDRs associated with commercial loans in 2012.
+3. Calculate the percentage of commercial TDRs relative to the total TDRs.
+
+From the numeric catalog:
+- Total TDRs in 2012: $2859 million (source: t3c1n0)
+- TDRs associated with commercial loans in 2012: $541 million (source: t2c1n0)
+
+The formula to calculate the percentage is:
+\[ \text{Percentage} = \left( \frac{\text{TDRs associated with commercial loans}}{\text{Total TDRs}} \right) \times 100 \]
+
+Now, let's calculate this using the calculate tool.
+```json
+{
+  "message": "Calculating the percentage of TDRs associated with commercial loans in 2012.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(541 / 2859) * 100",
+    "variables": {
+      "541": {"value": 541, "source": "source:t2c1n0", "unit": "million"},
+      "2859": {"value": 2859, "source": "source:t3c1n0", "unit": "million"}
+    },
+    "sources": {
+      "541": "source:t2c1n0",
+      "2859": "source:t3c1n0"
+    }
+  }
+}
+```

@@ -1,0 +1,24 @@
+To find the average operating profit for MFC in millions between 2014 and 2016, we need to:
+1. Identify the operating profit values for 2014, 2015, and 2016.
+2. Sum these values.
+3. Divide the sum by 3 to get the average.
+
+From the table:
+- 2014 operating profit: 1344
+- 2015 operating profit: 1282
+- 2016 operating profit: 1018
+
+Now, let's calculate the average.
+```json
+{
+  "message": "Calculating the average operating profit for MFC in millions between 2014 and 2016.",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {
+      "2014": 1344,
+      "2015": 1282,
+      "2016": 1018
+    }
+  }
+}
+```

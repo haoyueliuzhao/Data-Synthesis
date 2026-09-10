@@ -1,0 +1,9 @@
+{
+  "message": "There is a persistent issue with the expression syntax. Let's manually calculate the net change in the balance of employee separations liability during 2004 by subtracting the liability as of January 1, 2004 from the liability as of December 31, 2004 for the employee separations row in the table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "665 - 2239",
+    "variables": {},
+    "sources": {}
+  }
+}

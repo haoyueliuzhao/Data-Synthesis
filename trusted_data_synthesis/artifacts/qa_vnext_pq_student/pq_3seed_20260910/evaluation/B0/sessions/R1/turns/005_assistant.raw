@@ -1,0 +1,14 @@
+Given the persistent interface issues, let's proceed with the final answer directly.
+
+The calculation for the percentage of shares purchased in December 2012 out of the total fourth quarter shares is:
+\[ \text{Percentage} = \left( \frac{102400}{619314} \right) \times 100 \]
+
+Performing the calculation:
+\[ \text{Percentage} = \left( 0.1651 \right) \times 100 \approx 16.51\% \]
+
+The final answer is:
+```json
+{
+  "final": "16.51%"
+}
+```

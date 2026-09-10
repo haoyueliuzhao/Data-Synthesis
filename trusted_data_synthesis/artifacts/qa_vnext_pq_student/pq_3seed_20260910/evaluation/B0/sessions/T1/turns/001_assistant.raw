@@ -1,0 +1,15 @@
+It seems there was an issue with the previous calculation request. Let's try again to calculate the net change in the balance of unrecognized tax benefits during 2008.
+
+The balance at the beginning of the period for 2008 is $134.8 million, and the balance at the end of the period for 2008 is $148.8 million. The net change can be calculated as:
+\[ \text{Net change} = 148.8 - 134.8 \]
+
+Let's use the calculate tool to perform this calculation.
+```json
+{
+  "message": "Calculating the net change in the balance of unrecognized tax benefits during 2008.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "148.8 - 134.8"
+  }
+}
+```

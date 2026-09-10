@@ -1,0 +1,12 @@
+{
+  "message": "The percentage of the total number of shares purchased in December 2012 out of the total fourth quarter is approximately 16.53%.",
+  "final": {
+    "answer": "16.53%",
+    "value": 16.534423571887604672266410899802039030281892545623,
+    "unit": "%",
+    "sources": [
+      "source:t3c1n0",
+      "source:t4c1n0"
+    ]
+  }
+}

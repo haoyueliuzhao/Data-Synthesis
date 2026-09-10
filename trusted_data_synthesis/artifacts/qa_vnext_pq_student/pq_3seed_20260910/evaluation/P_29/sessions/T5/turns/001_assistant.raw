@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "The net change amount of unrecognized tax benefits during 2007 is 17 million dollars.",
+    "value": 17,
+    "unit": "million dollars",
+    "sources": {
+      "balance_dec_31_2007": "source:t5c1",
+      "balance_jan_1_2007": "source:t0c1n1"
+    },
+    "result_id": "tool:1"
+  }
+}

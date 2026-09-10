@@ -1,0 +1,15 @@
+{
+  "message": "The percentage change in free cash flow from 2009 to 2010 can be calculated using the formula: (2010 value - 2009 value) / 2009 value * 100. The 2010 value is $1415 million and the 2009 value is $699 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(source:t1c2n0.value - source:t1c3n0.value) / source:t1c3n0.value * 100",
+    "variables": {
+      "source:t1c2n0.value": 4105,
+      "source:t1c3n0.value": 3204
+    },
+    "sources": {
+      "source:t1c2n0.value": "source:t1c2n0",
+      "source:t1c3n0.value": "source:t1c3n0"
+    }
+  }
+}

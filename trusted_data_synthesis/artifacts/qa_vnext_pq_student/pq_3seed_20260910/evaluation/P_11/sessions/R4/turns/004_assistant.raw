@@ -1,0 +1,11 @@
+{
+  "message": "There is a persistent issue with the expression syntax. Let's manually calculate the difference and then the percentage change. The difference between the 2010 and 2009 free cash flow values is 4105 - 3204 = 901. The percentage change is then (901 / 3204) * 100 = 28.11%.",
+  "final": {
+    "value": 28.11,
+    "unit": "%",
+    "sources": {
+      "2010_value": "source:t1c2n0",
+      "2009_value": "source:t1c3n0"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "message": "The net change in the balance of employee separations liability during 2004 is -1574 thousand dollars, indicating a decrease in the liability.",
+  "final": {
+    "answer": "The net change in the balance of employee separations liability during 2004 is -1574 thousand dollars.",
+    "value": -1574,
+    "unit": "thousand dollars",
+    "sources": ["source:t0c1n1", "source:t0c4n0"],
+    "result_id": "tool:1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "message": "The numeric records for the liability as of December 31, 2004 and January 1, 2004 for the employee separations row in the table are retrieved successfully.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t1c4n0 - source:t1c1n0",
+    "variables": {
+      "source:t1c4n0": {"value": 665, "unit": "thousand"},
+      "source:t1c1n0": {"value": 2239, "unit": "thousand"}
+    },
+    "sources": {
+      "source:t1c4n0": "source:t1c4n0",
+      "source:t1c1n0": "source:t1c1n0"
+    }
+  }
+}

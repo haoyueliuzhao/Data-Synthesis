@@ -1,0 +1,1 @@
+{"call_id":"tool:32","error":{"message":"expression_syntax_error","type":"CalculationError"},"result":null,"status":"error","tool":"calculate"}

@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "-25%",
+    "value": -25,
+    "unit": "%",
+    "sources": [
+      "source:t2c1n0",
+      "source:t0c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

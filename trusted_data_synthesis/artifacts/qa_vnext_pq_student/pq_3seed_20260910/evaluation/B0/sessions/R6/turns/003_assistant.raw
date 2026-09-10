@@ -1,0 +1,10 @@
+It seems there is a persistent issue with the interface. Let's provide the final answer directly in the final message.
+
+The average amortization expense from 2006 to 2008 is $77 million.
+
+Final answer: {"value": 77, "unit": "million dollars"}
+```json
+{
+  "final": "77"
+}
+```

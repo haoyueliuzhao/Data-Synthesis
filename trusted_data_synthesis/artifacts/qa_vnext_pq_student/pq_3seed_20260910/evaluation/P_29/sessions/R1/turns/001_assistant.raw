@@ -1,0 +1,18 @@
+{
+  "message": "The calculation for the percentage of the total number of shares purchased in December 2012 out of the total fourth quarter purchases is 102400 / 619314 * 100, which evaluates to approximately 16.53%.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "16.534423571887604672266410899802039030281892545623",
+    "variables": {},
+    "sources": {}
+  },
+  "final": {
+    "answer": "16.53%",
+    "value": 16.534423571887604672266410899802039030281892545623,
+    "unit": "%",
+    "sources": {
+      "102400": "source:t3c1n0",
+      "619314": "source:t4c1n0"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+To find the net change in the accrued liability for unrecognized tax benefits from 2007 to 2008, we need to subtract the balance at December 31, 2007 from the balance at December 31, 2008.
+
+From the source document:
+- Balance at December 31, 2008: $99 million
+- Balance at December 31, 2007: $110 million
+
+The calculation is:
+\[ \text{Net change} = \text{Balance at December 31, 2008} - \text{Balance at December 31, 2007} \]
+
+Using the calculate tool:
+```plaintext
+expression: 99 - 110
+```
+
+Let's perform the calculation.
+```json
+{
+  "message": "Calculating the net change in the accrued liability for unrecognized tax benefits from 2007 to 2008.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "99 - 110"
+  }
+}
+```

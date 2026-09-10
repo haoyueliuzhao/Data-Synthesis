@@ -1,0 +1,12 @@
+{
+  "message": "There was an error in the tool execution. The expression was correctly set up, but the tool encountered an unexpected issue. Let's re-calculate the net change in net revenue for Entergy Wholesale Commodities during 2012 manually."
+}
+
+Using the values provided:
+2011 net revenue = $2045 million
+2012 net revenue = $1854 million
+
+Net change in net revenue = 2012 net revenue - 2011 net revenue
+Net change in net revenue = 1854 - 2045 = -191 million dollars
+
+Final answer: The net change in net revenue for Entergy Wholesale Commodities during 2012 is -191 million dollars.

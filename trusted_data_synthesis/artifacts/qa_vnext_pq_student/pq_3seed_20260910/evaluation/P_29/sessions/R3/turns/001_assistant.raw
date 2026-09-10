@@ -1,0 +1,23 @@
+{
+  "message": "The percentage change in working capital from 2015 to 2016 is approximately 25.43%.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(1279337 - 1019953) / 1019953 * 100",
+    "variables": {
+      "new_value": 1279337,
+      "old_value": 1019953
+    },
+    "sources": {
+      "new_value": "source:t2c1n0",
+      "old_value": "source:t2c2n0"
+    }
+  },
+  "final": {
+    "value": 25.43,
+    "unit": "%",
+    "sources": {
+      "new_value": "source:t2c1n0",
+      "old_value": "source:t2c2n0"
+    }
+  }
+}

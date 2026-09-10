@@ -1,0 +1,13 @@
+It seems there is a persistent issue with the interface. Let's proceed with the final answer directly in the response without relying on the tool interface.
+
+The net change in the accrued liability for unrecognized tax benefits from 2007 to 2008 is:
+\[ \text{Net change} = 99 - 110 = -11 \]
+
+The net change is \(-11\) million dollars. This indicates a decrease in the accrued liability for unrecognized tax benefits from 2007 to 2008.
+
+Final answer:
+```json
+{
+  "final": "-11"
+}
+```

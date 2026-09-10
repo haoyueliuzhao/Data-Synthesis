@@ -1,0 +1,9 @@
+{
+  "message": "There seems to be a persistent issue with the expression syntax. The correct expression should be (541 / 2859) * 100 to calculate the percentage of total TDRs that was associated with commercial loans in 2012. I will try again with the correct format.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(541 / 2859) * 100",
+    "variables": {},
+    "sources": {}
+  }
+}

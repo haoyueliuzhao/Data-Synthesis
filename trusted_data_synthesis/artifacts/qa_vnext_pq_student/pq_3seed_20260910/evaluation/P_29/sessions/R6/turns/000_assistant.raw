@@ -1,0 +1,12 @@
+{
+  "message": "To find the average amortization expense from 2006 to 2008, I will use the amortization expense values for each year and calculate the average.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(90 + 77 + 64) / 3",
+    "variables": {
+      "90": {"value": 90, "unit": "million dollars"},
+      "77": {"value": 77, "unit": "million dollars"},
+      "64": {"value": 64, "unit": "million dollars"}
+    }
+  }
+}

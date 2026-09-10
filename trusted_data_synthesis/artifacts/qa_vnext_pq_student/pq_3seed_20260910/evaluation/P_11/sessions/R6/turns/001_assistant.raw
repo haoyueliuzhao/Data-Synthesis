@@ -1,0 +1,9 @@
+{
+  "message": "The average amortization expense from 2006 to 2008 is $77 million.",
+  "final": {
+    "value": 77,
+    "unit": "million USD",
+    "sources": ["source:t1c1n0", "source:t1c2n0", "source:t1c3n0"],
+    "result_id": "tool:1"
+  }
+}

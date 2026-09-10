@@ -1,0 +1,73 @@
+training P_29 epoch 1 rows 6 /36 weighted_loss_sum 0.137672
+training P_29 epoch 1 rows 12 /36 weighted_loss_sum 0.272959
+training P_29 epoch 1 rows 18 /36 weighted_loss_sum 0.381176
+training P_29 epoch 1 rows 24 /36 weighted_loss_sum 0.516445
+training P_29 epoch 1 rows 30 /36 weighted_loss_sum 0.660347
+training P_29 epoch 1 rows 36 /36 weighted_loss_sum 0.812656
+training P_29 epoch 2 rows 6 /36 weighted_loss_sum 0.145269
+training P_29 epoch 2 rows 12 /36 weighted_loss_sum 0.273621
+training P_29 epoch 2 rows 18 /36 weighted_loss_sum 0.403741
+training P_29 epoch 2 rows 24 /36 weighted_loss_sum 0.556638
+training P_29 epoch 2 rows 30 /36 weighted_loss_sum 0.697738
+training P_29 epoch 2 rows 36 /36 weighted_loss_sum 0.80453
+training P_29 epoch 3 rows 6 /36 weighted_loss_sum 0.149362
+training P_29 epoch 3 rows 12 /36 weighted_loss_sum 0.285938
+training P_29 epoch 3 rows 18 /36 weighted_loss_sum 0.421473
+training P_29 epoch 3 rows 24 /36 weighted_loss_sum 0.536933
+training P_29 epoch 3 rows 30 /36 weighted_loss_sum 0.652978
+training P_29 epoch 3 rows 36 /36 weighted_loss_sum 0.787626
+training P_29 epoch 4 rows 6 /36 weighted_loss_sum 0.115278
+training P_29 epoch 4 rows 12 /36 weighted_loss_sum 0.255357
+training P_29 epoch 4 rows 18 /36 weighted_loss_sum 0.388915
+training P_29 epoch 4 rows 24 /36 weighted_loss_sum 0.498096
+training P_29 epoch 4 rows 30 /36 weighted_loss_sum 0.616134
+training P_29 epoch 4 rows 36 /36 weighted_loss_sum 0.756891
+training P_29 epoch 5 rows 6 /36 weighted_loss_sum 0.161245
+training P_29 epoch 5 rows 12 /36 weighted_loss_sum 0.282146
+training P_29 epoch 5 rows 18 /36 weighted_loss_sum 0.392641
+training P_29 epoch 5 rows 24 /36 weighted_loss_sum 0.490182
+training P_29 epoch 5 rows 30 /36 weighted_loss_sum 0.621832
+training P_29 epoch 5 rows 36 /36 weighted_loss_sum 0.720146
+training P_29 epoch 6 rows 6 /36 weighted_loss_sum 0.113775
+training P_29 epoch 6 rows 12 /36 weighted_loss_sum 0.239327
+training P_29 epoch 6 rows 18 /36 weighted_loss_sum 0.350113
+training P_29 epoch 6 rows 24 /36 weighted_loss_sum 0.47148
+training P_29 epoch 6 rows 30 /36 weighted_loss_sum 0.57292
+training P_29 epoch 6 rows 36 /36 weighted_loss_sum 0.680108
+training P_29 epoch 7 rows 6 /36 weighted_loss_sum 0.10238
+training P_29 epoch 7 rows 12 /36 weighted_loss_sum 0.225688
+training P_29 epoch 7 rows 18 /36 weighted_loss_sum 0.327351
+training P_29 epoch 7 rows 24 /36 weighted_loss_sum 0.431912
+training P_29 epoch 7 rows 30 /36 weighted_loss_sum 0.544875
+training P_29 epoch 7 rows 36 /36 weighted_loss_sum 0.639823
+training P_29 epoch 8 rows 6 /36 weighted_loss_sum 0.120318
+training P_29 epoch 8 rows 12 /36 weighted_loss_sum 0.205251
+training P_29 epoch 8 rows 18 /36 weighted_loss_sum 0.294014
+training P_29 epoch 8 rows 24 /36 weighted_loss_sum 0.375203
+training P_29 epoch 8 rows 30 /36 weighted_loss_sum 0.495175
+training P_29 epoch 8 rows 36 /36 weighted_loss_sum 0.603416
+training P_29 epoch 9 rows 6 /36 weighted_loss_sum 0.09345
+training P_29 epoch 9 rows 12 /36 weighted_loss_sum 0.182875
+training P_29 epoch 9 rows 18 /36 weighted_loss_sum 0.255715
+training P_29 epoch 9 rows 24 /36 weighted_loss_sum 0.377752
+training P_29 epoch 9 rows 30 /36 weighted_loss_sum 0.473948
+training P_29 epoch 9 rows 36 /36 weighted_loss_sum 0.570767
+training P_29 epoch 10 rows 6 /36 weighted_loss_sum 0.081554
+training P_29 epoch 10 rows 12 /36 weighted_loss_sum 0.177094
+training P_29 epoch 10 rows 18 /36 weighted_loss_sum 0.277079
+training P_29 epoch 10 rows 24 /36 weighted_loss_sum 0.363997
+training P_29 epoch 10 rows 30 /36 weighted_loss_sum 0.45876
+training P_29 epoch 10 rows 36 /36 weighted_loss_sum 0.544479
+evaluation P_29 T1 model_final 2
+evaluation P_29 T2 model_final 2
+evaluation P_29 T3 model_final 7
+evaluation P_29 T4 model_final 2
+evaluation P_29 T5 model_final 2
+evaluation P_29 T6 model_final 2
+evaluation P_29 R1 model_final 2
+evaluation P_29 R2 model_final 2
+evaluation P_29 R3 model_final 2
+evaluation P_29 R4 model_final 2
+evaluation P_29 R5 model_final 2
+evaluation P_29 R6 model_final 2
+completed completed_student_training:3bdd196e92615c493e55b9d3bc7cbe0d832018308f117f16e5f039e7f04018aa {'schema_version': 'fixed_support_pq_student.v1.offline_student_guards', 'phase': 'train', 'calls': {'private_or_credential_file_read': 0, 'socket_connect': 0, 'socket_connect_ex': 0, 'socket_create_connection': 0}, 'all_zero': True, 'provider_calls': 0, 'GPU_explicitly_allowed': True, 'scope': 'instrumented Python entry points, local-only model loading; not arbitrary-code isolation proof', 'id': 'offline_student_guards:2423ce841805d329518252fd1b14406e83f17ea41a92ec1a3190051dc28c06f3'}

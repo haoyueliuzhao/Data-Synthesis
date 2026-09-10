@@ -1,0 +1,11 @@
+{
+  "message": "To find the percent of total TDRs associated with commercial loans in 2012, I will use the total TDRs and total commercial lending figures from the table. The total TDRs in 2012 is $2859 million and the total commercial lending in 2012 is $541 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "541 / 2859 * 100",
+    "variables": {
+      "541": {"value": 541, "unit": "million"},
+      "2859": {"value": 2859, "unit": "million"}
+    }
+  }
+}

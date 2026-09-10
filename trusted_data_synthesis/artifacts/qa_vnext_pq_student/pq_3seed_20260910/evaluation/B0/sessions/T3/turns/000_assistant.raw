@@ -1,0 +1,18 @@
+To find the net change in the balance of employee separations liability during 2004, I will use the table provided in the document. Specifically, I will look at the "liability as of december 31 2004" and "liability as of january 1 2004" values for the "employee separations" row.
+
+The "liability as of january 1 2004" value is $2239.
+The "liability as of december 31 2004" value is $665.
+
+The net change in the balance of employee separations liability during 2004 is calculated as:
+\[ \text{Net change} = \text{liability as of december 31 2004} - \text{liability as of january 1 2004} \]
+
+Now, I will calculate this using the calculate tool.
+```json
+{
+  "message": "Calculating the net change in the balance of employee separations liability during 2004.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "665 - 2239"
+  }
+}
+```

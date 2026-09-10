@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "The net change in the balance of unrecognized tax benefits during 2008 is $14 million.",
+    "value": 14,
+    "unit": "million",
+    "sources": [
+      "source:t7c1",
+      "source:t1c1"
+    ],
+    "result_id": "tool:1"
+  }
+}

@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":1,"exact_value":"17","expression":"70 - 53","financial_meaning_certified":false,"model_supplied_sources":{"balance_dec_31_2007":"source:t5c1","balance_jan_1_2007":"source:t0c1n1"},"operation_count":1,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"17"},"status":"ok","tool":"calculate"}

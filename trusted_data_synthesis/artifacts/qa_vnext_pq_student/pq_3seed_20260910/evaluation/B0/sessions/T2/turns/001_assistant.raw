@@ -1,0 +1,16 @@
+It seems there was an issue with the previous calculation request. Let's try the calculation again.
+
+The net change in the accrued liability for unrecognized tax benefits from 2007 to 2008 is calculated as follows:
+\[ \text{Net change} = \text{Balance at December 31, 2008} - \text{Balance at December 31, 2007} \]
+\[ \text{Net change} = 99 - 110 \]
+
+Let's perform the calculation using the `calculate` tool.
+```json
+{
+  "message": "Calculating the net change in the accrued liability for unrecognized tax benefits from 2007 to 2008.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "99 - 110"
+  }
+}
+```

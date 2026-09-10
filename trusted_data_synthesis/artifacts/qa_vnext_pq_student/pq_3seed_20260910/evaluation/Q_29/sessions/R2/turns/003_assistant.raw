@@ -1,0 +1,10 @@
+{
+  "message": "The percentage of total TDRs associated with commercial loans in 2012 is approximately 18.92%.",
+  "final": {
+    "value": 18.92,
+    "unit": "%",
+    "sources": [
+      "SEGMENT12"
+    ]
+  }
+}

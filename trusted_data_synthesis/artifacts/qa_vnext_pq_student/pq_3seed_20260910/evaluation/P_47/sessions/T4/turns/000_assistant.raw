@@ -1,0 +1,11 @@
+{
+  "message": "The balance at April 1, 2007 is $224, and the balance at March 31, 2008 is $168. The percentage change in the balance of unrecognized tax benefits from 2007 to 2008 is calculated as ((168 - 224) / 224) * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((168 - 224) / 224) * 100",
+    "variables": {
+      "168": {"value": 168, "unit": "$"},
+      "224": {"value": 224, "unit": "$"}
+    }
+  }
+}
