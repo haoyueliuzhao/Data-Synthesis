@@ -1,0 +1,15 @@
+{
+  "type": "json_object",
+  "final": {
+    "answer": "The increase in unrecognized tax benefits was $143.9 million.",
+    "value": 143.9,
+    "unit": "millions of dollars",
+    "calculation": "Ending balance Dec. 27, 2008 ($214.4M) - beginning balance Dec. 29, 2007 ($70.5M) = $143.9M. Equivalent yearly check: 2007 increase $126.6M - $70.5M = $56.1M; 2008 increase $214.4M - $126.6M = $87.8M; total $56.1M + $87.8M = $143.9M.",
+    "sources": [
+      "source:t8c1n0",
+      "source:t1c2n0",
+      "source:t1c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

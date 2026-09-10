@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "Variable names cannot start with digits. Recompute with valid names: reserve_2006 ($10 million) minus reserve_2005 ($4 million), both from q11.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "reserve_2006 - reserve_2005",
+    "variables": {
+      "reserve_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "reserve_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "reserve_2006": "source:q11n3",
+      "reserve_2005": "source:q11n4"
+    }
+  }
+}

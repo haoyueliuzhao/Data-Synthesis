@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "I interpret the question as the total increase in unrecognized tax benefits over the two-year period 2007–2008. The beginning balance at the start of 2007 is $70.5 million (table row 'balance at beginning of year', 2007 column, source:t1c2n0), and the ending balance at Dec. 27, 2008 is $214.4 million (table row 'balance at december 27 2008', 2008 column, source:t8c1n0). Total increase = ending 2008 minus beginning 2007.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      },
+      "begin_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "begin_2007": "source:t1c2n0"
+    }
+  }
+}

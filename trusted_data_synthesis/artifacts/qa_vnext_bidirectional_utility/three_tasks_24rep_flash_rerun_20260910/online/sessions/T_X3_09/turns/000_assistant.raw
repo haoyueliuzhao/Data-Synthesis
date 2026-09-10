@@ -1,0 +1,23 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 70.5",
+    "variables": {
+      "ending_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      },
+      "beginning_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "ending_2008": "source:t8c1n0",
+      "beginning_2007": "source:t1c2n0"
+    }
+  },
+  "message": "The total increase in unrecognized tax benefits observed over 2007 and 2008 is the ending 2008 balance minus the beginning 2007 balance: $214.4M - $70.5M."
+}

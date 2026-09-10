@@ -1,0 +1,15 @@
+{
+  "final": {
+    "answer": "An increase of $46.4 million",
+    "value": 46.4,
+    "unit": "millions of dollars",
+    "sources": [
+      "source:t1c1n0",
+      "source:t4c1n0",
+      "source:t2c1n0",
+      "source:t3c1n0"
+    ],
+    "result_id": "tool:1",
+    "explanation": "Net revenue rose from $380.2 million in 2002 to $426.6 million in 2003, a net change of 426.6 - 380.2 = $46.4 million (an increase). This is consistent with the table components: base rates +48.3 and other -1.9 sum to +46.4."
+  }
+}

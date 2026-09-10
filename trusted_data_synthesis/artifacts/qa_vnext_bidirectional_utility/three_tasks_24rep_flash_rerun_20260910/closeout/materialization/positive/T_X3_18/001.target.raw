@@ -1,0 +1,14 @@
+{
+  "type": "json_object",
+  "final": {
+    "answer": "The unrecognized tax benefits increased by $87.8 million from 2007 to 2008.",
+    "value": 87.8,
+    "unit": "$ millions",
+    "calculation": "$214.4 million (Dec. 27, 2008 balance) − $126.6 million (Dec. 29, 2007 balance) = $87.8 million",
+    "sources": [
+      "source:t8c1n0",
+      "source:t8c2n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

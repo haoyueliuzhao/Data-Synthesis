@@ -1,0 +1,23 @@
+{
+  "message": "Net change in net revenue is 2003 net revenue minus 2002 net revenue, both in millions from the comparative table: $426.6M - $380.2M. A component check is base rates of $48.3M plus other of -$1.9M = $46.4M.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "net_revenue_2003 - net_revenue_2002",
+    "variables": {
+      "net_revenue_2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "million USD"
+      },
+      "net_revenue_2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "million USD"
+      }
+    },
+    "sources": {
+      "net_revenue_2003": "source:t4c1n0",
+      "net_revenue_2002": "source:t1c1n0"
+    }
+  }
+}

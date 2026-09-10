@@ -1,0 +1,20 @@
+{
+  "type": "json_object",
+  "message": "I interpret the increase as the net change in the unrecognized tax benefits balance from the beginning of 2007 to the end of 2008. Inputs: beginning 2007 balance = 70.5 (source:t1c2n0) and ending 2008 balance = 214.4 (source:t8c1n0), both in $ millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - beg_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "$ millions"
+      },
+      "beg_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "$ millions"
+      }
+    }
+  }
+}

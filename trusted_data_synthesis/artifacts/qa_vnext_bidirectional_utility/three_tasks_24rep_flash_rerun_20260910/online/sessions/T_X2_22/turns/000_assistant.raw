@@ -1,0 +1,23 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "2006_reserve - 2005_reserve",
+    "variables": {
+      "2006_reserve": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "2005_reserve": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "2006_reserve": "source:q11n3",
+      "2005_reserve": "source:q11n4"
+    }
+  },
+  "message": "The relationship chosen is the 2006 reserve for product warranties minus the 2005 reserve, both disclosed in the product warranties note. The source states the reserve was $10 million in 2006 and $4 million in 2005, so the calculation is 10 - 4 in millions."
+}

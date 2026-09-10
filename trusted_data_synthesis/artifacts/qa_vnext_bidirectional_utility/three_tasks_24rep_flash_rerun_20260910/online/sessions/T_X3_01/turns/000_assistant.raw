@@ -1,0 +1,11 @@
+{
+  "message": "I interpret the question as asking for the total increase in unrecognized tax benefits over the two-year period 2007 and 2008. The table gives the beginning balance for 2007 as $70.5 million and the ending balance for 2008 as $214.4 million. The total increase is the difference: 214.4 - 70.5 = 143.9 million. (The annual increases are 2007: 126.6 - 70.5 = 56.1 million; 2008: 214.4 - 126.6 = 87.8 million.)",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {"value": 214.4, "source": "source:t8c1n0", "unit": "millions"},
+      "begin_2007": {"value": 70.5, "source": "source:t1c2n0", "unit": "millions"}
+    }
+  }
+}

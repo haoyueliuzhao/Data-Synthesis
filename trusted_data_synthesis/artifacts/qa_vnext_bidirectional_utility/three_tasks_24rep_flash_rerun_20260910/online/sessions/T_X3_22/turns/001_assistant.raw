@@ -1,0 +1,15 @@
+{
+  "type": "json_object",
+  "final": {
+    "answer": "143.9",
+    "value": 143.9,
+    "unit": "millions of dollars",
+    "calculation": "214.4 - 70.5 = 143.9",
+    "explanation": "The total increase in unrecognized tax benefits over 2007 and 2008 equals the ending 2008 balance of $214.4 million minus the beginning 2007 balance of $70.5 million. (Equivalently, the 2007 increase of $56.1 million plus the 2008 increase of $87.8 million totals $143.9 million.)",
+    "sources": [
+      "source:t8c1n0",
+      "source:t1c2n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

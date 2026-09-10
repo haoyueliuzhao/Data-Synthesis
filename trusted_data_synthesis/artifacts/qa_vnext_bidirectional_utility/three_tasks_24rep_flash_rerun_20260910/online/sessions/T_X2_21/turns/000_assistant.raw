@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "The reserve for product warranties was $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005, per the product warranties note. The requested change is 2006 reserve minus 2005 reserve, in millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "warranty_2006 - warranty_2005",
+    "variables": {
+      "warranty_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "warranty_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "warranty_2006": "source:q11n3",
+      "warranty_2005": "source:q11n4"
+    }
+  }
+}

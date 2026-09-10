@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "Retry: the previous expression used variable names beginning with digits, causing a syntax error. The relationship is change in reserve = 2006 reserve minus 2005 reserve. Both figures come from post_text segment q11, where the reserve for product warranties was $10 million in 2006 and $4 million in 2005. Both are already in millions, so the difference is in millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "reserve_2006 - reserve_2005",
+    "variables": {
+      "reserve_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "reserve_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "reserve_2006": "source:q11n3",
+      "reserve_2005": "source:q11n4"
+    }
+  }
+}

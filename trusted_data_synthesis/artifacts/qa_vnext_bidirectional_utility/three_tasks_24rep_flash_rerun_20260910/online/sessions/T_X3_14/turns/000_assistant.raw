@@ -1,0 +1,22 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions"
+      },
+      "begin_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "begin_2007": "source:t1c2n0"
+    }
+  }
+}

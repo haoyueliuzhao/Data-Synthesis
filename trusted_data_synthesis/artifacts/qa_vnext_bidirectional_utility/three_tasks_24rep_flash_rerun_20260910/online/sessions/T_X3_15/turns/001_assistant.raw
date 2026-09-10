@@ -1,0 +1,13 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(126.6 - 70.5) + (214.4 - 126.6)",
+    "variables": {
+      "b2007": {"value": 70.5, "source": "source:t1c2n0", "unit": "millions"},
+      "e2007": {"value": 126.6, "source": "source:t8c2n0", "unit": "millions"},
+      "b2008": {"value": 126.6, "source": "source:t1c1n0", "unit": "millions"},
+      "e2008": {"value": 214.4, "source": "source:t8c1n0", "unit": "millions"}
+    },
+    "message": "Check: increase during fiscal 2007 = 126.6 - 70.5 = 56.1; increase during fiscal 2008 = 214.4 - 126.6 = 87.8; combined = 143.9. Same as ending 2008 minus beginning 2007."
+  }
+}

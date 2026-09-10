@@ -1,0 +1,1 @@
+{"type":"json_object","tool":"calculate","arguments":{"expression":"10 - 4","variables":{"warranty_reserve_2006":{"value":10,"source":"source:q11n3","unit":"millions"},"warranty_reserve_2005":{"value":4,"source":"source:q11n4","unit":"millions"}},"sources":{"warranty_reserve_2006":"source:q11n3","warranty_reserve_2005":"source:q11n4"}}}

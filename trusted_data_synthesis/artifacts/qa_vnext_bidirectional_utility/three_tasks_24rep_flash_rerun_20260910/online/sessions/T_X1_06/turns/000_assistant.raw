@@ -1,0 +1,19 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "2003_net_revenue - 2002_net_revenue",
+    "variables": {
+      "2003_net_revenue": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "millions of dollars"
+      },
+      "2002_net_revenue": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "message": "Net change in net revenue = 2003 net revenue minus 2002 net revenue. Both figures are from Entergy Mississippi's net revenue analysis table, in millions of dollars."
+  }
+}

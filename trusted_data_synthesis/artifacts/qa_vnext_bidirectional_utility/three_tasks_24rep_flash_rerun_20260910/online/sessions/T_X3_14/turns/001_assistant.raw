@@ -1,0 +1,16 @@
+{
+  "final": {
+    "answer": "143.9 million dollars",
+    "value": 143.9,
+    "unit": "millions of dollars",
+    "reasoning": "The unrecognized tax benefits reconciliation shows the balance at the beginning of fiscal 2007 (the FIN 48 adoption date) was $70.5 million and the balance at December 27, 2008 was $214.4 million. The increase observed over the 2007 and 2008 period is 214.4 − 70.5 = 143.9. This equals the sum of the annual increases (2007: 126.6 − 70.5 = 56.1; 2008: 214.4 − 126.6 = 87.8).",
+    "sources": [
+      "source:t1c2n0 (balance at beginning of year, Dec 29 2007: 70.5)",
+      "source:t8c1n0 (balance at Dec 27 2008: 214.4)",
+      "source:t1c1n0 (balance at beginning of year, Dec 27 2008: 126.6)",
+      "source:t8c2n0 (balance at Dec 27 2008 column for 2007: 126.6)"
+    ],
+    "result_id": "tool:1",
+    "note": "If interpreted as the increase during 2008 alone, the figure would be 214.4 − 126.6 = 87.8 million."
+  }
+}

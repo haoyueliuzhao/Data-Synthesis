@@ -1,0 +1,3 @@
+{"type":"json_object","message":"The reserve for product warranties was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005, so the 2005-to-2006 change is 10 - 4 = 6 million (an increase).","tool":"calculate","arguments":{"expression":"10 - 4","variables":{"warranty_reserve_2006":{"value":10,"source":"source:q11n3","unit":"millions"},"warranty_reserve_2005":{"value":4,"source":"source:q11n4","unit":"millions"}},"sources":{"warranty_reserve_2006":"source:q11n3","warranty_reserve_2005":"source:q11n4"}}}</｜｜DSML｜｜ parameter>
+</｜｜DSML｜｜ invoke>
+</｜｜DSML｜｜ calls>

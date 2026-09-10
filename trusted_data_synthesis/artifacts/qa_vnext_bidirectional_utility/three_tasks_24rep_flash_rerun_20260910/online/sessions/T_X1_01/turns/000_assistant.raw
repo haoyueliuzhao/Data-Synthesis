@@ -1,0 +1,20 @@
+{
+  "type": "json_object",
+  "message": "The requested net change is 2003 net revenue minus 2002 net revenue for Entergy Mississippi, Inc. Both figures are in millions of dollars per the table. I will calculate the difference using the table values: 2003 net revenue = $426.6 million, 2002 net revenue = $380.2 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "v2003 - v2002",
+    "variables": {
+      "v2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD millions"
+      },
+      "v2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD millions"
+      }
+    }
+  }
+}

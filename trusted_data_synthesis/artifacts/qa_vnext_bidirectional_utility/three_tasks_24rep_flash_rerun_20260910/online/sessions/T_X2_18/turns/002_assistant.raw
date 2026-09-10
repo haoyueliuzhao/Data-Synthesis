@@ -1,0 +1,14 @@
+{
+  "type": "json_object",
+  "final": {
+    "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006.",
+    "value": 6,
+    "unit": "millions",
+    "sources": [
+      "source:q11n3",
+      "source:q11n4"
+    ],
+    "result_id": "tool:2",
+    "explanation": "Post-text segment q11 states the reserve for product warranties was $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005. Change = 2006 reserve − 2005 reserve = 10 − 4 = 6 ($ millions), i.e., a $6 million increase."
+  }
+}

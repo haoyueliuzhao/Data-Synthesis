@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "I interpret the requested two-year increase as the change from the beginning balance of unrecognized tax benefits at the start of fiscal 2007 to the ending balance at December 27, 2008. Inputs: $70.5 million beginning-of-2007 balance (table row 'balance at beginning of year', 2007 column) and $214.4 million ending 2008 balance (table row 'balance at december 27 2008', 2008 column). Both are in millions of dollars, so no unit conversion is needed. Calculation: 214.4 - 70.5.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "ending_2008 - beginning_2007",
+    "variables": {
+      "ending_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "USD millions"
+      },
+      "beginning_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "USD millions"
+      }
+    },
+    "sources": {
+      "ending_2008": "source:t8c1n0",
+      "beginning_2007": "source:t1c2n0"
+    }
+  }
+}

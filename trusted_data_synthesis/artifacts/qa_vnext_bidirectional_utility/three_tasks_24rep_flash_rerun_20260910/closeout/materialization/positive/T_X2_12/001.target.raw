@@ -1,0 +1,1 @@
+{"type":"json_object","message":"The reserve for product warranties was $10 million at year-end 2006 and $4 million at year-end 2005 (post_text q11n3 and q11n4). Change from 2005 to 2006 = 2006 reserve minus 2005 reserve = 10 - 4, in millions of dollars.","tool":"calculate","arguments":{"expression":"10 - 4","sources":{"minuend":"source:q11n3","subtrahend":"source:q11n4"}}}

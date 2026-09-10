@@ -1,0 +1,13 @@
+{
+  "final": {
+    "answer": "The unrecognized tax benefits balance increased by $87.8 million from 2007 to 2008.",
+    "value": 87.8,
+    "unit": "millions of dollars",
+    "calculation": "2008 ending balance $214.4 million − 2007 ending balance $126.6 million = $87.8 million",
+    "sources": [
+      "source:t8c1n0",
+      "source:t8c2n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

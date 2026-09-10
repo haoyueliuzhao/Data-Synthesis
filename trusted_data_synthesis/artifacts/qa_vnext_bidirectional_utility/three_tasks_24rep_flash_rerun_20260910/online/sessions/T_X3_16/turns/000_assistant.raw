@@ -1,0 +1,11 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 126.6",
+    "variables": {
+      "214.4": {"value": 214.4, "source": "source:t8c1n0", "unit": "million"},
+      "126.6": {"value": 126.6, "source": "source:t8c2n0", "unit": "million"}
+    }
+  },
+  "message": "I interpret the question as the increase in the unrecognized tax benefits balance from the 2007 year-end to the 2008 year-end. Using the reconciliation table, the 2008 ending balance is $214.4 million (source:t8c1n0) and the 2007 ending balance is $126.6 million (source:t8c2n0). The increase is 214.4 - 126.6 = 87.8 million."
+}
