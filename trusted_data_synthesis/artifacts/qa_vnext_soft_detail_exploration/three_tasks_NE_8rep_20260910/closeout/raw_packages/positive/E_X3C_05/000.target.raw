@@ -1,0 +1,23 @@
+{
+  "message": "The net change in unrecognized tax benefits over the fiscal year ended December 27, 2008 is the ending balance minus the beginning balance. The beginning balance is the December 27, 2008 column's balance at beginning of year, $126.6 million (source:t1c1n0), and the ending balance is the December 27, 2008 balance, $214.4 million (source:t8c1n0). I am computing the difference directly because the question requests the change from the end of fiscal 2007 to the end of fiscal 2008, not cumulative movement over both years.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 126.6",
+    "variables": {
+      "ending_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "USD_million"
+      },
+      "beginning_2008": {
+        "value": 126.6,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "ending_2008": "source:t8c1n0",
+      "beginning_2008": "source:t1c1n0"
+    }
+  }
+}

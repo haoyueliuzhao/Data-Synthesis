@@ -1,0 +1,23 @@
+{
+  "message": "I interpret the requested net change as the ending balance of unrecognized tax benefits at fiscal year-end 2008 minus the ending balance at fiscal year-end 2007. The table’s 2007 ending balance appears as the beginning-of-year balance for 2008 ($126.6 million), and the 2008 ending balance is $214.4 million; both amounts are in millions of U.S. dollars. Calculation: 214.4 - 126.6.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 126.6",
+    "variables": {
+      "ending_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "USD_million"
+      },
+      "ending_2007": {
+        "value": 126.6,
+        "source": "source:t8c2n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "ending_2008": "source:t8c1n0",
+      "ending_2007": "source:t8c2n0"
+    }
+  }
+}

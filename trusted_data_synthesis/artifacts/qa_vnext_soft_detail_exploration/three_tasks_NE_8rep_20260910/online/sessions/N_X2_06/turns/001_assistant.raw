@@ -1,0 +1,1 @@
+{"tool":"calculate","arguments":{"expression":"2006_reserve - 2005_reserve","variables":{"2006_reserve":10,"2005_reserve":4},"sources":{"2006_reserve":"source:q11n3","2005_reserve":"source:q11n4"}}}

@@ -1,0 +1,23 @@
+{
+  "message": "The requested net change is the 2003 net revenue minus 2002 net revenue, in millions of USD. I use the table's 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "rev2003 - rev2002",
+    "variables": {
+      "rev2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD_million"
+      },
+      "rev2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "rev2003": "source:t4c1n0",
+      "rev2002": "source:t1c1n0"
+    }
+  }
+}

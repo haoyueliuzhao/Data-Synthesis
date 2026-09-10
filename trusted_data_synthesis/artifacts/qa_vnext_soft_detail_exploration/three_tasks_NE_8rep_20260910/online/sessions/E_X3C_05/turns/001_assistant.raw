@@ -1,0 +1,10 @@
+{
+  "answer": "The net change in unrecognized tax benefits from the end of fiscal 2007 to the end of fiscal 2008 was an increase of $87.8 million.",
+  "value": 87.8,
+  "unit": "USD_million",
+  "sources": [
+    "source:t1c1n0",
+    "source:t8c1n0"
+  ],
+  "result_id": "tool:1"
+}

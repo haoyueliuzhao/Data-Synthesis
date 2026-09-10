@@ -1,0 +1,23 @@
+{
+  "message": "Net revenue for Entergy Mississippi is reported as 2002 net revenue of $380.2 million and 2003 net revenue of $426.6 million, both in millions. The net change from 2002 to 2003 is the 2003 amount minus the 2002 amount. I will also check the component reconciliation: base rates increase of $48.3 million plus other decrease of $1.9 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "426.6 - 380.2",
+    "variables": {
+      "net_revenue_2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD_million"
+      },
+      "net_revenue_2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "net_revenue_2003": "source:t4c1n0",
+      "net_revenue_2002": "source:t1c1n0"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "message": "The net change in net revenue is the difference between 2003 net revenue and 2002 net revenue, both in millions of USD from the table. I will use 2003 net revenue $426.6 million and 2002 net revenue $380.2 million. The change is 426.6 - 380.2 = 46.4, i.e. an increase of $46.4 million. The table also shows base rates of +48.3 and other of -1.9, which sum to +46.4 and serve as a consistency check.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "426.6 - 380.2",
+    "variables": {
+      "2003_net_revenue": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD_million"
+      },
+      "2002_net_revenue": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "2003_net_revenue": "source:t4c1n0",
+      "2002_net_revenue": "source:t1c1n0"
+    }
+  }
+}

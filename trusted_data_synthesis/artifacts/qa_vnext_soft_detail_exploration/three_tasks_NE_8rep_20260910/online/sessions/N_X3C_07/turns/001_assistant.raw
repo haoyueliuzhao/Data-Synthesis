@@ -1,0 +1,10 @@
+{
+  "answer": "The net change in the balance of unrecognized tax benefits from fiscal year end December 29, 2007 to fiscal year end December 27, 2008 was an increase of $87.8 million.",
+  "value": 87.8,
+  "unit": "USD_million",
+  "sources": [
+    "source:t8c2n0",
+    "source:t8c1n0"
+  ],
+  "result_id": "tool:1"
+}

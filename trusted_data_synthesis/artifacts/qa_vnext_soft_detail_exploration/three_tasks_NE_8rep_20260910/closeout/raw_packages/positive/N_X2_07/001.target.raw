@@ -1,0 +1,1 @@
+{"message":"The reserve for product warranties was $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005 (post_text q11). The change is 2006 reserve minus 2005 reserve, in USD millions.","tool":"calculate","arguments":{"expression":"r2006 - r2005","variables":{"r2006":10,"r2005":4},"sources":{"r2006":"source:q11n3","r2005":"source:q11n4"}}}

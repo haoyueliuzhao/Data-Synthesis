@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":1,"exact_value":"439/5","expression":"214.4 - 126.6","financial_meaning_certified":false,"model_supplied_sources":{"end_2007":"source:t1c1n0","end_2008":"source:t8c1n0"},"operation_count":1,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"87.8"},"status":"ok","tool":"calculate"}

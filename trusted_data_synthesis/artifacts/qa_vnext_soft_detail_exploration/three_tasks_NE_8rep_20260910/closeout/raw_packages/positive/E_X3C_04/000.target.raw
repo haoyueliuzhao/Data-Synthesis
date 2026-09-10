@@ -1,0 +1,15 @@
+{
+  "message": "The net change in unrecognized tax benefits from the end of FY2007 to the end of FY2008 is the FY2008 ending balance minus the FY2007 ending balance. The table reports the reconciliation in $ millions: FY2008 ending balance is $214.4 million, and FY2007 ending balance is $126.6 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "ending_2008 - ending_2007",
+    "variables": {
+      "ending_2008": 214.4,
+      "ending_2007": 126.6
+    },
+    "sources": {
+      "ending_2008": "source:t8c1n0",
+      "ending_2007": "source:t8c2n0"
+    }
+  }
+}

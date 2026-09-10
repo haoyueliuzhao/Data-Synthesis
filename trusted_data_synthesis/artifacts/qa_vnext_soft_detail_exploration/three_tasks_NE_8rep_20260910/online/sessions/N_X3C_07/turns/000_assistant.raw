@@ -1,0 +1,23 @@
+{
+  "tool": "calculate",
+  "message": "The requested net change is the ending unrecognized tax benefit balance at December 27, 2008 minus the ending balance at December 29, 2007. I use the table's ending balances: $214.4 million for 2008 (source:t8c1n0) and $126.6 million for 2007 (source:t8c2n0). Both are already in USD millions, so no scale conversion is needed.",
+  "arguments": {
+    "expression": "end_2008 - end_2007",
+    "variables": {
+      "end_2008": {
+        "value": "1072/5",
+        "source": "source:t8c1n0",
+        "unit": "USD_million"
+      },
+      "end_2007": {
+        "value": "633/5",
+        "source": "source:t8c2n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "end_2007": "source:t8c2n0"
+    }
+  }
+}
