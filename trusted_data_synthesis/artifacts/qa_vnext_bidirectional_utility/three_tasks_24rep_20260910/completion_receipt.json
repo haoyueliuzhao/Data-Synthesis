@@ -1,0 +1,29 @@
+{
+  "schema_version": "bidirectional_utility.v1.bounded_experiment_completion_receipt",
+  "status": "INPUT_INADEQUATE",
+  "source_freeze_commit": "5816093fab4151eec4194a501d7f0e698a9a54f8",
+  "manifests": {
+    "preparation": "qa_vnext_model_execution_open_support_preparation_manifest:3eac72fbb4c26ba1c5dc46c784ec5c6ca48e35b2d974a95b6cd4aa2523949a72",
+    "online": "qa_vnext_model_execution_open_support_online_manifest:34221ad9251ab996a68ceacb8f9040e1600dd61dbbffade4de115f6cc15c33d7",
+    "assessment": "qa_vnext_model_execution_open_support_assessment_manifest:3db66a30e2859e46fe11e765231baba6dd172f3165fd10236dad4d9459794fbb",
+    "closeout": "qa_vnext_model_execution_open_support_closeout_manifest:88fd289b71cd95c5421a59a6a89cd4caf078675769240e0c8a47492b02ec2900",
+    "condition_diagnostic": "qa_vnext_model_execution_identity_diagnostic_manifest:f84593e35a79eb384d786d5553eb8885962c2829c9b206977032802ac33e1e1d"
+  },
+  "history_guard": {
+    "baseline": "6222e2f07849392618ab725cc534c66bf66a2dd2",
+    "all_historical_files_and_scores_unchanged": true
+  },
+  "same_frozen_source_bytes_after_collection": true,
+  "new_control_exit_code": 0,
+  "closeout_id": "new_support_exploration_report:858a453b32da5f79ec2ff51c00c6e73b46da31af88696c5b662eec57a208b754",
+  "identity_diagnostic_id": "identity_failure_input_closeout:521c512991ab0dc4d55ee43ede7801307597ae97ca529693d2ce666164406468",
+  "post_collection_provider_calls": 0,
+  "closed_old_runs_or_scores_reopened": false,
+  "additional_sampling_authorized_by_this_receipt": false,
+  "analysis_artifact_hashes": {
+    "terminal_only_reviews.json": "4f9f59696edafdec7bc6234d9fe286f64aa89018f0510a6d17b73bbad1186ffc",
+    "diagnose_condition.py": "950aa6cc1917c6712f36f221b8f15b44db617ccc5bb56bc5d5b272cb69a4025a"
+  },
+  "receipt_is_same_author_integrity_check_not_independent_financial_or_provider_certification": true,
+  "id": "bounded_experiment_completion_receipt:fc4df48bcd83f6e9877facff7ed2cb94a13f8602418c4bab178c51acf983fd95"
+}

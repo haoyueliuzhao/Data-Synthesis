@@ -1,0 +1,15 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "10 - 4",
+    "variables": {
+      "a": {"value": 10, "source": "source:q11n3", "unit": "millions"},
+      "b": {"value": 4, "source": "source:q11n4", "unit": "millions"}
+    },
+    "sources": {
+      "a": "source:q11n3",
+      "b": "source:q11n4"
+    }
+  },
+  "message": "The question asks for the change in the reserve for product warranties from 2005 to 2006. The source states the reserve was $10 million in 2006 and $4 million in 2005, so I calculate 2006 reserve minus 2005 reserve = 10 - 4."
+}

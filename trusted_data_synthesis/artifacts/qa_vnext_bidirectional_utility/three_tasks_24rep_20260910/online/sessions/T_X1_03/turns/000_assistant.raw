@@ -1,0 +1,2 @@
+{"tool":"calculate","arguments":{"expression":"rev2003 - rev2002","variables":{"rev2003":{"value":426.6,"source":"source:t4c1n0","unit":"$ millions"},"rev2002":{"value":380.2,"source":"source:t1c1n0","unit":"$ millions"}},"sources":{"rev2003":"source:t4c1n0","rev2002":"source:t1c1n0"}},"message":"Net change in net revenue is 2003 net revenue minus 2002 net revenue, using the table's amounts in millions. I use the table rows 2003 net revenue ($426.6 million) and 2002 net revenue ($380.2 million)."}
+

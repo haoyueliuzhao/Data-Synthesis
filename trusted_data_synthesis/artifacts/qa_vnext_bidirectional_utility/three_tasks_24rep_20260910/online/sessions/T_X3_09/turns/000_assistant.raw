@@ -1,0 +1,15 @@
+{
+  "message": "I interpret the requested increase as the change in the total unrecognized tax benefits from the 2007 ending balance to the 2008 ending balance. The amounts are in millions of dollars: 214.4 as of December 27, 2008 and 126.6 as of December 29, 2007. Increase = 214.4 - 126.6.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 126.6",
+    "variables": {
+      "a": {"value": 214.4, "source": "source:t8c1n0", "unit": "millions"},
+      "b": {"value": 126.6, "source": "source:t8c2n0", "unit": "millions"}
+    },
+    "sources": {
+      "a": "source:t8c1n0",
+      "b": "source:t8c2n0"
+    }
+  }
+}

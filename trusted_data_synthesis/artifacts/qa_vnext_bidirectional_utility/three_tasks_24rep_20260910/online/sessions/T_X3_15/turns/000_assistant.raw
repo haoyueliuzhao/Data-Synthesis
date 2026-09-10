@@ -1,0 +1,23 @@
+{
+  "message": "I interpret the requested increase as the total change in the unrecognized tax benefits balance from the beginning of fiscal 2007 to the end of fiscal 2008. Using the reconciliation table: beginning balance for 2007 is $70.5 million and ending balance for 2008 is $214.4 million. I will also check the annual increases.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 70.5",
+    "variables": {
+      "start_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions of dollars"
+      },
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "start_2007": "source:t1c2n0",
+      "end_2008": "source:t8c1n0"
+    }
+  }
+}

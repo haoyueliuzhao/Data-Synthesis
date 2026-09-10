@@ -1,0 +1,22 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 70.5",
+    "variables": {
+      "214.4": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      },
+      "70.5": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "214.4": "source:t8c1n0",
+      "70.5": "source:t1c2n0"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "message": "I interpret the increase as the change in the unrecognized tax benefits reconciliation balance. The table is in $ millions. For 2008, the ending balance $214.4m (source:t8c1n0) less the balance at beginning of 2008 $126.6m (source:t1c1n0) gives the 2008 increase. I will also compute the 2007 increase and the cumulative 2007-2008 increase using the same reconciliation.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2008",
+    "variables": {
+      "end_2008": {"value": 214.4, "source": "source:t8c1n0", "unit": "$ millions"},
+      "begin_2008": {"value": 126.6, "source": "source:t1c1n0", "unit": "$ millions"}
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "begin_2008": "source:t1c1n0"
+    }
+  }
+}

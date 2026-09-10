@@ -1,0 +1,23 @@
+{
+  "message": "The increase in unrecognized tax benefits over the two-year period is the ending balance at December 27, 2008 minus the beginning balance at December 29, 2007. Using the reconciliation table: 214.4 million at end of 2008 and 70.5 million at beginning of 2007. Both are in $ millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "million USD"
+      },
+      "begin_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "million USD"
+      }
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "begin_2007": "source:t1c2n0"
+    }
+  }
+}

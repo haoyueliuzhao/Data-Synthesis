@@ -1,0 +1,19 @@
+{
+  "message": "The question asks for the net change in Entergy Mississippi net revenue from 2002 to 2003. The table gives 2002 net revenue of $380.2 million and 2003 net revenue of $426.6 million, both in millions. I will compute 2003 net revenue minus 2002 net revenue.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "net_revenue_2003 - net_revenue_2002",
+    "variables": {
+      "net_revenue_2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "millions USD"
+      },
+      "net_revenue_2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "millions USD"
+      }
+    }
+  }
+}

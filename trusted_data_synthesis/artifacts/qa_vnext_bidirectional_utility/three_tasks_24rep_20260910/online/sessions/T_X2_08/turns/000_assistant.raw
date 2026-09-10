@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "The change in the reserve for product warranties from 2005 to 2006 is 2006 reserve minus 2005 reserve. Per post_text q11, the reserve was $10 million in 2006 and $4 million in 2005, so I will calculate 10 - 4.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "w2006 - w2005",
+    "variables": {
+      "w2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "w2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "w2006": "source:q11n3",
+      "w2005": "source:q11n4"
+    }
+  }
+}

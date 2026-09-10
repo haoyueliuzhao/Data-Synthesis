@@ -1,0 +1,22 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "2006_reserve - 2005_reserve",
+    "variables": {
+      "2006_reserve": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "millions"
+      },
+      "2005_reserve": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "millions"
+      }
+    },
+    "sources": {
+      "2006_reserve": "source:q11n3",
+      "2005_reserve": "source:q11n4"
+    }
+  }
+}

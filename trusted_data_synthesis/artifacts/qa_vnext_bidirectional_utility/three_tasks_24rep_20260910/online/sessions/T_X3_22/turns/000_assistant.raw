@@ -1,0 +1,23 @@
+{
+  "message": "I interpret the increase over 2007 and 2008 as the change from the beginning 2007 unrecognized tax benefits balance ($70.5 million) to the ending 2008 balance ($214.4 million). This equals the sum of the 2007 and 2008 annual increases. Units are $ millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end2008 - begin2007",
+    "variables": {
+      "end2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "$ millions"
+      },
+      "begin2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "$ millions"
+      }
+    },
+    "sources": {
+      "end2008": "source:t8c1n0",
+      "begin2007": "source:t1c2n0"
+    }
+  }
+}

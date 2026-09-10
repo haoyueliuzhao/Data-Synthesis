@@ -1,0 +1,19 @@
+{
+  "message": "The increase in unrecognized tax benefits over the 2007 and 2008 fiscal years is the ending balance at December 27, 2008 minus the beginning balance at the start of fiscal 2007. Both amounts are in $ millions from the reconciliation table. I will use the 2008 ending balance (214.4) and the 2007 beginning balance (70.5).",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "$ millions"
+      },
+      "begin_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "$ millions"
+      }
+    }
+  }
+}

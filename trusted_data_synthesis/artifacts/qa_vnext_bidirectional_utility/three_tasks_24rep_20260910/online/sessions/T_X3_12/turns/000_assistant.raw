@@ -1,0 +1,23 @@
+{
+  "message": "The increase is measured from the December 29, 2007 unrecognized tax benefits balance to the December 27, 2008 balance. I use the 2007 ending balance of $126.6 million and the 2008 ending balance of $214.4 million from the reconciliation table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "214.4 - 126.6",
+    "variables": {
+      "2008_balance": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      },
+      "2007_balance": {
+        "value": 126.6,
+        "source": "source:t8c2n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "2008_balance": "source:t8c1n0",
+      "2007_balance": "source:t8c2n0"
+    }
+  }
+}

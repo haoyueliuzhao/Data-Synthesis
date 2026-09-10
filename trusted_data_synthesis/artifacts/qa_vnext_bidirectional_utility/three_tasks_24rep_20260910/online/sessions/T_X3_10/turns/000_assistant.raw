@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "The question asks for the total increase in unrecognized tax benefits over the 2007 and 2008 fiscal years. The reconciliation table gives the balance at the beginning of 2007 as $70.5 million and the balance at December 27, 2008 as $214.4 million. The combined increase is the difference between these two figures. Equivalently, it is the sum of the 2007 increase ($126.6 - $70.5 = $56.1) and the 2008 increase ($214.4 - $126.6 = $87.8). I will compute the direct difference.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2008 - begin_2007",
+    "variables": {
+      "end_2008": {
+        "value": 214.4,
+        "source": "source:t8c1n0",
+        "unit": "millions of dollars"
+      },
+      "begin_2007": {
+        "value": 70.5,
+        "source": "source:t1c2n0",
+        "unit": "millions of dollars"
+      }
+    },
+    "sources": {
+      "end_2008": "source:t8c1n0",
+      "begin_2007": "source:t1c2n0"
+    }
+  }
+}
