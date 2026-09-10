@@ -1,0 +1,22 @@
+{
+  "observation_date_UTC": "2026-09-10",
+  "endpoint": "https://api.deepseek.com/models",
+  "request_method": "GET",
+  "http_status": 200,
+  "object": "list",
+  "models": [
+    {"id": "deepseek-flash", "owned_by": "deepseek"},
+    {"id": "deepseek-v4-pro", "owned_by": "deepseek"}
+  ],
+  "metadata_requests": 1,
+  "inference_requests": 0,
+  "selected_request_model": "deepseek-flash",
+  "accepted_response_models": ["deepseek-flash"],
+  "user_authorization": "先前已经确认模型更换为flash，请重新进行本次实验",
+  "preexisting_batch": "three_tasks_24rep_20260910",
+  "preexisting_batch_will_not_be_regraded_or_resumed": true,
+  "new_batch": "three_tasks_24rep_flash_rerun_20260910",
+  "online_documentation_limit": "Consulted official pages still display deepseek-v4-flash; the live model list is the current caller-ID evidence. Names and owner strings are not weight hashes.",
+  "official_documentation_urls": ["https://api-docs.deepseek.com/", "https://api-docs.deepseek.com/api/list-models/"],
+  "credentials_and_authorization_header_stored": false
+}

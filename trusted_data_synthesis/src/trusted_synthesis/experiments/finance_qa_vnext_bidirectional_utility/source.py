@@ -13,6 +13,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_thinking_comparison.online.c
     strict_json,
 )
 
+from .model_contract import response_model_matches
 from .plan import BASELINE, MODEL, OUTPUT, SYSTEM, encode, read_json, record, require, sha
 
 POSITIVE_TOOL_NAMES = frozenset({"calculate", "read_source", "notebook"})
@@ -166,7 +167,7 @@ def bind_session(root, row):
             projection["id"] == outcome["provider_response_id"]
             and projection["object"] == "chat.completion"
             and projection["model"] == outcome["model"]
-            and projection["model"] in {MODEL, MODEL + "-0731"}
+            and response_model_matches(MODEL, projection["model"])
             and len(projection["choices"]) == 1
             and projection["usage"] == outcome["usage"]
             and projection["reasoning_telemetry"] == outcome["reasoning_telemetry"],

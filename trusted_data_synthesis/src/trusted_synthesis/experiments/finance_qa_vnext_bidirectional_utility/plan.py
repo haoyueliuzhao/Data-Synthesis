@@ -20,17 +20,27 @@ from trusted_synthesis.experiments.finance_qa_vnext_thinking_comparison.online.c
 )
 from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.instructions import SYSTEMS
 
-BASELINE = "6222e2f07849392618ab725cc534c66bf66a2dd2"
+from .model_contract import ACCEPTED_RESPONSE_MODELS, REQUESTED_MODEL
+
+BASELINE = "5dde23c2a041a638060ee0af8dcaa3fa4f7330e5"
 PACKAGE = (
     "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_bidirectional_ut"
     "ility"
 )
 OUTPUT = (
+    "trusted_data_synthesis/artifacts/qa_vnext_bidirectional_utility/"
+    "three_tasks_24rep_flash_rerun_20260910"
+)
+DOCUMENT = "trusted_data_synthesis/docs/finance_qa_vnext_bidirectional_utility_flash_rerun.md"
+TESTS = (
+    "trusted_data_synthesis/tests/test_qa_vnext_bidirectional_utility.py",
+    "trusted_data_synthesis/tests/test_qa_vnext_bidirectional_flash_contract.py",
+)
+MODEL = REQUESTED_MODEL
+MODEL_CATALOG_SHA256 = "a9c95c422d1a3d79b91240fbbf1a5f4b9ecaa29df5ced18b502360ea37b45c5b"
+PRIOR_OUTPUT = (
     "trusted_data_synthesis/artifacts/qa_vnext_bidirectional_utility/three_tasks_24rep_20260910"
 )
-DOCUMENT = "trusted_data_synthesis/docs/finance_qa_vnext_bidirectional_utility.md"
-TESTS = ("trusted_data_synthesis/tests/test_qa_vnext_bidirectional_utility.py",)
-MODEL = "deepseek-v4-flash"
 SYSTEM = SYSTEMS["T"]
 TASKS = ("X1", "X2", "X3")
 CONTROLS = ("G1", "G2", "F1")
@@ -68,7 +78,7 @@ CONTROL_INDEX_SHA256 = "7e8ccf83f765405c3b168de81fa125bf5c9c73660bac4f6fa5015e46
 
 
 def record(kind, **fields):
-    body = {"schema_version": "bidirectional_utility.v1." + kind, **fields}
+    body = {"schema_version": "bidirectional_utility.flash_rerun.v1." + kind, **fields}
     return {**body, "id": kind + ":" + sha(encode(body))}
 
 
@@ -85,7 +95,7 @@ def history_guard(root):
     paths = [
         "trusted_data_synthesis",
         ":(exclude)" + PACKAGE,
-        ":(exclude)trusted_data_synthesis/artifacts/qa_vnext_bidirectional_utility",
+        ":(exclude)" + OUTPUT,
         ":(exclude)" + DOCUMENT,
         *[":(exclude)" + p for p in TESTS],
     ]
@@ -99,13 +109,24 @@ def history_guard(root):
         not subprocess.check_output(["git", "status", "--porcelain", "--", *paths], cwd=root),
         "history.uncommitted",
     )
-    return {"baseline": BASELINE, "all_historical_files_and_scores_unchanged": True}
+    return {
+        "baseline": BASELINE,
+        "all_files_outside_authorized_rerun_scope_unchanged": True,
+        "prior_batch_artifacts_and_financial_scores_unchanged": True,
+        "current_experiment_code_has_authorized_model_contract_revision": True,
+    }
 
 
 def condition():
     return record(
         "fixed_open_support_condition",
         model=MODEL,
+        accepted_response_models=list(ACCEPTED_RESPONSE_MODELS),
+        user_confirmed_current_Flash_and_authorized_new_batch=True,
+        model_catalog_snapshot_path=PACKAGE + "/model_catalog_snapshot.json",
+        model_catalog_snapshot_sha256=MODEL_CATALOG_SHA256,
+        independent_rerun_of=PRIOR_OUTPUT,
+        previous_72_sessions_not_resumed_regraded_or_pooled=True,
         system=SYSTEM,
         system_sha256=sha(SYSTEM.encode()),
         thinking="enabled",
@@ -124,7 +145,9 @@ def condition():
         eventual_training_task_marginal={key: "1/6" for key in TRAIN_TASKS},
         parent_T_instruction_unchanged=True,
         complete_original_question_and_source_visible=True,
-        original_worker_calculator_projection_isolate_bytes=True,
+        original_worker_calculator_projection_isolate_bytes=False,
+        worker_changes="current Flash request/response identity contract only",
+        original_calculator_feedback_stop_projection_isolate_and_T_semantics=True,
         private_route_options_never_in_model_input=True,
         fixed_allocation_no_adaptive_prompt_or_resampling=True,
         all_registrations_before_any_provider_call=True,

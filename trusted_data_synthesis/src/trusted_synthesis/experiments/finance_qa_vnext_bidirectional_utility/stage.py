@@ -20,9 +20,10 @@ from trusted_synthesis.experiments.finance_qa_vnext_task_panel.guards import (
     guard_report,
 )
 from trusted_synthesis.experiments.finance_qa_vnext_thinking_comparison.online.common import write
-from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.instructions import capsule_files
 from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.stage import public_document
 
+from .capsule import capsule_files
+from .model_contract import ACCEPTED_RESPONSE_MODELS
 from .panel import Panel
 from .plan import (
     AUDIT_PATH,
@@ -32,9 +33,11 @@ from .plan import (
     DOCUMENT,
     LABELS,
     MODEL,
+    MODEL_CATALOG_SHA256,
     OUTPUT,
     PACKAGE,
     PARENT,
+    PRIOR_OUTPUT,
     SYSTEM,
     TASKS,
     TESTS,
@@ -74,6 +77,19 @@ def prepare(root):
     store = DurableStore(output / "preparation")
     store.json("implementation.json", implementation)
     store.json("condition.json", condition())
+    catalog_raw = (root / PACKAGE / "model_catalog_snapshot.json").read_bytes()
+    require(sha(catalog_raw) == MODEL_CATALOG_SHA256, "prepare.bound_live_catalog_snapshot")
+    catalog = read_json(root / PACKAGE / "model_catalog_snapshot.json")
+    require(
+        catalog["http_status"] == 200 and MODEL in {m["id"] for m in catalog["models"]},
+        "prepare.current_live_model_catalog",
+    )
+    require(
+        catalog["selected_request_model"] == MODEL
+        and catalog["accepted_response_models"] == list(ACCEPTED_RESPONSE_MODELS),
+        "prepare.one_shared_Flash_contract",
+    )
+    store.write("model_catalog_snapshot.json", catalog_raw)
     store.json("finite_policy.json", policy())
     store.json("panel_selection.json", panel.design())
     store.json("downstream_plan.json", downstream_plan())
@@ -102,6 +118,7 @@ def prepare(root):
     require(sha(audit) == AUDIT_SHA256, "prepare.original_audit")
     store.write("external_review.original.txt", audit)
     public, private = {}, {}
+    prior_panel_checks = []
     for key, task in panel.tasks.items():
         public[key] = public_document(task)
         private[key] = {
@@ -126,6 +143,26 @@ def prepare(root):
         }
         private[key]["public_document_id"] = public[key]["id"]
         store.json(f"public/{key}.json", public[key])
+        prior_raw = (root / PRIOR_OUTPUT / f"preparation/public/{key}.json").read_bytes()
+        require(
+            (store.root / f"public/{key}.json").read_bytes() == prior_raw,
+            "prepare.unchanged_source_question_bytes:" + key,
+        )
+        prior_panel_checks.append({"task_key": key, "original_public_sha256": sha(prior_raw)})
+    require(
+        private == read_json(root / PRIOR_OUTPUT / "preparation/private/evaluation_targets.json"),
+        "prepare.all_39_private_targets_unchanged",
+    )
+    store.json(
+        "prior_panel_identity.json",
+        {
+            "prior_output": PRIOR_OUTPUT,
+            "all_39_public_documents_byte_identical": True,
+            "all_private_targets_equal": True,
+            "rows": prior_panel_checks,
+            "old_sessions_regraded": False,
+        },
+    )
     store.json("private/evaluation_targets.json", private)
     from .study import target_prototypes
 
@@ -136,7 +173,7 @@ def prepare(root):
     rows = registrations(public)
     require(len(rows) == 72 and len({r["label"] for r in rows}) == 72, "prepare.all_registrations")
     store.json("registrations.json", rows)
-    files = capsule_files(root, "T")
+    files = capsule_files(root)
     members = []
     for name, raw in files.items():
         store.write("worker_code/" + name, raw)
@@ -144,12 +181,15 @@ def prepare(root):
     store.json(
         "worker_bundle.json",
         record(
-            "unchanged_T_worker_bundle",
+            "current_Flash_T_worker_bundle",
             members=members,
             system_sha256=sha(SYSTEM.encode()),
             interpreter=WORKER_PYTHON,
             flags=["-I", "-S", "-B"],
-            same_parent_worker_calculator_isolate_projection_and_T_common_bytes=True,
+            same_parent_worker_calculator_isolate_projection_and_T_common_bytes=False,
+            same_parent_calculator_isolate_projection_and_T_common_bytes=True,
+            worker_only_current_model_identity_contract_changed=True,
+            accepted_response_models=list(ACCEPTED_RESPONSE_MODELS),
             private_targets_or_route_menu_bundled=False,
         ),
     )
@@ -319,6 +359,9 @@ def collect(root):
             all_workers_terminated=True,
             no_retries=True,
             no_resampling=True,
+            independent_rerun_explicitly_authorized_by_user=True,
+            previous_batch_output=PRIOR_OUTPUT,
+            previous_batch_sessions_in_new_denominator=0,
             eventual_training_task_marginal={key: "1/6" for key in TRAIN_TASKS},
             collection_task_allocation={key: "1/3" for key in TASKS},
             no_old_trajectories_in_denominators=True,

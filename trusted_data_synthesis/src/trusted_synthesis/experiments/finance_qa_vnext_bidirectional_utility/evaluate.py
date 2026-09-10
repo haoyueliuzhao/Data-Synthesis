@@ -20,7 +20,6 @@ from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.evaluate impo
     answer_score,
     audit_session,
     comparison_status,
-    cost_summary,
     display_compatible,
     final_number_and_unit,
     internal_final_diagnostics,
@@ -30,6 +29,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_trace_delivery.evaluate impo
     verify_quotes,
 )
 
+from .costs import cost_summary
 from .plan import LABELS, MODEL, OUTPUT, SYSTEM, TASKS, history_guard, read_json, record, require
 
 
@@ -92,6 +92,10 @@ def costs(online):
             "Official indexed Chinese table matches prior frozen CNY rates; direct page fetch "
             "timed out. These are estimates under the registered table, not confirmed account "
             "invoices or exchange-rate conversions."
+        ),
+        "current_Flash_name_does_not_independently_verify_tariff": True,
+        "rate_scope": (
+            "Inherited registered Flash price assumptions, not a new price quote or invoice"
         ),
     }
     return report
@@ -366,7 +370,7 @@ def finalize(root, review_path):
                 "class_probability_degrees_of_freedom"
             ],
             old_trajectories_in_new_frequency_denominator=False,
-            original_history_unchanged=True,
+            prior_batch_and_other_experiment_artifacts_unchanged=True,
             old_N3_unchanged=True,
             new_six_task_population_not_old_panel_renormalization=True,
             no_forced_reconstruction=True,

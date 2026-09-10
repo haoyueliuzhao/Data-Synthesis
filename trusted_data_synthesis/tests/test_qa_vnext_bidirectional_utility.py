@@ -205,7 +205,7 @@ def test_source_unit_and_included_excluded_component_checks(panel):
     assert evaluate(c14["target"], c14["facts"]) == 599768
 
 
-@pytest.mark.parametrize("name", ["source.py", "projection.py", "tokens.py", "materialize.py"])
+@pytest.mark.parametrize("name", ["projection.py", "tokens.py", "materialize.py"])
 def test_inherited_offline_algorithms_not_semantically_changed(name):
     base = ROOT / "trusted_data_synthesis/src/trusted_synthesis/experiments"
     parent = ast.parse((base / "finance_qa_vnext_open_support_exploration" / name).read_text())
