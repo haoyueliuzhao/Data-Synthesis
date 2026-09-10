@@ -1,0 +1,15 @@
+{
+  "message": "To find the net change in AON 2019's unpaid restructuring liabilities during 2006, I need to calculate the difference between the balance at the end of 2006 and the balance at the beginning of 2006. The balance at the beginning of 2006 is the balance at the end of 2005, which is 116. The balance at the end of 2006 is 134.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "134 - 116",
+    "variables": {
+      "balance_end_2006": 134,
+      "balance_begin_2006": 116
+    },
+    "sources": {
+      "balance_end_2006": "source:t4c1n0",
+      "balance_begin_2006": "source:t5c1n0"
+    }
+  }
+}

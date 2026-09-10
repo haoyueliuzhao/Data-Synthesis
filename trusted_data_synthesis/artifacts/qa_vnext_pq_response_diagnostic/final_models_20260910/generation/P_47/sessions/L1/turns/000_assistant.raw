@@ -1,0 +1,15 @@
+{
+  "message": "The net change in AON 2019's unpaid restructuring liabilities during 2006 is the difference between the balance at the end of 2006 and the balance at the end of 2005. The balance at the end of 2005 is 116 and the balance at the end of 2006 is 134.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "134 - 116",
+    "variables": {
+      "balance_end_2006": 134,
+      "balance_end_2005": 116
+    },
+    "sources": {
+      "balance_end_2006": "source:t8c1n0",
+      "balance_end_2005": "source:t4c1n0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "The net change in AON 2019's unpaid restructuring liabilities during 2006 is 18 million dollars.",
+    "value": 18,
+    "unit": "million dollars",
+    "sources": {
+      "balance_end_2005": "source:t4c1n0",
+      "balance_end_2006": "source:t8c1n0"
+    },
+    "result_id": "tool:1"
+  }
+}
