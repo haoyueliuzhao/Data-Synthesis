@@ -1,0 +1,12 @@
+{
+  "message": "The percentage of the company's gross liabilities that are classified as other long-term liabilities in the accompanying consolidated balance sheets in 2012 is approximately 41.08%.",
+  "final": {
+    "answer": "41.08%",
+    "value": 41.084461830015525462310697098782825855143569088307,
+    "unit": "%",
+    "sources": [
+      "source:q0n0",
+      "source:t6c1"
+    ]
+  }
+}

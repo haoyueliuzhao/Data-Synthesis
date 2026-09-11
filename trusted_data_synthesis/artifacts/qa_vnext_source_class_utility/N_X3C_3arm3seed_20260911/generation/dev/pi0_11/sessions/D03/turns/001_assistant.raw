@@ -1,0 +1,15 @@
+{
+  "message": "The calculation expression was malformed. I will correct the expression and re-calculate the percentage decline in the allowance for doubtful accounts as of December 31, 2018.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(source:t0c1n0.value - source:t4c1n0.value) / source:t0c1n0.value * 100",
+    "variables": {
+      "source:t0c1n0": {"value": 389/10, "unit": "$"},
+      "source:t4c1n0": {"value": 343/10, "unit": "$"}
+    },
+    "sources": {
+      "source:t0c1n0": "SEGMENT13",
+      "source:t4c1n0": "SEGMENT13"
+    }
+  }
+}

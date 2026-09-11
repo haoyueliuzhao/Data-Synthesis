@@ -1,0 +1,10 @@
+{
+  "message": "There was an error in the calculation. The expression was (source:t6c1.value - source:t0c1n1.value) / source:t0c1n1.value * 100. The tool reported a ValueError. Let's try the calculation again.",
+  "tool": {
+    "expression": "(source:t6c1.value - source:t0c1n1.value) / source:t0c1n1.value * 100",
+    "variables": {
+      "beginning_balance": {"value": 201808, "source": "source:t0c1n1", "unit": "USD"},
+      "ending_balance": {"value": 139549, "source": "source:t6c1.value", "unit": "USD"}
+    }
+  }
+}

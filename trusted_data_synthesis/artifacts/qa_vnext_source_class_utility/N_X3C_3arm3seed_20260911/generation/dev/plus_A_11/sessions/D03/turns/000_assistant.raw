@@ -1,0 +1,19 @@
+{
+  "message": "The percentage decline in the allowance for doubtful accounts from 2017 to 2018 is calculated by the formula: (2017 value - 2018 value) / 2017 value * 100. The 2017 value is $44.0 and the 2018 value is $34.3.",
+  "tool": {
+    "expression": "(44 - 34.3) / 44 * 100",
+    "variables": {
+      "2017_value": 44,
+      "2018_value": 34.3
+    }
+  },
+  "final": {
+    "answer": "21.136363636363634",
+    "value": 21.136363636363634,
+    "unit": "%",
+    "sources": {
+      "2017_value": "source:t1c2n0",
+      "2018_value": "source:t4c2n0"
+    }
+  }
+}

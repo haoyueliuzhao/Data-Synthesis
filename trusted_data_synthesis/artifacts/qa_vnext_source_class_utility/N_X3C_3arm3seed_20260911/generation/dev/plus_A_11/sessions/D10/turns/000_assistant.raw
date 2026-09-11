@@ -1,0 +1,10 @@
+{
+  "message": "The deferred tax assets and regulatory assets changed by $6348 and $6241 from 2013 to 2014. I will calculate the percentage change using these values.",
+  "calculate": {
+    "expression": "(6348 - 6241) / 6241 * 100",
+    "variables": {
+      "2013_value": 6241,
+      "2014_value": 6348
+    }
+  }
+}

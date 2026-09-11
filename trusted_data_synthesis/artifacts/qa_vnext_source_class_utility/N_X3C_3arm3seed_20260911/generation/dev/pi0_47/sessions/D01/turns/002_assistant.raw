@@ -1,0 +1,15 @@
+{
+  "message": "There seems to be an issue with the expression syntax. Let's try the calculation again: the ending balance as of November 28, 2008 is $139,549 and the beginning balance as of December 1, 2007 is $201,808. The net change in the gross liability for unrecognized tax benefits during 2008 is the difference between these two values.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t6c1.value - source:t0c1n1.value",
+    "variables": {
+      "source:t6c1.value": {"value": 139549, "source": "source:t6c1n0", "unit": "$"},
+      "source:t0c1n1.value": {"value": 201808, "source": "source:t0c1n1", "unit": "$"}
+    },
+    "sources": {
+      "source:t6c1.value": "source:t6c1n0",
+      "source:t0c1n1.value": "source:t0c1n1"
+    }
+  }
+}

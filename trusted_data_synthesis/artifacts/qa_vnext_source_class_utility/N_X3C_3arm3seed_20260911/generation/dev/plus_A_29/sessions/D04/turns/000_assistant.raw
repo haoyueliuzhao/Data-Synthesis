@@ -1,0 +1,15 @@
+{
+  "message": "The question asks for the percentage of gross liabilities classified as other long-term liabilities in 2012. The relevant information is in the post_text segment: 'the liability balance includes amounts reflected as other long-term liabilities in the accompanying consolidated balance sheets totaling $ 74360 and $ 46961 as of december 31 , 2012 and 2011 , respectively.' The total gross liability for 2012 is $180993, as shown in the table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "74360 / 180993 * 100",
+    "variables": {
+      "74360": {"value": 74360, "source": "source:q0n0", "unit": "$"},
+      "180993": {"value": 180993, "source": "source:t6c1", "unit": "$"}
+    },
+    "sources": {
+      "74360": "source:q0n0",
+      "180993": "source:t6c1"
+    }
+  }
+}

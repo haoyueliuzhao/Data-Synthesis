@@ -1,0 +1,1 @@
+{"call_id":"tool:1","error":{"message":"unknown_tool:{'expression': '0.3 + 0.1 + 0.4', 'variables': {}}","type":"ValueError"},"result":null,"status":"error","tool":{"expression":"0.3 + 0.1 + 0.4","variables":{}}}

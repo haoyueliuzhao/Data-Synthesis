@@ -1,0 +1,9 @@
+{
+  "message": "I will manually calculate the percentage of total operating revenues from 2014-2016 that is the revenue from coal. The coal revenues for 2014-2016 are 2440, 3237, and 4127 millions respectively. The total operating revenues for the same period are 19941, 21813, and 23988 millions respectively. The sum of coal revenues is 2440 + 3237 + 4127 = 9804 millions. The sum of total operating revenues is 19941 + 21813 + 23988 = 65742 millions. The percentage is (9804 / 65742) * 100 = 14.91%.",
+  "final": {
+    "value": 14.91,
+    "unit": "%",
+    "sources": ["source:t4c1", "source:t4c2", "source:t4c3", "source:t9c1", "source:t9c2", "source:t9c3"],
+    "result_id": "tool:3"
+  }
+}

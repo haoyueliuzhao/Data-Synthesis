@@ -1,0 +1,11 @@
+{
+  "message": "The net sales in 2016 and 2015 are $6608 million and $6770 million respectively. The growth rate from 2015 to 2016 can be calculated as (2015 value - 2016 value) / 2015 value * 100%",
+  "final": {
+    "value": -2.5,
+    "unit": "%",
+    "sources": {
+      "2015_value": "source:t1c2n0",
+      "2016_value": "source:t1c1n0"
+    }
+  }
+}

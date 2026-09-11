@@ -1,0 +1,20 @@
+{
+  "message": "The average operating profit for MFC between 2014 and 2016 is 1190.67 million.",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {
+      "2014": {"value": 1344, "unit": "million"},
+      "2015": {"value": 1282, "unit": "million"},
+      "2016": {"value": 1018, "unit": "million"}
+    },
+    "sources": {
+      "2014": "source:t0c3n0",
+      "2015": "source:t0c2n0",
+      "2016": "source:t0c1n0"
+    }
+  },
+  "final": {
+    "value": 1190.67,
+    "unit": "million"
+  }
+}

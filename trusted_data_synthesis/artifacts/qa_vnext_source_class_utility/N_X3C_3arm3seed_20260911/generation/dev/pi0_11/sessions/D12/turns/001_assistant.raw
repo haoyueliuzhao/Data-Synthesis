@@ -1,0 +1,9 @@
+{
+  "calculate": {
+    "expression": "(6608 - 6770) / 6770 * 100",
+    "variables": {
+      "2016_value": 6608,
+      "2015_value": 6770
+    }
+  }
+}

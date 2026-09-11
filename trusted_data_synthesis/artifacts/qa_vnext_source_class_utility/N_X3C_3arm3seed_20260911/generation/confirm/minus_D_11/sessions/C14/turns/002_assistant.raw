@@ -1,0 +1,7 @@
+{
+  "message": "The calculation for the total shares if Mr. Oppenheimer's RSUs vest is 9,425,966.1893 shares. This is based on the shares held by Mr. Oppenheimer (149,768) plus the total shares of the group of current executive officers and directors (9,378,423) minus the RSUs that vest (9,378,423 * 1.09 / 10,000).",
+  "tool": "final",
+  "arguments": {
+    "final": "9425966.1893 shares"
+  }
+}

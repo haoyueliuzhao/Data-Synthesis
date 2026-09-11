@@ -1,0 +1,11 @@
+{
+  "message": "The percentage change in deferred tax assets and regulatory assets from 2013 to 2014 is calculated by finding the difference between the values at the end of 2014 and 2013, and then dividing by the value at the end of 2013, and multiplying by 100 to get the percentage.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((195237 - 177947) / 177947) * 100",
+    "variables": {
+      "195237": {"value": 195237, "unit": ""},
+      "177947": {"value": 177947, "unit": ""}
+    }
+  }
+}

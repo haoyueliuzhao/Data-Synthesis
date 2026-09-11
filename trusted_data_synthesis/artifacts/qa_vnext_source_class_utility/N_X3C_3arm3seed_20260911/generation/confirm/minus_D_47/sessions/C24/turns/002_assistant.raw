@@ -1,0 +1,22 @@
+{
+  "calculate": {
+    "expression": "155 / 898 * 100",
+    "variables": {
+      "2020_capital_lease_payment": {"value": 155, "unit": "million"},
+      "total_capital_lease_payment": {"value": 898, "unit": "million"}
+    },
+    "sources": {
+      "2020_capital_lease_payment": "source:t2c2n0",
+      "total_capital_lease_payment": "source:t7c2n0"
+    }
+  },
+  "final": {
+    "value": 17.259259259259258,
+    "unit": "%",
+    "sources": {
+      "2020_capital_lease_payment": "source:t2c2n0",
+      "total_capital_lease_payment": "source:t7c2n0"
+    },
+    "result_id": "calculate:1"
+  }
+}

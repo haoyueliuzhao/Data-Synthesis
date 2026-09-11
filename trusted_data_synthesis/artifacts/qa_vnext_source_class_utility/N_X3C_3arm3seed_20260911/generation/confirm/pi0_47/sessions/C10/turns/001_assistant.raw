@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "The contingent consideration without the foreign currency translation adjustment in 2014 would be $33,458 million.",
+    "value": 33458,
+    "unit": "million",
+    "sources": [
+      "source:t7c1n0",
+      "source:t5c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

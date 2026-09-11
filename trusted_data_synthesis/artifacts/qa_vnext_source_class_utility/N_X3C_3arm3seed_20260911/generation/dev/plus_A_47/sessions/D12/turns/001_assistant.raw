@@ -1,0 +1,12 @@
+{
+  "message": "The growth rate of net sales from 2015 to 2016 is approximately 2.39%.",
+  "final": {
+    "answer": "2.39%",
+    "value": 2.3929098966026587887740029542097488921713441654357,
+    "unit": "%",
+    "sources": [
+      "source:t1c1n0",
+      "source:t1c2n0"
+    ]
+  }
+}

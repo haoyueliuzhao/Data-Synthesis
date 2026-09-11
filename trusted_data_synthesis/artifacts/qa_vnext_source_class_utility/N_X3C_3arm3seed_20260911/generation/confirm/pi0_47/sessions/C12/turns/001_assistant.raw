@@ -1,0 +1,11 @@
+{
+  "final": {
+    "answer": "The net change in cash during 2016 was a decrease of $102 million.",
+    "value": -102,
+    "unit": "million dollars",
+    "sources": [
+      "source:t1c2n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

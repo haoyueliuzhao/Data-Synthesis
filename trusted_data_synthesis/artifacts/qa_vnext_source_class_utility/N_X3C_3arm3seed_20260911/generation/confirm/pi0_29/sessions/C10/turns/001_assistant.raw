@@ -1,0 +1,19 @@
+{
+  "message": "The calculation expression was incorrectly formatted. I will correct it and try again.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(202 / 5) * 1000000 + (-4934)",
+    "variables": {
+      "202 / 5": {
+        "value": 40.4,
+        "source": "source:p2n2",
+        "unit": "million"
+      },
+      "-4934": {
+        "value": -4934,
+        "source": "source:t5c1n0",
+        "unit": "million"
+      }
+    }
+  }
+}

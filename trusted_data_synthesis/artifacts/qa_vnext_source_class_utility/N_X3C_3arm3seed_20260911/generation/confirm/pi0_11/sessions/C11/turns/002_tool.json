@@ -1,0 +1,1 @@
+{"call_id":"tool:3","result":{"dependency_depth":0,"exact_value":"1277","expression":"1277","financial_meaning_certified":false,"model_supplied_sources":{"value":"source:t0c3n0"},"operation_count":0,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"1277"},"status":"ok","tool":"calculate"}

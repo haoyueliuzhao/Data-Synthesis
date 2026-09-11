@@ -1,0 +1,24 @@
+{
+  "message": "The calculation for the percentage of gross liabilities classified as other long-term liabilities in 2012 is as follows: (74360 / 180993) * 100 = 41.084461830015525462310697098782825855143569088307%.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "74360 / 180993 * 100",
+    "variables": {
+      "74360": {"value": 74360, "source": "source:q0n0", "unit": "$"},
+      "180993": {"value": 180993, "source": "source:t6c1", "unit": "$"}
+    },
+    "sources": {
+      "74360": "source:q0n0",
+      "180993": "source:t6c1"
+    }
+  },
+  "final": {
+    "value": 41.084461830015525462310697098782825855143569088307,
+    "unit": "%",
+    "sources": {
+      "74360": "source:q0n0",
+      "180993": "source:t6c1"
+    },
+    "result_id": "tool:1"
+  }
+}

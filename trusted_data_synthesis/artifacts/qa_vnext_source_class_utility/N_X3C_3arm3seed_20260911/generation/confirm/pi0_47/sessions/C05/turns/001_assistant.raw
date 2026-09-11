@@ -1,0 +1,7 @@
+{
+  "message": "There was an error in the expression. The correct expression should be: ((4919 - 4277) / 4919) * 100. Let's calculate the percentage change in the balance of unrecognized tax benefits from 2011 to 2012.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((4919 - 4277) / 4919) * 100"
+  }
+}

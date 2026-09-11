@@ -1,0 +1,7 @@
+{
+  "message": "The calculation tool encountered an error. Let's try the calculation manually: 0.3 + 0.1 + 0.4 = 0.8",
+  "tool": {
+    "expression": "0.3 + 0.1 + 0.4",
+    "variables": {}
+  }
+}

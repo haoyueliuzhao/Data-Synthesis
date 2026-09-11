@@ -1,0 +1,13 @@
+{
+  "calculate": {
+    "expression": "159 / 898 * 100",
+    "variables": {
+      "2021_capital_lease_payment": {"value": 159, "unit": "million"},
+      "total_capital_lease_payment": {"value": 898, "unit": "million"}
+    },
+    "sources": {
+      "2021_capital_lease_payment": "source:t3c2n0",
+      "total_capital_lease_payment": "source:t7c2n0"
+    }
+  }
+}

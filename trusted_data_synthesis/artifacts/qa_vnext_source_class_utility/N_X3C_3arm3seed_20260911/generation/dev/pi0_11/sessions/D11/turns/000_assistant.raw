@@ -1,0 +1,11 @@
+{
+  "message": "To find the average operating profit for MFC between 2014 and 2016, I will use the data from the table. The relevant values are 1344 (2014), 1282 (2015), and 1018 (2016).",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {
+      "2014": {"value": 1344, "unit": "million"},
+      "2015": {"value": 1282, "unit": "million"},
+      "2016": {"value": 1018, "unit": "million"}
+    }
+  }
+}

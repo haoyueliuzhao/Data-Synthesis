@@ -1,0 +1,11 @@
+{
+  "message": "The total sales in 2012 is $47,267 million. The total sales in 2013 is $44,033 million. The growth rate in total sales in 2012 is calculated as (2013 sales - 2012 sales) / 2012 sales.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(44033 - 47267) / 47267",
+    "variables": {
+      "2013_sales": 44033,
+      "2012_sales": 47267
+    }
+  }
+}

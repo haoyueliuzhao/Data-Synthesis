@@ -1,0 +1,8 @@
+{
+  "message": "The total balance of severance and related charges, lease termination costs, and canceled contracts in millions is the sum of $0.3 million, $0.1 million, and $0.4 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "0.3 + 0.1 + 0.4",
+    "variables": {}
+  }
+}

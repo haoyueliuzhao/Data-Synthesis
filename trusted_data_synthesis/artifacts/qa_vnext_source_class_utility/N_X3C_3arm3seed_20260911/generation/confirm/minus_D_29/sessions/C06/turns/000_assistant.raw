@@ -1,0 +1,15 @@
+{
+  "message": "To calculate the percentage change in the total carrying amount of goodwill from 2015 to 2017, I will use the formula: (New Value - Original Value) / Original Value * 100. The original value is the total carrying amount of goodwill in 2015, and the new value is the total carrying amount of goodwill in 2017.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((source:t13c5n0.value - source:t1c5n0.value) / source:t1c5n0.value) * 100",
+    "variables": {
+      "source:t13c5n0": {"value": 7167.1, "unit": "million"},
+      "source:t1c5n0": {"value": 6490.8, "unit": "million"}
+    },
+    "sources": {
+      "source:t13c5n0": "SEGMENT13N0",
+      "source:t1c5n0": "SEGMENT1CN0"
+    }
+  }
+}

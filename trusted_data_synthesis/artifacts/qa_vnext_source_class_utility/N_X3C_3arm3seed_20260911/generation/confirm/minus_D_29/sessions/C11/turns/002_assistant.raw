@@ -1,0 +1,11 @@
+{
+  "message": "The value in the '2015' column of the 'operating activities' row in the table is 1277 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "1277",
+    "variables": {
+      "value": 1277,
+      "unit": "million"
+    }
+  }
+}

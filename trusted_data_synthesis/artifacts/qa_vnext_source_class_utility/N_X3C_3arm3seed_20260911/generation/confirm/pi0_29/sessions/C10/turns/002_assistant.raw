@@ -1,0 +1,12 @@
+{
+  "message": "The calculation for the 2014 contingent consideration without the foreign currency translation adjustment is as follows: (202 / 5) * 1000000 + (-4934) = 40395066. This means the contingent consideration would be approximately $40,395,066 million.",
+  "final": {
+    "answer": "The 2014 contingent consideration without the foreign currency translation adjustment is approximately $40,395,066 million.",
+    "value": 40395066,
+    "unit": "million",
+    "sources": [
+      "source:t6c0n2",
+      "source:t5c1n0"
+    ]
+  }
+}

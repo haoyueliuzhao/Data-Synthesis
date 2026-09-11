@@ -1,0 +1,13 @@
+{
+  "message": "The percentage change in the unrecognized tax benefits from 2011 to 2012 is approximately 13.05%.",
+  "final": {
+    "answer": "The percentage change in the unrecognized tax benefits from 2011 to 2012 is approximately 13.05%",
+    "value": 13.051433218133767025818255743037202683472250457410,
+    "unit": "%",
+    "sources": [
+      "source:t0c1n0",
+      "source:t0c2n0",
+      "source:t0c3n0"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "message": "To calculate the percentage change in aggregate rent expense from 2012 to 2013, I will use the formula: (New Value - Original Value) / Original Value * 100. The original value is the aggregate rent expense in 2012, and the new value is the aggregate rent expense in 2013.",
+  "tool": {
+    "expression": "(source:t3c1.value - source:t2c1.value) / source:t2c1.value * 100",
+    "variables": {
+      "source:t2c1": {"value": 538405, "unit": "thousand dollars"},
+      "source:t3c1": {"value": 519034, "unit": "thousand dollars"}
+    }
+  },
+  "final": {
+    "answer": "The percentage change in aggregate rent expense from 2012 to 2013 is -3.57%."
+  }
+}

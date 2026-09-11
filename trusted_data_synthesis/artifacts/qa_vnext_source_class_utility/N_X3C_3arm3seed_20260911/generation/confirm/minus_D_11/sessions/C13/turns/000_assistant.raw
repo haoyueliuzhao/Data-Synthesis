@@ -1,0 +1,10 @@
+{
+  "message": "The total cost of capital lease obligations, principal only, is $2975 million. This is derived from the 'capital lease obligations [b]' row in the table, where the 'total' column value is $2975 million.",
+  "final": {
+    "value": 2975,
+    "unit": "million dollars",
+    "sources": {
+      "total": "source:t3c1n0"
+    }
+  }
+}

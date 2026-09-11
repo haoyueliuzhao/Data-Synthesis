@@ -1,0 +1,13 @@
+{
+  "message": "The percentage decline in the allowance for doubtful accounts from 2017 to 2018 is 22.05%.",
+  "final": {
+    "answer": "22.05%",
+    "value": 22.045454545454545454545454545454545454545454545455,
+    "unit": "%",
+    "sources": {
+      "2017_value": "source:t0c2n0",
+      "2018_value": "source:t0c1n0"
+    },
+    "result_id": "tool:1"
+  }
+}

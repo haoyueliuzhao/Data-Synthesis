@@ -1,0 +1,1 @@
+{"call_id":"tool:1","error":{"message":"unknown_tool:{'expression': '(29.7 - 21.0) / 21.0 * 100', 'variables': {'2012_additions': '29","type":"ValueError"},"result":null,"status":"error","tool":{"expression":"(29.7 - 21.0) / 21.0 * 100","variables":{"2011_additions":"21.0","2012_additions":"29.7"}}}

@@ -1,0 +1,13 @@
+{
+  "message": "The total number of shares if Mr. Oppenheimer's RSUs vest is approximately 102,224.8107 shares. This is calculated by taking 1.09% of the total shares held by the current executive officers and directors as a group, which is 9,378,423 shares.",
+  "final": {
+    "answer": "102224.8107",
+    "value": 102224.8107,
+    "unit": "shares",
+    "sources": [
+      "source:t13c1",
+      "source:t13c3"
+    ],
+    "result_id": "tool:1"
+  }
+}

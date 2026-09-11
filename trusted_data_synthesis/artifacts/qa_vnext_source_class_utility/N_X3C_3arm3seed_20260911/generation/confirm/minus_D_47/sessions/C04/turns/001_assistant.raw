@@ -1,0 +1,12 @@
+{
+  "message": "The net change in asset retirement liability between 2002 and September 25, 2004 is 2.7 million dollars.",
+  "final": {
+    "value": 2.7,
+    "unit": "million dollars",
+    "sources": {
+      "value_2002": "source:t0c1n0",
+      "value_2004": "source:t6c1n0"
+    },
+    "result_id": "tool:1"
+  }
+}

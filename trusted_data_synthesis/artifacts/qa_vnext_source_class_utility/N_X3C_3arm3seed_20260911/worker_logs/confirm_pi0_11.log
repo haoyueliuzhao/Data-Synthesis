@@ -1,0 +1,27 @@
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   1%|          | 2/339 [00:00<00:40,  8.38it/s]Loading weights:   4%|▍         | 13/339 [00:00<00:07, 41.21it/s]Loading weights:   6%|▌         | 19/339 [00:00<00:07, 43.03it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:08, 35.11it/s]Loading weights:  11%|█         | 36/339 [00:00<00:06, 47.35it/s]Loading weights:  12%|█▏        | 42/339 [00:01<00:06, 46.67it/s]Loading weights:  14%|█▍        | 49/339 [00:01<00:06, 42.05it/s]Loading weights:  18%|█▊        | 60/339 [00:01<00:05, 51.84it/s]Loading weights:  19%|█▉        | 66/339 [00:01<00:06, 43.19it/s]Loading weights:  22%|██▏       | 73/339 [00:01<00:06, 39.41it/s]Loading weights:  25%|██▍       | 84/339 [00:01<00:05, 46.20it/s]Loading weights:  26%|██▋       | 89/339 [00:02<00:06, 38.50it/s]Loading weights:  28%|██▊       | 96/339 [00:02<00:06, 40.33it/s]Loading weights:  30%|██▉       | 101/339 [00:02<00:05, 41.59it/s]Loading weights:  32%|███▏      | 109/339 [00:02<00:06, 38.22it/s]Loading weights:  35%|███▌      | 120/339 [00:02<00:04, 48.07it/s]Loading weights:  37%|███▋      | 126/339 [00:03<00:05, 40.56it/s]Loading weights:  39%|███▉      | 132/339 [00:03<00:05, 35.60it/s]Loading weights:  42%|████▏     | 144/339 [00:03<00:04, 43.32it/s]Loading weights:  44%|████▍     | 149/339 [00:03<00:04, 40.38it/s]Loading weights:  46%|████▌     | 156/339 [00:03<00:04, 38.62it/s]Loading weights:  48%|████▊     | 162/339 [00:03<00:04, 42.31it/s]Loading weights:  50%|████▉     | 169/339 [00:04<00:04, 37.01it/s]Loading weights:  51%|█████▏    | 174/339 [00:04<00:04, 39.38it/s]Loading weights:  53%|█████▎    | 179/339 [00:04<00:05, 31.19it/s]Loading weights:  57%|█████▋    | 192/339 [00:04<00:04, 35.58it/s]Loading weights:  60%|█████▉    | 202/339 [00:05<00:03, 40.63it/s]Loading weights:  61%|██████    | 207/339 [00:05<00:03, 39.36it/s]Loading weights:  63%|██████▎   | 212/339 [00:05<00:03, 38.19it/s]Loading weights:  64%|██████▎   | 216/339 [00:05<00:04, 30.58it/s]Loading weights:  67%|██████▋   | 228/339 [00:05<00:03, 32.88it/s]Loading weights:  70%|███████   | 238/339 [00:05<00:02, 42.90it/s]Loading weights:  72%|███████▏  | 244/339 [00:06<00:02, 36.95it/s]Loading weights:  74%|███████▍  | 251/339 [00:06<00:02, 39.17it/s]Loading weights:  76%|███████▌  | 256/339 [00:06<00:02, 31.22it/s]Loading weights:  78%|███████▊  | 263/339 [00:06<00:02, 31.54it/s]Loading weights:  79%|███████▉  | 267/339 [00:06<00:02, 32.16it/s]Loading weights:  81%|████████  | 274/339 [00:07<00:01, 38.28it/s]Loading weights:  82%|████████▏ | 279/339 [00:07<00:01, 36.27it/s]Loading weights:  85%|████████▍ | 287/339 [00:07<00:01, 42.28it/s]Loading weights:  86%|████████▌ | 292/339 [00:07<00:01, 39.62it/s]Loading weights:  88%|████████▊ | 298/339 [00:07<00:00, 42.10it/s]Loading weights:  89%|████████▉ | 303/339 [00:07<00:00, 38.79it/s]Loading weights:  92%|█████████▏| 311/339 [00:08<00:00, 37.34it/s]Loading weights:  94%|█████████▎| 317/339 [00:08<00:00, 40.52it/s]Loading weights:  96%|█████████▌| 324/339 [00:08<00:00, 46.29it/s]Loading weights:  97%|█████████▋| 329/339 [00:08<00:00, 38.91it/s]Loading weights: 100%|██████████| 339/339 [00:08<00:00, 39.93it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+generation confirm pi0_11 C01 finished
+generation confirm pi0_11 C02 finished
+generation confirm pi0_11 C03 finished
+generation confirm pi0_11 C04 finished
+generation confirm pi0_11 C05 finished
+generation confirm pi0_11 C06 finished
+generation confirm pi0_11 C07 finished
+generation confirm pi0_11 C08 finished
+generation confirm pi0_11 C09 finished
+generation confirm pi0_11 C10 finished
+generation confirm pi0_11 C11 finished
+generation confirm pi0_11 C12 finished
+generation confirm pi0_11 C13 finished
+generation confirm pi0_11 C14 finished
+generation confirm pi0_11 C15 finished
+generation confirm pi0_11 C16 finished
+generation confirm pi0_11 C17 finished
+generation confirm pi0_11 C18 finished
+generation confirm pi0_11 C19 finished
+generation confirm pi0_11 C20 finished
+generation confirm pi0_11 C21 finished
+generation confirm pi0_11 C22 finished
+generation confirm pi0_11 C23 finished
+generation confirm pi0_11 C24 finished
+completed confirm pi0 11 student_generation_report:82aad1154d040d2db0bea2f119547262911a690e59e8beb63b778f434ea426a1

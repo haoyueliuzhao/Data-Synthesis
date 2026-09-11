@@ -1,0 +1,24 @@
+{
+  "message": "The percentage change in the additions charged to expense from 2011 to 2012 is 41.43%.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(29.7 - 21.0) / 21.0 * 100",
+    "variables": {
+      "29.7": {"value": 29.7, "unit": ""},
+      "21.0": {"value": 21.0, "unit": ""}
+    },
+    "sources": {
+      "29.7": "source:t1c1n0",
+      "21.0": "source:t1c2n0"
+    }
+  },
+  "final": {
+    "answer": "41.43%",
+    "value": 41.428571428571428571428571428571428571428571428571,
+    "unit": "%",
+    "sources": {
+      "29.7": "source:t1c1n0",
+      "21.0": "source:t1c2n0"
+    }
+  }
+}

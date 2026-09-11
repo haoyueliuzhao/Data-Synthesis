@@ -1,0 +1,19 @@
+{
+  "message": "The table shows the balance of contingent consideration as of December 31, 2014, and 2013. The value of all potential acquisition-related contingent consideration required payments to be between zero and $40.4 million as of December 31, 2014. The foreign currency translation adjustment for 2014 is -4934 (4934). To find the contingent consideration without the foreign currency translation adjustment, we need to add 4934 to the balance as of December 31, 2014.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "28524 + 4934",
+    "variables": {
+      "28524": {
+        "value": 28524,
+        "source": "source:t7c1n0",
+        "unit": "million"
+      },
+      "4934": {
+        "value": 4934,
+        "source": "source:t5c1n0",
+        "unit": "million"
+      }
+    }
+  }
+}

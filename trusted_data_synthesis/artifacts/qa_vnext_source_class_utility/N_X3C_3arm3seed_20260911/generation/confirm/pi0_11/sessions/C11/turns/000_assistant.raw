@@ -1,0 +1,14 @@
+{
+  "message": "The net change in cash during 2015 is the value in the '2015' column of the 'operating activities' row in the table. This value is $1277 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t0c3n0.value",
+    "variables": {
+      "value": 1277,
+      "unit": "million"
+    },
+    "sources": {
+      "value": "source:t0c3n0"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "message": "The 2014 contingent consideration is estimated to be between zero and $40.4 million. The foreign currency translation adjustment for 2014 is -4934. To find the contingent consideration without the foreign currency translation adjustment, we need to add 4934 to the upper limit of the estimated range.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "40.4 * 1000000 + 4934",
+    "variables": {
+      "40.4": {
+        "value": 202 / 5,
+        "source": "source:t6c0n2",
+        "unit": "million"
+      },
+      "4934": {
+        "value": -4934,
+        "source": "source:t5c1n0",
+        "unit": "million"
+      }
+    }
+  }
+}

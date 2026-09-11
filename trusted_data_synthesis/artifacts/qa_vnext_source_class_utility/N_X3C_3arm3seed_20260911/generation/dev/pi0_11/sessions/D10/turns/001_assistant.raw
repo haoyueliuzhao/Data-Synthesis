@@ -1,0 +1,11 @@
+{
+  "message": "The percentage change in deferred tax assets and regulatory assets from 2013 to 2014 is 9.72%.",
+  "final": {
+    "value": 9.72,
+    "unit": "%",
+    "sources": [
+      "source:t6c1n0",
+      "source:t3c1n0"
+    ]
+  }
+}

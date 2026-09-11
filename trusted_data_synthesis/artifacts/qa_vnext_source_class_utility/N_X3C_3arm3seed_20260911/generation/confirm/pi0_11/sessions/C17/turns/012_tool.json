@@ -1,0 +1,1 @@
+{"call_id":"tool:13","error":{"message":"unknown_tool:{'expression': '(519034 - 538405) / 538405 * 100', 'variables': {}}","type":"ValueError"},"result":null,"status":"error","tool":{"expression":"(519034 - 538405) / 538405 * 100","variables":{}}}

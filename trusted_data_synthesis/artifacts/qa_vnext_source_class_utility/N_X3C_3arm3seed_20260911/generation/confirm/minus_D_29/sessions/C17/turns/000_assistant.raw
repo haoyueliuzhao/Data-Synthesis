@@ -1,0 +1,15 @@
+{
+  "message": "To calculate the percentage change in aggregate rent expense from 2013 to 2014, I will use the formula: (new_value - old_value) / old_value * 100. The old_value is the aggregate rent expense in 2013, and the new_value is the aggregate rent expense in 2014.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(source:t3n0.value - source:t2n0.value) / source:t2n0.value * 100",
+    "variables": {
+      "source:t2n0.value": 538405,
+      "source:t3n0.value": 519034
+    },
+    "sources": {
+      "source:t2n0.value": "source:t2c1",
+      "source:t3n0.value": "source:t3c1"
+    }
+  }
+}

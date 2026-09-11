@@ -1,0 +1,11 @@
+{
+  "message": "The calculation for the percent of total minimum capital leases payments due in 2020 is 155 / 898 * 100 = 17.25%.",
+  "final": {
+    "value": 17.25,
+    "unit": "%",
+    "sources": {
+      "2020_capital_lease_payment": "source:t2c2n0",
+      "total_capital_lease_payment": "source:t7c2n0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "message": "The allowance for doubtful accounts declined by approximately -11.83% from the beginning to the end of 2018.",
+  "final": {
+    "answer": "The allowance for doubtful accounts declined by approximately -11.83% from the beginning to the end of 2018.",
+    "value": -11.825192802056555,
+    "unit": "%",
+    "sources": {
+      "34.3": "source:t4c1n0",
+      "38.9": "source:t1c1n0"
+    }
+  }
+}

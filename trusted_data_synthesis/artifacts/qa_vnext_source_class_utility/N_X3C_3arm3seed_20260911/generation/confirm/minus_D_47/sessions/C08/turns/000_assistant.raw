@@ -1,0 +1,15 @@
+{
+  "message": "The net increase in outstanding shares during the period of 2016 to 2018 can be calculated by subtracting the outstanding shares at the end of 2016 from the outstanding shares at the end of 2018.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t7c3.value - source:t3c3.value",
+    "variables": {
+      "source:t7c3.value": {"value": 1220, "source": "SEGMENT12n2", "unit": "millions of shares"},
+      "source:t3c3.value": {"value": 1217, "source": "SEGMENT3n1", "unit": "millions of shares"}
+    },
+    "sources": {
+      "source:t7c3.value": "SEGMENT12n2",
+      "source:t3c3.value": "SEGMENT3n1"
+    }
+  }
+}

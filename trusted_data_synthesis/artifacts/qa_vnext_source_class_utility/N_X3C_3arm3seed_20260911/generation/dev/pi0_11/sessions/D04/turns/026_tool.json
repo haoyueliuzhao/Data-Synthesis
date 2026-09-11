@@ -1,0 +1,1 @@
+{"call_id":"tool:27","error":{"message":"unknown_tool:{'expression': '(source:t6c1.value / source:t6c0.value) * 100', 'variables': {'s","type":"ValueError"},"result":null,"status":"error","tool":{"expression":"(source:t6c1.value / source:t6c0.value) * 100","variables":{"source:t6c0":{"unit":"$","value":118314},"source:t6c1":{"unit":"$","value":180993}}}}

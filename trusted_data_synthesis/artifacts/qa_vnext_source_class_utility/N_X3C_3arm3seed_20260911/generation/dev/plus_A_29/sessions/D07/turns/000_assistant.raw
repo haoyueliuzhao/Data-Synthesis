@@ -1,0 +1,23 @@
+{
+  "message": "The company repurchased 0.6 million shares and 0.7 million shares of common stock in the open market for the years ended December 31, 2018 and 2017, respectively.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "0.6 + 0.7",
+    "variables": {
+      "0.6": {"value": 0.6, "source": "source:q5n2", "unit": "million shares"},
+      "0.7": {"value": 0.7, "source": "source:q5n3", "unit": "million shares"}
+    },
+    "sources": {
+      "0.6": "source:q5n2",
+      "0.7": "source:q5n3"
+    }
+  },
+  "final": {
+    "value": 1.3,
+    "unit": "million shares",
+    "sources": {
+      "0.6": "source:q5n2",
+      "0.7": "source:q5n3"
+    }
+  }
+}

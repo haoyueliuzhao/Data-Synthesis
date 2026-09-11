@@ -1,0 +1,9 @@
+{
+  "message": "There was an error in the expression syntax. The correct expression should be the value in the '2015' column of the 'operating activities' row in the table, which is $1277 million.",
+  "tool": "read_source",
+  "arguments": {
+    "locators": [
+      "source:t0c3n0"
+    ]
+  }
+}

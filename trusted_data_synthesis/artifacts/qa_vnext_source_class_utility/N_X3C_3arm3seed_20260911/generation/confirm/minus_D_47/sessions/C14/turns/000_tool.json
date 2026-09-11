@@ -1,0 +1,1 @@
+{"call_id":"tool:1","result":{"dependency_depth":1,"exact_value":"9528191","expression":"149768 + 9378423","financial_meaning_certified":false,"model_supplied_sources":null,"operation_count":1,"resolved_variables":{},"source_declarations_validated":false,"used_result_ids":[],"value":"9528191"},"status":"ok","tool":"calculate"}

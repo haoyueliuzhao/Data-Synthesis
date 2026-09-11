@@ -1,0 +1,12 @@
+{
+  "message": "The net increase in outstanding shares during the period of 2016 to 2018 is 3 million shares.",
+  "final": {
+    "answer": "The net increase in outstanding shares during the period of 2016 to 2018 is 3 million shares.",
+    "value": 3,
+    "unit": "millions of shares",
+    "sources": [
+      "SEGMENT12n2",
+      "SEGMENT13n3"
+    ]
+  }
+}

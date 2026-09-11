@@ -1,0 +1,14 @@
+{
+  "message": "There was an error in the calculation. The expression '100 * (t4c1 + t4c2 + t4c3) / (t9c1 + t9c2 + t9c3)' seems to be causing issues. I will try a simpler calculation to find the total coal revenue and total operating revenue for 2014-2016, and then calculate the percentage manually.",
+  "tool": {
+    "expression": "(t4c1 + t4c2 + t4c3) / (t9c1 + t9c2 + t9c3)",
+    "variables": {
+      "t4c1": {"value": 2440, "unit": "millions"},
+      "t4c2": {"value": 3237, "unit": "millions"},
+      "t4c3": {"value": 4127, "unit": "millions"},
+      "t9c1": {"value": 19941, "unit": "millions"},
+      "t9c2": {"value": 21813, "unit": "millions"},
+      "t9c3": {"value": 23988, "unit": "millions"}
+    }
+  }
+}

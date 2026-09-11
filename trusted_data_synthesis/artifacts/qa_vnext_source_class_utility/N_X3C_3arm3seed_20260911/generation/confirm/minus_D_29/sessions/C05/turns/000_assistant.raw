@@ -1,0 +1,11 @@
+{
+  "message": "The table shows the balance of unrecognized tax benefits for 2011, 2012, and 2013. The balance for 2011 is $4919, and for 2012, it is $4277. The change in the balance from 2011 to 2012 is $4919 - $4277 = $642. To find the percentage change, we use the formula: (change / original value) * 100. In this case, the original value is the 2011 balance.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((4919 - 4277) / 4919) * 100",
+    "variables": {
+      "2011_balance": 4919,
+      "2012_balance": 4277
+    }
+  }
+}

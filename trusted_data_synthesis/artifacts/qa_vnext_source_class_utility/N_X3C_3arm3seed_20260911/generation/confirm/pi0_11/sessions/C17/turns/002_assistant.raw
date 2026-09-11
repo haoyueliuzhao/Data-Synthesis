@@ -1,0 +1,7 @@
+{
+  "message": "There seems to be an issue with the calculation tool. I will manually perform the calculation: (519034 - 538405) / 538405 * 100. This should give us the percentage change in aggregate rent expense from 2013 to 2014.",
+  "tool": {
+    "expression": "(519034 - 538405) / 538405 * 100",
+    "variables": {}
+  }
+}

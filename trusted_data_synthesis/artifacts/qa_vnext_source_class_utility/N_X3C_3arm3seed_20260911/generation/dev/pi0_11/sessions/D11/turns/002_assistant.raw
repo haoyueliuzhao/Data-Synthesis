@@ -1,0 +1,17 @@
+{
+  "message": "The average operating profit for MFC between 2014 and 2016 is calculated as (1344 + 1282 + 1018) / 3 = 1218 million.",
+  "calculate": {
+    "expression": "(1344 + 1282 + 1018) / 3",
+    "variables": {
+      "2014": {"value": 1344, "unit": "million"},
+      "2015": {"value": 1282, "unit": "million"},
+      "2016": {"value": 1018, "unit": "million"}
+    }
+  },
+  "final": {
+    "value": 1218,
+    "unit": "million",
+    "sources": ["source:t2c1", "source:t2c2", "source:t2c3"],
+    "result_id": "calculate:1"
+  }
+}

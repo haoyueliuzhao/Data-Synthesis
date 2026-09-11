@@ -1,0 +1,12 @@
+{
+  "message": "The percentage change in aggregate rent expense from 2013 to 2014 is approximately -3.60%. This means there was a slight decrease in the aggregate rent expense from 2013 to 2014.",
+  "final": {
+    "answer": "decrease",
+    "value": -3.6,
+    "unit": "%",
+    "sources": [
+      "source:t2c1",
+      "source:t3c1"
+    ]
+  }
+}

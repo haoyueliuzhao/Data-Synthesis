@@ -1,0 +1,19 @@
+{
+  "message": "The table shows the number of shares held by Peter Oppenheimer, which is 149,768. However, the total number of shares includes options that are exercisable within 60 days. The question asks for the total shares if Mr. Oppenheimer's RSUs vest. The table does not provide the number of RSUs, but it can be inferred from the total shares of the group of current executive officers and directors, which is 9,378,423, and the fact that Mr. Oppenheimer's shares are part of this total.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "149768 + 9378423 - 9378423 * 109 / 10000",
+    "variables": {
+      "149768": {"value": 149768, "unit": ""},
+      "9378423": {"value": 9378423, "unit": ""},
+      "109": {"value": 109, "unit": ""},
+      "10000": {"value": 10000, "unit": ""}
+    },
+    "sources": {
+      "149768": "source:t9c1",
+      "9378423": "source:t13c1",
+      "109": "source:t13c3n2",
+      "10000": "source:t13c3n1"
+    }
+  }
+}

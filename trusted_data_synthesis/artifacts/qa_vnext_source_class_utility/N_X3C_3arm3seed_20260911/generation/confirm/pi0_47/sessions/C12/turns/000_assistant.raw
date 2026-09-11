@@ -1,0 +1,8 @@
+{
+  "message": "The net change in cash during 2016 can be found in the 'cash flows' table. The row for 'financing activities' shows the cash change for 2016 as $-102 (102). This indicates a decrease in cash of $102 million in 2016.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "-102",
+    "variables": {}
+  }
+}

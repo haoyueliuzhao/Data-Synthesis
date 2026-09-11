@@ -1,0 +1,11 @@
+{
+  "message": "The calculation for the percentage change in aggregate rent expense from 2013 to 2014 is as follows: (519034 - 538405) / 538405 * 100. The result of this calculation is -3.55%.",
+  "tool": {
+    "expression": "(new_value - old_value) / old_value * 100",
+    "variables": {
+      "new_value": {"value": 519034, "source": "source:t3c1", "unit": "thousand dollars"},
+      "old_value": {"value": 538405, "source": "source:t2c1", "unit": "thousand dollars"}
+    }
+  },
+  "final": -3.55
+}

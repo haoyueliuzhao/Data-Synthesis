@@ -1,0 +1,17 @@
+{
+  "message": "The net change in cash during 2016 can be found in the 'operating activities' row of the table, which shows the cash flow for each year. For 2016, the value is $262 million.",
+  "calculate": {
+    "expression": "source:t1c2n0.value",
+    "variables": {
+      "value": 262,
+      "source": "source:t1c2n0",
+      "unit": "million"
+    }
+  },
+  "final": {
+    "value": 262,
+    "unit": "million",
+    "sources": ["source:t1c2n0"],
+    "result_id": "calculate:0"
+  }
+}

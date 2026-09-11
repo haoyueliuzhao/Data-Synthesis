@@ -1,0 +1,15 @@
+{
+  "message": "The net sales in 2016 and 2015 are provided in the table. The growth rate from 2015 to 2016 can be calculated using the formula: (2016 value - 2015 value) / 2015 value * 100. The 2016 value is $6608 and the 2015 value is $6770.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(6608 - 6770) / 6770 * 100",
+    "variables": {
+      "2016": 6608,
+      "2015": 6770
+    },
+    "sources": {
+      "2016": "source:t1c1n0",
+      "2015": "source:t1c2n0"
+    }
+  }
+}

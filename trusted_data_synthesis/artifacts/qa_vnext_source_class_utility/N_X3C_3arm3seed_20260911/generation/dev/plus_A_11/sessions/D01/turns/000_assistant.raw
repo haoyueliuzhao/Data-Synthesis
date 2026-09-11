@@ -1,0 +1,15 @@
+{
+  "message": "The net change in the gross liability for unrecognized tax benefits during 2008 can be calculated by subtracting the beginning balance as of December 1, 2007 from the ending balance as of November 28, 2008.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t6c1.value - source:t0c1n1.value",
+    "variables": {
+      "source:t6c1.value": {"value": 139549, "unit": "USD"},
+      "source:t0c1n1.value": {"value": 201808, "unit": "USD"}
+    },
+    "sources": {
+      "source:t6c1.value": "source:t6c1",
+      "source:t0c1n1.value": "source:t0c1n1"
+    }
+  }
+}

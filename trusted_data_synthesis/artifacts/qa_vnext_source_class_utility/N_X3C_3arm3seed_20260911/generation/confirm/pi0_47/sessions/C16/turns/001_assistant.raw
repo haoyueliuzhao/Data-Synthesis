@@ -1,0 +1,16 @@
+{
+  "final": {
+    "answer": "14.91%",
+    "value": 14.912841106142192205895774390800401569772748014968,
+    "unit": "%",
+    "sources": [
+      "source:t4c1n0",
+      "source:t4c2n0",
+      "source:t4c3n0",
+      "source:t9c1n0",
+      "source:t9c2n0",
+      "source:t9c3n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "message": "There seems to be a persistent issue with the expression syntax. I will manually correct the expression and try again: ((7167.1 - 6490.8) / 6490.8) * 100",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((7167.1 - 6490.8) / 6490.8) * 100",
+    "variables": {},
+    "sources": {}
+  }
+}

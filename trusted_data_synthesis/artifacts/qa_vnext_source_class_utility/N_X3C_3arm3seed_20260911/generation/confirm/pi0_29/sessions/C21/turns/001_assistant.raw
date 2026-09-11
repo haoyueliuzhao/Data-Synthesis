@@ -1,0 +1,13 @@
+{
+  "message": "The growth rate in total sales in 2013 is -6.84%.",
+  "final": {
+    "value": -6.84,
+    "unit": "%",
+    "sources": [
+      "source:t1c1n0",
+      "source:t1c2n0",
+      "source:t1c3n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

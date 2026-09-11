@@ -1,0 +1,27 @@
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:16,  4.44it/s]Loading weights:   3%|▎         | 10/339 [00:00<00:10, 32.04it/s]Loading weights:   4%|▍         | 14/339 [00:00<00:11, 29.36it/s]Loading weights:   6%|▌         | 20/339 [00:00<00:08, 36.98it/s]Loading weights:   7%|▋         | 25/339 [00:00<00:10, 29.98it/s]Loading weights:  11%|█         | 36/339 [00:01<00:07, 43.06it/s]Loading weights:  12%|█▏        | 41/339 [00:01<00:08, 34.75it/s]Loading weights:  14%|█▍        | 48/339 [00:01<00:07, 36.99it/s]Loading weights:  16%|█▌        | 53/339 [00:01<00:07, 38.66it/s]Loading weights:  17%|█▋        | 59/339 [00:01<00:06, 42.33it/s]Loading weights:  19%|█▉        | 64/339 [00:01<00:07, 39.20it/s]Loading weights:  21%|██        | 71/339 [00:02<00:08, 30.93it/s]Loading weights:  25%|██▍       | 84/339 [00:02<00:05, 44.24it/s]Loading weights:  26%|██▋       | 89/339 [00:02<00:05, 42.75it/s]Loading weights:  29%|██▊       | 97/339 [00:02<00:05, 40.89it/s]Loading weights:  32%|███▏      | 107/339 [00:02<00:05, 39.07it/s]Loading weights:  35%|███▌      | 120/339 [00:03<00:04, 44.91it/s]Loading weights:  37%|███▋      | 126/339 [00:03<00:04, 45.37it/s]Loading weights:  39%|███▉      | 132/339 [00:03<00:05, 39.16it/s]Loading weights:  42%|████▏     | 143/339 [00:03<00:05, 37.99it/s]Loading weights:  46%|████▌     | 156/339 [00:03<00:03, 49.99it/s]Loading weights:  48%|████▊     | 162/339 [00:04<00:04, 42.81it/s]Loading weights:  50%|████▉     | 169/339 [00:04<00:04, 39.36it/s]Loading weights:  53%|█████▎    | 180/339 [00:04<00:04, 38.77it/s]Loading weights:  56%|█████▋    | 191/339 [00:04<00:03, 46.56it/s]Loading weights:  58%|█████▊    | 197/339 [00:04<00:03, 43.74it/s]Loading weights:  60%|██████    | 205/339 [00:05<00:03, 41.95it/s]Loading weights:  62%|██████▏   | 210/339 [00:05<00:03, 41.11it/s]Loading weights:  64%|██████▎   | 216/339 [00:05<00:03, 40.36it/s]Loading weights:  65%|██████▌   | 221/339 [00:05<00:02, 40.19it/s]Loading weights:  67%|██████▋   | 228/339 [00:05<00:02, 42.92it/s]Loading weights:  69%|██████▊   | 233/339 [00:05<00:02, 44.20it/s]Loading weights:  71%|███████   | 239/339 [00:06<00:02, 35.18it/s]Loading weights:  74%|███████▍  | 251/339 [00:06<00:01, 49.05it/s]Loading weights:  76%|███████▌  | 257/339 [00:06<00:02, 39.29it/s]Loading weights:  78%|███████▊  | 263/339 [00:06<00:01, 40.89it/s]Loading weights:  79%|███████▉  | 268/339 [00:06<00:01, 36.07it/s]Loading weights:  81%|████████  | 275/339 [00:06<00:01, 38.70it/s]Loading weights:  83%|████████▎ | 280/339 [00:07<00:01, 36.14it/s]Loading weights:  85%|████████▍ | 288/339 [00:07<00:01, 41.24it/s]Loading weights:  86%|████████▋ | 293/339 [00:07<00:01, 36.89it/s]Loading weights:  88%|████████▊ | 299/339 [00:07<00:01, 34.02it/s]Loading weights:  91%|█████████▏| 310/339 [00:07<00:00, 48.32it/s]Loading weights:  93%|█████████▎| 316/339 [00:07<00:00, 40.77it/s]Loading weights:  95%|█████████▍| 322/339 [00:08<00:00, 41.58it/s]Loading weights:  96%|█████████▋| 327/339 [00:08<00:00, 38.82it/s]Loading weights: 100%|██████████| 339/339 [00:08<00:00, 40.94it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+generation confirm minus_D_11 C01 finished
+generation confirm minus_D_11 C02 finished
+generation confirm minus_D_11 C03 finished
+generation confirm minus_D_11 C04 finished
+generation confirm minus_D_11 C05 finished
+generation confirm minus_D_11 C06 finished
+generation confirm minus_D_11 C07 finished
+generation confirm minus_D_11 C08 finished
+generation confirm minus_D_11 C09 finished
+generation confirm minus_D_11 C10 finished
+generation confirm minus_D_11 C11 finished
+generation confirm minus_D_11 C12 finished
+generation confirm minus_D_11 C13 finished
+generation confirm minus_D_11 C14 finished
+generation confirm minus_D_11 C15 finished
+generation confirm minus_D_11 C16 finished
+generation confirm minus_D_11 C17 finished
+generation confirm minus_D_11 C18 finished
+generation confirm minus_D_11 C19 finished
+generation confirm minus_D_11 C20 finished
+generation confirm minus_D_11 C21 finished
+generation confirm minus_D_11 C22 finished
+generation confirm minus_D_11 C23 finished
+generation confirm minus_D_11 C24 finished
+completed confirm minus_D 11 student_generation_report:5c6606f3adb8bda2bb2bcc9d214b522a1431c83663da44b675fb5dac8ec136db

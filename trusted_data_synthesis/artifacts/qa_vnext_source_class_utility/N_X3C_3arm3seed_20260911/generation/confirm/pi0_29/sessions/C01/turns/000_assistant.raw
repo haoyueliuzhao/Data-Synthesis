@@ -1,0 +1,7 @@
+{
+  "message": "The net change in the balance of liability related to employee separations during 2006 is calculated by subtracting the liability as of December 31, 2006 from the liability as of December 31, 2005. The liability as of December 31, 2005 is $20,963 and the liability as of December 31, 2006 is $7,327.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "20963 - 7327"
+  }
+}

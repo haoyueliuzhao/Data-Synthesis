@@ -1,0 +1,6 @@
+{
+  "message": "The net sales in 2016 and 2015 are provided in the table. To find the growth rate, I will use the formula: (2016 value - 2015 value) / 2015 value * 100. The 2016 value is $6608 and the 2015 value is $6770.",
+  "calculate": {
+    "expression": "(6608 - 6770) / 6770 * 100"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "message": "The total rent expense for fiscal years 2010 to 2012 is the sum of the rent expenses for each year. The rent expenses for 2010, 2011, and 2012 are $758,000, $2,700,000, and $2,200,000 respectively, as shown in the table.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "sum(758, 2700, 2200)",
+    "variables": {
+      "758": {"value": 758, "unit": "thousand dollars"},
+      "2700": {"value": 2700, "unit": "thousand dollars"},
+      "2200": {"value": 2200, "unit": "thousand dollars"}
+    },
+    "sources": {
+      "758": "source:t4c1n0",
+      "2700": "source:t6c1n0",
+      "2200": "source:t7c1n0"
+    }
+  },
+  "final": {
+    "value": 5658,
+    "unit": "thousand dollars",
+    "result_id": "calculate:1"
+  }
+}

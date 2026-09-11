@@ -1,0 +1,15 @@
+{
+  "message": "The base rent for Danvers, Massachusetts facility from 2008-2010 was $40,000 per month, and from 2010-2014 it was $64,350 per month. To calculate the percentage increase, I will use the formula: ((new_value - original_value) / original_value) * 100. Here, the new_value is $64,350 and the original_value is $40,000.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((64350 - 40000) / 40000) * 100",
+    "variables": {
+      "new_value": 64350,
+      "original_value": 40000
+    },
+    "sources": {
+      "new_value": "source:t16c1n0",
+      "original_value": "source:t17n3"
+    }
+  }
+}

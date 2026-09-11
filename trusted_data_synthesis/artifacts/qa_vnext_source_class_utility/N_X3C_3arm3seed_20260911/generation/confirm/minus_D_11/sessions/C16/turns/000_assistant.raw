@@ -1,0 +1,14 @@
+{
+  "message": "To find the percentage of total operating revenues from 2014-2016 that is the revenue from coal, I will first sum the coal revenues for 2014-2016, then divide by the total operating revenues for the same period, and finally multiply by 100 to get the percentage.",
+  "tool": {
+    "expression": "100 * (t4c1 + t4c2 + t4c3) / (t9c1 + t9c2 + t9c3)",
+    "variables": {
+      "t4c1": {"value": 2440, "source": "source:t4c1n0", "unit": "millions"},
+      "t4c2": {"value": 3237, "source": "source:t4c2n0", "unit": "millions"},
+      "t4c3": {"value": 4127, "source": "source:t4c3n0", "unit": "millions"},
+      "t9c1": {"value": 19941, "source": "source:t9c1n0", "unit": "millions"},
+      "t9c2": {"value": 21813, "source": "source:t9c2n0", "unit": "millions"},
+      "t9c3": {"value": 23988, "source": "source:t9c3n0", "unit": "millions"}
+    }
+  }
+}

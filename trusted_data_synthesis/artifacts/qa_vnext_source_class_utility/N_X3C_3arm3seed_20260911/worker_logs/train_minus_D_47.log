@@ -1,0 +1,65 @@
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:22,  4.08it/s]Loading weights:   3%|▎         | 11/339 [00:00<00:13, 24.27it/s]Loading weights:   7%|▋         | 23/339 [00:00<00:07, 40.34it/s]Loading weights:   8%|▊         | 28/339 [00:00<00:08, 37.96it/s]Loading weights:  10%|█         | 34/339 [00:00<00:07, 38.13it/s]Loading weights:  11%|█         | 38/339 [00:01<00:08, 34.69it/s]Loading weights:  12%|█▏        | 42/339 [00:01<00:08, 35.57it/s]Loading weights:  14%|█▍        | 49/339 [00:01<00:08, 33.31it/s]Loading weights:  18%|█▊        | 60/339 [00:01<00:08, 34.87it/s]Loading weights:  20%|██        | 68/339 [00:01<00:06, 42.55it/s]Loading weights:  22%|██▏       | 73/339 [00:02<00:07, 34.96it/s]Loading weights:  24%|██▍       | 83/339 [00:02<00:06, 37.92it/s]Loading weights:  26%|██▌       | 88/339 [00:02<00:06, 37.09it/s]Loading weights:  28%|██▊       | 94/339 [00:02<00:06, 37.48it/s]Loading weights:  30%|██▉       | 101/339 [00:02<00:05, 43.30it/s]Loading weights:  32%|███▏      | 109/339 [00:02<00:05, 44.51it/s]Loading weights:  34%|███▎      | 114/339 [00:03<00:05, 42.37it/s]Loading weights:  36%|███▌      | 121/339 [00:03<00:04, 43.83it/s]Loading weights:  37%|███▋      | 126/339 [00:03<00:04, 43.06it/s]Loading weights:  39%|███▊      | 131/339 [00:03<00:05, 39.90it/s]Loading weights:  40%|████      | 136/339 [00:03<00:04, 41.20it/s]Loading weights:  42%|████▏     | 144/339 [00:03<00:05, 35.76it/s]Loading weights:  45%|████▌     | 154/339 [00:03<00:03, 47.90it/s]Loading weights:  47%|████▋     | 160/339 [00:04<00:04, 41.26it/s]Loading weights:  50%|████▉     | 168/339 [00:04<00:04, 36.47it/s]Loading weights:  53%|█████▎    | 179/339 [00:04<00:04, 39.34it/s]Loading weights:  54%|█████▍    | 184/339 [00:04<00:04, 37.76it/s]Loading weights:  57%|█████▋    | 192/339 [00:05<00:03, 37.38it/s]Loading weights:  60%|█████▉    | 202/339 [00:05<00:02, 47.45it/s]Loading weights:  61%|██████▏   | 208/339 [00:05<00:03, 41.18it/s]Loading weights:  63%|██████▎   | 214/339 [00:05<00:03, 39.54it/s]Loading weights:  65%|██████▍   | 219/339 [00:05<00:03, 39.08it/s]Loading weights:  67%|██████▋   | 227/339 [00:05<00:02, 41.75it/s]Loading weights:  68%|██████▊   | 232/339 [00:06<00:02, 36.32it/s]Loading weights:  71%|███████   | 240/339 [00:06<00:02, 37.17it/s]Loading weights:  74%|███████▎  | 250/339 [00:06<00:01, 48.76it/s]Loading weights:  76%|███████▌  | 256/339 [00:06<00:02, 41.10it/s]Loading weights:  78%|███████▊  | 263/339 [00:06<00:01, 42.12it/s]Loading weights:  79%|███████▉  | 268/339 [00:06<00:01, 41.62it/s]Loading weights:  81%|████████  | 274/339 [00:06<00:01, 42.35it/s]Loading weights:  82%|████████▏ | 279/339 [00:07<00:01, 41.14it/s]Loading weights:  85%|████████▍ | 288/339 [00:07<00:01, 47.10it/s]Loading weights:  86%|████████▋ | 293/339 [00:07<00:01, 42.57it/s]Loading weights:  88%|████████▊ | 299/339 [00:07<00:00, 45.83it/s]Loading weights:  90%|████████▉ | 304/339 [00:07<00:00, 40.55it/s]Loading weights:  92%|█████████▏| 312/339 [00:07<00:00, 46.59it/s]Loading weights:  94%|█████████▎| 317/339 [00:08<00:00, 39.43it/s]Loading weights:  96%|█████████▌| 324/339 [00:08<00:00, 45.62it/s]Loading weights:  97%|█████████▋| 329/339 [00:08<00:00, 41.59it/s]Loading weights: 100%|██████████| 339/339 [00:08<00:00, 40.82it/s]
+training minus_D_47 epoch 1 rows 10 / 46
+training minus_D_47 epoch 1 rows 20 / 46
+training minus_D_47 epoch 1 rows 30 / 46
+training minus_D_47 epoch 1 rows 40 / 46
+training minus_D_47 update 1 completed
+training minus_D_47 epoch 2 rows 10 / 46
+training minus_D_47 epoch 2 rows 20 / 46
+training minus_D_47 epoch 2 rows 30 / 46
+training minus_D_47 epoch 2 rows 40 / 46
+training minus_D_47 update 2 completed
+training minus_D_47 epoch 3 rows 10 / 46
+training minus_D_47 epoch 3 rows 20 / 46
+training minus_D_47 epoch 3 rows 30 / 46
+training minus_D_47 epoch 3 rows 40 / 46
+training minus_D_47 update 3 completed
+training minus_D_47 epoch 4 rows 10 / 46
+training minus_D_47 epoch 4 rows 20 / 46
+training minus_D_47 epoch 4 rows 30 / 46
+training minus_D_47 epoch 4 rows 40 / 46
+training minus_D_47 update 4 completed
+training minus_D_47 epoch 5 rows 10 / 46
+training minus_D_47 epoch 5 rows 20 / 46
+training minus_D_47 epoch 5 rows 30 / 46
+training minus_D_47 epoch 5 rows 40 / 46
+training minus_D_47 update 5 completed
+training minus_D_47 epoch 6 rows 10 / 46
+training minus_D_47 epoch 6 rows 20 / 46
+training minus_D_47 epoch 6 rows 30 / 46
+training minus_D_47 epoch 6 rows 40 / 46
+training minus_D_47 update 6 completed
+training minus_D_47 epoch 7 rows 10 / 46
+training minus_D_47 epoch 7 rows 20 / 46
+training minus_D_47 epoch 7 rows 30 / 46
+training minus_D_47 epoch 7 rows 40 / 46
+training minus_D_47 update 7 completed
+training minus_D_47 epoch 8 rows 10 / 46
+training minus_D_47 epoch 8 rows 20 / 46
+training minus_D_47 epoch 8 rows 30 / 46
+training minus_D_47 epoch 8 rows 40 / 46
+training minus_D_47 update 8 completed
+training minus_D_47 epoch 9 rows 10 / 46
+training minus_D_47 epoch 9 rows 20 / 46
+training minus_D_47 epoch 9 rows 30 / 46
+training minus_D_47 epoch 9 rows 40 / 46
+training minus_D_47 update 9 completed
+training minus_D_47 epoch 10 rows 10 / 46
+training minus_D_47 epoch 10 rows 20 / 46
+training minus_D_47 epoch 10 rows 30 / 46
+training minus_D_47 epoch 10 rows 40 / 46
+training minus_D_47 update 10 completed
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+generation dev minus_D_47 D01 finished
+generation dev minus_D_47 D02 finished
+generation dev minus_D_47 D03 finished
+generation dev minus_D_47 D04 finished
+generation dev minus_D_47 D05 finished
+generation dev minus_D_47 D06 finished
+generation dev minus_D_47 D07 finished
+generation dev minus_D_47 D08 finished
+generation dev minus_D_47 D09 finished
+generation dev minus_D_47 D10 finished
+generation dev minus_D_47 D11 finished
+generation dev minus_D_47 D12 finished
+completed train minus_D 47 completed_student_training:2ac7da8cade7486ff8eb027dbd230a09fbc528a5097bd42ac654be189ec58bec

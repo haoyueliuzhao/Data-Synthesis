@@ -1,0 +1,11 @@
+{
+  "message": "To find the percentage change in capitalized interest from 2017 to 2018, I will use the values provided in the document for capitalized interest in those years. The values are $30.4 million for 2018 and $29.0 million for 2017. The formula for percentage change is: ((new value - old value) / old value) * 100. In this case, the new value is $30.4 million and the old value is $29.0 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((30.4 - 29) / 29) * 100",
+    "variables": {
+      "30.4": {"value": 30.4, "unit": "million"},
+      "29": {"value": 29, "unit": "million"}
+    }
+  }
+}

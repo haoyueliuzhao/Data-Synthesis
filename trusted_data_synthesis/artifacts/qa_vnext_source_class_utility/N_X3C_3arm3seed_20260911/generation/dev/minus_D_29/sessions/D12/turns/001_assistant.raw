@@ -1,0 +1,9 @@
+{
+  "message": "The growth rate of net sales from 2015 to 2016 is -2.39%.",
+  "final": {
+    "value": -2.39,
+    "unit": "%",
+    "sources": ["source:t1c1n0", "source:t1c2n0"],
+    "result_id": "tool:1"
+  }
+}

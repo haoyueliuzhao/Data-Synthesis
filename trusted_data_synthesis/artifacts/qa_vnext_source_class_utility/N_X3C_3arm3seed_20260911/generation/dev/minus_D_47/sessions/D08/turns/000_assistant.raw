@@ -1,0 +1,9 @@
+{
+  "message": "The operating profit for 2016 is given in the table as 1018 million. This is the total operating expenses for 2016.",
+  "final": {
+    "value": 1018,
+    "unit": "million",
+    "source": "source:t0c1n0",
+    "result_id": "calculate:1018"
+  }
+}

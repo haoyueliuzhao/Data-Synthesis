@@ -1,0 +1,12 @@
+{
+  "message": "The expression is now correctly formatted: ((4919 - 4277) / 4919) * 100. This will calculate the percentage change in the balance of unrecognized tax benefits from 2011 to 2012.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((4919 - 4277) / 4919) * 100",
+    "variables": {
+      "2011_balance": 4919,
+      "2012_balance": 4277,
+      "change": 4919 - 4277
+    }
+  }
+}

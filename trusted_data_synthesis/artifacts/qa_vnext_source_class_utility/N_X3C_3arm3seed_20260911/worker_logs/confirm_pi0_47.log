@@ -1,0 +1,27 @@
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   1%|          | 2/339 [00:00<00:37,  8.87it/s]Loading weights:   4%|▎         | 12/339 [00:00<00:08, 40.83it/s]Loading weights:   5%|▌         | 18/339 [00:00<00:09, 34.41it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:09, 32.23it/s]Loading weights:  11%|█         | 36/339 [00:00<00:06, 46.17it/s]Loading weights:  12%|█▏        | 42/339 [00:01<00:07, 41.44it/s]Loading weights:  14%|█▍        | 47/339 [00:01<00:07, 40.21it/s]Loading weights:  16%|█▌        | 53/339 [00:01<00:06, 44.48it/s]Loading weights:  18%|█▊        | 60/339 [00:01<00:07, 37.32it/s]Loading weights:  21%|██        | 71/339 [00:01<00:06, 39.16it/s]Loading weights:  24%|██▍       | 83/339 [00:02<00:06, 39.34it/s]Loading weights:  28%|██▊       | 96/339 [00:02<00:05, 46.69it/s]Loading weights:  30%|██▉       | 101/339 [00:02<00:05, 44.52it/s]Loading weights:  32%|███▏      | 108/339 [00:02<00:05, 40.18it/s]Loading weights:  35%|███▌      | 119/339 [00:02<00:04, 52.09it/s]Loading weights:  37%|███▋      | 126/339 [00:03<00:04, 47.06it/s]Loading weights:  39%|███▉      | 132/339 [00:03<00:04, 46.31it/s]Loading weights:  41%|████      | 138/339 [00:03<00:04, 47.62it/s]Loading weights:  42%|████▏     | 144/339 [00:03<00:04, 39.71it/s]Loading weights:  45%|████▌     | 154/339 [00:03<00:04, 45.14it/s]Loading weights:  47%|████▋     | 159/339 [00:03<00:04, 42.01it/s]Loading weights:  50%|████▉     | 168/339 [00:03<00:03, 45.48it/s]Loading weights:  51%|█████     | 173/339 [00:04<00:04, 38.28it/s]Loading weights:  53%|█████▎    | 179/339 [00:04<00:03, 42.43it/s]Loading weights:  54%|█████▍    | 184/339 [00:04<00:04, 38.39it/s]Loading weights:  56%|█████▌    | 190/339 [00:04<00:04, 35.51it/s]Loading weights:  58%|█████▊    | 196/339 [00:04<00:03, 40.35it/s]Loading weights:  60%|██████    | 205/339 [00:04<00:03, 41.58it/s]Loading weights:  64%|██████▎   | 216/339 [00:05<00:02, 45.69it/s]Loading weights:  65%|██████▌   | 221/339 [00:05<00:02, 44.41it/s]Loading weights:  67%|██████▋   | 228/339 [00:05<00:02, 40.05it/s]Loading weights:  71%|███████   | 240/339 [00:05<00:02, 43.74it/s]Loading weights:  74%|███████▍  | 252/339 [00:05<00:01, 47.12it/s]Loading weights:  76%|███████▌  | 257/339 [00:06<00:01, 43.29it/s]Loading weights:  78%|███████▊  | 264/339 [00:06<00:01, 39.35it/s]Loading weights:  81%|████████▏ | 276/339 [00:06<00:01, 40.34it/s]Loading weights:  85%|████████▍ | 287/339 [00:06<00:01, 42.90it/s]Loading weights:  87%|████████▋ | 294/339 [00:06<00:00, 46.82it/s]Loading weights:  89%|████████▉ | 301/339 [00:07<00:00, 44.69it/s]Loading weights:  92%|█████████▏| 312/339 [00:07<00:00, 53.55it/s]Loading weights:  94%|█████████▍| 318/339 [00:07<00:00, 46.85it/s]Loading weights:  96%|█████████▌| 325/339 [00:07<00:00, 42.69it/s]Loading weights: 100%|██████████| 339/339 [00:07<00:00, 43.88it/s]
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+generation confirm pi0_47 C01 finished
+generation confirm pi0_47 C02 finished
+generation confirm pi0_47 C03 finished
+generation confirm pi0_47 C04 finished
+generation confirm pi0_47 C05 finished
+generation confirm pi0_47 C06 finished
+generation confirm pi0_47 C07 finished
+generation confirm pi0_47 C08 finished
+generation confirm pi0_47 C09 finished
+generation confirm pi0_47 C10 finished
+generation confirm pi0_47 C11 finished
+generation confirm pi0_47 C12 finished
+generation confirm pi0_47 C13 finished
+generation confirm pi0_47 C14 finished
+generation confirm pi0_47 C15 finished
+generation confirm pi0_47 C16 finished
+generation confirm pi0_47 C17 finished
+generation confirm pi0_47 C18 finished
+generation confirm pi0_47 C19 finished
+generation confirm pi0_47 C20 finished
+generation confirm pi0_47 C21 finished
+generation confirm pi0_47 C22 finished
+generation confirm pi0_47 C23 finished
+generation confirm pi0_47 C24 finished
+completed confirm pi0 47 student_generation_report:1d215630c23fdbfdc051d89b7bfa6b7117e62b87c46a861688b6177df565985a

@@ -1,0 +1,12 @@
+{
+  "message": "The percentage change in capitalized interest from 2017 to 2018 is approximately 4.83%.",
+  "final": {
+    "value": 4.83,
+    "unit": "%",
+    "sources": {
+      "new_value": "source:t1c5n0",
+      "old_value": "source:t2c5n0"
+    },
+    "result_id": "tool:1"
+  }
+}

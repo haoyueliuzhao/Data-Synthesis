@@ -1,0 +1,15 @@
+{
+  "message": "The net increase in outstanding shares during the period of 2016 to 2018 can be calculated by subtracting the outstanding shares at the end of 2016 from the outstanding shares at the end of 2018. The outstanding shares at the end of 2016 are 1214 million, and at the end of 2018 are 1220 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "1220 - 1214",
+    "variables": {
+      "1220": {"value": 1220, "unit": "million shares"},
+      "1214": {"value": 1214, "unit": "million shares"}
+    },
+    "sources": {
+      "1220": "source:t7c3n0",
+      "1214": "source:t1c3n0"
+    }
+  }
+}

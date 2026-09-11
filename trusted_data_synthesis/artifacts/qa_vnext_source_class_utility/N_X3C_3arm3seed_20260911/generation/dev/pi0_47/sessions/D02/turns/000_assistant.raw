@@ -1,0 +1,11 @@
+{
+  "message": "The beginning balance of gross liability for unrecognized tax benefits in 2007 is $201,808,000 and the ending balance in 2008 is $139,549,000. To find the percentage change, I will use the formula: ((Ending Value - Beginning Value) / Beginning Value) * 100. The beginning value is $201,808,000 and the ending value is $139,549,000.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((139549000 - 201808000) / 201808000) * 100",
+    "variables": {
+      "beginning_value": 201808000,
+      "ending_value": 139549000
+    }
+  }
+}

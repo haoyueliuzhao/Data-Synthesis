@@ -1,0 +1,13 @@
+{
+  "message": "The percentage change in the gross liability for unrecognized tax benefits from 2007 to 2008 is approximately -30.85%.",
+  "final": {
+    "answer": "The gross liability for unrecognized tax benefits decreased by approximately 30.85% from 2007 to 2008.",
+    "value": -30.850610481249504479505272338063902323000079283279,
+    "unit": "%",
+    "sources": [
+      "source:t0c1n1",
+      "source:t2c1n0",
+      "source:t6c1n0"
+    ]
+  }
+}

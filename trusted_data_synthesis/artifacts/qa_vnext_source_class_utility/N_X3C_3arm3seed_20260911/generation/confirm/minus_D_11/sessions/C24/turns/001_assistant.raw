@@ -1,0 +1,25 @@
+{
+  "message": "The calculation is 155 / 898 * 100 = 17.25855327447907%.",
+  "calculate": {
+    "expression": "155 / 898 * 100",
+    "variables": {
+      "value_1": 155,
+      "value_2": 898
+    },
+    "sources": {
+      "value_1": "source:t2c2n0",
+      "value_2": "source:t7c2n0"
+    },
+    "result_id": "calculate:1"
+  },
+  "final": {
+    "answer": "17.26%",
+    "value": 17.25855327447907,
+    "unit": "%",
+    "sources": {
+      "value_1": "source:t2c2n0",
+      "value_2": "source:t7c2n0"
+    },
+    "result_id": "calculate:1"
+  }
+}

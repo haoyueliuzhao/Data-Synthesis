@@ -1,0 +1,12 @@
+{
+  "message": "The percentage increase in base rent for the Danvers, Massachusetts facility from the period 2008-2010 to 2010-2014 is 60.875%.",
+  "final": {
+    "answer": "The base rent increased by 60.875% from 2008-2010 to 2010-2014.",
+    "value": 60.875,
+    "unit": "%",
+    "sources": {
+      "new_value": "source:t16c1n0",
+      "original_value": "source:t17n0"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "message": "The growth rate in total sales in 2012 is -0.0684 or -6.84%.",
+  "final": {
+    "value": -0.0684,
+    "unit": "%",
+    "sources": ["source:t1c2n0", "source:t1c1n0"],
+    "result_id": "tool:1"
+  }
+}

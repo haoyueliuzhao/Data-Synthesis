@@ -1,0 +1,12 @@
+{
+  "final": {
+    "answer": "If Mr. Oppenheimer's RSUs vest, he would then have a total of 9,528,191 shares.",
+    "value": 9528191,
+    "unit": "",
+    "sources": [
+      "source:t9c1n0",
+      "source:t13c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

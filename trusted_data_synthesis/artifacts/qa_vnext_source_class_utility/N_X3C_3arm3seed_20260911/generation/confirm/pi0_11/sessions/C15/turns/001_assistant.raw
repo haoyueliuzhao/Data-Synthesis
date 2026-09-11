@@ -1,0 +1,13 @@
+{
+  "final": {
+    "answer": "The total rent expense for fiscal years 2010 to 2012 was $1,653,000,000 in millions.",
+    "value": 1653,
+    "unit": "million dollars",
+    "sources": [
+      "source:t4c1n0",
+      "source:t3c1n0",
+      "source:t2c1n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

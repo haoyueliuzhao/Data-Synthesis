@@ -1,0 +1,15 @@
+{
+  "message": "There seems to be an issue with the expression syntax. The correct expression should be the liability as of December 31, 2004 minus the liability as of January 1, 2004 for the employee separations row in the table. Let's try again.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t1c4n0.value - source:t1c1n0.value",
+    "variables": {
+      "source:t1c4n0.value": 665,
+      "source:t1c1n0.value": 2239
+    },
+    "sources": {
+      "source:t1c4n0.value": "source:t1c4n0",
+      "source:t1c1n0.value": "source:t1c1n0"
+    }
+  }
+}

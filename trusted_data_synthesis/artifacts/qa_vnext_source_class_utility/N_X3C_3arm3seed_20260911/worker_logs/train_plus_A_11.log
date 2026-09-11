@@ -1,0 +1,65 @@
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:26,  3.92it/s]Loading weights:   3%|▎         | 9/339 [00:00<00:12, 26.47it/s]Loading weights:   4%|▍         | 15/339 [00:00<00:10, 31.49it/s]Loading weights:   6%|▋         | 22/339 [00:00<00:09, 32.78it/s]Loading weights:  10%|█         | 35/339 [00:00<00:06, 47.14it/s]Loading weights:  12%|█▏        | 40/339 [00:01<00:07, 41.83it/s]Loading weights:  14%|█▍        | 48/339 [00:01<00:07, 36.95it/s]Loading weights:  18%|█▊        | 60/339 [00:01<00:05, 48.13it/s]Loading weights:  19%|█▉        | 66/339 [00:01<00:06, 42.39it/s]Loading weights:  21%|██        | 72/339 [00:01<00:06, 41.94it/s]Loading weights:  23%|██▎       | 77/339 [00:01<00:06, 42.68it/s]Loading weights:  24%|██▍       | 83/339 [00:02<00:06, 36.68it/s]Loading weights:  27%|██▋       | 92/339 [00:02<00:05, 47.21it/s]Loading weights:  29%|██▉       | 98/339 [00:02<00:06, 39.91it/s]Loading weights:  32%|███▏      | 108/339 [00:02<00:06, 37.92it/s]Loading weights:  35%|███▌      | 119/339 [00:03<00:05, 39.93it/s]Loading weights:  39%|███▉      | 132/339 [00:03<00:03, 53.34it/s]Loading weights:  41%|████      | 139/339 [00:03<00:04, 48.95it/s]Loading weights:  43%|████▎     | 145/339 [00:03<00:04, 42.91it/s]Loading weights:  46%|████▋     | 157/339 [00:03<00:03, 46.95it/s]Loading weights:  50%|████▉     | 168/339 [00:03<00:03, 55.03it/s]Loading weights:  52%|█████▏    | 175/339 [00:04<00:03, 46.86it/s]Loading weights:  53%|█████▎    | 181/339 [00:04<00:03, 41.26it/s]Loading weights:  57%|█████▋    | 192/339 [00:04<00:03, 42.96it/s]Loading weights:  60%|█████▉    | 202/339 [00:04<00:02, 52.35it/s]Loading weights:  62%|██████▏   | 209/339 [00:04<00:02, 44.32it/s]Loading weights:  63%|██████▎   | 215/339 [00:05<00:03, 39.97it/s]Loading weights:  65%|██████▌   | 222/339 [00:05<00:02, 44.26it/s]Loading weights:  67%|██████▋   | 228/339 [00:05<00:02, 39.21it/s]Loading weights:  71%|███████   | 240/339 [00:05<00:01, 50.26it/s]Loading weights:  73%|███████▎  | 246/339 [00:05<00:02, 42.35it/s]Loading weights:  74%|███████▍  | 252/339 [00:05<00:02, 37.00it/s]Loading weights:  77%|███████▋  | 262/339 [00:06<00:01, 38.88it/s]Loading weights:  79%|███████▉  | 268/339 [00:06<00:01, 41.37it/s]Loading weights:  81%|████████▏ | 276/339 [00:06<00:01, 38.43it/s]Loading weights:  83%|████████▎ | 281/339 [00:06<00:01, 40.31it/s]Loading weights:  85%|████████▍ | 288/339 [00:06<00:01, 41.51it/s]Loading weights:  86%|████████▋ | 293/339 [00:06<00:01, 41.85it/s]Loading weights:  88%|████████▊ | 299/339 [00:07<00:01, 38.55it/s]Loading weights:  91%|█████████▏| 310/339 [00:07<00:00, 53.40it/s]Loading weights:  94%|█████████▎| 317/339 [00:07<00:00, 42.14it/s]Loading weights:  95%|█████████▌| 323/339 [00:07<00:00, 43.74it/s]Loading weights:  97%|█████████▋| 330/339 [00:07<00:00, 48.61it/s]Loading weights: 100%|██████████| 339/339 [00:07<00:00, 43.74it/s]
+training plus_A_11 epoch 1 rows 10 / 46
+training plus_A_11 epoch 1 rows 20 / 46
+training plus_A_11 epoch 1 rows 30 / 46
+training plus_A_11 epoch 1 rows 40 / 46
+training plus_A_11 update 1 completed
+training plus_A_11 epoch 2 rows 10 / 46
+training plus_A_11 epoch 2 rows 20 / 46
+training plus_A_11 epoch 2 rows 30 / 46
+training plus_A_11 epoch 2 rows 40 / 46
+training plus_A_11 update 2 completed
+training plus_A_11 epoch 3 rows 10 / 46
+training plus_A_11 epoch 3 rows 20 / 46
+training plus_A_11 epoch 3 rows 30 / 46
+training plus_A_11 epoch 3 rows 40 / 46
+training plus_A_11 update 3 completed
+training plus_A_11 epoch 4 rows 10 / 46
+training plus_A_11 epoch 4 rows 20 / 46
+training plus_A_11 epoch 4 rows 30 / 46
+training plus_A_11 epoch 4 rows 40 / 46
+training plus_A_11 update 4 completed
+training plus_A_11 epoch 5 rows 10 / 46
+training plus_A_11 epoch 5 rows 20 / 46
+training plus_A_11 epoch 5 rows 30 / 46
+training plus_A_11 epoch 5 rows 40 / 46
+training plus_A_11 update 5 completed
+training plus_A_11 epoch 6 rows 10 / 46
+training plus_A_11 epoch 6 rows 20 / 46
+training plus_A_11 epoch 6 rows 30 / 46
+training plus_A_11 epoch 6 rows 40 / 46
+training plus_A_11 update 6 completed
+training plus_A_11 epoch 7 rows 10 / 46
+training plus_A_11 epoch 7 rows 20 / 46
+training plus_A_11 epoch 7 rows 30 / 46
+training plus_A_11 epoch 7 rows 40 / 46
+training plus_A_11 update 7 completed
+training plus_A_11 epoch 8 rows 10 / 46
+training plus_A_11 epoch 8 rows 20 / 46
+training plus_A_11 epoch 8 rows 30 / 46
+training plus_A_11 epoch 8 rows 40 / 46
+training plus_A_11 update 8 completed
+training plus_A_11 epoch 9 rows 10 / 46
+training plus_A_11 epoch 9 rows 20 / 46
+training plus_A_11 epoch 9 rows 30 / 46
+training plus_A_11 epoch 9 rows 40 / 46
+training plus_A_11 update 9 completed
+training plus_A_11 epoch 10 rows 10 / 46
+training plus_A_11 epoch 10 rows 20 / 46
+training plus_A_11 epoch 10 rows 30 / 46
+training plus_A_11 epoch 10 rows 40 / 46
+training plus_A_11 update 10 completed
+[transformers] The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+generation dev plus_A_11 D01 finished
+generation dev plus_A_11 D02 finished
+generation dev plus_A_11 D03 finished
+generation dev plus_A_11 D04 finished
+generation dev plus_A_11 D05 finished
+generation dev plus_A_11 D06 finished
+generation dev plus_A_11 D07 finished
+generation dev plus_A_11 D08 finished
+generation dev plus_A_11 D09 finished
+generation dev plus_A_11 D10 finished
+generation dev plus_A_11 D11 finished
+generation dev plus_A_11 D12 finished
+completed train plus_A 11 completed_student_training:ab88d309aee9a99d9d9364a33b6d0f3c18a50eca00675d510b0ca0dfe8a180b5

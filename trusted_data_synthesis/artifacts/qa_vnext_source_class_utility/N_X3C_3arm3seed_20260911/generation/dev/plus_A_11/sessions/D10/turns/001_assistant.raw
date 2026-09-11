@@ -1,0 +1,19 @@
+{
+  "message": "The percentage change in deferred tax assets and regulatory assets from 2013 to 2014 is calculated as (6348 - 6241) / 6241 * 100 = 1.61%.",
+  "calculate": {
+    "expression": "(6348 - 6241) / 6241 * 100",
+    "variables": {
+      "2013_value": 6241,
+      "2014_value": 6348
+    },
+    "result_id": "calculate:1"
+  },
+  "final": {
+    "value": 1.61,
+    "unit": "%",
+    "sources": {
+      "2013_value": "source:t6c1",
+      "2014_value": "source:t6c1"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "message": "The net change in the gross liability for unrecognized tax benefits during 2008 is a decrease of $62,259 million. This is calculated by subtracting the beginning balance as of December 1, 2007 ($201,808 million) from the ending balance as of November 28, 2008 ($139,549 million).",
+  "final": {
+    "value": -62259,
+    "unit": "USD",
+    "sources": [],
+    "result_id": "tool:4"
+  }
+}

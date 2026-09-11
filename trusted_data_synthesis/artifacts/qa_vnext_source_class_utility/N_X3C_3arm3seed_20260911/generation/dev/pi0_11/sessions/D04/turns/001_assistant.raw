@@ -1,0 +1,10 @@
+{
+  "message": "The calculation for the percentage of other long-term liabilities in the gross liabilities for 2012 is (74,360 / 180,993) * 100. Let's perform this calculation.",
+  "tool": {
+    "expression": "(source:t6c1.value / source:t6c0.value) * 100",
+    "variables": {
+      "source:t6c1": {"value": 180993, "unit": "$"},
+      "source:t6c0": {"value": 118314, "unit": "$"}
+    }
+  }
+}

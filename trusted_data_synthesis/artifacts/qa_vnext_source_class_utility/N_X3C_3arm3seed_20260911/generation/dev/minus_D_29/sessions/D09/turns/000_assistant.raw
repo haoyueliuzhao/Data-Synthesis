@@ -1,0 +1,11 @@
+{
+  "message": "The capitalized interest for 2017 and 2018 are $33.7 million and $30.4 million respectively. The percentage change is calculated as (new value - old value) / old value * 100.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(30.4 - 33.7) / 33.7 * 100",
+    "variables": {
+      "30.4": {"value": 30.4, "unit": "million"},
+      "33.7": {"value": 33.7, "unit": "million"}
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"call_id":"tool:2","error":{"message":"unknown_tool:final","type":"ValueError"},"result":null,"status":"error","tool":"final"}

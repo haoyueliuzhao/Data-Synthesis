@@ -1,0 +1,9 @@
+{
+  "message": "There seems to be a persistent issue with the expression syntax. Let's try a different approach. The outstanding shares at the end of 2018 are 1220 million and at the end of 2016 are 1214 million. We can directly subtract these values to find the net increase.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "1220 - 1214",
+    "variables": {},
+    "sources": {}
+  }
+}

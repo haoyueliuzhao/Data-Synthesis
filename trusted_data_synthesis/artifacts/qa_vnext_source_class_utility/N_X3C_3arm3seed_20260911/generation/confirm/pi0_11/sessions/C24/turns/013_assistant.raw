@@ -1,0 +1,13 @@
+{
+  "calculate": {
+    "expression": "155 / 898 * 100",
+    "variables": {
+      "155": {"value": 155, "source": "source:t2c2n0", "unit": "million"},
+      "898": {"value": 898, "source": "source:t7c2n0", "unit": "million"}
+    },
+    "sources": {
+      "155": "source:t2c2n0",
+      "898": "source:t7c2n0"
+    }
+  }
+}

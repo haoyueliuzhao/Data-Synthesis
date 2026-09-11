@@ -1,0 +1,8 @@
+{
+  "message": "The growth rate in total sales in 2012 is -0.0684 or -6.84%. This means there was a decrease in total sales from 2012 to 2013.",
+  "final": {
+    "value": -0.0684,
+    "unit": "%",
+    "answer": "The growth rate in total sales in 2012 is -6.84%."
+  }
+}

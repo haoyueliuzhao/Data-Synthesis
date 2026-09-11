@@ -1,0 +1,15 @@
+{
+  "message": "The percentage change in the additions charged to expense from 2011 to 2012 is calculated as (29.7 - 21.0) / 21.0 * 100%",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(29.7 - 21.0) / 21.0 * 100",
+    "variables": {
+      "29.7": {"value": 29.7, "source": "source:t1c1n0", "unit": "$"},
+      "21.0": {"value": 21.0, "source": "source:t1c2n0", "unit": "$"}
+    },
+    "sources": {
+      "29.7": "source:t1c1n0",
+      "21.0": "source:t1c2n0"
+    }
+  }
+}

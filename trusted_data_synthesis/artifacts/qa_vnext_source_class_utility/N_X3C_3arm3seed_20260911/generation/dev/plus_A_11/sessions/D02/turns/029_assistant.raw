@@ -1,0 +1,7 @@
+{
+  "message": "There seems to be a persistent issue with the calculation tool. Let's manually compute the percentage change using the values provided: the beginning balance in 2007 is $201,808 and the ending balance in 2008 is $139,549. The formula for percentage change is ((ending balance - beginning balance) / beginning balance) * 100.",
+  "tool": {
+    "expression": "(139549 - 201808) / 201808 * 100",
+    "variables": {}
+  }
+}

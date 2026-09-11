@@ -1,0 +1,1 @@
+{"call_id":"tool:9","error":{"message":"unknown_tool:{'expression': '(139549 - 201808) / 201808 * 100', 'variables': {}}","type":"ValueError"},"result":null,"status":"error","tool":{"expression":"(139549 - 201808) / 201808 * 100","variables":{}}}

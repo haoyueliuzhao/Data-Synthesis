@@ -1,0 +1,10 @@
+{
+  "message": "The total gross liability for 2012 is $180,993. The other long-term liabilities are $74,360. To find the percentage, we need to calculate (74,360 / 180,993) * 100.",
+  "tool": {
+    "expression": "(source:t6c1.value / source:t6c0.value) * 100",
+    "variables": {
+      "source:t6c1": {"value": 180993, "unit": "$"},
+      "source:t6c0": {"value": 118314, "unit": "$"}
+    }
+  }
+}

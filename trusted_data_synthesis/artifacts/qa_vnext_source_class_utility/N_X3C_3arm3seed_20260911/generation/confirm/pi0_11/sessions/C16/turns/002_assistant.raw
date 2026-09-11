@@ -1,0 +1,7 @@
+{
+  "message": "There seems to be an issue with the calculation tool. I will perform the calculation manually using the values provided.",
+  "tool": null,
+  "arguments": {
+    "expression": "100 * (2440 + 3237 + 4127) / (19941 + 21813 + 23988)"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "message": "The final purchase price allocation table shows the liabilities in the 'current liabilities' and 'other non-current liabilities' rows. We need to sum these values to find the total liabilities.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "sum(-5536, -38519)",
+    "variables": {
+      "value1": -5536,
+      "value2": -38519
+    },
+    "sources": {
+      "value1": "source:t5c1n0",
+      "value2": "source:t6c1n0"
+    }
+  }
+}

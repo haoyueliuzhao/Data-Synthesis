@@ -1,0 +1,8 @@
+{
+  "message": "The calculation tool is still encountering an error. I will manually perform the calculation: ((139549 - 201808) / 201808) * 100 = (-62259 / 201808) * 100 = -30.85%.",
+  "tool": {
+    "expression": "((139549 - 201808) / 201808) * 100",
+    "variables": {}
+  },
+  "final": "-30.85%"
+}

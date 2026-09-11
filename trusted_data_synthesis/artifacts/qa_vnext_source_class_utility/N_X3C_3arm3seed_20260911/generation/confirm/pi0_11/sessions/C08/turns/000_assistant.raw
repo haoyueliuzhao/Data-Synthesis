@@ -1,0 +1,15 @@
+{
+  "message": "To find the net increase in outstanding shares during the period of 2016 to 2018, I will use the table data to find the shares outstanding for 2016 and 2018, and then calculate the difference.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t7c3.value - source:t3c3.value",
+    "variables": {
+      "source:t7c3.value": {"value": 1220, "unit": "millions of shares"},
+      "source:t3c3.value": {"value": 1217, "unit": "millions of shares"}
+    },
+    "sources": {
+      "source:t7c3.value": "SEGMENT12n2",
+      "source:t3c3.value": "SEGMENT13n3"
+    }
+  }
+}

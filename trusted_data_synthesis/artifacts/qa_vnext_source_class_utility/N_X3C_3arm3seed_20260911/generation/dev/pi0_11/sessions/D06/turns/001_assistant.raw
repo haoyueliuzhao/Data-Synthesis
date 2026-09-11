@@ -1,0 +1,10 @@
+{
+  "message": "There was an error in the calculation. The expression is (29.7 - 21.0) / 21.0 * 100. Let's try the calculation again.",
+  "tool": {
+    "expression": "(29.7 - 21.0) / 21.0 * 100",
+    "variables": {
+      "2012_additions": 29.7,
+      "2011_additions": 21.0
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "message": "There seems to be a persistent issue with the expression syntax. Let's manually calculate the difference between the outstanding shares at the end of 2018 and the end of 2016.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "1220 - 1217",
+    "variables": {},
+    "sources": {}
+  }
+}

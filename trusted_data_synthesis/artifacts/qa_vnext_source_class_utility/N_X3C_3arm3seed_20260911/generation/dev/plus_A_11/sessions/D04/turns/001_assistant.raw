@@ -1,0 +1,12 @@
+{
+  "message": "The percentage of the company's gross liabilities classified as other long-term liabilities in 2012 is approximately 12.38%.",
+  "final": {
+    "answer": "12.38%",
+    "value": 12.384456857447525594912510428580110833015641488897,
+    "unit": "%",
+    "sources": [
+      "source:t6c1n0",
+      "source:t6c1n1"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "message": "The table shows the number of shares held by Peter Oppenheimer, which is 149,768. The total shares held by all current executive officers and directors as a group is 9,378,423. We need to add the shares held by Peter Oppenheimer to the total shares to find the total shares if Mr. Oppenheimer's RSUs vest.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "149768 + 9378423",
+    "variables": {
+      "149768": {"value": 149768, "unit": ""},
+      "9378423": {"value": 9378423, "unit": ""}
+    }
+  }
+}

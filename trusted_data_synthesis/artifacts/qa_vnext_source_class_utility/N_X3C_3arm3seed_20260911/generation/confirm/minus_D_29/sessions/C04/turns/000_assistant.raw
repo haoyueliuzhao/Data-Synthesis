@@ -1,0 +1,12 @@
+{
+  "message": "The net change in asset retirement liability between 2002 and September 25, 2004 is calculated by subtracting the 2002 value from the 2004 value. The 2002 value is 5.5 and the 2004 value is 8.2.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "8.2 - 5.5",
+    "variables": {
+      "value": 2.7,
+      "source": "source:t6c1",
+      "unit": "millions"
+    }
+  }
+}

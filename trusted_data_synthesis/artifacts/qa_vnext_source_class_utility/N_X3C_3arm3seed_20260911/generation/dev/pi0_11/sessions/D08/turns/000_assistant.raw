@@ -1,0 +1,9 @@
+{
+  "message": "The total operating expenses for 2016 can be found in the table under the 'operating profit' row for the year 2016, which is 1018 million dollars.",
+  "final": {
+    "value": 1018,
+    "unit": "million dollars",
+    "source": "source:t2c1",
+    "result_id": "calculate:expression=1018"
+  }
+}

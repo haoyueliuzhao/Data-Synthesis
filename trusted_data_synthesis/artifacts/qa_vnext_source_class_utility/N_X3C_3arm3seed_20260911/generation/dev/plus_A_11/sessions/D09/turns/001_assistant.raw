@@ -1,0 +1,8 @@
+{
+  "message": "The percentage change in capitalized interest from 2017 to 2018 is approximately 4.83%. This was calculated using the formula ((new value - old value) / old value) * 100, where the new value is $30.4 million (2018) and the old value is $29.0 million (2017).",
+  "final": {
+    "value": 4.83,
+    "unit": "%",
+    "sources": ["source:t15n0", "source:t15n1", "source:t15n2", "source:t15n3", "source:t15n4", "source:t15n5", "source:t15n6"]
+  }
+}

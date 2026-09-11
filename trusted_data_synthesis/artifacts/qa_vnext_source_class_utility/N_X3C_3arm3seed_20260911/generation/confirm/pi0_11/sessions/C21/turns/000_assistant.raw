@@ -1,0 +1,11 @@
+{
+  "message": "The total sales in 2013 is $44033 million. To calculate the growth rate, I will use the formula: (sales_2013 - sales_2012) / sales_2012 * 100. The sales in 2012 is $47267 million.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(44033 - 47267) / 47267 * 100",
+    "variables": {
+      "sales_2013": 44033,
+      "sales_2012": 47267
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "message": "The sum of the liabilities, which includes current liabilities and other non-current liabilities, is -44055 thousand dollars. The negative sign indicates a liability.",
+  "final": {
+    "answer": "The sum of the liabilities is -44055 thousand dollars.",
+    "value": -44055,
+    "unit": "thousand dollars",
+    "sources": [
+      "source:t5c1n0",
+      "source:t6c1n0"
+    ]
+  }
+}

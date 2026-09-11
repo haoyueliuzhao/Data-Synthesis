@@ -1,0 +1,9 @@
+{
+  "message": "The total balance of severance and related charges, lease termination costs, and canceled contracts in millions is 0.8 million.",
+  "final": {
+    "value": 0.8,
+    "unit": "million",
+    "source": "SEGMENT13",
+    "result_id": "tool:1"
+  }
+}

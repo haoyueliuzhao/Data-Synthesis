@@ -1,0 +1,10 @@
+{
+  "message": "To find the percent of total minimum capital leases payments due in 2020, I will use the capital lease payments for 2020 and the total capital lease payments. The capital lease payment for 2020 is $155 million, and the total capital lease payments are $898 million.",
+  "calculate": {
+    "expression": "155 / 898 * 100",
+    "variables": {
+      "2020_capital_lease_payment": {"value": 155, "unit": "million"},
+      "total_capital_lease_payment": {"value": 898, "unit": "million"}
+    }
+  }
+}

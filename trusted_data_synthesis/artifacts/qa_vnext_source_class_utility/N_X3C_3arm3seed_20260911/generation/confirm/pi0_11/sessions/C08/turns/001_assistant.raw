@@ -1,0 +1,15 @@
+{
+  "message": "There was an error in the expression syntax. I will recheck the values and correct the expression.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "source:t7c3.value - source:t3c3.value",
+    "variables": {
+      "source:t7c3.value": {"value": 1220, "unit": "millions of shares"},
+      "source:t3c3.value": {"value": 1217, "unit": "millions of shares"}
+    },
+    "sources": {
+      "source:t7c3.value": "SEGMENT12n2",
+      "source:t3c3.value": "SEGMENT13n3"
+    }
+  }
+}

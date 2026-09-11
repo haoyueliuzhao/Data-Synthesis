@@ -1,0 +1,13 @@
+{
+  "message": "The calculation for the percentage of gross liabilities classified as other long-term liabilities in 2012 is 74360 / 180993 * 100, which evaluates to approximately 41.08%.",
+  "final": {
+    "answer": "41.08%",
+    "value": 41.084461830015525462310697098782825855143569088307,
+    "unit": "%",
+    "sources": {
+      "74360": "source:q0n0",
+      "180993": "source:t6c1"
+    },
+    "result_id": "tool:1"
+  }
+}

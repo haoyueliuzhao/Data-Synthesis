@@ -1,0 +1,15 @@
+{
+  "message": "There was an error in the expression syntax. The expression should be: ((source:t13c5n0.value - source:t1c5n0.value) / source:t1c5n0.value) * 100. I will correct the expression and try again.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "((source:t13c5n0.value - source:t1c5n0.value) / source:t1c5n0.value) * 100",
+    "variables": {
+      "source:t13c5n0": {"value": 7167.1, "unit": "million"},
+      "source:t1c5n0": {"value": 6490.8, "unit": "million"}
+    },
+    "sources": {
+      "source:t13c5n0": "SEGMENT13N0",
+      "source:t1c5n0": "SEGMENT1CN0"
+    }
+  }
+}

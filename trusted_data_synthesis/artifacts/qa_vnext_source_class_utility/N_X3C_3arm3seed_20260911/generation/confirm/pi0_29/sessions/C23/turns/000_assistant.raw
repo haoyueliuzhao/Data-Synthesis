@@ -1,0 +1,10 @@
+{
+  "message": "To find the percentage of total minimum capital lease payments due in 2021, I will use the capital lease payment for 2021 and the total capital lease payments. The capital lease payment for 2021 is $159 million (source: source:t3c2n0) and the total capital lease payments are $898 million (source: source:t7c2n0).",
+  "calculate": {
+    "expression": "159 / 898 * 100",
+    "variables": {
+      "capital_lease_2021": {"value": 159, "source": "source:t3c2n0", "unit": "million"},
+      "total_capital_lease_payments": {"value": 898, "source": "source:t7c2n0", "unit": "million"}
+    }
+  }
+}

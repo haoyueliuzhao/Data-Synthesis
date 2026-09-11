@@ -1,0 +1,12 @@
+{
+  "message": "The percentage change in the total carrying amount of goodwill from 2015 to 2017 is approximately 10.42%.",
+  "final": {
+    "answer": "10.42%",
+    "value": 10.419362790411043,
+    "unit": "%",
+    "sources": [
+      "source:t1c5n0",
+      "source:t13c5n0"
+    ]
+  }
+}

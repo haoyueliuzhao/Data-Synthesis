@@ -1,0 +1,15 @@
+{
+  "message": "The allowance for doubtful accounts at the beginning of 2018 was $38.9 million, and at the end of 2018, it was $34.3 million. The decline in the allowance for doubtful accounts is calculated as the percentage change from the beginning to the end of 2018.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(34.3 - 38.9) / 38.9 * 100",
+    "variables": {
+      "34.3": {"value": 34.3, "source": "source:t4c1n0", "unit": "$ million"},
+      "38.9": {"value": 38.9, "source": "source:t1c1n0", "unit": "$ million"}
+    },
+    "sources": {
+      "34.3": "source:t4c1n0",
+      "38.9": "source:t1c1n0"
+    }
+  }
+}

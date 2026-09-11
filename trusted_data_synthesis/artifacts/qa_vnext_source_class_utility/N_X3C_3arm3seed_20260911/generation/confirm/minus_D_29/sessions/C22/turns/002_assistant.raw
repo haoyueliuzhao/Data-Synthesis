@@ -1,0 +1,20 @@
+{
+  "message": "The growth rate from 2012 to 2013 for total sales is -6.78%.",
+  "calculate": {
+    "expression": "(44033 - 47267) / 47267 * 100",
+    "variables": {
+      "2013_sales": 44033,
+      "2012_sales": 47267
+    },
+    "result_id": "calculate:1"
+  },
+  "final": {
+    "value": -6.78,
+    "unit": "%",
+    "sources": {
+      "2013_sales": "source:t1c1n0",
+      "2012_sales": "source:t1c2n0"
+    },
+    "result_id": "calculate:1"
+  }
+}

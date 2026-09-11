@@ -1,0 +1,11 @@
+{
+  "message": "The percentage change in deferred tax assets and regulatory assets from 2013 to 2014 is calculated based on the changes in the table provided. The relevant values are $180,993 (balance at January 1, 2013) and $195,237 (balance at December 31, 2014).",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "(195237 - 180993) / 180993 * 100",
+    "variables": {
+      "195237": {"value": 195237, "source": "source:t6c1", "unit": ""},
+      "180993": {"value": 180993, "source": "source:t0c1n1", "unit": ""}
+    }
+  }
+}
