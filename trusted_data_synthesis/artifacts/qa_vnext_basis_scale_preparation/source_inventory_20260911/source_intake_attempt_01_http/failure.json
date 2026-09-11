@@ -1,0 +1,16 @@
+{
+  "schema_version": "basis_scale_preparation.v1.source_acquisition_failure",
+  "status": "SOURCE_ACQUISITION_FAILED_NOT_A_GENERATION_BATCH",
+  "transport": "urllib raw.githubusercontent.com HTTPS",
+  "fixed_source_files_scheduled": 4,
+  "surfaced_error": "urllib.error.URLError: SSL UNEXPECTED_EOF_WHILE_READING",
+  "recorded_original_source_files": 0,
+  "other_thread_outcomes": "not recorded because the first ordered map result raised",
+  "original_acquisition_plan_and_audit_preserved": true,
+  "followup": "same pinned public Git blobs through separately recorded source acquisition",
+  "Teacher_sessions": 0,
+  "semantic_model_requests": 0,
+  "tokenizer_loads": 0,
+  "Student_runs": 0,
+  "DeepSeek_credential_loaded": false
+}
