@@ -14,14 +14,13 @@ from pathlib import Path
 
 from finraw.atomic_facts import _fact, _with_build
 from finraw.builds import ensure_build_schema, finish_build, start_build
-from finraw.db.client import MetadataDB
 from finraw.derived_facts import refresh_derived_facts
 from finraw.fact_quality import enforce_fact_quality_gates
 from finraw.fact_standardization import refresh_fact_standardization
 from finraw.kg_builder import build_kg, ensure_kg_schema
 
 from . import issuer_tables
-from .archive import WORK, insert, record, require, sha, write_json
+from .archive import WORK, RecordDB, insert, record, require, sha, write_json
 from .protocol import CASH, METRIC_TAGS, NEW_FLOW_METRICS, RESTRICTED, source_identity, source_split
 
 
@@ -397,7 +396,7 @@ def run(root, output):
     root, output = Path(root).resolve(), Path(output)
     database = root / WORK / "native_fact_qa.sqlite3"
     require(not database.exists(), "native.new_scoped_database_only")
-    archived = MetadataDB(str(root / WORK / "qa_build.sqlite3"))
+    archived = RecordDB(str(root / WORK / "qa_build.sqlite3"))
     # Reading the archive projection does not activate or amend old builds.
     inputs = source_inputs(root, archived)
     issuer = issuer_tables.prepare(root, archived, inputs)
@@ -413,7 +412,7 @@ def run(root, output):
             for item in inputs
         ],
     )
-    db = MetadataDB(str(database))
+    db = RecordDB(str(database))
     db.init_schema()
     ensure_build_schema(db)
     ensure_kg_schema(db)

@@ -17,6 +17,18 @@ from finraw.builds import ensure_build_schema
 from finraw.db.client import MetadataDB
 from finraw.kg_builder import ensure_kg_schema
 
+
+class RecordDB(MetadataDB):
+    """The new adapter consumes mappings, irrespective of SQLite Row objects."""
+
+    def fetchall(self, sql, params=()):
+        return [dict(row) for row in super().fetchall(sql, params)]
+
+    def fetchone(self, sql, params=()):
+        row = super().fetchone(sql, params)
+        return None if row is None else dict(row)
+
+
 ARCHIVE = "raw_financial_data_lake/data/kg_archive/kg_build_id=kg_20260723_191638_396e6b92"
 OUTPUT = "trusted_data_synthesis/artifacts/qa_vnext_task_build/task_factory_20260911"
 WORK = "trusted_data_synthesis/artifacts/qa_vnext_task_build/runtime_20260911"
@@ -106,6 +118,7 @@ def validate_archive(root):
 def insert(db, table, rows):
     if not rows:
         return
+    rows = [dict(row) for row in rows]
     columns = [row["name"] for row in db.fetchall("PRAGMA table_info(" + table + ")")]
     used = [column for column in columns if any(column in row for row in rows)]
     require(bool(used), "archive.projection_known_schema")

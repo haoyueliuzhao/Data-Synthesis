@@ -629,6 +629,22 @@ def test_content_addressed_identity_cannot_be_kept_after_mutation():
         validate_record(value, "manifest")
 
 
+def test_actual_SQLite_rows_cross_the_record_adapter_boundary_as_mappings(tmp_path):
+    from trusted_synthesis.experiments.finance_qa_vnext_task_build.archive import RecordDB, insert
+
+    db = RecordDB(str(tmp_path / "row_boundary.sqlite3"))
+    db.execute("CREATE TABLE input_fixture (identifier TEXT PRIMARY KEY, value TEXT)")
+    db.execute("INSERT INTO input_fixture VALUES (?, ?)", ("source1", "42"))
+    row = db.fetchone("SELECT * FROM input_fixture")
+    assert row.get("identifier") == "source1" and "identifier" in row
+    assert json.loads(json.dumps(db.fetchall("SELECT * FROM input_fixture")))[0] == row
+    db.execute("CREATE TABLE output_fixture (identifier TEXT PRIMARY KEY, value TEXT)")
+    raw_rows = db.conn.execute("SELECT * FROM input_fixture").fetchall()
+    insert(db, "output_fixture", raw_rows)
+    assert db.fetchone("SELECT * FROM output_fixture") == row
+    db.close()
+
+
 def test_synthesized_catalog_reader_exposes_public_not_private_canaries(tmp_path):
     from trusted_synthesis.experiments.finance_qa_vnext_task_build.archive import (
         OUTPUT,

@@ -5,13 +5,12 @@ from collections import Counter, defaultdict, deque
 from decimal import Decimal
 from pathlib import Path
 
-from finraw.db.client import MetadataDB
 from finraw.qa import pipeline
 from finraw.qa.graph_patterns import get_pattern, pattern_content_hash
 from finraw.qa.store import insert_rows
 
 from . import issuer_tables
-from .archive import WORK, record, require, write_json
+from .archive import WORK, RecordDB, record, require, write_json
 from .protocol import CAPS, CASH, RESTRICTED, all_leaf_uses
 from .relations import (
     BindingRejected,
@@ -594,7 +593,7 @@ def dump_parents(db, output):
 
 def run(root, output, native_report):
     root, output = Path(root).resolve(), Path(output)
-    db = MetadataDB(str(root / WORK / "native_fact_qa.sqlite3"))
+    db = RecordDB(str(root / WORK / "native_fact_qa.sqlite3"))
     kg = native_report["kg_build"]
     bindings = json.loads((output / "native_bindings.json").read_bytes())
     facts = pipeline._load_facts_by_id(
