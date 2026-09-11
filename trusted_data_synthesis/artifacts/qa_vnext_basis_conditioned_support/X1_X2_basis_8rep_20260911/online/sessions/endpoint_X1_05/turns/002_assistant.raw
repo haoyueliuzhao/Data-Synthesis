@@ -1,0 +1,1 @@
+{"tool":"calculate","arguments":{"expression":"426.6 - 380.2","variables":{"a":{"value":426.6,"source":"source:t4c1n0","unit":"USD_million"},"b":{"value":380.2,"source":"source:t1c1n0","unit":"USD_million"}},"sources":{"a":"source:t4c1n0","b":"source:t1c1n0"}}}

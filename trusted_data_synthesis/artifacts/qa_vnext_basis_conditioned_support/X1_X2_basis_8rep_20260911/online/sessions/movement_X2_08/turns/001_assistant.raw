@@ -1,0 +1,15 @@
+{
+  "final": {
+    "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006. The change is explained as $4 million of 2006 pretax warranty charges plus $7 million of warranty obligations assumed in acquisitions, less $5 million of cash outlays, which reconciles the reserve from $4 million at the end of 2005 to $10 million at the end of 2006.",
+    "value": 6,
+    "unit": "USD_million",
+    "sources": [
+      "source:q11n3",
+      "source:q11n4",
+      "source:q12n3",
+      "source:q13n0",
+      "source:q14n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

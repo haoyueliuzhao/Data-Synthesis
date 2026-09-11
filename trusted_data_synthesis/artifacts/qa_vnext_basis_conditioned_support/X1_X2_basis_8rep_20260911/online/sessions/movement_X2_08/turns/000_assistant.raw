@@ -1,0 +1,28 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "charges_2006 + obligations_assumed_2006 - cash_outlays_2006",
+    "variables": {
+      "charges_2006": {
+        "value": 4,
+        "source": "source:q12n3",
+        "unit": "USD_million"
+      },
+      "obligations_assumed_2006": {
+        "value": 7,
+        "source": "source:q14n0",
+        "unit": "USD_million"
+      },
+      "cash_outlays_2006": {
+        "value": 5,
+        "source": "source:q13n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "charges_2006": "source:q12n3",
+      "obligations_assumed_2006": "source:q14n0",
+      "cash_outlays_2006": "source:q13n0"
+    }
+  }
+}

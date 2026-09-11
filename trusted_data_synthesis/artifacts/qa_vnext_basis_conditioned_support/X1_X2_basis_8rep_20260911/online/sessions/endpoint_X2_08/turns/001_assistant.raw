@@ -1,0 +1,10 @@
+{
+  "answer": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005).",
+  "value": 1,
+  "unit": "USD_million",
+  "sources": [
+    "source:q11n3",
+    "source:q11n4"
+  ],
+  "result_id": "tool:1"
+}

@@ -1,0 +1,8 @@
+{
+  "answer": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million.",
+  "value": 46.4,
+  "unit": "USD_million",
+  "sources": ["source:t4c1n0", "source:t1c1n0"],
+  "result_id": "tool:1",
+  "message": "2003 net revenue was $426.6 million and 2002 net revenue was $380.2 million; the change is 426.6 - 380.2 = 46.4 million USD."
+}

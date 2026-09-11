@@ -1,0 +1,17 @@
+{
+  "message": "The 2006 product warranty reserve rollforward explains the increase. Starting from the 2005 reserve of $4 million (source:q11n4), 2006 pretax warranty charges of $4 million (source:q12n3) and $7 million of warranty obligations assumed in acquisitions (source:q14n0) added to the reserve, while 2006 cash outlays of $5 million (source:q13n0) reduced it. The net 2006 change is 4 + 7 - 5 = $6 million, which reconciles the 2005 reserve of $4 million to the 2006 reserve of $10 million (source:q11n3). Amounts are stated in USD millions per the source table.",
+  "final": {
+    "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006 (from $4 million to $10 million).",
+    "value": 6,
+    "unit": "USD_million",
+    "sources": [
+      "source:q11n3",
+      "source:q11n4",
+      "source:q12n3",
+      "source:q13n0",
+      "source:q14n0"
+    ],
+    "result_id": "tool:1",
+    "explanation": "Net change = 2006 pretax warranty charges ($4M) + warranty obligations assumed in 2006 acquisitions ($7M) - 2006 cash outlays ($5M) = $6M increase."
+  }
+}

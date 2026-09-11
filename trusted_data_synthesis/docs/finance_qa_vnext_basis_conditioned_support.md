@@ -123,12 +123,143 @@ K_psi(g,tau|x,m) = sum_z q_psi(g,z|x,m) M_psi(tau|x,g,z)
 
 ## 9. 实际执行与结果记录
 
-采集前联合控制为 **228 passed in 8.20s**，Ruff 检查与二十个 Python 文件格式检查均通过：规则/身份/选样与原文控制 42 项、有限跨数量投影 28 项、实际方法与细类 36 项、Token 表示 44 项、固定选择消费门 21 项、隔离采集 27 项、费用 30 项。控制使用离线或显式脚本/Mock 场景；未调用真实 Provider、真实 tokenizer、Student 或 GPU。准备阶段会在相同冻结代码上再运行这七个新测试文件并封存 stdout/stderr；不复跑旧完整实验套件。
+采集前联合控制为 **228 passed in 8.20s**，Ruff 检查与二十个 Python 文件格式检查均通过：规则/身份/选样与原文控制 42 项、有限跨数量投影 28 项、实际方法与细类 36 项、Token 表示 44 项、固定选择消费门 21 项、隔离采集 27 项、费用 30 项。控制使用离线或显式脚本/Mock 场景；未调用真实 Provider、真实 tokenizer、Student 或 GPU。准备阶段随后又在相同冻结代码上运行了这七个新测试文件，并已封存 stdout/stderr；未复跑旧完整实验套件。
 
 预检修正了两处新代码集成问题，均在新采集之前：评审 packet 以 `read_bytes().decode('utf-8')` 保留原 CRLF/CR，不做文本换行归一；新费用模块接受本轮真实 endpoint/movement 登记，而不冒用旧 N/E 标签或修改旧费用代码。支持不足与选定包超长/表示边界失败是登记的停止结果；来源原包验证或 tokenizer 资产加载失败则另记 `STOPPED_SOURCE_OR_ASSET_NOT_CERTIFIED`，不无条件宣称范围内成功。
 
-当前为采集前冻结说明，尚未发起本轮在线请求，尚无新有效率、方法分层支持或 Token 消费结果。固定 32 会话及封存评审完成后，在本节追加实际数量、g×m 分布、细类组成、支持门、选择身份、消费性、成本口径和停止结论。不以预期效果替代观测。
+采集前说明的原样副本封存于 `preparation/design_at_freeze.md`；其中“尚未发起本轮在线请求”是冻结时的进度事实。以下结果来自随后一次固定批次，未修改冻结规则、重开采集或根据资格结果重写原响应。
 
 成本仅按继承的条件性 Flash 人民币费率与请求 UTC 时间估算，不是当前价格验证或正式账单；分别保存 cache hit、cache miss、completion 与 reasoning 计数，reasoning 已含在 completion 中，不重复加总。
 
 可执行入口（仓库根目录）：`PYTHONPATH=trusted_data_synthesis/src trusted_data_synthesis/.venv/bin/python -B -m trusted_synthesis.experiments.finance_qa_vnext_basis_conditioned_support.stage {prepare,collect,assess,finalize,show}`。`finalize` 需本轮完整 `--reviews` 文件；没有训练、重试、补采、提示换版或恢复模式。
+
+### 9.1 冻结、采集与实际资源用量
+
+规则与二十个 Python 源码/测试文件先在 `d543b3bf31379c0b4fb830673eda0c38c026af0c` 提交推送。准备阶段再次获得 **228 passed in 8.21s**，所有被禁止入口计数为零，然后在 `c41273aad48f6eb927f8b8af5a7d00897dce87eb` 封存并推送准备工件。首次新 Provider 请求发生在这两个提交之后。
+
+固定 32 会话全部终止；实际 72 次预约与请求，72 个返回均为 HTTP 200、公开模型标识 `deepseek-flash`、finish_reason `stop`，32 个首次实际 Final。采集程序测得总 wall time 16.819 秒，两波分别为 9.299 秒和 7.502 秒；这些是本次程序计时，不是提供商性能的稳定估计，也不是累计请求延迟。没有补采、网络重试、模型替换、catalog 请求或指导重写。
+
+72 个公开响应分解为：
+
+| 实际公开事件 | 数量 |
+| --- | ---: |
+| 成功执行 `calculate` | 32 |
+| 首次实际 Final | 32 |
+| 合法非终止、无工具公共消息 | 6 |
+| JSON framing 协议错误，未执行工具 | 2 |
+| 合计 | 72 |
+
+全部会话都只有一次实际计算，32 次工具全部成功；两个协议错误不能说成两次工具错误。`endpoint_X1_05` 的前两条响应附带 DSML 结束标签，JSON 解析失败，第三条才真正计算 `426.6−380.2`，随后 Final。原错误消息和格式恢复均保留，没有把失败请求当作成功执行。另有六条 answer-shaped 但无 `final` 的合法消息保留到后续完整历史中，不虚构它们是早期 Final 或语义修订。
+
+本阶段真实 tokenizer 加载一次，且发生在全部资格与固定 16 包选择封存之后。Student 权重加载、Student 前向、训练、生成、GPU 初始化、B0、同题 greedy、辅助 NLL 以及留出训练/NLL 均为零。离线执行防护覆盖了所登记入口；这不是对任意代码的形式化隔离证明。
+
+### 9.2 资格、实际方法与完整映射
+
+数量提取/数值资格为 **31 PASS、1 FAIL**；完整财务与交付资格为 **27 PASS、2 FAIL、3 UNDETERMINED**。二者不同：数值正确不撤销错误来源声明，也不解决当前来源引用的角色歧义。
+
+| 任务与请求 g（每格 8 会话） | 完整资格 PASS / FAIL / UND | 实际 endpoint / movement / UND | 完整有效且完整映射的目标方法支持 |
+| --- | --- | --- | ---: |
+| X1 / endpoint | 8 / 0 / 0 | 8 / 0 / 0 | endpoint 8 |
+| X1 / movement | 8 / 0 / 0 | 0 / 8 / 0 | movement 8 |
+| X2 / endpoint | 7 / 1 / 0 | 7 / 0 / 1 | endpoint 7 |
+| X2 / movement | 4 / 1 / 3 | 0 / 8 / 0 | movement 4 |
+
+实际方法特征在全部 32 会话上的数量为 endpoint 15、movement 16、未定 1，没有 MIXED。这里 16 个 movement **不是** 16 个完整有效包，其中包括一个来源 FAIL 和三个资格未定；可准入的 movement 为 X1 的 8 个加 X2 的 4 个。请求依据与已建立的实际依据一致者 31 个，另一个实际方法未定；不能把“31 个依据吻合”称作“31 个完整有效”。
+
+27 个完整有效包均完成本轮完整类映射，本批没有“完整有效但完整类未定”的新增包。三个资格未定包不自动移入有效分母或完整类分母。这里完整有效分母为 27，已映射有效质量为 27/27；这一事实不改变上一批 28/29 加 1/29 映射未定的历史分解。
+
+### 9.3 五个未准入包及保留的执行边界
+
+| 原标签（遮蔽评审号） | 冻结规则下的处理 | 直接依据 |
+| --- | --- | --- |
+| `movement_X2_02`（016） | FAIL；实际 movement 特征仍可记录 | 当前嵌套 `charges_2006={value:4, source:q12n0}` 将 4 指向年份 2006，未被撤回。表达式实际是字面量 `4+7−5`，不消费该变量，但不消费不撤销错误源值断言；Final 为 6 也不能修复它。 |
+| `endpoint_X2_08`（022） | FAIL；实际方法未定 | 实际表达式为 `2006−2005`，工具返回 1，Final 发布 `$1 million`。元数据里名为 `2006`、`2005` 的 10/4 对象未被表达式读取；不能把数值字面量解释为变量，再替模型执行 `10−4`。 |
+| `movement_X2_06`（002） | UNDETERMINED；实际 movement 已知，不完整类准入 | 主要组件输入与计算正确，但 Final 的未结构化来源列表含 `q11n2`（年份 2005）及 `q11n3`（期末 10）。它可以是期间背景引用，也可能意图对应叙述中的期初金额，原文未唯一确定其角色。 |
+| `movement_X2_01`（007） | UNDETERMINED；实际 movement 已知，不完整类准入 | 主要组件输入正确，Final 另列 `q11n0/n1/n2`（日期 31、年份 2006/2005）。不强制将列表当成金额-ID 配对判 FAIL，也不因数值正确便强称一般引用 PASS。 |
+| `movement_X2_04`（023） | UNDETERMINED；实际 movement 已知，不完整类准入 | 唯一工具实际执行组件差额并得到 6；Final 的 `q11n2` 引用角色仍未定。Final 文本叙述余额恒等式并不构成额外实际计算，也不消除来源列表歧义。 |
+
+016 的 Final 列表还存在未定引用，但其资格 FAIL 不依赖对这个列表强选解释；明确错误的嵌套源值断言已经足够。上述歧义均按既有 v2 保留，不扩充 parser、不将 numeric ID 格式当作唯一准入门，也不降格为无条件一般引用。执行助手团队分四区完成原始消息、事件与来源审核，主助手复核全部原始公开响应及关键边界，随后用冻结规则验证全部 32 条；这仍是非独立、非保证盲评。
+
+### 9.4 观察到的细完整类与没有观察到的行为
+
+| 任务 / 实际方法 | 本批有效映射细类 ID（去共同前缀 `basis_complete_behavior_class:`） | 包数 |
+| --- | --- | ---: |
+| X1 / endpoint | `e55c8c20c0e63dce3cf61b97659f50181fb91f7fddc65094b28eb4c524bdff36` | 8 |
+| X1 / movement | `360e0389f4a1ae9f47d81314fb6f18658f54b93be0c2ea640e5e9d6a0516a245` | 8 |
+| X2 / endpoint | `bf863eb68db88762e70a57b1ae34727028c21b262092512fbc9cb631d95e047b` | 7 |
+| X2 / movement | `6f2f1ea28360857905e0211ddffe4b0c27b6307265986f4f5fcdea2f453789b3` | 4 |
+
+这些 ID 绑定各自新 g、任务、来源、目标、主支持规范形、实质修订和核对结构，不是旧 N/E 类标识。这批观察中，每个实际方法层恰好只有一个已认证细类，并且均来自同名指导条件；这不是实现将方法层当成完整类，也不是拒绝未来同层不同细类。格式恢复、命名和合法重复消息不被误当作新的金融依据；它们仍留在原始序列和证据账中。
+
+原始会话中有多处文字“consistent/reconciles/check”或余额说明，但没有第二次实际工具计算，因此新样本的实际同量核对和跨数量核对都为零，实质修订也为零。`endpoint_X1_05` 有两个保留的 format-only 恢复记录。有限跨数量扩展本轮通过历史 B2_07 和定向反例的准备控制，但**没有采到新的该类核对实例**，不能把扩展测试当作本批生成收益。
+
+完整公共响应序列逐字节去重检查未发现跨会话完全重复；这仍不意味着每包代表一种不同方法。`movement_X1_05` 在同一会话中有两条完全相同的合法无 Final 消息，原样保留，而不是新增方法类。
+
+### 9.5 固定 16 包与实际消费性结果
+
+四个原始方法支持层分别有 8、8、7、4 个完整有效且已映射原包，达到冻结的各层至少四包要求。选择先独立封存，再进行表示检查：
+
+| 任务 / 实际方法 | future_train 三个完整原包 | heldout 完整原包 |
+| --- | --- | --- |
+| X1 / endpoint | `endpoint_X1_01`、`endpoint_X1_02`、`endpoint_X1_03` | `endpoint_X1_04` |
+| X1 / movement | `movement_X1_01`、`movement_X1_02`、`movement_X1_03` | `movement_X1_04` |
+| X2 / endpoint | `endpoint_X2_01`、`endpoint_X2_02`、`endpoint_X2_03` | `endpoint_X2_04` |
+| X2 / movement | `movement_X2_03`、`movement_X2_05`、`movement_X2_07` | `movement_X2_08` |
+
+X2 movement 的 01/02/04/06 因上述资格原因不在合格池，03/05/07/08 是按预先规则得到的全部四包，不是看到 Token 长度后更换出来的四包。本批消费过程中没有替换、裁剪、指导前缀中性化或响应修订。
+
+| 表示检查项 | 实际结果 |
+| --- | ---: |
+| 检查原包 / future_train / heldout | 16 / 12 / 4 |
+| 整包检查 PASS / FAIL | 16 / 0 |
+| 原始正目标响应检查次数 | 34，全部一次且 PASS |
+| 其中 future_train / heldout 响应 | 26 / 8 |
+| 全部十六包目标 Token | 6,759 |
+| 十二个 future_train 包目标 Token | 5,188 |
+| 四个 heldout 包目标 Token | 1,571 |
+| 实际完整单响应序列长度范围 | 4,577–10,745 |
+| 冻结最大位置边界 | 32,768 |
+| 真实 tokenizer 加载次数 | 1 |
+| 消费性失败、重试、替换 | 全部 0 |
+
+两个被选包各含一条额外合法无 Final 消息：`movement_X1_01` 与 `endpoint_X2_03` 各三条正目标，其他被选包各两条。正目标不是一律“一个计算加一个 Final”的人工改写；输入中保留实际完整公共历史与真实指导 SYSTEM。
+
+26 条 future_train 响应和 8 条 heldout 响应只是本次表示计数，**没有训练**。5,188 不等于后继 27 包训练总体的监督量，更不能乘十之后冒称已冻结整体训练 Token 预算。没有建立旧控制包与本轮包的 27 包合并训练视图，没有 alpha 权重或十五次训练计划的实际物化。留出只作表示检查，未作 greedy、NLL、模型或方向选择。
+
+### 9.6 请求费用与可解释范围
+
+本次完整记录的用量为：cache hit 335,872、cache miss 157,862，合计 prompt 493,734；completion 30,144，total 523,878。reasoning 17,859 是 completion 内部子集，未再加一次。72 次请求全部落在继承费率的 offpeak UTC 窗口，按该**未重新核价、非账单**口径估算：
+
+```text
+(335872 × 0.05 + 157862 × 1.5 + 30144 × 4.5) / 1,000,000
+= 0.3892346 元
+```
+
+成本账保留所有 32 会话，包括失败和未定，不仅计入合格包；没有把请求 Token 当作监督目标 Token。与旧 E/X2 的不同费用、长度或方法计数均不能单独说明稳定生成概率、提供商能力变化或训练效用。
+
+### 9.7 收口结论与证据入口
+
+本轮状态为：
+
+```text
+scope_status = PASS_AS_SCOPED
+collection_status = FIXED_32_CLOSED
+raw_support_status = RAW_METHOD_SUPPORT_ESTABLISHED
+consumable_input_status = SUPPORT_REPRESENTATION_ESTABLISHED
+selected = 12 future_train + 4 heldout original packages
+training_allowed = false
+Student_training_runs = Student_sessions = NLL = 0
+```
+
+本次证明的是：在这两个固定公开任务和已明确指导的生成机制下，冻结批次提供了足够的完整有效、完整映射且可消费的方法层原包。它没有证明原 E 的自然纯 R 供给已改善，没有证明 movement 的抽象方法效应，更没有得到 Student 效用收益或独立确认。
+
+可供后继独立接受并冻结的效用设计仍见第 8 节；这次支持成立不自动授权或执行该十五次训练计划。后继若启动，还须先完成 27 包固定总体、实际 Token 预算、开发 D10 新版和全新确认题 panel 的准备。不得用原八/四十候选替换本次选定材料，或将本次已知样本当作全新独立确认。
+
+主要证据入口：
+
+- [封存准备与控制](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/preparation/manifest.json)。
+- [固定采集报告](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/online/report.json)。
+- [32 条资格与原包索引](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/qualification/report.json)。
+- [固定选择](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/selection/support_selection.json)，ID `basis_fixed_support_selection:aae0f5af72b50a7b514c14d5e307ae43d119b5b76829622344dcc38cf95cd83f`。
+- [一次性消费报告](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/consumption/report.json)，ID `basis_support_consumption_report:ff37eb0f3b75d383bc6eb8182c8488a36caffe38bfe02b9a48382cb82bc8049c`。
+- [最终收口报告](../artifacts/qa_vnext_basis_conditioned_support/X1_X2_basis_8rep_20260911/closeout/report.json)，ID `basis_bounded_support_report:0726836c2ccac88a7155f48fcbe0709dff8219e93e50effc4229b2a19ceb802c`。

@@ -1,0 +1,29 @@
+{
+  "message": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "charges2006 + assumed2006 - outlays2006",
+    "variables": {
+      "charges2006": {
+        "value": 4,
+        "source": "source:q12n3",
+        "unit": "USD_million"
+      },
+      "assumed2006": {
+        "value": 7,
+        "source": "source:q14n0",
+        "unit": "USD_million"
+      },
+      "outlays2006": {
+        "value": 5,
+        "source": "source:q13n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "charges2006": "source:q12n3",
+      "assumed2006": "source:q14n0",
+      "outlays2006": "source:q13n0"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "message": "The requested net change is the difference between the 2003 net revenue endpoint and the 2002 net revenue endpoint, both stated in the table in millions of dollars. I use 2003 net revenue = $426.6 million (source:t4c1n0) and 2002 net revenue = $380.2 million (source:t1c1n0): change = 426.6 - 380.2.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "end_2003 - end_2002",
+    "variables": {
+      "end_2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD_million"
+      },
+      "end_2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "end_2003": "source:t4c1n0",
+      "end_2002": "source:t1c1n0"
+    }
+  }
+}

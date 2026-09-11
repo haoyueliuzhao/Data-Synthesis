@@ -1,0 +1,3681 @@
+{
+  "basis_review_017": {
+    "R_Final_link": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual Final result_id selects the executed component calculation; this does not itself certify all current source claims or full eligibility."
+    },
+    "R_mention": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        }
+      ],
+      "explanation": "The pre-call public text explicitly names the period components and signs."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t2c1n0",
+            "role": "base-rate contribution to annual company-defined net revenue (gross margin) change",
+            "period": "2003 compared with 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "base_rates_change",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t2c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "48.3 + (-1.9)"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "signed other contribution to annual company-defined net revenue (gross margin) change",
+            "period": "2003 compared with 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "other_change",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t3c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "48.3 + (-1.9)"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the movement Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "nonterminal_publication_message",
+          "interpretation": "A legal answer-shaped response without final repeats the same quantity and support. The later final wrapper changes delivery only, with no source/formula revision and no tool-error repair.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The net change in Entergy Mississippi, Inc.'s 2003 net revenue was an increase of $46.4 million, driven by a $48.3 million increase from base rates partially offset by a $1.9 million decrease from other items."
+            }
+          ]
+        },
+        {
+          "response_index": 2,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 2,
+              "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+            },
+            {
+              "response_index": 2,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the movement financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "46.4",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"base_rates_change\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"base_rates_change\": {\n        \"value\": 48.3,\n        \"source\": \"source:t2c1n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          }
+        ],
+        "explanation": "The actual nested object declares 48.3 USD_million at source:t2c1n0: base-rate contribution to annual company-defined net revenue (gross margin) change, 2003 compared with 2002. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[0].arguments.variables[\"other_change\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"other_change\": {\n        \"value\": -1.9,\n        \"source\": \"source:t3c1n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "The actual nested object declares -1.9 USD_million at source:t3c1n0: signed other contribution to annual company-defined net revenue (gross margin) change, 2003 compared with 2002. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked. The literal source span is -1.9; no positive source ID is invented."
+      },
+      {
+        "location": "response[1].answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The net change in Entergy Mississippi, Inc.'s 2003 net revenue was an increase of $46.4 million, driven by a $48.3 million increase from base rates partially offset by a $1.9 million decrease from other items."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "The published increase follows from the complete signed bridge. A $1.9 million decrease is a magnitude description of the signed -1.9 contribution, not a direct assertion that its source equals +1.9."
+      },
+      {
+        "location": "response[1].sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:t2c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t3c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      },
+      {
+        "location": "response[2].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "The published increase follows from the complete signed bridge. A $1.9 million decrease is a magnitude description of the signed -1.9 contribution, not a direct assertion that its source equals +1.9."
+      },
+      {
+        "location": "response[2].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "\"source:t2c1n0\""
+          },
+          {
+            "response_index": 2,
+            "quote": "\"source:t3c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        },
+        {
+          "response_index": 2,
+          "quote": "Entergy Mississippi, Inc.'s 2003 net revenue increased by $46.4 million, reflecting a $48.3 million increase from base rates partly offset by a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "p0",
+          "quote": "entergy mississippi , inc ."
+        },
+        {
+          "segment_id": "p3",
+          "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+        },
+        {
+          "segment_id": "p4",
+          "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+        },
+        {
+          "segment_id": "t0c1",
+          "quote": "( in millions )"
+        },
+        {
+          "segment_id": "t2c1",
+          "quote": "48.3"
+        },
+        {
+          "segment_id": "t3c1",
+          "quote": "-1.9 ( 1.9 )"
+        }
+      ],
+      "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net revenue change is explained by the table's components: base rates increased net revenue by $48.3 million, while other items reduced it by $1.9 million. I will sum those signed components, not merely subtract the beginning and ending net revenue totals. The table is labeled in millions of dollars, so the result is in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+    }
+  },
+  "basis_review_018": {
+    "R_Final_link": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual Final result_id selects the executed component calculation; this does not itself certify all current source claims or full eligibility."
+    },
+    "R_mention": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        }
+      ],
+      "explanation": "The pre-call public text explicitly names the period components and signs."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t2c1n0",
+            "role": "base-rate contribution to annual company-defined net revenue (gross margin) change",
+            "period": "2003 compared with 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "base_rates_change",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t2c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "48.3 + (-1.9)"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t3c1n0",
+            "role": "signed other contribution to annual company-defined net revenue (gross margin) change",
+            "period": "2003 compared with 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "other_change",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t3c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "48.3 + (-1.9)"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the movement Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "48.3 + (-1.9)"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+            },
+            {
+              "response_index": 1,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the movement financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "46.4",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"base_rates_change\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"base_rates_change\":{\"value\":48.3,\"source\":\"source:t2c1n0\",\"unit\":\"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          }
+        ],
+        "explanation": "The actual nested object declares 48.3 USD_million at source:t2c1n0: base-rate contribution to annual company-defined net revenue (gross margin) change, 2003 compared with 2002. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[0].arguments.variables[\"other_change\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"other_change\":{\"value\":-1.9,\"source\":\"source:t3c1n0\",\"unit\":\"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "The actual nested object declares -1.9 USD_million at source:t3c1n0: signed other contribution to annual company-defined net revenue (gross margin) change, 2003 compared with 2002. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked. The literal source span is -1.9; no positive source ID is invented."
+      },
+      {
+        "location": "response[1].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          }
+        ],
+        "explanation": "The published increase follows from the complete signed bridge. A $1.9 million decrease is a magnitude description of the signed -1.9 contribution, not a direct assertion that its source equals +1.9."
+      },
+      {
+        "location": "response[1].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:t1c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t2c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t3c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t4c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          },
+          {
+            "segment_id": "t2c1",
+            "quote": "48.3"
+          },
+          {
+            "segment_id": "t3c1",
+            "quote": "-1.9 ( 1.9 )"
+          },
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. The two extra endpoint references give context for the same annual bridge; they are not an additional executed endpoint calculation."
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        },
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi's net revenue from 2002 to 2003 was an increase of $46.4 million, composed of a $48.3 million increase from base rates and a $1.9 million decrease from other items."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "p0",
+          "quote": "entergy mississippi , inc ."
+        },
+        {
+          "segment_id": "p3",
+          "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+        },
+        {
+          "segment_id": "p4",
+          "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+        },
+        {
+          "segment_id": "t0c1",
+          "quote": "( in millions )"
+        },
+        {
+          "segment_id": "t2c1",
+          "quote": "48.3"
+        },
+        {
+          "segment_id": "t3c1",
+          "quote": "-1.9 ( 1.9 )"
+        }
+      ],
+      "explanation": "The actual signed base-rate plus other bridge computes the 2003-versus-2002 change in company-defined annual net revenue (gross margin). It is not net profit or a stock rollforward, and no unrelated revenue/expense item is added."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "Net change in net revenue is the sum of the disclosed 2003-vs-2002 components: base rates change +48.3 million and other change -1.9 million, both in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "48.3 + (-1.9)"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+    }
+  },
+  "basis_review_019": {
+    "R_Final_link": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "No executed period-component target calculation is selected by Final."
+    },
+    "R_mention": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "The complete public history contains no period-component target calculation."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+            },
+            {
+              "response_index": 0,
+              "quote": "426.6 - 380.2"
+            }
+          ],
+          "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+            },
+            {
+              "response_index": 0,
+              "quote": "426.6 - 380.2"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+            },
+            {
+              "response_index": 0,
+              "quote": "426.6 - 380.2"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+        },
+        {
+          "response_index": 0,
+          "quote": "426.6 - 380.2"
+        }
+      ],
+      "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c1n0",
+            "role": "Entergy Mississippi company-defined annual net revenue (gross margin)",
+            "period": "annual 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "net_revenue_2003",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t4c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "426.6 - 380.2"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t1c1n0",
+            "role": "Entergy Mississippi company-defined annual net revenue (gross margin)",
+            "period": "annual 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "net_revenue_2002",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t1c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "426.6 - 380.2"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the endpoint Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+            },
+            {
+              "response_index": 0,
+              "quote": "426.6 - 380.2"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "nonterminal_publication_message",
+          "interpretation": "A legal answer-shaped response without final repeats the same quantity and support. The later final wrapper changes delivery only, with no source/formula revision and no tool-error repair.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+            }
+          ]
+        },
+        {
+          "response_index": 2,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 2,
+              "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+            },
+            {
+              "response_index": 2,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the endpoint financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "46.4",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"net_revenue_2002\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"net_revenue_2002\": {\"value\": 380.2, \"source\": \"source:t1c1n0\", \"unit\": \"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          }
+        ],
+        "explanation": "The actual nested object declares 380.2 USD_million at source:t1c1n0: Entergy Mississippi company-defined annual net revenue (gross margin), annual 2002. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[0].arguments.variables[\"net_revenue_2003\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"net_revenue_2003\": {\"value\": 426.6, \"source\": \"source:t4c1n0\", \"unit\": \"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "The actual nested object declares 426.6 USD_million at source:t4c1n0: Entergy Mississippi company-defined annual net revenue (gross margin), annual 2003. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[1].answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          },
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "The published change and any narrated endpoint values follow from the correctly scoped original monetary source facts and the actual tool calculation."
+      },
+      {
+        "location": "response[1].sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:t4c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t1c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      },
+      {
+        "location": "response[2].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          },
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "The published change and any narrated endpoint values follow from the correctly scoped original monetary source facts and the actual tool calculation."
+      },
+      {
+        "location": "response[2].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "\"source:t4c1n0\""
+          },
+          {
+            "response_index": 2,
+            "quote": "\"source:t1c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+        },
+        {
+          "response_index": 0,
+          "quote": "426.6 - 380.2"
+        },
+        {
+          "response_index": 2,
+          "quote": "The net change in Entergy Mississippi, Inc.'s net revenue during 2003 compared with 2002 was an increase of $46.4 million."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "p0",
+          "quote": "entergy mississippi , inc ."
+        },
+        {
+          "segment_id": "p3",
+          "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+        },
+        {
+          "segment_id": "p4",
+          "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+        },
+        {
+          "segment_id": "t0c1",
+          "quote": "( in millions )"
+        },
+        {
+          "segment_id": "t1c1",
+          "quote": "$ 380.2"
+        },
+        {
+          "segment_id": "t4c1",
+          "quote": "$ 426.6"
+        }
+      ],
+      "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+        },
+        {
+          "response_index": 0,
+          "quote": "426.6 - 380.2"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The comparison endpoints are 2003 net revenue of $426.6 million and 2002 net revenue of $380.2 million, both from the table. I interpret the requested net change as 2003 net revenue minus 2002 net revenue, in millions of USD."
+        },
+        {
+          "response_index": 0,
+          "quote": "426.6 - 380.2"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression consumes literals. The explanation and explicit same-call source-value declarations establish their financial correspondences; unused metadata is not represented as executed variables."
+    }
+  },
+  "basis_review_020": {
+    "R_Final_link": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "No executed period-component target calculation is selected by Final."
+    },
+    "R_mention": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "The complete public history contains no period-component target calculation."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+            },
+            {
+              "response_index": 0,
+              "quote": "warranty_2006 - warranty_2005"
+            }
+          ],
+          "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+            },
+            {
+              "response_index": 0,
+              "quote": "warranty_2006 - warranty_2005"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+            },
+            {
+              "response_index": 0,
+              "quote": "warranty_2006 - warranty_2005"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at December 31, 2006 versus $4 million at December 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+        },
+        {
+          "response_index": 0,
+          "quote": "warranty_2006 - warranty_2005"
+        }
+      ],
+      "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:q11n3",
+            "role": "PPG product-warranty reserve",
+            "period": "December 31, 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "warranty_2006",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q11n3\""
+              },
+              {
+                "response_index": 0,
+                "quote": "warranty_2006 - warranty_2005"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:q11n4",
+            "role": "PPG product-warranty reserve",
+            "period": "December 31, 2005",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "warranty_2005",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q11n4\""
+              },
+              {
+                "response_index": 0,
+                "quote": "warranty_2006 - warranty_2005"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the endpoint Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+            },
+            {
+              "response_index": 0,
+              "quote": "warranty_2006 - warranty_2005"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at December 31, 2006 versus $4 million at December 31, 2005)."
+            },
+            {
+              "response_index": 1,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the endpoint financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at December 31, 2006 versus $4 million at December 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "6",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"warranty_2005\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"warranty_2005\": {\n        \"value\": 4,\n        \"source\": \"source:q11n4\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 4 USD_million at source:q11n4: PPG product-warranty reserve, December 31, 2005. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[0].arguments.variables[\"warranty_2006\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"warranty_2006\": {\n        \"value\": 10,\n        \"source\": \"source:q11n3\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 10 USD_million at source:q11n3: PPG product-warranty reserve, December 31, 2006. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[1].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at December 31, 2006 versus $4 million at December 31, 2005)."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q9",
+            "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+          },
+          {
+            "segment_id": "q10",
+            "quote": "as of dec ."
+          },
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The published change and any narrated endpoint values follow from the correctly scoped original monetary source facts and the actual tool calculation."
+      },
+      {
+        "location": "response[1].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n3\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n4\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+        },
+        {
+          "response_index": 0,
+          "quote": "warranty_2006 - warranty_2005"
+        },
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at December 31, 2006 versus $4 million at December 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "q9",
+          "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+        },
+        {
+          "segment_id": "q10",
+          "quote": "as of dec ."
+        },
+        {
+          "segment_id": "q11",
+          "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+        }
+      ],
+      "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+        },
+        {
+          "response_index": 0,
+          "quote": "warranty_2006 - warranty_2005"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars."
+        },
+        {
+          "response_index": 0,
+          "quote": "warranty_2006 - warranty_2005"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+    }
+  },
+  "basis_review_021": {
+    "R_Final_link": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "No executed period-component target calculation is selected by Final."
+    },
+    "R_mention": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "The complete public history contains no period-component target calculation."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+            },
+            {
+              "response_index": 0,
+              "quote": "net_revenue_2003 - net_revenue_2002"
+            }
+          ],
+          "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+            },
+            {
+              "response_index": 0,
+              "quote": "net_revenue_2003 - net_revenue_2002"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+            },
+            {
+              "response_index": 0,
+              "quote": "net_revenue_2003 - net_revenue_2002"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi, Inc. net revenue during 2003 was an increase of $46.4 million, calculated as 2003 net revenue of $426.6 million minus 2002 net revenue of $380.2 million."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+        },
+        {
+          "response_index": 0,
+          "quote": "net_revenue_2003 - net_revenue_2002"
+        }
+      ],
+      "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:t4c1n0",
+            "role": "Entergy Mississippi company-defined annual net revenue (gross margin)",
+            "period": "annual 2003",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "net_revenue_2003",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t4c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "net_revenue_2003 - net_revenue_2002"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:t1c1n0",
+            "role": "Entergy Mississippi company-defined annual net revenue (gross margin)",
+            "period": "annual 2002",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "net_revenue_2002",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:t1c1n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "net_revenue_2003 - net_revenue_2002"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the endpoint Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+            },
+            {
+              "response_index": 0,
+              "quote": "net_revenue_2003 - net_revenue_2002"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The net change in Entergy Mississippi, Inc. net revenue during 2003 was an increase of $46.4 million, calculated as 2003 net revenue of $426.6 million minus 2002 net revenue of $380.2 million."
+            },
+            {
+              "response_index": 1,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the endpoint financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi, Inc. net revenue during 2003 was an increase of $46.4 million, calculated as 2003 net revenue of $426.6 million minus 2002 net revenue of $380.2 million."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "46.4",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"net_revenue_2002\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"net_revenue_2002\": {\n        \"value\": 380.2,\n        \"source\": \"source:t1c1n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          }
+        ],
+        "explanation": "The actual nested object declares 380.2 USD_million at source:t1c1n0: Entergy Mississippi company-defined annual net revenue (gross margin), annual 2002. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[0].arguments.variables[\"net_revenue_2003\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"net_revenue_2003\": {\n        \"value\": 426.6,\n        \"source\": \"source:t4c1n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "The actual nested object declares 426.6 USD_million at source:t4c1n0: Entergy Mississippi company-defined annual net revenue (gross margin), annual 2003. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[1].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The net change in Entergy Mississippi, Inc. net revenue during 2003 was an increase of $46.4 million, calculated as 2003 net revenue of $426.6 million minus 2002 net revenue of $380.2 million."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "p0",
+            "quote": "entergy mississippi , inc ."
+          },
+          {
+            "segment_id": "p3",
+            "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+          },
+          {
+            "segment_id": "p4",
+            "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+          },
+          {
+            "segment_id": "t0c1",
+            "quote": "( in millions )"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          },
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          }
+        ],
+        "explanation": "The published change and any narrated endpoint values follow from the correctly scoped original monetary source facts and the actual tool calculation."
+      },
+      {
+        "location": "response[1].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:t4c1n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:t1c1n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "t4c1",
+            "quote": "$ 426.6"
+          },
+          {
+            "segment_id": "t1c1",
+            "quote": "$ 380.2"
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+        },
+        {
+          "response_index": 0,
+          "quote": "net_revenue_2003 - net_revenue_2002"
+        },
+        {
+          "response_index": 1,
+          "quote": "The net change in Entergy Mississippi, Inc. net revenue during 2003 was an increase of $46.4 million, calculated as 2003 net revenue of $426.6 million minus 2002 net revenue of $380.2 million."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "p0",
+          "quote": "entergy mississippi , inc ."
+        },
+        {
+          "segment_id": "p3",
+          "quote": "2003 compared to 2002 net revenue , which is entergy mississippi's measure of gross margin , consists of operating revenues net of : 1 ) fuel , fuel-related , and purchased power expenses and 2 ) other regulatory charges ( credits ) ."
+        },
+        {
+          "segment_id": "p4",
+          "quote": "following is an analysis of the change in net revenue comparing 2003 to 2002. ."
+        },
+        {
+          "segment_id": "t0c1",
+          "quote": "( in millions )"
+        },
+        {
+          "segment_id": "t1c1",
+          "quote": "$ 380.2"
+        },
+        {
+          "segment_id": "t4c1",
+          "quote": "$ 426.6"
+        }
+      ],
+      "explanation": "The actual subtraction of 2002 annual company-defined net revenue from 2003 annual net revenue matches the comparison fixed by p3/p4 and the two table rows; it is not a stock reserve or net profit."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+        },
+        {
+          "response_index": 0,
+          "quote": "net_revenue_2003 - net_revenue_2002"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The source gives the comparison endpoints directly: Entergy Mississippi net revenue was $380.2 million for 2002 and $426.6 million for 2003, both in millions. The net change for 2003 is 2003 net revenue minus 2002 net revenue."
+        },
+        {
+          "response_index": 0,
+          "quote": "net_revenue_2003 - net_revenue_2002"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+    }
+  },
+  "basis_review_022": {
+    "R_Final_link": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "No executed period-component target calculation is selected by Final."
+    },
+    "R_mention": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "The complete public history contains no period-component target calculation."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "FAIL",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+            },
+            {
+              "response_index": 0,
+              "quote": "2006 - 2005"
+            }
+          ],
+          "explanation": "The actual successful arithmetic is 2006-2005=1 on numeric calendar labels, not 10-4. The monetary 10/4 objects are unconsumed. The integer subtraction is locally correct but fails the requested warranty-reserve object and quantity."
+        },
+        "variable_correspondence": {
+          "status": "FAIL",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+            },
+            {
+              "response_index": 0,
+              "quote": "2006 - 2005"
+            }
+          ],
+          "explanation": "The tool has no resolved variables: 2006 and 2005 are literal operands. Objects advertising 10 and 4 under numeric-looking keys remain correct source statements but are never consumed. No source reassignment or inferred extra calculation repairs this."
+        },
+        "unit_handling": {
+          "status": "FAIL",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+            },
+            {
+              "response_index": 0,
+              "quote": "2006 - 2005"
+            }
+          ],
+          "explanation": "USD_million is declared on unused monetary objects and the publication, but the executed calendar-year literals have no valid monetary unit handling. Their difference cannot be assigned reserve units."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "FAIL",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The Final calls 1 a $1 million reserve increase despite naming $10 million and $4 million endpoints. This is the wrong monetary answer and conflicts with its stated endpoint amounts; no correction follows."
+    },
+    "formula_applicability": {
+      "status": "FAIL",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+        },
+        {
+          "response_index": 0,
+          "quote": "2006 - 2005"
+        }
+      ],
+      "explanation": "The actual successful arithmetic is 2006-2005=1 on numeric calendar labels, not 10-4. The monetary 10/4 objects are unconsumed. The integer subtraction is locally correct but fails the requested warranty-reserve object and quantity."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "constant",
+            "value": "2006",
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "2006 - 2005"
+              }
+            ],
+            "reason": "This is the exact executed calendar-year literal, not the value of the unconsumed similarly named object. No reserve source or corrected operand is assigned."
+          },
+          "body.right": {
+            "kind": "constant",
+            "value": "2005",
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "2006 - 2005"
+              }
+            ],
+            "reason": "This is the exact executed calendar-year literal, not the value of the unconsumed similarly named object. No reserve source or corrected operand is assigned."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "incorrect_answer_calculation",
+          "interpretation": "Successful arithmetic executes calendar labels and returns 1; monetary metadata is unconsumed. No tool failure or repair occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+            },
+            {
+              "response_index": 0,
+              "quote": "2006 - 2005"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "nonterminal_publication_message",
+          "interpretation": "A legal answer-shaped response without final repeats the wrong monetary claim; no correction occurs.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+            }
+          ]
+        },
+        {
+          "response_index": 2,
+          "role": "final_publication",
+          "interpretation": "First Final repeats the incorrect $1 million claim and selects tool:1. No correction occurs.",
+          "evidence": [
+            {
+              "response_index": 2,
+              "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+            },
+            {
+              "response_index": 2,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces reserve-endpoint subtraction but actually executes year literals, with no subsequent correction.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 2,
+          "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "1",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"2005\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"2005\": {\n        \"value\": 4,\n        \"source\": \"source:q11n4\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 4 USD_million at source:q11n4: PPG product-warranty reserve, December 31, 2005. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[0].arguments.variables[\"2006\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"2006\": {\n        \"value\": 10,\n        \"source\": \"source:q11n3\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 10 USD_million at source:q11n3: PPG product-warranty reserve, December 31, 2006. The original signed source agrees. This object is unused by expression execution; its source assertion remains current and is still checked."
+      },
+      {
+        "location": "response[1].answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": false,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q9",
+            "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+          },
+          {
+            "segment_id": "q10",
+            "quote": "as of dec ."
+          },
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The claimed $1 million increase does not follow from the stated reserves 10 and 4. Repetition of the claim is not withdrawal or correction."
+      },
+      {
+        "location": "response[1].sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n3\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n4\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      },
+      {
+        "location": "response[2].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": false,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q9",
+            "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+          },
+          {
+            "segment_id": "q10",
+            "quote": "as of dec ."
+          },
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The claimed $1 million increase does not follow from the stated reserves 10 and 4. Repetition of the claim is not withdrawal or correction."
+      },
+      {
+        "location": "response[2].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 2,
+            "quote": "\"source:q11n3\""
+          },
+          {
+            "response_index": 2,
+            "quote": "\"source:q11n4\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "FAIL",
+        "registered_scope_match": "FAIL",
+        "final_chain_completes_public_target": "FAIL"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+        },
+        {
+          "response_index": 0,
+          "quote": "2006 - 2005"
+        },
+        {
+          "response_index": 2,
+          "quote": "The reserve for product warranties increased by $1 million from 2005 to 2006 ($10 million in 2006 vs. $4 million in 2005)."
+        },
+        {
+          "response_index": 2,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "q9",
+          "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+        },
+        {
+          "segment_id": "q10",
+          "quote": "as of dec ."
+        },
+        {
+          "segment_id": "q11",
+          "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+        }
+      ],
+      "explanation": "The actual successful arithmetic is 2006-2005=1 on numeric calendar labels, not 10-4. The monetary 10/4 objects are unconsumed. The integer subtraction is locally correct but fails the requested warranty-reserve object and quantity."
+    },
+    "unit_handling": {
+      "status": "FAIL",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+        },
+        {
+          "response_index": 0,
+          "quote": "2006 - 2005"
+        }
+      ],
+      "explanation": "USD_million is declared on unused monetary objects and the publication, but the executed calendar-year literals have no valid monetary unit handling. Their difference cannot be assigned reserve units."
+    },
+    "variable_correspondence": {
+      "status": "FAIL",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The requested change is the difference between the product warranty reserve at year-end 2006 and at year-end 2005. Source q11 states the reserve was $10 million in 2006 and $4 million in 2005, both in USD millions, so the change is 2006 minus 2005."
+        },
+        {
+          "response_index": 0,
+          "quote": "2006 - 2005"
+        }
+      ],
+      "explanation": "The tool has no resolved variables: 2006 and 2005 are literal operands. Objects advertising 10 and 4 under numeric-looking keys remain correct source statements but are never consumed. No source reassignment or inferred extra calculation repairs this."
+    }
+  },
+  "basis_review_023": {
+    "R_Final_link": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual Final result_id selects the executed component calculation; this does not itself certify all current source claims or full eligibility."
+    },
+    "R_mention": {
+      "status": "CONFIRMED",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        }
+      ],
+      "explanation": "The pre-call public text explicitly names the period components and signs."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "charges2006 + assumed2006 - outlays2006"
+            }
+          ],
+          "explanation": "The actual 2006 charges plus acquired warranty obligations minus 2006 cash outlays computes the warranty-reserve net change. The Final selects this sole tool:1; its extra textual balance equalities are not additional executed checks."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "charges2006 + assumed2006 - outlays2006"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "charges2006 + assumed2006 - outlays2006"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. The q11n2 citation role remains unresolved and is separately retained. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "charges2006 + assumed2006 - outlays2006"
+        }
+      ],
+      "explanation": "The actual 2006 charges plus acquired warranty obligations minus 2006 cash outlays computes the warranty-reserve net change. The Final selects this sole tool:1; its extra textual balance equalities are not additional executed checks."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left.left": {
+            "kind": "source",
+            "source_id": "source:q12n3",
+            "role": "pretax warranty charges; reserve addition",
+            "period": "fiscal 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "charges2006",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q12n3\""
+              },
+              {
+                "response_index": 0,
+                "quote": "charges2006 + assumed2006 - outlays2006"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.left.right": {
+            "kind": "source",
+            "source_id": "source:q14n0",
+            "role": "warranty obligations assumed through acquisitions; reserve addition",
+            "period": "fiscal 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "assumed2006",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q14n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "charges2006 + assumed2006 - outlays2006"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:q13n0",
+            "role": "cash warranty outlays; reserve reduction",
+            "period": "fiscal 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "outlays2006",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q13n0\""
+              },
+              {
+                "response_index": 0,
+                "quote": "charges2006 + assumed2006 - outlays2006"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the movement Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "charges2006 + assumed2006 - outlays2006"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "First Final selects the component result. Extra balance identities appear only as prose, not executed checks; q11n2 citation-role uncertainty remains current.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+            },
+            {
+              "response_index": 1,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the movement financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "6",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"assumed2006\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"assumed2006\": {\n        \"value\": 7,\n        \"source\": \"source:q14n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q14",
+            "quote": "in addition , $ 7 million of warranty obligations were assumed as part of the company 2019s 2006 business acquisitions ."
+          }
+        ],
+        "explanation": "The actual nested object declares 7 USD_million at source:q14n0: warranty obligations assumed through acquisitions; reserve addition, fiscal 2006. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[0].arguments.variables[\"charges2006\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"charges2006\": {\n        \"value\": 4,\n        \"source\": \"source:q12n3\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q12",
+            "quote": "pretax charges against income for product warranties in 2006 , 2005 and 2004 totaled $ 4 million , $ 5 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 4 USD_million at source:q12n3: pretax warranty charges; reserve addition, fiscal 2006. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[0].arguments.variables[\"outlays2006\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"outlays2006\": {\n        \"value\": 5,\n        \"source\": \"source:q13n0\",\n        \"unit\": \"USD_million\"\n      }"
+          },
+          {
+            "response_index": 0,
+            "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q13",
+            "quote": "cash outlays related to product warranties were $ 5 million , $ 4 million and $ 4 million in 2006 , 2005 and 2004 , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 5 USD_million at source:q13n0: cash warranty outlays; reserve reduction, fiscal 2006. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[1].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q9",
+            "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+          },
+          {
+            "segment_id": "q10",
+            "quote": "as of dec ."
+          },
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          },
+          {
+            "segment_id": "q12",
+            "quote": "pretax charges against income for product warranties in 2006 , 2005 and 2004 totaled $ 4 million , $ 5 million and $ 4 million , respectively ."
+          },
+          {
+            "segment_id": "q13",
+            "quote": "cash outlays related to product warranties were $ 5 million , $ 4 million and $ 4 million in 2006 , 2005 and 2004 , respectively ."
+          },
+          {
+            "segment_id": "q14",
+            "quote": "in addition , $ 7 million of warranty obligations were assumed as part of the company 2019s 2006 business acquisitions ."
+          }
+        ],
+        "explanation": "The actual 4+7-5=6 computation is supported. The prose 4+4+7-5=10 and 10-4=6 relationships are correct explanations of public quantities; neither creates another executed calculation or independent check."
+      },
+      {
+        "location": "response[1].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n3\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q12n3\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q13n0\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q14n0\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          },
+          {
+            "segment_id": "q12",
+            "quote": "pretax charges against income for product warranties in 2006 , 2005 and 2004 totaled $ 4 million , $ 5 million and $ 4 million , respectively ."
+          },
+          {
+            "segment_id": "q13",
+            "quote": "cash outlays related to product warranties were $ 5 million , $ 4 million and $ 4 million in 2006 , 2005 and 2004 , respectively ."
+          },
+          {
+            "segment_id": "q14",
+            "quote": "in addition , $ 7 million of warranty obligations were assumed as part of the company 2019s 2006 business acquisitions ."
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      },
+      {
+        "location": "response[1].final.sources[0] = source:q11n2",
+        "parameters": {
+          "role": "UNRESOLVED",
+          "current": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n2\""
+          },
+          {
+            "response_index": 1,
+            "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "q11n2 is the literal year 2005; q11n4 is the beginning reserve amount 4. The flat source list, which also lists the ending amount q11n3, accompanies an explicit beginning-reserve $4 narrative. It does not uniquely establish a general year reference versus an intended beginning-amount source. No structured 4-to-q11n2 assertion exists, so it is not a definite direct-source FAIL; general-reference relevance also cannot certify an ambiguous role. Preserve UNRESOLVED without substituting a source or rewriting Final."
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "charges2006 + assumed2006 - outlays2006"
+        },
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "q9",
+          "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+        },
+        {
+          "segment_id": "q10",
+          "quote": "as of dec ."
+        },
+        {
+          "segment_id": "q11",
+          "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+        },
+        {
+          "segment_id": "q12",
+          "quote": "pretax charges against income for product warranties in 2006 , 2005 and 2004 totaled $ 4 million , $ 5 million and $ 4 million , respectively ."
+        },
+        {
+          "segment_id": "q13",
+          "quote": "cash outlays related to product warranties were $ 5 million , $ 4 million and $ 4 million in 2006 , 2005 and 2004 , respectively ."
+        },
+        {
+          "segment_id": "q14",
+          "quote": "in addition , $ 7 million of warranty obligations were assumed as part of the company 2019s 2006 business acquisitions ."
+        }
+      ],
+      "explanation": "The actual 2006 charges plus acquired warranty obligations minus 2006 cash outlays computes the warranty-reserve net change. The Final selects this sole tool:1; its extra textual balance equalities are not additional executed checks."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "charges2006 + assumed2006 - outlays2006"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "I will compute the 2006 net change in the product-warranty reserve from its components: 2006 pretax warranty charges (addition) + warranty obligations assumed in 2006 acquisitions (addition) − 2006 cash warranty outlays (reduction). Values are in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "charges2006 + assumed2006 - outlays2006"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+    }
+  },
+  "basis_review_024": {
+    "R_Final_link": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "No executed period-component target calculation is selected by Final."
+    },
+    "R_mention": {
+      "status": "NOT_OBSERVED",
+      "evidence": [],
+      "explanation": "The complete public history contains no period-component target calculation."
+    },
+    "answer_calculation_id": "tool:1",
+    "answer_calculation_unit": "USD_million",
+    "answer_override_evidence": [],
+    "call_semantics": {
+      "tool:1": {
+        "formula_applicability": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "a - b"
+            }
+          ],
+          "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+        },
+        "variable_correspondence": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "a - b"
+            }
+          ],
+          "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+        },
+        "unit_handling": {
+          "status": "PASS",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "a - b"
+            }
+          ],
+          "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+        }
+      }
+    },
+    "claim_inventory": {
+      "complete": true,
+      "reviewed_response_indices": [
+        0,
+        1
+      ],
+      "explanation": "All original public responses, events and calculations were read, including every nested source-value object, arguments.sources, pre-call factual statement, any nonterminal answer-shaped message, and first Final prose/value/unit/source list/result link. Unconsumed metadata remains current. No later withdrawal or correction is observed. Review by the executing assistant team; not independent or guaranteed blind."
+    },
+    "final_answer_consistency": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at Dec. 31, 2006 vs. $4 million at Dec. 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The actual first Final's value, unit, direction, object and comparison period agree with the requested quantity and the actual calculation. Other narrated amounts describe inputs or explanatory relationships."
+    },
+    "formula_applicability": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "a - b"
+        }
+      ],
+      "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+    },
+    "mapping": {
+      "occurrences": {
+        "tool:1": {
+          "body.left": {
+            "kind": "source",
+            "source_id": "source:q11n3",
+            "role": "PPG product-warranty reserve",
+            "period": "December 31, 2006",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "a",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q11n3\""
+              },
+              {
+                "response_index": 0,
+                "quote": "a - b"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          },
+          "body.right": {
+            "kind": "source",
+            "source_id": "source:q11n4",
+            "role": "PPG product-warranty reserve",
+            "period": "December 31, 2005",
+            "unit": "USD_million",
+            "attribution": "model_declaration",
+            "declaration_pointer": [
+              "variables",
+              "b",
+              "source"
+            ],
+            "evidence": [
+              {
+                "response_index": 0,
+                "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+              },
+              {
+                "response_index": 0,
+                "quote": "\"source:q11n4\""
+              },
+              {
+                "response_index": 0,
+                "quote": "a - b"
+              }
+            ],
+            "reason": "The public role explanation and explicit same-call source-value declaration bind this actual occurrence; the ledger retains whether execution used a variable or literal."
+          }
+        }
+      },
+      "event_annotations": [
+        {
+          "response_index": 0,
+          "role": "answer_calculation",
+          "interpretation": "The sole actual calculation supplies the endpoint Final basis; no second calculation or check occurs.",
+          "evidence": [
+            {
+              "response_index": 0,
+              "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+            },
+            {
+              "response_index": 0,
+              "quote": "a - b"
+            }
+          ]
+        },
+        {
+          "response_index": 1,
+          "role": "final_publication",
+          "interpretation": "First Final publishes the existing result without a substantive revision or extra check.",
+          "evidence": [
+            {
+              "response_index": 1,
+              "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at Dec. 31, 2006 vs. $4 million at Dec. 31, 2005)."
+            },
+            {
+              "response_index": 1,
+              "quote": "\"result_id\""
+            }
+          ]
+        }
+      ],
+      "revisions": [],
+      "cross_checks": []
+    },
+    "planning_observations": {
+      "text": "The assistant announces the endpoint financial relation in its sole calculation request.",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+        }
+      ]
+    },
+    "publication_alignment": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at Dec. 31, 2006 vs. $4 million at Dec. 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "explanation": "The first Final explicitly selects tool:1 and reproduces its actual returned scalar. Publication-to-tool agreement does not certify financial meaning or reference correctness."
+    },
+    "published_unit": "USD_million",
+    "published_value": "6",
+    "secondary_answer_values": [],
+    "source_claims": [
+      {
+        "location": "response[0].arguments.variables[\"a\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"a\":{\"value\":10,\"source\":\"source:q11n3\",\"unit\":\"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 10 USD_million at source:q11n3: PPG product-warranty reserve, December 31, 2006. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[0].arguments.variables[\"b\"] and matching arguments.sources, including the corresponding pre-call fact",
+        "parameters": {
+          "role": "DIRECT_SOURCE_VALUE",
+          "current": true,
+          "source_value_equal": true,
+          "consumed": true
+        },
+        "evidence": [
+          {
+            "response_index": 0,
+            "quote": "\"b\":{\"value\":4,\"source\":\"source:q11n4\",\"unit\":\"USD_million\"}"
+          },
+          {
+            "response_index": 0,
+            "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The actual nested object declares 4 USD_million at source:q11n4: PPG product-warranty reserve, December 31, 2005. The original signed source agrees. This named variable is consumed."
+      },
+      {
+        "location": "response[1].final.answer/value: derived financial result and narrated inputs",
+        "parameters": {
+          "role": "DERIVED_FROM_SOURCES",
+          "current": true,
+          "derivation_supported": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at Dec. 31, 2006 vs. $4 million at Dec. 31, 2005)."
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q9",
+            "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+          },
+          {
+            "segment_id": "q10",
+            "quote": "as of dec ."
+          },
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "The published change and any narrated endpoint values follow from the correctly scoped original monetary source facts and the actual tool calculation."
+      },
+      {
+        "location": "response[1].final.sources: relevant financial records",
+        "parameters": {
+          "role": "GENERAL_REFERENCE",
+          "current": true,
+          "reference_relevant": true,
+          "consumed": false
+        },
+        "evidence": [
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n3\""
+          },
+          {
+            "response_index": 1,
+            "quote": "\"source:q11n4\""
+          }
+        ],
+        "source_evidence": [
+          {
+            "segment_id": "q11",
+            "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+          }
+        ],
+        "explanation": "These cited original financial records support the already identified input amounts or comparison context. The flat list does not assert that each source scalar equals the derived final value. "
+      }
+    ],
+    "target_binding": {
+      "parameters": {
+        "local_relation": "PASS",
+        "public_scope_match": "PASS",
+        "registered_scope_match": "PASS",
+        "final_chain_completes_public_target": "PASS"
+      },
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "a - b"
+        },
+        {
+          "response_index": 1,
+          "quote": "The reserve for product warranties increased by $6 million from 2005 to 2006 ($10 million at Dec. 31, 2006 vs. $4 million at Dec. 31, 2005)."
+        },
+        {
+          "response_index": 1,
+          "quote": "\"result_id\""
+        }
+      ],
+      "source_evidence": [
+        {
+          "segment_id": "q9",
+          "quote": "product warranties the company accrues for product warranties at the time the associated products are sold based on historical claims experience ."
+        },
+        {
+          "segment_id": "q10",
+          "quote": "as of dec ."
+        },
+        {
+          "segment_id": "q11",
+          "quote": "31 , 2006 and 2005 , the reserve for product warranties was $ 10 million and $ 4 million , respectively ."
+        }
+      ],
+      "explanation": "The actual subtraction of the December 31, 2005 warranty reserve from the December 31, 2006 reserve matches the public object, interval and positive-increase direction."
+    },
+    "unit_handling": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "a - b"
+        }
+      ],
+      "explanation": "Source scale is millions; dollar-denominated source context and the common public USD contract agree. The calculation and Final use USD_million without conversion."
+    },
+    "variable_correspondence": {
+      "status": "PASS",
+      "evidence": [
+        {
+          "response_index": 0,
+          "quote": "The financial object is PPG's reserve for product warranties. The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions."
+        },
+        {
+          "response_index": 0,
+          "quote": "a - b"
+        }
+      ],
+      "explanation": "The pre-call explanation identifies financial roles and periods, and each nested source-value object explicitly binds the indicated original source span. The expression actually consumes these named variables."
+    }
+  }
+}

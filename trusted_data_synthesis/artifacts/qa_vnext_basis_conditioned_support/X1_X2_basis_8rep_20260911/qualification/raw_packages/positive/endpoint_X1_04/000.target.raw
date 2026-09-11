@@ -1,0 +1,23 @@
+{
+  "message": "The requested net change is the difference between the two comparison endpoints disclosed in the source table: 2003 net revenue minus 2002 net revenue. Both amounts are in millions of dollars. I will subtract $380.2 million (2002 net revenue) from $426.6 million (2003 net revenue).",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "rev2003 - rev2002",
+    "variables": {
+      "rev2003": {
+        "value": 426.6,
+        "source": "source:t4c1n0",
+        "unit": "USD_million"
+      },
+      "rev2002": {
+        "value": 380.2,
+        "source": "source:t1c1n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "rev2003": "source:t4c1n0",
+      "rev2002": "source:t1c1n0"
+    }
+  }
+}

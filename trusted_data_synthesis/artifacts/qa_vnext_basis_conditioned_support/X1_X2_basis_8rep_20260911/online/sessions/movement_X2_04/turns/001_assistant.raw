@@ -1,0 +1,15 @@
+{
+  "final": {
+    "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006, reconciled through the warranty activity components: beginning reserve $4 million + $4 million pretax warranty charges + $7 million warranty obligations assumed in acquisitions − $5 million cash outlays = $10 million ending reserve; change = $10M − $4M = $6M.",
+    "value": 6,
+    "unit": "USD_million",
+    "sources": [
+      "source:q11n2",
+      "source:q11n3",
+      "source:q12n3",
+      "source:q13n0",
+      "source:q14n0"
+    ],
+    "result_id": "tool:1"
+  }
+}

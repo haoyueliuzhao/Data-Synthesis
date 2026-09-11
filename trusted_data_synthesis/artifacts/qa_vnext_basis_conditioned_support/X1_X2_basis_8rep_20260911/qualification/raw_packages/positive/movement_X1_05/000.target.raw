@@ -1,0 +1,15 @@
+{
+  "message": "Net revenue is measured in millions of dollars. The 2003 change is the sum of the disclosed components: base rates +48.3 and other -1.9 (from the 2003 vs 2002 net revenue analysis table). I will calculate 48.3 + (-1.9).",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "48.3 + (-1.9)",
+    "variables": {
+      "base_rates": {"value": "48.3", "source": "source:t2c1n0", "unit": "USD_million"},
+      "other": {"value": "-1.9", "source": "source:t3c1n0", "unit": "USD_million"}
+    },
+    "sources": {
+      "base_rates": "source:t2c1n0",
+      "other": "source:t3c1n0"
+    }
+  }
+}

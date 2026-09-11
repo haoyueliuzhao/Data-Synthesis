@@ -1,0 +1,29 @@
+{
+  "message": "I will compute the 2005-to-2006 change in the product warranty reserve from the rollforward components: add 2006 pretax warranty charges and warranty obligations assumed in acquisitions, then subtract 2006 cash outlays. All amounts are in USD millions; the source IDs are declared in the calculation.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "charges_2006 + assumed_in_acquisitions - outlays_2006",
+    "variables": {
+      "charges_2006": {
+        "value": 4,
+        "source": "source:q12n3",
+        "unit": "USD_million"
+      },
+      "assumed_in_acquisitions": {
+        "value": 7,
+        "source": "source:q14n0",
+        "unit": "USD_million"
+      },
+      "outlays_2006": {
+        "value": 5,
+        "source": "source:q13n0",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "charges_2006": "source:q12n3",
+      "assumed_in_acquisitions": "source:q14n0",
+      "outlays_2006": "source:q13n0"
+    }
+  }
+}

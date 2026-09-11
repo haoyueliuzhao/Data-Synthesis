@@ -1,0 +1,23 @@
+{
+  "message": "I will use the two reserve-for-product-warranties endpoints stated for 2006 and 2005: $10 million in 2006 and $4 million in 2005. The requested change is the 2006 amount minus the 2005 amount, both already in millions of U.S. dollars.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "warranty_2006 - warranty_2005",
+    "variables": {
+      "warranty_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "USD_million"
+      },
+      "warranty_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "warranty_2006": "source:q11n3",
+      "warranty_2005": "source:q11n4"
+    }
+  }
+}
