@@ -2788,7 +2788,12 @@ def _graph_pattern_candidate(
             )
 
     subtype = pattern.task_subtype
-    if subtype in {
+    if match.get("target_time_scope") is not None:
+        # Source-aware compilers can bind explicit periods instead of using a
+        # filing's FY metadata as the observation's fiscal year. The adapter
+        # must validate these dates against the bound facts before compilation.
+        time_scope = dict(match["target_time_scope"])
+    elif subtype in {
         "multi_period_average",
         "temporal_peak_followup",
         "walk_temporal_peak_followup_provenance",
@@ -6717,6 +6722,10 @@ def _question_display_time_scope(
 
 
 def _period_label(scope: dict[str, Any]) -> str:
+    if scope.get("basis") == "explicit_source_periods":
+        end = str(scope["period_end"])
+        start = scope.get("period_start")
+        return f"the period {start} through {end}" if start else end
     if scope.get("fiscal_year"):
         quarter = str(scope.get("fiscal_quarter") or "").upper()
         if quarter and quarter != "FY":
@@ -6774,6 +6783,10 @@ def _period_unit_label(scope: dict[str, Any]) -> str:
 
 
 def _previous_period_label(scope: dict[str, Any]) -> str:
+    if scope.get("basis") == "explicit_source_periods":
+        end = str(scope["previous_period_end"])
+        start = scope.get("previous_period_start")
+        return f"the period {start} through {end}" if start else end
     if scope.get("previous_year"):
         return _period_endpoint_label(scope["previous_year"], scope)
     if scope.get("previous_quarter"):

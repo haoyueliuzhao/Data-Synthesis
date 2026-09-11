@@ -246,6 +246,21 @@ class MetadataDB:
             )
         self._commit_if_needed()
 
+    def update_standardized_graph_ready(self, updates: list[dict[str, Any]]) -> None:
+        """Persist the fact-quality gate decisions, matching the DB protocol."""
+        if not updates:
+            return
+        values = [
+            (row.get("graph_ready"), row.get("graph_ready_reason"), row.get("fact_id"))
+            for row in updates
+        ]
+        self.conn.executemany(
+            "UPDATE standardized_facts "
+            "SET graph_ready = ?, graph_ready_reason = ? WHERE fact_id = ?",
+            values,
+        )
+        self._commit_if_needed()
+
     def sync_atomic_fact_verification_status(self) -> None:
         self.conn.execute(
             """

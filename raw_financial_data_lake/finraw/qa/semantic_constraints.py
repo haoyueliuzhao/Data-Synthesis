@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable, Iterable, Mapping
 
@@ -15,7 +15,7 @@ from finraw.qa.comparability import (
 )
 
 
-SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.2.0"
+SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.3.0"
 
 
 @dataclass(frozen=True)
@@ -443,6 +443,15 @@ def _evaluate_eq(
     field = str(constraint.get("field") or "")
     suffix = field.split(".")[-1]
     expected = constraint.get("value")
+    if field == "bound_facts.count":
+        count = len({str(row.get("fact_id")) for row in context.rows})
+        expected_count = _decimal(expected)
+        return SemanticCheck(
+            "bound_fact_count_equals",
+            expected_count is not None and Decimal(count) == expected_count,
+            count,
+            str(expected_count),
+        )
     getters = {
         "graph_ready": lambda row: _truthy(row.get("graph_ready")),
         "is_forecast": lambda row: _truthy(row.get("is_forecast")),
@@ -981,7 +990,60 @@ def _evaluate_gt_industry_average(
     )
 
 
+def _evaluate_adjacent_annual(
+    context: SemanticConstraintContext, constraint: Mapping[str, Any]
+) -> SemanticCheck:
+    """Validate actual observation periods, not a filing's FY label."""
+    if constraint.get("field") != "actual_periods":
+        return _unsupported_field("adjacent_annual", str(constraint.get("field")))
+    observed: dict[str, Any] = {}
+    try:
+        inputs = context.binding["input_bindings"]
+        left = context.fact_map[str(inputs["previous"])]
+        right = context.fact_map[str(inputs["current"])]
+        for name, row in (("previous", left), ("current", right)):
+            observed[name] = {
+                key: row.get(key)
+                for key in (
+                    "fact_id",
+                    "entity_id",
+                    "metric_id",
+                    "period_start",
+                    "period_end",
+                )
+            }
+        end_left = date.fromisoformat(str(left["period_end"]))
+        end_right = date.fromisoformat(str(right["period_end"]))
+        passed = (
+            len(context.rows) == 2
+            and left["entity_id"] == right["entity_id"]
+            and left["metric_id"] == right["metric_id"]
+            and 330 <= (end_right - end_left).days <= 380
+            and bool(left.get("period_start")) == bool(right.get("period_start"))
+        )
+        if right.get("period_start"):
+            passed = passed and (
+                date.fromisoformat(str(right["period_start"]))
+                == end_left + timedelta(days=1)
+            )
+            for row in (left, right):
+                duration = (
+                    date.fromisoformat(str(row["period_end"]))
+                    - date.fromisoformat(str(row["period_start"]))
+                ).days + 1
+                passed = passed and 330 <= duration <= 380
+    except (KeyError, ValueError, TypeError):
+        passed = False
+    return SemanticCheck(
+        "actual_periods_adjacent_annual",
+        passed,
+        observed,
+        "same company/metric; ordered annual endpoints; no flow gap, overlap or stock/flow mix",
+    )
+
+
 SEMANTIC_OPERATORS: dict[str, SemanticEvaluator] = {
+    "adjacent_annual": _evaluate_adjacent_annual,
     "eq": _evaluate_eq,
     "ne": _evaluate_ne,
     "gte": _evaluate_gte,

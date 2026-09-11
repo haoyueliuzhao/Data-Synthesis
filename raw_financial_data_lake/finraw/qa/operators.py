@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
-from typing import Any, Callable
+from typing import Any
 
 from finraw.qa.comparability import (
     fact_frequency,
@@ -11,8 +12,7 @@ from finraw.qa.comparability import (
     period_label,
 )
 
-
-OPERATION_OPERATOR_REGISTRY_VERSION = "1.0.0"
+OPERATION_OPERATOR_REGISTRY_VERSION = "1.1.0"
 
 
 class OperatorError(ValueError):
@@ -73,6 +73,61 @@ def _difference(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     return {"value": str(value), "unit": unit, "currency": currency}
 
 
+def _numeric_input(item: Any) -> tuple[Decimal, Any, Any]:
+    """Read either a fact or a typed numeric result, never a literal answer."""
+    if not isinstance(item, dict):
+        raise OperatorError("numeric input must be a fact or a typed result")
+    if "normalized_value" in item:
+        value = _fact_value(item)
+        unit, currency = item.get("normalized_unit"), item.get("normalized_currency")
+    else:
+        value = _decimal(item.get("value"))
+        unit, currency = item.get("unit"), item.get("currency")
+    if not value.is_finite() or not unit:
+        raise OperatorError("numeric input requires a finite value and explicit unit")
+    return value, unit, currency
+
+
+def _linear_combination(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
+    """Signed source components; financial completeness is a relation gate."""
+    coefficients = params.get("coefficients")
+    if (
+        not isinstance(coefficients, list)
+        or len(coefficients) != len(inputs)
+        or not inputs
+    ):
+        raise OperatorError("linear_combination requires one coefficient per input")
+    if any(type(value) is not int or value not in {-1, 1} for value in coefficients):
+        raise OperatorError(
+            "linear_combination only accepts registered signed components"
+        )
+    values = [_numeric_input(item) for item in inputs]
+    signatures = {(unit, currency) for _, unit, currency in values}
+    if len(signatures) != 1:
+        raise OperatorError("linear_combination requires identical dimensions")
+    unit, currency = next(iter(signatures))
+    total = sum(
+        (coefficient * value[0] for coefficient, value in zip(coefficients, values)),
+        Decimal(0),
+    )
+    return {"value": str(total), "unit": unit, "currency": currency}
+
+
+def _ratio_percent(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
+    if len(inputs) != 2:
+        raise OperatorError("ratio_percent requires numerator and denominator")
+    numerator, denominator = map(_numeric_input, inputs)
+    if numerator[1:] != denominator[1:] or denominator[0] <= 0:
+        raise OperatorError(
+            "ratio_percent requires matching dimensions and a positive base"
+        )
+    return {
+        "value": str(100 * numerator[0] / denominator[0]),
+        "unit": "percent",
+        "currency": None,
+    }
+
+
 def _compare(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     if len(inputs) != 2 or not all(isinstance(item, dict) for item in inputs):
         raise OperatorError("compare requires two facts")
@@ -111,9 +166,7 @@ def _mean(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
     if not facts:
         raise OperatorError("mean requires at least one fact")
     unit, currency = _unit_signature(facts)
-    value = sum((_fact_value(fact) for fact in facts), Decimal("0")) / Decimal(
-        len(facts)
-    )
+    value = sum((_fact_value(fact) for fact in facts), Decimal(0)) / Decimal(len(facts))
     return {
         "value": str(value),
         "unit": unit,
@@ -242,7 +295,7 @@ def _growth_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
         prior = _fact_value(previous_fact)
         if prior == 0:
             continue
-        value = ((_fact_value(current_fact) - prior) / abs(prior)) * Decimal("100")
+        value = ((_fact_value(current_fact) - prior) / abs(prior)) * Decimal(100)
         records.append(
             {
                 "entity_id": entity_id,
@@ -274,7 +327,7 @@ def _ratio_by_entity(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any
         base = _fact_value(denominator)
         if base == 0:
             continue
-        value = (_fact_value(numerator) / base) * Decimal("100")
+        value = (_fact_value(numerator) / base) * Decimal(100)
         records.append(
             {
                 "entity_id": entity_id,
@@ -383,7 +436,7 @@ def _multi_factor_screen(inputs: list[Any], params: dict[str, Any]) -> dict[str,
     if not common:
         raise OperatorError("multi_factor_screen has no complete entities")
     industry_average = sum(
-        (_fact_value(margin[key]) for key in common), Decimal("0")
+        (_fact_value(margin[key]) for key in common), Decimal(0)
     ) / Decimal(len(common))
     growth_min = _decimal(params.get("growth_min_pct", 10))
     debt_max = _decimal(params.get("debt_max_pct", 70))
@@ -456,6 +509,16 @@ OPERATORS: dict[str, OperatorSpec] = {
     ),
     "lookup": OperatorSpec("lookup", "fact", "numeric", 0.0, _lookup),
     "difference": OperatorSpec("difference", "fact_pair", "numeric", 1.0, _difference),
+    "linear_combination": OperatorSpec(
+        "linear_combination",
+        "typed_numeric_inputs",
+        "numeric",
+        1.5,
+        _linear_combination,
+    ),
+    "ratio_percent": OperatorSpec(
+        "ratio_percent", "typed_numeric_pair", "numeric", 1.0, _ratio_percent
+    ),
     "compare": OperatorSpec("compare", "fact_pair", "comparison", 1.5, _compare),
     "mean": OperatorSpec("mean", "fact_series", "numeric", 1.5, _mean),
     "argmax": OperatorSpec("argmax", "fact_set", "entity_and_value", 2.0, _arg_extreme),

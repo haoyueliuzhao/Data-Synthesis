@@ -46,7 +46,6 @@ def validate_plan(plan: dict[str, Any]) -> list[str]:
             errors.append(f"operators[{index}] is missing step_id")
         elif step_id in step_ids:
             errors.append(f"duplicate step_id: {step_id}")
-        step_ids.add(step_id)
         if operator not in OPERATORS:
             errors.append(f"unknown operator: {operator}")
         for reference in step.get("inputs") or []:
@@ -54,6 +53,7 @@ def validate_plan(plan: dict[str, Any]) -> list[str]:
                 errors.append(
                     f"step {step_id} references a non-previous step: {reference['step']}"
                 )
+        step_ids.add(step_id)
     output_step = str(plan.get("output_step") or "")
     if output_step not in step_ids:
         errors.append(f"output_step does not exist: {output_step}")

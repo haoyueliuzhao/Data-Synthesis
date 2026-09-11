@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from typing import Any
 
 
@@ -29,6 +29,48 @@ class GraphPattern:
 
 
 PATTERNS: tuple[GraphPattern, ...] = (
+    GraphPattern(
+        pattern_id="pinned_annual_metric_change",
+        pattern_version=1,
+        pattern_family="temporal_comparison",
+        task_subtype="difference",
+        matcher=None,
+        node_constraints=[
+            {"variable": "entity", "type": "Entity"},
+            {"variable": "previous", "type": "Fact"},
+            {"variable": "current", "type": "Fact"},
+            {"variable": "metric", "type": "Metric"},
+        ],
+        edge_constraints=[
+            {"src": "entity", "relation": "HAS_FACT", "dst": "previous"},
+            {"src": "entity", "relation": "HAS_FACT", "dst": "current"},
+            {"src": "previous", "relation": "MEASURES", "dst": "metric"},
+            {"src": "current", "relation": "MEASURES", "dst": "metric"},
+        ],
+        semantic_constraints=[
+            {"field": "bound_facts.count", "operator": "eq", "value": 2},
+            {"field": "actual_periods", "operator": "adjacent_annual"},
+            {"field": "source_definition", "operator": "same"},
+            {"field": "time_basis", "operator": "same"},
+            {"field": "frequency", "operator": "same"},
+            {"field": "unit", "operator": "same"},
+            {"field": "currency", "operator": "same"},
+            {"field": "is_forecast", "operator": "eq", "value": False},
+        ],
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "answer",
+                    "operator": "difference",
+                    "inputs": [{"binding": "previous"}, {"binding": "current"}],
+                }
+            ],
+            "output_step": "answer",
+        },
+        answer_schema={"type": "numeric"},
+        difficulty_base="medium",
+        question_intents=("reported_annual_change",),
+    ),
     GraphPattern(
         pattern_id="entity_metric_time_lookup",
         pattern_version=2,
@@ -514,6 +556,35 @@ PATTERNS: tuple[GraphPattern, ...] = (
         difficulty_base="easy",
         question_intents=("source_trace", "definition_trace"),
         is_active=False,
+    ),
+)
+
+
+PATTERNS += (
+    replace(
+        next(
+            pattern
+            for pattern in PATTERNS
+            if pattern.pattern_id == "pinned_annual_metric_change"
+        ),
+        pattern_id="pinned_annual_metric_growth",
+        task_subtype="yoy_growth",
+        operator_template={
+            "operators": [
+                {
+                    "step_id": "change",
+                    "operator": "difference",
+                    "inputs": [{"binding": "previous"}, {"binding": "current"}],
+                },
+                {
+                    "step_id": "answer",
+                    "operator": "ratio_percent",
+                    "inputs": [{"step": "change"}, {"binding": "previous"}],
+                },
+            ],
+            "output_step": "answer",
+        },
+        question_intents=("reported_annual_growth_with_positive_base",),
     ),
 )
 
