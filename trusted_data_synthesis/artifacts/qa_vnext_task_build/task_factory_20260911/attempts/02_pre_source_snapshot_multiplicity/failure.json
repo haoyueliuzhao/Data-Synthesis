@@ -1,0 +1,30 @@
+{
+  "schema_version": "finance_qa_vnext_task_build.runtime_failure.v1",
+  "attempt": 2,
+  "code_commit": "dbbc24f2bd8e213c158591c6f5e9cb852c027f3d",
+  "stage_freeze_id": "stage_freeze:d3367ea737b9897fc0790179f233574f6721a0487acc1218b71476c1fa30a949",
+  "rule_id": "task_synthesis_protocol:981408c5eda32b71f428d72ac7e098dcd6f75b7d837d2c64e054d3ec526efaa0",
+  "started_at": "2026-09-11T17:56:01.862805+00:00",
+  "failure_phase": "native_facts.source_inputs",
+  "error_type": "ValueError",
+  "error_message": "native.one_pinned_snapshot_per_company",
+  "observed_case": {
+    "entity_id": "NKE_US",
+    "cik": "0000320187",
+    "snapshots": [
+      {"date": "2026-07-08", "raw_object_id": "rawobj_sec_companyfacts_f9a2cca841580150c86004cb", "sha256": "b7ccaed366ef82a02c4603361d6ca45afe666d653a36b5f156e58565fb281ad5"},
+      {"date": "2026-07-22", "raw_object_id": "rawobj_sec_companyfacts_fa15b05a396dc53442ebf067", "sha256": "54abad8b001c9e08bb81b83c12f30e36867f6462a12e040cc329e94d46e6fc5c"}
+    ]
+  },
+  "native_fact_database_created": false,
+  "native_source_inventory_created": false,
+  "relation_enumeration_executed": false,
+  "qa_builds_created": 0,
+  "production_tasks_created": 0,
+  "guard_count_artifact_available": false,
+  "repair": "Register latest archived snapshot_date then raw_object_id; preserve all original snapshot references. Do not select by numeric closure or task yield.",
+  "source_snapshot_policy_refined_before_task_generation": true,
+  "rule_id_will_change": true,
+  "financial_relations_quotas_and_company_splits_changed": false,
+  "read_only_followup": "All 14 chosen native files passed original byte identity and CIK checks; native tag descriptions had no version conflicts. No task binding or oracle was executed by this check."
+}

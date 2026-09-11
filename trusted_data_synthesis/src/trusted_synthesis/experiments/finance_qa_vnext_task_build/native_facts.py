@@ -168,7 +168,9 @@ def source_inputs(root, archived):
             "definitions": definitions,
             "selection_exclusions": rejected,
             "all_pinned_snapshot_references": matches,
-            "snapshot_selection": "latest snapshot date, then raw_object_id, before inspecting values",
+            "snapshot_selection": (
+                "latest snapshot date, then raw_object_id, before inspecting values"
+            ),
         }
 
     with ThreadPoolExecutor(max_workers=8) as executor:
