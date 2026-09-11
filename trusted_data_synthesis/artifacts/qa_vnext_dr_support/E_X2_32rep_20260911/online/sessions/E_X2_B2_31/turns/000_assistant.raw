@@ -1,0 +1,23 @@
+{
+  "message": "The question asks for the change in the reserve for product warranties from 2005 to 2006. The source states the reserve was $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005, so the change is 2006 reserve minus 2005 reserve.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "2006_reserve - 2005_reserve",
+    "variables": {
+      "2006_reserve": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "USD_million"
+      },
+      "2005_reserve": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "2006_reserve": "source:q11n3",
+      "2005_reserve": "source:q11n4"
+    }
+  }
+}

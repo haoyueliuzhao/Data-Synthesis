@@ -1,0 +1,23 @@
+{
+  "message": "The relevant evidence is the product warranties reserve disclosure: as of Dec. 31, 2006 it was $10 million and as of Dec. 31, 2005 it was $4 million. I calculate the 2005-to-2006 change as 2006 reserve minus 2005 reserve, in USD millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "reserve_2006 - reserve_2005",
+    "variables": {
+      "reserve_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "USD_million"
+      },
+      "reserve_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "reserve_2006": "source:q11n3",
+      "reserve_2005": "source:q11n4"
+    }
+  }
+}

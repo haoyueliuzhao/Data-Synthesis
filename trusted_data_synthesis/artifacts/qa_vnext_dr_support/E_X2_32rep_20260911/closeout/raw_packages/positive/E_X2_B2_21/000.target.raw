@@ -1,0 +1,23 @@
+{
+  "message": "The question asks for the change in the reserve for product warranties from 2005 to 2006. The source states the reserve was $10 million in 2006 and $4 million in 2005. I will calculate change = 2006 reserve - 2005 reserve, both in USD millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "reserve_2006 - reserve_2005",
+    "variables": {
+      "reserve_2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "USD_million"
+      },
+      "reserve_2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "reserve_2006": "source:q11n3",
+      "reserve_2005": "source:q11n4"
+    }
+  }
+}

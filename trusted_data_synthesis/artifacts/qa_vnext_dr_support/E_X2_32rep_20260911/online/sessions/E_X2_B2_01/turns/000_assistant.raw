@@ -1,0 +1,24 @@
+{
+  "type": "json_object",
+  "message": "The reserve for product warranties is disclosed directly: $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005. The change is 2006 reserve minus 2005 reserve, both in USD millions.",
+  "tool": "calculate",
+  "arguments": {
+    "expression": "w2006 - w2005",
+    "variables": {
+      "w2006": {
+        "value": 10,
+        "source": "source:q11n3",
+        "unit": "USD_million"
+      },
+      "w2005": {
+        "value": 4,
+        "source": "source:q11n4",
+        "unit": "USD_million"
+      }
+    },
+    "sources": {
+      "w2006": "source:q11n3",
+      "w2005": "source:q11n4"
+    }
+  }
+}

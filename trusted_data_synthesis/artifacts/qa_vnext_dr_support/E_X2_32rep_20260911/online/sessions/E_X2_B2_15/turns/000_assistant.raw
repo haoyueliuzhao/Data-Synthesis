@@ -1,0 +1,15 @@
+{
+  "tool": "calculate",
+  "arguments": {
+    "expression": "reserve_2006 - reserve_2005",
+    "variables": {
+      "reserve_2006": {"value": 10, "source": "source:q11n0", "unit": "USD_million"},
+      "reserve_2005": {"value": 4, "source": "source:q11n1", "unit": "USD_million"}
+    },
+    "sources": {
+      "reserve_2006": "source:q11n0",
+      "reserve_2005": "source:q11n1"
+    }
+  },
+  "message": "The reserve for product warranties was $10 million at Dec. 31, 2006 and $4 million at Dec. 31, 2005, per the post-text warranty note. I compute the change as 2006 reserve minus 2005 reserve."
+}

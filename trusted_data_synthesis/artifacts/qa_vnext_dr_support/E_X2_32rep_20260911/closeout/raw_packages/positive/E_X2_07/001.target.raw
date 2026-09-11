@@ -1,0 +1,11 @@
+{
+  "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006, rising from $4 million at Dec. 31, 2005 to $10 million at Dec. 31, 2006.",
+  "value": 6,
+  "unit": "USD_million",
+  "sources": [
+    "source:q11n3",
+    "source:q11n4"
+  ],
+  "result_id": "tool:1",
+  "message": "Reserve for product warranties was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. Change = 10 - 4 = 6 million USD. This is consistent with the movement components: 2005 balance $4M + 2006 pretax charges $4M - cash outlays $5M + $7M assumed in acquisitions = $10M."
+}

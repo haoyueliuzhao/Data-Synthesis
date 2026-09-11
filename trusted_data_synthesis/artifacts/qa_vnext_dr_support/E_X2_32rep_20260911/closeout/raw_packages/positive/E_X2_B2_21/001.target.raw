@@ -1,0 +1,13 @@
+{
+  "final": {
+    "answer": "The reserve for product warranties increased by $6 million from 2005 to 2006.",
+    "value": 6,
+    "unit": "USD_million",
+    "sources": [
+      "source:q11n3",
+      "source:q11n4"
+    ],
+    "result_id": "tool:1",
+    "explanation": "The source states the reserve was $10 million as of Dec. 31, 2006 and $4 million as of Dec. 31, 2005. Change = 10 - 4 = 6 million USD. A rollforward check is consistent: beginning reserve $4M + pretax charges $4M - cash outlays $5M + assumed obligations $7M = $10M ending reserve, confirming a $6M increase."
+  }
+}
