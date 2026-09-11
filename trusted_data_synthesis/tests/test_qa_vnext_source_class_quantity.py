@@ -132,3 +132,64 @@ def test_no_inherited_money_context_for_ratio_quantity():
         new.interpret_final({"value": "46.4", "unit": "USD_million"}, context), "46.4", context
     )
     assert wrong["V_quantity"] == "FAIL"
+
+
+@pytest.mark.parametrize(
+    ("actual", "target", "factor"),
+    [
+        ("USD_million", "USD_thousand", "1000"),
+        ("USD", "USD_million", "1/1000000"),
+        ("million shares", "shares", "1000000"),
+        ("shares", "million shares", "1/1000000"),
+        ("millions of common shares", "million shares", "1"),
+        ("ratio", "percent", "100"),
+        ("percent", "ratio", "1/100"),
+        ("EUR_million", "USD_million", None),
+        ("USD_million", "million shares", None),
+        ("million", "million shares", None),
+    ],
+)
+def test_student_task_specific_dimensions_and_scales(actual, target, factor):
+    from fractions import Fraction
+
+    from trusted_synthesis.experiments.finance_qa_vnext_source_class_utility import (
+        student_quantity,
+    )
+
+    assert student_quantity.unit_factor(actual, target) == (
+        None if factor is None else Fraction(factor)
+    )
+
+
+@pytest.mark.parametrize(
+    ("final", "unit", "status"),
+    [
+        ({"value": "46.4", "unit": "USD_million", "answer": "$46.4M"}, "USD_million", "PASS"),
+        (
+            {"value": "46.4", "unit": "USD_million", "answer": "$46.4K"},
+            "USD_million",
+            "UNDETERMINED",
+        ),
+        ({"value": "46.4", "unit": "USD_million", "answer": "$46.4"}, "USD_million", "FAIL"),
+        ({"value": "46.4", "unit": "USD_million", "currency": "EUR"}, "USD_million", "FAIL"),
+        (
+            {"value": "1.3", "unit": "million shares", "answer": "1.3 million shares"},
+            "million shares",
+            "PASS",
+        ),
+        ({"value": "20%", "unit": "percent", "answer": "20%"}, "percent", "PASS"),
+        ({"value": "46.4", "answer": "$46.4M"}, "USD_million", "PASS"),
+        ({"value": "46.4", "answer": "46.4"}, "USD_million", "UNDETERMINED"),
+        ("$46.4M", "USD_million", "PASS"),
+    ],
+)
+def test_student_complete_actual_Final_units(final, unit, status):
+    from trusted_synthesis.experiments.finance_qa_vnext_source_class_utility import (
+        student_quantity,
+    )
+
+    value = final.get("value") if isinstance(final, dict) else "46.4"
+    result = student_quantity.final_amount_check(
+        final, {"value": value, "unit": unit}, {"unit": unit}
+    )
+    assert result["status"] == status
