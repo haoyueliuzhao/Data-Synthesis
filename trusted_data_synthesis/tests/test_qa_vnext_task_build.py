@@ -645,6 +645,29 @@ def test_actual_SQLite_rows_cross_the_record_adapter_boundary_as_mappings(tmp_pa
     db.close()
 
 
+def test_multiple_pinned_snapshots_are_selected_by_source_date_not_values():
+    from trusted_synthesis.experiments.finance_qa_vnext_task_build.native_facts import (
+        select_snapshot,
+    )
+
+    rows = [
+        {
+            "raw_object_id": "old",
+            "storage_uri": "/pinned/snapshot_date=2026-07-08.json",
+            "unused_answer": 999,
+        },
+        {
+            "raw_object_id": "new",
+            "storage_uri": "/pinned/snapshot_date=2026-07-22.json",
+            "unused_answer": 0,
+        },
+    ]
+    assert select_snapshot(rows)["raw_object_id"] == "new"
+    assert select_snapshot(list(reversed(rows)))["raw_object_id"] == "new"
+    rows[0]["unused_answer"] = -100000000
+    assert select_snapshot(rows)["raw_object_id"] == "new"
+
+
 def test_synthesized_catalog_reader_exposes_public_not_private_canaries(tmp_path):
     from trusted_synthesis.experiments.finance_qa_vnext_task_build.archive import (
         OUTPUT,

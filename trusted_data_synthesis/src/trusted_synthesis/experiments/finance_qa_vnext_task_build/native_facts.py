@@ -6,6 +6,7 @@ input to this adapter. Original archived parents remain read-only.
 """
 
 import json
+import re
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
@@ -152,13 +153,12 @@ def source_inputs(root, archived):
     for entity in selected_entities:
         cik = str(entity["cik"]).zfill(10)
         matches = [raw for raw in raw_rows if f"cik={cik}/" in str(raw["storage_uri"])]
-        require(len(matches) == 1, "native.one_pinned_snapshot_per_company")
-        raw = matches[0]
+        raw = select_snapshot(matches)
         path = resolve_raw(root, raw)
-        prepared.append((entity, raw, path))
+        prepared.append((entity, raw, path, matches))
 
     def read(item):
-        entity, raw, path = item
+        entity, raw, path, matches = item
         chosen, definitions, rejected = select_native(json.loads(path.read_bytes()), entity, raw)
         return {
             "entity": entity,
@@ -167,10 +167,23 @@ def source_inputs(root, archived):
             "observations": chosen,
             "definitions": definitions,
             "selection_exclusions": rejected,
+            "all_pinned_snapshot_references": matches,
+            "snapshot_selection": "latest snapshot date, then raw_object_id, before inspecting values",
         }
 
     with ThreadPoolExecutor(max_workers=8) as executor:
         return list(executor.map(read, prepared))
+
+
+def select_snapshot(matches):
+    require(bool(matches), "native.pinned_snapshot_available")
+
+    def key(row):
+        date_match = re.search(r"/snapshot_date=(\d{4}-\d{2}-\d{2})\.json$", row["storage_uri"])
+        require(date_match is not None, "native.snapshot_date_in_pinned_path")
+        return date_match.group(1), row["raw_object_id"]
+
+    return max(matches, key=key)
 
 
 def populate_ontology(db, archived, inputs, issuer=None):

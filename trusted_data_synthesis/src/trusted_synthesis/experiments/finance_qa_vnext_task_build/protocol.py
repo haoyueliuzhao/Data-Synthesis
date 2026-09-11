@@ -81,6 +81,10 @@ def policy():
             "new_split_not_inherited_from_FinQA": True,
         },
         allowed_current_use="train",
+        native_snapshot_selection=(
+            "latest snapshot_date then raw_object_id among the archived RawObject references; "
+            "retain all old snapshot references; never select by observed task yield"
+        ),
         all_leaf_usage_required=True,
         metrics_and_tag_priority=METRIC_TAGS,
         observation_end_years=[2010, 2025],
