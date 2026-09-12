@@ -263,7 +263,9 @@ def main():
             "post-run independent source arithmetic and request/usage/public-byte reconciliation"
         ),
         "natural_language_equivalence_proof": False,
-        "natural_language_check_separate": "frozen finite temporal parser on actual final questions",
+        "natural_language_check_separate": (
+            "frozen finite temporal parser on actual final questions"
+        ),
         "actual_final_question_count": len(tasks),
         "production_artifacts_changed": False,
         "model_calls_by_this_audit": 0,
