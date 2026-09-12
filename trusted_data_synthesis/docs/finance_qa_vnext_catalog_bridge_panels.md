@@ -1,5 +1,28 @@
 # Catalog Bridge：隔离评测面板的有界构建合同
 
+## 运行后状态更新：v3 审计阻断正式评测
+
+下文是生产前的有限构建合同，不是最终面板准入结论。生产实际导出 874 条记录：
+dev 166（双依据 46、均值 60、峰值关联 60），confirm 708（234、237、237）。
+原计划仍分别缺 14、12 个记录；不能把 180 / 720 计划写成已经完成。
+
+最新独立运行后审计 **v3 = `BLOCKED_PUBLIC_PERIOD_MISMATCH`**：
+874 条记录虽均通过现有 QA，来源 / 父链 / 数值层核对也通过，但峰值关联组中
+dev 18、confirm 78，共 96 题把非日历财政年度称为 `calendar year`，构成公共题面准入阻断。
+全部冻结题面与目标保留不变，没有删除、修订、替换或补题；没有由剩余记录重算成功面板。
+正式评测 primary worker 未建立资格，不能启动正式 Teacher / Student 效用实验。
+
+v1 是审计器字段名称错误记录，v2 只覆盖来源 / 父链 / 数值有限层；**v3 最新结论优先**。
+完整受影响 ID、期间、原问题和 SHA，以及计数与相关结构，见
+[独立运行后审计说明](finance_qa_vnext_catalog_panels_postrun_audit.md) 和
+`artifacts/qa_vnext_catalog_bridge/independent_panel_audit_20260912_v3.json`。
+
+实际来源簇为 dev 12、confirm 71；其中双依据组仅 dev 3、confirm 27 个 CIK。
+确认侧 12 个未导出目标是 6 个缺少唯一真实 DerivedFact 父、6 个 candidate
+语义约束拒绝而未发出 sample；实际 708 个 QA 的验证拒绝数为 0，不是 12 个 QA 验证失败。
+
+## 原构建合同与预冻结控制
+
 本文件记录面板实现和预冻结控制，不把计划的 180 / 720 题写成已生产结果。
 真实生产数量、QA 拒绝、各组不足和来源相关结构以父阶段冻结后生成的
 `evaluation_panels/report.json` 及两个分面板 `catalog.json` 为准。本模块不发送模型请求。

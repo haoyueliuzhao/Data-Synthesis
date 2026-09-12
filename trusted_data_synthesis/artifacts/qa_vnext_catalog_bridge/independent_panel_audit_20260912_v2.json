@@ -1,0 +1,311 @@
+{
+  "check_count": 78944,
+  "checks": {
+    "actual_DerivedFact_leaf_parent": 280,
+    "actual_Fact_KG_node": 4353,
+    "actual_Fact_metric_KG_edge": 4353,
+    "actual_definition_document_parent": 4353,
+    "actual_period_continuity": 2062,
+    "actual_qualified_fact_parent": 4353,
+    "actual_successful_KG_QA_builds": 874,
+    "all_exported_actual_QA_checks": 874,
+    "all_fixed_selected_targets_retained_in_denominator": 2,
+    "all_leaf_entity_CIK_join": 4353,
+    "all_leaf_isolation": 4353,
+    "annual_duration": 3233,
+    "bounded_composition_claim_not_hidden_endpoints": 297,
+    "catalog_bundle_identity": 874,
+    "certificate_all_leaf_join": 874,
+    "complete_original_source_bytes": 83,
+    "dev_confirm_CIK_disjoint": 1,
+    "dual_common_filing_accession": 560,
+    "dual_native_financial_definition": 280,
+    "dual_original_accession_pointer": 1680,
+    "dual_source_disjoint_witnesses": 280,
+    "exported_QA_qualified": 874,
+    "full_source_same_concept_window_aggregate_absent": 297,
+    "growth_positive_earlier_base": 141,
+    "independent_CIK_correlation_counts": 2,
+    "independent_complete_annual_revenue_cost_relation": 560,
+    "independent_dual_basis_recompute": 560,
+    "independent_exact_target": 874,
+    "independent_overlap_pair_sum": 2,
+    "independent_peak_year": 297,
+    "independent_snapshot_counts": 2,
+    "native_CIK": 4353,
+    "native_actual_period": 4353,
+    "native_exact_million_USD_scale": 4353,
+    "native_pointer_exact_record": 4353,
+    "no_evaluation_rewrite": 874,
+    "no_model_trajectory_claim": 874,
+    "old_confirmation_issuer_excluded": 874,
+    "original_native_definition": 4353,
+    "original_salt_and_usage": 874,
+    "original_source_containment": 83,
+    "other_finance_not_temporal_difference": 297,
+    "plan_candidate_build_join": 874,
+    "public_complete_snapshot_reference": 84,
+    "public_full_source_preserved": 874,
+    "public_source_document_identity": 84,
+    "real_QA_and_public_question_join": 874,
+    "record_content_identity": 3550,
+    "registered_Pattern_parent_join": 874,
+    "registered_mean_not_difference": 297,
+    "same_actual_period_secondary": 297,
+    "scientific_task_unique": 874,
+    "semantic_task_ID_recomputed": 874,
+    "three_real_temporal_components": 297,
+    "total_scientific_task_denominator": 1,
+    "unchanged_series_definition": 1171,
+    "unique_primary_peak": 297
+  },
+  "failures": [],
+  "imported_generation_or_QA_execution_code": false,
+  "limitations": [
+    "Composition necessity audited only within the registered annual-flow semantics and same-concept whole-window screen, not arbitrary unformalized disclosures.",
+    "Same CIK/snapshot and overlapping windows remain correlated; no power or effective independent sample size inferred.",
+    "This is source, parent-chain, recorded QA and target recomputation verification, not a live evaluation-worker or natural-language open-domain certification."
+  ],
+  "model_calls": 0,
+  "panels": {
+    "confirm": {
+      "CIK_count_by_group": {
+        "composition_required": 71,
+        "dual_sufficient": 27,
+        "other_financial": 69
+      },
+      "QA_validation": {
+        "failure_counts": {},
+        "kg_build_id": "kg_20260912_054928_e69fd186",
+        "pass_rate": 1.0,
+        "passed_count": 708,
+        "pending_count": 0,
+        "qa_build_id": "qa_build_20260912_054951_4f982456",
+        "quality_status": "passed",
+        "question_parser_manifest_hash": "946193490d2cbcd06a0ab47106c904428e35090fca13ae62bee80b5a7d3f4a62",
+        "question_parser_version": "1.6.0",
+        "rejected_count": 0,
+        "resumed_sample_count": 708,
+        "sample_count": 708
+      },
+      "compiler_semantic_rejections": {
+        "semantic_constraint:periods_contiguous": 6,
+        "semantic_constraint:secondary_period_coverage_equals": 1
+      },
+      "examples": {
+        "composition_required": {
+          "answer": {
+            "value": "33524.38966666666666666666667"
+          },
+          "question": "Across the 3 annual observations from 2011 through 2013, what was ABBOTT LABORATORIES's average Revenue? In the answer, express the value in USD millions and round to 2 decimal places.",
+          "source_cluster": "cik:0000001800",
+          "task_id": "task_0ad5807c1404a7e9705eced8854f17ccf8eb36c9645f459202591f896d8ab499"
+        },
+        "dual_sufficient": {
+          "answer": {
+            "value": "3007.462"
+          },
+          "question": "Calculate the change in ANALOG DEVICES INC's Gross Profit between the period 2020-11-01 through 2021-10-30 and the period 2021-10-31 through 2022-10-29. In the answer, express the value in USD millions and round to 2 decimal places.",
+          "source_cluster": "cik:0000006281",
+          "task_id": "task_1ec63709cc4cd3712c3c80d3762be85b47a220ae01cd816b3f5b2505ae6df656"
+        },
+        "other_financial": {
+          "answer": {
+            "period": "2012",
+            "value": "8084.515"
+          },
+          "question": "Which calendar year from 2010 through 2012 had ABBOTT LABORATORIES's highest Revenue, and what Operating Income did it report in that same calendar year? Organize the requested results in a table with the relevant fields; use USD millions for numeric values.",
+          "source_cluster": "cik:0000001800",
+          "task_id": "task_1cfc2f685a4b0a38b5805d0e78fb4c970bd76c9be5612343122a7d2ca18b1c62"
+        }
+      },
+      "group_counts": {
+        "composition_required": 237,
+        "dual_sufficient": 234,
+        "other_financial": 237
+      },
+      "not_exported_reasons": {
+        "panel.candidate_not_emitted_as_QA_sample": 6,
+        "panel.no_unique_real_DerivedFact_parent": 6
+      },
+      "overlapping_issuer_period_pair_sum": 4865,
+      "qualified_before_caps": {
+        "composition_required": 2928,
+        "dual_sufficient": 505,
+        "other_financial": 1149
+      },
+      "selected_before_QA": 720,
+      "shortages": {
+        "composition_required": 3,
+        "dual_sufficient": 6,
+        "other_financial": 3
+      },
+      "source_CIK_clusters": {
+        "cik:0000001800": 8,
+        "cik:0000004962": 8,
+        "cik:0000006281": 18,
+        "cik:0000006951": 18,
+        "cik:0000008670": 8,
+        "cik:0000012927": 18,
+        "cik:0000014272": 12,
+        "cik:0000018230": 8,
+        "cik:0000040545": 8,
+        "cik:0000051143": 18,
+        "cik:0000059478": 8,
+        "cik:0000060667": 18,
+        "cik:0000063908": 8,
+        "cik:0000064040": 8,
+        "cik:0000070858": 8,
+        "cik:0000077476": 17,
+        "cik:0000078003": 8,
+        "cik:0000080424": 8,
+        "cik:0000080661": 8,
+        "cik:0000089800": 17,
+        "cik:0000097745": 8,
+        "cik:0000104169": 8,
+        "cik:0000200406": 5,
+        "cik:0000310764": 17,
+        "cik:0000313616": 17,
+        "cik:0000315189": 8,
+        "cik:0000316709": 8,
+        "cik:0000318154": 7,
+        "cik:0000319201": 7,
+        "cik:0000354950": 16,
+        "cik:0000723125": 16,
+        "cik:0000732712": 7,
+        "cik:0000732717": 7,
+        "cik:0000753308": 3,
+        "cik:0000764180": 6,
+        "cik:0000773840": 15,
+        "cik:0000789019": 15,
+        "cik:0000829224": 6,
+        "cik:0000831001": 6,
+        "cik:0000872589": 6,
+        "cik:0000882095": 6,
+        "cik:0000885725": 15,
+        "cik:0000886982": 3,
+        "cik:0000895421": 6,
+        "cik:0000896159": 6,
+        "cik:0000896878": 6,
+        "cik:0000936468": 15,
+        "cik:0001018724": 6,
+        "cik:0001035267": 15,
+        "cik:0001045810": 15,
+        "cik:0001075531": 15,
+        "cik:0001090727": 6,
+        "cik:0001103982": 15,
+        "cik:0001108524": 15,
+        "cik:0001141391": 6,
+        "cik:0001156039": 6,
+        "cik:0001163165": 6,
+        "cik:0001318605": 15,
+        "cik:0001326160": 6,
+        "cik:0001326801": 6,
+        "cik:0001327567": 15,
+        "cik:0001413329": 15,
+        "cik:0001467373": 6,
+        "cik:0001543151": 6,
+        "cik:0001551152": 6,
+        "cik:0001571949": 6,
+        "cik:0001613103": 12,
+        "cik:0001707925": 6,
+        "cik:0001730168": 15,
+        "cik:0001739940": 6,
+        "cik:0001744489": 6
+      },
+      "source_CIK_count": 71,
+      "source_snapshot_count": 71,
+      "task_count": 708
+    },
+    "dev": {
+      "CIK_count_by_group": {
+        "composition_required": 12,
+        "dual_sufficient": 3,
+        "other_financial": 12
+      },
+      "QA_validation": {
+        "failure_counts": {},
+        "kg_build_id": "kg_20260912_054847_c97029c7",
+        "pass_rate": 1.0,
+        "passed_count": 166,
+        "pending_count": 0,
+        "qa_build_id": "qa_build_20260912_054855_dc562c4c",
+        "quality_status": "passed",
+        "question_parser_manifest_hash": "946193490d2cbcd06a0ab47106c904428e35090fca13ae62bee80b5a7d3f4a62",
+        "question_parser_version": "1.6.0",
+        "rejected_count": 0,
+        "resumed_sample_count": 166,
+        "sample_count": 166
+      },
+      "compiler_semantic_rejections": {},
+      "examples": {
+        "composition_required": {
+          "answer": {
+            "value": "96957.0"
+          },
+          "question": "Across the 3 annual observations from 2011 through 2013, what was JPMORGAN CHASE & CO's average Revenue? In the answer, express the value in USD millions and round to 2 decimal places.",
+          "source_cluster": "cik:0000019617",
+          "task_id": "task_2366c23e226338378f840429e4e94b85729148bce1503a6f853ba93b698193d2"
+        },
+        "dual_sufficient": {
+          "answer": {
+            "value": "1706.0"
+          },
+          "question": "By how much did COCA COLA CO's Gross Profit change from the period 2021-01-01 through 2021-12-31 to the period 2022-01-01 through 2022-12-31? In the answer, express the value in USD millions and round to 2 decimal places.",
+          "source_cluster": "cik:0000021344",
+          "task_id": "task_29433dd457f042ad7a5b0b6045b0b520fc2ee49955bc1d374d3af8bb4259dfd3"
+        },
+        "other_financial": {
+          "answer": {
+            "period": "2010",
+            "value": "17370.0"
+          },
+          "question": "Identify JPMORGAN CHASE & CO's peak-Revenue calendar year between 2010 and 2012, then give its Net Income for that period. Organize the requested results in a table with the relevant fields; use USD millions for numeric values.",
+          "source_cluster": "cik:0000019617",
+          "task_id": "task_3487fde5af4685fb93d50b3347d64c5f8f482a686e1588d78509951e5153fca7"
+        }
+      },
+      "group_counts": {
+        "composition_required": 60,
+        "dual_sufficient": 46,
+        "other_financial": 60
+      },
+      "not_exported_reasons": {},
+      "overlapping_issuer_period_pair_sum": 1313,
+      "qualified_before_caps": {
+        "composition_required": 528,
+        "dual_sufficient": 46,
+        "other_financial": 207
+      },
+      "selected_before_QA": 166,
+      "shortages": {
+        "composition_required": 0,
+        "dual_sufficient": 14,
+        "other_financial": 0
+      },
+      "source_CIK_clusters": {
+        "cik:0000019617": 11,
+        "cik:0000021344": 25,
+        "cik:0000072971": 6,
+        "cik:0000092122": 11,
+        "cik:0000093410": 11,
+        "cik:0000101829": 11,
+        "cik:0000109198": 7,
+        "cik:0000731766": 11,
+        "cik:0000796343": 41,
+        "cik:0000804328": 10,
+        "cik:0001065280": 12,
+        "cik:0001403161": 10
+      },
+      "source_CIK_count": 12,
+      "source_snapshot_count": 12,
+      "task_count": 166
+    }
+  },
+  "primary_evaluation_worker_qualified": false,
+  "production_panel_report_id": "evaluation_panel_preparation:e2192bdef23de48e9bfac1968ae0b6f560da91d080eda0cf1e0efade33fb8f41",
+  "production_panel_report_sha256": "f9e2afa9527cc628d15d94450e9da93541c5635bbb633a4b1d36b4131a30e474",
+  "read_only_original_inputs_and_production_outputs": true,
+  "status": "PASS_AS_SCOPED_PARTIAL_PANEL",
+  "unique_tasks": 874
+}

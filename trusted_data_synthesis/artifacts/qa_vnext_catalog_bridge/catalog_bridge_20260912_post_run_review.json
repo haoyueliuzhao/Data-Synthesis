@@ -1,0 +1,83 @@
+{
+  "schema_version": "catalog_bridge_post_run_review.v1",
+  "review_date": "2026-09-12",
+  "status": "BLOCKED_FOR_FORMAL_COLLECTION",
+  "production_commit": "dd7567a11961176c2aea07680438ba06c9a36a07",
+  "production_manifest_id": "manifest:93e7733ea14ee5ce52dfaf657c63086e18b73667c30300daf3971b9b1fde5136",
+  "production_report_id": "catalog_bridge_report:351e9b3b796875a2d8bb20ac9e3d07154e2732b66cc91ad2b8849cb7adb37a70",
+  "scientific_outputs_or_frozen_code_modified_by_audit": false,
+  "new_production_runs_after_observing_results": 0,
+  "training_catalog": {
+    "original_tasks_preserved": 233,
+    "new_tasks": 10,
+    "total_tasks": 243,
+    "company_defined_metric_tasks": 36,
+    "global_CIK_clusters": 14,
+    "balanced_reference_supply_ceiling": 180,
+    "source_ceiling_is_actual_AB_material_readiness": false,
+    "source_acquisition_attempts": 2,
+    "source_acquisition_HTTP_statuses": [403, 403],
+    "extra_sources_admitted": 0
+  },
+  "rewrite": {
+    "old_task_requests": 0,
+    "new_task_requests": 15,
+    "true_rewrites": 6,
+    "unchanged": 0,
+    "canonical_fallbacks": 4,
+    "this_stage_conservative_token_debit": 10200,
+    "known_cumulative_token_debit": 221538,
+    "remaining_registered_global_allowance": 999778462
+  },
+  "scripted_interface_controls": {
+    "registered": 36,
+    "passed": 36,
+    "mapped_complete_classes": 29,
+    "pending_records_retained": 7,
+    "original_scripted_packages": 30,
+    "encoded_rows": 167,
+    "target_tokens": 9284,
+    "sequence_tokens": 636097,
+    "maximum_actual_sequence_length": 6904,
+    "frozen_sequence_limit": 24576,
+    "CPU_tokenizer_constructions_in_production": 1,
+    "training_samples": 0
+  },
+  "evaluation_panels": {
+    "status": "BLOCKED_PUBLIC_PERIOD_MISMATCH_AND_QUOTA_SHORTFALL",
+    "dev_planned": 180,
+    "dev_exported": 166,
+    "confirm_planned": 720,
+    "confirm_exported": 708,
+    "existing_QA_passed_exported_records": 874,
+    "existing_QA_pass_is_independent_public_semantic_qualification": false,
+    "dev_noncalendar_fiscal_periods_mislabeled_calendar_year": 18,
+    "confirm_noncalendar_fiscal_periods_mislabeled_calendar_year": 78,
+    "total_public_period_mismatches": 96,
+    "affected_records_deleted_or_rewritten": false,
+    "replacement_targets_added": 0,
+    "source_cluster_counts": {"dev": 12, "confirm": 71},
+    "dual_sufficient_source_cluster_counts": {"dev": 3, "confirm": 27},
+    "primary_trajectory_worker_qualification_established": false,
+    "latest_authoritative_post_run_audit": "independent_panel_audit_20260912_v3.json"
+  },
+  "read_only_audit_evidence": {
+    "original_frozen_incremental_auditor_failure_retained": "catalog_bridge_20260912_incremental_source_audit.json",
+    "post_run_YoY_domain_supplement_not_blind": "catalog_bridge_20260912_incremental_yoy_supplement_audit.json",
+    "worker_scope_does_not_cover_eval_panel_semantics": "catalog_bridge_20260912_worker_audit.json"
+  },
+  "resources_not_executed": {
+    "Teacher_solution_sessions": 0,
+    "formal_AB_collection_sessions": 0,
+    "Student_training_runs": 0,
+    "GPU_runs": 0,
+    "actual_training_packages": 0
+  },
+  "publication": {
+    "lossless_transport_index": "catalog_bridge_20260912_publication/index.json",
+    "oversized_original_members_preserved_locally": 2,
+    "original_manifest_replaced": false,
+    "restore_required_after_new_checkout_before_stage_verify": true
+  },
+  "interpretation": "The bounded source increment and scripted training-catalog interface were executed. Reference supply reaches the 180-task design floor, but common real A/B materials are not established. Evaluation quotas are incomplete, 96 frozen questions have a public calendar/fiscal-period mismatch, and evaluation primary trajectory qualification is not connected. Do not infer formal collection or training readiness from exported record counts or existing QA pass flags."
+}
