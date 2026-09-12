@@ -72,6 +72,8 @@ def replay_session(session, sources):
             session["first_final_index"] is None and session["provider_error"] is not None,
             "assessment.incomplete_provider_failure",
         )
+    if session["origin"] == "scripted_evaluation_control":
+        require(replay == session, "assessment.entire_saved_script_session_identity")
     return replay
 
 
@@ -319,6 +321,170 @@ def _period_contract(bundle):
     return contract, identities
 
 
+def _consume_certificate(bundle, native_bindings):
+    """Consume exactly the registered growth wrapper without unwrapping its target.
+
+    Completeness belongs to the base financial relation. The returned object is
+    still the outer certificate, whose percentage witnesses and bindings remain
+    authoritative inputs to the executed-support checks below. Unknown/nested
+    wrappers cannot obtain admission by carrying a convenient complete flag.
+    """
+    certificate = bundle["private"]["relation_certificate"]
+    schema = certificate.get("schema_version")
+    prefix = "finance_qa_vnext_task_build.v1."
+    if schema != prefix + "relative_quantity_certificate":
+        require(
+            "base_relation_certificate" not in certificate, "assessment.unknown_certificate_wrapper"
+        )
+        expected_kind = {
+            "dual_sufficient": "financial_relation_certificate",
+            "composition_required": "panel_composition_certificate",
+            "other_financial": "panel_other_financial_certificate",
+        }.get(bundle["family"])
+        require(
+            expected_kind is not None and schema == prefix + expected_kind,
+            "assessment.unregistered_certificate_type",
+        )
+        require(
+            bundle["private"]["canonical_target"]["quantity"] != "relative_change",
+            "assessment.relative_registered_wrapper_required",
+        )
+        _body_valid(certificate)
+        require(
+            certificate.get("complete") is True, "assessment.source_relation_certificate_required"
+        )
+        return certificate
+    import sympy
+
+    _body_valid(certificate)
+    target = bundle["private"]["canonical_target"]
+    public = bundle["public"]
+    operation = public["period_contract"]["operation"]
+    require(
+        bundle["family"] == "dual_sufficient"
+        and target["quantity"] == certificate["quantity"] == "relative_change",
+        "assessment.relative_wrapper_target_type",
+    )
+    require(
+        target["unit"] == public["quantity_contract"]["unit"] == "percent"
+        and operation.get("kind") == "relative_change"
+        and operation.get("direction") == "current_minus_previous"
+        and operation.get("denominator") == "strictly_positive_previous"
+        and operation.get("multiplier") == 100,
+        "assessment.relative_wrapper_quantity_contract",
+    )
+    base = certificate.get("base_relation_certificate")
+    require(
+        isinstance(base, dict)
+        and base.get("schema_version") == prefix + "financial_relation_certificate"
+        and "base_relation_certificate" not in base,
+        "assessment.relative_registered_base_type",
+    )
+    _body_valid(base)
+    require(base.get("complete") is True, "assessment.source_relation_certificate_required")
+    require(
+        certificate["family"] == base["family"]
+        and base["family"] in {"annual_flow", "stock_rollforward"},
+        "assessment.relative_wrapper_base_family",
+    )
+    for field in ("leaf_fact_ids", "public_fact_ids"):
+        require(
+            certificate[field] == base[field]
+            and len(set(certificate[field])) == len(certificate[field]),
+            "assessment.relative_wrapper_source_bindings",
+        )
+    require(
+        set(base["public_fact_ids"]) <= set(base["leaf_fact_ids"]),
+        "assessment.relative_public_leaf_subset",
+    )
+    require(
+        all(
+            identifier in native_bindings
+            and native_bindings[identifier]["source_cluster"] == target["source_cluster"]
+            for identifier in certificate["leaf_fact_ids"]
+        ),
+        "assessment.relative_native_source_cluster",
+    )
+    base_witnesses = {witness["basis"]: witness for witness in base["witnesses"]}
+    outer_witnesses = {witness["basis"]: witness for witness in certificate["witnesses"]}
+    require(
+        len(base["witnesses"]) == len(certificate["witnesses"]) == 2
+        and set(base_witnesses) == set(outer_witnesses) == {"endpoint", "movement"},
+        "assessment.relative_both_registered_witnesses",
+    )
+    endpoints = base_witnesses["endpoint"]["input_bindings"]
+    previous, current = endpoints["previous"], endpoints["current"]
+    require(
+        previous != current and target["previous_period"][1] < target["current_period"][1],
+        "assessment.relative_forward_actual_periods",
+    )
+    for role, identifier in (("previous", previous), ("current", current)):
+        native = native_bindings[identifier]
+        require(
+            native["metric_id"] == target["metric_id"]
+            and [native["record"].get("start"), native["record"]["end"]]
+            == list(target[role + "_period"]),
+            "assessment.relative_endpoint_actual_metric_period",
+        )
+    require(
+        number(native_bindings[previous]["record"]["val"]) > 0,
+        "assessment.relative_strictly_positive_previous",
+    )
+    symbols = {identifier: sympy.Symbol(identifier) for identifier in certificate["leaf_fact_ids"]}
+    previous_base = symbols[previous]
+    components = base.get("previous_component_fact_ids")
+    if components:
+        coefficients = base.get("previous_component_coefficients") or [1] * len(components)
+        previous_base = sum(
+            symbols[identifier] * sympy.Rational(str(coefficient))
+            for identifier, coefficient in zip(components, coefficients, strict=True)
+        )
+        substitutions = {
+            symbols[key]: sympy.Rational(str(number(native_bindings[key]["record"]["val"])))
+            for key in certificate["leaf_fact_ids"]
+        }
+        require(
+            previous_base.subs(substitutions) == substitutions[symbols[previous]],
+            "assessment.relative_reconstructed_previous_base",
+        )
+    for basis, outer in outer_witnesses.items():
+        original = base_witnesses[basis]
+        _body_valid(original)
+        _body_valid(outer)
+        require(
+            all(
+                outer["input_bindings"].get(name) == identifier
+                for name, identifier in original["input_bindings"].items()
+            )
+            and set(outer["input_bindings"].values()) <= set(symbols),
+            "assessment.relative_original_witness_bindings_preserved",
+        )
+        delta, _ = _witness_expression(original, symbols, sympy)
+        if basis == "endpoint":
+            require(
+                sympy.cancel(delta - (symbols[current] - symbols[previous])) == 0,
+                "assessment.relative_base_delta_direction",
+            )
+        denominator = previous_base if basis == "movement" else symbols[previous]
+        expression, steps = _witness_expression(outer, symbols, sympy)
+        require(
+            "change" in steps
+            and sympy.cancel(steps["change"] - delta) == 0
+            and sympy.cancel(expression - 100 * delta / denominator) == 0,
+            "assessment.relative_outer_percentage_witness",
+        )
+        final_step = next(
+            step
+            for step in outer["operator_dag"]["operators"]
+            if step["step_id"] == outer["operator_dag"]["output_step"]
+        )
+        require(
+            final_step["operator"] == "ratio_percent",
+            "assessment.relative_percentage_output_operator",
+        )
+    return certificate
+
+
 def assess_session(session, bundle, native_bindings, sources):
     """Private contract/native bindings enter only this offline replay boundary."""
     require(
@@ -360,6 +526,10 @@ def assess_session(session, bundle, native_bindings, sources):
         ),
         "fine_mapping_required_for_training_stratification": True,
         "pending_fine_classes_retained_without_filling_training_quotas": True,
+        "certificate_consumer_revision": (
+            "registered_relative_wrapper.v1.base_complete_outer_target"
+        ),
+        "support_assessment_entered": False,
     }
     if session["first_final_index"] is None:
         return record("evaluation_assessment", **{**outcome, "reason": "no_final"})
@@ -373,15 +543,13 @@ def assess_session(session, bundle, native_bindings, sources):
     }
     try:
         contract, periods = _period_contract(bundle)
-        certificate = bundle["private"]["relation_certificate"]
-        require(
-            certificate.get("complete") is True, "assessment.source_relation_certificate_required"
-        )
+        certificate = _consume_certificate(bundle, native_bindings)
         facts = certificate["leaf_fact_ids"]
         require(
             all(identifier in native_bindings for identifier in facts),
             "assessment.native_certificate_join",
         )
+        outcome["support_assessment_entered"] = True
         support = Support(bundle, native_bindings, tools)
         expression = support.resolve(final["result_id"])
         target = bundle["private"]["canonical_target"]

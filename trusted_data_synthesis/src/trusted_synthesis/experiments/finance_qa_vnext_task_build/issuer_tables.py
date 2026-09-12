@@ -128,6 +128,92 @@ def digest(value):
     ).hexdigest()
 
 
+def _cover_dom_segments(document_tree, start, end):
+    """Recover a normalized cover span from exact original DOM text/tail slices."""
+    position, segments = 0, []
+    for original in document_tree.xpath(".//text()"):
+        raw = str(original)
+        normalized = " ".join(raw.split())
+        if not normalized:
+            continue
+        left, right = position, position + len(normalized)
+        position = right + 1
+        if right <= start or left >= end:
+            continue
+        tokens = list(re.finditer(r"\S+", raw))
+        cursor, chosen = left, []
+        for token in tokens:
+            token_end = cursor + len(token.group(0))
+            if token_end > start and cursor < end:
+                chosen.append((token, cursor, token_end))
+            cursor = token_end + 1
+        require(bool(chosen), "issuer.cover_original_DOM_tokens")
+        raw_start, raw_end = chosen[0][0].start(), chosen[-1][0].end()
+        parent = original.getparent()
+        segments.append(
+            {
+                "element_xpath": parent.getroottree().getpath(parent),
+                "slot": "tail" if original.is_tail else "text",
+                "raw_character_span": [raw_start, raw_end],
+                "raw_text": raw[raw_start:raw_end],
+                "normalized_document_span": [chosen[0][1], chosen[-1][2]],
+            }
+        )
+    return segments
+
+
+def annual_report_cover(document_tree):
+    """Locate UNP's actual SEC annual-report cover, not mentions of old 10-Ks.
+
+    No archive year, known text offset, table amount, or closure enters selection.
+    The fixed semantic sequence distinguishes a cover from prose citations and
+    remains valid when inline XBRL splits the date around its comma.
+    """
+    document_text = text(document_tree)
+    legal = (
+        r"REPORT\s+PURSUANT\s+TO\s+SECTION\s+13\s+OR\s+15\(d\)\s+OF\s+THE\s+"
+        r"SECURITIES\s+EXCHANGE\s+ACT\s+OF\s+1934"
+    )
+    pattern = (
+        r"SECURITIES\s+AND\s+EXCHANGE\s+COMMISSION\s+WASHINGTON,\s*D\.C\.\s+\d{5}\s+"
+        r"FORM\s+10[- ]?K\s+\(Mark\s+One\)\s+(?:\[\s*[Xx]\s*\]|☒|☑)\s+ANNUAL\s+"
+        + legal
+        + r"\s+(?P<cover>For\s+(?:the\s+)?fiscal\s+year\s+ended\s+December\s+31\s*,?\s+"
+        r"(?P<year>20\d{2}))\s+OR\s+(?:\[\s*\]|☐)\s+TRANSITION\s+"
+        + legal
+        + r"\s+For\s+the\s+transition\s+period\s+from\s+_+\s+to\s+_+\s+"
+        r"Commission\s+File\s+Number\s+[0-9-]+\s+UNION\s+PACIFIC\s+CORP\s*ORATION\s+"
+        r"\(Exact\s+name\s+of\s+registrant\s+as\s+specified\s+in\s+its\s+charter\)"
+    )
+    matches = list(re.finditer(pattern, document_text, re.I))
+    require(len(matches) == 1, "issuer.cash_dividend_unique_SEC_annual_cover_region")
+    match = matches[0]
+    segments = _cover_dom_segments(document_tree, match.start(), match.end())
+    require(
+        " ".join(" ".join(segment["raw_text"].split()) for segment in segments) == match.group(0),
+        "issuer.cover_region_exact_DOM_reconstruction",
+    )
+    return {
+        "rule": "sec_UNP_annual_cover_region_and_native_CFO_v2",
+        "cover_quote": match.group("cover"),
+        "cover_text_start": match.start("cover"),
+        "cover_text_end": match.end("cover"),
+        "period_end": match.group("year") + "-12-31",
+        "cover_region": {
+            "normalized_text_start": match.start(),
+            "normalized_text_end": match.end(),
+            "quote": match.group(0),
+            "dom_text_segments": segments,
+            "annual_report_selected": True,
+            "transition_report_unselected": True,
+            "registrant_identity": "UNION PACIFIC CORPORATION",
+            "selection_uses_archived_year_known_offset_or_amount": False,
+        },
+        "native_same_accession_annual_CFO_confirmation_required": True,
+        "annual_frequency_alone_used_to_infer_calendar_year": False,
+    }
+
+
 def cells(table):
     rows = []
     for row_index, row in enumerate(table.xpath("./tr|./thead/tr|./tbody/tr|./tfoot/tr")):
@@ -473,24 +559,9 @@ def table_structure(table, document_text):
         # The literal December-31 annual cover gives proposed dates ONLY. Every
         # proposal must subsequently match an exact same-accession native annual
         # CFO record; a 52/53-week or fiscal-label/end-year mismatch stays rejected.
-        covers = list(
-            re.finditer(
-                r"For\s+(?:the\s+)?fiscal\s+year\s+ended\s+December\s+31,?\s+(20\d{2})",
-                document_text,
-                re.I,
-            )
-        )
-        require(len(covers) == 1, "issuer.cash_dividend_explicit_December31_cover")
-        cover = covers[0]
-        require(
-            re.search(
-                r"\bFORM\s+10[- ]?K\b",
-                document_text[max(0, cover.start() - 3000) : cover.start()],
-                re.I,
-            )
-            is not None,
-            "issuer.cash_dividend_original_10K_cover_context",
-        )
+        original_document = table.getroottree().getroot()
+        require(text(original_document) == document_text, "issuer.actual_original_DOM_text_parent")
+        header_resolution = annual_report_cover(original_document)
         candidates = []
         for row in rows[:start]:
             annual = [
@@ -503,7 +574,7 @@ def table_structure(table, document_text):
         require(len(candidates) == 1, "issuer.cash_dividend_unique_year_heading")
         year_headers = candidates[0]
         require(
-            max(x["period_end"] for x in year_headers) == cover.group(1) + "-12-31",
+            max(x["period_end"] for x in year_headers) == header_resolution["period_end"],
             "issuer.cash_dividend_cover_and_latest_heading",
         )
         require(
@@ -514,14 +585,6 @@ def table_structure(table, document_text):
             ),
             "issuer.cash_dividend_no_hidden_auxiliary_heading",
         )
-        header_resolution = {
-            "rule": "literal_December31_annual_cover_and_year_heading_native_CFO_required_v1",
-            "cover_quote": cover.group(0),
-            "cover_text_start": cover.start(),
-            "cover_text_end": cover.end(),
-            "native_same_accession_annual_CFO_confirmation_required": True,
-            "annual_frequency_alone_used_to_infer_calendar_year": False,
-        }
     else:
         year_headers = headers(rows, start)
     return {

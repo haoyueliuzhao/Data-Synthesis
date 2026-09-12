@@ -67,7 +67,147 @@ def pinned_bytes(root, member):
     return data
 
 
-def unp_headers(grid, document_text):
+def independent_annual_cover(document_tree):
+    """Select a date only when both sides are actual SEC annual-cover clauses.
+
+    The source parser uses one complete-region expression. This auditor instead
+    starts from all date clauses and independently establishes the preceding
+    legal annual-report header and following transition/registrant declarations.
+    """
+    text = base.normalized_text(document_tree)
+    candidates = list(
+        re.finditer(
+            r"For\s+(?:the\s+)?fiscal\s+year\s+ended\s+December\s+31\s*,?\s+(20\d{2})",
+            text,
+            re.IGNORECASE,
+        )
+    )
+    agency = list(re.finditer(r"SECURITIES\s+AND\s+EXCHANGE\s+COMMISSION\b", text, re.IGNORECASE))
+    legal = (
+        r"REPORT\s+PURSUANT\s+TO\s+SECTION\s+13\s+OR\s+15\(d\)\s+OF\s+THE\s+"
+        r"SECURITIES\s+EXCHANGE\s+ACT\s+OF\s+1934"
+    )
+    qualified = []
+    for candidate in candidates:
+        preceding = [match for match in agency if match.end() <= candidate.start()]
+        if not preceding:
+            continue
+        beginning = preceding[-1]
+        header = text[beginning.end() : candidate.start()]
+        if not re.fullmatch(
+            r"\s+WASHINGTON,\s*D\.C\.\s+\d{5}\s+FORM\s+10[- ]?K\s+\(Mark\s+One\)\s+"
+            r"(?:\[\s*[Xx]\s*\]|☒|☑)\s+ANNUAL\s+" + legal + r"\s+",
+            header,
+            re.IGNORECASE,
+        ):
+            continue
+        ending = re.match(
+            r"\s+OR\s+(?:\[\s*\]|☐)\s+TRANSITION\s+"
+            + legal
+            + r"\s+For\s+the\s+transition\s+period\s+from\s+_+\s+to\s+_+\s+"
+            r"Commission\s+File\s+Number\s+[0-9-]+\s+UNION\s+PACIFIC\s+CORP\s*ORATION\s+"
+            r"\(Exact\s+name\s+of\s+registrant\s+as\s+specified\s+in\s+its\s+charter\)",
+            text[candidate.end() :],
+            re.IGNORECASE,
+        )
+        if ending is None:
+            continue
+        start, end = beginning.start(), candidate.end() + ending.end()
+        qualified.append(
+            {
+                "rule": "sec_UNP_annual_cover_region_and_native_CFO_v2",
+                "cover_quote": candidate.group(0),
+                "cover_text_start": candidate.start(),
+                "cover_text_end": candidate.end(),
+                "period_end": candidate.group(1) + "-12-31",
+                "cover_region": {
+                    "normalized_text_start": start,
+                    "normalized_text_end": end,
+                    "quote": text[start:end],
+                    "annual_report_selected": True,
+                    "transition_report_unselected": True,
+                    "registrant_identity": "UNION PACIFIC CORPORATION",
+                    "selection_uses_archived_year_known_offset_or_amount": False,
+                },
+                "native_same_accession_annual_CFO_confirmation_required": True,
+                "annual_frequency_alone_used_to_infer_calendar_year": False,
+            }
+        )
+    require(len(qualified) == 1, "one independently identified UNP SEC annual cover")
+    return qualified[0]
+
+
+def verify_cover_evidence(document_tree, claimed):
+    """Reopen each claimed raw DOM slice and compute its global position afresh."""
+    expected = independent_annual_cover(document_tree)
+    region = claimed.get("cover_region") or {}
+    without_segments = {
+        **claimed,
+        "cover_region": {key: value for key, value in region.items() if key != "dom_text_segments"},
+    }
+    require(
+        without_segments == expected, "claimed cover equals independently selected semantic region"
+    )
+    positions, offset = {}, 0
+    for part in document_tree.xpath(".//text()"):
+        raw = str(part)
+        normalized = " ".join(raw.split())
+        if not normalized:
+            continue
+        node = part.getparent()
+        key = (node.getroottree().getpath(node), "tail" if part.is_tail else "text")
+        require(key not in positions, "unique original DOM text location")
+        positions[key] = (raw, offset)
+        offset += len(normalized) + 1
+    segments = region.get("dom_text_segments")
+    require(isinstance(segments, list) and bool(segments), "original cover DOM evidence required")
+    reconstructed, preceding = [], region["normalized_text_start"] - 1
+    for segment in segments:
+        require(
+            set(segment)
+            == {
+                "element_xpath",
+                "slot",
+                "raw_character_span",
+                "raw_text",
+                "normalized_document_span",
+            },
+            "closed DOM cover evidence fields",
+        )
+        key = (segment["element_xpath"], segment["slot"])
+        require(key in positions, "original cover DOM node/slot")
+        raw, node_offset = positions[key]
+        left, right = segment["raw_character_span"]
+        require(
+            type(left) is int and type(right) is int and 0 <= left < right <= len(raw),
+            "valid original DOM raw character span",
+        )
+        require(
+            (left == 0 or raw[left - 1].isspace())
+            and (right == len(raw) or raw[right].isspace())
+            and not raw[left].isspace()
+            and not raw[right - 1].isspace(),
+            "whole original DOM tokens",
+        )
+        require(raw[left:right] == segment["raw_text"], "exact original DOM raw slice")
+        prefix = " ".join(raw[:left].split())
+        fragment = " ".join(raw[left:right].split())
+        begin = node_offset + len(prefix) + bool(prefix)
+        finish = begin + len(fragment)
+        require(
+            segment["normalized_document_span"] == [begin, finish] and begin == preceding + 1,
+            "independent contiguous original DOM positions",
+        )
+        preceding = finish
+        reconstructed.append(fragment)
+    require(
+        preceding == region["normalized_text_end"] and " ".join(reconstructed) == region["quote"],
+        "complete original SEC cover DOM reconstruction",
+    )
+    return expected
+
+
+def unp_headers(grid, document_text, *, document_tree=None):
     """Derive the finite layout from original DOM, not a stored shape certificate."""
     labels = [next((cell["text"] for cell in row if cell["text"]), "") for row in grid]
     starts = [i for i, label in enumerate(labels) if label.casefold() == ROLES[0]]
@@ -80,21 +220,10 @@ def unp_headers(grid, document_text):
         "original complete CFO-CFI-dividend definition",
     )
     require(
-        re.search(r"\bFORM\s+10-K\b", document_text[:3000], re.IGNORECASE),
-        "original FORM 10-K document marker",
+        document_tree is not None and base.normalized_text(document_tree) == document_text,
+        "actual original DOM document required",
     )
-    covers = list(
-        re.finditer(
-            r"For\s+(?:the\s+)?fiscal\s+year\s+ended\s+December\s+31,?\s+(20\d{2})",
-            document_text,
-            re.IGNORECASE,
-        )
-    )
-    require(
-        len(covers) == 1,
-        "unambiguous original December31 cover",
-    )
-    cover = covers[0]
+    resolution = independent_annual_cover(document_tree)
     headings = []
     for row in grid[: starts[0]]:
         columns = [
@@ -123,17 +252,9 @@ def unp_headers(grid, document_text):
     )
     headers = headings[0]
     require(
-        max(cell["period_end"] for cell in headers) == cover.group(1) + "-12-31",
+        max(cell["period_end"] for cell in headers) == resolution["period_end"],
         "cover matches latest heading",
     )
-    resolution = {
-        "rule": "literal_December31_annual_cover_and_year_heading_native_CFO_required_v1",
-        "cover_quote": cover.group(0),
-        "cover_text_start": cover.start(),
-        "cover_text_end": cover.end(),
-        "native_same_accession_annual_CFO_confirmation_required": True,
-        "annual_frequency_alone_used_to_infer_calendar_year": False,
-    }
     return headers, selected, labels, resolution
 
 
@@ -395,7 +516,7 @@ class UNPAudit(base.IncrementalAudit):
             )
             grid, text = base.original_grid(nodes[0]), base.normalized_text(dom)
             structure = table["structure"]
-            headers, selected, labels, resolution = unp_headers(grid, text)
+            headers, selected, labels, resolution = unp_headers(grid, text, document_tree=dom)
             require(
                 grid == structure["rows"]
                 and headers == structure["headers"]
@@ -407,7 +528,7 @@ class UNPAudit(base.IncrementalAudit):
                 "exact original role labels",
             )
             require(
-                resolution == structure["header_period_resolution"],
+                verify_cover_evidence(dom, structure["header_period_resolution"]) == resolution,
                 "independent original cover resolution",
             )
             quote = text[structure["definition_text_start"] : structure["definition_text_end"]]
