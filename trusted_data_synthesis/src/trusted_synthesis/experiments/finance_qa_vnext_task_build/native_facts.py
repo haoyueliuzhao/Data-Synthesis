@@ -28,8 +28,16 @@ from .protocol import CASH, METRIC_TAGS, NEW_FLOW_METRICS, RESTRICTED, source_id
 def resolve_raw(root, value):
     raw = str(value["storage_uri"])
     prefix = "/workspace/Data Synthesis/"
-    require(raw.startswith(prefix), "native.known_historical_storage_prefix")
-    path = Path(root) / raw[len(prefix) :]
+    if raw.startswith(prefix):
+        relative = raw[len(prefix) :]
+    else:
+        require(
+            raw.startswith("trusted_data_synthesis/artifacts/qa_vnext_surface_build/"),
+            "native.registered_new_source_storage_prefix",
+        )
+        relative = raw
+    path = Path(root) / relative
+    require(path.resolve().is_relative_to(Path(root).resolve()), "native.source_path_containment")
     require(path.is_file() and not path.is_symlink(), "native.original_file_available")
     require(
         path.stat().st_size == value["content_size_bytes"] and sha(path) == value["content_sha256"],
@@ -407,14 +415,15 @@ def populate_facts(db, inputs, issuer=None):
     return fact_build, document_build, bindings
 
 
-def run(root, output):
+def run(root, output, *, work=WORK, extra_issuer_sources=()):
     root, output = Path(root).resolve(), Path(output)
-    database = root / WORK / "native_fact_qa.sqlite3"
+    database = root / work / "native_fact_qa.sqlite3"
+    database.parent.mkdir(parents=True, exist_ok=True)
     require(not database.exists(), "native.new_scoped_database_only")
     archived = RecordDB(str(root / WORK / "qa_build.sqlite3"))
     # Reading the archive projection does not activate or amend old builds.
     inputs = source_inputs(root, archived)
-    issuer = issuer_tables.prepare(root, archived, inputs)
+    issuer = issuer_tables.prepare(root, archived, inputs, extra_sources=extra_issuer_sources)
     write_json(output / "issuer_source_tables.json", issuer)
     write_json(
         output / "native_source_inventory.json",

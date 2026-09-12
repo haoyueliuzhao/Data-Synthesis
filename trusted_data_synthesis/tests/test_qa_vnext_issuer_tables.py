@@ -2,8 +2,10 @@
 
 import copy
 import hashlib
+import importlib.util
 import json
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from finraw.builds import ensure_build_schema, finish_build, start_build
@@ -37,6 +39,79 @@ less capital expenditures plus legal settlements.</p><p>All amounts in millions 
 def structures(source=SOURCE):
     root = html.fromstring(source)
     return issuer_tables.table_structure(root.xpath("//table")[0], issuer_tables.text(root))
+
+
+@pytest.mark.parametrize("layout", ["full_dates", "shared_month_day", "annotated_total"])
+def test_independent_source_auditor_reads_issuer_header_variants(layout):
+    source = SOURCE
+    if layout == "shared_month_day":
+        source = source.replace(
+            "<td>Years Ended</td><td>December 31, 2020</td><td>December 31, 2019</td>",
+            "<td>Years Ended December 31,</td><td>2020</td><td>2019</td>",
+        )
+    elif layout == "annotated_total":
+        source = source.replace(">Free cash flow<", ">Free cash flow (1)<").replace(
+            "</table>", "</table><p>(1) This is an explicit source footnote.</p>"
+        )
+    path = Path(__file__).resolve().parents[1] / "scripts/audit_qa_vnext_task_build.py"
+    spec = importlib.util.spec_from_file_location("synthetic_source_auditor", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    auditor = module.Audit.__new__(module.Audit)
+    auditor.grids = {"table": structures(source)["rows"]}
+    public = {
+        "question": (
+            "What is the change in Example's company-defined free cash flow from "
+            "2019-12-31 to 2020-12-31? Report in USD millions."
+        ),
+        "sources": [{"source_id": "table"}],
+        "quantity_contract": {
+            "unit": "million USD",
+            "decimal_places": 2,
+            "rounding": "half away from zero",
+        },
+    }
+    assert auditor.public_target(public) == Decimal("11")
+
+
+def test_colon_ends_explicit_definition_before_table_or_following_prose():
+    source = SOURCE.replace(
+        "We define free cash flow as net cash provided by operating activities\n"
+        "less capital expenditures plus legal settlements.",
+        "We calculate free cash flow as follows:",
+    )
+    assert structures(source)["definition_quote"] == "We calculate free cash flow as follows:"
+
+
+def test_exact_subtracting_capex_clause_requires_complete_two_component_domain():
+    quote = (
+        "Free cash flow was calculated by subtracting capital expenditures from "
+        "the most directly comparable GAAP measure, cash flows from operating activities "
+        "(also referred to as cash flow from operations)."
+    )
+    issuer_tables.validate_definition_shape(
+        quote, ["Cash flows from operating activities", "Capital expenditures"]
+    )
+    with pytest.raises(ValueError, match="subtraction_clause_complete_roles"):
+        issuer_tables.validate_definition_shape(
+            quote,
+            ["Cash flows from operating activities", "Capital expenditures", "Legal settlements"],
+        )
+
+
+@pytest.mark.parametrize("marker", ["*", "(1)"])
+def test_annotation_requires_real_following_note_not_its_own_label(marker):
+    source = SOURCE.replace(">Free cash flow<", ">Free cash flow " + marker + "<")
+    with pytest.raises(ValueError, match="footnote_requires_following_source_text"):
+        structures(source)
+    source = source.replace(
+        "</table>", "</table><p>" + marker + " This is an explicit source note.</p>"
+    )
+    result = structures(source)
+    annotation = result["label_annotations"][0]
+    assert annotation["note_quote"] == marker + " This is an explicit source note."
+    assert annotation["note_text_start"] >= result["table_text_end"]
+    assert result["labels"][-1] == "Free cash flow"
 
 
 def inputs(tmp_path, source=SOURCE):
@@ -189,7 +264,10 @@ def test_same_filing_native_anchor_and_original_cell_values_are_required(tmp_pat
     assert result["failures"][0]["reason"] == "issuer.same_filing_native_USD_CFO_anchor"
 
 
-def test_issuer_native_facts_reach_actual_QA_build_export_without_a_universal_FCF_formula(tmp_path):
+@pytest.mark.parametrize("realization", ["template", "accepted", "fallback"])
+def test_issuer_native_facts_reach_actual_QA_build_export_without_a_universal_FCF_formula(
+    tmp_path, realization
+):
     issuer, native = inputs(tmp_path)
     db = MetadataDB(str(tmp_path / "issuer_integration.sqlite3"))
     db.init_schema()
@@ -251,10 +329,83 @@ def test_issuer_native_facts_reach_actual_QA_build_export_without_a_universal_FC
     assert not rejected
     assert len(selected["company_defined_metric"]) == 2
     items = selected["company_defined_metric"]
+    kwargs = {}
+    ledger = None
+    if realization != "template":
+        from trusted_synthesis.experiments.finance_qa_vnext_surface_build.budget import Ledger
+        from trusted_synthesis.experiments.finance_qa_vnext_surface_build.protocol import qa_config
+        from trusted_synthesis.experiments.finance_qa_vnext_surface_build.transport import (
+            MODEL,
+            Provider,
+        )
+
+        ledger = Ledger(tmp_path / "rewrite_budget.sqlite", "synthetic_stage")
+
+        def sender(body, key):
+            requested = json.loads(body["messages"][1]["content"])
+            template = (
+                requested["protected_question"]
+                .replace("What is", "Calculate")
+                .replace("What was", "Calculate")
+            )
+            if realization == "fallback":
+                template = "Invented invalid question."
+            content = {
+                "rewrites": [
+                    {"rewrite_version": "question_rewrite.v3.3", "question_template": template}
+                ]
+            }
+            return json.dumps(
+                {
+                    "model": MODEL,
+                    "usage": {"prompt_tokens": 50, "completion_tokens": 50},
+                    "choices": [{"message": {"content": json.dumps(content)}}],
+                }
+            ).encode()
+
+        kwargs = {
+            "config": qa_config(),
+            "provider_factory": lambda task: Provider(
+                task, ledger, tmp_path, "TEST_KEY", sender=sender
+            ),
+        }
     build_id, candidates, plans, compilations, validation = factory.compile_batch(
-        db, kg, items, facts, bindings, tmp_path, "issuer_QA"
+        db, kg, items, facts, bindings, tmp_path, "issuer_QA", **kwargs
     )
     assert validation["passed_count"] == 2, validation
+    if ledger:
+        from trusted_synthesis.experiments.finance_qa_vnext_surface_build.stage import make_surface
+
+        count = 2 if realization == "accepted" else 4
+        assert ledger.snapshot()["sent_request_count"] == count
+        for sample in db.fetchall("SELECT * FROM qa_samples"):
+            candidate = next(
+                row for row in candidates if row["candidate_id"] == sample["candidate_id"]
+            )
+            item = next(
+                row
+                for row in items
+                if row["previous_fact_id"]
+                == candidate["canonical_semantics"]["input_bindings"]["previous"]
+                and (
+                    "yoy_growth" if row["target"]["quantity"] == "relative_change" else "difference"
+                )
+                == candidate["task_subtype"]
+            )
+            public = factory.public_projection(
+                sample["question"],
+                [],
+                {
+                    "unit": item["target"]["unit"],
+                    "currency": item["target"]["currency"],
+                    "decimal_places": 2,
+                    "rounding": "half away from zero",
+                },
+            )
+            surface = make_surface(item, dict(sample), public, candidate, "synthetic_stage")
+            if realization == "fallback":
+                assert surface["category"] == "canonical_fallback"
+                assert sample["question"] == sample["canonical_question"]
     exported, rejected = factory.export_batch(
         db, kg, build_id, items, candidates, plans, compilations, facts, bindings, usage, tmp_path
     )

@@ -8,12 +8,16 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, Protocol
 
 from finraw.llm_client import LLMClientError, OpenAICompatibleJsonClient
-
+from finraw.qa.temporal_rewrite import (
+    public_cues,
+    quantity_contract,
+    validate_temporal_question,
+)
 
 SENTENCE_PLAN_VERSION = "sentence_plan.v1"
-QUESTION_REWRITE_VERSION = "question_rewrite.v3.2"
+QUESTION_REWRITE_VERSION = "question_rewrite.v3.3"
 SURFACE_VARIATION_VERSION = "surface_variation.v3.4"
-QUESTION_PARSER_VERSION = "1.5.2"
+QUESTION_PARSER_VERSION = "1.6.0"
 QUESTION_PARSER_SUPPORTED_LANGUAGES = ("en", "zh", "mixed")
 
 _TONE_PREFIXES = {
@@ -88,7 +92,9 @@ _COMPARISON_LEXEMES = {
     "小于": "lt",
     "等于": "eq",
 }
-_NUMBER_PATTERN = re.compile(r"(?<![A-Za-z0-9_.])-?\d+(?:\.\d+)?(?![A-Za-z0-9_.])")
+_NUMBER_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_.])[-+\u2212]?(?:\d+(?:\.\d+)?|\.\d+)(?![A-Za-z0-9_]|\.\d)"
+)
 _OBSERVABLE_OPERATOR_PATTERNS = {
     "filter": re.compile(
         r"\b(?:filter(?:s|ed|ing)?|screen(?:s|ed|ing)?|qualifying|condition(?:s)?)\b|筛选|过滤|条件",
@@ -536,6 +542,7 @@ def _realize_protected_rewrite(
     effective_provider: QuestionProvider | None = None
     telemetry: dict[str, Any] = {}
     errors: list[str] = []
+    variant_checks: list[dict[str, Any]] = []
     selected_surface_fallback: tuple[dict[str, str], dict[str, str]] | None = None
     protected = protected_question or _protect_question_text(
         canonical_question, canonical_slots, required_slots
@@ -643,7 +650,10 @@ def _realize_protected_rewrite(
         rewrites = effective_provider.generate(request)
         telemetry = dict(getattr(effective_provider, "last_telemetry", {}) or {})
         indexed_rewrites = list(enumerate(rewrites))
-        if indexed_rewrites:
+        if (
+            indexed_rewrites
+            and str(policy.get("variant_order") or "style_offset") != "response_order"
+        ):
             style_offset = protected_rewrite_style_ids().index(style_variant_id) % len(
                 indexed_rewrites
             )
@@ -677,6 +687,14 @@ def _realize_protected_rewrite(
                     )
             if not rewrite_check["passed"]:
                 errors.extend(rewrite_check["rewrite_errors"])
+                variant_checks.append(
+                    {
+                        "attempt": 1,
+                        "variant_index": rewrite_variant_index,
+                        "passed": False,
+                        "errors": rewrite_check["rewrite_errors"],
+                    }
+                )
                 continue
             candidate_slots = resolved_slots
             if llm_selects_variants:
@@ -694,6 +712,17 @@ def _realize_protected_rewrite(
             )
             numeric_check = validate_rewrite_numeric_grounding(
                 question, candidate_slots
+            )
+            variant_checks.append(
+                {
+                    "attempt": 1,
+                    "variant_index": rewrite_variant_index,
+                    "passed": slot_check["passed"] and numeric_check["passed"],
+                    "errors": [
+                        *slot_check["contract_errors"],
+                        *numeric_check["errors"],
+                    ],
+                }
             )
             if slot_check["passed"] and numeric_check["passed"]:
                 selected_variant_ids = (
@@ -718,6 +747,12 @@ def _realize_protected_rewrite(
                         "style_variant_id": style_variant_id,
                         "rewrite_variant_index": rewrite_variant_index,
                         "rewrite_valid": True,
+                        "rewrite_template_changed": _normalize(
+                            rewrite_check["question_template"]
+                        )
+                        != _normalize(protected),
+                        "rewrite_text_changed": question != canonical_question,
+                        "variant_checks": variant_checks,
                         "rewrite_errors": [],
                         "rewrite_warnings": rewrite_check["rewrite_warnings"],
                         "protected_question": protected,
@@ -751,7 +786,9 @@ def _realize_protected_rewrite(
             errors.extend(slot_check["contract_errors"])
             errors.extend(numeric_check["errors"])
         max_attempts = max(1, min(3, int(policy.get("max_attempts", 2))))
-        if max_attempts > 1:
+        # A transport exception exits to fallback above; a normal return with
+        # no candidates has no structural/semantic defect that warrants repair.
+        if max_attempts > 1 and errors:
             retry_result = _realize_protected_rewrite(
                 canonical_question,
                 semantics=semantics,
@@ -768,6 +805,12 @@ def _realize_protected_rewrite(
                 base_validation=base_validation,
             )
             retry_validation = dict(retry_result.validation)
+            variant_checks.extend(
+                [
+                    {**row, "attempt": int(row["attempt"]) + 1}
+                    for row in retry_validation.get("variant_checks") or []
+                ]
+            )
             retry_telemetry = dict(retry_validation.get("llm_telemetry") or {})
             telemetry = _merge_llm_attempt_telemetry([telemetry, retry_telemetry])
             rewrite_attempt_count = 1 + int(
@@ -784,6 +827,7 @@ def _realize_protected_rewrite(
                         **retry_validation,
                         "rewrite_attempt_count": rewrite_attempt_count,
                         "repair_error_codes": sorted(set(errors)),
+                        "variant_checks": variant_checks,
                         "llm_telemetry": telemetry,
                     },
                 )
@@ -861,6 +905,9 @@ def _realize_protected_rewrite(
             "rewrite_version": QUESTION_REWRITE_VERSION,
             "style_variant_id": style_variant_id,
             "rewrite_valid": False,
+            "rewrite_template_changed": False,
+            "rewrite_text_changed": False,
+            "variant_checks": variant_checks,
             "rewrite_errors": sorted(set(errors)),
             "protected_question": protected,
             "surface_slots": resolved_slots,
@@ -901,8 +948,19 @@ def _merge_llm_attempt_telemetry(
     merged.update(
         {
             "request_count": sum(
-                max(int(row.get("request_count") or 1), 1) for row in rows
+                max(int(row.get("request_count") or 0), 0) for row in rows
             ),
+            "http_success_count": sum(
+                int(row.get("http_success_count") or 0) for row in rows
+            ),
+            "structured_response_count": sum(
+                int(row.get("structured_response_count") or 0) for row in rows
+            ),
+            "request_ids": [
+                identifier
+                for row in rows
+                for identifier in row.get("request_ids") or []
+            ],
             "latency_ms": sum(float(row.get("latency_ms") or 0) for row in rows),
             "prompt_tokens": sum(int(row.get("prompt_tokens") or 0) for row in rows),
             "completion_tokens": sum(
@@ -1493,6 +1551,8 @@ def validate_question_semantics(
     requirements = _semantic_requirements(expected_contract)
     errors: list[str] = []
     observed_comparisons: list[dict[str, Any]] = []
+    temporal_check = validate_temporal_question(question, expected_contract)
+    errors.extend(temporal_check["errors"])
 
     for requirement in requirements["comparisons"]:
         value = requirement.get("value")
@@ -1607,10 +1667,20 @@ def validate_question_semantics(
         "semantic_errors": errors,
         "expected_operator_order": expected_order,
         "observed_operator_order": observed_order,
-        "observed_operator_id": "_then_".join(observed_order) or None,
+        "observed_operator_id": (
+            "difference_then_ratio_percent"
+            if temporal_check["passed"]
+            and (temporal_check.get("observed") or {}).get("quantity")
+            == "relative_change"
+            else "difference"
+            if temporal_check["passed"]
+            and (temporal_check.get("observed") or {}).get("quantity") == "difference"
+            else "_then_".join(observed_order) or None
+        ),
         "observed_comparisons": observed_comparisons,
         "observed_rank": observed_rank,
         "observed_extreme_direction": observed_extreme,
+        "temporal_quantity": temporal_check,
     }
 
 
@@ -1674,6 +1744,7 @@ def _semantic_requirements(contract: dict[str, Any]) -> dict[str, Any]:
         "rank": rank,
         "extreme_direction": extreme_direction,
         "operator_order": operator_order,
+        "temporal_quantity": contract.get("temporal_quantity"),
     }
 
 
@@ -1797,6 +1868,7 @@ def _protected_rewrite_semantic_cues(
             if operator in cue_words
         },
         "extreme_direction": requirements.get("extreme_direction"),
+        "temporal_quantity": public_cues(semantic_contract.get("temporal_quantity")),
         "instruction": (
             "Express every listed operation exactly once in the listed order using "
             "an applicable observable anchor; these cues contain no result values."
@@ -1870,6 +1942,7 @@ def build_question_contract(
                 "step_id": step.get("step_id"),
                 "operator": step.get("operator"),
                 "params": _json_ready(step.get("params") or {}),
+                "inputs": _json_ready(step.get("inputs") or []),
             }
         )
     operator_id = "_then_".join(
@@ -1884,6 +1957,7 @@ def build_question_contract(
         "required_slots": list(required_slots),
         "operator_id": operator_id,
         "constraints": operators,
+        "temporal_quantity": quantity_contract(semantics, operators),
     }
 
 

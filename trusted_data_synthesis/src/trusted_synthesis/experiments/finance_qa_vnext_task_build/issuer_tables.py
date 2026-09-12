@@ -29,8 +29,8 @@ DATE_RE = re.compile(rf"\b({MONTH_RE})\s+(\d{{1,2}}),?\s+(20\d{{2}})\b", re.I)
 MONTH_DAY_RE = re.compile(rf"\b({MONTH_RE})\s+(\d{{1,2}}),?\b", re.I)
 DEFINITION_RE = re.compile(
     r"\b(?:we\s+(?:define|calculate)\s+(?:non-GAAP\s+)?free cash flow"
-    r"|free cash flow(?:,\s*[^.]{0,100},)?\s+is\s+(?:calculated|defined))"
-    r"[^.]{0,1000}[.:]",
+    r"|free cash flow(?:,\s*[^.]{0,100},)?\s+(?:is|was)\s+(?:calculated|defined))"
+    r"[^.:]{0,1000}[.:]",
     re.I,
 )
 TOTAL_RE = re.compile(r"^(?:non-gaap\s+)?free cash flow(?:\s*\(non-gaap\))?\s*[*]?$", re.I)
@@ -88,6 +88,18 @@ def validate_definition_shape(quote, component_labels):
         row_roles[0] == {"operating_cash_flow"}, "issuer.first_component_is_operating_cash_flow"
     )
     if re.fullmatch(r"We calculate (?:non-GAAP )?free cash flow as follows:", quote, re.I):
+        return
+    if re.fullmatch(
+        r"Free cash flow (?:was|is) calculated by subtracting capital expenditures from "
+        r"the most directly comparable GAAP measure, cash flows from operating activities "
+        r"\(also referred to as cash flow from operations\)\.",
+        quote,
+        re.I,
+    ):
+        require(
+            row_roles == [{"operating_cash_flow"}, {"capital_expenditure"}],
+            "issuer.subtraction_clause_complete_roles",
+        )
         return
     words = set(re.findall(r"[a-z]+", quote.lower()))
     require(words <= FORMULA_WORDS, "issuer.uninterpreted_definition_vocabulary")
@@ -193,7 +205,38 @@ def row_amount(row, header):
 
 def table_structure(table, document_text):
     rows = cells(table)
-    labels = [next((cell["text"] for cell in row if cell["text"]), "") for row in rows]
+    table_text = text(table)
+    position = document_text.find(table_text)
+    require(position >= 0, "issuer.table_text_in_original_document")
+    after_start = position + len(table_text)
+    after_table = document_text[after_start : after_start + 2500]
+    original_labels = [next((cell["text"] for cell in row if cell["text"]), "") for row in rows]
+    # Trailing footnote markers are source annotations, not financial roles.
+    # Keep original DOM labels intact and require the annotated note to exist.
+    labels, annotations = [], []
+    for index, label in enumerate(original_labels):
+        match = re.search(r"\s*(\*|\([0-9]+\))$", label)
+        if match:
+            marker = match.group(1)
+            note = re.search(
+                re.escape(marker) + r"\s+(?=[A-Za-z])[^.]{8,1500}(?:[.]|$)", after_table
+            )
+            require(note is not None, "issuer.footnote_requires_following_source_text")
+            normalized = label[: match.start()].rstrip()
+            annotations.append(
+                {
+                    "row": index,
+                    "original": label,
+                    "normalized": normalized,
+                    "marker": marker,
+                    "note_quote": note.group(0),
+                    "note_text_start": after_start + note.start(),
+                    "note_text_end": after_start + note.end(),
+                }
+            )
+            labels.append(normalized)
+        else:
+            labels.append(label)
     total_rows = [index for index, label in enumerate(labels) if TOTAL_RE.fullmatch(label)]
     require(len(total_rows) == 1, "issuer.one_reported_FCF_total_row")
     end = total_rows[0]
@@ -210,9 +253,6 @@ def table_structure(table, document_text):
         not any("free cash flow" in labels[index].lower() for index in selected_rows[1:-1]),
         "issuer.intermediate_total_not_an_additive_component",
     )
-    table_text = text(table)
-    position = document_text.find(table_text)
-    require(position >= 0, "issuer.table_text_in_original_document")
     region_start, region_end = (
         max(0, position - 5000),
         min(len(document_text), position + len(table_text) + 5000),
@@ -244,6 +284,8 @@ def table_structure(table, document_text):
     return {
         "rows": rows,
         "labels": labels,
+        "original_labels": original_labels,
+        "label_annotations": annotations,
         "selected_rows": selected_rows,
         "headers": year_headers,
         "definition_quote": quote,
@@ -434,7 +476,7 @@ def parse_document(root, source, native_observations):
     }
 
 
-def prepare(root, archived, native_inputs):
+def prepare(root, archived, native_inputs, *, extra_sources=()):
     selected = {item["entity"]["entity_id"]: item for item in native_inputs}
     sources = []
     for document in archived.fetchall(
@@ -455,6 +497,26 @@ def prepare(root, archived, native_inputs):
                 "entity": selected[document["entity_id"]]["entity"],
             }
         )
+
+    for source in extra_sources:
+        entity = source["entity"]
+        require(entity["entity_id"] in selected, "issuer.extra_source_same_training_scope")
+        require(
+            source_identity(entity) == source_identity(selected[entity["entity_id"]]["entity"]),
+            "issuer.extra_source_CIK_identity",
+        )
+        sources.append(source)
+    require(
+        len({source["document"]["document_id"] for source in sources}) == len(sources),
+        "issuer.unique_original_source_documents",
+    )
+    sources.sort(
+        key=lambda source: (
+            source["entity"]["entity_id"],
+            source["document"]["period_end"],
+            source["document"]["document_id"],
+        )
+    )
 
     def read(source):
         try:

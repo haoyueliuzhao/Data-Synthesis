@@ -13,13 +13,11 @@ from pathlib import Path
 from typing import Any
 
 from finraw.db.client import DBProtocol
-from finraw.source_registry import GREATER_CHINA_QA_SOURCE_IDS
-from finraw.qa.binding_executor import MetricFactCache
 from finraw.kg_query import resolve_kg_build_id
+from finraw.qa.binding_executor import MetricFactCache
 from finraw.qa.comparability import comparability_policy
 from finraw.qa.difficulty import DIFFICULTY_POLICY, assess_difficulty, graph_features
 from finraw.qa.graph_matcher import discover_pattern_matches, load_bound_facts
-from finraw.qa.walk_verifier import validate_walk_binding
 from finraw.qa.graph_patterns import (
     get_pattern,
     pattern_content_hash,
@@ -54,10 +52,14 @@ from finraw.qa.scope_contract import (
 from finraw.qa.semantic_constraints import validate_semantic_constraints
 from finraw.qa.split_leakage import (
     audit_split_leakage,
-    cluster_id as split_cluster_id,
-    entity_ids as split_entity_ids,
     leakage_policy,
     strict_holdout_clusters,
+)
+from finraw.qa.split_leakage import (
+    cluster_id as split_cluster_id,
+)
+from finraw.qa.split_leakage import (
+    entity_ids as split_entity_ids,
 )
 from finraw.qa.store import chunks, execute_many, insert_rows, json_value
 from finraw.qa.templates import TEMPLATES, template_for
@@ -77,7 +79,8 @@ from finraw.qa.verbalizer import (
     validate_question_roundtrip,
     validate_rewrite_numeric_grounding,
 )
-
+from finraw.qa.walk_verifier import validate_walk_binding
+from finraw.source_registry import GREATER_CHINA_QA_SOURCE_IDS
 
 SIMPLE_DERIVED = {"difference", "yoy_growth", "qoq_growth", "ratio", "share"}
 TEMPORAL_DERIVED = {
@@ -115,7 +118,7 @@ GRAPH_SCOPE_TASKS = {
     "walk_scope_filter_rank_followup",
 }
 SUPPORTED_DERIVED = SIMPLE_DERIVED | TEMPORAL_DERIVED | SCOPE_DERIVED
-GENERATOR_VERSION = "4.29.0"
+GENERATOR_VERSION = "4.30.0"
 
 BUILD_COLUMNS = [
     "qa_build_id",
@@ -1009,6 +1012,7 @@ def generate_qa_samples(
     *,
     output_dir: str | None = None,
     batch_size: int = 2000,
+    question_provider_factory: Any = None,
 ) -> dict[str, Any]:
     ensure_qa_schema(db)
     build = _qa_build(db, qa_build_id)
@@ -1059,7 +1063,12 @@ def generate_qa_samples(
     _assign_candidate_languages(decoded_candidates, generation_policy)
 
     def render(candidate: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-        return _sample_from_candidate(candidate, build)
+        provider = (
+            question_provider_factory(candidate, build)
+            if question_provider_factory
+            else None
+        )
+        return _sample_from_candidate(candidate, build, question_provider=provider)
 
     def consume(results: Any) -> None:
         for sample, path in results:
@@ -1694,7 +1703,9 @@ def split_qa_samples(
             f"unique_operation_sequences={len(operation_sequences)} "
             f"< {int(minimum_sequences)}"
         )
-    if llm_generation["mode"] == "controlled_llm":
+    if llm_generation["mode"] == "controlled_llm" and not dict(
+        policy.get("question_generation", {}).get("api_quality_gate") or {}
+    ).get("observational_only", False):
         generation_gate = dict(
             policy.get("question_generation", {}).get("api_quality_gate") or {}
         )
@@ -1737,7 +1748,7 @@ def split_qa_samples(
                 f"{maximum_retry_rate:.6f}"
             )
         for metric, minimum in thresholds.items():
-            observed = float(llm_generation[metric])
+            observed = float(llm_generation[metric] or 0)
             if observed < minimum:
                 failures.append(f"qa_llm_{metric}={observed:.6f} < {minimum:.6f}")
         minimum_average_noncanonical = float(
@@ -2184,7 +2195,7 @@ def _qa_llm_generation_stats(
     sample_rows = [
         dict(row)
         for row in db.fetchall(
-            "SELECT generation_method, source_metadata FROM qa_samples "
+            "SELECT generation_method, question, canonical_question, source_metadata FROM qa_samples "
             "WHERE qa_build_id = ? ORDER BY qa_id",
             (qa_build_id,),
         )
@@ -2206,17 +2217,20 @@ def _qa_llm_generation_stats(
             "noncanonical_selection_count": 0,
             "controlled_generation_count": 0,
             "fallback_count": 0,
-            "http_success_rate": 1.0,
-            "structured_response_pass_rate": 1.0,
-            "valid_sentence_plan_rate": 1.0,
-            "valid_rewrite_rate": 1.0,
-            "valid_surface_realization_rate": 1.0,
-            "valid_denormalization_rate": 1.0,
-            "denormalization_applied_rate": 1.0,
+            "rate_status": "NOT_APPLICABLE",
+            "registered_task_count": len(sample_rows),
+            "accepted_true_rewrite_count": 0,
+            "http_success_rate": None,
+            "structured_response_pass_rate": None,
+            "valid_sentence_plan_rate": None,
+            "valid_rewrite_rate": None,
+            "valid_surface_realization_rate": None,
+            "valid_denormalization_rate": None,
+            "denormalization_applied_rate": None,
             "average_noncanonical_slots": 0.0,
             "style_variant_distribution": {},
             "surface_realization_source_distribution": {},
-            "controlled_generation_rate": 1.0,
+            "controlled_generation_rate": None,
             "fallback_rate": 0.0,
             "unknown_fallback_reason_count": 0,
             "fallback_reason_distribution": {},
@@ -2278,19 +2292,24 @@ def _qa_llm_generation_stats(
                     generation.get("surface_realization_source") or "none"
                 ),
                 "controlled_generation": controlled,
+                "true_text_rewrite": method == "controlled_llm_protected_rewrite"
+                and bool(generation.get("rewrite_template_changed"))
+                and row.get("question") != row.get("canonical_question"),
+                "no_change": controlled
+                and row.get("question") == row.get("canonical_question"),
             }
         )
     count = len(telemetry_rows)
     request_count = sum(
-        max(int(row.get("request_count") or 1), 1) for row in telemetry_rows
+        max(int(row.get("request_count") or 0), 0) for row in telemetry_rows
     )
     retry_count = max(request_count - count, 0)
 
-    def rate(field: str) -> float:
+    def rate(field: str) -> float | None:
         return (
             sum(bool(row.get(field)) for row in telemetry_rows) / count
             if count
-            else 0.0
+            else None
         )
 
     latencies = [
@@ -2299,18 +2318,26 @@ def _qa_llm_generation_stats(
         if row.get("latency_ms") is not None
     ]
     fallback_count = sum(fallback_reasons.values()) + unknown_fallbacks
+    http_success_count = sum(
+        int(row.get("http_success_count") or 0) for row in telemetry_rows
+    )
+    structured_count = sum(
+        int(row.get("structured_response_count") or 0) for row in telemetry_rows
+    )
     return {
         "mode": mode,
         "request_count": request_count,
         "expected_request_count": len(sample_rows),
+        "registered_task_count": len(sample_rows),
+        "accepted_true_rewrite_count": sum(
+            row["true_text_rewrite"] for row in telemetry_rows
+        ),
+        "accepted_true_rewrite_rate": rate("true_text_rewrite"),
+        "no_change_count": sum(row["no_change"] for row in telemetry_rows),
         "retry_count": retry_count,
         "retry_rate": retry_count / count if count else 0.0,
-        "http_success_count": sum(
-            bool(row.get("http_success")) for row in telemetry_rows
-        ),
-        "structured_response_pass_count": sum(
-            bool(row.get("structured_response_valid")) for row in telemetry_rows
-        ),
+        "http_success_count": http_success_count,
+        "structured_response_pass_count": structured_count,
         "valid_sentence_plan_count": sum(
             bool(row.get("sentence_plan_valid")) for row in telemetry_rows
         ),
@@ -2333,8 +2360,12 @@ def _qa_llm_generation_stats(
             bool(row.get("controlled_generation")) for row in telemetry_rows
         ),
         "fallback_count": fallback_count,
-        "http_success_rate": rate("http_success"),
-        "structured_response_pass_rate": rate("structured_response_valid"),
+        "http_success_rate": http_success_count / request_count
+        if request_count
+        else None,
+        "structured_response_pass_rate": structured_count / request_count
+        if request_count
+        else None,
         "valid_sentence_plan_rate": rate("sentence_plan_valid"),
         "valid_rewrite_rate": rate("rewrite_valid"),
         "valid_surface_realization_rate": rate("surface_realization_valid"),
@@ -2846,6 +2877,13 @@ def _graph_pattern_candidate(
             for metric_id in metric_ids
         },
         "metric_period_type": facts[0].get("metric_period_type") if facts else None,
+        "source_definition_ids": sorted(
+            {
+                str(fact["source_definition_id"])
+                for fact in facts
+                if fact.get("source_definition_id")
+            }
+        ),
         "time_scope": time_scope,
         "input_bindings": match["input_bindings"],
         "operation_plan": operator_dag,
@@ -3103,7 +3141,7 @@ def _sample_language_policy(
 
 
 def _sample_from_candidate(
-    candidate: dict[str, Any], build: dict[str, Any]
+    candidate: dict[str, Any], build: dict[str, Any], *, question_provider: Any = None
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     semantics = candidate["canonical_semantics"]
     entity_names = _entity_names_from_semantics(semantics, candidate["entity_ids"])
@@ -3178,7 +3216,8 @@ def _sample_from_candidate(
     realization_policy = {
         **generation_policy,
         "language": language,
-        "style_variant_id": rewrite_styles[
+        "style_variant_id": generation_policy.get("style_variant_id")
+        or rewrite_styles[
             int(
                 _digest(
                     candidate.get("stable_candidate_id") or candidate["candidate_id"],
@@ -3197,6 +3236,7 @@ def _sample_from_candidate(
         config=realization_policy,
         surface_slots=surface_slots,
         protected_question=protected_question,
+        provider=question_provider,
     )
     question = _normalize_question_typography(realization.question, language)
     answer_text = _answer_text(candidate, answer, entity_names, output_contract)

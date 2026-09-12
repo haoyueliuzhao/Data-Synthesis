@@ -57,9 +57,10 @@ def pointer(document, path):
 
 
 class Audit:
-    def __init__(self, root):
+    def __init__(self, root, stage=STAGE):
         self.root = root.resolve()
-        self.stage = self.root / STAGE
+        self.stage = (self.root / stage).resolve()
+        require(self.stage.is_relative_to(self.root), "audit stage contained in project")
         self.tables = {}
         for item in read(self.stage / "parent_table_inventory.json"):
             rows = []
@@ -144,6 +145,18 @@ class Audit:
                 table["structure"]["definition_quote"] in normalized_text(dom), "raw definition"
             )
             require(table["structure"]["nearby_source_text"] in normalized_text(dom), "raw context")
+            full_text = normalized_text(dom)
+            for note in table["structure"].get("label_annotations", []):
+                require(
+                    note["note_text_start"] >= table["structure"]["table_text_end"],
+                    "footnote outside actual table",
+                )
+                require(
+                    full_text[note["note_text_start"] : note["note_text_end"]]
+                    == note["note_quote"],
+                    "original following footnote text",
+                )
+                require(note["original"].endswith(note["marker"]), "original annotated label")
             self.grids[table["table_id"]] = grid
             self.issuer[table["table_id"]] = table
             self.counts["original_issuer_tables"] += 1
@@ -240,15 +253,47 @@ class Audit:
             for source in sources:
                 grid = self.grids[source["source_id"]]
                 total_rows = [
-                    row for row in grid if row and row[0]["text"].lower() == "free cash flow"
+                    row
+                    for row in grid
+                    if re.fullmatch(
+                        r"(?:non-gaap\s+)?free cash flow(?:\s*\(non-gaap\))?\s*(?:\*|\(\d+\))?",
+                        next((cell["text"] for cell in row if cell["text"]), "").lower(),
+                    )
                 ]
                 require(len(total_rows) == 1, "public issuer total label")
-                for row in grid:
+                body_start = next(
+                    index
+                    for index, row in enumerate(grid)
+                    if any(
+                        re.search(
+                            r"operating activities|cash flows? from operations", cell["text"], re.I
+                        )
+                        for cell in row
+                    )
+                )
+                prefix = " ".join(cell["text"] for row in grid[:body_start] for cell in row)
+                month_days = set(
+                    re.findall(
+                        r"\b(January|February|March|April|May|June|July|August|September|October|November|December)"
+                        r"\s+(\d{1,2})(?!\d)",
+                        prefix,
+                    )
+                )
+                for row in grid[:body_start]:
                     for cell in row:
                         try:
                             end = datetime.strptime(cell["text"], "%B %d, %Y").date().isoformat()
                         except ValueError:
-                            continue
+                            if not re.fullmatch(r"20\d{2}", cell["text"]) or len(month_days) != 1:
+                                continue
+                            month, day = next(iter(month_days))
+                            end = (
+                                datetime.strptime(
+                                    month + " " + day + " " + cell["text"], "%B %d %Y"
+                                )
+                                .date()
+                                .isoformat()
+                            )
                         cells = [
                             x
                             for x in total_rows[0]
@@ -351,10 +396,20 @@ class Audit:
                 "actual public message",
             )
             require(
-                not bundle["actual_model_sessions"]
+                (
+                    not bundle["actual_model_sessions"]
+                    or (
+                        "surface_realization" in bundle
+                        and all(
+                            row["purpose"] == "question_rewrite"
+                            and row["is_Teacher_trajectory"] is False
+                            for row in bundle["actual_model_sessions"]
+                        )
+                    )
+                )
                 and not bundle["training_materials"]
                 and not bundle["tokenizer_artifacts"],
-                "no model/training artifacts",
+                "no Teacher or training artifacts; rewrite requests explicitly distinct",
             )
             sample, candidate = samples[parents["qa_id"]], candidates[parents["candidate_id"]]
             plan, build = plans[parents["operation_plan_id"]], builds[parents["qa_build_id"]]
@@ -414,7 +469,7 @@ class Audit:
                 )
                 cik = str(self.entities[fact["entity_id"]]["cik"]).zfill(10)
                 require("cik:" + cik == bundle["source_cluster"], "leaf entity CIK")
-            split = frozen["rule"]["source_split"]
+            split = frozen["rule"].get("inherited_source_rules", frozen["rule"])["source_split"]
             bucket = int(
                 hashlib.sha256((split["salt"] + bundle["source_cluster"]).encode()).hexdigest(), 16
             )
@@ -533,9 +588,10 @@ class Audit:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--stage", default=STAGE)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    audit = Audit(args.root)
+    audit = Audit(args.root, args.stage)
     manifest_id = audit.verify_manifest()
     audit.verify_sources()
     results = audit.verify_tasks()
@@ -549,7 +605,9 @@ def main():
             "no task generator, relation compiler or plan executor imports"
         ),
         "limitation": (
-            "not independent human financial-semantic review; finite public question/source forms"
+            "source arithmetic and provenance, not independent human financial review or "
+            "natural-language equivalence proof; actual rewrite semantics require the separately "
+            "registered finite question parser"
         ),
         "production_artifacts_changed": False,
         "model_calls": 0,

@@ -219,9 +219,11 @@ def match_for(item, facts, bindings):
     }
 
 
-def compile_batch(db, kg, items, facts, bindings, output, name):
+def compile_batch(
+    db, kg, items, facts, bindings, output, name, *, config=None, provider_factory=None
+):
     output = Path(output) / name
-    initial = pipeline.build_qa_candidates(db, qa_config(), kg_build_id=kg["kg_build_id"])
+    initial = pipeline.build_qa_candidates(db, config or qa_config(), kg_build_id=kg["kg_build_id"])
     qa_build_id = initial["qa_build_id"]
     require(initial["candidate_count"] == 0, "factory.no_default_or_benchmark_candidates")
     entity_names = {
@@ -332,7 +334,14 @@ def compile_batch(db, kg, items, facts, bindings, output, name):
         output / "target_bindings.json",
         [{key: value for key, value in item.items() if key != "certificate"} for item in items],
     )
-    generation = pipeline.generate_qa_samples(db, qa_build_id)
+    task_by_candidate = {row["candidate_id"]: row["task_id"] for row in compilations}
+
+    def question_provider(candidate, build):
+        return provider_factory(task_by_candidate[candidate["candidate_id"]])
+
+    generation = pipeline.generate_qa_samples(
+        db, qa_build_id, question_provider_factory=question_provider if provider_factory else None
+    )
     validation = pipeline.validate_qa_samples(db, qa_build_id)
     write_json(output / "generation_report.json", generation)
     write_json(output / "validation_report.json", validation)
@@ -376,7 +385,19 @@ def teacher_messages(bundle):
 
 
 def export_batch(
-    db, kg, qa_build_id, items, candidates, plans, compilations, facts, bindings, usage, output
+    db,
+    kg,
+    qa_build_id,
+    items,
+    candidates,
+    plans,
+    compilations,
+    facts,
+    bindings,
+    usage,
+    output,
+    *,
+    surface_context=None,
 ):
     candidate_by_id = {row["candidate_id"]: row for row in candidates}
     plan_by_id = {row["plan_id"]: row for row in plans}
@@ -484,6 +505,8 @@ def export_batch(
             "decimal_places": 2,
             "rounding": "half away from zero",
         }
+        public = public_projection(sample["question"], native_sources, contract)
+        surface = surface_context(item, sample, public) if surface_context else None
         bundle = record(
             "TaskBundle",
             task_id=item["task_id"],
@@ -511,7 +534,7 @@ def export_batch(
                     {facts[key]["source_definition_id"] for key in leaf_ids}
                 ),
             },
-            public=public_projection(sample["question"], native_sources, contract),
+            public=public,
             private={
                 "canonical_target": item["target"],
                 "answer_exact": str(independently_recomputed),
@@ -529,9 +552,14 @@ def export_batch(
                 "all_leaf_source_use_checked_again_at_export": True,
                 "independent_target_recompute": str(independently_recomputed),
             },
-            actual_model_sessions=[],
+            actual_model_sessions=surface["model_requests"] if surface else [],
             training_materials=[],
             tokenizer_artifacts=[],
+            **(
+                {"canonical_task_id": item["task_id"], "surface_realization": surface}
+                if surface
+                else {}
+            ),
         )
         teacher_messages(bundle)
         directory = Path(output) / "tasks" / item["task_id"]
