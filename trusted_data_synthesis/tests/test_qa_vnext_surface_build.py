@@ -16,7 +16,42 @@ from trusted_synthesis.experiments.finance_qa_vnext_surface_build.budget import 
 )
 from trusted_synthesis.experiments.finance_qa_vnext_surface_build.guards import rewrite_guard
 from trusted_synthesis.experiments.finance_qa_vnext_surface_build.protocol import qa_config
-from trusted_synthesis.experiments.finance_qa_vnext_surface_build.transport import MODEL, Provider
+from trusted_synthesis.experiments.finance_qa_vnext_surface_build.transport import (
+    MODEL,
+    Provider,
+    credential,
+)
+
+
+def test_registered_project_credential_path_not_repository_root(tmp_path):
+    directory = tmp_path / "trusted_data_synthesis"
+    directory.mkdir()
+    (directory / ".env").write_text("UNRELATED=ignored\nDEEPSEEK_API_KEY='SYNTHETIC_KEY'\n")
+    assert credential(tmp_path) == "SYNTHETIC_KEY"
+    assert not (tmp_path / ".env").exists()
+
+
+@pytest.mark.parametrize("state", ["empty", "reserved", "native", "resumed"])
+def test_environment_continuation_cannot_replay_any_production_work(tmp_path, state):
+    from trusted_synthesis.experiments.finance_qa_vnext_surface_build.sources import OUTPUT, WORK
+    from trusted_synthesis.experiments.finance_qa_vnext_surface_build.stage import (
+        require_pristine_pre_model,
+    )
+
+    output = tmp_path / OUTPUT
+    output.mkdir(parents=True)
+    ledger = Ledger(tmp_path / WORK / "budget.sqlite", "fixture")
+    if state == "reserved":
+        ledger.reserve("task")
+    elif state == "native":
+        (tmp_path / WORK / "native_fact_qa.sqlite3").touch()
+    elif state == "resumed":
+        (output / "run_resumed.json").touch()
+    if state == "empty":
+        assert require_pristine_pre_model(tmp_path, output, ledger)["request_reservations"] == 0
+    else:
+        with pytest.raises(ValueError):
+            require_pristine_pre_model(tmp_path, output, ledger)
 
 
 def process_reserve(args):

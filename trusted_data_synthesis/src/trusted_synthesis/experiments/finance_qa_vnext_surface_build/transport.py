@@ -32,7 +32,7 @@ PROMPT = (
 
 def credential(root):
     # Load only the explicitly authorized project key; never serialize it.
-    for line in (Path(root) / ".env").read_text().splitlines():
+    for line in (Path(root) / "trusted_data_synthesis/.env").read_text().splitlines():
         if line.strip().startswith("DEEPSEEK_API_KEY="):
             value = line.split("=", 1)[1].strip().strip("\"'")
             require(bool(value), "surface.rewrite_credential_present")

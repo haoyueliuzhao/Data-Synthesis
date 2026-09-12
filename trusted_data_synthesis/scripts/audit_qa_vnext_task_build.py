@@ -372,6 +372,17 @@ class Audit:
         }
         usage = read(self.stage / "all_leaf_usage.json")
         frozen = read(self.stage / "stage_freeze.json")
+        execution_commit = frozen["git_commit"]
+        recovery_path = self.stage / "environment_recovery_freeze.json"
+        if recovery_path.exists():
+            recovery = read(recovery_path)
+            check_identity(recovery)
+            require(
+                recovery["stage_freeze_id"] == frozen["id"]
+                and recovery["budget_before_recovery"]["request_reservations"] == 0,
+                "registered pre-model environment-only recovery",
+            )
+            execution_commit = recovery["git_commit"]
         compilations = {}
         for batch in ("first_20", "candidate_catalog"):
             for row in read(self.stage / batch / "pattern_compilations.json"):
@@ -430,7 +441,8 @@ class Audit:
                 "actual QA question",
             )
             require(
-                build["git_commit_sha"] == frozen["git_commit"], "actual build frozen code revision"
+                build["git_commit_sha"] == execution_commit,
+                "actual build frozen execution revision",
             )
             require(
                 build["kg_build_id"] == parents["kg_build_id"] == kg["kg_build_id"],

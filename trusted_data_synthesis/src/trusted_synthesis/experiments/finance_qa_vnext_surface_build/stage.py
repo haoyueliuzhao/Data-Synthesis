@@ -158,20 +158,133 @@ def freeze(root):
     }
 
 
-def check_freeze(root, frozen):
+RECOVERY_CODE_PATHS = {
+    PACKAGE + "finance_qa_vnext_surface_build/stage.py",
+    PACKAGE + "finance_qa_vnext_surface_build/transport.py",
+    "trusted_data_synthesis/scripts/audit_qa_vnext_task_build.py",
+}
+
+
+def recovery_record(output, frozen):
+    path = output / "environment_recovery_freeze.json"
+    if not path.exists():
+        return None
+    recovery = read(path)
+    validate_record(recovery, "surface_environment_recovery")
+    require(recovery["stage_freeze_id"] == frozen["id"], "surface.same_stage_recovery")
+    require(
+        {row["path"] for row in recovery["code"]} == RECOVERY_CODE_PATHS,
+        "surface.environment_only_code_recovery",
+    )
+    require(
+        recovery["budget_before_recovery"]["request_reservations"] == 0,
+        "surface.no_model_output_observed_before_recovery",
+    )
+    return recovery
+
+
+def check_freeze(root, frozen, *, pending_recovery_code=None):
     validate_record(frozen, "surface_stage_freeze")
     require(frozen["rule"] == policy(), "surface.same_frozen_rule")
+    recovery = recovery_record(root / OUTPUT, frozen)
+    overrides = {
+        row["path"]: row
+        for row in (pending_recovery_code or (recovery["code"] if recovery else []))
+    }
+    require(set(overrides) <= RECOVERY_CODE_PATHS, "surface.no_source_or_budget_rule_override")
     for member in [
         *frozen["code"],
         *frozen["original_sources"],
         *frozen["source_acquisition_inputs"],
     ]:
         require(
-            sha(root / member["path"]) == member["sha256"], "surface.frozen_input_bytes_unchanged"
+            sha(root / member["path"]) == overrides.get(member["path"], member)["sha256"],
+            "surface.frozen_input_bytes_unchanged",
         )
     require(
         parent_identity(root) == frozen["inherited_parent"], "surface.inherited_parent_identity"
     )
+
+
+def require_pristine_pre_model(root, output, ledger):
+    snapshot = ledger.snapshot()
+    require(
+        snapshot["request_reservations"] == 0 and snapshot["conservative_charged_tokens"] == 0,
+        "surface.environment_recovery_cannot_reset_or_replay_requests",
+    )
+    forbidden = [
+        output / name
+        for name in (
+            "native_fact_build_report.json",
+            "native_bindings.json",
+            "issuer_source_tables.json",
+            "native_source_inventory.json",
+            "canonical_task_registry.json",
+            "all_leaf_usage.json",
+            "rewrite_requests",
+            "parents",
+            "first_20",
+            "candidate_catalog",
+            "run_completed.json",
+            "run_failed.json",
+            "run_resumed.json",
+            "manifest.json",
+        )
+    ] + [root / WORK / "native_fact_qa.sqlite3"]
+    require(
+        not any(path.exists() for path in forbidden),
+        "surface.environment_recovery_requires_no_production_outputs",
+    )
+    return snapshot
+
+
+def recover_environment(root):
+    """Only repair the observed pre-model credential-path failure, without a new budget."""
+    root, output = Path(root).resolve(), Path(root).resolve() / OUTPUT
+    frozen = read(output / "stage_freeze.json")
+    require((output / "run_started.json").exists(), "surface.original_start_retained")
+    require(
+        not (output / "environment_recovery_freeze.json").exists(),
+        "surface.one_environment_recovery_only",
+    )
+    ledger = Ledger(root / WORK / "rewrite_budget.sqlite3", frozen["id"])
+    snapshot = require_pristine_pre_model(root, output, ledger)
+    credential(root)  # Check the actual registered local file before enabling continuation.
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    code = []
+    for path in sorted(RECOVERY_CODE_PATHS):
+        committed = subprocess.check_output(["git", "show", head + ":" + path], cwd=root)
+        require(
+            committed == (root / path).read_bytes(), "surface.recovery_committed_before_outputs"
+        )
+        code.append({"path": path, "sha256": sha(root / path)})
+    check_freeze(root, frozen, pending_recovery_code=code)
+    recovery = record(
+        "surface_environment_recovery",
+        stage_freeze_id=frozen["id"],
+        git_commit=head,
+        code=code,
+        created_at=now(),
+        original_start=read(output / "run_started.json"),
+        observed_failure={
+            "type": "FileNotFoundError",
+            "missing_relative_path": ".env",
+            "observed_before_native_or_model_execution": True,
+        },
+        registered_credential_relative_path="trusted_data_synthesis/.env",
+        budget_before_recovery=snapshot,
+        original_ledger_reused_without_reset=True,
+        model_source_semantic_rules_changed=False,
+        additional_request_or_token_allowance=0,
+        original_freeze_and_start_records_unchanged=True,
+    )
+    write_json(output / "environment_recovery_freeze.json", recovery)
+    return {
+        "recovery_id": recovery["id"],
+        "git_commit": head,
+        "prior_requests": 0,
+        "same_original_budget": True,
+    }
 
 
 def make_surface(item, sample, public, candidate, frozen_id):
@@ -478,18 +591,33 @@ def build_tasks(root, output, native, frozen, ledger, key):
     return summary
 
 
-def run(root):
+def run(root, *, environment_resume=False):
     root, output = Path(root).resolve(), Path(root).resolve() / OUTPUT
     frozen = read(output / "stage_freeze.json")
     check_freeze(root, frozen)
-    require(not (output / "run_started.json").exists(), "surface.one_run_per_frozen_stage")
-    write_json(
-        output / "run_started.json",
-        record("surface_run_start", stage_freeze_id=frozen["id"], started_at=now()),
-    )
-    ledger = Ledger(root / WORK / "rewrite_budget.sqlite3", frozen["id"])
-    write_json(output / "rewrite_budget_initial.json", ledger.snapshot())
     key = credential(root)
+    ledger = Ledger(root / WORK / "rewrite_budget.sqlite3", frozen["id"])
+    if environment_resume:
+        recovery = recovery_record(output, frozen)
+        require(recovery is not None, "surface.registered_environment_recovery_required")
+        require_pristine_pre_model(root, output, ledger)
+        write_json(
+            output / "run_resumed.json",
+            record(
+                "surface_pre_model_resume",
+                stage_freeze_id=frozen["id"],
+                recovery_id=recovery["id"],
+                resumed_at=now(),
+                reused_budget_initial=True,
+            ),
+        )
+    else:
+        require(not (output / "run_started.json").exists(), "surface.one_run_per_frozen_stage")
+        write_json(
+            output / "run_started.json",
+            record("surface_run_start", stage_freeze_id=frozen["id"], started_at=now()),
+        )
+        write_json(output / "rewrite_budget_initial.json", ledger.snapshot())
     try:
         with rewrite_guard() as counters:
             native = native_facts.run(root, output, work=WORK, extra_issuer_sources=())
@@ -517,6 +645,7 @@ def run(root):
                 report_id=summary["id"],
                 completed_at=now(),
                 parent_archive_unchanged=True,
+                execution_git_commit=(recovery_record(output, frozen) or frozen)["git_commit"],
             ),
         )
     except BaseException as exc:
@@ -699,12 +828,20 @@ def verify(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=["freeze", "run", "verify"])
+    parser.add_argument(
+        "phase", choices=["freeze", "run", "verify", "recover_environment", "resume"]
+    )
     parser.add_argument("--root", type=Path, default=Path.cwd())
     args = parser.parse_args()
     print(
         json.dumps(
-            {"freeze": freeze, "run": run, "verify": verify}[args.phase](args.root),
+            {
+                "freeze": freeze,
+                "run": run,
+                "verify": verify,
+                "recover_environment": recover_environment,
+                "resume": lambda root: run(root, environment_resume=True),
+            }[args.phase](args.root),
             ensure_ascii=False,
         ),
         flush=True,
