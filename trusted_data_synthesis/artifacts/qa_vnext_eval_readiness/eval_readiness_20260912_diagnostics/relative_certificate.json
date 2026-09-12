@@ -1,0 +1,298 @@
+{
+  "API_requests": 0,
+  "GPU_calls": 0,
+  "affected_fixture_count": 5,
+  "cause": {
+    "actual_wrapper_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+    "classification": "offline_assessment_nested_relative_certificate_contract_mismatch",
+    "failure_before_support_chain_assessment": true,
+    "frozen_requirement": "certificate.get('complete') is True",
+    "later_support_checks_were_not_executed": true,
+    "nested_base_relation_certificate_complete": true,
+    "no_post_fix_results_claimed": true,
+    "not_a_new_source_amount_or_period_defect": true,
+    "source_line": 378,
+    "source_path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_eval_readiness/assessment.py",
+    "source_sha256": "8d5acd241881e005b51e2e779bfb6e57126d0866ed4a4b38bfa33a8e5ec25cc6",
+    "top_level_complete_field_present": false
+  },
+  "controls_reexecuted": false,
+  "denominators": {
+    "actual_new_source_bound_controls": 70,
+    "complete_class_MAPPED": 35,
+    "complete_class_PENDING_REVIEW": 35,
+    "controls_matching_frozen_expectation": 55,
+    "correctly_rejected_negative_controls": 16,
+    "expected_negative_controls": 16,
+    "expected_positive_controls": 54,
+    "expected_positive_controls_rejected_at_certificate_wrapper_gate": 15,
+    "financial_valid_but_fine_class_pending": 4,
+    "financial_valid_positive_controls": 39,
+    "provider_calls": 0
+  },
+  "diagnostic_id": "relative_certificate_diagnostic:7c4ee44f9491a7d155129049468db7e9ad78da5afde7d10928745963feb784c0",
+  "diagnostic_schema": "eval_readiness.relative_certificate_shape_diagnostic.v1",
+  "fixtures": [
+    {
+      "base_relation_certificate_complete": true,
+      "base_relation_certificate_id": "financial_relation_certificate:f59110ac4626a067adc495d76b3e0f2e5b31d664d38e76636dd4968e51cbf744",
+      "bundle_id": "EvaluationTaskBundle:2b35a00080e353e6d2bba4c572f3dab3e4755f881e48e83b3c9015b76874d0b0",
+      "bundle_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/confirm/tasks/task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381/task_bundle.json",
+      "bundle_sha256": "46f0b78cf5be95b43c94cb72266ef654dd4ab962bc8d610130f85fba51c28647",
+      "certificate_id": "relative_quantity_certificate:a2c8e758223394d4f6877f80bed02a01a37910373ce8487f796028c00470c654",
+      "certificate_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+      "original_public_messages_sha256": "5c911cb6b7adeb582b2e54af42841eb43a82a3fcd731bacfdc62121a161f9f28",
+      "original_rejected_positive_controls": [
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:00238781226ae11cbfcb918b546b0d3e104c5a1ecbea3aa7e223c023187e13b7",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381:dual_endpoint",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:2683aa4681d0addfeae509189e91a8b5463953417edb22e26464d17e06a9f99f"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:c06ff0b363833069b308ebcbfa3971e8e018ea263182bf9ee8b4d5c9a7fcef59",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381:dual_endpoint_opposite_guidance",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:f75374180892bc40124a3ed499ec1ebc083bf0cf6155d33d87511bda612d273e"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:a3fa5c7203db9e440110e5a9ae7e3c90e24e552663441d4208190bbb3bf81594",
+          "expected_financial_valid": true,
+          "first_final_index": 8,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381:dual_movement",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:c2a85e59e37a8daf0b1489676aee012c942170f523e9302d711759443c574b7c"
+        }
+      ],
+      "public_messages_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/confirm/tasks/task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381/public_messages.json",
+      "quantity": "relative_change",
+      "split": "confirm",
+      "surface_version_id": "evaluation_surface_version:4ec1647ad4132b15c340b28693be2d4f2a2b690d04eb441f8f99e90892b83554",
+      "target_metric_id": "gross_profit",
+      "task_id": "task_0030bd84c38636efa8092c8ad67464283b2eceb057ef1c7344ea92b1dc055381",
+      "top_level_complete_field_present": false,
+      "top_level_complete_get_value": null
+    },
+    {
+      "base_relation_certificate_complete": true,
+      "base_relation_certificate_id": "financial_relation_certificate:ec7c5188873c536622c516e5d49199e6218255f5c26568f650b5689636ae0ce2",
+      "bundle_id": "EvaluationTaskBundle:d071b00992b019a3ebc57f545089fa6a1beaa30cf67d627837bba56daddb971e",
+      "bundle_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/confirm/tasks/task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a/task_bundle.json",
+      "bundle_sha256": "cb987311ad2400e8fc0eb331f8e78774a8dc4844eb9f52c1cee0c2fc01b53d5f",
+      "certificate_id": "relative_quantity_certificate:86e4b0a7c22e8d39cabcdd61d571dcc8bad6214e2a5ad823d493b08f00d2fb07",
+      "certificate_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+      "original_public_messages_sha256": "fb29acf2a4455bc441fa5b0ad5f3bbad7abcaf3dadaccdf0bf19193661db1066",
+      "original_rejected_positive_controls": [
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:5100377914f38ed4a6a9d8a0428a11153a723ae376c7e4d7158fb9724ba71f02",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a:dual_endpoint",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:348c23216f73d51fc1e695fde26a7582042bd6703e3591ed1e511a43e1915ef8"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:d68994ed7b281ab6e775bb80fa70d41149a8ae83789961b0acda3de679dc2e69",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a:dual_endpoint_opposite_guidance",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:d8fcd1dd55e71b29518bf7c0572590faea20bcf79bf0698a2ec0c1008ad7b4ab"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:d168d6bcfd5cc64ff12997f19018f427cb1642d9288737263d501da3304cd6c0",
+          "expected_financial_valid": true,
+          "first_final_index": 8,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a:dual_movement",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:804951823433f81f19f98b78a14f505f0b1b55887733df36c0d66e873e6fbdeb"
+        }
+      ],
+      "public_messages_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/confirm/tasks/task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a/public_messages.json",
+      "quantity": "relative_change",
+      "split": "confirm",
+      "surface_version_id": "evaluation_surface_version:137a886057055eeea0f4d28542c5f14526b0c5261d51cd214ed41c2bac6098d8",
+      "target_metric_id": "gross_profit",
+      "task_id": "task_021a84d092d33bc16e57305237f20145a55732d2ae44f3caefcb9d5431f4e87a",
+      "top_level_complete_field_present": false,
+      "top_level_complete_get_value": null
+    },
+    {
+      "base_relation_certificate_complete": true,
+      "base_relation_certificate_id": "financial_relation_certificate:7153d93eec283b888375c1f2743e602711a39632d5cca4802462a57b4e2ae037",
+      "bundle_id": "EvaluationTaskBundle:68965eb777d5d3a9636d5d6bbe7607aedafe50310453564c2f50ae2b13cf485e",
+      "bundle_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d/task_bundle.json",
+      "bundle_sha256": "6887e7abefe53fd32f85dea5cf9c47ad41ca663f9a8a867f6d59a9b44ef21af1",
+      "certificate_id": "relative_quantity_certificate:0d7b9cdb4a5b257411f03f4bfda32b9f1ceedbef0d5349eb1295bfa2e13fe4c0",
+      "certificate_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+      "original_public_messages_sha256": "43847e5b3258544eec4dbd9791b3cbed7ca5b34177f40e8ebfc90ef7fd5e9512",
+      "original_rejected_positive_controls": [
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:7c85df15b320bb61681e0e7ca94dfde9236f239a8e3609f325b12763ee480958",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d:dual_endpoint",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:54217292483db5826f555cd124beaa42cccd643f4f00e81d68e603923aca75a1"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:1e4b7688094638c8b66a1e150d32cba9bf8812efd0868a85b0ac75f39016a71f",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d:dual_endpoint_opposite_guidance",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:7fda4c782ad3b07ee1d6461cad2af6295e0eeaa7a918568d76361172863ec833"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:1e76a5b0d3ff6f3c5a058640dc55cb8f472f34c30e6ac076ed2eca044b92241a",
+          "expected_financial_valid": true,
+          "first_final_index": 8,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d:dual_movement",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:3f9025420111e731f5dacd744b1f3016c2dca94626c2ce9cd1d006de9862510a"
+        }
+      ],
+      "public_messages_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d/public_messages.json",
+      "quantity": "relative_change",
+      "split": "dev",
+      "surface_version_id": "evaluation_surface_version:05d08d92a659e87ba4e0f13b4085edb2b8d74697b2c99c90035133aa0d723a18",
+      "target_metric_id": "cash_cash_equivalents_restricted_cash_and_restricted_cash_equivalents",
+      "task_id": "task_04b2dad30c202ddf6942813ed466a33a4658e03411d8e5ff858c5920915b0b0d",
+      "top_level_complete_field_present": false,
+      "top_level_complete_get_value": null
+    },
+    {
+      "base_relation_certificate_complete": true,
+      "base_relation_certificate_id": "financial_relation_certificate:0c4126c369ddac223bd81281c669aefb5dccd7de8b67c71e54b64f721bb50265",
+      "bundle_id": "EvaluationTaskBundle:ac94aa82ab2ca4b29a7cb9e33d87d67282a390e5ff050634dd5fab40558f3a79",
+      "bundle_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e/task_bundle.json",
+      "bundle_sha256": "53c885dcba906b2daee77413d71391cd0bc758ce33fea4b5eac049d99b51bcce",
+      "certificate_id": "relative_quantity_certificate:dcc68fa536ec46ff9869af35853146ec372693728a32012a97b0cbcf9581c9b5",
+      "certificate_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+      "original_public_messages_sha256": "4a19faa2ec1f2b220ae3489bdfef213b2af7e546daee3aca2227c91e93083eb5",
+      "original_rejected_positive_controls": [
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:32dd181205b9801f2a3823bb3fabf01f6275723ce7c3b926ddba06a4c0fa0813",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e:dual_endpoint",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:7a2b0701581adbc102b4862412e89e0e91eb0b5e7965130f8bf23f6562014d7d"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:79f057cb603b7db9d070fff2e88ee0054f554a5d59090609689305dcd0578acd",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e:dual_endpoint_opposite_guidance",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:fa7463a1d400ab3f938caa478ba549e5ccc69cdee5ae026c2756a16396ad277b"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:822c155a1fd65a30e9dfe63b48349672761b663c6acc9c2e696b9eb7b35023c5",
+          "expected_financial_valid": true,
+          "first_final_index": 8,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e:dual_movement",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:825e72aa22942c5df5ae7a8d7af546c089cd25af56a21b3d4404df26fd2ffdb8"
+        }
+      ],
+      "public_messages_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e/public_messages.json",
+      "quantity": "relative_change",
+      "split": "dev",
+      "surface_version_id": "evaluation_surface_version:ac38f620c6facaaf1c5df2485852a134d5057ff442edca57f7b955e03492d7eb",
+      "target_metric_id": "gross_profit",
+      "task_id": "task_0b68d233c2cd4324ceac46dc8d070d921ff427cfdc352451bb2ba37bbc53cf7e",
+      "top_level_complete_field_present": false,
+      "top_level_complete_get_value": null
+    },
+    {
+      "base_relation_certificate_complete": true,
+      "base_relation_certificate_id": "financial_relation_certificate:8e88a10625b42e383d7cf3a76789b7ff717e0b722b954b0092a8e8511d92bb90",
+      "bundle_id": "EvaluationTaskBundle:b3ca74b0097581af5a872e87c688b265d835ff29732bfee03f3da9929dbdb1ad",
+      "bundle_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494/task_bundle.json",
+      "bundle_sha256": "e8b8050efcb25cefc4baf388606c46714af83f6eecceeca5d14324d8c9f9a2d2",
+      "certificate_id": "relative_quantity_certificate:8ad223302a49aca0cb9d87312efc07764f1eb176b9432a1e25c56130f10c618a",
+      "certificate_schema": "finance_qa_vnext_task_build.v1.relative_quantity_certificate",
+      "original_public_messages_sha256": "b350940a3eb9bf524e47af54fb532a89f8750a99d8b3719b4ba7d613d3174040",
+      "original_rejected_positive_controls": [
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:3832cbf78d10245ddb39e828f76041b0f614349094313f4797a9c60949af3844",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494:dual_endpoint",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:32719fa5af63cff1cf46c5579e09aac3cbbb42778265946c44b3d767c1b736dc"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:c39ca84a34521eba8813d85929323d131f7e4abb8dd9ecfca7f9a4c93f2c0410",
+          "expected_financial_valid": true,
+          "first_final_index": 5,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494:dual_endpoint_opposite_guidance",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:ef62b52ffed8a997e6b3910c14701403189c29bf94dea5c62ac32232cdbe2ecc"
+        },
+        {
+          "actual_financial_valid": false,
+          "assessment_id": "evaluation_assessment:c7875033be8242839e7aaee7a4eae7bdd952060b5482ab34f55b35de75004345",
+          "expected_financial_valid": true,
+          "first_final_index": 8,
+          "full_mapping_status": "PENDING_REVIEW",
+          "name": "task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494:dual_movement",
+          "original_assessment_reason": "assessment.source_relation_certificate_required",
+          "session_id": "evaluation_session:decda57284c7b978f68d12f78663a115a70f774a2a4319469f265ed86c13e076"
+        }
+      ],
+      "public_messages_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/panels/dev/tasks/task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494/public_messages.json",
+      "quantity": "relative_change",
+      "split": "dev",
+      "surface_version_id": "evaluation_surface_version:b0a5be2902aea4d799a0f92862930771539272ca6b6680fb1518007fe24143ad",
+      "target_metric_id": "gross_profit",
+      "task_id": "task_388f2c17c2c5334fef5c4aec0c20f5abb4fda47e353434574f8af9b5f10dc494",
+      "top_level_complete_field_present": false,
+      "top_level_complete_get_value": null
+    }
+  ],
+  "frozen_code_modified": false,
+  "frozen_execution_commit": "f138191c0f2840d39b18266117434838f7f173bc",
+  "interpretation": "70 control outcomes comprise 39 financially supported positive controls, 16 correctly rejected negative controls, and 15 expected positive controls stopped by the nested relative-certificate wrapper gate. The 55 matching expectations are not 55 financially valid trajectories. Original failures remain preserved; no repair, replay, or model collection was performed by this diagnostic.",
+  "production_artifacts_modified": false,
+  "production_manifest_id": "manifest:90ebc575be3e1c825edb598a937677e0bd83c49cd43c29f35cfe67f543055407",
+  "read_only_evidence_extraction": true,
+  "source_bound_report_id": "new_evaluation_controls:dfb235c1b28ba69bbd9c59d459a725ab3b441e9ec2c3a2f60cf8bae14d754da0",
+  "source_bound_report_path": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912/controls/source_bound_report.json",
+  "source_bound_report_sha256": "99c6c5afad3d4fb01f89ce0e2a95492103e3857c6ea5b34a2d5767a28f0d1bf8",
+  "stage_freeze_id": "eval_readiness_freeze:9f97c0609fe66254f619632b7c23eccb83f0b8dc01d328a2452749fe6a990dea",
+  "tokenizer_constructions": 0
+}

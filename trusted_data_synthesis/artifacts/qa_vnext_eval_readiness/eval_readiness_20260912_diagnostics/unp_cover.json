@@ -1,0 +1,745 @@
+{
+  "schema_version": "UNP_cover_read_only_diagnostics.v1",
+  "created_at": "2026-09-12T10:28:11.635050+00:00",
+  "diagnostic_kind": "post_freeze_read_only_metadata_layout_inspection_not_source_re_admission",
+  "stage_root": "trusted_data_synthesis/artifacts/qa_vnext_eval_readiness/eval_readiness_20260912",
+  "production_git_commit": "f138191c0f2840d39b18266117434838f7f173bc",
+  "stage_freeze_id": "eval_readiness_freeze:9f97c0609fe66254f619632b7c23eccb83f0b8dc01d328a2452749fe6a990dea",
+  "incremental_manifest_id": "manifest:be76901dfd20385c7e0f4c6246d76430cdb0e87c95545e1ddedd8b1f4e1de8ab",
+  "frozen_generator_path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_task_build/issuer_tables.py",
+  "frozen_generator_sha256": "66d58e421cc25c386721986e5c5bedabe0f5faa80be2d93113b2708ad1fc1421",
+  "frozen_auditor_path": "trusted_data_synthesis/scripts/audit_qa_vnext_eval_readiness_increment.py",
+  "frozen_auditor_sha256": "9e8265e9d065b5a1d9cb883085a7ee1ebe6907f9c2f64cdc2b4a984397612a6a",
+  "coordinates": {
+    "normalized_character_spans": "zero-based half-open positions in whitespace-normalized original DOM itertext",
+    "raw_UTF8_byte_spans": "zero-based half-open offsets in exact frozen raw HTML bytes; base64 is authoritative"
+  },
+  "frozen_exact_cover_regex": "For\\s+(?:the\\s+)?fiscal\\s+year\\s+ended\\s+December\\s+31,?\\s+(20\\d{2})",
+  "frozen_cover_match_requirement": "exactly one full-document match before any heading-year comparison",
+  "FORM_context_boundary_difference": {
+    "generator": "look for FORM 10[- ]?K in the 3000 normalized characters immediately preceding the matched candidate",
+    "independent_auditor": "look for FORM 10-K within first 3000 normalized document characters",
+    "six_document_first_3000_auditor_marker_matches": 0,
+    "generator_and_auditor_bounds_are_not_identical": true,
+    "not_exercised_on_admitted_tables_in_this_run": true
+  },
+  "documents": [
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_fefefea1d0df743f4b29ed7c__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2020-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_d1a54ca80e05a968c4b97722",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2021/accession=0000100885-21-000068/unp-20201231x10k.htm",
+      "original_raw_sha256": "14eb175e1b20f6eef776a03058a330b31044952bd77ba6c9bc1df411df82f22c",
+      "original_raw_bytes": 7034542,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          25793,
+          25837
+        ],
+        "literal": "For the fiscal year ended December 31 , 2020",
+        "year": "2020",
+        "raw_UTF8_byte_span": [
+          262848,
+          263760
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZCA8L3NwYW4+PGl4Om5vbk51bWVyaWMgbmFtZT0iZGVpOkN1cnJlbnRGaXNjYWxZZWFyRW5kRGF0ZSIgaWQ9ImN0LW5vbk51bWVyaWMtZjE1NDhmOWUtMTE5Mi00OTkxLTg5YTktMmFjZmQ4NDMxZjY1IiBjb250ZXh0UmVmPSJEdXJhdGlvbl8xXzFfMjAyMF9Ub18xMl8zMV8yMDIwIiBmb3JtYXQ9Iml4dDpkYXRlbW9udGhkYXllbiI+PGl4Om5vbk51bWVyaWMgbmFtZT0iZGVpOkRvY3VtZW50UGVyaW9kRW5kRGF0ZSIgaWQ9ImN0LW5vbk51bWVyaWMtZDhlZWQxZjctYzEwZC00ZjNmLWE5ZTYtMDZiNTlmNDZlYzQ3IiBjb250ZXh0UmVmPSJEdXJhdGlvbl8xXzFfMjAyMF9Ub18xMl8zMV8yMDIwIiBmb3JtYXQ9Iml4dDpkYXRlbW9udGhkYXl5ZWFyZW4iIGNvbnRpbnVlZEF0PSJjdC1ub25OdW1lcmljLWQ4ZWVkMWY3LWMxMGQtNGYzZi1hOWU2LTA2YjU5ZjQ2ZWM0Ny1jb250aW51YXRpb24tMCI+PHNwYW4gc3R5bGU9IndoaXRlLXNwYWNlOnByZS13cmFwOyBmb250LWZhbWlseTogJ0FyaWFsJywgJ3NhbnMtc2VyaWYnO2ZvbnQtc2l6ZTogOXB0O2ZvbnQtc3R5bGU6IG5vcm1hbDtmb250LXdlaWdodDogbm9ybWFsO21hcmdpbjogMDtwYWRkaW5nOiAwOyI+RGVjZW1iZXIgMzE8L3NwYW4+PC9peDpub25OdW1lcmljPjwvaXg6bm9uTnVtZXJpYz48aXg6Y29udGludWF0aW9uIGlkPSJjdC1ub25OdW1lcmljLWQ4ZWVkMWY3LWMxMGQtNGYzZi1hOWU2LTA2YjU5ZjQ2ZWM0Ny1jb250aW51YXRpb24tMCI+PHNwYW4gc3R5bGU9IndoaXRlLXNwYWNlOnByZS13cmFwOyBmb250LWZhbWlseTogJ0FyaWFsJywgJ3NhbnMtc2VyaWYnO2ZvbnQtc2l6ZTogOXB0O2ZvbnQtc3R5bGU6IG5vcm1hbDtmb250LXdlaWdodDogbm9ybWFsO21hcmdpbjogMDtwYWRkaW5nOiAwOyI+LCAyMDIw",
+        "raw_fragment_UTF8": "For the fiscal year ended </span><ix:nonNumeric name=\"dei:CurrentFiscalYearEndDate\" id=\"ct-nonNumeric-f1548f9e-1192-4991-89a9-2acfd8431f65\" contextRef=\"Duration_1_1_2020_To_12_31_2020\" format=\"ixt:datemonthdayen\"><ix:nonNumeric name=\"dei:DocumentPeriodEndDate\" id=\"ct-nonNumeric-d8eed1f7-c10d-4f3f-a9e6-06b59f46ec47\" contextRef=\"Duration_1_1_2020_To_12_31_2020\" format=\"ixt:datemonthdayyearen\" continuedAt=\"ct-nonNumeric-d8eed1f7-c10d-4f3f-a9e6-06b59f46ec47-continuation-0\"><span style=\"white-space:pre-wrap; font-family: 'Arial', 'sans-serif';font-size: 9pt;font-style: normal;font-weight: normal;margin: 0;padding: 0;\">December 31</span></ix:nonNumeric></ix:nonNumeric><ix:continuation id=\"ct-nonNumeric-d8eed1f7-c10d-4f3f-a9e6-06b59f46ec47-continuation-0\"><span style=\"white-space:pre-wrap; font-family: 'Arial', 'sans-serif';font-size: 9pt;font-style: normal;font-weight: normal;margin: 0;padding: 0;\">, 2020",
+        "raw_fragment_sha256": "c55902b6656332a637c5d51467f4b7522e0c35dd8dab6b2405a1397fa08106b8",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 2,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            104547,
+            104590
+          ],
+          "year": "2019",
+          "literal": "for the fiscal year ended December 31, 2019",
+          "normalized_context_character_span": [
+            104407,
+            104690
+          ],
+          "original_normalized_context": "ations, financial condition, and liquidity. Americans with Disabilities Act (ADA) Litigation- As reported in our Annual Report on Form 10-K for the fiscal year ended December 31, 2019, a lawsuit was filed in U.S. District Court for the Western District of Washington (the District Co",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              104537,
+              104546
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        },
+        {
+          "normalized_character_span": [
+            116530,
+            116573
+          ],
+          "year": "2019",
+          "literal": "for the fiscal year ended December 31, 2019",
+          "normalized_context_character_span": [
+            116390,
+            116673
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2019. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable business segm",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              116352,
+              116361
+            ],
+            [
+              116520,
+              116529
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_6a8984cb8487f923ea3f348d",
+          "original_table_index": 18,
+          "table_xpath": "/html/body/div[53]/div/table",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "2020",
+              "2019",
+              "2018"
+            ]
+          ],
+          "maximum_year_heading": 2020,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_fefefea1d0df743f4b29ed7c__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_explicit_December31_cover",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_6a8984cb8487f923ea3f348d"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "actual_report_title_contains_space_before_comma_and_is_not_matched_by_frozen_31_comma_regex",
+        "frozen_full_document_uniqueness_rejects_multiple_title_or_body_reference_matches"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    },
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_d6505e8eedebfb2082976e24__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2021-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_82c67e42a3a4592192959884",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2022/accession=0001437749-22-002494/unp20211231_10k.htm",
+      "original_raw_sha256": "fd46bac11abc482480c7da46324766ed49c54b4a7a59444b2b364b144f4b32da",
+      "original_raw_bytes": 2740999,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          33921,
+          33964
+        ],
+        "literal": "For the fiscal year ended December 31, 2021",
+        "year": "2021",
+        "raw_UTF8_byte_span": [
+          240508,
+          240668
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZCA8aXg6bm9uTnVtZXJpYyBuYW1lPSJkZWk6RG9jdW1lbnRQZXJpb2RFbmREYXRlIiBmb3JtYXQ9Iml4dDpkYXRlbW9udGhkYXl5ZWFyZW4iIGNvbnRleHRSZWY9ImRfMjAyMS0wMS0wMV8yMDIxLTEyLTMxIj5EZWNlbWJlciAzMSwgMjAyMQ==",
+        "raw_fragment_UTF8": "For the fiscal year ended <ix:nonNumeric name=\"dei:DocumentPeriodEndDate\" format=\"ixt:datemonthdayyearen\" contextRef=\"d_2021-01-01_2021-12-31\">December 31, 2021",
+        "raw_fragment_sha256": "53f9db3bcc0b7c6fe87fe11d5c4b79d5964fbec0e7f4681ce4365d0b2592979d",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 2,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            33921,
+            33964
+          ],
+          "year": "2021",
+          "literal": "For the fiscal year ended December 31, 2021",
+          "normalized_context_character_span": [
+            33781,
+            34064
+          ],
+          "original_normalized_context": "MMISSION WASHINGTON, D.C. 20549 FORM 10-K (Mark One) ☒ ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For the fiscal year ended December 31, 2021 OR ☐ TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For t",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              33813,
+              33822
+            ]
+          ],
+          "is_actual_annual_report_title": true,
+          "diagnostic_context_class": "actual_annual_report_title"
+        },
+        {
+          "normalized_character_span": [
+            122818,
+            122861
+          ],
+          "year": "2020",
+          "literal": "for the fiscal year ended December 31, 2020",
+          "normalized_context_character_span": [
+            122678,
+            122961
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2020. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable business segm",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              122640,
+              122649
+            ],
+            [
+              122808,
+              122817
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_cc55025152dc05fba8e25df2",
+          "original_table_index": 35,
+          "table_xpath": "/html/body/table[23]",
+          "original_year_heading_rows": [],
+          "maximum_year_heading": null,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_d6505e8eedebfb2082976e24__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.one_reported_FCF_total_row",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_cc55025152dc05fba8e25df2"
+          }
+        },
+        {
+          "table_id": "issuer_table_9f8dfd4830e16ab9087b3684",
+          "original_table_index": 36,
+          "table_xpath": "/html/body/table[24]",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "",
+              "2021",
+              "",
+              "",
+              "2020",
+              "",
+              "",
+              "2019",
+              ""
+            ]
+          ],
+          "maximum_year_heading": 2021,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_d6505e8eedebfb2082976e24__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_explicit_December31_cover",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_9f8dfd4830e16ab9087b3684"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "frozen_full_document_uniqueness_rejects_multiple_title_or_body_reference_matches"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    },
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_f819bf569b4bf467c63f7332__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2022-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_df74ee279bd8e89d812b3ab5",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2023/accession=0001437749-23-002959/unp20221231_10k.htm",
+      "original_raw_sha256": "5114cb3376eecf007f31a15bbafc749751b3cd194c20f8191187a45a1a818ac4",
+      "original_raw_bytes": 2772044,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          34689,
+          34732
+        ],
+        "literal": "For the fiscal year ended December 31, 2022",
+        "year": "2022",
+        "raw_UTF8_byte_span": [
+          245306,
+          245466
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZCA8aXg6bm9uTnVtZXJpYyBuYW1lPSJkZWk6RG9jdW1lbnRQZXJpb2RFbmREYXRlIiBmb3JtYXQ9Iml4dDpkYXRlbW9udGhkYXl5ZWFyZW4iIGNvbnRleHRSZWY9ImRfMjAyMi0wMS0wMV8yMDIyLTEyLTMxIj5EZWNlbWJlciAzMSwgMjAyMg==",
+        "raw_fragment_UTF8": "For the fiscal year ended <ix:nonNumeric name=\"dei:DocumentPeriodEndDate\" format=\"ixt:datemonthdayyearen\" contextRef=\"d_2022-01-01_2022-12-31\">December 31, 2022",
+        "raw_fragment_sha256": "03887be5ca74a4906c88d876e068fcee63365d4eda0dbcb244eadacaaecf659d",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 2,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            34689,
+            34732
+          ],
+          "year": "2022",
+          "literal": "For the fiscal year ended December 31, 2022",
+          "normalized_context_character_span": [
+            34549,
+            34832
+          ],
+          "original_normalized_context": "MMISSION WASHINGTON, D.C. 20549 FORM 10-K (Mark One) ☒ ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For the fiscal year ended December 31, 2022 OR ☐ TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For t",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              34581,
+              34590
+            ]
+          ],
+          "is_actual_annual_report_title": true,
+          "diagnostic_context_class": "actual_annual_report_title"
+        },
+        {
+          "normalized_character_span": [
+            129267,
+            129310
+          ],
+          "year": "2021",
+          "literal": "for the fiscal year ended December 31, 2021",
+          "normalized_context_character_span": [
+            129127,
+            129410
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2021. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable business segm",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              129089,
+              129098
+            ],
+            [
+              129257,
+              129266
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_0c6327a5b548a14bd4406881",
+          "original_table_index": 37,
+          "table_xpath": "/html/body/table[23]",
+          "original_year_heading_rows": [],
+          "maximum_year_heading": null,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_f819bf569b4bf467c63f7332__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.one_reported_FCF_total_row",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_0c6327a5b548a14bd4406881"
+          }
+        },
+        {
+          "table_id": "issuer_table_ed7d23502732a1efd0698006",
+          "original_table_index": 38,
+          "table_xpath": "/html/body/table[24]",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "",
+              "2022",
+              "",
+              "",
+              "2021",
+              "",
+              "",
+              "2020",
+              ""
+            ]
+          ],
+          "maximum_year_heading": 2022,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_f819bf569b4bf467c63f7332__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_explicit_December31_cover",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_ed7d23502732a1efd0698006"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "frozen_full_document_uniqueness_rejects_multiple_title_or_body_reference_matches"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    },
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_9396c3fd8e7516ca93e20706__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2023-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_9c3597bc393d12fc5a301094",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2024/accession=0001437749-24-003599/unp20231231_10k.htm",
+      "original_raw_sha256": "9a5a7ecb64de7b47bcc447d9d66e86d7b304535c476200040e1a852c4f10d9b7",
+      "original_raw_bytes": 2690710,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          32263,
+          32306
+        ],
+        "literal": "For the fiscal year ended December 31, 2023",
+        "year": "2023",
+        "raw_UTF8_byte_span": [
+          228230,
+          228413
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZCA8aXg6bm9uTnVtZXJpYyBuYW1lPSJkZWk6RG9jdW1lbnRQZXJpb2RFbmREYXRlIiBmb3JtYXQ9Iml4dDpkYXRlLW1vbnRobmFtZS1kYXkteWVhci1lbiIgY29udGV4dFJlZj0iZF8yMDIzLTAxLTAxXzIwMjMtMTItMzEiIGlkPSJpeHYtMTAwMDEiPkRlY2VtYmVyIDMxLCAyMDIz",
+        "raw_fragment_UTF8": "For the fiscal year ended <ix:nonNumeric name=\"dei:DocumentPeriodEndDate\" format=\"ixt:date-monthname-day-year-en\" contextRef=\"d_2023-01-01_2023-12-31\" id=\"ixv-10001\">December 31, 2023",
+        "raw_fragment_sha256": "c343b3ea10a5b95da0c5ac8534a74ecbd582f2537903d52755eb85f580bf7a30",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 2,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            32263,
+            32306
+          ],
+          "year": "2023",
+          "literal": "For the fiscal year ended December 31, 2023",
+          "normalized_context_character_span": [
+            32123,
+            32406
+          ],
+          "original_normalized_context": "MMISSION WASHINGTON, D.C. 20549 FORM 10-K (Mark One) ☒ ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For the fiscal year ended December 31, 2023 OR ☐ TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934 For t",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              32155,
+              32164
+            ]
+          ],
+          "is_actual_annual_report_title": true,
+          "diagnostic_context_class": "actual_annual_report_title"
+        },
+        {
+          "normalized_character_span": [
+            129235,
+            129278
+          ],
+          "year": "2022",
+          "literal": "for the fiscal year ended December 31, 2022",
+          "normalized_context_character_span": [
+            129095,
+            129378
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2022. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable operating seg",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              129057,
+              129066
+            ],
+            [
+              129225,
+              129234
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_6e020f08b4dcde536a78e0d8",
+          "original_table_index": 31,
+          "table_xpath": "/html/body/table[17]",
+          "original_year_heading_rows": [],
+          "maximum_year_heading": null,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_9396c3fd8e7516ca93e20706__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.one_reported_FCF_total_row",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_6e020f08b4dcde536a78e0d8"
+          }
+        },
+        {
+          "table_id": "issuer_table_b1f147931af4bbff340cde4e",
+          "original_table_index": 32,
+          "table_xpath": "/html/body/table[18]",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "",
+              "2023",
+              "",
+              "",
+              "2022",
+              "",
+              "",
+              "2021",
+              ""
+            ]
+          ],
+          "maximum_year_heading": 2023,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_9396c3fd8e7516ca93e20706__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_explicit_December31_cover",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_b1f147931af4bbff340cde4e"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "frozen_full_document_uniqueness_rejects_multiple_title_or_body_reference_matches"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    },
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_ad643bfb5d437463ec4f0cfe__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2024-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_a31296f247110db86bb12f1f",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2025/accession=0000100885-25-000042/unp-20241231.htm",
+      "original_raw_sha256": "2172765e1ca7cd9ee2cc1d4bc7398a239d66c6624ff8946ebce490fd9dd30d32",
+      "original_raw_bytes": 2101726,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          25920,
+          25964
+        ],
+        "literal": "For the fiscal year ended December 31 , 2024",
+        "year": "2024",
+        "raw_UTF8_byte_span": [
+          144019,
+          144531
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZDwvc3Bhbj48c3BhbiBzdHlsZT0iY29sb3I6IzAwMDAwMDtmb250LWZhbWlseTonQXJpYWwnLHNhbnMtc2VyaWY7Zm9udC1zaXplOjlwdDtmb250LXdlaWdodDo3MDA7bGluZS1oZWlnaHQ6MTIwJSI+IDwvc3Bhbj48c3BhbiBzdHlsZT0iY29sb3I6IzAwMDAwMDtmb250LWZhbWlseTonQXJpYWwnLHNhbnMtc2VyaWY7Zm9udC1zaXplOjEwcHQ7Zm9udC13ZWlnaHQ6NDAwO2xpbmUtaGVpZ2h0OjEyMCUiPjxpeDpub25OdW1lcmljIGNvbnRleHRSZWY9ImMtMSIgbmFtZT0iZGVpOkRvY3VtZW50UGVyaW9kRW5kRGF0ZSIgZm9ybWF0PSJpeHQ6ZGF0ZS1tb250aG5hbWUtZGF5LXllYXItZW4iIGlkPSJmLTMiPjxpeDpub25OdW1lcmljIGNvbnRleHRSZWY9ImMtMSIgbmFtZT0iZGVpOkN1cnJlbnRGaXNjYWxZZWFyRW5kRGF0ZSIgZm9ybWF0PSJpeHQ6ZGF0ZS1tb250aG5hbWUtZGF5LWVuIiBpZD0iZi00Ij5EZWNlbWJlciAzMTwvaXg6bm9uTnVtZXJpYz4sIDIwMjQ=",
+        "raw_fragment_UTF8": "For the fiscal year ended</span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%\"> </span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonNumeric contextRef=\"c-1\" name=\"dei:DocumentPeriodEndDate\" format=\"ixt:date-monthname-day-year-en\" id=\"f-3\"><ix:nonNumeric contextRef=\"c-1\" name=\"dei:CurrentFiscalYearEndDate\" format=\"ixt:date-monthname-day-en\" id=\"f-4\">December 31</ix:nonNumeric>, 2024",
+        "raw_fragment_sha256": "5e93e94e62c74dfb6c15e3eba9062d1eda6fb09ab9070a8ffbdb4838422380c1",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 2,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            125575,
+            125618
+          ],
+          "year": "2023",
+          "literal": "for the fiscal year ended December 31, 2023",
+          "normalized_context_character_span": [
+            125435,
+            125718
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2023. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable operating seg",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              125397,
+              125406
+            ],
+            [
+              125565,
+              125574
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        },
+        {
+          "normalized_character_span": [
+            215493,
+            215532
+          ],
+          "year": "2024",
+          "literal": "for fiscal year ended December 31, 2024",
+          "normalized_context_character_span": [
+            215353,
+            215632
+          ],
+          "original_normalized_context": "ment Disclosures , which requires business entities to enhance disclosures about significant segment expenses. We adopted the ASU effective for fiscal year ended December 31, 2024. The adoption of this ASU only impacted our disclosures. See Note 1 Nature of Operations. In Decemb",
+          "FORM_10K_in_preceding_3000_characters": false,
+          "FORM_match_absolute_character_spans": [],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "ASU_effective_year_statement"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_89f9b9ae72bd5a344c680a67",
+          "original_table_index": 16,
+          "table_xpath": "/html/body/div[306]/table",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "2024",
+              "2023",
+              "2022"
+            ]
+          ],
+          "maximum_year_heading": 2024,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_ad643bfb5d437463ec4f0cfe__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_explicit_December31_cover",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_89f9b9ae72bd5a344c680a67"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "actual_report_title_contains_space_before_comma_and_is_not_matched_by_frozen_31_comma_regex",
+        "frozen_full_document_uniqueness_rejects_multiple_title_or_body_reference_matches"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    },
+    {
+      "entity_id": "UNP_US",
+      "archived_document_id": "srcdoc_36729aac5f51e3e5e773772d__fact_build_20260723_183450_a48fea09",
+      "archived_document_period_end": "2025-12-31",
+      "original_raw_object_id": "rawobj_sec_filings_95565f51e3ac8a7f8e90411d",
+      "original_relative_path": "raw_financial_data_lake/data/fin_raw/sec/filings/cik=0000100885/form=10-K/year=2026/accession=0000100885-26-000037/unp-20251231.htm",
+      "original_raw_sha256": "36169a354ee32c8c314633b2c55de9c3dbf4db24da61db996457f73b0a8e40c0",
+      "original_raw_bytes": 2185539,
+      "original_raw_SHA_and_size_verified": true,
+      "actual_annual_report_title": {
+        "normalized_character_span": [
+          27371,
+          27415
+        ],
+        "literal": "For the fiscal year ended December 31 , 2025",
+        "year": "2025",
+        "raw_UTF8_byte_span": [
+          154430,
+          154942
+        ],
+        "raw_fragment_base64": "Rm9yIHRoZSBmaXNjYWwgeWVhciBlbmRlZDwvc3Bhbj48c3BhbiBzdHlsZT0iY29sb3I6IzAwMDAwMDtmb250LWZhbWlseTonQXJpYWwnLHNhbnMtc2VyaWY7Zm9udC1zaXplOjlwdDtmb250LXdlaWdodDo3MDA7bGluZS1oZWlnaHQ6MTIwJSI+IDwvc3Bhbj48c3BhbiBzdHlsZT0iY29sb3I6IzAwMDAwMDtmb250LWZhbWlseTonQXJpYWwnLHNhbnMtc2VyaWY7Zm9udC1zaXplOjEwcHQ7Zm9udC13ZWlnaHQ6NDAwO2xpbmUtaGVpZ2h0OjEyMCUiPjxpeDpub25OdW1lcmljIGNvbnRleHRSZWY9ImMtMSIgbmFtZT0iZGVpOkRvY3VtZW50UGVyaW9kRW5kRGF0ZSIgZm9ybWF0PSJpeHQ6ZGF0ZS1tb250aG5hbWUtZGF5LXllYXItZW4iIGlkPSJmLTQiPjxpeDpub25OdW1lcmljIGNvbnRleHRSZWY9ImMtMSIgbmFtZT0iZGVpOkN1cnJlbnRGaXNjYWxZZWFyRW5kRGF0ZSIgZm9ybWF0PSJpeHQ6ZGF0ZS1tb250aG5hbWUtZGF5LWVuIiBpZD0iZi0zIj5EZWNlbWJlciAzMTwvaXg6bm9uTnVtZXJpYz4sIDIwMjU=",
+        "raw_fragment_UTF8": "For the fiscal year ended</span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%\"> </span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonNumeric contextRef=\"c-1\" name=\"dei:DocumentPeriodEndDate\" format=\"ixt:date-monthname-day-year-en\" id=\"f-4\"><ix:nonNumeric contextRef=\"c-1\" name=\"dei:CurrentFiscalYearEndDate\" format=\"ixt:date-monthname-day-en\" id=\"f-3\">December 31</ix:nonNumeric>, 2025",
+        "raw_fragment_sha256": "9960120596f620e265b841c03e88c422fb8161449e1c609e9e4dc4b889e9907e",
+        "raw_fragment_normalizes_exactly_to_title_literal": true,
+        "diagnostic_selection_evidence": "unique matching current-year title immediately after original SECURITIES EXCHANGE ACT OF 1934 heading; diagnostic only, not source re-admission",
+        "FORM_10K_in_preceding_3000_characters": true
+      },
+      "frozen_regex_full_document_match_count": 1,
+      "frozen_regex_matches": [
+        {
+          "normalized_character_span": [
+            153877,
+            153920
+          ],
+          "year": "2024",
+          "literal": "for the fiscal year ended December 31, 2024",
+          "normalized_context_character_span": [
+            153737,
+            154020
+          ],
+          "original_normalized_context": "s Discussion and Analysis of Financial Condition and Results of Operations” in Part II, Item 7, of the Company’s Annual Report on Form 10-K for the fiscal year ended December 31, 2024. The Railroad, along with its subsidiaries and rail affiliates, is our one reportable operating seg",
+          "FORM_10K_in_preceding_3000_characters": true,
+          "FORM_match_absolute_character_spans": [
+            [
+              153699,
+              153708
+            ],
+            [
+              153867,
+              153876
+            ]
+          ],
+          "is_actual_annual_report_title": false,
+          "diagnostic_context_class": "prior_annual_report_reference"
+        }
+      ],
+      "auditor_FORM_10K_in_first_3000_characters": false,
+      "candidate_table_headings": [
+        {
+          "table_id": "issuer_table_b90ddb3badad064d5dc7a64b",
+          "original_table_index": 16,
+          "table_xpath": "/html/body/div[349]/table",
+          "original_year_heading_rows": [
+            [
+              "Millions",
+              "2025",
+              "2024",
+              "2023"
+            ]
+          ],
+          "maximum_year_heading": 2025,
+          "frozen_production_rejection": {
+            "document_id": "srcdoc_36729aac5f51e3e5e773772d__fact_build_20260723_183450_a48fea09",
+            "entity_id": "UNP_US",
+            "reason": "issuer.cash_dividend_cover_and_latest_heading",
+            "status": "ISSUER_TABLE_BINDING_REJECTED",
+            "table_id": "issuer_table_b90ddb3badad064d5dc7a64b"
+          }
+        }
+      ],
+      "diagnostic_causes": [
+        "actual_report_title_contains_space_before_comma_and_is_not_matched_by_frozen_31_comma_regex",
+        "only_frozen_regex_match_is_prior_report_reference_and_disagrees_with_latest_table_heading"
+      ],
+      "new_admitted_table_count": 0,
+      "new_admitted_period_count": 0
+    }
+  ],
+  "observed_outcome": {
+    "fixed_source_documents_attempted": 6,
+    "new_tables": 0,
+    "new_periods": 0,
+    "new_tasks": 0,
+    "source_candidate_rejections": 9,
+    "new_rewrite_requests": 0,
+    "new_rewrite_charged_tokens": 0,
+    "previous_and_current_common_debit": 221538,
+    "preserved_candidate_tasks": 243,
+    "company_defined_candidates": 36,
+    "additional_company_margin": 0
+  },
+  "independent_audit_scope_limit": {
+    "frozen_audit_status": "passed",
+    "verified": "six original source SHA/size pins; old 243 public SHA bytes; empty incremental parents/catalog/zero-new-request accounting",
+    "actual_UNP_admitted_table_details_verified": 0,
+    "does_not_establish_real_UNP_table_financial_admission": true,
+    "synthetic_controls_are_not_real_source_success": true,
+    "does_not_prove_UNP_lacks_FCF_disclosures_or_usable_financial_data": true
+  },
+  "inference": "The observed rejection is a limitation of the frozen cover-identification adapter: comma whitespace and full-document matches include ordinary prior-report references; no financial source absence is inferred.",
+  "scope_preservation": {
+    "amounts_parsed_or_recomputed_for_this_diagnostic": false,
+    "frozen_rules_changed": false,
+    "frozen_artifacts_changed": false,
+    "new_source_acquisition_or_HTTP_requests": 0,
+    "new_model_requests": 0,
+    "tokenizer_constructions": 0,
+    "new_task_outputs_generated": 0,
+    "source_retries_or_re_admission": false,
+    "separate_revision_not_started": true
+  }
+}
