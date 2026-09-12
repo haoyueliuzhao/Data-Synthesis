@@ -32,7 +32,10 @@ def resolve_raw(root, value):
         relative = raw[len(prefix) :]
     else:
         require(
-            raw.startswith("trusted_data_synthesis/artifacts/qa_vnext_surface_build/"),
+            raw.startswith((
+                "trusted_data_synthesis/artifacts/qa_vnext_surface_build/",
+                "trusted_data_synthesis/artifacts/qa_vnext_catalog_bridge/",
+            )),
             "native.registered_new_source_storage_prefix",
         )
         relative = raw

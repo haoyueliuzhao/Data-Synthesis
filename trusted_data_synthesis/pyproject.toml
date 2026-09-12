@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-finance = ["pyarrow>=16.0.0"]
+finance = ["pyarrow>=16.0.0", "sympy>=1.13.0,<2"]
 online = ["httpx>=0.28.1,<1"]
 training = [
     "accelerate>=1.7.0,<2",

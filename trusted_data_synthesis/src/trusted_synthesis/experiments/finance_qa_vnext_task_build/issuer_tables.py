@@ -21,6 +21,8 @@ from .protocol import source_identity
 
 FCF = "issuer_defined_free_cash_flow"
 CFO = "net_cash_provided_by_used_in_operating_activities"
+LOGICAL_AMOUNT_RULE = "unique_annual_body_directional_adjacent_symbols_v1"
+PRINTED_NUMBER = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 MONTHS = (
     "January February March April May June July August September October November December"
 ).split()
@@ -139,6 +141,9 @@ def cells(table):
                     "start": cursor,
                     "stop": cursor + width,
                     "text": text(cell),
+                    "raw_text": "".join(cell.itertext()),
+                    "cell_xpath": cell.getroottree().getpath(cell),
+                    "has_superscript": bool(cell.xpath(".//sup")),
                 }
             )
             cursor += width
@@ -148,18 +153,19 @@ def cells(table):
 
 def scalar(value):
     """Printed signed amounts only; an untagged dash is NOT invented as zero."""
-    original = value.strip()
-    clean = original.replace("$", "").replace(",", "").replace(" ", "").replace("\u2212", "-")
-    if clean in {"", "-", "—", "–", "N/A", "n/a"} or "%" in clean:
+    if re.search(r"\d\s+\d", value):
         return None
-    negative = clean.startswith("(") and clean.endswith(")")
-    if negative:
-        clean = clean[1:-1]
-    if not re.fullmatch(r"-?\d+(?:\.\d+)?", clean):
+    clean = re.sub(r"\s+", "", value).replace("\u2212", "-")
+    match = re.fullmatch(
+        rf"(?P<currency>\$)?(?:\((?P<inner_currency>\$)?(?P<bracket>{PRINTED_NUMBER})\)"
+        rf"|(?P<plain>-?{PRINTED_NUMBER}))",
+        clean,
+    )
+    if match is None or (match["currency"] and match["inner_currency"]):
         return None
     try:
-        number = Decimal(clean)
-        return -number if negative else number
+        number = Decimal((match["bracket"] or match["plain"]).replace(",", ""))
+        return -number if match["bracket"] else number
     except InvalidOperation:
         return None
 
@@ -193,14 +199,174 @@ def headers(rows, before):
     return possibilities[0]
 
 
-def row_amount(row, header):
-    included = [
-        cell for cell in row if cell["start"] >= header["start"] and cell["stop"] <= header["stop"]
-    ]
+def _contains(outer, inner):
+    return outer["start"] <= inner["start"] and inner["stop"] <= outer["stop"]
+
+
+def _overlaps(left, right):
+    return left["start"] < right["stop"] and right["start"] < left["stop"]
+
+
+def _symbol_roles(cell):
+    """A dash is not a sign cell; mixed ')(' cells are never split opportunistically."""
+    compact = re.sub(r"\s+", "", cell["text"])
+    if not compact or not re.fullmatch(r"[$()]+", compact) or cell.get("has_superscript"):
+        return set()
+    return ({"prefix"} if "$" in compact or "(" in compact else set()) | (
+        {"suffix"} if ")" in compact else set()
+    )
+
+
+def _validate_geometry(row):
+    require(bool(row), "issuer.logical_amount_empty_row")
+    require(
+        len({cell["row"] for cell in row}) == 1
+        and len({cell["cell"] for cell in row}) == len(row)
+        and all(0 <= cell["start"] < cell["stop"] for cell in row)
+        and all(
+            left["stop"] == right["start"] and left["cell"] < right["cell"]
+            for left, right in zip(row, row[1:], strict=False)
+        ),
+        "issuer.logical_amount_invalid_physical_geometry",
+    )
+
+
+def row_amount(row, header, *, year_headers=None, header_row=None):
+    """Bind a printed amount before parsing its value, in a finite layout domain.
+
+    One digit-bearing physical body must lie wholly inside exactly one annual
+    header. Only immediately adjacent symbol-only runs may extend that body:
+    '(' and '$' face right; ')' faces left. A physical symbol cell is indivisible
+    and needs one owner, regardless of which concatenation would parse or make
+    a reconciliation close. External symbols also need a blank original header
+    cell and cannot overlap a different year. No blank/body/annotation is hopped.
+
+    Without the complete annual/header-row context, only cells wholly contained
+    in the supplied header are supported; external symbols cannot be inferred.
+    """
+    _validate_geometry(row)
+    annual = list(year_headers) if year_headers is not None else [header]
+    require(header in annual, "issuer.logical_amount_requested_header_missing")
+    require(
+        len({item["period_end"] for item in annual}) == len(annual)
+        and all(item["start"] < item["stop"] for item in annual)
+        and all(
+            not _overlaps(left, right)
+            for index, left in enumerate(annual)
+            for right in annual[index + 1 :]
+        ),
+        "issuer.logical_amount_ambiguous_annual_headers",
+    )
+    if header_row is not None:
+        _validate_geometry(header_row)
+        require(
+            all(
+                any(
+                    all(item[key] == cell[key] for key in ("row", "cell", "start", "stop", "text"))
+                    for cell in header_row
+                )
+                for item in annual
+            ),
+            "issuer.logical_amount_header_context_mismatch",
+        )
+    overlap = [cell for cell in row if _overlaps(cell, header)]
+    require(
+        all(_contains(header, cell) for cell in overlap),
+        "issuer.logical_amount_uncertain_column_ownership",
+    )
+    body_positions = [index for index, cell in enumerate(row) if re.search(r"\d", cell["text"])]
+    selected = [index for index in body_positions if _contains(header, row[index])]
+    require(len(selected) == 1, "issuer.missing_or_ambiguous_numeric_cell")
+    selected_index = selected[0]
+    body = row[selected_index]
+    require(not body.get("has_superscript"), "issuer.logical_amount_numeric_annotation")
+    body_owners = {
+        index: [item for item in annual if _contains(item, row[index])] for index in body_positions
+    }
+    require(
+        body_owners[selected_index] == [header],
+        "issuer.logical_amount_uncertain_column_ownership",
+    )
+
+    def nearby_body(index, direction):
+        cursor = index + direction
+        crossed = 0
+        while 0 <= cursor < len(row):
+            if cursor in body_owners:
+                return cursor
+            # At most two other symbol cells in an uninterrupted physical run.
+            if not _symbol_roles(row[cursor]) or crossed >= 2:
+                return None
+            cursor += direction
+            crossed += 1
+        return None
+
+    bindings, attached = [], []
+    for index, cell in enumerate(row):
+        roles = _symbol_roles(cell)
+        if not roles:
+            continue
+        candidate_indices = sorted(
+            {
+                owner
+                for role in roles
+                if (owner := nearby_body(index, 1 if role == "prefix" else -1)) is not None
+            }
+        )
+        if selected_index not in candidate_indices:
+            continue
+        require(candidate_indices == [selected_index], "issuer.logical_amount_shared_symbol_cell")
+        require(
+            not any(item != header and _overlaps(item, cell) for item in annual),
+            "issuer.logical_amount_symbol_crosses_annual_column",
+        )
+        if not _contains(header, cell):
+            require(
+                year_headers is not None and header_row is not None,
+                "issuer.logical_amount_external_symbol_requires_full_headers",
+            )
+            header_cover = [item for item in header_row if _overlaps(item, cell)]
+            require(
+                header_cover
+                and header_cover[0]["start"] <= cell["start"]
+                and header_cover[-1]["stop"] >= cell["stop"]
+                and all(not item["text"] for item in header_cover),
+                "issuer.logical_amount_external_symbol_not_blank_header_slot",
+            )
+        attached.append(cell)
+        bindings.append(
+            {
+                "cell": cell,
+                "roles": sorted(roles),
+                "candidate_body_cells": [row[owner] for owner in candidate_indices],
+                "owner_period_end": header["period_end"],
+                "outside_annual_header": not _contains(header, cell),
+            }
+        )
+    included = sorted(
+        overlap + [cell for cell in attached if cell not in overlap], key=lambda cell: cell["start"]
+    )
+    require(
+        all(not cell["text"] or cell == body or cell in attached for cell in included),
+        "issuer.missing_or_ambiguous_numeric_cell",
+    )
     rendered = " ".join(cell["text"] for cell in included if cell["text"])
     amount = scalar(rendered)
     require(amount is not None, "issuer.missing_or_ambiguous_numeric_cell")
-    return amount, {"printed_text": rendered, "cells": included}
+    return amount, {
+        "printed_text": rendered,
+        "cells": included,
+        "geometry_certificate": {
+            "rule": LOGICAL_AMOUNT_RULE,
+            "body": body,
+            "annual_header": header,
+            "all_annual_headers": annual,
+            "original_header_row": header_row,
+            "original_amount_row": row,
+            "symbol_bindings": bindings,
+            "selection_uses_amount_value_or_reconciliation": False,
+        },
+    }
 
 
 def table_structure(table, document_text):
@@ -368,7 +534,12 @@ def parse_document(root, source, native_observations):
                     end = header["period_end"]
                     require(2010 <= int(end[:4]) <= 2025, "issuer.observation_year_scope")
                     values = [
-                        row_amount(structure["rows"][row], header)
+                        row_amount(
+                            structure["rows"][row],
+                            header,
+                            year_headers=structure["headers"],
+                            header_row=structure["rows"][header["row"]],
+                        )
                         for row in structure["selected_rows"]
                     ]
                     cfo_value = values[0][0]
@@ -896,7 +1067,12 @@ def validate_binding(fact, native):
         for value in table["structure"]["headers"]
         if value["period_end"] == fact["period_end"]
     )
-    observed, reference = row_amount(table["structure"]["rows"][row_index], header)
+    observed, reference = row_amount(
+        table["structure"]["rows"][row_index],
+        header,
+        year_headers=table["structure"]["headers"],
+        header_row=table["structure"]["rows"][header["row"]],
+    )
     require(
         reference == native["record"]["cell_reference"]
         and observed == Decimal(native["record"]["val"]),
