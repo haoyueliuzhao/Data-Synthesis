@@ -150,5 +150,109 @@ collection.run与原Teacher Provider：训练目录仍255候选，不把900评�
 共同账本只读前检仍为历史221,538＋UNP10,819＝232,357，
 评测用途未登记、评测／Teacher请求均0；磁盘约1.4TB可用。
 
-此处将在本阶段提交、冻结、真实改写及独立审计后追加实际身份、类别、请求、费用和限制。
-当前设计与开发控制不等于900题已获得新措辞，不等于Teacher采集、Student训练或效用已执行。
+本阶段实际已执行。源码提交`01dde8afaa6a2987f4df26c6620665e106b49c17`先推送，
+随后freeze再次执行同258项并通过（15.65秒）；不把两次相加成516项不同控制。
+实际表述准备从2026-09-12 14:12:54.645561 UTC至14:16:01.481756 UTC，
+约186.84秒，不含开发、freeze、后续独立审计与A/B时长。
+
+## 9. 900题表述的实际结果
+
+| Split | 运算 | 总题数 | 真实改写 | 未变化原样保留 | fallback |
+| --- | --- | ---: | ---: | ---: | ---: |
+| dev | 差额 | 30 | 7 | 23 | 0 |
+| dev | 增长率 | 30 | 9 | 21 | 0 |
+| dev | 三期算术平均 | 60 | 22 | 38 | 0 |
+| dev | 选峰后同期间查询 | 60 | 30 | 21 | 9 |
+| confirm | 差额 | 119 | 28 | 91 | 0 |
+| confirm | 增长率 | 121 | 25 | 96 | 0 |
+| confirm | 三期算术平均 | 240 | 94 | 146 | 0 |
+| confirm | 选峰后同期间查询 | 240 | 117 | 106 | 17 |
+| 总计 | — | 900 | 332 | 542 | 26 |
+
+真实改写为332／900＝36.89%。542条未变化记录实际全部是首个语义合格模板与
+model_contract中的canonical_template完全一致，不只是笼统的“格式变化”。
+这542条和26条fallback最终都逐字复用原消息，共568条；没有跳第二个已返回候选追求变化率。
+900个新surface ID不能写成900条真实措辞改写，也不能称900题全部获得语言多样性。
+
+本地canonical准备900条都不同于原base；最终题面相对canonical_base也有900条词差异，
+其中大量只是退回原模板造成，因此这个900不能用于衡量LLM贡献。
+按“相对模型canonical有实词变化，并且最终base相对原题也有实词变化”的双重规则，
+真正贡献为332；不把确定性CIK／日期补齐算成LLM改写。
+
+全部900题的其他五个公开字段、完整期间后缀、科学TaskID、原bundle与QA引用保持，
+新QA Build／QASample均0；新旧SHA分别由所属manifest认证。
+独立题面审计实际重开900条原／新public、1,007条请求及其响应／收据／账本，
+逐题重新核算首合格、分类、保留原字节、预算和用途永久关闭，结果`passed`、失败0。
+原900题来源审计按原身份继承，没有重跑原900金融来源或读取私有答案来验证改写文字。
+新统一输入准入为`READY_FOR_UNIFIED_EVALUATION_INPUT`，失败门为空。
+
+## 10. 实际请求、费用与解释范围
+
+900次初始＋107次合同修复＝1,007次，793题一次、107题两次；
+全部响应模型为`deepseek-flash`，全部请求settled，用量已知，未知和全局停止均0。
+输入511,532＋输出140,427＝651,959 Token。
+共同账本在评测结束时为221,538历史＋10,819 UNP＋0 Teacher＋651,959评测＝884,316，
+余额999,115,684。后续Teacher继续使用同一账本，这个余额是本阶段结束时状态，不是永远不变。
+
+返回候选共1,867个；按原顺序实际检查1,136个，874个语义合格、262个被拒。
+874＝332真实改写＋542无变化，不是874条新语言表达。另731个后续候选未被继续用于挑选。
+5次返回存在结构失败；所有原公开返回内容和拒绝历史仍保留。
+262个拒绝均落在有限肯定句式保护规则上，不应直接宣称262个金融语义错误；
+26个fallback全属选峰查询，也不能推断底层26道金融题不成立。
+
+评测改写用途已永久关闭剩余次数，未用的793次理论余量不会再投入提高接受率。
+这仅关闭该用途，不关闭Teacher或改写共同账本的其他已授权消费者。
+本阶段tokenizer／Student／GPU／新增源获取均0，未测量效用或自然语言泛化收益。
+显式运算合同仍在，结论限于既有任务定义下的表述变化，不是去掉合同后的理解能力验证。
+
+| 身份 | 实际值 |
+| --- | --- |
+| freeze | `evaluation_surface_freeze:219f5b9a4dbaf1d3eca92831fa070622125841cc5e8da982fa51954fbf09cbdc` |
+| 科学表述manifest | `manifest:f29dac61b36396baffd60916bf3b2bdca461a849f0e11bb2d519d54127d2c856` |
+| 独立审计manifest | `manifest:05a8c505721eb46b536da95a7cf46b270a800cb267154a0fa42bd6a51bfd782d` |
+| 独立审计 | `evaluation_surface_independent_audit:05fc1e0bef90e2048735667f165a1ca19b8cbeeaf104f9f039341cab4852e53b` |
+| 统一输入准入 | `evaluation_surface_admission:4314cb21e40b609ec2871ecffb9729ba81e2a154c60d08fbba324ed80fa428f7` |
+| 运行报告 | `evaluation_surface_report:d4ae94888b6263dc8551149668b7a62e98521816afbdc3819e31965411bb3e4a` |
+
+表述manifest含5,735成员、33,932,155字节，不含manifest本身；
+最大成员1,574,080字节，无需超大文件传输压缩。旧大面板仍父引用，不重新复制或构建。
+
+## 11. 直接启动的固定A/B批次
+
+两级实际准入均通过后，已经直接调用新`stage collect`，使用EvaluationLedger及原
+collection.run／Teacher Provider；没有小批试采、失败补采或八包提前停。
+实际完整登记24,640个255候选的训练Teacher会话，900个评测目标不在该训练登记中。
+批次目录为`artifacts/qa_vnext_readiness_revision/fixed_AB_20260912`。
+
+启动后的一个只读中间快照为125个已完成会话：61个财务有效，40个MAPPED且表示候选合格，
+85个PENDING_REVIEW；实际方法为55 endpoint、6 control、64未定。
+这仅是固定排序前缀的中间观测，不能当作总体产率、臂比较、样本量选择或效用结果。
+不按它修改来源、提示、资格或补采规则。完整批次仍在执行，尚未选出180–200共同材料。
+
+在完整登记全部结束并核对真实响应前，不启动Student训练、不从前缀挑选总体，
+也不把本阶段651,959改写Token用作训练材料Token预算。
+后续以该批次最终report／共同材料报告为准；当前运行中状态不等于正式实验已经全部完成。
+
+## 12. Student执行尚未完成的接线边界
+
+采集期间只读盘点了既有源码，没有启动Student、加载Tokenizer或修改生产依赖。
+当前不能把“原包消费者接口已登记”表述成“本研究Student训练驱动已经完成”。
+后续必须先核对完整采集与共同材料总体，再以独立版本补齐以下三处接线：
+
+1. `finance_qa_vnext_eval_readiness/materials.update_examples`已经返回五题64整包及
+   `alpha/(40L)`，`finance_qa_vnext_basis_scale_preparation/design.task_batches`已经给出
+   十遍调度，但尚无本研究训练driver消费它们。可复用`pq_student/loss.py`的底层损失与
+   `pq_student/model.py`的模型组件；不能直接运行仍固定18／21包及整遍一次更新的
+   `pq_student/train.py`或`source_class_utility/train.py`。新driver须完整五题累积后更新，
+   不能另加微批、全局Token或样本数的二次平均。
+2. 新`eval_surface/overlay.py`与`eval_readiness/runtime.generate`已提供统一公共输入和
+   离线资格接口，但旧`source_class_utility/inference.LocalDecoder`仅接收一个参数并返回
+   `content`，新callback接收`(messages, context)`并要求`raw_response`。还需接入完整原输出、
+   checkpoint身份、终止状态及事前冻结的本研究解码额度；不能默认继承旧限额。
+   旧`evaluate_model()`还绑定12／24题，不适用于新180／720题。
+3. `basis_scale_preparation/design.select_direction`已经实现A池三臂三种子平均配对严格
+   正收益选择，但仍需把真实训练报告、统一表述版本、完整轨迹结果与A开发选方向、B两臂、
+   B主确认串成执行编排。旧`bidirectional_utility/study.py`不是本研究的新入口。
+
+上述属于既定设计的实现缺口，不是根据中间Teacher产率重新选择设计的依据；
+本次题面通过、正式采集运行中、Student执行尚未接通是三个不同状态。
