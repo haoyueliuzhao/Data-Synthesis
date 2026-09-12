@@ -3,8 +3,9 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter, defaultdict
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from itertools import pairwise
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -330,6 +331,8 @@ def _annual_rows(
             row.get("source_id"),
             row.get("derived_year"),
             row.get("derived_time_basis"),
+            row.get("period_start"),
+            row.get("period_end"),
             row.get("normalized_unit"),
             row.get("normalized_currency"),
         ),
@@ -396,31 +399,15 @@ def _iter_yoy_and_difference(
             row.get("derived_time_basis"),
         )
         grouped[key].append(row)
-    for key, group_rows in grouped.items():
-        group_rows.sort(
-            key=lambda r: (r["derived_year"], str(r.get("period_end") or ""))
-        )
-        by_year: dict[int, dict[str, Any]] = {}
-        for row in group_rows:
-            current = by_year.get(row["derived_year"])
-            if current is None or _row_score(row) > _row_score(current):
-                by_year[row["derived_year"]] = row
-        for year in sorted(by_year):
-            prev = by_year.get(year - 1)
-            curr = by_year[year]
-            if not prev:
-                continue
+    for group_rows in grouped.values():
+        for prev, curr, time_scope in _actual_annual_pairs(group_rows, report):
             diff = curr["value_decimal"] - prev["value_decimal"]
             yield _derived_scalar(
                 "difference",
                 [prev, curr],
                 {"entity_id": curr["entity_id"]},
                 {"metric_id": curr["metric_id"]},
-                {
-                    "year": year,
-                    "basis": curr["derived_time_basis"],
-                    "previous_year": year - 1,
-                },
+                time_scope,
                 "current_value - prior_year_value",
                 diff,
                 curr.get("normalized_unit"),
@@ -435,16 +422,73 @@ def _iter_yoy_and_difference(
                 [prev, curr],
                 {"entity_id": curr["entity_id"]},
                 {"metric_id": curr["metric_id"]},
-                {
-                    "year": year,
-                    "basis": curr["derived_time_basis"],
-                    "previous_year": year - 1,
-                },
+                time_scope,
                 "(current_value - prior_year_value) / abs(prior_year_value) * 100",
                 yoy,
                 "percent",
                 _status_from_inputs([prev, curr]),
             )
+
+
+def _actual_annual_pairs(rows, report):
+    """Actual interval identity takes precedence over reporting-year indices.
+
+    A 52/53-week issuer can end two successive reporting years in the same
+    calendar year, or skip an end-year index. Neither changes the source dates.
+    Year-only pairing is retained only for records with no actual date at all.
+    """
+    dated, year_only = [], []
+    for row in rows:
+        if row.get("period_end"):
+            end = _as_date(row["period_end"])
+            start = _as_date(row.get("period_start"))
+            if end is None or (row.get("period_start") and start is None):
+                report["skipped_counts"]["annual_invalid_actual_date"] += 1
+                continue
+            if start and not 330 <= (end - start).days + 1 <= 380:
+                report["skipped_counts"]["annual_invalid_actual_duration"] += 1
+                continue
+            dated.append((row, start, end))
+        elif row.get("period_start"):
+            report["skipped_counts"]["annual_incomplete_actual_interval"] += 1
+        else:
+            year_only.append(row)
+    for duration in (False, True):
+        series = sorted(
+            (item for item in dated if bool(item[1]) == duration),
+            key=lambda item: (item[2], item[1] or date.min, item[0]["fact_id"]),
+        )
+        for (prev, pstart, pend), (curr, cstart, cend) in pairwise(series):
+            if not 330 <= (cend - pend).days <= 380:
+                report["skipped_counts"]["annual_actual_endpoints_not_adjacent"] += 1
+                continue
+            if duration and cstart != pend + timedelta(days=1):
+                report["skipped_counts"]["annual_actual_flow_gap_or_overlap"] += 1
+                continue
+            yield prev, curr, {
+                "basis": "explicit_source_periods",
+                "frequency": "annual",
+                "year": curr["derived_year"],
+                "previous_year": prev["derived_year"],
+                "year_fields_are_labels_not_period_identity": True,
+                "previous_period_start": pstart.isoformat() if pstart else None,
+                "previous_period_end": pend.isoformat(),
+                "period_start": cstart.isoformat() if cstart else None,
+                "period_end": cend.isoformat(),
+            }
+    by_year = {}
+    for row in year_only:
+        current = by_year.get(row["derived_year"])
+        if current is None or _row_score(row) > _row_score(current):
+            by_year[row["derived_year"]] = row
+    for year, curr in sorted(by_year.items()):
+        prev = by_year.get(year - 1)
+        if prev:
+            yield prev, curr, {
+                "basis": curr["derived_time_basis"],
+                "year": year,
+                "previous_year": year - 1,
+            }
 
 
 def _iter_qoq_growth(

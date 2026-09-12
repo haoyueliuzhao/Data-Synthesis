@@ -418,15 +418,22 @@ def populate_facts(db, inputs, issuer=None):
     return fact_build, document_build, bindings
 
 
-def run(root, output, *, work=WORK, extra_issuer_sources=()):
+def run(root, output, *, work=WORK, extra_issuer_sources=(), prepared_context=None):
     root, output = Path(root).resolve(), Path(output)
     database = root / work / "native_fact_qa.sqlite3"
     database.parent.mkdir(parents=True, exist_ok=True)
     require(not database.exists(), "native.new_scoped_database_only")
     archived = RecordDB(str(root / WORK / "qa_build.sqlite3"))
     # Reading the archive projection does not activate or amend old builds.
-    inputs = source_inputs(root, archived)
-    issuer = issuer_tables.prepare(root, archived, inputs, extra_sources=extra_issuer_sources)
+    if prepared_context is None:
+        inputs = source_inputs(root, archived)
+        issuer = issuer_tables.prepare(root, archived, inputs, extra_sources=extra_issuer_sources)
+    else:
+        require(not extra_issuer_sources, "native.single_explicit_input_provider")
+        # The provider must pin a prior source manifest and preserve its admitted
+        # records. It may append only the newly frozen source extension. Actual
+        # Fact/quality/KG construction below is shared, never fabricated in caller.
+        inputs, issuer = prepared_context(root, archived)
     write_json(output / "issuer_source_tables.json", issuer)
     write_json(
         output / "native_source_inventory.json",

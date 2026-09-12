@@ -185,6 +185,25 @@ def assess_session(session, bundle, native_bindings):
         max_tools=session["max_tools"],
     )
     require(replay == session, "assessment.full_raw_history_and_tool_replay")
+    return assess_replayed_session(session, bundle, native_bindings)
+
+
+def assess_replayed_session(session, bundle, native_bindings):
+    """Pure offline semantics after a caller's complete deterministic replay.
+
+    The archived scripted entry above preserves its original replay requirement.
+    The new live adapter verifies its own 32-tool protocol and transport evidence
+    separately; neither entry infers model authenticity from this function.
+    """
+    require(
+        bundle["task_id"] == session["identity"]["task_id"]
+        and bundle["family"] == session["identity"]["family"],
+        "assessment.task_join",
+    )
+    require(
+        bundle["public"] == __import__("json").loads(session["public_messages"][0]["content"]),
+        "assessment.frozen_public_join",
+    )
     outcome = {
         "session_id": session["id"],
         "task_id": bundle["task_id"],

@@ -15,7 +15,7 @@ from finraw.qa.comparability import (
 )
 
 
-SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.3.0"
+SEMANTIC_OPERATOR_REGISTRY_VERSION = "1.4.0"
 
 
 @dataclass(frozen=True)
@@ -682,6 +682,39 @@ def _evaluate_contiguous(
         rows = _binding_rows(name, context.binding, context.fact_map)
         frequencies = {_normalise(fact_frequency(row)) for row in rows}
         frequency = next(iter(frequencies), "")
+        if rows and any(row.get("period_start") for row in rows):
+            # Duration identity is the actual inclusive interval, not a fiscal
+            # filing FY or the year containing its end date. Mixing a dated
+            # duration with an index-only observation must fail closed.
+            try:
+                intervals = sorted(
+                    (
+                        date.fromisoformat(str(row["period_start"])),
+                        date.fromisoformat(str(row["period_end"])),
+                    )
+                    for row in rows
+                )
+                valid = (
+                    len(frequencies) == 1
+                    and len(set(intervals)) == len(intervals)
+                    and all(start <= end for start, end in intervals)
+                    and all(
+                        right[0] == left[1] + timedelta(days=1)
+                        for left, right in zip(intervals, intervals[1:])
+                    )
+                )
+                serialized = [
+                    [start.isoformat(), end.isoformat()] for start, end in intervals
+                ]
+            except (KeyError, TypeError, ValueError):
+                valid, serialized = False, []
+            observed[name] = {
+                "actual_intervals": serialized,
+                "frequency": frequency,
+                "passed": valid,
+            }
+            passed = passed and valid
+            continue
         indices = [period_index(row, frequency) for row in rows]
         ordered = sorted(value for value in indices if value is not None)
         valid = (
@@ -693,7 +726,12 @@ def _evaluate_contiguous(
         )
         observed[name] = {"indices": ordered, "frequency": frequency, "passed": valid}
         passed = passed and valid
-    return SemanticCheck("periods_contiguous", passed, observed, "step size 1")
+    return SemanticCheck(
+        "periods_contiguous",
+        passed,
+        observed,
+        "inclusive duration endpoints adjacent; index step 1 only without dates",
+    )
 
 
 def _evaluate_between_days(
@@ -1186,6 +1224,13 @@ def _period_signature(row: Mapping[str, Any]) -> str:
 
 
 def _period_alignment_signature(row: Mapping[str, Any]) -> str:
+    if row.get("period_start") or row.get("period_end"):
+        return (
+            "actual:"
+            + str(row.get("period_start") or "")
+            + ":"
+            + str(row.get("period_end") or "")
+        )
     frequency = fact_frequency(dict(row))
     index = period_index(dict(row), frequency)
     if index is not None:

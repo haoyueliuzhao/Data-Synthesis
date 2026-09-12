@@ -4196,7 +4196,7 @@ def test_scope_followup_aligns_fiscal_period_without_equating_time_basis():
     }
 
 
-def test_temporal_followup_coverage_uses_fiscal_identity_not_exact_date():
+def test_temporal_followup_rejects_same_fiscal_index_with_different_actual_dates():
     facts = {}
     for year in [2021, 2022, 2023]:
         revenue = _semantic_fact(f"r{year}", "revenue", year, value=year - 1900)
@@ -4222,9 +4222,13 @@ def test_temporal_followup_coverage_uses_fiscal_identity_not_exact_date():
         _semantic_ontology(),
         comparability_policy(),
     )
-    assert result.passed, (result.errors, result.checks)
+    # Equal four-digit FY indices do not make different inclusive source
+    # intervals interchangeable, nor remove a one-day gap between flows.
+    assert not result.passed
+    assert "periods_contiguous" in result.errors
+    assert "secondary_period_coverage_equals" in result.errors
     assert (
-        result.checks["secondary_period_coverage_equals"]["observed"]["coverage"] == "1"
+        result.checks["secondary_period_coverage_equals"]["observed"]["coverage"] == "0"
     )
 
 

@@ -7,7 +7,7 @@ import subprocess
 import uuid
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
@@ -5577,13 +5577,17 @@ def _is_exact_integer_answer(
 
 
 def _period_output_format(value: Any, time_scope: dict[str, Any]) -> str:
+    if time_scope.get("basis") == "actual_period_set":
+        return "actual_interval"
     text = str(value or "")
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
         return "YYYY-MM-DD"
     if re.fullmatch(r"\d{4}-\d{2}", text):
         return "YYYY-MM"
     basis = str(time_scope.get("basis") or "").casefold()
-    return "fiscal_year" if "fiscal" in basis else "calendar_year"
+    if "fiscal" in basis:
+        return "fiscal_year"
+    return "calendar_year" if basis == "calendar_year" else "period_label"
 
 
 def _benchmark_output_instruction(
@@ -5702,6 +5706,8 @@ def _benchmark_output_instruction(
                 "YYYY-MM": "月份写成YYYY-MM",
                 "fiscal_year": "期间标明为财年",
                 "calendar_year": "期间标明为自然年",
+                "actual_interval": "所选期间写明实际起止日期（YYYY-MM-DD/YYYY-MM-DD）",
+                "period_label": "期间使用来源给出的期间标识",
             }
             parts.append(labels[str(period_format)])
         if contract_type == "exact_integer" and question_precision_explicit:
@@ -5742,6 +5748,8 @@ def _benchmark_output_instruction(
             "YYYY-MM": "use YYYY-MM for the month",
             "fiscal_year": "label the selected period as a fiscal year",
             "calendar_year": "label the selected period as a calendar year",
+            "actual_interval": "identify the selected actual interval as YYYY-MM-DD/YYYY-MM-DD",
+            "period_label": "use the source period label for the selected period",
         }
         parts.append(labels[str(period_format)])
     if contract_type == "exact_integer" and question_precision_explicit:
@@ -6616,6 +6624,10 @@ def _validate_benchmark_output_contract(row: dict[str, Any]) -> dict[str, Any]:
             "YYYY-MM": (r"yyyy-mm",),
             "fiscal_year": (r"fiscal\s+year|财年",),
             "calendar_year": (r"calendar\s+year|自然年",),
+            "actual_interval": (
+                r"actual\s+interval.*yyyy-mm-dd/yyyy-mm-dd|实际起止日期",
+            ),
+            "period_label": (r"source\s+period\s+label|来源给出的期间标识",),
         }
         if not any(
             re.search(pattern, normalized)
@@ -6742,6 +6754,16 @@ def _question_display_time_scope(
     time_scope: dict[str, Any], semantics: dict[str, Any]
 ) -> dict[str, Any]:
     display = dict(time_scope)
+    actual = display.get("actual_periods")
+    if actual:
+        # Actual intervals outrank frequency, FY filing metadata and end-year
+        # indices. A 52/53-week fiscal flow can skip or repeat an end-year index.
+        display["basis"] = "actual_period_set"
+        display["start_date"] = actual[0]["period_start"]
+        display["end_date"] = actual[-1]["period_end"]
+        display.pop("start_year", None)
+        display.pop("end_year", None)
+        return display
     if str(display.get("basis") or "").casefold() != "multi_period":
         return display
     comparability = dict(semantics.get("comparability") or {})
@@ -6752,16 +6774,15 @@ def _question_display_time_scope(
         display["basis"] = "fiscal_year"
     elif "calendar" in declared_basis:
         display["basis"] = "calendar_year"
-    elif str(
-        semantics.get("metric_period_type") or ""
-    ).casefold() == "period_flow" and dict(semantics.get("financial_scope") or {}).get(
-        "entity_scope_id"
-    ):
-        display["basis"] = "fiscal_year"
     return display
 
 
 def _period_label(scope: dict[str, Any]) -> str:
+    if scope.get("basis") == "actual_period_set":
+        return "; ".join(
+            f"{period['period_start']} through {period['period_end']}"
+            for period in scope.get("actual_periods") or []
+        )
     if scope.get("basis") == "explicit_source_periods":
         end = str(scope["period_end"])
         start = scope.get("period_start")
@@ -6808,6 +6829,19 @@ def _period_endpoint_label(value: Any, scope: dict[str, Any]) -> str:
 
 
 def _period_unit_label(scope: dict[str, Any]) -> str:
+    if scope.get("actual_periods"):
+        periods = scope["actual_periods"]
+        try:
+            calendar = all(
+                date.fromisoformat(period["period_start"])
+                == date(date.fromisoformat(period["period_end"]).year, 1, 1)
+                and date.fromisoformat(period["period_end"])
+                == date(date.fromisoformat(period["period_start"]).year, 12, 31)
+                for period in periods
+            )
+        except (KeyError, TypeError, ValueError):
+            calendar = False
+        return "calendar year" if calendar else "actual reporting period"
     frequency = str(scope.get("frequency") or "").casefold()
     if scope.get("fiscal_quarter") or frequency == "quarterly":
         return "fiscal quarter" if scope.get("basis") == "fiscal_year" else "quarter"
@@ -6817,7 +6851,7 @@ def _period_unit_label(scope: dict[str, Any]) -> str:
         return "date"
     if scope.get("basis") == "fiscal_year":
         return "fiscal year"
-    if scope.get("basis") == "calendar_year" or frequency == "annual":
+    if scope.get("basis") == "calendar_year":
         return "calendar year"
     return "period"
 

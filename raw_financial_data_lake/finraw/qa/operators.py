@@ -12,7 +12,7 @@ from finraw.qa.comparability import (
     period_label,
 )
 
-OPERATION_OPERATOR_REGISTRY_VERSION = "1.1.0"
+OPERATION_OPERATOR_REGISTRY_VERSION = "1.2.0"
 
 
 class OperatorError(ValueError):
@@ -191,6 +191,13 @@ def _arg_extreme(inputs: list[Any], params: dict[str, Any]) -> dict[str, Any]:
         "period_index": period_index(winner, frequency),
         "frequency": frequency,
         "period": period_label(winner),
+        "actual_period": {
+            "start": winner.get("period_start"),
+            "end": winner.get("period_end"),
+            "period_type": "duration" if winner.get("period_start") else "instant",
+        }
+        if winner.get("period_end")
+        else None,
         "metric_id": winner.get("metric_id"),
         "unit": unit,
         "currency": currency,
@@ -207,14 +214,28 @@ def _select_by_period(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
     frequency = str(selection.get("frequency") or "")
     selected_index = selection.get("period_index")
     selected_period = tuple(selection.get("period_key") or ())
+    actual = selection.get("actual_period")
     matches = [
         fact
         for fact in facts
         if (
-            selected_index is not None
-            and period_index(fact, frequency) == selected_index
+            actual is not None
+            and (fact.get("period_start"), fact.get("period_end"))
+            == (actual.get("start"), actual.get("end"))
         )
-        or (selected_index is None and tuple(period_key(fact)) == selected_period)
+        or (
+            actual is None
+            and (
+                (
+                    selected_index is not None
+                    and period_index(fact, frequency) == selected_index
+                )
+                or (
+                    selected_index is None
+                    and tuple(period_key(fact)) == selected_period
+                )
+            )
+        )
     ]
     if len(matches) != 1:
         raise OperatorError(
@@ -225,6 +246,7 @@ def _select_by_period(inputs: list[Any], params: dict[str, Any]) -> dict[str, An
         "value": str(_fact_value(fact)),
         "period": selection.get("period") or period_label(fact),
         "result_period": selection.get("period") or period_label(fact),
+        "actual_period": actual,
         "primary_value": selection.get("value"),
         "primary_unit": selection.get("unit"),
         "primary_currency": selection.get("currency"),

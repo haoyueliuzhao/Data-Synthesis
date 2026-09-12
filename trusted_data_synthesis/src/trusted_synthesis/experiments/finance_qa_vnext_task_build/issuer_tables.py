@@ -38,13 +38,15 @@ DEFINITION_RE = re.compile(
 TOTAL_RE = re.compile(r"^(?:non-gaap\s+)?free cash flow(?:\s*\(non-gaap\))?\s*[*]?$", re.I)
 CFO_RE = re.compile(
     r"^(?:gaap\s+)?(?:net\s+cash\s+(?:provided\s+by|from)\s+operating\s+activities"
+    r"|cash\s+provided\s+by\s+operating\s+activities"
     r"|cash\s+flows?\s+from\s+(?:operations|operating\s+activities))"
     r"(?:\s*\(gaap\))?\s*[*]?$",
     re.I,
 )
 
 FORMULA_WORDS = set(
-    "we define defines calculate calculated calculation free cash flow flows non gaap financial "
+    "we define defines defined calculate calculated calculation free cash flow flows non gaap "
+    "financial "
     "measure measures as is net provided by from operating activities operations less minus plus "
     "and to outflows for legal settlements settlement business combination other related costs "
     "including compensation expense expenses reduced purchases purchase acquire acquisition "
@@ -435,8 +437,27 @@ def table_structure(table, document_text):
         document_text,
         re.I,
     )
+    # A separately registered, complete CFO-CFI-dividend issuer definition.
+    # No omission of 'net' changes the CFO identity: the actual same-filing
+    # USD CFO/annual-period anchor below remains mandatory before Fact creation.
+    cash_after_dividends = [labels[row].casefold() for row in selected_rows] == [
+        "cash provided by operating activities",
+        "cash used in investing activities",
+        "dividends paid",
+        "free cash flow",
+    ] and re.fullmatch(
+        r"Free cash flow is defined as cash provided by operating activities "
+        r"less cash used in investing activities and dividends paid\.",
+        quote,
+        re.I,
+    ) is not None
+    explicit_millions_heading = cash_after_dividends and any(
+        cell["text"].casefold() == "millions" for row in rows[:start] for cell in row
+    )
     require(
-        "in millions" in unit_context.lower() or global_units is not None,
+        "in millions" in unit_context.lower()
+        or global_units is not None
+        or explicit_millions_heading,
         "issuer.explicit_million_scale",
     )
     caption_context = document_text[max(0, position - 250) : position + len(table_text)]
@@ -446,7 +467,63 @@ def table_structure(table, document_text):
         ),
         "issuer.explicit_foreign_currency",
     )
-    year_headers = headers(rows, start)
+    header_resolution = None
+    if cash_after_dividends and explicit_millions_heading:
+        # This finite summary-table layout prints year indices, not full dates.
+        # The literal December-31 annual cover gives proposed dates ONLY. Every
+        # proposal must subsequently match an exact same-accession native annual
+        # CFO record; a 52/53-week or fiscal-label/end-year mismatch stays rejected.
+        covers = list(
+            re.finditer(
+                r"For\s+(?:the\s+)?fiscal\s+year\s+ended\s+December\s+31,?\s+(20\d{2})",
+                document_text,
+                re.I,
+            )
+        )
+        require(len(covers) == 1, "issuer.cash_dividend_explicit_December31_cover")
+        cover = covers[0]
+        require(
+            re.search(
+                r"\bFORM\s+10[- ]?K\b",
+                document_text[max(0, cover.start() - 3000) : cover.start()],
+                re.I,
+            )
+            is not None,
+            "issuer.cash_dividend_original_10K_cover_context",
+        )
+        candidates = []
+        for row in rows[:start]:
+            annual = [
+                {**cell, "period_end": cell["text"] + "-12-31"}
+                for cell in row
+                if re.fullmatch(r"20\d{2}", cell["text"])
+            ]
+            if 2 <= len(annual) <= 3 and len({x["period_end"] for x in annual}) == len(annual):
+                candidates.append(annual)
+        require(len(candidates) == 1, "issuer.cash_dividend_unique_year_heading")
+        year_headers = candidates[0]
+        require(
+            max(x["period_end"] for x in year_headers) == cover.group(1) + "-12-31",
+            "issuer.cash_dividend_cover_and_latest_heading",
+        )
+        require(
+            all(
+                cell["text"].casefold() in {"", "millions"}
+                or re.fullmatch(r"20\d{2}", cell["text"])
+                for cell in rows[year_headers[0]["row"]]
+            ),
+            "issuer.cash_dividend_no_hidden_auxiliary_heading",
+        )
+        header_resolution = {
+            "rule": "literal_December31_annual_cover_and_year_heading_native_CFO_required_v1",
+            "cover_quote": cover.group(0),
+            "cover_text_start": cover.start(),
+            "cover_text_end": cover.end(),
+            "native_same_accession_annual_CFO_confirmation_required": True,
+            "annual_frequency_alone_used_to_infer_calendar_year": False,
+        }
+    else:
+        year_headers = headers(rows, start)
     return {
         "rows": rows,
         "labels": labels,
@@ -465,6 +542,7 @@ def table_structure(table, document_text):
         ],
         "global_unit_quote": global_units.group(0) if global_units else None,
         "definition_type": "complete signed issuer reconciliation; not a universal FCF formula",
+        **({"header_period_resolution": header_resolution} if header_resolution else {}),
     }
 
 
