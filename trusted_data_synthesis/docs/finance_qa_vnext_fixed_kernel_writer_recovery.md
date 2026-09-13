@@ -49,3 +49,18 @@
 采集闭合且材料/剂量门通过后，立即进入已实现的A三臂九次训练、开发选择及有条件B六次训练与确认流程，最多使用八张当时空闲GPU，不抢占其他进程。任何新的停止/失败保持原分母，原条件不改写，也不使用成功前缀启动训练。
 
 正式恢复注册、实际调用/费用、材料支持及Student结果仍待后续真实工件追加。本说明不把影子压测或GPU工程检查称为Student效用。
+
+## 6. 运行中的后续阶段自动衔接
+
+恢复源码与冻结工件已由 `6e23b776fca34f94cb76404c4085e21e29f53f3d` 推送远端main；实际采集在2026-09-13 15:55:08 UTC启动一次。冻结ID为 `study_freeze:f4eb84ee8adacce1d4253086e8fc6443e882dc5ff6dc192b8c02b0a6e2475084`。截至2026-09-13 16:36:58 UTC（北京时间9月14日00:36:58），已写出2,359/10,240会话记录，其中2,320为first Final、39为本地transport终态；13,898次请求已知结算57,660,538 Token。该快照SQLite锁错误0、全局停止false，但**不是闭合结果，也不是最终材料合格率**；未据此修改总体、预算或门槛。
+
+为减少采集完毕后的人工等待，新增两个位于冻结科学包及冻结测试glob之外的操作脚本：
+
+- `scripts/run_fixed_kernel_writer_recovery_followthrough_20260913.py`：只观察既有采集、钱包闭合与材料门记录；每10秒查看一次，不重新评分、不打开钱包、不读取凭据、不重新采样。门FAIL时只封存材料，不启动Student；门PASS时并行启动材料封存与既有 `execution.prepare`，prepare完成立即调用冻结的 `execution.run`。正式执行报告 `actual_complete=true` 后才封存结果与其明确列出的最终LoRA。
+- `scripts/finalize_fixed_kernel_writer_recovery_publication_20260913.py`：在operator退出后尝试一次实际结果发布。只接受绑定的真实终态及已关闭子进程，选择小型顶层报告、workflow元数据、publisher清单绑定的分页索引和压缩分片；不把巨型原始session/token JSON直接加入Git。生成客观实际结果文档与精确发布清单，再在恢复分支提交并普通非强制推送授权远端main。若Git已有无关暂存变更、证据不闭合或推送冲突，保留失败事实，不自动重试、不改写历史。`git add --force`仅用于清单内被ignore的实验产物，不是force push。
+
+材料封存与Student目录相互隔离；封存成功不增加或替代科学门，封存失败也不自动重跑训练。operator有进程锁、一次性启动记录、源码SHA连续性和阶段PID/退出码；异常不杀死仍在执行的独立子进程，但有未关闭子进程时Git helper拒绝发布。它们不更改任何冻结源码、原六个保护工作树、超参或评价集。既有publisher的真实凭据扫描及逐原件往返校验照常在独立封存子进程中进行，operator本身不声称执行了这些工作。
+
+只为这两个新脚本运行针对性的stub控制：operator覆盖等待、门FAIL、prepare/执行失败、封存并行和真实终态路径；publication helper覆盖已闭合清单、精确暂存、拒绝未关闭子进程及非强制推送回执。stub不产生实际Teacher请求、GPU训练或Git推送，不算正式实验结果；不重复运行349项科学控制或GPU工程检查。
+
+workflow证据保存在 `study_20260913_writer_recovery_workflow` 同级目录；过程控制台和最终Git回执保存在隔离runtime。最终实际结果页为 `fixed_kernel_writer_recovery_actual_results_20260913.md`，由已闭合报告生成；其出现前不宣称材料门、训练或确认实验已经完成。
