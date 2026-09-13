@@ -1,0 +1,86 @@
+{
+  "record_kind": "read_only_linear_parent_preflight_observation",
+  "observed_date_Asia_Shanghai": "2026-09-13",
+  "collection_directory": "trusted_data_synthesis/artifacts/qa_vnext_readiness_revision/fixed_AB_20260912",
+  "collection_manifest_id": "manifest:97e3df4ec4728be4169f80abb3b1f1c7d535fefb4b115d9015e507034311dbd8",
+  "collection_report_id": "fixed_collection_report:8a1487bf934d5e5e0ea9e5deeefdb4f6806b916382a2f22be27a20a5813079cb",
+  "manifest_bytes": 84035934,
+  "members": 408398,
+  "required_directories": 143891,
+  "watched_inodes": 552299,
+  "observed_watch_limit": 1048576,
+  "elapsed_seconds": 76.12612745608203,
+  "manifest_full_hashes": 3,
+  "manifest_bytes_hashed": 252107802,
+  "member_hashes": 408398,
+  "member_bytes_hashed": 5557955937,
+  "metadata_checks": 816810,
+  "exact_file_and_directory_set_passed": true,
+  "member_SHA_and_size_checks_passed": true,
+  "notification_failure_observed": false,
+  "process_exit_code": 0,
+  "diagnostic_process_id": 1734600,
+  "tool_session_id": 93919,
+  "implementation_at_observation": "uncommitted linear core before later watch-owner cleanup and final supervisor gates",
+  "implementation_digest_recorded": false,
+  "claims_final_commit_preverified": false,
+  "original_follow_stopped": false,
+  "production_materialization_or_model_started": false,
+  "original_scientific_files_written": false,
+  "scientific_scores_or_qualification_results_copied": false,
+  "authorizes_production_handoff": false,
+  "final_implementation_preflight": {
+    "started_at": "2026-09-13T02:57:03.014858+00:00",
+    "completed_verification_at": "2026-09-13T02:58:21.864183+00:00",
+    "completed_at": "2026-09-13T02:58:24.155830+00:00",
+    "collection_directory": "trusted_data_synthesis/artifacts/qa_vnext_readiness_revision/fixed_AB_20260912",
+    "collection_manifest_id": "manifest:97e3df4ec4728be4169f80abb3b1f1c7d535fefb4b115d9015e507034311dbd8",
+    "implementation_sources": [
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_linear_postprocess/__init__.py",
+        "sha256": "076629b0f57a61f05816e69491621629cbf14642473a3b76a8ad48c2a440ecf2"
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_linear_postprocess/adapter.py",
+        "sha256": "92cd79d64022d31cf1a21638c53941de91d89a5932973f42d9f1e882461adb10"
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_linear_postprocess/manifest.py",
+        "sha256": "fb3e849f1b634ef20fed08d9d801eb22f0b70d4df25251e16a3a0467399985cd"
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_linear_postprocess/protocol.py",
+        "sha256": "4e270cab968c45e945861c02ea68aefaa105002aef591bc0bf8272c03a2ce137"
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_linear_postprocess/runner.py",
+        "sha256": "4daa9c1c974c76266a218805a53a716fa8dbe0359f58a0ea49c837e58f2665e4"
+      }
+    ],
+    "implementation_sources_unchanged_at_exit": true,
+    "verification_elapsed_seconds": 78.8493423468899,
+    "owner_cleanup_elapsed_seconds": 2.2910583880729973,
+    "manifest_bytes": 84035934,
+    "members": 408398,
+    "required_directories": 143891,
+    "watched_inodes_before_close": 552299,
+    "watched_inodes_after_owner_close": 0,
+    "kernel_inotify_watches_after_owner_close": 0,
+    "verification_stats": {
+      "manifest_full_hashes": 3,
+      "manifest_bytes_hashed": 252107802,
+      "member_hashes": 408398,
+      "member_bytes_hashed": 5557955937,
+      "metadata_checks": 816810
+    },
+    "monitor_closed": true,
+    "notification_failure_observed": false,
+    "process_exit_code": 0,
+    "tool_session_id": 34179,
+    "production_materialization_or_model_started": false,
+    "original_follow_stopped": false,
+    "original_scientific_files_written": false,
+    "metrics_or_confirmation_scores_read": false,
+    "authorizes_production_handoff": false
+  }
+}
