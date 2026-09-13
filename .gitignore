@@ -10,3 +10,8 @@ trusted_data_synthesis/artifacts/
 /artifacts/
 trusted_data_synthesis/.coverage
 trusted_data_synthesis/build/
+
+# Local linked worktrees are separate repositories, not parent-repo content.
+/.codex-worktrees/
+# Live process locks/state; reviewed evidence is archived separately.
+/trusted_data_synthesis/runtime/
