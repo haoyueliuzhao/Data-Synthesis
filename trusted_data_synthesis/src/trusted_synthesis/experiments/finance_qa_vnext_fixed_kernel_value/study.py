@@ -1,7 +1,7 @@
 """Freeze, close one 10,240-session collection, then materialize without training.
 
 Preparation has no generation or live-wallet mutation. A committed prospective
-freeze precedes the fifth-purpose registration, credential read and first HTTP.
+freeze precedes the sixth recovery-purpose registration, credential read and first HTTP.
 Every original session is retained; stopping never permits a successful prefix
 to become a scientific training pool. This module has no Student/GPU entry point.
 """
@@ -30,12 +30,16 @@ from ..qa_reasoning_share_training_preflight import tokenization as tokenizer_as
 from . import budget, distribution, materials, population, preflight, runtime, transport
 from . import protocol as p
 
+CLOSED_FAILED_ROOT = Path("/tmp/data-synthesis-fixed-kernel-value-5OwzgU")
+CLOSED_FAILED_OUTPUT = "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/study_20260913"
+RECOVERY_DIRECTIVE = "尽快处理继续在线采集以及后续训练"
 PROTECTED = (
     "/data1/zhuxinrui/projects/Data-Synthesis",
     "/tmp/data-synthesis-anchored-vtdo-MaNMFd",
     "/tmp/data-synthesis-hierarchical-loss-yvab69o2",
     "/tmp/data-synthesis-movement-support-se2ytr1a",
     "/tmp/data-synthesis-probe-coverage-uPr3h7",
+    str(CLOSED_FAILED_ROOT),
 )
 BASE_PREFIXES = (
     "trusted_data_synthesis/src",
@@ -46,6 +50,164 @@ BASE_PREFIXES = (
     "raw_financial_data_lake/finraw",
 )
 _ASSESS_FIXTURES = None
+
+
+def _current_study_member(name):
+    return name.startswith(p.PACKAGE + "/") or (
+        name.startswith("trusted_data_synthesis/tests/test_qa_vnext_fixed_kernel")
+        and name.endswith(".py")
+    )
+
+
+def recovery_parent_binding(selected):
+    """Read only closed metadata; never import a previous response or package.
+
+    The old tree is separately protected at its post-publication HEAD. Same
+    scientific population is mandatory, but new sessions are salted by the new
+    prospective freeze. Budget/request ceilings deduct the closed failed use.
+    """
+    root = CLOSED_FAILED_ROOT / CLOSED_FAILED_OUTPUT
+    kinds = {
+        "generation_report.json": "material_generation_report",
+        "budget_finalization.json": "kernel_budget_finalization",
+        "material_gate.json": "material_gate",
+        "closed_collection_summary.json": "closed_collection_summary",
+        "population.json": "population",
+        "freeze.json": "study_freeze",
+        "policy.json": "fixed_kernel_policy",
+    }
+    values, references = {}, {}
+    for name, kind in kinds.items():
+        path = root / name
+        p.require(
+            path.is_file() and not any(item.is_symlink() for item in (path, *path.parents)),
+            "study.closed_failed_parent_regular_metadata",
+        )
+        raw = path.read_bytes()
+        value = p.checked(json.loads(raw), kind)
+        p.require(p.encode(value) == raw, "study.closed_failed_parent_canonical_metadata")
+        values[name] = value
+        references[name] = {"path": name, "id": value["id"], "sha256": p.sha(raw)}
+    generation, final = values["generation_report.json"], values["budget_finalization.json"]
+    gate, summary = values["material_gate.json"], values["closed_collection_summary.json"]
+    frozen, previous_policy = values["freeze.json"], values["policy.json"]
+    p.require(
+        generation["generation_closed"] is True
+        and generation["no_inflight_requests"] is True
+        and generation["status"] == "STOP_INCOMPLETE_OR_CONTRACT"
+        and generation["registered_sessions"] == summary["registered_sessions"] == 10240
+        and final["purpose_closed"] is True
+        and final["report_id"] == summary["generation_report_id"] == generation["id"]
+        and final["id"] == summary["budget_finalization_id"]
+        and generation["freeze_id"] == final["freeze_id"] == frozen["id"]
+        and gate["id"] == summary["material_gate_id"]
+        and gate["generation_report_id"] == generation["id"]
+        and gate["training_gate"] == summary["training_gate"] == "FAIL"
+        and gate["materialization_permitted"] is False
+        and summary["Student_training_runs"] == summary["Student_evaluation_sessions"] == 0,
+        "study.old_failed_batch_closed_without_training_or_relabel",
+    )
+    p.require(
+        selected == values["population.json"]
+        and selected["id"] == gate["population_id"] == frozen["population_id"]
+        and len(selected["tasks"]) == 200,
+        "study.recovery_exact_same_200_scientific_population",
+    )
+    scientific_keys = (
+        "scientific_task_count",
+        "task_family_counts",
+        "task_selection",
+        "task_mass",
+        "pools",
+        "target_generation_protocol",
+        "target_protocol_byte_identical_to_previous_P2",
+        "control_generation_protocol",
+        "control_has_no_route_guidance",
+        "replicates_per_pool_task_guidance",
+        "train_replicates_before_outcomes",
+        "sealed_replicates_before_outcomes",
+        "registered_sessions",
+        "assignment_order_seed",
+        "maximum_responses",
+        "maximum_tools",
+        "model",
+        "endpoint",
+        "thinking",
+        "reasoning_effort",
+        "response_format",
+        "maximum_sequence_length",
+        "supervision",
+        "output_cap",
+        "stream",
+        "temperature_top_p_generation_seed_omitted",
+        "maximum_serialized_body_bytes",
+        "maximum_public_response_bytes",
+        "input_reservation",
+        "request_reservation",
+        "HTTP_retries",
+        "rollout_resampling",
+        "no_truncation_or_replacement",
+        "method_mass",
+        "minimum_global_mass_shift",
+        "minimum_shared_intervention_tasks",
+        "tasks_per_update",
+        "epochs",
+        "optimizer_updates",
+        "seeds",
+        "arms",
+    )
+    current_policy = p.policy()
+    p.require(
+        all(current_policy[key] == previous_policy[key] for key in scientific_keys),
+        "study.recovery_preserves_P2_roles_and_scientific_rules",
+    )
+    original_prompts = {
+        "P2:endpoint": p.coverage.system_prompt(p.TARGET_PROFILE, "endpoint"),
+        "P2:movement": p.coverage.system_prompt(p.TARGET_PROFILE, "movement"),
+        "control:neutral": p.original_runtime.SYSTEM + "\n\n" + p.coverage.DELIVERY,
+    }
+    current_prompts = {
+        "P2:endpoint": p.system_prompt(p.TARGET_PROFILE, "endpoint"),
+        "P2:movement": p.system_prompt(p.TARGET_PROFILE, "movement"),
+        "control:neutral": p.system_prompt(p.CONTROL_PROFILE, "neutral"),
+    }
+    p.require(current_prompts == original_prompts, "study.recovery_original_public_prompt_bytes")
+    p.require(p.DIRECTIVE == RECOVERY_DIRECTIVE, "study.exact_new_recovery_authorization")
+    p.require(
+        frozen["policy_id"] == previous_policy["id"]
+        and p.TOKEN_CAP == frozen["material_token_cap"] - generation["kernel_conservative_debit"]
+        and p.REQUEST_CAP
+        == previous_policy["request_cap"] - generation["actual_HTTP_request_count"],
+        "study.recovery_only_remaining_original_token_and_HTTP_allowance",
+    )
+    return p.record(
+        "recovery_parent_binding",
+        failed_worktree=str(CLOSED_FAILED_ROOT),
+        failed_output=CLOSED_FAILED_OUTPUT,
+        protected_parent_commit=git(CLOSED_FAILED_ROOT, "rev-parse", "HEAD").decode().strip(),
+        old_generation_report_id=generation["id"],
+        old_budget_finalization_id=final["id"],
+        old_material_gate_id=gate["id"],
+        old_summary_id=summary["id"],
+        unchanged_population_id=selected["id"],
+        references=references,
+        original_failed_registered_denominator=10240,
+        old_training_gate_preserved="FAIL",
+        closed_previous_purpose_reopened=False,
+        old_sessions_or_packages_read_or_imported=0,
+        new_user_directive=RECOVERY_DIRECTIVE,
+        recovery_reason=(
+            "user-authorized infrastructure recovery after closed concurrent SQLite writer "
+            "failure; "
+            "fresh prospective collection, not successful-prefix continuation"
+        ),
+        science_and_public_generation_protocol_unchanged=True,
+        public_system_prompt_sha256={
+            key: p.sha(value.encode("utf-8")) for key, value in current_prompts.items()
+        },
+        remaining_token_cap=p.TOKEN_CAP,
+        remaining_actual_HTTP_request_cap=p.REQUEST_CAP,
+    )
 
 
 def git(root, *arguments):
@@ -105,7 +267,7 @@ def base_dependencies(root):
         )
         .decode()
         .split("\0")
-        if name
+        if name and not _current_study_member(name)
     ]
     p.require(names, "study.original_dependencies_present")
     raw = subprocess.run(
@@ -208,6 +370,26 @@ def _shadow_evidence(path, before):
         and value["source_new_purpose_registered"] is False
         and value["live_API_calls"] == value["live_new_tokens"] == 0,
         "study.exact_real_wallet_shadow_only_evidence",
+    )
+    pressure = value.get("writer_pressure_test", {})
+    statistics = pressure.get("writer_statistics", {})
+    p.require(
+        pressure.get("workers") == p.WORKERS == 128
+        and pressure.get("rounds_per_worker") == 3
+        and pressure.get("registered_lease_count") == value["shadow_simulated_request_count"] == 384
+        and pressure.get("known_simulated_settlements") == 352
+        and pressure.get("proven_unsent_cancellations") == 32
+        and value["shadow_simulated_usage_tokens"] == 1056
+        and pressure.get("worker_failures") == 0
+        and pressure.get("real_source_snapshot_scale_retained") is True
+        and pressure.get("no_HTTP_or_provider_callback") is True
+        and value.get("writer_policy") == budget.writer_policy()
+        and statistics.get("writer_policy_id") == budget.writer_policy()["id"]
+        and statistics.get("sqlite_lock_errors") == 0
+        and statistics.get("first_failure") is None
+        and statistics.get("maximum_active_write_connections") == 1
+        and statistics.get("active_write_connections") == statistics.get("queued_operations") == 0,
+        "study.current_128_worker_three_round_single_writer_pressure_proof",
     )
     shadow = Path(value["shadow_wallet"])
     with sqlite3.connect(shadow.as_uri() + "?mode=ro", uri=True) as db:
@@ -314,6 +496,7 @@ def prepare(
     tests = _junit(junit_path)
     code, original = code_snapshot(code_root), base_dependencies(code_root)
     inputs = preflight.load_inputs(data_root)
+    recovery = recovery_parent_binding(inputs["population"])
     controls = preflight.scripted_controls(inputs, workers=control_workers)
     p.require(
         controls["status"] == "PASS" and controls["passed_control_count"] == 560,
@@ -328,6 +511,8 @@ def prepare(
         if model_preflight_path
         else work / "official_model_preflight.json"
     )
+    if not model_preflight_path and not api_path.exists():
+        api_path = CLOSED_FAILED_ROOT / CLOSED_FAILED_OUTPUT / "official_model_preflight.json"
     api = p.checked(p.read_json(api_path), "official_model_preflight")
     p.require(
         api["HTTP_status"] == 200
@@ -337,6 +522,17 @@ def prepare(
         and api["credential_saved"] is False,
         "study.one_saved_official_model_GET",
     )
+    api_import = p.record(
+        "official_model_preflight_import",
+        original_preflight_id=api["id"],
+        source_path=str(api_path.resolve()),
+        source_sha256=p.sha(api_path),
+        historical_GET_evidence_reused=True,
+        fresh_availability_or_provider_weight_revision_verified=False,
+        new_administrative_GET_requests=0,
+        new_model_generation_requests=0,
+        old_generation_report_id=recovery["old_generation_report_id"],
+    )
     audit_bytes = Path(p.AUDIT_PATH).read_bytes()
     audit = p.record(
         "audit_directive",
@@ -344,6 +540,9 @@ def prepare(
         original_bytes_sha256=p.sha(audit_bytes),
         complete_text=audit_bytes.decode("utf-8"),
         current_user_directive=p.DIRECTIVE,
+        explicit_recovery_user_directive=RECOVERY_DIRECTIVE,
+        recovery_parent_binding_id=recovery["id"],
+        closed_failed_run_not_reopened=True,
         linked_audit_artifacts_replayed=False,
         external_59_controls_rerun=False,
     )
@@ -370,7 +569,9 @@ def prepare(
         "budget_shadow_evidence.json": shadow,
         "GPU_engineering_evidence.json": gpu,
         "official_model_preflight.json": api,
+        "official_model_preflight_import.json": api_import,
         "audit_directive.json": audit,
+        "recovery_parent_binding.json": recovery,
         "CPU_test_evidence.json": tests,
         "scripted_preflight.json": controls,
         "checkpoint_binding.json": checkpoint,
@@ -397,6 +598,10 @@ def prepare(
         common_conservative_debit_before=common,
         remaining_common_allowance_before=p.COMMON_CAP - common,
         material_token_cap=p.TOKEN_CAP,
+        recovery_parent_binding_id=recovery["id"],
+        closed_failed_generation_report_id=recovery["old_generation_report_id"],
+        explicit_recovery_user_directive=RECOVERY_DIRECTIVE,
+        fresh_registry_not_previous_sessions_or_packages=True,
         registered_sessions=p.SESSION_CAP,
         model=p.MODEL,
         assignment_order_seed=p.ORDER_SEED,
@@ -419,7 +624,8 @@ def prepare(
         generation_requests_before_freeze=0,
         live_wallet_mutations_by_prepare=0,
         Student_or_GPU_operations_by_prepare=0,
-        new_independent_population_not_old_AB=True,
+        scientific_population_unchanged_from_closed_failed_batch=True,
+        old_packages_imported=False,
         registry_roles_precede_all_outputs=True,
     )
     registry = population.make_registry(inputs["population"], freeze["id"], p.ORDER_SEED)
@@ -473,9 +679,15 @@ def _verify_launch(code_root, data_root, output, *, require_unregistered_wallet)
     protected = [source_snapshot(Path(root)) for root in PROTECTED]
     p.require(
         protected == p.read_json(output / "protected_sources_before.json"),
-        "study.five_protected_worktrees_unchanged",
+        "study.all_six_protected_worktrees_unchanged",
     )
     inputs = preflight.load_inputs(data_root)
+    recovery = recovery_parent_binding(selected)
+    p.require(
+        recovery == p.read_json(output / "recovery_parent_binding.json")
+        and recovery["id"] == freeze["recovery_parent_binding_id"],
+        "study.closed_failed_parent_unchanged_before_new_HTTP",
+    )
     p.require(
         inputs["population"] == selected
         and inputs["source_dependencies"]["id"] == freeze["source_dependencies_id"]
@@ -878,6 +1090,11 @@ def run(code_root, data_root, *, materialize_after=True):
         )
         try:
             verify_code(code_root, code, original)
+            p.require(
+                recovery_parent_binding(selected)
+                == p.read_json(output / "recovery_parent_binding.json"),
+                "study.closed_failed_parent_unchanged_after_generation",
+            )
         except (ValueError, OSError):
             contracts = False
         if not contracts:
@@ -1041,6 +1258,10 @@ def materialize(code_root, data_root):
     )
     results = p.read_json(output / "session_results.json")
     selected = p.read_json(output / "population.json")
+    p.require(
+        recovery_parent_binding(selected) == p.read_json(output / "recovery_parent_binding.json"),
+        "study.closed_failed_parent_unchanged_before_materialization",
+    )
     p.write_once(
         output / "materialization_started.json",
         p.record(

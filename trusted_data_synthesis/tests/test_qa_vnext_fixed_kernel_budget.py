@@ -1,4 +1,4 @@
-"""Synthetic fifth-purpose SQLite controls; never a live wallet or API request."""
+"""Synthetic sixth-purpose recovery controls; never a live wallet or API request."""
 
 import json
 import shutil
@@ -12,7 +12,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import bu
 from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import population as pop
 from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import protocol as p
 
-FREEZE = "synthetic_fifth_purpose_freeze"
+FREEZE = "synthetic_sixth_purpose_recovery_freeze"
 
 
 @pytest.fixture(scope="module")
@@ -37,6 +37,9 @@ def original_wallet(tmp_path_factory):
             ),
             ("old_marker", "immutable_original_value"),
             ("probe01_finalization", json.dumps({"purpose_closed": True})),
+            ("kernel_registration", "original_failed_purpose_registration_retained"),
+            ("kernel_fatal", "original_database_locked_stop_retained"),
+            ("kernel_finalization", json.dumps({"purpose_closed": True})),
             (
                 "eval_surface_rewrite_finalization",
                 json.dumps({"remaining_evaluation_attempts_permanently_closed": True}),
@@ -56,7 +59,11 @@ def original_wallet(tmp_path_factory):
                 "VALUES(?,'usage_unknown',115712,115712)",
                 ("old_unknown_" + table,),
             )
-        for table, count in (("collection_sessions", 24640), ("probe01_sessions", 144)):
+        for table, count in (
+            ("collection_sessions", 24640),
+            ("probe01_sessions", 144),
+            ("kernel_sessions", 10240),
+        ):
             db.execute(f"CREATE TABLE {table}(session_id TEXT PRIMARY KEY,state TEXT NOT NULL)")
             db.executemany(
                 f"INSERT INTO {table} VALUES(?,'finished')", [(str(i),) for i in range(count)]
@@ -101,14 +108,15 @@ def first_session(registry, n=0):
 
 
 def test_new_registered_bounds_are_not_old_probe_bounds():
-    assert p.SESSION_CAP == 10240 and p.REQUEST_CAP == 327680
-    assert p.TOKEN_CAP == 250000000 and p.COMMON_CAP == 1000000000
+    assert p.SESSION_CAP == 10240 and p.REQUEST_CAP == 327338
+    assert p.TOKEN_CAP == 248730297 and p.COMMON_CAP == 1000000000
     assert p.REQUEST_RESERVATION == p.INPUT_ALLOWANCE + p.OUTPUT_ALLOWANCE == 115712
     assert budget.OLD_RESERVATIONS == (
         "reservations",
         "teacher_reservations",
         "eval_reservations",
         "probe01_requests",
+        "kernel_requests",
     )
 
 
@@ -123,7 +131,7 @@ def test_migration_preserves_all_old_rows_schema_and_metadata(wallet, registry):
     assert [json.loads(row["registered_json"]) for row in rows] == registry["sessions"]
     snapshot = ledger.snapshot()
     assert snapshot["kernel_conservative_debit"] == 0
-    assert snapshot["common_conservative_debit"] == 221538 + 4 * 115712
+    assert snapshot["common_conservative_debit"] == 221538 + 5 * 115712
 
 
 def test_prior_not_double_counted_and_known_unused_lease_released(wallet, registry):
@@ -144,7 +152,9 @@ def test_registration_once_and_exact_frozen_identity(wallet, registry, populatio
         budget.KernelLedger(ledger.path, "different_freeze")
 
 
-@pytest.mark.parametrize("key", ["probe01_finalization", "eval_surface_rewrite_finalization"])
+@pytest.mark.parametrize(
+    "key", ["probe01_finalization", "eval_surface_rewrite_finalization", "kernel_finalization"]
+)
 def test_unclosed_old_purpose_rejected(tmp_path, original_wallet, registry, population, key):
     ledger, _ = create_wallet(tmp_path, original_wallet, registry, population, register=False)
     with ledger.connection() as db:
@@ -154,7 +164,7 @@ def test_unclosed_old_purpose_rejected(tmp_path, original_wallet, registry, popu
         ledger.register(registry, population, legacy_before=before)
 
 
-@pytest.mark.parametrize("table", ["collection_sessions", "probe01_sessions"])
+@pytest.mark.parametrize("table", ["collection_sessions", "probe01_sessions", "kernel_sessions"])
 def test_unclosed_old_session_rejected(tmp_path, original_wallet, registry, population, table):
     ledger, _ = create_wallet(tmp_path, original_wallet, registry, population, register=False)
     with ledger.connection() as db:
@@ -211,7 +221,15 @@ def test_prior_debits_cannot_be_replayed_or_refunded(wallet, operation):
 
 @pytest.mark.parametrize(
     "key",
-    ["old_marker", "probe01_finalization", "eval_surface_rewrite_finalization", budget.PURPOSE],
+    [
+        "old_marker",
+        "probe01_finalization",
+        "eval_surface_rewrite_finalization",
+        "kernel_registration",
+        "kernel_fatal",
+        "kernel_finalization",
+        budget.PURPOSE,
+    ],
 )
 @pytest.mark.parametrize("operation", ["update", "delete", "replace"])
 def test_old_and_current_metadata_cannot_be_rewritten(wallet, key, operation):
@@ -239,19 +257,19 @@ def test_registered_pool_role_identity_immutable(wallet, registry, field, value)
     ledger, _ = wallet
     with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError):
         db.execute(
-            f"UPDATE kernel_sessions SET {field}=? WHERE session_id=?",
+            f"UPDATE kernel_recovery_sessions SET {field}=? WHERE session_id=?",
             (value, first_session(registry)),
         )
 
 
 @pytest.mark.parametrize("table", budget.OLD_RESERVATIONS)
-def test_old_client_insert_path_sees_fifth_purpose_debit(
+def test_old_client_insert_path_sees_sixth_purpose_debit(
     tmp_path, original_wallet, registry, population, table
 ):
-    prior = p.COMMON_CAP - 4 * 115712 - p.REQUEST_RESERVATION
+    prior = p.COMMON_CAP - 5 * 115712 - p.REQUEST_RESERVATION
     ledger, _ = create_wallet(tmp_path, original_wallet, registry, population, prior=prior)
     ledger.reserve(first_session(registry))
-    with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError, match="five_purpose_cap"):
+    with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError, match="six_purpose_cap"):
         db.execute(
             f"INSERT INTO {table}(request_id,state,reserved_tokens,charged_tokens) "
             "VALUES('new_old_client','reserved',1,1)"
@@ -261,7 +279,7 @@ def test_old_client_insert_path_sees_fifth_purpose_debit(
 def test_parallel_unique_sessions_respect_atomic_common_cap(
     tmp_path, original_wallet, registry, population
 ):
-    prior = p.COMMON_CAP - 4 * 115712 - 3 * p.REQUEST_RESERVATION
+    prior = p.COMMON_CAP - 5 * 115712 - 3 * p.REQUEST_RESERVATION
     ledger, _ = create_wallet(tmp_path, original_wallet, registry, population, prior=prior)
 
     def reserve(i):
@@ -401,7 +419,7 @@ def test_SQL_settlement_bypass_rejected(wallet, registry, attack):
     }
     with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError):
         db.execute(
-            "UPDATE kernel_requests SET " + updates[attack] + " WHERE request_id=?",
+            "UPDATE kernel_recovery_requests SET " + updates[attack] + " WHERE request_id=?",
             (lease["request_id"],),
         )
     assert ledger.requests()[0]["state"] == "sent"
@@ -416,10 +434,11 @@ def test_request_replace_delete_double_send_settle_and_premature_finish_rejected
         ledger.finish(sid, "pretend_completed")
     with ledger.connection() as db:
         with pytest.raises(sqlite3.IntegrityError):
-            db.execute("DELETE FROM kernel_requests")
+            db.execute("DELETE FROM kernel_recovery_requests")
         with pytest.raises(sqlite3.IntegrityError, match="replacement"):
             db.execute(
-                "INSERT OR REPLACE INTO kernel_requests(request_id,session_id,attempt,state,"
+                "INSERT OR REPLACE INTO kernel_recovery_requests("
+                "request_id,session_id,attempt,state,"
                 "reserved_tokens,charged_tokens,created_at) VALUES(?,?,2,'reserved',?,?,?)",
                 (lease["request_id"], sid, p.REQUEST_RESERVATION, p.REQUEST_RESERVATION, p.now()),
             )
@@ -435,7 +454,7 @@ def test_guards_must_be_present_for_every_application_send_and_settle(wallet, re
     ledger, _ = wallet
     lease = ledger.reserve(first_session(registry))
     with ledger.connection() as db:
-        db.execute("DROP TRIGGER kernel_request_state")
+        db.execute("DROP TRIGGER kernel_recovery_request_state")
     with pytest.raises(budget.BudgetStop, match="guards_present"):
         ledger.mark_sent(lease["request_id"])
     with pytest.raises(budget.BudgetStop, match="guards_present"):
@@ -508,7 +527,7 @@ def test_SQL_new_request_must_reserve_full_lease_before_send(wallet, registry, f
     fields[field] = value
     with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError):
         db.execute(
-            "INSERT INTO kernel_requests("
+            "INSERT INTO kernel_recovery_requests("
             + ",".join(fields)
             + ") VALUES("
             + ",".join("?" for _ in fields)
@@ -563,7 +582,7 @@ def test_sent_or_unknown_rows_can_never_be_cancelled_as_unsent(wallet, registry,
         ledger.cancel_unsent(lease["request_id"], "false_claim")
     with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError):
         db.execute(
-            """UPDATE kernel_requests SET state='not_sent',charged_tokens=0,
+            """UPDATE kernel_recovery_requests SET state='not_sent',charged_tokens=0,
             prompt_tokens=0,completion_tokens=0,reported_total_tokens=0,http_success=0,
             response_model=NULL,outcome='not_sent:forged' WHERE request_id=?""",
             (lease["request_id"],),
@@ -597,7 +616,7 @@ def test_SQL_unsent_cancellation_must_prove_zero_send_contract(wallet, registry,
     changes[field] = value
     with ledger.connection() as db, pytest.raises(sqlite3.IntegrityError):
         db.execute(
-            "UPDATE kernel_requests SET "
+            "UPDATE kernel_recovery_requests SET "
             + ",".join(key + "=?" for key in changes)
             + " WHERE request_id=?",
             (*changes.values(), lease["request_id"]),

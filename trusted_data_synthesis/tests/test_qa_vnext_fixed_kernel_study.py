@@ -400,7 +400,10 @@ def test_materialization_requires_matching_generation_and_budget_closure(
         s.materialize(tmp_path, tmp_path)
 
 
-def test_prepare_is_offline_and_keeps_formal_tokenizer_filename_unused(tmp_path, monkeypatch):
+@pytest.mark.parametrize("reuse_closed_preflight", [False, True])
+def test_prepare_is_offline_and_keeps_formal_tokenizer_filename_unused(
+    tmp_path, monkeypatch, reuse_closed_preflight
+):
     output, work = tmp_path / "output", tmp_path / "runtime"
     output.mkdir()
     work.mkdir()
@@ -413,6 +416,13 @@ def test_prepare_is_offline_and_keeps_formal_tokenizer_filename_unused(tmp_path,
     }
     inputs = {"population": selected, "fixtures": {}, **records}
     monkeypatch.setattr(s.preflight, "load_inputs", lambda _: inputs)
+    monkeypatch.setattr(
+        s,
+        "recovery_parent_binding",
+        lambda _: p.record(
+            "recovery_parent_binding", old_generation_report_id="synthetic_closed_failure"
+        ),
+    )
     monkeypatch.setattr(
         s.preflight,
         "scripted_controls",
@@ -449,8 +459,13 @@ def test_prepare_is_offline_and_keeps_formal_tokenizer_filename_unused(tmp_path,
     junit.write_text(
         '<testsuites><testsuite tests="2" failures="0" errors="0" skipped="0"/></testsuites>'
     )
+    api_path = work / "official_model_preflight.json"
+    if reuse_closed_preflight:
+        monkeypatch.setattr(s, "CLOSED_FAILED_ROOT", tmp_path / "closed_failure")
+        monkeypatch.setattr(s, "CLOSED_FAILED_OUTPUT", "output")
+        api_path = s.CLOSED_FAILED_ROOT / s.CLOSED_FAILED_OUTPUT / api_path.name
     p.write_once(
-        work / "official_model_preflight.json",
+        api_path,
         p.record(
             "official_model_preflight",
             HTTP_status=200,
@@ -474,6 +489,18 @@ def test_prepare_is_offline_and_keeps_formal_tokenizer_filename_unused(tmp_path,
     assert not (output / "tokenizer_binding.json").exists()
     assert (output / "cpu_tests.xml").read_bytes() == junit.read_bytes()
     assert p.read_json(output / "audit_directive.json")["complete_text"] == audit.read_text()
+    assert (
+        p.read_json(output / "official_model_preflight_import.json")[
+            "new_administrative_GET_requests"
+        ]
+        == 0
+    )
+    assert p.read_json(output / "official_model_preflight_import.json")["source_path"] == str(
+        api_path
+    )
+    assert freeze["closed_failed_generation_report_id"] == "synthetic_closed_failure"
+    assert freeze["scientific_population_unchanged_from_closed_failed_batch"] is True
+    assert freeze["old_packages_imported"] is False
     assert (
         freeze["generation_requests_before_freeze"]
         == freeze["live_wallet_mutations_by_prepare"]

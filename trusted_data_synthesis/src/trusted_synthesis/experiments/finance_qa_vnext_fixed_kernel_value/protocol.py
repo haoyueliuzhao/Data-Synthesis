@@ -11,21 +11,21 @@ from ..finance_qa_vnext_basis_scale_preparation import design as original_design
 from ..finance_qa_vnext_eval_readiness import training_runtime as original_runtime
 from ..finance_qa_vnext_probe_coverage import protocol as coverage
 
-BRANCH = "codex/fixed-kernel-value-20260913"
-BASE_COMMIT = "4733ad057e19c2aaf5ed25bcad2f87e78e821047"
+BRANCH = "codex/fixed-kernel-recovery-20260913"
+BASE_COMMIT = "4d9b3bf6aa3c6252fdd15397a5923256f666a35b"
 MAIN_COMMIT = coverage.MAIN_COMMIT
 PACKAGE = (
     "trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_fixed_kernel_value"
 )
-OUTPUT = "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/study_20260913"
-RUNTIME = "trusted_data_synthesis/runtime/fixed_kernel_value_20260913"
+OUTPUT = "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/study_20260913_writer_recovery"
+RUNTIME = "trusted_data_synthesis/runtime/fixed_kernel_value_writer_recovery_20260913"
 WALLET = coverage.WALLET
 OWNER = coverage.OWNER
 REVISION, REVISION_MANIFEST = coverage.REVISION, coverage.REVISION_MANIFEST
 AUDIT_PATH = (
     "/home/zhuxinrui/.codex/attachments/7585560f-eae8-49d0-b6c8-32d12aaee0c0/pasted-text.txt"
 )
-DIRECTIVE = "参照审计继续实验，当前GPU空闲，尽快使用，避免资源浪费"
+DIRECTIVE = "尽快处理继续在线采集以及后续训练"
 MODEL, ENDPOINT = coverage.MODEL, coverage.ENDPOINT
 SEEDS, ARMS, POOLS = original_design.SEEDS, original_design.ARMS, original_design.POOLS
 FAMILIES = ("annual_flow", "stock_rollforward", "company_defined_metric", "control")
@@ -37,7 +37,11 @@ MAX_RESPONSES, MAX_TOOLS = 32, 32
 WORKERS, CPU_WORKERS = 128, 24
 INPUT_ALLOWANCE, OUTPUT_ALLOWANCE = 99328, 16384
 REQUEST_RESERVATION = INPUT_ALLOWANCE + OUTPUT_ALLOWANCE
-REQUEST_CAP, TOKEN_CAP, COMMON_CAP = SESSION_CAP * MAX_RESPONSES, 250000000, 1000000000
+PREVIOUS_ACTUAL_REQUESTS, PREVIOUS_ACTUAL_TOKENS = 342, 1269703
+TOTAL_REQUEST_CAP, TOTAL_TOKEN_CAP = SESSION_CAP * MAX_RESPONSES, 250000000
+REQUEST_CAP = TOTAL_REQUEST_CAP - PREVIOUS_ACTUAL_REQUESTS
+TOKEN_CAP = TOTAL_TOKEN_CAP - PREVIOUS_ACTUAL_TOKENS
+COMMON_CAP = 1000000000
 MAX_BODY_BYTES, PUBLIC_RESPONSE_BYTES, SEQUENCE_CAP = 98304, 65536, 24576
 PROTOCOL = "fixed_kernel_material_runtime.v1"
 TARGET_PROFILE, CONTROL_PROFILE = "P2_method_delivery", "delivery_neutral_control"
@@ -172,7 +176,7 @@ def policy():
         request_cap=REQUEST_CAP,
         purpose_token_cap=TOKEN_CAP,
         common_token_cap=COMMON_CAP,
-        same_existing_wallet_fifth_purpose=True,
+        same_existing_wallet_sixth_purpose=True,
         old_charges_and_unknown_leases_not_reset=True,
         unsent_cancellation="only reserved before sender starts may become not_sent at known zero cost; original lease retained",
         sent_or_unknown_reservations_never_cancelled_or_refunded=True,

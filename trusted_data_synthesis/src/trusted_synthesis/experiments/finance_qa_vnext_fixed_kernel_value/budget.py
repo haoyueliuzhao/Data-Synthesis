@@ -1,19 +1,49 @@
-"""Fifth purpose in the same existing SQLite wallet; original history stays put."""
+"""Fresh sixth purpose with one priority-ordered SQLite writer per local process.
 
+HTTP remains parallel. Only short ledger operations enter the shared write gate;
+settlement/cancellation outrank new reservations. Original five-purpose history
+and all SQL cap checks remain intact; no network retry or balance cache is added.
+"""
+
+import heapq
 import json
 import re
 import sqlite3
-from contextlib import contextmanager
+import threading
+import time
+from collections import Counter, deque
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 
 from ..finance_qa_vnext_surface_build.budget import BudgetRejected
 from . import protocol as p
 
-OLD_RESERVATIONS = ("reservations", "teacher_reservations", "eval_reservations", "probe01_requests")
-ALL_RESERVATIONS = (*OLD_RESERVATIONS, "kernel_requests")
-PURPOSE = "kernel_registration"
-FATAL = "kernel_fatal"
-FINAL = "kernel_finalization"
+OLD_RESERVATIONS = (
+    "reservations",
+    "teacher_reservations",
+    "eval_reservations",
+    "probe01_requests",
+    "kernel_requests",
+)
+ALL_RESERVATIONS = (*OLD_RESERVATIONS, "kernel_recovery_requests")
+PURPOSE = "kernel_recovery_registration"
+FATAL = "kernel_recovery_fatal"
+FINAL = "kernel_recovery_finalization"
+WRITE_PRIORITIES = {
+    "settle": 0,
+    "cancel_unsent": 0,
+    "halt": 0,
+    "finalize": 0,
+    "register": 1,
+    "finish": 1,
+    "direct_sql": 1,
+    "mark_sent": 2,
+    "reserve": 3,
+}
+TRACE_LIMIT = 4096
+_WRITER_GATES = {}
+_WRITER_GATES_LOCK = threading.Lock()
 
 
 class BudgetStop(BudgetRejected):
@@ -23,6 +53,126 @@ class BudgetStop(BudgetRejected):
 def require(value, code):
     if not value:
         raise BudgetStop("kernel_budget." + code)
+
+
+def writer_policy():
+    return p.record(
+        "SQLite_writer_policy",
+        purpose=PURPOSE,
+        design="process-local canonical-wallet priority gate; one active SQLite write connection",
+        priorities=WRITE_PRIORITIES,
+        equal_priority_order="FIFO monotonic ticket",
+        HTTP_inside_write_gate=False,
+        HTTP_concurrency_unchanged=True,
+        SQLite_timeout_seconds=30,
+        SQL_atomic_cap_checks_retained=True,
+        common_balance_cached=False,
+        automatic_HTTP_retries=0,
+        retained_recent_operation_events=TRACE_LIMIT,
+        observability="monotonic queue wait and gate hold times; operation sequence; first failure",
+    )
+
+
+class PriorityWriterGate:
+    """Serialize write admission, not HTTP, with bounded diagnostic storage."""
+
+    def __init__(self):
+        self.condition = threading.Condition()
+        self.pending, self.active, self.ticket, self.sequence = [], False, 0, 0
+        self.maximum_queued = 0
+        self.events = deque(maxlen=TRACE_LIMIT)
+        self.counts, self.failures = Counter(), Counter()
+        self.maximum_wait_ns, self.maximum_hold_ns = 0, 0
+        self.first_failure = None
+
+    @contextmanager
+    def enter(self, operation):
+        require(operation in WRITE_PRIORITIES, "known_writer_operation")
+        queued_at = time.monotonic_ns()
+        with self.condition:
+            self.ticket += 1
+            ticket = self.ticket
+            key = (WRITE_PRIORITIES[operation], ticket)
+            heapq.heappush(self.pending, key)
+            self.maximum_queued = max(self.maximum_queued, len(self.pending))
+            try:
+                while self.active or self.pending[0] != key:
+                    self.condition.wait()
+            except BaseException:
+                self.pending.remove(key)
+                heapq.heapify(self.pending)
+                self.condition.notify_all()
+                raise
+            heapq.heappop(self.pending)
+            self.active = True
+            self.sequence += 1
+            sequence = self.sequence
+            acquired_at = time.monotonic_ns()
+        failure = None
+        try:
+            yield
+        except BaseException as error:
+            failure = {
+                "type": type(error).__name__,
+                "message": str(error)[:1000],
+                "sqlite_locked": isinstance(error, sqlite3.Error)
+                and "locked" in str(error).lower(),
+            }
+            raise
+        finally:
+            released_at = time.monotonic_ns()
+            event = dict(
+                sequence=sequence,
+                ticket=ticket,
+                operation=operation,
+                priority=WRITE_PRIORITIES[operation],
+                queued_monotonic_ns=queued_at,
+                acquired_monotonic_ns=acquired_at,
+                released_monotonic_ns=released_at,
+                wait_ns=acquired_at - queued_at,
+                hold_ns=released_at - acquired_at,
+                failure=failure,
+            )
+            with self.condition:
+                self.counts[operation] += 1
+                if failure:
+                    self.failures[failure["type"]] += 1
+                    self.failures["sqlite_locked"] += int(failure["sqlite_locked"])
+                    if self.first_failure is None:
+                        self.first_failure = event
+                self.maximum_wait_ns = max(self.maximum_wait_ns, event["wait_ns"])
+                self.maximum_hold_ns = max(self.maximum_hold_ns, event["hold_ns"])
+                self.events.append(event)
+                self.active = False
+                self.condition.notify_all()
+
+    def statistics(self, *, include_events=False):
+        with self.condition:
+            result = dict(
+                writer_policy_id=writer_policy()["id"],
+                completed_operations=sum(self.counts.values()),
+                operation_counts=dict(self.counts),
+                failures=dict(self.failures),
+                sqlite_lock_errors=self.failures["sqlite_locked"],
+                maximum_active_write_connections=1 if self.sequence else 0,
+                active_write_connections=int(self.active),
+                queued_operations=len(self.pending),
+                maximum_queued_operations=self.maximum_queued,
+                maximum_wait_seconds=self.maximum_wait_ns / 1e9,
+                maximum_hold_seconds=self.maximum_hold_ns / 1e9,
+                first_failure=self.first_failure,
+                retained_event_count=len(self.events),
+                evicted_event_count=max(0, sum(self.counts.values()) - len(self.events)),
+            )
+            if include_events:
+                result["events"] = list(self.events)
+            return result
+
+
+def _writer_gate(path):
+    key = str(Path(path).resolve())
+    with _WRITER_GATES_LOCK:
+        return _WRITER_GATES.setdefault(key, PriorityWriterGate())
 
 
 def _sql(value):
@@ -41,18 +191,18 @@ def _total_sql():
 def triggers():
     result = {}
     for table in ALL_RESERVATIONS:
-        name = "kernel_cross5_" + table + "_reserve"
+        name = "kernel_recovery_cross6_" + table + "_reserve"
         result[name] = f"""CREATE TRIGGER {name} BEFORE INSERT ON {table} BEGIN
           SELECT CASE WHEN EXISTS(SELECT 1 FROM metadata WHERE key='study_fatal')
             THEN RAISE(ABORT,'kernel_budget.common_persisted_stop') END;
           SELECT CASE WHEN typeof(NEW.charged_tokens) IS NOT 'integer' OR NEW.charged_tokens < 0
             OR {_total_sql()} + NEW.charged_tokens > {p.COMMON_CAP}
-            THEN RAISE(ABORT,'kernel_budget.common_five_purpose_cap') END; END"""
-        name = "kernel_cross5_" + table + "_send"
+            THEN RAISE(ABORT,'kernel_budget.common_six_purpose_cap') END; END"""
+        name = "kernel_recovery_cross6_" + table + "_send"
         result[name] = f"""CREATE TRIGGER {name} BEFORE UPDATE ON {table}
           WHEN NEW.state='sent' AND EXISTS(SELECT 1 FROM metadata WHERE key='study_fatal')
           BEGIN SELECT RAISE(ABORT,'kernel_budget.no_send_after_common_stop'); END"""
-        name = "kernel_cross5_" + table + "_settlement"
+        name = "kernel_recovery_cross6_" + table + "_settlement"
         result[name] = f"""CREATE TRIGGER {name} AFTER UPDATE ON {table}
           WHEN NEW.state IN ('settled','usage_unknown','budget_breach') BEGIN
           INSERT INTO metadata(key,value)
@@ -62,30 +212,31 @@ def triggers():
             OR (NEW.http_success=1 AND
                 (NEW.response_model IS NOT '{p.MODEL}' OR NEW.state='usage_unknown'))); END"""
         if table in OLD_RESERVATIONS:
-            name = "kernel_cross5_" + table + "_terminal_immutable"
+            name = "kernel_recovery_cross6_" + table + "_terminal_immutable"
             result[name] = f"""CREATE TRIGGER {name} BEFORE UPDATE ON {table}
-              WHEN EXISTS(SELECT 1 FROM kernel_legacy_rows
+              WHEN EXISTS(SELECT 1 FROM kernel_recovery_legacy_rows
                 WHERE table_name='{table}' AND request_id=OLD.request_id)
               BEGIN SELECT RAISE(ABORT,'kernel_budget.old_terminal_history_immutable'); END"""
-            name = "kernel_cross5_" + table + "_no_delete"
+            name = "kernel_recovery_cross6_" + table + "_no_delete"
             result[name] = f"""CREATE TRIGGER {name} BEFORE DELETE ON {table}
-              WHEN EXISTS(SELECT 1 FROM kernel_legacy_rows
+              WHEN EXISTS(SELECT 1 FROM kernel_recovery_legacy_rows
                 WHERE table_name='{table}' AND request_id=OLD.request_id)
               BEGIN SELECT RAISE(ABORT,'kernel_budget.old_request_history_immutable'); END"""
-            name = "kernel_cross5_" + table + "_no_replace"
+            name = "kernel_recovery_cross6_" + table + "_no_replace"
             result[name] = f"""CREATE TRIGGER {name} BEFORE INSERT ON {table}
-              WHEN EXISTS(SELECT 1 FROM kernel_legacy_rows
+              WHEN EXISTS(SELECT 1 FROM kernel_recovery_legacy_rows
                 WHERE table_name='{table}' AND request_id=NEW.request_id)
               BEGIN SELECT RAISE(ABORT,'kernel_budget.old_request_replacement_forbidden'); END"""
-    result["kernel_new_request"] = f"""CREATE TRIGGER kernel_new_request
-      BEFORE INSERT ON kernel_requests BEGIN
+    result["kernel_recovery_new_request"] = f"""CREATE TRIGGER kernel_recovery_new_request
+      BEFORE INSERT ON kernel_recovery_requests BEGIN
       SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM metadata WHERE key='{PURPOSE}')
         OR EXISTS(SELECT 1 FROM metadata WHERE key IN ('{FATAL}','{FINAL}'))
         THEN RAISE(ABORT,'kernel_budget.purpose_not_open') END;
-      SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM kernel_sessions WHERE session_id=NEW.session_id
+      SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM kernel_recovery_sessions
+          WHERE session_id=NEW.session_id
           AND state IN ('registered','running'))
         THEN RAISE(ABORT,'kernel_budget.registered_unfinished_session') END;
-      SELECT CASE WHEN EXISTS(SELECT 1 FROM kernel_requests WHERE request_id=NEW.request_id
+      SELECT CASE WHEN EXISTS(SELECT 1 FROM kernel_recovery_requests WHERE request_id=NEW.request_id
           OR (session_id=NEW.session_id AND attempt=NEW.attempt))
         THEN RAISE(ABORT,'kernel_budget.no_request_replacement') END;
       SELECT CASE WHEN NEW.state IS NOT 'reserved'
@@ -101,18 +252,18 @@ def triggers():
         OR NEW.response_model IS NOT NULL OR NEW.outcome IS NOT NULL
         THEN RAISE(ABORT,'kernel_budget.full_lease_before_send') END;
       SELECT CASE WHEN NEW.attempt IS NOT
-          (1 + (SELECT COUNT(*) FROM kernel_requests WHERE session_id=NEW.session_id))
+          (1 + (SELECT COUNT(*) FROM kernel_recovery_requests WHERE session_id=NEW.session_id))
         OR NEW.attempt > {p.MAX_RESPONSES}
-        OR EXISTS(SELECT 1 FROM kernel_requests WHERE session_id=NEW.session_id
+        OR EXISTS(SELECT 1 FROM kernel_recovery_requests WHERE session_id=NEW.session_id
           AND (state IS NOT 'settled' OR http_success IS NOT 1
                OR response_model IS NOT '{p.MODEL}' OR outcome IS NOT 'public_response_received'))
         THEN RAISE(ABORT,'kernel_budget.no_retry_after_failed_unknown_or_inflight_request') END;
-      SELECT CASE WHEN (SELECT COUNT(*) FROM kernel_requests) >= {p.REQUEST_CAP}
-        OR COALESCE((SELECT SUM(charged_tokens) FROM kernel_requests),0)
+      SELECT CASE WHEN (SELECT COUNT(*) FROM kernel_recovery_requests) >= {p.REQUEST_CAP}
+        OR COALESCE((SELECT SUM(charged_tokens) FROM kernel_recovery_requests),0)
            + NEW.charged_tokens > {p.TOKEN_CAP}
         THEN RAISE(ABORT,'kernel_budget.kernel_subcap') END; END"""
-    result["kernel_request_state"] = f"""CREATE TRIGGER kernel_request_state
-      BEFORE UPDATE ON kernel_requests BEGIN
+    result["kernel_recovery_request_state"] = f"""CREATE TRIGGER kernel_recovery_request_state
+      BEFORE UPDATE ON kernel_recovery_requests BEGIN
       SELECT CASE WHEN NEW.request_id IS NOT OLD.request_id OR NEW.session_id IS NOT OLD.session_id
         OR NEW.attempt IS NOT OLD.attempt OR NEW.reserved_tokens IS NOT OLD.reserved_tokens
         OR NEW.created_at IS NOT OLD.created_at
@@ -126,7 +277,7 @@ def triggers():
         THEN RAISE(ABORT,'kernel_budget.monotonic_request_history') END;
       SELECT CASE WHEN NEW.state='sent'
         AND (EXISTS(SELECT 1 FROM metadata WHERE key IN ('{FATAL}','{FINAL}'))
-          OR NOT EXISTS(SELECT 1 FROM kernel_sessions WHERE session_id=NEW.session_id
+          OR NOT EXISTS(SELECT 1 FROM kernel_recovery_sessions WHERE session_id=NEW.session_id
             AND state='running'))
         THEN RAISE(ABORT,'kernel_budget.no_send_after_kernel_stop') END;
       SELECT CASE WHEN NEW.state IN ('settled','usage_unknown','budget_breach') AND
@@ -164,15 +315,17 @@ def triggers():
           OR NOT(NEW.prompt_tokens > {p.INPUT_ALLOWANCE}
                  OR NEW.completion_tokens > {p.OUTPUT_ALLOWANCE}))
         THEN RAISE(ABORT,'kernel_budget.breach_actual_cost_preserved') END; END"""
-    result["kernel_request_no_delete"] = """CREATE TRIGGER kernel_request_no_delete
-      BEFORE DELETE ON kernel_requests BEGIN
+    result[
+        "kernel_recovery_request_no_delete"
+    ] = """CREATE TRIGGER kernel_recovery_request_no_delete
+      BEFORE DELETE ON kernel_recovery_requests BEGIN
       SELECT RAISE(ABORT,'kernel_budget.request_history_immutable'); END"""
     for operation in ("INSERT", "DELETE"):
-        name = "kernel_sessions_no_" + operation.lower()
-        result[name] = f"""CREATE TRIGGER {name} BEFORE {operation} ON kernel_sessions
+        name = "kernel_recovery_sessions_no_" + operation.lower()
+        result[name] = f"""CREATE TRIGGER {name} BEFORE {operation} ON kernel_recovery_sessions
           BEGIN SELECT RAISE(ABORT,'kernel_budget.fixed_registry'); END"""
-    result["kernel_session_state"] = """CREATE TRIGGER kernel_session_state
-      BEFORE UPDATE ON kernel_sessions BEGIN
+    result["kernel_recovery_session_state"] = """CREATE TRIGGER kernel_recovery_session_state
+      BEFORE UPDATE ON kernel_recovery_sessions BEGIN
       SELECT CASE WHEN NEW.session_id IS NOT OLD.session_id OR NEW.ordinal IS NOT OLD.ordinal
         OR NEW.task_id IS NOT OLD.task_id OR NEW.profile IS NOT OLD.profile
         OR NEW.pool IS NOT OLD.pool OR NEW.role IS NOT OLD.role
@@ -182,26 +335,28 @@ def triggers():
                 OR (OLD.state IN ('registered','running') AND NEW.state='finished'
                     AND typeof(NEW.terminal)='text' AND length(NEW.terminal)>0))
         THEN RAISE(ABORT,'kernel_budget.session_state_or_identity') END;
-      SELECT CASE WHEN NEW.state='finished' AND EXISTS(SELECT 1 FROM kernel_requests
+      SELECT CASE WHEN NEW.state='finished' AND EXISTS(SELECT 1 FROM kernel_recovery_requests
           WHERE session_id=OLD.session_id AND state IN ('reserved','sent'))
         THEN RAISE(ABORT,'kernel_budget.no_inflight_session_terminal') END; END"""
     for operation in ("INSERT", "UPDATE", "DELETE"):
-        name = "kernel_prior_no_" + operation.lower()
+        name = "kernel_recovery_prior_no_" + operation.lower()
         result[name] = f"""CREATE TRIGGER {name} BEFORE {operation} ON prior_debits
           BEGIN SELECT RAISE(ABORT,'kernel_budget.prior_debits_never_replayed_or_refunded'); END"""
     for operation in ("UPDATE", "DELETE"):
-        name = "kernel_metadata_no_" + operation.lower()
+        name = "kernel_recovery_metadata_no_" + operation.lower()
         result[name] = f"""CREATE TRIGGER {name} BEFORE {operation} ON metadata
           WHEN OLD.key IN ('{PURPOSE}','{FATAL}','{FINAL}','study_fatal')
-            OR EXISTS(SELECT 1 FROM kernel_legacy_metadata WHERE key=OLD.key)
+            OR EXISTS(SELECT 1 FROM kernel_recovery_legacy_metadata WHERE key=OLD.key)
           BEGIN SELECT RAISE(ABORT,'kernel_budget.frozen_existing_and_purpose_metadata'); END"""
-    result["kernel_metadata_no_replace"] = f"""CREATE TRIGGER kernel_metadata_no_replace
+    result[
+        "kernel_recovery_metadata_no_replace"
+    ] = f"""CREATE TRIGGER kernel_recovery_metadata_no_replace
       BEFORE INSERT ON metadata WHEN EXISTS(SELECT 1 FROM metadata WHERE key=NEW.key)
         AND (NEW.key IN ('{PURPOSE}','{FATAL}','{FINAL}','study_fatal')
-          OR EXISTS(SELECT 1 FROM kernel_legacy_metadata WHERE key=NEW.key))
+          OR EXISTS(SELECT 1 FROM kernel_recovery_legacy_metadata WHERE key=NEW.key))
         AND NEW.value IS NOT (SELECT value FROM metadata WHERE key=NEW.key)
       BEGIN SELECT RAISE(ABORT,'kernel_budget.no_metadata_replacement'); END"""
-    for table in ("kernel_legacy_rows", "kernel_legacy_metadata"):
+    for table in ("kernel_recovery_legacy_rows", "kernel_recovery_legacy_metadata"):
         for operation in ("INSERT", "UPDATE", "DELETE"):
             name = table + "_no_" + operation.lower()
             result[name] = f"""CREATE TRIGGER {name} BEFORE {operation} ON {table}
@@ -218,17 +373,17 @@ def legacy_snapshot(db, original=None):
     names = (
         original["original_table_names"]
         if original
-        else [x for x in all_tables if not x.startswith(("sqlite_", "kernel_"))]
+        else [x for x in all_tables if not x.startswith(("sqlite_", "kernel_recovery_"))]
     )
     require(
         {"metadata", "prior_debits", *OLD_RESERVATIONS} <= set(names),
-        "existing_four_purpose_wallet",
+        "existing_five_purpose_wallet",
     )
     tables, metadata = [], dict(db.execute("SELECT key,value FROM metadata"))
     keys = (
         original["original_metadata_keys"]
         if original
-        else sorted(k for k in metadata if not k.startswith("kernel_"))
+        else sorted(k for k in metadata if not k.startswith("kernel_recovery_"))
     )
     require(all(k in metadata for k in keys), "old_metadata_not_removed")
     for name in names:
@@ -260,7 +415,7 @@ def legacy_snapshot(db, original=None):
     schema_names = (
         original["original_schema_names"]
         if original
-        else sorted(k for k in schema if not k.startswith("kernel_"))
+        else sorted(k for k in schema if not k.startswith("kernel_recovery_"))
     )
     require(all(k in schema for k in schema_names), "old_schema_not_removed")
     return p.record(
@@ -295,24 +450,29 @@ class KernelLedger:
             self._registration(db, optional=True)
 
     @contextmanager
-    def connection(self, *, readonly=False):
+    def connection(self, *, readonly=False, operation="direct_sql"):
         suffix = "?mode=ro" if readonly else "?mode=rw"
-        db = sqlite3.connect(
-            self.path.as_uri() + suffix, uri=True, timeout=30, isolation_level=None
-        )
-        db.row_factory = sqlite3.Row
-        db.execute("PRAGMA foreign_keys=ON")
-        try:
-            yield db
-        finally:
-            db.close()
+        gate = nullcontext() if readonly else _writer_gate(self.path).enter(operation)
+        with gate:
+            db = sqlite3.connect(
+                self.path.as_uri() + suffix, uri=True, timeout=30, isolation_level=None
+            )
+            db.row_factory = sqlite3.Row
+            db.execute("PRAGMA foreign_keys=ON")
+            try:
+                yield db
+            finally:
+                db.close()
+
+    def writer_statistics(self, *, include_events=False):
+        return _writer_gate(self.path).statistics(include_events=include_events)
 
     def _registration(self, db, *, optional=False):
         found = db.execute("SELECT value FROM metadata WHERE key=?", (PURPOSE,)).fetchone()
         tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if found is None:
             require(
-                optional and not any(name.startswith("kernel_") for name in tables),
+                optional and not any(name.startswith("kernel_recovery_") for name in tables),
                 "no_partial_kernel_schema",
             )
             return None
@@ -321,7 +481,10 @@ class KernelLedger:
         except (ValueError, TypeError) as error:
             raise BudgetStop("kernel_budget.registration_identity") from error
         require(
-            value["freeze_id"] == self.freeze_id and value["policy_id"] == p.policy()["id"],
+            value["freeze_id"] == self.freeze_id
+            and value["policy_id"] == p.policy()["id"]
+            and value["purpose"] == PURPOSE
+            and value["writer_policy_id"] == writer_policy()["id"],
             "exact_frozen_purpose",
         )
         stored = dict(db.execute("SELECT name,sql FROM sqlite_master WHERE type='trigger'"))
@@ -330,7 +493,7 @@ class KernelLedger:
                 name in stored and _sql(stored[name]) == _sql(sql)
                 for name, sql in triggers().items()
             ),
-            "five_purpose_guards_present_unchanged",
+            "six_purpose_guards_present_unchanged",
         )
         return value
 
@@ -340,6 +503,10 @@ class KernelLedger:
         p.checked(legacy_before, "legacy_wallet_snapshot")
         value = p.record(
             "kernel_budget_registration",
+            purpose=PURPOSE,
+            request_table="kernel_recovery_requests",
+            original_reservation_tables=list(OLD_RESERVATIONS),
+            writer_policy_id=writer_policy()["id"],
             freeze_id=self.freeze_id,
             policy_id=p.policy()["id"],
             owner_stage_id=p.OWNER,
@@ -351,7 +518,7 @@ class KernelLedger:
             original_requests_and_debits_not_replayed=True,
             no_new_wallet=True,
         )
-        with self.connection() as db:
+        with self.connection(operation="register") as db:
             db.execute("BEGIN IMMEDIATE")
             try:
                 require(
@@ -386,7 +553,16 @@ class KernelLedger:
                     is True,
                     "old_evaluation_rewrite_purpose_closed",
                 )
-                for table, count in (("collection_sessions", 24640), ("probe01_sessions", 144)):
+                require(
+                    "kernel_finalization" in metadata
+                    and json.loads(metadata["kernel_finalization"]).get("purpose_closed") is True,
+                    "old_fixed_kernel_purpose_closed",
+                )
+                for table, count in (
+                    ("collection_sessions", 24640),
+                    ("probe01_sessions", 144),
+                    ("kernel_sessions", 10240),
+                ):
                     require(
                         db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] == count
                         and not db.execute(
@@ -394,36 +570,36 @@ class KernelLedger:
                         ).fetchone(),
                         "old_registered_collection_closed:" + table,
                     )
-                db.execute("""CREATE TABLE kernel_legacy_rows(
+                db.execute("""CREATE TABLE kernel_recovery_legacy_rows(
                   table_name TEXT NOT NULL, request_id TEXT NOT NULL,
                   PRIMARY KEY(table_name,request_id))""")
-                db.execute("CREATE TABLE kernel_legacy_metadata(key TEXT PRIMARY KEY)")
+                db.execute("CREATE TABLE kernel_recovery_legacy_metadata(key TEXT PRIMARY KEY)")
                 for table in OLD_RESERVATIONS:
                     db.execute(
-                        "INSERT INTO kernel_legacy_rows(table_name,request_id) "
+                        "INSERT INTO kernel_recovery_legacy_rows(table_name,request_id) "
                         f"SELECT ?,request_id FROM {table}",
                         (table,),
                     )
                 db.executemany(
-                    "INSERT INTO kernel_legacy_metadata(key) VALUES(?)",
+                    "INSERT INTO kernel_recovery_legacy_metadata(key) VALUES(?)",
                     [(key,) for key in legacy_before["original_metadata_keys"]],
                 )
-                db.execute("""CREATE TABLE kernel_sessions(
+                db.execute("""CREATE TABLE kernel_recovery_sessions(
                   session_id TEXT PRIMARY KEY, ordinal INTEGER NOT NULL UNIQUE,
                   pool TEXT NOT NULL, role TEXT NOT NULL, task_id TEXT NOT NULL,
                   profile TEXT NOT NULL, basis TEXT NOT NULL, replicate INTEGER NOT NULL,
                   registered_json TEXT NOT NULL, state TEXT NOT NULL, terminal TEXT,
                   UNIQUE(pool,task_id,profile,basis,replicate))""")
-                db.execute("""CREATE TABLE kernel_requests(
+                db.execute("""CREATE TABLE kernel_recovery_requests(
                   request_id TEXT PRIMARY KEY,
-                  session_id TEXT NOT NULL REFERENCES kernel_sessions(session_id),
+                  session_id TEXT NOT NULL REFERENCES kernel_recovery_sessions(session_id),
                   attempt INTEGER NOT NULL, state TEXT NOT NULL, reserved_tokens INTEGER NOT NULL,
                   charged_tokens INTEGER NOT NULL, prompt_tokens INTEGER, completion_tokens INTEGER,
                   reported_total_tokens INTEGER, http_success INTEGER,
                   response_model TEXT, outcome TEXT,
                   created_at TEXT NOT NULL, UNIQUE(session_id,attempt))""")
                 db.executemany(
-                    "INSERT INTO kernel_sessions VALUES(?,?,?,?,?,?,?,?,?,?,NULL)",
+                    "INSERT INTO kernel_recovery_sessions VALUES(?,?,?,?,?,?,?,?,?,?,NULL)",
                     [
                         (
                             r["session_id"],
@@ -461,13 +637,14 @@ class KernelLedger:
         with self.connection(readonly=True) as db:
             self._registration(db)
             return [
-                dict(row) for row in db.execute("SELECT * FROM kernel_sessions ORDER BY ordinal")
+                dict(row)
+                for row in db.execute("SELECT * FROM kernel_recovery_sessions ORDER BY ordinal")
             ]
 
     def requests(self, session_id=None):
         with self.connection(readonly=True) as db:
             self._registration(db)
-            query = "SELECT * FROM kernel_requests"
+            query = "SELECT * FROM kernel_recovery_requests"
             params = ()
             if session_id is not None:
                 query += " WHERE session_id=?"
@@ -478,18 +655,19 @@ class KernelLedger:
         with self.connection(readonly=True) as db:
             self._registration(db)
             row = db.execute(
-                "SELECT registered_json FROM kernel_sessions WHERE session_id=?", (session_id,)
+                "SELECT registered_json FROM kernel_recovery_sessions WHERE session_id=?",
+                (session_id,),
             ).fetchone()
         require(row is not None, "registered_session_required")
         return json.loads(row[0])
 
     def reserve(self, session_id):
-        with self.connection() as db:
+        with self.connection(operation="reserve") as db:
             db.execute("BEGIN IMMEDIATE")
             try:
                 self._registration(db)
                 row = db.execute(
-                    "SELECT state FROM kernel_sessions WHERE session_id=?", (session_id,)
+                    "SELECT state FROM kernel_recovery_sessions WHERE session_id=?", (session_id,)
                 ).fetchone()
                 require(
                     row is not None and row[0] in ("registered", "running"),
@@ -497,15 +675,16 @@ class KernelLedger:
                 )
                 attempt = (
                     db.execute(
-                        "SELECT COUNT(*) FROM kernel_requests WHERE session_id=?", (session_id,)
+                        "SELECT COUNT(*) FROM kernel_recovery_requests WHERE session_id=?",
+                        (session_id,),
                     ).fetchone()[0]
                     + 1
                 )
-                request_id = "kernel_request_" + p.sha(
+                request_id = "kernel_recovery_request_" + p.sha(
                     p.encode([self.freeze_id, session_id, attempt])
                 )
                 db.execute(
-                    """INSERT INTO kernel_requests(request_id,session_id,attempt,state,
+                    """INSERT INTO kernel_recovery_requests(request_id,session_id,attempt,state,
                   reserved_tokens,charged_tokens,created_at) VALUES(?,?,?,'reserved',?,?,?)""",
                     (
                         request_id,
@@ -518,7 +697,7 @@ class KernelLedger:
                 )
                 if row[0] == "registered":
                     db.execute(
-                        "UPDATE kernel_sessions SET state='running' WHERE session_id=?",
+                        "UPDATE kernel_recovery_sessions SET state='running' WHERE session_id=?",
                         (session_id,),
                     )
                 db.execute("COMMIT")
@@ -538,10 +717,11 @@ class KernelLedger:
                 raise
 
     def mark_sent(self, request_id):
-        with self.connection() as db:
+        with self.connection(operation="mark_sent") as db:
             self._registration(db)
             changed = db.execute(
-                "UPDATE kernel_requests SET state='sent' WHERE request_id=? AND state='reserved'",
+                "UPDATE kernel_recovery_requests SET state='sent' "
+                "WHERE request_id=? AND state='reserved'",
                 (request_id,),
             )
             require(changed.rowcount == 1, "single_send")
@@ -558,17 +738,17 @@ class KernelLedger:
         known = prompt is not None
         breach = known and (prompt > p.INPUT_ALLOWANCE or completion > p.OUTPUT_ALLOWANCE)
         state = "budget_breach" if breach else "settled" if known else "usage_unknown"
-        with self.connection() as db:
+        with self.connection(operation="settle") as db:
             db.execute("BEGIN IMMEDIATE")
             try:
                 self._registration(db)
                 row = db.execute(
-                    "SELECT * FROM kernel_requests WHERE request_id=?", (request_id,)
+                    "SELECT * FROM kernel_recovery_requests WHERE request_id=?", (request_id,)
                 ).fetchone()
                 require(row is not None and row["state"] == "sent", "single_settlement_after_send")
                 charged = total if known else row["reserved_tokens"]
                 db.execute(
-                    """UPDATE kernel_requests SET state=?,charged_tokens=?,prompt_tokens=?,
+                    """UPDATE kernel_recovery_requests SET state=?,charged_tokens=?,prompt_tokens=?,
                   completion_tokens=?,reported_total_tokens=?,http_success=?,response_model=?,outcome=?
                   WHERE request_id=?""",
                     (
@@ -598,17 +778,17 @@ class KernelLedger:
         retry, extra replicate, or reuse of the candidate's registered role.
         """
         require(isinstance(reason, str) and bool(reason), "explicit_unsent_cancellation_reason")
-        with self.connection() as db:
+        with self.connection(operation="cancel_unsent") as db:
             db.execute("BEGIN IMMEDIATE")
             try:
                 self._registration(db)
                 row = db.execute(
-                    "SELECT state,reserved_tokens FROM kernel_requests WHERE request_id=?",
+                    "SELECT state,reserved_tokens FROM kernel_recovery_requests WHERE request_id=?",
                     (request_id,),
                 ).fetchone()
                 require(row is not None and row["state"] == "reserved", "cancel_only_proven_unsent")
                 db.execute(
-                    """UPDATE kernel_requests SET state='not_sent',charged_tokens=0,
+                    """UPDATE kernel_recovery_requests SET state='not_sent',charged_tokens=0,
                     prompt_tokens=0,completion_tokens=0,reported_total_tokens=0,http_success=0,
                     response_model=NULL,outcome=? WHERE request_id=?""",
                     ("not_sent:" + reason, request_id),
@@ -630,7 +810,7 @@ class KernelLedger:
         )
 
     def halt(self, reason):
-        with self.connection() as db:
+        with self.connection(operation="halt") as db:
             self._registration(db)
             db.execute(
                 "INSERT INTO metadata(key,value) SELECT ?,? "
@@ -640,10 +820,10 @@ class KernelLedger:
 
     def finish(self, session_id, terminal):
         require(isinstance(terminal, str) and bool(terminal), "nonempty_session_terminal")
-        with self.connection() as db:
+        with self.connection(operation="finish") as db:
             self._registration(db)
             changed = db.execute(
-                """UPDATE kernel_sessions SET state='finished',terminal=?
+                """UPDATE kernel_recovery_sessions SET state='finished',terminal=?
               WHERE session_id=? AND state IN ('registered','running')""",
                 (terminal, session_id),
             )
@@ -654,12 +834,14 @@ class KernelLedger:
             registration = self._registration(db)
             counts = {
                 row[0]: row[1]
-                for row in db.execute("SELECT state,COUNT(*) FROM kernel_sessions GROUP BY state")
+                for row in db.execute(
+                    "SELECT state,COUNT(*) FROM kernel_recovery_sessions GROUP BY state"
+                )
             }
             charges = [
                 dict(row)
                 for row in db.execute("""SELECT state,COUNT(*) AS requests,
-              SUM(charged_tokens) AS charged_tokens FROM kernel_requests
+              SUM(charged_tokens) AS charged_tokens FROM kernel_recovery_requests
               GROUP BY state ORDER BY state""")
             ]
             common = db.execute("SELECT " + _total_sql()).fetchone()[0]
@@ -672,6 +854,9 @@ class KernelLedger:
         debit = sum(row["charged_tokens"] for row in charges)
         return p.record(
             "kernel_wallet_snapshot",
+            purpose=PURPOSE,
+            request_table="kernel_recovery_requests",
+            historical_reservation_tables=list(OLD_RESERVATIONS),
             registration_id=registration["id"],
             sessions_by_state=counts,
             request_states=charges,
@@ -681,16 +866,17 @@ class KernelLedger:
             remaining_kernel_allowance=p.TOKEN_CAP - debit,
             persisted_stops=stop,
             old_unknown_leases_still_charged=True,
+            writer_statistics=self.writer_statistics(),
         )
 
     def finalize(self, *, report_id):
-        with self.connection() as db:
+        with self.connection(operation="finalize") as db:
             db.execute("BEGIN IMMEDIATE")
             try:
                 self._registration(db)
                 require(
                     not db.execute(
-                        "SELECT 1 FROM kernel_requests WHERE state IN ('reserved','sent')"
+                        "SELECT 1 FROM kernel_recovery_requests WHERE state IN ('reserved','sent')"
                     ).fetchone(),
                     "no_inflight_finalization",
                 )
@@ -715,14 +901,23 @@ class KernelLedger:
         return row
 
 
-def run_shadow_control(source_wallet, output_directory, registry, population, freeze_id):
-    """Migrate a consistent *copy* and simulate one 3-token settlement, without HTTP.
+def run_shadow_control(
+    source_wallet, output_directory, registry, population, freeze_id, *, stress_workers=1, rounds=1
+):
+    """Migrate a consistent *copy* and simulate bounded ledger work, without HTTP.
 
     The original wallet is opened only mode=ro. Results explicitly distinguish
     the synthetic charge in the disposable copy from zero live/model usage.
     The destination is a newly created exclusive directory, never the source.
     """
     source_wallet = Path(source_wallet).resolve()
+    require(
+        type(stress_workers) is int
+        and 1 <= stress_workers <= 128
+        and type(rounds) is int
+        and 1 <= rounds <= p.MAX_RESPONSES,
+        "bounded_shadow_pressure_plan",
+    )
     output_directory = Path(output_directory).absolute()
     require(
         not output_directory.exists()
@@ -753,19 +948,50 @@ def run_shadow_control(source_wallet, output_directory, registry, population, fr
     shadow = KernelLedger(shadow_path, freeze_id)
     shadow.register(registry, population, legacy_before=before)
     initial = shadow.snapshot()
-    registered = registry["sessions"][0]
-    lease = shadow.reserve(registered["session_id"])
-    shadow.mark_sent(lease["request_id"])
-    shadow.settle(
-        lease["request_id"],
-        usage={"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3},
-        http_success=True,
-        response_model=p.MODEL,
-        outcome="public_response_received",
-    )
-    shadow.finish(registered["session_id"], "synthetic_shadow_only_not_a_material_session")
+    barrier = threading.Barrier(stress_workers)
+    started = time.monotonic()
+
+    def simulate(index):
+        registered = registry["sessions"][index]
+        known, cancelled = 0, 0
+        try:
+            for turn in range(rounds):
+                lease = shadow.reserve(registered["session_id"])
+                barrier.wait(timeout=120)
+                if stress_workers > 1 and index % 4 == 0 and turn == rounds - 1:
+                    shadow.cancel_unsent(lease["request_id"], "synthetic_pressure_proven_unsent")
+                    cancelled += 1
+                else:
+                    shadow.mark_sent(lease["request_id"])
+                    shadow.settle(
+                        lease["request_id"],
+                        usage={"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3},
+                        http_success=True,
+                        response_model=p.MODEL,
+                        outcome="public_response_received",
+                    )
+                    known += 1
+            shadow.finish(registered["session_id"], "synthetic_shadow_only_not_a_material_session")
+            return known, cancelled
+        except BaseException:
+            barrier.abort()
+            raise
+
+    with ThreadPoolExecutor(max_workers=stress_workers) as pool:
+        observed = list(pool.map(simulate, range(stress_workers)))
+    known = sum(row[0] for row in observed)
+    cancelled = sum(row[1] for row in observed)
+    elapsed = time.monotonic() - started
     finalization = shadow.finalize(report_id="synthetic_shadow_control_not_an_experiment_report")
     final = shadow.snapshot()
+    writer = shadow.writer_statistics(include_events=True)
+    require(
+        known + cancelled == stress_workers * rounds
+        and writer["sqlite_lock_errors"] == 0
+        and writer["maximum_active_write_connections"] == 1
+        and writer["active_write_connections"] == writer["queued_operations"] == 0,
+        "shadow_single_writer_completed_without_lock_errors",
+    )
     with shadow.connection(readonly=True) as db:
         preserved_shadow = legacy_snapshot(db, before) == before
     with source.connection(readonly=True) as db:
@@ -776,8 +1002,8 @@ def run_shadow_control(source_wallet, output_directory, registry, population, fr
     require(preserved_shadow and source_after == before, "shadow_preserves_real_and_copied_history")
     require(
         initial["kernel_conservative_debit"] == 0
-        and final["kernel_conservative_debit"] == 3
-        and final["common_conservative_debit"] == initial["common_conservative_debit"] + 3,
+        and final["kernel_conservative_debit"] == 3 * known
+        and final["common_conservative_debit"] == initial["common_conservative_debit"] + 3 * known,
         "shadow_simulated_charge_exactly_once",
     )
     evidence = p.record(
@@ -795,8 +1021,21 @@ def run_shadow_control(source_wallet, output_directory, registry, population, fr
         shadow_wallet=str(shadow_path),
         shadow_registry_id=registry["id"],
         shadow_registered_sessions=len(registry["sessions"]),
-        shadow_simulated_request_count=1,
-        shadow_simulated_usage_tokens=3,
+        shadow_simulated_request_count=stress_workers * rounds,
+        shadow_simulated_usage_tokens=3 * known,
+        writer_pressure_test={
+            "workers": stress_workers,
+            "rounds_per_worker": rounds,
+            "registered_lease_count": stress_workers * rounds,
+            "known_simulated_settlements": known,
+            "proven_unsent_cancellations": cancelled,
+            "elapsed_seconds": elapsed,
+            "worker_failures": 0,
+            "real_source_snapshot_scale_retained": True,
+            "no_HTTP_or_provider_callback": True,
+            "writer_statistics": writer,
+        },
+        writer_policy=writer_policy(),
         initial_shadow_snapshot=initial,
         final_shadow_snapshot=final,
         shadow_finalization=finalization,
@@ -808,3 +1047,16 @@ def run_shadow_control(source_wallet, output_directory, registry, population, fr
     )
     p.write_once(output_directory / "shadow_control.json", evidence)
     return evidence
+
+
+def run_writer_shadow_control(source_wallet, output_directory, registry, population, freeze_id):
+    """One prescribed 128-worker / three-round real-history-copy pressure check."""
+    return run_shadow_control(
+        source_wallet,
+        output_directory,
+        registry,
+        population,
+        freeze_id,
+        stress_workers=128,
+        rounds=3,
+    )
