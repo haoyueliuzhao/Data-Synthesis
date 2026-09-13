@@ -1,0 +1,1 @@
+{"failure":"Python build omits os.pidfd_open; detected before signal; libc provides same pidfd interface","id":"operator_stop_interface_check:3a1c88501187d9e79f70d03db4d024b881f4e67233b16c0a6b1113110bd50759","original_process_still_alive":true,"python_os_pidfd_open_available":false,"schema_version":"linear_postprocess.v1.operator_stop_interface_check","signal_sent":false}
