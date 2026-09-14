@@ -175,6 +175,24 @@ def _qualification(session, registered, qualification):
     )
 
 
+def _assessor_code(session, registered, qualification, code_snapshot_id, lineage_binding=None):
+    """Admit an unchanged inherited qualification only by its frozen exact slot."""
+    if lineage_binding is None:
+        p.require(
+            qualification["code_snapshot_id"] == code_snapshot_id,
+            "materials.frozen_assessor_code",
+        )
+        return
+    p.checked(lineage_binding, "material_qualification_lineage_binding")
+    p.require(
+        lineage_binding["registered_session_id"] == registered["session_id"]
+        and lineage_binding["material_session_id"] == session["id"]
+        and lineage_binding["qualification_id"] == qualification["id"]
+        and lineage_binding["code_snapshot_id"] == qualification["code_snapshot_id"],
+        "materials.exact_inherited_qualification_lineage",
+    )
+
+
 def original_candidates(session, registered, qualification):
     """No replacement rows: original target bytes and entire actual input history."""
     _qualification(session, registered, qualification)
@@ -269,11 +287,12 @@ def materialize_session(
     code_snapshot_id,
     status="finished",
     encoder=encode_original_candidate,
+    qualification_lineage_binding=None,
 ):
     """Encode one entire eligible package with an already loaded CPU tokenizer."""
     _qualification(session, registered, qualification)
-    p.require(
-        code_snapshot_id == qualification["code_snapshot_id"], "materials.frozen_assessor_code"
+    _assessor_code(
+        session, registered, qualification, code_snapshot_id, qualification_lineage_binding
     )
     if status != "finished" or not qualification["token_materialization_eligible"]:
         return {
@@ -365,6 +384,14 @@ def materialize_session(
         source_boundary_id=qualification["source_boundary_id"],
         bundle_id=qualification["bundle_id"],
         code_snapshot_id=code_snapshot_id,
+        **(
+            {
+                "qualification_code_snapshot_id": qualification["code_snapshot_id"],
+                "qualification_lineage_binding_id": qualification_lineage_binding["id"],
+            }
+            if qualification_lineage_binding is not None
+            else {}
+        ),
         actual_method=qualification["actual_method"],
         full_class=qualification["full_class"],
         state_id=canonical_state_id(qualification["actual_method"], qualification["full_class"]),
@@ -508,6 +535,7 @@ def materialize_all(
     loader=load_local_tokenizer,
     encoder=encode_original_candidate,
     writer=p.write_once,
+    qualification_lineage_bindings=None,
 ):
     """Close all 10,240 registered terminal rows before the first tokenizer load.
 
@@ -534,6 +562,17 @@ def materialize_all(
         and set(by_session) == {row["session_id"] for row in sessions},
         "materials.no_missing_duplicate_foreign_terminals",
     )
+    bindings = {} if qualification_lineage_bindings is None else qualification_lineage_bindings
+    p.require(
+        isinstance(bindings, dict) and set(bindings) <= set(by_session),
+        "materials.inherited_lineage_registered_slots_only",
+    )
+    for session_id, binding in bindings.items():
+        p.checked(binding, "material_qualification_lineage_binding")
+        p.require(
+            binding["registered_session_id"] == session_id,
+            "materials.inherited_lineage_slot_key",
+        )
     for registered in sessions:
         _registration(registered)
         p.require(
@@ -568,9 +607,12 @@ def materialize_all(
             }
         else:
             _qualification(session, registered, qualification)
-            p.require(
-                qualification["code_snapshot_id"] == code_snapshot_id,
-                "materials.frozen_assessor_code",
+            _assessor_code(
+                session,
+                registered,
+                qualification,
+                code_snapshot_id,
+                bindings.get(registered["session_id"]),
             )
             if incomplete:
                 materialized = {
@@ -603,6 +645,7 @@ def materialize_all(
                     code_snapshot_id=code_snapshot_id,
                     status=status,
                     encoder=encoder,
+                    qualification_lineage_binding=bindings.get(registered["session_id"]),
                 )
         outcome = materialized["outcome"]
         counts[status] += 1
@@ -613,6 +656,16 @@ def materialize_all(
         registry_id=registry["id"],
         freeze_id=registry["freeze_id"],
         code_snapshot_id=code_snapshot_id,
+        **(
+            {
+                "qualification_lineage_binding_ids": {
+                    session_id: binding["id"] for session_id, binding in bindings.items()
+                },
+                "inherited_qualification_bytes_rewritten": False,
+            }
+            if bindings
+            else {}
+        ),
         complete_registered_denominator=len(sessions),
         collection_complete=not incomplete,
         collection_complete_is_admission_gate_not_raw_attempt_count=True,

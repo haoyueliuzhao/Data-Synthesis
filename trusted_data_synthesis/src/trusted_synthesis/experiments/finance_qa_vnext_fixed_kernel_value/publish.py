@@ -781,6 +781,7 @@ def seal_stage(
     approved_adapter_paths=None,
     workers=p.CPU_WORKERS,
     secret_loader=_credential,
+    source_output=None,
 ):
     """Seal one immutable snapshot outside the raw tree; no Git operations.
 
@@ -793,8 +794,9 @@ def seal_stage(
     _require(stage in {"materials", "results"}, "known_publication_stage")
     code_root, data_root = _regular_root(code_root), _regular_root(data_root)
     _require(code_root != data_root, "independent_code_and_readonly_data_root")
-    root = _regular_root(code_root / p.OUTPUT)
-    destination = code_root / (p.OUTPUT + "_publication") / stage
+    source_output = p.OUTPUT if source_output is None else _relative(source_output).as_posix()
+    root = _regular_root(code_root / source_output)
+    destination = code_root / (source_output + "_publication") / stage
     _require(
         not destination.exists()
         and not any(part.is_symlink() for part in (destination, *destination.parents)),
@@ -880,7 +882,7 @@ def seal_stage(
         "publication_manifest",
         stage=stage,
         closure=closure,
-        source_root=p.OUTPUT,
+        source_root=source_output,
         scope_allowlist=sorted(allowlist) if allowlist is not None else None,
         source_snapshot_sha256=digest.hexdigest(),
         snapshot_digest_rule="canonical member descriptor plus LF in lexical path order",
