@@ -7,6 +7,7 @@ fixtures. GPU failures stop new launches; failed outputs are never retried.
 """
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -17,8 +18,9 @@ from pathlib import Path
 from ..finance_qa_vnext_basis_student.protocol import path_within
 from ..finance_qa_vnext_eval_surface.overlay import public_object
 from . import evaluation as e
-from . import fast_materials, training
+from . import fast_materials, trajectory_materials
 from . import protocol as p
+from . import trajectory_training as training
 
 
 def execution_policy():
@@ -56,7 +58,7 @@ def code_root():
 
 
 def code_binding():
-    """Bind all committed Python dependencies and reject uncommitted new code."""
+    """Bind committed Python bytes with one Git batch, not one process per file."""
     root = code_root()
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     names = subprocess.check_output(
@@ -67,13 +69,38 @@ def code_binding():
     names = sorted(name for name in names if name.endswith(".py"))
     required = {str(path.relative_to(root)) for path in Path(__file__).parent.glob("*.py")}
     p.require(required <= set(names), "execution.all_new_python_code_committed_before_training")
-    members = []
+    p.require(
+        all("\n" not in name and "\r" not in name for name in names),
+        "execution.safe_git_object_spec",
+    )
+    requested = "".join(head + ":" + name + "\n" for name in names).encode()
+    raw = subprocess.run(
+        ["git", "cat-file", "--batch"],
+        cwd=root,
+        input=requested,
+        capture_output=True,
+        check=True,
+    ).stdout
+    position, members = 0, []
     for name in names:
-        path = path_within(root, name)
-        actual = path.read_bytes()
-        committed = subprocess.check_output(["git", "show", head + ":" + name], cwd=root)
-        p.require(actual == committed, "execution.exact_committed_python_dependency")
+        line_end = raw.index(b"\n", position)
+        header = raw[position:line_end].split()
+        p.require(
+            len(header) == 3 and header[1] == b"blob", "execution.exact_committed_python_blob"
+        )
+        width, begin = int(header[2]), line_end + 1
+        committed = memoryview(raw)[begin : begin + width]
+        p.require(
+            raw[begin + width : begin + width + 1] == b"\n", "execution.complete_git_blob_frame"
+        )
+        actual = path_within(root, name).read_bytes()
+        p.require(
+            len(actual) == width and actual == committed,
+            "execution.exact_committed_python_dependency",
+        )
         members.append({"path": name, "sha256": p.sha(actual)})
+        position = begin + width + 1
+    p.require(position == len(raw), "execution.no_extra_git_blob_frames")
     return p.record(
         "execution_code_binding", code_root=str(root), head_commit=head, members=members
     )
@@ -120,11 +147,12 @@ def descriptor(root, path):
 def load_descriptor(root, reference):
     p.require(set(reference) == {"path", "bytes", "sha256"}, "execution.closed_file_descriptor")
     path = path_within(root, reference["path"])
+    raw = path.read_bytes()
     p.require(
-        path.stat().st_size == reference["bytes"] and p.sha(path) == reference["sha256"],
+        len(raw) == reference["bytes"] and p.sha(raw) == reference["sha256"],
         "execution.original_material_file_bytes",
     )
-    return p.read_json(path)
+    return json.loads(raw)
 
 
 def load_material_inputs(root, files, *, expected_kernel_id=None):
@@ -142,122 +170,138 @@ def binding(frozen):
     }
 
 
-def prepare(
-    root,
-    output,
-    *,
-    source_root,
-    study_freeze_id,
-    population_path,
-    registry_path,
-    materialization_index_path,
-    base_binding,
-    tokenizer_binding,
-    material_gate_path=None,
-    resume_existing_receipt=False,
-):
-    root, output = Path(root).resolve(), Path(output).resolve()
-    receipt_path = output / "preparation" / "material_input_receipt.json"
-    p.require(type(resume_existing_receipt) is bool, "execution.explicit_receipt_resume_mode")
+def _source_record(root, path, kind):
+    """Read one parent metadata file once and bind exactly those observed bytes."""
+    root = Path(root).resolve()
+    path = Path(path)
+    path = path if path.is_absolute() else root / path
+    relative = str(path.relative_to(root))
+    raw = path_within(root, relative).read_bytes()
+    return p.checked(json.loads(raw), kind), {
+        "path": relative,
+        "bytes": len(raw),
+        "sha256": p.sha(raw),
+    }
+
+
+def prepare(root, output, *, input_root, parent_freeze_path, parent_authority_path, workers=24):
+    """Reuse the complete parent validation; build only compact fused trajectories."""
+    root, output, input_root = (
+        Path(root).resolve(),
+        Path(output).resolve(),
+        Path(input_root).resolve(),
+    )
     p.require(
         output.is_relative_to(root)
         and output != root
-        and (
-            receipt_path.is_file()
-            and not (output / "preparation" / "execution_freeze.json").exists()
-            and not (output / "execution_started.json").exists()
-            if resume_existing_receipt
-            else not output.exists()
-        ),
-        "execution.existing_receipt_without_freeze_or_Student_only"
-        if resume_existing_receipt
-        else "execution.new_dedicated_output",
+        and not output.exists()
+        and input_root != root
+        and input_root.is_dir(),
+        "execution.new_trajectory_output",
     )
-    paths = dict(
-        population=population_path,
-        registry=registry_path,
-        materialization_index=materialization_index_path,
+    parent, parent_reference = _source_record(input_root, parent_freeze_path, "execution_freeze")
+    authority, authority_reference = _source_record(
+        input_root, parent_authority_path, "fast_execution_authority"
     )
-    files = {key: descriptor(root, path) for key, path in paths.items()}
-    gate_path = (
-        Path(material_gate_path)
-        if material_gate_path is not None
-        else Path(materialization_index_path).parent / "material_gate.json"
-    )
-    gate_reference = descriptor(root, gate_path)
-    original_gate = p.checked(load_descriptor(root, gate_reference), "material_gate")
+    gate = p.checked(load_descriptor(input_root, parent["original_material_gate"]), "material_gate")
     p.require(
-        original_gate["training_gate"]
-        == original_gate["material_gate"]
-        == original_gate["dose_gate"]
-        == "PASS",
-        "execution.actual_original_material_gate_pass",
+        parent["material_gate"]
+        == parent["dose_gate"]
+        == parent["training_gate"]
+        == gate["material_gate"]
+        == gate["dose_gate"]
+        == gate["training_gate"]
+        == "PASS"
+        and authority["execution_freeze_id"] == parent["id"]
+        and authority["original_kernel_id"] == parent["kernel_id"] == gate["kernel_id"]
+        and authority["original_material_gate_id"]
+        == parent["original_material_gate_id"]
+        == gate["id"]
+        and authority["original_registry_freeze_id"] == parent["study_freeze_id"]
+        and authority["original_generation_report_id"] == gate["generation_report_id"]
+        and authority["actual_full_original_kernel_ID_equal"] is True
+        and parent["code_binding"]["code_root"] == str(input_root)
+        and parent["material_verification"]["kernel_id"] == parent["kernel_id"],
+        "execution.actual_parent_freeze_authority_gate_join",
     )
-    if resume_existing_receipt:
-        receipt_reference = descriptor(root, receipt_path)
-        inputs = fast_materials.load_authority(
-            root, receipt_reference, files, expected_kernel_id=original_gate["kernel_id"]
+    # Fail missing/dirty source dependencies before doing cache work.
+    source = code_binding()
+    cache_root = output / "preparation" / "trajectory_cache"
+    manifest = trajectory_materials.prepare_cache(
+        input_root, cache_root, Path(input_root) / parent_reference["path"], workers=workers
+    )
+    p.checked(manifest, "trajectory_material_cache")
+    p.require(
+        manifest["parent_execution_freeze_id"] == parent["id"]
+        and manifest["source_material_receipt"] == parent["material_input_receipt"]
+        and manifest["kernel_id"] == parent["kernel_id"]
+        and manifest["material_verification_id"] == parent["material_verification"]["id"]
+        and manifest["source_material_budgets"] == parent["material_verification"]["pool_budgets"],
+        "execution.trajectory_cache_original_global_authority",
+    )
+    for pool in p.POOLS:
+        actual = manifest["pool_budgets"][pool]
+        original = manifest["source_material_budgets"][pool]
+        p.require(
+            all(
+                actual[field + suffix] == original[field + suffix]
+                for field in ("packages", "target_tokens")
+                for suffix in ("_per_epoch", "_all_epochs")
+            )
+            and all(
+                actual[field + "_all_epochs"] == 10 * actual[field + "_per_epoch"]
+                for field in ("packages", "rows", "target_tokens", "sequence_tokens")
+            ),
+            "execution.trajectory_preserves_physical_packages_targets_and_ten_visits",
         )
-    else:
-        inputs = load_material_inputs(root, files, expected_kernel_id=original_gate["kernel_id"])
-    p.require(
-        inputs["registry"]["freeze_id"] == study_freeze_id,
-        "execution.same_prospective_collection_freeze",
+    cached = dict(
+        cache_root=str(cache_root.relative_to(root)),
+        manifest=descriptor(root, cache_root / "manifest.json"),
+        manifest_id=manifest["id"],
     )
-    verification = training.validate_materials(
-        inputs["kernel"],
-        inputs["population"],
-        inputs["registry"],
-        inputs["outcomes"],
-        verified_inputs=inputs,
-    )
-    p.require(
-        original_gate["registry_id"] == inputs["registry"]["id"]
-        and original_gate["physical_originals_sha256"]
-        == inputs["kernel"]["physical_originals_sha256"],
-        "execution.same_complete_original_material_gate",
-    )
-    if not resume_existing_receipt:
-        receipt = fast_materials.make_receipt(inputs, verification)
-        p.write_once(receipt_path, receipt)
-        receipt_reference = descriptor(root, receipt_path)
-    p.require(
-        verification["tokenizer_binding_id"] == tokenizer_binding["id"],
-        "execution.original_training_and_evaluation_tokenizer",
-    )
-    decode = e.bind_policy(tokenizer_binding, base_binding)
     frozen = p.record(
         "execution_freeze",
-        study_freeze_id=study_freeze_id,
+        study_freeze_id=parent["study_freeze_id"],
         output_directory=str(output.relative_to(root)),
-        source_root=str(Path(source_root).resolve()),
-        kernel_id=inputs["kernel"]["id"],
-        input_files=files,
-        material_input_receipt=receipt_reference,
-        original_material_gate=gate_reference,
-        original_material_gate_id=original_gate["id"],
-        base_binding=base_binding,
-        tokenizer_binding=tokenizer_binding,
+        source_root=parent["source_root"],
+        input_root=str(input_root),
+        kernel_id=parent["kernel_id"],
+        input_files=parent["input_files"],
+        material_input_receipt=parent["material_input_receipt"],
+        original_material_gate=parent["original_material_gate"],
+        original_material_gate_id=parent["original_material_gate_id"],
+        base_binding=parent["base_binding"],
+        tokenizer_binding=parent["tokenizer_binding"],
         training_configuration=training.training_config(),
-        decoder_configuration=decode,
+        decoder_configuration=parent["decoder_configuration"],
         execution_policy=execution_policy(),
-        analysis_policy=e.analysis_policy(),
-        material_verification=verification,
-        evaluation_registry=evaluation_registry(source_root),
-        code_binding=code_binding(),
-        physical_originals_sha256=inputs["kernel"]["physical_originals_sha256"],
+        analysis_policy=parent["analysis_policy"],
+        material_verification=parent["material_verification"],
+        evaluation_registry=parent["evaluation_registry"],
+        code_binding=source,
+        physical_originals_sha256=parent["physical_originals_sha256"],
         material_gate="PASS",
         dose_gate="PASS",
         training_gate="PASS",
+        parent_execution_freeze=parent_reference,
+        parent_execution_freeze_id=parent["id"],
+        parent_execution_authority=authority_reference,
+        parent_authority=authority,
+        parent_training_configuration_id=parent["training_configuration"]["id"],
+        trajectory_cache=cached,
+        trajectory_pool_budgets=manifest["pool_budgets"],
+        source_material_budgets=manifest["source_material_budgets"],
+        source_material_validation_reused=True,
+        full_kernel_rebuilds=0,
+        new_full_kernel_identity_measurement_claimed=False,
+        new_token_encodings=0,
+        new_API_calls=0,
+        fresh_Students_required=True,
+        parent_partial_Students_resumed=False,
+        dropout_correlation_changed=True,
+        bitwise_equivalence_claimed=False,
+        objective_weights_labels_global_updates_epochs_and_seeds_preserved=True,
         Student_or_GPU_loaded=False,
-        old_probe_or_old_AB_materials_reused=False,
-        authoritative_material_storage="index plus once-stored per-session package/outcome files",
-        execution_only_validation_revision=True,
-        receipt_reused_after_interrupted_preparation=resume_existing_receipt,
-        worker_material_admission="global byte/code-bound receipt plus current-pool original SHA",
-        full_kernel_rebuilds_per_preparation=1,
-        worker_full_kernel_rebuilds=0,
-        kernel_and_outcomes_token_arrays_serialized_again=False,
     )
     p.write_once(output / "preparation" / "execution_freeze.json", frozen)
     return frozen
@@ -339,9 +383,12 @@ def _training_report(root, frozen, job):
         and all(report[key] == job[key] for key in ("pool", "arm", "seed")),
         "execution.exact_training_binding_and_variant",
     )
-    budget = frozen["material_verification"]["pool_budgets"][job["pool"]]
+    budget = frozen["trajectory_pool_budgets"][job["pool"]]
+    source_budget = frozen["material_verification"]["pool_budgets"][job["pool"]]
     p.require(
         report["actual_budget"] == budget
+        and report["source_material_budget"] == source_budget
+        and report["trajectory_cache_id"] == frozen["trajectory_cache"]["manifest_id"]
         and report["physical_originals_sha256"] == frozen["physical_originals_sha256"]
         and len(report["updates"]) == 400
         and all(
@@ -478,6 +525,8 @@ def run_jobs(root, frozen, phase, *, selected=None, release=None, poll_seconds=1
                     public_generation_input(root, frozen, job)
                     if public
                     else dict(
+                        input_root=frozen["input_root"],
+                        trajectory_cache=frozen["trajectory_cache"],
                         input_files=frozen["input_files"],
                         material_input_receipt=frozen["material_input_receipt"],
                         expected_kernel_id=frozen["kernel_id"],
@@ -643,6 +692,8 @@ def worker(root, job_path):
         p.require(
             set(value)
             == {
+                "input_root",
+                "trajectory_cache",
                 "input_files",
                 "material_input_receipt",
                 "expected_kernel_id",
@@ -653,12 +704,19 @@ def worker(root, job_path):
             },
             "execution.closed_training_input",
         )
-        inputs = fast_materials.load_training_pool(
-            root,
+        inputs = fast_materials.load_authority(
+            Path(value["input_root"]),
             value["material_input_receipt"],
             value["input_files"],
-            pool=job["pool"],
             expected_kernel_id=value["expected_kernel_id"],
+        )
+        cached = value["trajectory_cache"]
+        manifest = load_descriptor(root, cached["manifest"])
+        p.require(
+            manifest["id"] == cached["manifest_id"], "execution.exact_frozen_trajectory_cache"
+        )
+        trajectories = trajectory_materials.load_pool(
+            path_within(root, cached["cache_root"]), manifest, job["pool"]
         )
         p.require(
             inputs.verification["id"] == value["expected_material_verification_id"]
@@ -678,6 +736,7 @@ def worker(root, job_path):
             arm=job["arm"],
             seed=job["seed"],
             verified_inputs=inputs,
+            trajectory_cache=trajectories,
         )
     p.require(report["actual_complete"] is True, "execution.actual_worker_completion_required")
     return report
@@ -718,13 +777,14 @@ def run(root, frozen_path):
     phase = "material_reverification"
     try:
         inputs = fast_materials.load_authority(
-            root,
+            Path(frozen["input_root"]),
             frozen["material_input_receipt"],
             frozen["input_files"],
             expected_kernel_id=frozen["kernel_id"],
         )
         original_gate = p.checked(
-            load_descriptor(root, frozen["original_material_gate"]), "material_gate"
+            load_descriptor(Path(frozen["input_root"]), frozen["original_material_gate"]),
+            "material_gate",
         )
         p.require(
             original_gate["id"] == frozen["original_material_gate_id"]
@@ -846,18 +906,9 @@ def main():
     child.add_argument("--root", required=True)
     child.add_argument("--job", required=True)
     prep = commands.add_parser("prepare")
-    for name in (
-        "root",
-        "output",
-        "source-root",
-        "study-freeze-id",
-        "population",
-        "registry",
-        "materialization-index",
-        "base-binding",
-        "tokenizer-binding",
-    ):
+    for name in ("root", "output", "input-root", "parent-freeze", "parent-authority"):
         prep.add_argument("--" + name, required=True)
+    prep.add_argument("--workers", type=int, default=24)
     args = parser.parse_args()
     if args.command == "run":
         result = run(args.root, args.freeze)
@@ -881,13 +932,10 @@ def main():
         result = prepare(
             args.root,
             args.output,
-            source_root=args.source_root,
-            study_freeze_id=args.study_freeze_id,
-            population_path=args.population,
-            registry_path=args.registry,
-            materialization_index_path=args.materialization_index,
-            base_binding=p.read_json(args.base_binding),
-            tokenizer_binding=p.read_json(args.tokenizer_binding),
+            input_root=args.input_root,
+            parent_freeze_path=args.parent_freeze,
+            parent_authority_path=args.parent_authority,
+            workers=args.workers,
         )
     print(p.encode(result).decode(), flush=True)
 

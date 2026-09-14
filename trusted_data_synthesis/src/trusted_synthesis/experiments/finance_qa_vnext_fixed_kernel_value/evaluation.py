@@ -21,7 +21,7 @@ from ..finance_qa_vnext_eval_readiness import runtime
 from ..finance_qa_vnext_eval_surface.overlay import PublicOverlay
 from ..finance_qa_vnext_eval_surface.protocol import OUTPUT as SURFACE_DIRECTORY
 from .protocol import checked_record, read_json, record, require, sha, write_once
-from .training import training_config
+from .trajectory_training import training_config
 
 SURFACE_MANIFEST_ID = "manifest:f29dac61b36396baffd60916bf3b2bdca461a849f0e11bb2d519d54127d2c856"
 BINDING_FIELDS = (
@@ -533,7 +533,7 @@ def load_decoder(root, output, identity, base_binding, tokenizer_binding, decode
     try:
         from ..finance_qa_vnext_pq_student.model import adapter_digest
         from ..qa_reasoning_share_training_preflight.tokenization import load_tokenizer
-        from .training import load_registered_student
+        from .trajectory_training import load_registered_student
 
         attempts["model_load_attempts"] += 1
         model, _ = load_registered_student(

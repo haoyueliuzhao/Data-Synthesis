@@ -247,8 +247,17 @@ def _inventory(root, stage, allowlist, approved):
             )
             return
         _require(
-            suffix in {".json", ".jsonl", ".xml", ".safetensors"}, "unregistered_source_format"
+            suffix in {".json", ".jsonl", ".xml", ".safetensors", ".npy"}, "unregistered_source_format"
         )
+        if suffix == ".npy":
+            _require(
+                stage == "results"
+                and path.name in {"input_ids.npy", "target_positions.npy"}
+                and path.parent.name in p.POOLS
+                and path.parent.parent.name == "trajectory_cache"
+                and path.parent.parent.parent.name == "preparation",
+                "only_derived_trajectory_cache_numeric_vectors",
+            )
         if suffix == ".safetensors":
             _require(
                 stage == "results"
@@ -520,6 +529,32 @@ def _safetensors(raw):
     return len(tensors)
 
 
+def _trajectory_array(raw):
+    """Check bounded non-pickled int32 framing, not token semantics again."""
+    import numpy as np
+
+    stream = io.BytesIO(raw)
+    version = np.lib.format.read_magic(stream)
+    _require(version in {(1, 0), (2, 0)}, "registered_trajectory_array_version")
+    reader = (
+        np.lib.format.read_array_header_1_0
+        if version == (1, 0)
+        else np.lib.format.read_array_header_2_0
+    )
+    shape, fortran_order, dtype = reader(stream, max_header_size=10000)
+    _require(
+        dtype == np.dtype("<i4")
+        and not dtype.hasobject
+        and len(shape) == 1
+        and type(shape[0]) is int
+        and shape[0] >= 0
+        and not fortran_order
+        and len(raw) - stream.tell() == shape[0] * 4,
+        "only_complete_int32_trajectory_vector_no_pickle_or_weights",
+    )
+    return {"dtype": "int32", "elements": shape[0], "pickle": False}
+
+
 def _scan_member(root, name, secret, approved):
     raw = _read_member(root, name)
     _scan(raw, name, secret)
@@ -539,6 +574,8 @@ def _scan_member(root, name, secret, approved):
             count += 1
         result["canonical_JSONL_records"] = count
         result["original_newline_bytes_preserved"] = True
+    elif suffix == ".npy":
+        result["trajectory_cache_array"] = _trajectory_array(raw)
     elif suffix == ".xml":
         _require(
             b"<!DOCTYPE" not in raw.upper() and b"<!ENTITY" not in raw.upper(),
