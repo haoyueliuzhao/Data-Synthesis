@@ -119,3 +119,155 @@ def test_closure_requires_only_new_results_and_original_archive_and_stops_failur
     )
     with pytest.raises(ValueError, match="failure_not_relabelled"):
         publisher.wait_for_closure(tmp_path, namespace, wait=False)
+
+
+def retirement_fixture(tmp_path):
+    parent = tmp_path / "parent"
+    parent.mkdir()
+    namespace = SimpleNamespace(
+        OUTPUT="new",
+        PARENT_ROOT=parent,
+        **{
+            name: getattr(p, name)
+            for name in ("record", "checked", "read_json", "encode", "write_once", "now")
+        },
+    )
+    jobs = [
+        dict(kind="train", pool="A", arm=arm, seed=seed)
+        for seed in p.SEEDS
+        for arm in p.ARMS
+        if (arm, seed) != ("minus", 47)
+    ]
+    pause = p.record(
+        "parallel_tail_handoff_pause",
+        active_training_workers_signaled=False,
+        paused_processes=[
+            {"pid": 3169168, "cmdline_sha256": "controller"},
+            {"pid": 3171733, "cmdline_sha256": "publisher"},
+        ],
+    )
+    p.write_once(parent / "pause.json", pause)
+    frozen = p.record(
+        "execution_freeze",
+        scheduler_handoff=publisher.descriptor(parent, "pause.json"),
+        scheduler_handoff_id=pause["id"],
+        parent_execution_freeze_id="old_execution",
+        parent_execution_output="old",
+        parent_controller=dict(pid=3169168, start_ticks=101, cmdline_sha256="controller"),
+        parent_workers=[
+            dict(job=job, process={"pid": 10000 + index}) for index, job in enumerate(jobs)
+        ],
+    )
+    p.write_once(tmp_path / "new/preparation/execution_freeze.json", frozen)
+    marker = str(
+        parent
+        / "trusted_data_synthesis/scripts/finalize_fixed_kernel_trajectory_execution_20260914.py"
+    )
+    states = {
+        3169168: dict(
+            pid=3169168, state="T", start_ticks=101, cmdline_sha256="controller", argv=["python"]
+        ),
+        3171733: dict(
+            pid=3171733,
+            state="T",
+            start_ticks=202,
+            cmdline_sha256="publisher",
+            argv=["python", marker],
+        ),
+    }
+
+    def observe(pid):
+        return dict(states[pid])
+
+    captured = publisher.capture_parent_coordinators(tmp_path, namespace, observe=observe)
+    imported = []
+    for job in jobs:
+        key = "_".join(str(job[name]) for name in ("pool", "arm", "seed"))
+        report = p.record(
+            "training_report",
+            **{name: job[name] for name in ("pool", "arm", "seed")},
+            actual_complete=True,
+            status="COMPLETE_FINAL_CHECKPOINT",
+            optimizer_updates=400,
+            epochs_completed=10,
+        )
+        directory = tmp_path / ("new/training/" + key)
+        p.write_once(directory / "report.json", report)
+        imported.append(
+            p.record(
+                "completed_parent_training_import",
+                job=job,
+                source_root=str(parent),
+                source_execution_freeze_id="old_execution",
+                report_ID_or_historical_paths_rewritten=False,
+                source_worker_exit_observation={"state": "Z"},
+                training_report_id=report["id"],
+                members=[publisher.descriptor(directory, "report.json")],
+            )
+        )
+    return namespace, frozen, captured, imported, states, observe
+
+
+def test_retirement_signals_only_two_exact_old_coordinators_after_eight_complete_imports(tmp_path):
+    import signal
+
+    namespace, frozen, captured, imported, states, observe = retirement_fixture(tmp_path)
+    p.write_once(
+        tmp_path / "new/completed_parent_imports.json",
+        p.record(
+            "completed_parent_training_imports",
+            execution_freeze_id=frozen["id"],
+            completed_parent_runs=8,
+            imports=imported,
+            original_report_IDs_preserved=True,
+        ),
+    )
+    calls = []
+
+    def send(pid, signum):
+        calls.append((pid, signum))
+        if signum == signal.SIGCONT:
+            states[pid] = dict(
+                pid=pid, state="gone", start_ticks=None, cmdline_sha256=None, argv=[]
+            )
+
+    assert publisher.maybe_retire_parent_coordinators(
+        tmp_path, namespace, captured, observe=observe, send=send, sleeper=lambda _: None
+    )
+    assert calls == [
+        (3169168, signal.SIGTERM),
+        (3169168, signal.SIGCONT),
+        (3171733, signal.SIGTERM),
+        (3171733, signal.SIGCONT),
+    ]
+    result = p.read_json(tmp_path / "new/parent_coordinators_retired.json")
+    assert result["status"] == "RETIRED_OR_ALREADY_EXITED"
+    assert result["training_workers_or_new_processes_signaled"] is False
+    assert not (namespace.PARENT_ROOT / "old_workflow/terminal.json").exists()
+
+
+def test_retirement_without_eight_complete_imports_never_signals(tmp_path):
+    namespace, frozen, captured, imported, _states, observe = retirement_fixture(tmp_path)
+    calls = []
+
+    def send(pid, signum):
+        calls.append((pid, signum))
+
+    assert not publisher.maybe_retire_parent_coordinators(
+        tmp_path, namespace, captured, observe=observe, send=send, sleeper=lambda _: None
+    )
+    p.write_once(
+        tmp_path / "new/completed_parent_imports.json",
+        p.record(
+            "completed_parent_training_imports",
+            execution_freeze_id=frozen["id"],
+            completed_parent_runs=7,
+            imports=imported[:7],
+            original_report_IDs_preserved=True,
+        ),
+    )
+    with pytest.raises(ValueError, match="all_eight_actual_imports_required"):
+        publisher.maybe_retire_parent_coordinators(
+            tmp_path, namespace, captured, observe=observe, send=send, sleeper=lambda _: None
+        )
+    assert calls == []

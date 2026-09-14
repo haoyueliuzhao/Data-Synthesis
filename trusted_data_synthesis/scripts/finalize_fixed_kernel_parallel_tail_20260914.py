@@ -11,6 +11,7 @@ import importlib
 import importlib.util
 import json
 import os
+import signal
 import sys
 import time
 from pathlib import Path, PurePosixPath
@@ -64,7 +65,256 @@ def capture_sources(root, p, runner):
     )
 
 
-def wait_for_closure(root, p, *, wait, sleeper=time.sleep):
+def retirement_process(pid):
+    directory = Path("/proc") / str(pid)
+    try:
+        raw = (directory / "stat").read_text()
+    except FileNotFoundError:
+        return {
+            "pid": pid,
+            "state": "gone",
+            "start_ticks": None,
+            "cmdline_sha256": None,
+            "argv": [],
+        }
+    fields = raw[raw.rfind(")") + 2 :].split()
+    command = (directory / "cmdline").read_bytes() if fields[0] not in ("Z", "X") else b""
+    return dict(
+        pid=pid,
+        state=fields[0],
+        start_ticks=int(fields[19]),
+        cmdline_sha256=hashlib.sha256(command).hexdigest() if command else None,
+        argv=[part.decode() for part in command.split(b"\0") if part],
+    )
+
+
+def capture_parent_coordinators(root, p, *, observe=retirement_process):
+    frozen = read_record(
+        root, p.OUTPUT + "/preparation/execution_freeze.json", "execution_freeze", p
+    )
+    pause = _bound_record(
+        p.PARENT_ROOT, frozen["scheduler_handoff"], "parallel_tail_handoff_pause", p
+    )
+    require(
+        pause["id"] == frozen["scheduler_handoff_id"]
+        and pause["active_training_workers_signaled"] is False,
+        "retirement_scheduler_only_authority",
+    )
+    by_pid = {row["pid"]: row for row in pause["paused_processes"]}
+    require(
+        set(by_pid) == {3169168, 3171733} and frozen["parent_controller"]["pid"] == 3169168,
+        "retirement_exact_two_old_coordinators",
+    )
+    forbidden = {row["process"]["pid"] for row in frozen["parent_workers"]} | {os.getpid()}
+    marker = str(
+        p.PARENT_ROOT
+        / "trusted_data_synthesis/scripts/finalize_fixed_kernel_trajectory_execution_20260914.py"
+    )
+    captured = []
+    for pid in (3169168, 3171733):
+        require(pid not in forbidden, "retirement_never_training_workers_or_self")
+        actual = observe(pid)
+        require(
+            actual["state"] in ("T", "t", "Z", "gone"), "retirement_old_coordinator_must_be_stopped"
+        )
+        if actual["state"] in ("T", "t"):
+            require(
+                actual["cmdline_sha256"] == by_pid[pid]["cmdline_sha256"],
+                "retirement_same_original_command",
+            )
+            if pid == 3169168:
+                require(
+                    actual["start_ticks"] == frozen["parent_controller"]["start_ticks"]
+                    and actual["cmdline_sha256"] == frozen["parent_controller"]["cmdline_sha256"],
+                    "retirement_same_frozen_controller_process",
+                )
+            else:
+                require(marker in actual["argv"], "retirement_exact_old_publisher_marker")
+        captured.append(
+            {key: actual[key] for key in ("pid", "state", "start_ticks", "cmdline_sha256")}
+        )
+    return p.record(
+        "parent_coordinator_retirement_capture",
+        execution_freeze_id=frozen["id"],
+        scheduler_handoff_id=pause["id"],
+        targets=captured,
+        parent_worker_jobs=[row["job"] for row in frozen["parent_workers"]],
+        parent_execution_freeze_id=frozen["parent_execution_freeze_id"],
+        parent_execution_output=frozen["parent_execution_output"],
+        captured_at=p.now(),
+    )
+
+
+def maybe_retire_parent_coordinators(
+    root, p, captured, *, observe=retirement_process, send=os.kill, sleeper=time.sleep
+):
+    p.checked(captured, "parent_coordinator_retirement_capture")
+    require(
+        {item["pid"] for item in captured["targets"]} == {3169168, 3171733}
+        and len(captured["targets"]) == 2,
+        "retirement_exact_captured_signal_targets",
+    )
+    output = root / p.OUTPUT
+    result_path = output / "parent_coordinators_retired.json"
+    if result_path.exists():
+        old = p.checked(p.read_json(result_path), "parent_coordinators_retired")
+        require(
+            old["capture_id"] == captured["id"] and old["status"] == "RETIRED_OR_ALREADY_EXITED",
+            "retirement_existing_result_must_be_successful",
+        )
+        return True
+    manifest_path = output / "completed_parent_imports.json"
+    if not manifest_path.exists():
+        return False
+    require(
+        not any(
+            (output / name).exists()
+            for name in ("parallel_handoff_failure.json", "execution_failure.json")
+        ),
+        "retirement_no_new_handoff_failure",
+    )
+    imported = read_record(
+        root, p.OUTPUT + "/completed_parent_imports.json", "completed_parent_training_imports", p
+    )
+    require(
+        imported["execution_freeze_id"] == captured["execution_freeze_id"]
+        and imported["completed_parent_runs"] == len(imported["imports"]) == 8
+        and imported["original_report_IDs_preserved"] is True,
+        "retirement_all_eight_actual_imports_required",
+    )
+    wanted = {
+        tuple(job[key] for key in ("pool", "arm", "seed")) for job in captured["parent_worker_jobs"]
+    }
+    require(
+        len(wanted) == 8 and ("A", "minus", 47) not in wanted,
+        "retirement_exact_original_eight_jobs",
+    )
+    seen = set()
+    for item in imported["imports"]:
+        p.checked(item, "completed_parent_training_import")
+        key = tuple(item["job"][name] for name in ("pool", "arm", "seed"))
+        require(
+            key in wanted
+            and key not in seen
+            and item["source_root"] == str(p.PARENT_ROOT)
+            and item["source_execution_freeze_id"] == captured["parent_execution_freeze_id"]
+            and item["report_ID_or_historical_paths_rewritten"] is False
+            and item["source_worker_exit_observation"]["state"] in ("Z", "X", "gone"),
+            "retirement_complete_native_parent_import",
+        )
+        seen.add(key)
+        relative = p.OUTPUT + "/training/" + "_".join(map(str, key)) + "/report.json"
+        raw = regular(root, relative, SMALL_LIMIT).read_bytes()
+        report = p.checked(json.loads(raw), "training_report")
+        member = next(row for row in item["members"] if row["path"] == "report.json")
+        require(
+            report["id"] == item["training_report_id"]
+            and report["actual_complete"] is True
+            and report["status"] == "COMPLETE_FINAL_CHECKPOINT"
+            and report["optimizer_updates"] == 400
+            and report["epochs_completed"] == 10
+            and tuple(report[name] for name in ("pool", "arm", "seed")) == key
+            and len(raw) == member["bytes"]
+            and hashlib.sha256(raw).hexdigest() == member["sha256"],
+            "retirement_actual_copied_complete_report_bytes",
+        )
+    parent = p.PARENT_ROOT / captured["parent_execution_output"]
+    require(
+        not (parent / "training/A_minus_47").exists()
+        and not (parent / "jobs/A_train/train_A_minus_47_job.json").exists(),
+        "retirement_parent_ninth_never_launched",
+    )
+    observations = []
+    for target in captured["targets"]:
+        actual = observe(target["pid"])
+        require(
+            actual["state"] in ("T", "t", "Z", "gone"),
+            "retirement_refuse_unexpected_running_process",
+        )
+        if actual["state"] != "gone":
+            require(actual["start_ticks"] == target["start_ticks"], "retirement_no_PID_reuse")
+        if actual["state"] in ("T", "t"):
+            require(
+                target["state"] in ("T", "t")
+                and actual["cmdline_sha256"] == target["cmdline_sha256"],
+                "retirement_same_captured_command",
+            )
+        observations.append(actual)
+    actions = []
+    try:
+        for actual in observations:
+            if actual["state"] in ("T", "t"):
+                pid = actual["pid"]
+                latest = observe(pid)
+                require(
+                    latest["state"] in ("T", "t")
+                    and latest["start_ticks"] == actual["start_ticks"]
+                    and latest["cmdline_sha256"] == actual["cmdline_sha256"],
+                    "retirement_exact_identity_immediately_before_signal",
+                )
+                send(pid, signal.SIGTERM)
+                actions.append({"pid": pid, "signal": "SIGTERM"})
+                try:
+                    send(pid, signal.SIGCONT)
+                    actions.append({"pid": pid, "signal": "SIGCONT"})
+                except ProcessLookupError:
+                    pass
+        final = []
+        for attempt in range(11):
+            final = [observe(item["pid"]) for item in captured["targets"]]
+            if all(item["state"] in ("Z", "gone") for item in final):
+                break
+            if attempt < 10:
+                sleeper(1)
+        require(
+            all(item["state"] in ("Z", "gone") for item in final),
+            "retirement_exit_not_confirmed_within_10s",
+        )
+        ticks = {item["pid"]: item["start_ticks"] for item in captured["targets"]}
+        require(
+            all(
+                item["state"] == "gone" or item["start_ticks"] == ticks[item["pid"]]
+                for item in final
+            ),
+            "retirement_same_PID_identity_at_exit",
+        )
+        result = p.record(
+            "parent_coordinators_retired",
+            status="RETIRED_OR_ALREADY_EXITED",
+            capture_id=captured["id"],
+            execution_freeze_id=captured["execution_freeze_id"],
+            completed_parent_imports_id=imported["id"],
+            actions=actions,
+            final_observations=[
+                {key: item[key] for key in ("pid", "state", "start_ticks")} for item in final
+            ],
+            training_workers_or_new_processes_signaled=False,
+            old_terminal_fabricated=False,
+            files_deleted=False,
+            retired_at=p.now(),
+        )
+        p.write_once(result_path, result)
+        return True
+    except BaseException as error:
+        p.write_once(
+            result_path,
+            p.record(
+                "parent_coordinators_retired",
+                status="RETIREMENT_REFUSED_OR_PARTIAL",
+                capture_id=captured["id"],
+                actions=actions,
+                error_type=type(error).__name__,
+                reason=str(error)[:1000],
+                training_workers_or_new_processes_signaled=False,
+                old_terminal_fabricated=False,
+                files_deleted=False,
+                retired_at=p.now(),
+            ),
+        )
+        raise
+
+
+def wait_for_closure(root, p, *, wait, sleeper=time.sleep, retirement=None):
     paths = (
         root / p.OUTPUT / "report.json",
         root / p.OUTPUT / "manifest.json",
@@ -74,7 +324,11 @@ def wait_for_closure(root, p, *, wait, sleeper=time.sleep):
         root / p.OUTPUT / name
         for name in ("execution_failure.json", "parallel_handoff_failure.json")
     ]
-    while not all(path.exists() for path in paths):
+    while True:
+        if retirement is not None:
+            maybe_retire_parent_coordinators(root, p, retirement, sleeper=sleeper)
+        if all(path.exists() for path in paths):
+            break
         require(
             not any(path.exists() for path in failures), "actual_execution_failed_no_publication"
         )
@@ -500,12 +754,14 @@ def finalize(root, p, *, wait=False, sealer=None, runner=git, sleeper=time.sleep
     with (runtime / "parallel_publication_operator.lock").open("xb") as stream:
         stream.write(str(os.getpid()).encode())
     source = capture_sources(root, p, runner)
+    retirement = capture_parent_coordinators(root, p)
     workflow = p.OUTPUT + "_publication_workflow"
     started = p.record(
         "parallel_publication_operator_started",
         pid=os.getpid(),
         started_at=p.now(),
         source_capture=source,
+        parent_coordinator_retirement_capture=retirement,
         wait=wait,
         poll_seconds=10,
         maximum_seal_attempts=1,
@@ -516,7 +772,7 @@ def finalize(root, p, *, wait=False, sealer=None, runner=git, sleeper=time.sleep
     p.write_once(root / workflow / "started.json", started)
     phase, sealed = "waiting_for_actual_new_closure", False
     try:
-        wait_for_closure(root, p, wait=wait, sleeper=sleeper)
+        wait_for_closure(root, p, wait=wait, sleeper=sleeper, retirement=retirement)
         phase = "actual_parallel_authority_and_native_report_lineage"
         data = inputs(root, p)
         for member in source["sources"]:
