@@ -23,3 +23,13 @@
 2026-09-14 01:04:33 UTC，原材料门已PASS且旧Student execution_freeze/execution_started均尚未生成时，仅对主CPU协调进程3101807发出可逆SIGSTOP，以避免两条工作流重复训练。其独立材料封存子进程未受信号影响，原采集/编码产物不改；暂停记录保留在旧runtime。新工作树仅复制已完成package/outcome及必要metadata，19672文件、4011768198字节，零重采样与零新编码。
 
 只运行与身份等价、不可变共享、验证receipt和执行入口有关的小范围控制；不重跑全套财务评估、349项旧控制或GPU工程检查。只有真实全量kernel-ID核对通过且正式执行freeze提交后才启动GPU。实际正式训练、确认效果及最终推送状态在结果到达后记录，不预判科学正效应。
+
+## 首次真实准备中的环境缺项及收据复用
+
+首次真实fast prepare已通过全量kernel-ID和训练材料验证，并实际写出 `preparation/material_input_receipt.json`；随后在冻结源码依赖时发现稀疏工作树缺少已提交的 `raw_financial_data_lake/scripts/build_cost_controlled_qa_release.py`，以FileNotFoundError退出。此时没有execution_freeze、performance authority或Student执行，不能宣称该次准备成功，也不能丢弃已完成验证而重跑整个语料。
+
+修复仅补齐Git已经跟踪但未检出的Python源目录，并新增显式 `finish_prepare` 路径：已有receipt且尚无execution_freeze/execution_started时，核对其原内容SHA、实际gate/kernel和未变的validator代码，复用已完成的验证记录，只完成剩余冻结元数据。原receipt不覆盖、不改写，不重新读取或构建全量token树，不修改GPU计算与科学参数；新freeze/authority如实标记这次复用。
+
+实际补齐稀疏范围时发生了操作失误：Git刷新清除了该工作树中outside-sparse且被ignore的材料副本及未提交的receipt。因此本次并没有成功使用该receipt续封装入口；原先全量验证确实完成，但其缓存文件随后丢失，不能声称缓存仍存在。权威原件所在的旧completion工作树未受影响，9418个编码包、10240个outcome和实际PASS gate完整保留。
+
+恢复前先将精确material、execution output和runtime目录纳入固定稀疏范围，再从权威原件恢复副本，此后不再调整稀疏范围。为了恢复丢失的验证缓存，hydrate改为24 CPU按entry读取实际字节、核对SHA/record ID并恢复不可变树；根进程保持原index顺序，仍只调用一次原kernel构建公式。只新增一个串并行完整值与ID等价控制（1.44秒通过），没有重复10项旧控制。缓存恢复不等于重新采集或重新编码；这次额外等待由上述操作失误导致，予以明确记录。

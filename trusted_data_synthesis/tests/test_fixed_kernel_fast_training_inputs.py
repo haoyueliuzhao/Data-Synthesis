@@ -165,3 +165,80 @@ def test_training_configuration_and_optimizer_loss_functions_not_replaced():
     assert t.training_config()["optimizer_updates"] == 400
     assert t.optimizer_factory.__name__ == "optimizer_factory"
     assert t.selected_target_loss.__module__.endswith("finance_qa_vnext_pq_student.loss")
+
+
+def test_interrupted_prepare_reuses_receipt_without_rebuild_or_overwrite(tmp_path, monkeypatch):
+    output, material = tmp_path / "execution", tmp_path / "material"
+    population = {"id": "population"}
+    registry = {"id": "registry", "freeze_id": "original_study"}
+    kernel = {"id": "original_kernel", "physical_originals_sha256": "physical"}
+    verification = p.record(
+        "material_input_verification",
+        kernel_id=kernel["id"],
+        population_id=population["id"],
+        registry_id=registry["id"],
+        tokenizer_binding_id="tokenizer",
+    )
+    inputs = dict(population=population, registry=registry, outcomes=[], kernel=kernel)
+    for name, value in (
+        ("population.json", population),
+        ("registry.json", registry),
+        ("materialization_index.json", {"id": "index"}),
+    ):
+        p.write_once(material / name, value)
+    gate = p.record(
+        "material_gate",
+        kernel_id=kernel["id"],
+        registry_id=registry["id"],
+        training_gate="PASS",
+        material_gate="PASS",
+        dose_gate="PASS",
+        physical_originals_sha256=kernel["physical_originals_sha256"],
+    )
+    p.write_once(material / "material_gate.json", gate)
+    receipt_path = output / "preparation/material_input_receipt.json"
+    p.write_once(receipt_path, p.record("verified_material_receipt", already_fully_verified=True))
+    receipt_sha = p.sha(receipt_path)
+    calls = []
+
+    def authority(root, reference, files, *, expected_kernel_id):
+        assert root == tmp_path and expected_kernel_id == kernel["id"]
+        assert reference["sha256"] == receipt_sha
+        calls.append("authority")
+        return inputs
+
+    def verify(*args, verified_inputs):
+        assert verified_inputs is inputs
+        calls.append("verify")
+        return verification
+
+    monkeypatch.setattr(x.fast_materials, "load_authority", authority)
+    monkeypatch.setattr(
+        x, "load_material_inputs", lambda *_args, **_kwargs: pytest.fail("full material rebuilt")
+    )
+    monkeypatch.setattr(
+        x.fast_materials, "make_receipt", lambda *_args: pytest.fail("verified receipt rebuilt")
+    )
+    monkeypatch.setattr(x.training, "validate_materials", verify)
+    monkeypatch.setattr(x.e, "bind_policy", lambda *_args: {"id": "decoder"})
+    monkeypatch.setattr(x, "evaluation_registry", lambda *_args: {})
+    monkeypatch.setattr(x, "code_binding", lambda: {"id": "committed_code"})
+    arguments = dict(
+        source_root=tmp_path,
+        study_freeze_id="original_study",
+        population_path=material / "population.json",
+        registry_path=material / "registry.json",
+        materialization_index_path=material / "materialization_index.json",
+        material_gate_path=material / "material_gate.json",
+        base_binding={"id": "base"},
+        tokenizer_binding={"id": "tokenizer"},
+        resume_existing_receipt=True,
+    )
+    frozen = x.prepare(tmp_path, output, **arguments)
+    assert frozen["receipt_reused_after_interrupted_preparation"] is True
+    assert frozen["material_verification"] == verification
+    assert frozen["material_input_receipt"]["sha256"] == receipt_sha == p.sha(receipt_path)
+    assert calls == ["authority", "verify"]
+    with pytest.raises(ValueError, match="without_freeze_or_Student"):
+        x.prepare(tmp_path, output, **arguments)
+    assert calls == ["authority", "verify"]

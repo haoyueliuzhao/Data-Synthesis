@@ -134,7 +134,7 @@ def test_public_record_still_isolates_mutable_inputs_and_frozen_tree_rejects_mut
 def test_complete_builder_value_id_and_all_flags_match_original(tmp_path, monkeypatch, failed):
     selected, registry, outcomes, files = control(tmp_path, monkeypatch, failed=failed)
     expected = d.build_kernel(selected, registry, outcomes)
-    loaded = f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"])
+    loaded = f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"], workers=1)
     assert loaded["kernel"] == expected
     assert loaded["kernel"]["id"] == expected["id"]
     assert loaded["outcomes"] == outcomes
@@ -145,7 +145,10 @@ def test_complete_builder_value_id_and_all_flags_match_original(tmp_path, monkey
         loaded._stamps.clear()
     assert loaded["kernel"]["exclusions"] == {"invalid_or_incomplete_train": 4 + int(failed)}
     monkeypatch.setattr(d, "build_kernel", lambda *_: pytest.fail("no repeated build"))
-    assert f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"]) is loaded
+    assert (
+        f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"], workers=1)
+        is loaded
+    )
     f.assert_verified_inputs(
         loaded, loaded["kernel"], loaded["population"], loaded["registry"], loaded["outcomes"]
     )
@@ -154,7 +157,7 @@ def test_complete_builder_value_id_and_all_flags_match_original(tmp_path, monkey
 def test_receipt_authority_pool_only_originals_and_source_tamper(tmp_path, monkeypatch):
     selected, registry, outcomes, files = control(tmp_path, monkeypatch)
     expected = d.build_kernel(selected, registry, outcomes)
-    loaded = f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"])
+    loaded = f.load_material_inputs(tmp_path, files, expected_kernel_id=expected["id"], workers=1)
     verification = p.record(
         "material_input_verification",
         kernel_id=expected["id"],
@@ -196,3 +199,22 @@ def test_receipt_authority_pool_only_originals_and_source_tamper(tmp_path, monke
     original_path.write_bytes(original_path.read_bytes() + b" ")
     with pytest.raises(ValueError, match="verified_source_file_changed"):
         f.require_verified(view)
+
+
+def test_serial_parallel_hydration_exact_kernel_and_frozen_tree_parity(tmp_path, monkeypatch):
+    values = []
+    for workers in (1, 2):
+        root = tmp_path / str(workers)
+        _, _, _, files = control(root, monkeypatch, failed=True)
+        values.append(f.load_material_inputs(root, files, workers=workers))
+    serial, parallel = values
+    assert serial["kernel"] == parallel["kernel"]
+    assert serial["kernel"]["id"] == parallel["kernel"]["id"]
+    assert serial["outcomes"] == parallel["outcomes"]
+    assert serial.package_references == parallel.package_references
+    assert parallel.receipt["CPU_hydration_workers"] == 2
+    assert serial.receipt["verified_file_count"] == parallel.receipt["verified_file_count"]
+    assert serial.receipt["verified_file_bytes"] == parallel.receipt["verified_file_bytes"]
+    original = parallel["kernel"]["train_packages"][0]["original_package"]
+    with pytest.raises(TypeError, match="immutable"):
+        original["rows"][0]["representation"]["input_ids"][0] = 99

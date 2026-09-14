@@ -154,11 +154,24 @@ def prepare(
     base_binding,
     tokenizer_binding,
     material_gate_path=None,
+    resume_existing_receipt=False,
 ):
     root, output = Path(root).resolve(), Path(output).resolve()
+    receipt_path = output / "preparation" / "material_input_receipt.json"
+    p.require(type(resume_existing_receipt) is bool, "execution.explicit_receipt_resume_mode")
     p.require(
-        output.is_relative_to(root) and output != root and not output.exists(),
-        "execution.new_dedicated_output",
+        output.is_relative_to(root)
+        and output != root
+        and (
+            receipt_path.is_file()
+            and not (output / "preparation" / "execution_freeze.json").exists()
+            and not (output / "execution_started.json").exists()
+            if resume_existing_receipt
+            else not output.exists()
+        ),
+        "execution.existing_receipt_without_freeze_or_Student_only"
+        if resume_existing_receipt
+        else "execution.new_dedicated_output",
     )
     paths = dict(
         population=population_path,
@@ -180,7 +193,13 @@ def prepare(
         == "PASS",
         "execution.actual_original_material_gate_pass",
     )
-    inputs = load_material_inputs(root, files, expected_kernel_id=original_gate["kernel_id"])
+    if resume_existing_receipt:
+        receipt_reference = descriptor(root, receipt_path)
+        inputs = fast_materials.load_authority(
+            root, receipt_reference, files, expected_kernel_id=original_gate["kernel_id"]
+        )
+    else:
+        inputs = load_material_inputs(root, files, expected_kernel_id=original_gate["kernel_id"])
     p.require(
         inputs["registry"]["freeze_id"] == study_freeze_id,
         "execution.same_prospective_collection_freeze",
@@ -198,10 +217,10 @@ def prepare(
         == inputs["kernel"]["physical_originals_sha256"],
         "execution.same_complete_original_material_gate",
     )
-    receipt = fast_materials.make_receipt(inputs, verification)
-    receipt_path = output / "preparation" / "material_input_receipt.json"
-    p.write_once(receipt_path, receipt)
-    receipt_reference = descriptor(root, receipt_path)
+    if not resume_existing_receipt:
+        receipt = fast_materials.make_receipt(inputs, verification)
+        p.write_once(receipt_path, receipt)
+        receipt_reference = descriptor(root, receipt_path)
     p.require(
         verification["tokenizer_binding_id"] == tokenizer_binding["id"],
         "execution.original_training_and_evaluation_tokenizer",
@@ -234,6 +253,7 @@ def prepare(
         old_probe_or_old_AB_materials_reused=False,
         authoritative_material_storage="index plus once-stored per-session package/outcome files",
         execution_only_validation_revision=True,
+        receipt_reused_after_interrupted_preparation=resume_existing_receipt,
         worker_material_admission="global byte/code-bound receipt plus current-pool original SHA",
         full_kernel_rebuilds_per_preparation=1,
         worker_full_kernel_rebuilds=0,

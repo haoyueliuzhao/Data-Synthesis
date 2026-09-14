@@ -39,10 +39,13 @@ def guard(root):
     return root
 
 
-def prepare(root):
+def prepare(root, *, resume_existing_receipt=False):
     root = guard(root)
     material, output = root / MATERIALS, root / OUTPUT
-    p.require(not output.exists(), "fast_execution.one_prospective_prepare")
+    p.require(
+        not output.exists() or resume_existing_receipt,
+        "fast_execution.one_prospective_prepare",
+    )
     gate = p.checked(p.read_json(material / "material_gate.json"), "material_gate")
     parent_gate = p.read_json(PARENT_ROOT / MATERIALS / "material_gate.json")
     generation = p.checked(
@@ -93,6 +96,7 @@ def prepare(root):
         base_binding=p.read_json(material / "checkpoint_binding.json"),
         tokenizer_binding=p.read_json(material / "tokenizer_binding.json"),
         material_gate_path=material / "material_gate.json",
+        resume_existing_receipt=resume_existing_receipt,
     )
     p.require(bound["kernel_id"] == EXPECTED_KERNEL, "fast_execution.actual_full_kernel_ID_parity")
     authority = p.record(
@@ -119,6 +123,7 @@ def prepare(root):
         new_API_calls=0,
         new_token_encodings=0,
         engineering_GPU_checks_repeated=False,
+        completed_material_validation_reused_after_environment_fix=resume_existing_receipt,
         created_at=p.now(),
     )
     p.write_once(output / "preparation/fast_execution_authority.json", authority)
@@ -150,10 +155,14 @@ def run(root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--code-root", type=Path, default=root_path())
-    parser.add_argument("--phase", choices=("prepare", "run"), required=True)
+    parser.add_argument("--phase", choices=("prepare", "finish_prepare", "run"), required=True)
     args = parser.parse_args()
-    result = {"prepare": prepare, "run": run}[args.phase](args.code_root)
-    if args.phase == "prepare":
+    result = (
+        prepare(args.code_root, resume_existing_receipt=True)
+        if args.phase == "finish_prepare"
+        else {"prepare": prepare, "run": run}[args.phase](args.code_root)
+    )
+    if args.phase in {"prepare", "finish_prepare"}:
         print(
             json.dumps(
                 {

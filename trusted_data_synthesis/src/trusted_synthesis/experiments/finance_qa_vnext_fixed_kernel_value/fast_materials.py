@@ -9,6 +9,8 @@ privately minted authority can authorize their use with the frozen global ID.
 
 import json
 import weakref
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from pathlib import Path
 
 from . import distribution
@@ -253,7 +255,36 @@ def _input_files(root, files, stamps):
     return loaded
 
 
-def load_material_inputs(root, files, *, expected_kernel_id=None):
+def _hydrate_entry(arguments):
+    """Authenticate and freeze one original entry in its owning CPU process."""
+    root, directory, entry = arguments
+    stamps, references = {}, {}
+    stored_reference = {**entry["outcome"], "path": str(directory / entry["outcome"]["path"])}
+    stored = _read(root, stored_reference, stamps)
+    p.checked(stored, "stored_material_outcome")
+    reference = stored["original_package_reference"]
+    p.require(reference == entry["package"], "materials.index_package_reference")
+    original = None
+    if reference:
+        absolute_reference = {**reference, "path": str(directory / reference["path"])}
+        original = _read(root, absolute_reference, stamps)
+        p.checked(original, "encoded_original_package")
+        references[original["id"]] = absolute_reference
+        original = freeze_json(original)
+    outcome = p.record("material_outcome", **stored["outcome_fields"], original_package=original)
+    p.require(
+        outcome["id"] == stored["material_outcome_id"] == entry["outcome_id"]
+        and outcome["session_id"] == entry["registered_session_id"],
+        "materials.exact_hydrated_outcome",
+    )
+    return freeze_json(outcome), references, stamps
+
+
+def load_material_inputs(root, files, *, expected_kernel_id=None, workers=24):
+    p.require(
+        type(workers) is int and 1 <= workers <= p.CPU_WORKERS,
+        "fast_materials.bounded_hydration_workers",
+    )
     root = Path(root).resolve()
     key = str(root), p.sha(p.encode(files)), expected_kernel_id, validator_code_hash()
     if key in _CACHE:
@@ -267,28 +298,22 @@ def load_material_inputs(root, files, *, expected_kernel_id=None):
     )
     directory = Path(files["materialization_index"]["path"]).parent
     outcomes, references = [], {}
-    for entry in index["entries"]:
-        stored_reference = {**entry["outcome"], "path": str(directory / entry["outcome"]["path"])}
-        stored = _read(root, stored_reference, stamps)
-        p.checked(stored, "stored_material_outcome")
-        reference = stored["original_package_reference"]
-        p.require(reference == entry["package"], "materials.index_package_reference")
-        original = None
-        if reference:
-            absolute_reference = {**reference, "path": str(directory / reference["path"])}
-            original = _read(root, absolute_reference, stamps)
-            p.checked(original, "encoded_original_package")
-            references[original["id"]] = absolute_reference
-            original = freeze_json(original)
-        outcome = p.record(
-            "material_outcome", **stored["outcome_fields"], original_package=original
-        )
-        p.require(
-            outcome["id"] == stored["material_outcome_id"] == entry["outcome_id"]
-            and outcome["session_id"] == entry["registered_session_id"],
-            "materials.exact_hydrated_outcome",
-        )
-        outcomes.append(freeze_json(outcome))
+    arguments = ((root, directory, entry) for entry in index["entries"])
+
+    def accept(values):
+        for outcome, entry_references, entry_stamps in values:
+            outcomes.append(outcome)
+            references.update(entry_references)
+            stamps.update(entry_stamps)
+
+    if workers == 1:
+        accept(map(_hydrate_entry, arguments))
+    else:
+        with ProcessPoolExecutor(max_workers=workers, mp_context=get_context("spawn")) as pool:
+            # map preserves the original index order. Workers only read frozen
+            # files; no token encoding or scientific kernel construction occurs
+            # there. The parent calls the original builder exactly once below.
+            accept(pool.map(_hydrate_entry, arguments, chunksize=1))
     selected, registry, outcomes = map(freeze_json, (selected, registry, outcomes))
     # Unmodified scientific builder. Frozen subtrees make its deepcopy O(1).
     kernel = freeze_json(distribution.build_kernel(selected, registry, outcomes))
@@ -305,6 +330,7 @@ def load_material_inputs(root, files, *, expected_kernel_id=None):
         verified_file_bytes=sum(signature[2] for signature in stamps.values()),
         validator_code_sha256=validator_code_hash(),
         original_builder_used=True,
+        CPU_hydration_workers=workers,
         token_tree_immutable=True,
         outcome_based_selection=False,
         token_arrays_reencoded=False,
