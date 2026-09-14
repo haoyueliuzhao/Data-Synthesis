@@ -16,8 +16,8 @@ from pathlib import Path
 
 from ..finance_qa_vnext_basis_student.protocol import path_within
 from ..finance_qa_vnext_eval_surface.overlay import public_object
-from . import distribution, materials, training
 from . import evaluation as e
+from . import fast_materials, training
 from . import protocol as p
 
 
@@ -127,28 +127,9 @@ def load_descriptor(root, reference):
     return p.read_json(path)
 
 
-def load_material_inputs(root, files):
-    """Hydrate immutable per-session files; never duplicate token arrays on disk."""
-    p.require(
-        set(files) == {"population", "registry", "materialization_index"},
-        "execution.authoritative_split_material_files",
-    )
-    selected = load_descriptor(root, files["population"])
-    registry = load_descriptor(root, files["registry"])
-    index = load_descriptor(root, files["materialization_index"])
-    p.checked(index, "materialization_index")
-    p.require(
-        index["status"] == "COMPLETE_FIXED_MATERIALIZATION"
-        and index["collection_complete"] is True
-        and index["complete_registered_denominator"] == 10240
-        and index["registry_id"] == registry["id"]
-        and index["freeze_id"] == registry["freeze_id"],
-        "execution.complete_exact_materialization_index",
-    )
-    directory = path_within(root, files["materialization_index"]["path"]).parent
-    outcomes = materials.hydrate_outcomes(index, directory)
-    kernel = distribution.build_kernel(selected, registry, outcomes)
-    return dict(population=selected, registry=registry, outcomes=outcomes, kernel=kernel)
+def load_material_inputs(root, files, *, expected_kernel_id=None):
+    """Build the complete immutable kernel once, bound to the actual material gate."""
+    return fast_materials.load_material_inputs(root, files, expected_kernel_id=expected_kernel_id)
 
 
 def binding(frozen):
@@ -172,6 +153,7 @@ def prepare(
     materialization_index_path,
     base_binding,
     tokenizer_binding,
+    material_gate_path=None,
 ):
     root, output = Path(root).resolve(), Path(output).resolve()
     p.require(
@@ -184,14 +166,42 @@ def prepare(
         materialization_index=materialization_index_path,
     )
     files = {key: descriptor(root, path) for key, path in paths.items()}
-    inputs = load_material_inputs(root, files)
+    gate_path = (
+        Path(material_gate_path)
+        if material_gate_path is not None
+        else Path(materialization_index_path).parent / "material_gate.json"
+    )
+    gate_reference = descriptor(root, gate_path)
+    original_gate = p.checked(load_descriptor(root, gate_reference), "material_gate")
+    p.require(
+        original_gate["training_gate"]
+        == original_gate["material_gate"]
+        == original_gate["dose_gate"]
+        == "PASS",
+        "execution.actual_original_material_gate_pass",
+    )
+    inputs = load_material_inputs(root, files, expected_kernel_id=original_gate["kernel_id"])
     p.require(
         inputs["registry"]["freeze_id"] == study_freeze_id,
         "execution.same_prospective_collection_freeze",
     )
     verification = training.validate_materials(
-        inputs["kernel"], inputs["population"], inputs["registry"], inputs["outcomes"]
+        inputs["kernel"],
+        inputs["population"],
+        inputs["registry"],
+        inputs["outcomes"],
+        verified_inputs=inputs,
     )
+    p.require(
+        original_gate["registry_id"] == inputs["registry"]["id"]
+        and original_gate["physical_originals_sha256"]
+        == inputs["kernel"]["physical_originals_sha256"],
+        "execution.same_complete_original_material_gate",
+    )
+    receipt = fast_materials.make_receipt(inputs, verification)
+    receipt_path = output / "preparation" / "material_input_receipt.json"
+    p.write_once(receipt_path, receipt)
+    receipt_reference = descriptor(root, receipt_path)
     p.require(
         verification["tokenizer_binding_id"] == tokenizer_binding["id"],
         "execution.original_training_and_evaluation_tokenizer",
@@ -204,6 +214,9 @@ def prepare(
         source_root=str(Path(source_root).resolve()),
         kernel_id=inputs["kernel"]["id"],
         input_files=files,
+        material_input_receipt=receipt_reference,
+        original_material_gate=gate_reference,
+        original_material_gate_id=original_gate["id"],
         base_binding=base_binding,
         tokenizer_binding=tokenizer_binding,
         training_configuration=training.training_config(),
@@ -220,6 +233,10 @@ def prepare(
         Student_or_GPU_loaded=False,
         old_probe_or_old_AB_materials_reused=False,
         authoritative_material_storage="index plus once-stored per-session package/outcome files",
+        execution_only_validation_revision=True,
+        worker_material_admission="global byte/code-bound receipt plus current-pool original SHA",
+        full_kernel_rebuilds_per_preparation=1,
+        worker_full_kernel_rebuilds=0,
         kernel_and_outcomes_token_arrays_serialized_again=False,
     )
     p.write_once(output / "preparation" / "execution_freeze.json", frozen)
@@ -442,6 +459,9 @@ def run_jobs(root, frozen, phase, *, selected=None, release=None, poll_seconds=1
                     if public
                     else dict(
                         input_files=frozen["input_files"],
+                        material_input_receipt=frozen["material_input_receipt"],
+                        expected_kernel_id=frozen["kernel_id"],
+                        expected_material_verification_id=frozen["material_verification"]["id"],
                         base_binding=frozen["base_binding"],
                         release=release,
                         output_directory=str(job_output(root, frozen, job).relative_to(root)),
@@ -601,10 +621,30 @@ def worker(root, job_path):
         )
         value = supplied["training_input"]
         p.require(
-            set(value) == {"input_files", "base_binding", "release", "output_directory"},
+            set(value)
+            == {
+                "input_files",
+                "material_input_receipt",
+                "expected_kernel_id",
+                "expected_material_verification_id",
+                "base_binding",
+                "release",
+                "output_directory",
+            },
             "execution.closed_training_input",
         )
-        inputs = load_material_inputs(root, value["input_files"])
+        inputs = fast_materials.load_training_pool(
+            root,
+            value["material_input_receipt"],
+            value["input_files"],
+            pool=job["pool"],
+            expected_kernel_id=value["expected_kernel_id"],
+        )
+        p.require(
+            inputs.verification["id"] == value["expected_material_verification_id"]
+            and inputs["kernel"]["id"] == value["release"]["kernel_id"],
+            "execution.worker_exact_global_material_verification",
+        )
         report = training.run(
             root,
             path_within(root, value["output_directory"]),
@@ -617,6 +657,7 @@ def worker(root, job_path):
             pool=job["pool"],
             arm=job["arm"],
             seed=job["seed"],
+            verified_inputs=inputs,
         )
     p.require(report["actual_complete"] is True, "execution.actual_worker_completion_required")
     return report
@@ -656,9 +697,27 @@ def run(root, frozen_path):
     )
     phase = "material_reverification"
     try:
-        inputs = load_material_inputs(root, frozen["input_files"])
+        inputs = fast_materials.load_authority(
+            root,
+            frozen["material_input_receipt"],
+            frozen["input_files"],
+            expected_kernel_id=frozen["kernel_id"],
+        )
+        original_gate = p.checked(
+            load_descriptor(root, frozen["original_material_gate"]), "material_gate"
+        )
+        p.require(
+            original_gate["id"] == frozen["original_material_gate_id"]
+            and original_gate["kernel_id"] == frozen["kernel_id"]
+            and original_gate["training_gate"] == "PASS",
+            "execution.original_material_gate_unchanged_before_GPU",
+        )
         verified = training.validate_materials(
-            inputs["kernel"], inputs["population"], inputs["registry"], inputs["outcomes"]
+            inputs["kernel"],
+            inputs["population"],
+            inputs["registry"],
+            inputs["outcomes"],
+            verified_inputs=inputs,
         )
         p.require(
             verified == frozen["material_verification"],
@@ -670,6 +729,7 @@ def run(root, frozen_path):
             study_freeze_id=frozen["study_freeze_id"],
             surface_manifest_id=e.SURFACE_MANIFEST_ID,
             allowed_runs=[{key: job[key] for key in ("pool", "arm", "seed")} for job in a_jobs],
+            verified_inputs=inputs,
         )
         p.write_once(output / "A_release.json", release)
         phase = "A_train"
@@ -703,6 +763,7 @@ def run(root, frozen_path):
                 study_freeze_id=frozen["study_freeze_id"],
                 surface_manifest_id=e.SURFACE_MANIFEST_ID,
                 allowed_runs=[{key: job[key] for key in ("pool", "arm", "seed")} for job in b_jobs],
+                verified_inputs=inputs,
             )
             p.write_once(output / "B_release.json", release)
             phase = "B_train"

@@ -75,8 +75,15 @@ def record(kind, **fields):
 
 def checked(value, kind):
     require(isinstance(value, dict), "record_object")
-    expected = record(kind, **{k: v for k, v in value.items() if k not in {"id", "schema_version"}})
-    require(value == expected, "content_identity:" + kind)
+    # Verification does not acquire ownership or mutate a record. Hash its
+    # original canonical body instead of deep-copying every token array just
+    # to reconstruct an equal object. record() retains its isolation contract.
+    body = {k: v for k, v in value.items() if k != "id"}
+    require(
+        body.get("schema_version") == "fixed_kernel_value.v1." + kind
+        and value.get("id") == kind + ":" + sha(encode(body)),
+        "content_identity:" + kind,
+    )
     return value
 
 

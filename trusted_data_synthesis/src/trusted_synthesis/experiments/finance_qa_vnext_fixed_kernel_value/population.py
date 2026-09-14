@@ -40,10 +40,12 @@ METADATA_FIELDS = (
 
 
 def _checked(value, kind):
-    expected = p.record(
-        kind, **{k: v for k, v in value.items() if k not in {"id", "schema_version"}}
+    body = {k: v for k, v in value.items() if k != "id"}
+    p.require(
+        body.get("schema_version") == "fixed_kernel_value.v1." + kind
+        and value.get("id") == kind + ":" + p.sha(p.encode(body)),
+        "population.content_identity:" + kind,
     )
-    p.require(value == expected, "population.content_identity:" + kind)
 
 
 def metadata_rows(catalog):

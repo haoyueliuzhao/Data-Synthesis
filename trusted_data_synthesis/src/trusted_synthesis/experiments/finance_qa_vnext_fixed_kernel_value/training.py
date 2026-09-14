@@ -9,13 +9,14 @@ import argparse
 import os
 from collections import Counter, defaultdict
 from pathlib import Path
+from types import FunctionType, SimpleNamespace
 
 import torch
 
 from ..finance_qa_vnext_basis_student.protocol import training_config as original_config
 from ..finance_qa_vnext_pq_student import model as model_components
 from ..finance_qa_vnext_pq_student.loss import selected_target_loss
-from . import consumer, distribution, population
+from . import consumer, distribution, fast_materials, population
 from . import protocol as p
 
 
@@ -128,11 +129,26 @@ def optimizer_factory(parameters, config):
     )
 
 
-def validate_materials(kernel, selected_population, registry, outcomes):
-    """Rebuild once before GPU use; no caller-asserted PASS can bypass the gates."""
-    p.checked(kernel, "fixed_kernel")
-    expected = distribution.build_kernel(selected_population, registry, outcomes)
-    p.require(kernel == expected, "training.kernel_exact_complete_registered_outcomes")
+def validate_materials(kernel, selected_population, registry, outcomes, *, verified_inputs=None):
+    """One full preflight; only a private byte/code-bound authority may reuse it."""
+    if verified_inputs is None:
+        p.checked(kernel, "fixed_kernel")
+        expected = distribution.build_kernel(selected_population, registry, outcomes)
+        p.require(kernel == expected, "training.kernel_exact_complete_registered_outcomes")
+    else:
+        fast_materials.assert_verified_inputs(
+            verified_inputs, kernel, selected_population, registry, outcomes
+        )
+        verification = getattr(verified_inputs, "verification", None)
+        if verification is not None:
+            p.checked(verification, "material_input_verification")
+            p.require(
+                verification["kernel_id"] == kernel["id"]
+                and verification["population_id"] == selected_population["id"]
+                and verification["registry_id"] == registry["id"],
+                "training.exact_preflight_verification_authority",
+            )
+            return verification
     p.require(
         kernel["training_gate"] == kernel["material_gate"] == kernel["dose_gate"] == "PASS",
         "training.material_and_dose_gates_required",
@@ -209,13 +225,22 @@ def validate_materials(kernel, selected_population, registry, outcomes):
     )
 
 
-def make_release(kernel, *, study_freeze_id, surface_manifest_id, allowed_runs):
+def make_release(
+    kernel, *, study_freeze_id, surface_manifest_id, allowed_runs, verified_inputs=None
+):
     """Root orchestration calls this after independent material and stage gates.
 
     This is an explicit prospective run allowance, not a stage-selection routine;
     callers remain responsible for the registered A-dev selection before B.
     """
-    p.checked(kernel, "fixed_kernel")
+    if verified_inputs is None:
+        p.checked(kernel, "fixed_kernel")
+    else:
+        p.require(
+            fast_materials.checked_kernel(kernel) is kernel
+            and fast_materials.owner_for(kernel) is verified_inputs,
+            "training.exact_private_kernel_authority",
+        )
     p.require(
         kernel["training_gate"] == kernel["material_gate"] == kernel["dose_gate"] == "PASS",
         "training.release_requires_both_gates",
@@ -253,7 +278,7 @@ def make_release(kernel, *, study_freeze_id, surface_manifest_id, allowed_runs):
     )
 
 
-def validate_release(release, kernel, *, pool, arm, seed):
+def validate_release(release, kernel, *, pool, arm, seed, verified_inputs=None):
     p.checked(release, "training_release")
     p.require(
         release
@@ -262,6 +287,7 @@ def validate_release(release, kernel, *, pool, arm, seed):
             study_freeze_id=release["study_freeze_id"],
             surface_manifest_id=release["surface_manifest_id"],
             allowed_runs=release["allowed_runs"],
+            verified_inputs=verified_inputs,
         ),
         "training.exact_release_and_current_configuration",
     )
@@ -269,6 +295,70 @@ def validate_release(release, kernel, *, pool, arm, seed):
         {"pool": pool, "arm": arm, "seed": seed} in release["allowed_runs"],
         "training.run_explicitly_released",
     )
+
+
+def weighted_inputs(verified_inputs, pool, arm):
+    """Original weighting bytecode over a privately verified immutable pool view.
+
+    Only full-kernel identity and already verified canonical-package SHA checks
+    use the minted authority. Formulae, physical order and mass checks execute
+    unchanged. Frozen originals make the old deepcopy calls constant-time.
+    """
+    fast_materials.require_verified(verified_inputs)
+    kernel = fast_materials.checked_kernel(verified_inputs["kernel"])
+
+    def checked(value, kind):
+        p.require(value is kernel and kind == "fixed_kernel", "training.private_pool_kernel")
+        return value
+
+    original_distribution = distribution.distribution
+    assigned_function = FunctionType(
+        original_distribution.__code__,
+        {**original_distribution.__globals__, "_checked": checked},
+        original_distribution.__name__,
+        original_distribution.__defaults__,
+        original_distribution.__closure__,
+    )
+    assigned = assigned_function(kernel, pool, arm)
+    known = {
+        id(item["original_package"]): (item["original_package"], item["original_package_sha256"])
+        for item in kernel["train_packages"]
+        if item["pool"] == pool
+    }
+
+    class CanonicalPackageSHA:
+        def __init__(self, digest):
+            self.digest = digest
+
+    def encoded(value):
+        saved = known.get(id(value))
+        if saved is not None and saved[0] is value:
+            return CanonicalPackageSHA(saved[1])
+        return p.encode(value)
+
+    def sha(value):
+        return value.digest if isinstance(value, CanonicalPackageSHA) else p.sha(value)
+
+    def same_distribution(value, wanted_pool, wanted_arm):
+        p.require(
+            value is kernel and (wanted_pool, wanted_arm) == (pool, arm),
+            "training.same_verified_weighting_scope",
+        )
+        return assigned
+
+    original_weighting = distribution.weighted_packages
+    weighted_function = FunctionType(
+        original_weighting.__code__,
+        {
+            **original_weighting.__globals__,
+            "distribution": same_distribution,
+            "p": SimpleNamespace(require=p.require, encode=encoded, sha=sha),
+        },
+        original_weighting.__name__,
+        original_weighting.__defaults__,
+        original_weighting.__closure__,
+    )
+    return weighted_function(kernel, pool, arm), assigned
 
 
 def run(
@@ -287,6 +377,7 @@ def run(
     model_loader=load_registered_student,
     optimizer_builder=optimizer_factory,
     loss_fn=selected_target_loss,
+    verified_inputs=None,
 ):
     """400 paired updates and only the final adapter; failed runs never resume."""
     root, output = Path(root).resolve(), Path(output).resolve()
@@ -314,8 +405,12 @@ def run(
     updates, current_batch = [], None
     try:
         config = training_config()
-        validate_release(release, kernel, pool=pool, arm=arm, seed=seed)
-        verification = validate_materials(kernel, selected_population, registry, outcomes)
+        validate_release(
+            release, kernel, pool=pool, arm=arm, seed=seed, verified_inputs=verified_inputs
+        )
+        verification = validate_materials(
+            kernel, selected_population, registry, outcomes, verified_inputs=verified_inputs
+        )
         schedule = population.batch_schedule(selected_population, seed)
         p.require(
             schedule["total_updates"] == 400 and len(schedule["batches"]) == 400,
@@ -326,8 +421,11 @@ def run(
         p.write_once(output / "schedule.json", schedule)
         # Hash/validate the entire immutable kernel once, then retain the same
         # physical package rows in memory. Avoid re-hashing gigabytes 400 times.
-        examples = distribution.weighted_packages(kernel, pool, arm)
-        assigned = distribution.distribution(kernel, pool, arm)
+        if verified_inputs is None:
+            examples = distribution.weighted_packages(kernel, pool, arm)
+            assigned = distribution.distribution(kernel, pool, arm)
+        else:
+            examples, assigned = weighted_inputs(verified_inputs, pool, arm)
         p.write_once(output / "distribution.json", assigned)
         by_task = defaultdict(list)
         for index, example in enumerate(examples):
