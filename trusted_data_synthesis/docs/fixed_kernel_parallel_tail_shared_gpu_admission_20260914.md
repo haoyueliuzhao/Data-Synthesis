@@ -58,3 +58,30 @@
 不重复材料校验、缓存构造、模型加载、八卡通信 smoke 或训练对照实验。
 三项准入测试均通过，用时 1.78 秒；新增脚本及测试的定向 Ruff 检查通过。
 未执行模型/GPU 测试。实际切换状态在部署后追加，不以计划冒充已发生事实。
+
+## 实际部署结果（2026-09-14）
+
+- 调度脚本、三项测试及说明先以提交 `9cc323a63d697187fde8ac2fd8876e54f211601b`
+  推送至远端 `main`，然后才启动新脚本。
+- 首次部署在发送任何信号前因当前 Python 不提供 `os.pidfd_open` 而退出，未产生
+  训练或调度状态变更。随后采用每次信号前核对 PID 启动时刻及完整命令摘要的方式。
+- 仅将等待协调器 3363356 暂停，在确认没有子进程、未导入任何原训练结果后，
+  发送 TERM/CONT 使其退出。实际退出观察为 `gone`，没有伪称可证明退出码为 0。
+  原八个训练、发布器 3370870、其他用户作业均未发送信号。
+- 新协调器 PID 为 **3381543**，启动时间为 **15:12:18 UTC / 23:12:18 北京时间**。
+  15:12:20 UTC 写出准入修订与新协调器启动记录；启动验收时协调器和发布器均为
+  S 状态，原八个训练均为 R/S 状态，没有新训练或发布失败记录。
+- 准入修订 ID：
+  `parallel_tail_resource_admission_amendment:2b892a1d73606fbc5a78da85552a58d4ee7753437c1921a04fa889697ae3f149`。
+  其中 `minimum_free_GPU_memory_MiB=32768`、
+  `GPU_utilization_is_launch_condition=false`，明确取代第九任务的旧条件。
+- 原启动 ID 仍为
+  `execution_started:ace0135418ab1550646b599626fc17758dc56d452dd58059650c54ecb31a16d5`，
+  原 freeze、科学源码及发布脚本未改写。
+- 此次验收时第九任务仍未发出训练 release，正在等待原八个训练完成。
+  不能把“新准入条件已生效”描述为“第九个 Student 已开始训练”。
+
+切换事实、策略修订、新协调器启动分别记录在实验输出目录下的
+`resource_admission_handoff.json`、`resource_admission_amendment.json`、
+`resource_admission_coordinator_started.json`。后续实际放行记录为
+`resource_admission.json`，在真实显存达标时才会生成。
