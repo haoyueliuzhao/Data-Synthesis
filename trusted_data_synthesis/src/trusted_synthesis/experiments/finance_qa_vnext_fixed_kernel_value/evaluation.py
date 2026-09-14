@@ -20,6 +20,7 @@ from ..finance_qa_vnext_basis_student.protocol import path_within
 from ..finance_qa_vnext_eval_readiness import runtime
 from ..finance_qa_vnext_eval_surface.overlay import PublicOverlay
 from ..finance_qa_vnext_eval_surface.protocol import OUTPUT as SURFACE_DIRECTORY
+from . import parallel_lineage
 from .protocol import checked_record, read_json, record, require, sha, write_once
 from .trajectory_training import training_config
 
@@ -135,6 +136,13 @@ def validate_model_identity(identity):
     require(
         all(isinstance(identity[key], str) and identity[key] for key in BINDING_FIELDS),
         "decoder.five_frozen_bindings",
+    )
+    require(
+        identity["training_configuration_id"]
+        == parallel_lineage.expected_training_config(
+            identity["pool"], identity["arm"], identity["seed"]
+        )["id"],
+        "decoder.exact_registered_per_run_training_configuration",
     )
     adapter = identity["final_adapter"]
     require(
@@ -506,7 +514,9 @@ def load_decoder(root, output, identity, base_binding, tokenizer_binding, decode
     validate_model_identity(identity)
     root, output = Path(root).resolve(), Path(output).absolute()
     require(not output.exists(), "decoder.no_repeat_model_worker")
-    config = training_config()
+    config = parallel_lineage.expected_training_config(
+        identity["pool"], identity["arm"], identity["seed"]
+    )
     require(
         config["id"] == identity["training_configuration_id"]
         and base_binding["id"] == identity["base_binding_id"]
@@ -539,7 +549,7 @@ def load_decoder(root, output, identity, base_binding, tokenizer_binding, decode
         model, _ = load_registered_student(
             base_binding,
             identity["seed"],
-            config,
+            training_config(),
             trainable=False,
             adapter_path=path,
             adapter_record=adapter,
@@ -1236,11 +1246,12 @@ def _analysis_binding(binding):
         all(isinstance(binding[key], str) and binding[key] for key in BINDING_FIELDS),
         "analysis.nonempty_binding_identity",
     )
+    parallel_lineage.validate_binding(binding, binding)
     return dict(binding)
 
 
 def _analysis_check_binding(value, binding):
-    require(all(value.get(key) == val for key, val in binding.items()), "analysis.report_binding")
+    parallel_lineage.validate_binding(value, binding)
 
 
 def _analysis_tasks(tasks, split, groups):
@@ -1436,6 +1447,7 @@ def select_actual_direction(training_reports, dev_reports, *, binding, dev_tasks
         runner_up_after_confirmation_failure_allowed=False,
         prospective_rule_reference_id=mathematical["id"],
         actual_decision_requires_complete_report_bindings=True,
+        execution_lineage=parallel_lineage.execution_lineage([training[key] for key in keys]),
     )
 
 
@@ -1544,6 +1556,11 @@ def confirm_actual(
         decision.get("training_report_ids") == [training[key]["id"] for key in a_keys],
         "analysis.same_A_training_as_actual_selection",
     )
+    require(
+        decision.get("execution_lineage")
+        == parallel_lineage.execution_lineage([training[key] for key in a_keys]),
+        "analysis.same_heterogeneous_execution_as_selection",
+    )
     keys = [
         (pool, arm, seed)
         for pool in ("A", "B")
@@ -1582,6 +1599,9 @@ def confirm_actual(
         actual_complete=True,
         analysis_policy_id=analysis_policy()["id"],
         decision_id=decision["id"],
+        execution_lineage=parallel_lineage.execution_lineage(
+            [training[key] for key in [*a_keys, *b_keys]]
+        ),
         selected_arm=selected,
         primary_pool="B",
         auxiliary_pool="A",

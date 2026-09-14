@@ -18,7 +18,7 @@ from pathlib import Path
 from ..finance_qa_vnext_basis_student.protocol import path_within
 from ..finance_qa_vnext_eval_surface.overlay import public_object
 from . import evaluation as e
-from . import fast_materials, trajectory_materials
+from . import fast_materials, parallel_lineage, trajectory_materials
 from . import protocol as p
 from . import trajectory_training as training
 
@@ -50,6 +50,10 @@ def execution_policy():
         decoder_configuration="unchanged neutral greedy 2048-new-token / 24576-sequence contract",
         code_mutation_after_freeze=False,
         heldout_material_NLL=False,
+        imported_completed_A_runs=8,
+        parallel_tail_job={"pool": "A", "arm": "minus", "seed": 47},
+        parallel_tail_world_size=8,
+        mixed_training_configuration_routing=True,
     )
 
 
@@ -184,127 +188,8 @@ def _source_record(root, path, kind):
     }
 
 
-def prepare(root, output, *, input_root, parent_freeze_path, parent_authority_path, workers=24):
-    """Reuse the complete parent validation; build only compact fused trajectories."""
-    root, output, input_root = (
-        Path(root).resolve(),
-        Path(output).resolve(),
-        Path(input_root).resolve(),
-    )
-    p.require(
-        output.is_relative_to(root)
-        and output != root
-        and not output.exists()
-        and input_root != root
-        and input_root.is_dir(),
-        "execution.new_trajectory_output",
-    )
-    parent, parent_reference = _source_record(input_root, parent_freeze_path, "execution_freeze")
-    authority, authority_reference = _source_record(
-        input_root, parent_authority_path, "fast_execution_authority"
-    )
-    gate = p.checked(load_descriptor(input_root, parent["original_material_gate"]), "material_gate")
-    p.require(
-        parent["material_gate"]
-        == parent["dose_gate"]
-        == parent["training_gate"]
-        == gate["material_gate"]
-        == gate["dose_gate"]
-        == gate["training_gate"]
-        == "PASS"
-        and authority["execution_freeze_id"] == parent["id"]
-        and authority["original_kernel_id"] == parent["kernel_id"] == gate["kernel_id"]
-        and authority["original_material_gate_id"]
-        == parent["original_material_gate_id"]
-        == gate["id"]
-        and authority["original_registry_freeze_id"] == parent["study_freeze_id"]
-        and authority["original_generation_report_id"] == gate["generation_report_id"]
-        and authority["actual_full_original_kernel_ID_equal"] is True
-        and parent["code_binding"]["code_root"] == str(input_root)
-        and parent["material_verification"]["kernel_id"] == parent["kernel_id"],
-        "execution.actual_parent_freeze_authority_gate_join",
-    )
-    # Fail missing/dirty source dependencies before doing cache work.
-    source = code_binding()
-    cache_root = output / "preparation" / "trajectory_cache"
-    manifest = trajectory_materials.prepare_cache(
-        input_root, cache_root, Path(input_root) / parent_reference["path"], workers=workers
-    )
-    p.checked(manifest, "trajectory_material_cache")
-    p.require(
-        manifest["parent_execution_freeze_id"] == parent["id"]
-        and manifest["source_material_receipt"] == parent["material_input_receipt"]
-        and manifest["kernel_id"] == parent["kernel_id"]
-        and manifest["material_verification_id"] == parent["material_verification"]["id"]
-        and manifest["source_material_budgets"] == parent["material_verification"]["pool_budgets"],
-        "execution.trajectory_cache_original_global_authority",
-    )
-    for pool in p.POOLS:
-        actual = manifest["pool_budgets"][pool]
-        original = manifest["source_material_budgets"][pool]
-        p.require(
-            all(
-                actual[field + suffix] == original[field + suffix]
-                for field in ("packages", "target_tokens")
-                for suffix in ("_per_epoch", "_all_epochs")
-            )
-            and all(
-                actual[field + "_all_epochs"] == 10 * actual[field + "_per_epoch"]
-                for field in ("packages", "rows", "target_tokens", "sequence_tokens")
-            ),
-            "execution.trajectory_preserves_physical_packages_targets_and_ten_visits",
-        )
-    cached = dict(
-        cache_root=str(cache_root.relative_to(root)),
-        manifest=descriptor(root, cache_root / "manifest.json"),
-        manifest_id=manifest["id"],
-    )
-    frozen = p.record(
-        "execution_freeze",
-        study_freeze_id=parent["study_freeze_id"],
-        output_directory=str(output.relative_to(root)),
-        source_root=parent["source_root"],
-        input_root=str(input_root),
-        kernel_id=parent["kernel_id"],
-        input_files=parent["input_files"],
-        material_input_receipt=parent["material_input_receipt"],
-        original_material_gate=parent["original_material_gate"],
-        original_material_gate_id=parent["original_material_gate_id"],
-        base_binding=parent["base_binding"],
-        tokenizer_binding=parent["tokenizer_binding"],
-        training_configuration=training.training_config(),
-        decoder_configuration=parent["decoder_configuration"],
-        execution_policy=execution_policy(),
-        analysis_policy=parent["analysis_policy"],
-        material_verification=parent["material_verification"],
-        evaluation_registry=parent["evaluation_registry"],
-        code_binding=source,
-        physical_originals_sha256=parent["physical_originals_sha256"],
-        material_gate="PASS",
-        dose_gate="PASS",
-        training_gate="PASS",
-        parent_execution_freeze=parent_reference,
-        parent_execution_freeze_id=parent["id"],
-        parent_execution_authority=authority_reference,
-        parent_authority=authority,
-        parent_training_configuration_id=parent["training_configuration"]["id"],
-        trajectory_cache=cached,
-        trajectory_pool_budgets=manifest["pool_budgets"],
-        source_material_budgets=manifest["source_material_budgets"],
-        source_material_validation_reused=True,
-        full_kernel_rebuilds=0,
-        new_full_kernel_identity_measurement_claimed=False,
-        new_token_encodings=0,
-        new_API_calls=0,
-        fresh_Students_required=True,
-        parent_partial_Students_resumed=False,
-        dropout_correlation_changed=True,
-        bitwise_equivalence_claimed=False,
-        objective_weights_labels_global_updates_epochs_and_seeds_preserved=True,
-        Student_or_GPU_loaded=False,
-    )
-    p.write_once(output / "preparation" / "execution_freeze.json", frozen)
-    return frozen
+def prepare(*_args, **_kwargs):
+    raise ValueError("execution.parallel_tail_requires_parallel_study_prepare_no_cache_rebuild")
 
 
 def validate_freeze(frozen):
@@ -317,6 +202,11 @@ def validate_freeze(frozen):
         and frozen["analysis_policy"] == e.analysis_policy()
         and frozen["training_gate"] == frozen["material_gate"] == frozen["dose_gate"] == "PASS",
         "execution.frozen_configuration_and_all_gates",
+    )
+    p.require(
+        frozen["heterogeneous_execution"] is True
+        and frozen["per_run_training_configuration_ids"] == parallel_lineage.configuration_ids(),
+        "execution.exact_parallel_tail_config_map",
     )
     verify_code(frozen["code_binding"])
 
@@ -364,9 +254,9 @@ def job_output(root, frozen, job, *, score=False):
     return base / ("scores" if score else "generation") / job["split"] / name
 
 
-def _training_report(root, frozen, job):
-    directory = job_output(root, frozen, {**job, "kind": "train"})
-    report = p.checked(p.read_json(directory / "report.json"), "training_report")
+def validate_training_report(report, frozen, job):
+    """Validate actual run metadata without rewriting historical report paths or IDs."""
+    p.checked(report, "training_report")
     p.require(
         report["actual_complete"] is True
         and report["status"] == "COMPLETE_FINAL_CHECKPOINT"
@@ -374,19 +264,19 @@ def _training_report(root, frozen, job):
         and report["epochs_completed"] == 10,
         "execution.actual_complete_new_kernel_training",
     )
-    p.require(
-        all(
-            report[key] == value
-            for key, value in binding(frozen).items()
-            if key != "decoder_config_id"
-        )
-        and all(report[key] == job[key] for key in ("pool", "arm", "seed")),
-        "execution.exact_training_binding_and_variant",
+    parallel_lineage.validate_binding(
+        report,
+        {key: value for key, value in binding(frozen).items() if key != "decoder_config_id"},
+        pool=job["pool"],
+        arm=job["arm"],
+        seed=job["seed"],
     )
     budget = frozen["trajectory_pool_budgets"][job["pool"]]
     source_budget = frozen["material_verification"]["pool_budgets"][job["pool"]]
     p.require(
         report["actual_budget"] == budget
+        and report["base_binding_id"] == frozen["base_binding"]["id"]
+        and report["tokenizer_binding_id"] == frozen["tokenizer_binding"]["id"]
         and report["source_material_budget"] == source_budget
         and report["trajectory_cache_id"] == frozen["trajectory_cache"]["manifest_id"]
         and report["physical_originals_sha256"] == frozen["physical_originals_sha256"]
@@ -402,6 +292,12 @@ def _training_report(root, frozen, job):
         ),
         "execution.identical_physical_original_budget_not_only_nominal_steps",
     )
+    return report
+
+
+def _training_report(root, frozen, job):
+    directory = job_output(root, frozen, {**job, "kind": "train"})
+    report = validate_training_report(p.read_json(directory / "report.json"), frozen, job)
     adapter = report["final_adapter"]
     path = path_within(directory, adapter["path"])
     p.require(
@@ -431,12 +327,12 @@ def public_generation_input(root, frozen, job):
     report = _training_report(root, frozen, job)
     identity = p.record(
         "model_identity",
-        **binding(frozen),
+        **{**binding(frozen), "training_configuration_id": report["training_configuration_id"]},
         **{key: report[key] for key in ("pool", "arm", "seed", "checkpoint_id", "final_adapter")},
         training_report_id=report["id"],
         base_binding_id=frozen["base_binding"]["id"],
         tokenizer_binding_id=frozen["tokenizer_binding"]["id"],
-        adapter_directory=report["adapter_directory"],
+        adapter_directory=str(job_output(root, frozen, {**job, "kind": "train"}).relative_to(root)),
     )
     e.validate_model_identity(identity)
     return dict(
@@ -685,7 +581,9 @@ def worker(root, job_path):
         )
     else:
         p.require(
-            job["kind"] == "train" and set(supplied) == common | {"training_input"},
+            job["kind"] == "train"
+            and job["pool"] == "B"
+            and set(supplied) == common | {"training_input"},
             "execution.closed_training_job",
         )
         value = supplied["training_input"]
@@ -763,16 +661,19 @@ def score_jobs(root, frozen, jobs):
         return list(executor.map(_score_one, arguments))
 
 
-def run(root, frozen_path):
+def run(root, frozen_path, *, handoff):
     root = Path(root).resolve()
     frozen = p.read_json(frozen_path)
     validate_freeze(frozen)
     output = path_within(root, frozen["output_directory"])
-    p.write_once(
-        output / "execution_started.json",
-        p.record(
-            "execution_started", at=p.now(), execution_freeze_id=frozen["id"], **binding(frozen)
-        ),
+    p.checked(handoff, "parallel_tail_A_handoff")
+    started = p.checked(p.read_json(output / "execution_started.json"), "execution_started")
+    p.require(
+        handoff["execution_started_id"] == started["id"]
+        and started["execution_freeze_id"] == handoff["execution_freeze_id"] == frozen["id"]
+        and handoff["imported_parent_runs"] == 8
+        and handoff["new_parallel_runs"] == 1,
+        "execution.actual_completed_A_handoff",
     )
     phase = "material_reverification"
     try:
@@ -804,17 +705,15 @@ def run(root, frozen_path):
             "execution.material_reverification_before_GPU",
         )
         a_jobs = jobs_for("A_train")
-        release = training.make_release(
-            inputs["kernel"],
-            study_freeze_id=frozen["study_freeze_id"],
-            surface_manifest_id=e.SURFACE_MANIFEST_ID,
-            allowed_runs=[{key: job[key] for key in ("pool", "arm", "seed")} for job in a_jobs],
-            verified_inputs=inputs,
-        )
-        p.write_once(output / "A_release.json", release)
-        phase = "A_train"
-        run_jobs(root, frozen, phase, release=release)
+        phase = "completed_A_lineage_admission"
         a_training = training_reports(root, frozen, a_jobs)
+        p.require(
+            handoff["training_report_ids"] == [report["id"] for report in a_training],
+            "execution.original_eight_and_actual_tail_report_IDs",
+        )
+        p.write_once(
+            output / "A_execution_lineage.json", parallel_lineage.execution_lineage(a_training)
+        )
         phase = "A_dev"
         run_jobs(root, frozen, phase)
         dev = score_jobs(root, frozen, jobs_for(phase))
@@ -829,6 +728,11 @@ def run(root, frozen_path):
                 status="COMPLETE_NO_POSITIVE_DIRECTION",
                 actual_complete=True,
                 **binding(frozen),
+                heterogeneous_execution=True,
+                per_run_training_configuration_ids=frozen["per_run_training_configuration_ids"],
+                imported_completed_parent_training_runs=8,
+                parallel_tail_A_handoff_id=handoff["id"],
+                execution_lineage=parallel_lineage.execution_lineage(a_training),
                 decision_id=decision["id"],
                 actual_training_runs=9,
                 actual_evaluation_sessions=1620,
@@ -865,6 +769,11 @@ def run(root, frozen_path):
                 status="COMPLETE_FIXED_CONFIRMATION",
                 actual_complete=True,
                 **binding(frozen),
+                heterogeneous_execution=True,
+                per_run_training_configuration_ids=frozen["per_run_training_configuration_ids"],
+                imported_completed_parent_training_runs=8,
+                parallel_tail_A_handoff_id=handoff["id"],
+                execution_lineage=parallel_lineage.execution_lineage(all_training),
                 decision_id=decision["id"],
                 confirmation_id=result["id"],
                 actual_training_runs=15,
@@ -902,6 +811,7 @@ def main():
     launch = commands.add_parser("run")
     launch.add_argument("--root", required=True)
     launch.add_argument("--freeze", required=True)
+    launch.add_argument("--handoff", required=True)
     child = commands.add_parser("worker")
     child.add_argument("--root", required=True)
     child.add_argument("--job", required=True)
@@ -911,7 +821,7 @@ def main():
     prep.add_argument("--workers", type=int, default=24)
     args = parser.parse_args()
     if args.command == "run":
-        result = run(args.root, args.freeze)
+        result = run(args.root, args.freeze, handoff=p.read_json(args.handoff))
     elif args.command == "worker":
         try:
             result = worker(args.root, args.job)
