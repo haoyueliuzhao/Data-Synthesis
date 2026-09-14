@@ -33,3 +33,17 @@
 实际补齐稀疏范围时发生了操作失误：Git刷新清除了该工作树中outside-sparse且被ignore的材料副本及未提交的receipt。因此本次并没有成功使用该receipt续封装入口；原先全量验证确实完成，但其缓存文件随后丢失，不能声称缓存仍存在。权威原件所在的旧completion工作树未受影响，9418个编码包、10240个outcome和实际PASS gate完整保留。
 
 恢复前先将精确material、execution output和runtime目录纳入固定稀疏范围，再从权威原件恢复副本，此后不再调整稀疏范围。为了恢复丢失的验证缓存，hydrate改为24 CPU按entry读取实际字节、核对SHA/record ID并恢复不可变树；根进程保持原index顺序，仍只调用一次原kernel构建公式。只新增一个串并行完整值与ID等价控制（1.44秒通过），没有重复10项旧控制。缓存恢复不等于重新采集或重新编码；这次额外等待由上述操作失误导致，予以明确记录。
+
+## 实际准备完成与正式 GPU 启动
+
+第二次真实prepare成功退出（exit 0），实际完整kernel ID严格等于上述原材料门所绑定的kernel ID。最终执行冻结为 `execution_freeze:508d9405294f92d39f8378851e90eb80c4f24fec2a85a04ad9f1b8267bfd0365`，独立执行authority为 `fast_execution_authority:4508b4cef2ebe8c49b29e1d98e8176971347ed0ccabb551ad07d904976277acf`。本次是实际重新恢复验证收据后的成功prepare，不是复用已经丢失的首次收据。执行冻结约2.2MiB、无token数组的材料验证收据约25MiB，与原material index、PASS gate和generation report一起提交。冻结源码绑定提交为 `821f98c74d`；上述生成记录及发布helper于提交 `973b5bcaec20ed98dd9ad37b1a53c40ee31b4274` 固化并实际推送GitHub main后才启动Student。
+
+原独立材料sealer已经完成：manifest为 `publication_manifest:457d6009f338c172a665ef177ce1ebb2fd7f528e508b1918cc18bc50212a4ae0`，包含44642个原文件、5646106030字节，171个压缩归档合计661506214字节、索引页41339648字节。manifest报告credential_hits=0并已验证原件SHA及roundtrip；本次只读该现有manifest，不重做材料封装。旧sealer一度处于已退出但尚未被暂停父进程回收的Z状态，不能把父进程未写exit回执误报为封存失败。
+
+核对旧协调进程3101807和旧发布等待器3110431的实际cmdline之后，向这两个确切进程发出SIGTERM；对暂停的协调进程追加SIGCONT以完成退出。首次启动保护检查等待0.5秒时，协调进程仍在退出，因而在创建新训练进程之前中止；随后确认两个旧PID均已消失才启动新流程。没有修改旧材料原件或旧源码，没有伪造旧completion工作流终态，也没有并行启动两套Student。
+
+2026-09-14 02:10:06 UTC（北京时间10:10:06），正式控制器3140146与独立自动发布等待器3140147实际启动。02:10:10—02:10:12 UTC，首批8个A训练任务分别分配GPU 0—7：seed 11的alpha0/plus/minus、seed 29的alpha0/plus/minus、seed 47的alpha0/plus；第9个A任务minus/47排队。每个任务保持400次完整优化器更新，随后按已冻结方案执行A开发集选择及有条件的B独立确认。
+
+02:12 UTC实测8卡显存约23469—24385MiB、GPU利用率98%—100%。02:12:54 UTC读取8份 `training/<run>/updates/0001/events.jsonl` 的尾部：所有任务均已实际完成37—49行反向传播，8份failure.json均不存在；此时尚无第1步report.json，不能将行级backward进度写成已完成一次optimizer step。这里只读取现有运行日志，不重跑材料或模型工程验证。
+
+本节为启动时点记录，不是训练完成或科学效果报告。自动发布等待器只等待真实新执行report/manifest与已有完整材料manifest；结果闭合后，对新结果封装一次，按原manifest复制已封存材料归档，普通非强制提交推送到已获用户明确批准的GitHub main。最终结果和远端发布是否成功，以后续实际报告和Git receipt为准；出现失败不自动重训或将部分输出改称完整结果。
