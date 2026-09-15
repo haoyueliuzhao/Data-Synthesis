@@ -100,3 +100,31 @@
 目录身份与原公开题面保持（部分控制合并在同一测试内）。新脚本和测试的定向
 Ruff 检查通过。测试使用 CPU/合成模型，没有新真实 Student 生成、GPU 基准、
 Teacher 请求或原材料重评分。
+
+## 实际冻结与启动（2026-09-15）
+
+- 详细原实验报告、预算复评代码和上述控制先以 `7056523bd22c475b6f7fb580c30eb40063942cb6`
+  提交并推送；实际计划与九个新评估身份以 `91db0c537b32c07c2c53e8d1e8d990cebcc43e3c`
+  提交并推送后，才启动模型生成。
+- 实际计划 ID：
+  `budget_reevaluation_plan:e4a610ccf93a3f6fb05f9463bf935caddf22486be460c6a0cf200599ac29c918`。
+- 新协调器 PID **3675928**，启动于 **17:41:53 北京时间**；首个新 GPU worker
+  **3676023** 于 **17:42:10** 启动，90 分钟 pilot 时限从这一时刻计。
+- 首次启动验收观察到七个 GPU worker 实际占用 GPU 0、1、2、3、5、6、7，
+  另外两个模型等待槽位；GPU 4 当时由其他账号作业占用，未被干预。
+- 实际 worker 的 `decoder_config.json` 已记录 **64 / 64 / 4096 / 32768**。
+  A_alpha0_11 的一次必要启动检查已看到 24 个真实 callback 收据，最新一次
+  prompt 6,649 token、生成 77 token、`finish_reason=actual_EOS`、
+  `GPU_generation_invoked=true`、无错误。这只是已开始真实推理的证据，不是
+  pilot 完成或财务效果改善的证据；该时点尚无完整新 session result。
+
+事前选定的三道任务如下，全部九个检查点使用相同题目：
+
+| 组别 | 公司来源 | task ID |
+| --- | --- | --- |
+| dual_sufficient | cik:0001065280 | `task_ea109313ef382be1291c2a9d96cc056e0bcbf95c074856211c44824498348ca5` |
+| composition_required | cik:0000021344 | `task_333c3c386967293b26407b6fcadbd1f1e57a3723c3b6b1d18ddc1b85ff3ea4d0` |
+| other_financial | cik:0000804328 | `task_2cc505c9bd2ea65f5dc1628ff019d6a47614844af3c2d0db931a7582131dd6be` |
+
+后续完整 pilot、是否升级、实际新旧配对结果及发布回执由独立调度器生成。
+本次记录不预先宣称高预算有效，也不将原封存结果改为复评结果。
