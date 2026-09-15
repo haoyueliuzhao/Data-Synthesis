@@ -58,3 +58,21 @@ def test_adopted_child_requires_actual_bound_zero_exit_not_a_disappeared_process
     ):
         with pytest.raises(ValueError):
             scheduler.validate_original_exit(bound, {**actual, **changed})
+
+
+def test_only_the_observed_standard_resource_tracker_is_an_auxiliary_child():
+    argv = [
+        scheduler.sys.executable,
+        "-c",
+        "from multiprocessing.resource_tracker import main;main(3)",
+    ]
+    observed = dict(
+        pid=3408891,
+        ppid=3381543,
+        state="S",
+        cmdline_sha256=scheduler.p.sha(b"\0".join(arg.encode() for arg in argv) + b"\0"),
+    )
+    scheduler.validate_resource_tracker(observed)
+    for changed in (dict(pid=3419286), dict(ppid=1), dict(cmdline_sha256="another-command")):
+        with pytest.raises(ValueError):
+            scheduler.validate_resource_tracker({**observed, **changed})

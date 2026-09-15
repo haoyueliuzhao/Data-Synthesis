@@ -17,6 +17,18 @@ MINIMUM_FREE_MIB = 77824
 PREVIOUS_COORDINATOR_PID = 3381543
 
 
+def validate_resource_tracker(observed):
+    expected = [sys.executable, "-c", "from multiprocessing.resource_tracker import main;main(3)"]
+    p.require(
+        observed["pid"] == 3408891
+        and observed["ppid"] == PREVIOUS_COORDINATOR_PID
+        and observed["state"] in ("R", "S", "D")
+        and observed["cmdline_sha256"]
+        == p.sha(b"\0".join(arg.encode() for arg in expected) + b"\0"),
+        "evaluation_admission.only_observed_standard_resource_tracker",
+    )
+
+
 def query_gpu_snapshot():
     raw = subprocess.check_output(
         [
@@ -141,7 +153,7 @@ def capture(root, frozen):
         / "children"
     )
     children = [int(value) for value in children_path.read_text().split()]
-    p.require(len(children) == 8, "evaluation_admission.exact_eight_existing_children")
+    p.require(len(children) in (8, 9), "evaluation_admission.workers_and_optional_bound_tracker")
     # A zombie has no cmdline: the durable worker_started log binds its PID to its job.
     launch_log = root / s.RUNTIME / "shared_gpu_coordinator.log"
     launches = {}
@@ -151,7 +163,7 @@ def capture(root, frozen):
         value = json.loads(line)
         if value.get("event") == "worker_started":
             launches[value["pid"]] = value
-    workers = []
+    workers, auxiliary = [], []
     for pid in children:
         observed = s.process_observation(pid)
         p.require(
@@ -159,6 +171,10 @@ def capture(root, frozen):
             and observed["state"] in ("S", "R", "D", "Z"),
             "evaluation_admission.original_child_state",
         )
+        if pid == 3408891:
+            validate_resource_tracker(observed)
+            auxiliary.append(observed)
+            continue
         started = launches.get(pid)
         p.require(started is not None, "evaluation_admission.logged_original_child")
         job_path = directory / (started["job"] + "_job.json")
@@ -209,6 +225,7 @@ def capture(root, frozen):
     return dict(
         coordinator=coordinator,
         adopted_workers=workers,
+        auxiliary_children=auxiliary,
         previous_launch_id=launch["id"],
         previous_launch_descriptor=launch_ref,
         registry_id=registry["id"],
@@ -254,6 +271,17 @@ def validate_handoff(root, frozen, handoff):
     )
     _stopped(handoff["coordinator"])
     current = capture(root, frozen)
+    p.require(
+        [
+            {key: row[key] for key in ("pid", "start_ticks", "cmdline_sha256")}
+            for row in current["auxiliary_children"]
+        ]
+        == [
+            {key: row[key] for key in ("pid", "start_ticks", "cmdline_sha256")}
+            for row in handoff["auxiliary_children"]
+        ],
+        "evaluation_admission.unchanged_standard_auxiliary_child",
+    )
     p.require(
         current["registry_id"] == handoff["registry_id"]
         and current["previous_launch_id"] == handoff["previous_launch_id"]
@@ -411,9 +439,22 @@ def _retire(root, handoff, exits):
     )
     p.require(
         {int(value) for value in children.read_text().split()}
-        == {row["process"]["pid"] for row in handoff["adopted_workers"]},
-        "evaluation_admission.only_completed_original_children_before_retirement",
+        == {row["process"]["pid"] for row in handoff["adopted_workers"]}
+        | {row["pid"] for row in handoff["auxiliary_children"]},
+        "evaluation_admission.only_completed_workers_and_bound_tracker_before_retirement",
     )
+    for auxiliary in handoff["auxiliary_children"]:
+        observed_auxiliary = s.process_observation(
+            auxiliary["pid"], start_ticks=auxiliary["start_ticks"]
+        )
+        p.require(
+            observed_auxiliary["ppid"] == PREVIOUS_COORDINATOR_PID
+            and (
+                observed_auxiliary["state"] == "Z"
+                or observed_auxiliary.get("cmdline_sha256") == auxiliary["cmdline_sha256"]
+            ),
+            "evaluation_admission.same_auxiliary_not_a_signal_target",
+        )
     # This deployment's Python has no os.pidfd_open. A stopped process keeps
     # its PID; recheck the captured start time/command immediately per signal.
     _stopped(coordinator)
@@ -432,6 +473,7 @@ def _retire(root, handoff, exits):
         observation=observed,
         signaled_pids=[coordinator["pid"]],
         original_workers_signaled=False,
+        auxiliary_children_signaled=False,
         completed_original_exit_ids=[row["id"] for row in exits],
         status="RETIRED" if observed["state"] in ("Z", "X", "gone") else "RETIREMENT_NOT_CONFIRMED",
     )
