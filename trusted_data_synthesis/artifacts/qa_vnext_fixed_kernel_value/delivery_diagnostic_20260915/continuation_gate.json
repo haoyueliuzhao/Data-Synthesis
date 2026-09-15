@@ -1,0 +1,20 @@
+{
+  "schema_version": "delivery_diagnostic.v1.continuation_gate",
+  "status": "AB_COMPLETE_QUERY_REPAIR_COMPLETE_C_NOT_RELEASED",
+  "stage_A_report_id": "failure_location_report:52cd717e505659b746c43f5f9467bbaeb9c26b3fce9c4e4f3a48596f3f93572f",
+  "stage_B_report_id": "delivery_stage_B_report:1504e5c9d942fb0c437e8ffeab67e73cdbcfa5f7876da1a844a0e4ae490a6259",
+  "query_repair_receipt_id": "public_query_repair_receipt:f8c9d91fc2751dd551b48017d950e532c27e6538e28acb05073c6135c0b87aed",
+  "direct_implementation_defect": "query_source explicit null label/description string concatenation",
+  "query_defect_sessions": {"original_1620": 462, "higher_budget_27": 17},
+  "repair_version": "public_query_nullable_metadata:v1:20260915",
+  "real_counterexample_repaired_query_total": 0,
+  "repair_proves_model_recovery": false,
+  "stage_C_actual_model_generation_calls": 0,
+  "original_tool_runtime_modified": false,
+  "original_results_modified": false,
+  "reason": "Audit repair-first branch; R1 tools cannot be combined with old R0 baseline and described as a documentation-only contrast.",
+  "required_next_decision": "Freeze a new R1 model comparison scope; two options have been presented to the user, no option automatically authorized or launched.",
+  "new_training_started": false,
+  "B_training_started": false,
+  "confirmation_boundary_opened": false
+}
