@@ -79,6 +79,7 @@ if __name__ == "__main__":
             "fixed_kernel_anchored_sources_gpu_gate_20260916",
             "fixed_kernel_anchored_sources_cached_replay_20260916",
             "fixed_kernel_anchored_memory_profile_20260916",
+            "fixed_kernel_anchored_production_admission_20260916",
         ),
         default="fixed_kernel_anchored_sources_gpu_gate_20260916",
     )
