@@ -37,17 +37,30 @@ CSV保留三臂Q、差值、终态、首失败原因和训练配置/后端；A_m
 
 这只描述固定这些模型的开发来源抽样不确定性，不是确认，不覆盖全部训练随机性；跨零不证明等效。
 
+minus区间上界的未四舍五入数值为+0.0005144个百分点，仍跨零，不能由于表格显示
+接近零就宣布负效应已显著。两种固定分布的均值均没有正收益，因此本轮保留alpha0；
+这既不证明所有分布优化无效，也不允许按某个种子或局部题组改选方向。
+
 ## 峰值选择链
 
 540会话的重叠观测：`{'all_three_primary_periods_read': 290, 'any_successful_selection': 183, 'full_primary_selection_observed': 82, 'secondary_in_selected_period_read': 20, 'secondary_read_after_selection': 16, 'successful_linked_lookup': 1, 'final_names_complete_selection': 0, 'final_names_linked_lookup': 1, 'Final_object_observed': 49, 'runtime_recognized_Final': 49}`。
 
 完整primary选择观测要求三期公开主指标读数及实际选择返回覆盖全部期间；先读后选与选后读另列。不以calculate数量替代选择链，也不新增财务判分。
 
+在540次峰值组会话中，读齐三期不是最末端交付：完整主指标选择只观测到82次，
+同期间次指标读取20次，成功关联查询1次。这支持继续检查“选择—关联—Final”的
+组合链路；各计数是重叠行为证据，不能相减后直接当作互斥失败原因或因果损失量。
+
 ## Final失配
 
 既有final_not_supported_by_result的模式：`{'sessions': 215, 'referenced_numeric_result_exists': 215, 'requested_rounding_mismatch': 215, 'raw_number_equal_but_unit_labels_differ': 0, 'difference_within_one_requested_rounding_quantum': 47, 'another_numeric_tool_matches_submitted_amount': 0, 'exact_factor_100_or_inverse': 0, 'exact_factor_million_or_inverse': 0, 'unresolved_other_numeric_mismatch': 168}`。
 
 结果存在、单位标签、100/百万倍数、接近舍入量子、另一个工具金额匹配和未解数值差异可以重叠，不是已证因果根因；换引用不保证通过完整资格。
+
+215次均找到了被引用的数值结果，因而不能把本批问题统称为“引用ID不存在”。其中
+47次差额不超过一个请求舍入量子，只说明接近程度，不足以断言修正舍入就会合格；
+其余168次仍是未解释的数值失配。这里未观测到指定倍数模式，也不等于证明整个
+实验不存在单位/百分数类问题。没有据此修补任何回答或回填合格分数。
 
 非目标概念读取/计算：`{'other_financial': {'read_non_target_concept': 83, 'successful_calculate': 13}, 'composition_required': {'read_non_target_concept': 6, 'successful_calculate': 369}, 'dual_sufficient': {'read_non_target_concept': 37, 'successful_calculate': 539}}`。非目标读取不是movement标签；三期聚合不是披露组件重建；失败轨迹未补标movement。
 
