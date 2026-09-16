@@ -156,7 +156,7 @@ logP、不松容差。新增一个CPU控制核对缓存前缀的完整参数导�
 
 10:46:57北京时间，R2以`PASS_AS_SCOPED_CACHED_LOGP_CONTROL`完成，两段已有输出
 的最大logP差均为0，梯度有限；同一虚拟点摘要及真实状态/RNG隔离通过。无新增
-generate或随机token。耗时210.09秒、CUDA reserved峰值19.290GiB，执行中一次
+generate或随机token。耗时210.09秒、CUDA reserved峰值19.289GiB，执行中一次
 RSS观测约251.85GiB。因此只有反例数值修复已经落实，不把它当成可扩展的完整反馈
 实现。详见`fixed_kernel_anchored_sources_cached_replay_20260916.md`。
 
