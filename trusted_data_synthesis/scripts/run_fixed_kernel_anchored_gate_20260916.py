@@ -2,6 +2,7 @@
 
 import argparse
 import fcntl
+import importlib
 import json
 import os
 import subprocess
@@ -9,12 +10,11 @@ import sys
 import time
 from pathlib import Path
 
-import fixed_kernel_anchored_sources_gpu_gate_20260916 as gate
-
 from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import protocol as p
 
 
-def run(root):
+def run(root, module_name):
+    gate = importlib.import_module(module_name)
     root = Path(root).resolve()
     directory = root / gate.BASE / gate.GATE_DIRECTORY
     p.require((directory / "plan.json").exists(), "anchored_queue.register_before_waiting")
@@ -73,4 +73,13 @@ def run(root):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
-    raise SystemExit(run(parser.parse_args().root))
+    parser.add_argument(
+        "--gate-module",
+        choices=(
+            "fixed_kernel_anchored_sources_gpu_gate_20260916",
+            "fixed_kernel_anchored_sources_cached_replay_20260916",
+        ),
+        default="fixed_kernel_anchored_sources_gpu_gate_20260916",
+    )
+    args = parser.parse_args()
+    raise SystemExit(run(args.root, args.gate_module))
