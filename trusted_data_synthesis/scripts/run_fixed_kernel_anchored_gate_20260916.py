@@ -16,7 +16,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import pr
 
 def run(root):
     root = Path(root).resolve()
-    directory = root / gate.BASE / "gpu_gate"
+    directory = root / gate.BASE / gate.GATE_DIRECTORY
     p.require((directory / "plan.json").exists(), "anchored_queue.register_before_waiting")
     with (directory / "queue.lock").open("a") as lease:
         fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -56,7 +56,11 @@ def run(root):
                     "--mode",
                     "run",
                 ]
-                env = dict(os.environ, CUDA_VISIBLE_DEVICES=selected["uuid"])
+                env = dict(
+                    os.environ,
+                    CUDA_VISIBLE_DEVICES=selected["uuid"],
+                    CUBLAS_WORKSPACE_CONFIG=":4096:8",
+                )
                 with (directory / "worker.log").open("x") as log:
                     result = subprocess.run(
                         command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT

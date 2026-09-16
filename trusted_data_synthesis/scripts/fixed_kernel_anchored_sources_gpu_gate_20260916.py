@@ -28,6 +28,7 @@ from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import pr
 from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import trajectory_training
 
 BASE = "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/anchored_sources_20260916"
+GATE_DIRECTORY = "gpu_gate_env_r1"
 PARENT = (
     "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/parallel_tail_execution_20260914"
 )
@@ -160,8 +161,19 @@ def sample_prefix(model, theta_bar, prompt, configuration, seed):
 
 def prepare(root):
     root = Path(root).resolve()
-    output = root / BASE / "gpu_gate"
+    output = root / BASE / GATE_DIRECTORY
     p.require(not (output / "plan.json").exists(), "anchored_gpu.one_registration")
+    failed = p.checked(
+        p.read_json(root / BASE / "gpu_gate/report.json"), "anchored_sources_gpu_gate_report"
+    )
+    p.require(
+        failed["status"] == "BLOCKED_GPU_NUMERIC_GATE"
+        and failed["error"]["stage"] == "original_package_gradient"
+        and "CUBLAS_WORKSPACE_CONFIG" in failed["error"]["message"]
+        and not failed["cases"]
+        and failed["real_state_unchanged"] is True,
+        "anchored_gpu.explicit_environment_only_revision_of_preserved_failure",
+    )
     material = p.checked(
         p.read_json(root / BASE / "material_binding/report.json"),
         "anchored_sources_material_admission",
@@ -184,6 +196,9 @@ def prepare(root):
     plan = p.record(
         "anchored_sources_gpu_gate_plan",
         code_commit=head,
+        revises_failed_gate_report_id=failed["id"],
+        revision_reason="missing deterministic CuBLAS launch environment; no sampling occurred in first attempt",
+        required_launch_environment={"CUBLAS_WORKSPACE_CONFIG": ":4096:8"},
         source_sha256=p.sha(root / SCRIPT),
         material_admission_id=material["id"],
         utility_environment="J_sources_v2",
@@ -231,9 +246,13 @@ def run(root):
     )
 
     root = Path(root).resolve()
-    out = root / BASE / "gpu_gate"
+    out = root / BASE / GATE_DIRECTORY
     plan = p.checked(p.read_json(out / "plan.json"), "anchored_sources_gpu_gate_plan")
     p.require(plan["source_sha256"] == p.sha(root / SCRIPT), "anchored_gpu.frozen_source")
+    p.require(
+        os.environ.get("CUBLAS_WORKSPACE_CONFIG") == ":4096:8",
+        "anchored_gpu.frozen_deterministic_launch_environment",
+    )
     p.require(
         bool(os.environ.get("CUDA_VISIBLE_DEVICES")), "anchored_gpu.explicit_one_device_scope"
     )
@@ -401,6 +420,7 @@ def run(root):
                 }
             )
             p.require(passed, "anchored_gpu.replayed_sampling_probabilities_mismatch")
+            p.require(case["gradient_finite"], "anchored_gpu.finite_replayed_logprob_gradient")
         stage = "isolation"
         adam._verify(bound)
         unchanged = (
@@ -424,6 +444,7 @@ def run(root):
                 and all(value.grad is None for value in names.values())
                 and not optimizer.state
                 and [module.training for module in model.modules()] == initial_modes
+                and rng_digest() == initial_rng
             )
     report = p.record(
         "anchored_sources_gpu_gate_report",
