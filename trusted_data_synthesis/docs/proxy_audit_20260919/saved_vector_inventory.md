@@ -1,0 +1,330 @@
+# 审计后实验阶段记录
+
+保存CUDA向量与稳定参考的a误差已经测量，但C/pi影响与repeat方向尚待GPU审计，不能据此提前放行训练。冷启动正项集中度和有效方法概率质量仅作描述，不推断因果。
+
+公开文件不含原始会话、模型、梯度或逐轨迹数据。实际新增调用以本阶段计量为准。
+
+```json
+{
+  "schema_version": "fixed_kernel_value.v1.proxy_saved_numeric_public_progress",
+  "plan_id": "anchored_proxy_audit_plan:aa6922cd9f06d2755c65312abd8a7b8302c3f85acd2a1e677f3ce91ec6353df6",
+  "source_inventory_id": "proxy_numeric_inventory:adb0161624b39ebae6723a7953efce8bdc6959663d27a70929bc01a31805ed4e",
+  "status": "SAVED_A_COMPARED_C_AND_PI_PROJECTIONS_PENDING",
+  "scalar_control": {
+    "device": "cpu",
+    "historical_effect_not_inferred_from_scalar": true,
+    "input_FP32": 0.10000000149011612,
+    "original_CUDA_run_reproduced": false,
+    "original_FP32": 0.0,
+    "real_formula_at_same_representable_input": 9.999997701977173e-11,
+    "sign_flip_observed": false,
+    "stable_FP64": 9.999997701977175e-11,
+    "torch_version": "2.7.1+cu128"
+  },
+  "point_metrics": [
+    {
+      "key": "A_full_11_epoch0",
+      "a_relative_L2": 2.623733257040958e-08,
+      "a_cosine": 1.0000000000002336,
+      "existing_positive_terms": 5,
+      "repeat_counts": {
+        "1": 3,
+        "2": 2
+      },
+      "positive_task_count": 5,
+      "positive_CIK_count": 3,
+      "max_CIK_share": 0.6
+    },
+    {
+      "key": "A_full_11_epoch5",
+      "a_relative_L2": 9.322793060965186e-08,
+      "a_cosine": 0.9999999999999192,
+      "existing_positive_terms": 97,
+      "repeat_counts": {
+        "1": 48,
+        "2": 49
+      },
+      "positive_task_count": 67,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.3402061855670103
+    },
+    {
+      "key": "A_c_only_11_epoch0",
+      "a_relative_L2": 2.623733257040958e-08,
+      "a_cosine": 1.0000000000002336,
+      "existing_positive_terms": 5,
+      "repeat_counts": {
+        "1": 3,
+        "2": 2
+      },
+      "positive_task_count": 5,
+      "positive_CIK_count": 3,
+      "max_CIK_share": 0.6
+    },
+    {
+      "key": "A_c_only_11_epoch5",
+      "a_relative_L2": 9.322793060965186e-08,
+      "a_cosine": 0.9999999999999192,
+      "existing_positive_terms": 97,
+      "repeat_counts": {
+        "1": 48,
+        "2": 49
+      },
+      "positive_task_count": 67,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.3402061855670103
+    },
+    {
+      "key": "A_full_29_epoch0",
+      "a_relative_L2": 2.6868045339295846e-08,
+      "a_cosine": 1.000000000000279,
+      "existing_positive_terms": 5,
+      "repeat_counts": {
+        "1": 2,
+        "2": 3
+      },
+      "positive_task_count": 5,
+      "positive_CIK_count": 4,
+      "max_CIK_share": 0.4
+    },
+    {
+      "key": "A_full_29_epoch5",
+      "a_relative_L2": 9.298597964661137e-08,
+      "a_cosine": 0.9999999999999148,
+      "existing_positive_terms": 102,
+      "repeat_counts": {
+        "1": 57,
+        "2": 45
+      },
+      "positive_task_count": 71,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.28431372549019607
+    },
+    {
+      "key": "A_c_only_29_epoch0",
+      "a_relative_L2": 2.6868045339295846e-08,
+      "a_cosine": 1.000000000000279,
+      "existing_positive_terms": 5,
+      "repeat_counts": {
+        "1": 2,
+        "2": 3
+      },
+      "positive_task_count": 5,
+      "positive_CIK_count": 4,
+      "max_CIK_share": 0.4
+    },
+    {
+      "key": "A_c_only_29_epoch5",
+      "a_relative_L2": 9.298597964661137e-08,
+      "a_cosine": 0.9999999999999148,
+      "existing_positive_terms": 102,
+      "repeat_counts": {
+        "1": 57,
+        "2": 45
+      },
+      "positive_task_count": 71,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.28431372549019607
+    },
+    {
+      "key": "A_full_47_epoch0",
+      "a_relative_L2": 2.6891437969194255e-08,
+      "a_cosine": 1.0000000000002867,
+      "existing_positive_terms": 8,
+      "repeat_counts": {
+        "1": 3,
+        "2": 5
+      },
+      "positive_task_count": 8,
+      "positive_CIK_count": 3,
+      "max_CIK_share": 0.75
+    },
+    {
+      "key": "A_full_47_epoch5",
+      "a_relative_L2": 9.240262574867085e-08,
+      "a_cosine": 0.9999999999999151,
+      "existing_positive_terms": 109,
+      "repeat_counts": {
+        "1": 59,
+        "2": 50
+      },
+      "positive_task_count": 75,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.25688073394495414
+    },
+    {
+      "key": "A_c_only_47_epoch0",
+      "a_relative_L2": 2.6891437969194255e-08,
+      "a_cosine": 1.0000000000002867,
+      "existing_positive_terms": 8,
+      "repeat_counts": {
+        "1": 3,
+        "2": 5
+      },
+      "positive_task_count": 8,
+      "positive_CIK_count": 3,
+      "max_CIK_share": 0.75
+    },
+    {
+      "key": "A_c_only_47_epoch5",
+      "a_relative_L2": 9.240262574867085e-08,
+      "a_cosine": 0.9999999999999151,
+      "existing_positive_terms": 109,
+      "repeat_counts": {
+        "1": 59,
+        "2": 50
+      },
+      "positive_task_count": 75,
+      "positive_CIK_count": 12,
+      "max_CIK_share": 0.25688073394495414
+    }
+  ],
+  "unique_class_passes_planned": 6,
+  "existing_positive_replays_planned": 326,
+  "method_exposure": {
+    "A_c_only_11": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.008607018090736647,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": -0.003433370131019131,
+        "movement": 0.003433370131021407
+      },
+      "effective_pi_to_prior_weighted_TV": 0.015141886768696499,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29656662986898,
+        "movement": 0.3034333701310197
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.010854236820653024
+    },
+    "A_c_only_29": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.009944322215464664,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": 0.0032832950586110243,
+        "movement": -0.0032832950586083043
+      },
+      "effective_pi_to_prior_weighted_TV": 0.016471378437368126,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.3032832950586102,
+        "movement": 0.29671670494138996
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.011352766855199157
+    },
+    "A_c_only_47": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.008678400035845139,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": 0.0012937936685479823,
+        "movement": -0.0012937936685452622
+      },
+      "effective_pi_to_prior_weighted_TV": 0.016407252897828017,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.30129379366854714,
+        "movement": 0.298706206331453
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.01233566730826105
+    },
+    "A_full_11": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.007656814436564151,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": -0.003061387689173467,
+        "movement": 0.003061387689175632
+      },
+      "effective_pi_to_prior_weighted_TV": 0.013640140292933743,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.2969386123108257,
+        "movement": 0.3030613876891739
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.009931896238966096
+    },
+    "A_full_29": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.00882847296558573,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": 0.0030553186355468664,
+        "movement": -0.003055318635544313
+      },
+      "effective_pi_to_prior_weighted_TV": 0.014831790434015639,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.303055318635546,
+        "movement": 0.29694468136445396
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.010396323548381945
+    },
+    "A_full_47": {
+      "TV_components_not_asserted_additive": true,
+      "between_method_TV": 0.007731261715394116,
+      "delta_method_probability_mass": {
+        "control": 0.0,
+        "endpoint": 0.001189876527105227,
+        "movement": -0.0011898765271027845
+      },
+      "effective_pi_to_prior_weighted_TV": 0.014773641389480984,
+      "five_epochs_each_weight": 0.5,
+      "mean_ten_epoch_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.3011898765271044,
+        "movement": 0.2988101234728955
+      },
+      "prior_method_probability_mass": {
+        "control": 0.3999999999999998,
+        "endpoint": 0.29999999999999916,
+        "movement": 0.29999999999999827
+      },
+      "probability_mass_not_method_success_quality": true,
+      "within_method_TV_relative_to_prior_conditionals": 0.01123911363636476
+    }
+  },
+  "new_generated_sessions": 0,
+  "new_financial_scores": 0,
+  "new_training_runs_started": 0,
+  "at": "2026-09-19T03:09:54.723205+00:00",
+  "id": "proxy_saved_numeric_public_progress:4cf6b95f62eed5a8ac80dab2c1a8519bbe66b5a3d3a682e29fdbf2e222ab8549"
+}
+```
