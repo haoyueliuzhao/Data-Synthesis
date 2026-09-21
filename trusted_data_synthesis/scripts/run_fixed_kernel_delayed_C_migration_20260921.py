@@ -20,7 +20,7 @@ p, old = r.p, r.old
 SCRIPT = "trusted_data_synthesis/scripts/run_fixed_kernel_delayed_C_migration_20260921.py"
 DIRECTORY = "gpu5_sft_capacity_20260921"
 MOVING, RETAINED = "A_delayed_c_47", "A_delayed_c_29"
-SFT_CAPACITY_MIB = 40960
+SFT_CAPACITY_MIB = 32768
 SFT_COLD_START_MIB = SFT_CAPACITY_MIB + 1024
 
 

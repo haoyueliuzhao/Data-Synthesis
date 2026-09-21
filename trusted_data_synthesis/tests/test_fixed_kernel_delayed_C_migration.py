@@ -56,7 +56,7 @@ def test_SFT_amendment_does_not_apply_to_feedback_worker(monkeypatch):
         m.set_sft_policy(m.RETAINED)
     assert m.r.s.MIN_OWN_CAPACITY_MIB == 61440
     m.set_sft_policy(m.MOVING)
-    assert m.r.s.MIN_OWN_CAPACITY_MIB == 40960
+    assert m.r.s.MIN_OWN_CAPACITY_MIB == 32768
 
 
 def test_adopted_nonchild_completes_even_if_migrated_worker_fails(monkeypatch, tmp_path):
