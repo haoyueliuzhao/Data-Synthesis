@@ -166,6 +166,7 @@ def test_install_redirects_guard_and_all_child_entrypoints_with_revision_receipt
     monkeypatch.setattr(w.training, "_distribution", w.training._distribution)
     monkeypatch.setattr(w.runner, "SCRIPT", w.runner.SCRIPT)
     monkeypatch.setattr(w.runner, "implementation", w.runner.implementation)
+    monkeypatch.setattr(w.runner, "publish_completed", w.runner.publish_completed)
     identity = dict(pid=4321, start_ticks=9876, command=["synthetic"], uid=1000, state="R")
     monkeypatch.setattr(w.runner.identity, "identity", lambda pid: identity)
     implementation_calls = []
@@ -175,6 +176,13 @@ def test_install_redirects_guard_and_all_child_entrypoints_with_revision_receipt
         return {"id": "unchanged_original_implementation"}
 
     monkeypatch.setattr(w, "BASE_IMPLEMENTATION", original_implementation)
+    publication_calls = []
+
+    def original_publication(root, report):
+        publication_calls.append((root, report))
+        return True
+
+    monkeypatch.setattr(w, "BASE_PUBLISH", original_publication)
     w.install(case.root, "worker", w.TARGET, 2)
     assert w.training._distribution is w.guard.revised_distribution
     assert w.runner.SCRIPT == w.SCRIPT
@@ -192,6 +200,18 @@ def test_install_redirects_guard_and_all_child_entrypoints_with_revision_receipt
     assert receipt["mode"] == "worker" and receipt["attempt"] == 2
     assert receipt["guard_installed"] and receipt["identity"] == identity
     assert p.read_json(w.directory() / "processes/4321_9876.json") == receipt
+    report = p.record("B_confirm_completed_study", protocol_id="original_plan")
+    original_report = copy.deepcopy(report)
+    assert w.runner.publish_completed(case.root, report) is True
+    link = p.checked(
+        p.read_json(w.directory() / "completion_link.json"),
+        "B_control_guard_completed_report_link",
+    )
+    assert link["revision_id"] == case.revision["id"]
+    assert link["scientific_report_id"] == report["id"]
+    assert link["original_report_and_scientific_conclusions_not_modified"]
+    assert report == original_report
+    assert publication_calls == [(case.root, report)]
 
 
 def test_install_requires_original_implementation_before_any_runtime_patch(case, monkeypatch):

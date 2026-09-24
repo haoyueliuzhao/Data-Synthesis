@@ -170,3 +170,49 @@ qa_vnext_fixed_kernel_value/delayed_C_B_confirmation_cache_20260922
 ### 11.1 提交前实际定向测试
 
 2026-09-24：新准入44项与原训练worker/协调器7项合计51项通过（8.13秒）；新增受限恢复入口9项通过（3.76秒）；对应文件ruff通过。恢复入口测试仅使用临时目录和合成状态，不接触真实调度状态或GPU，包含预算/其他状态改动拒绝，以及恢复收据落盘前中断后按同一intent继续。原被冻结源码没有修改。
+
+恢复入口测试随后补充最终报告与修订的关联记录、原报告对象不变及原发布函数仍被调用的断言；同9项测试再次通过（3.79秒）。此测试补充不改变任何执行源码。
+
+### 11.2 实际修订登记
+
+修订实现已提交并推送：`62585cb4928bc3c3dd1e071978fa8704b2e2fd73`。2026-09-24 17:31:58，实际修订登记成功：
+
+```text
+B_control_guard_execution_revision:bc5c28a508ccecee854218d9e3257c7c637d5fe88776509a37ec39041429ac74
+```
+
+相对原数据根目录的修订路径为 `revisions/control_guard_20260924/registration.json`。登记时再次重现原表示比较错误，并以新准入验证真实80个控制任务全部通过；返回的保存分布不变。原协议、原implementation以及所有旧冻结源文件字节仍一致；没有打开确认私有资料。
+
+登记前账本为：optimizer 1,200；population 3；feedback_response 593（全部属于seed11）；generate_call 15,865；score_case 1,080；worker_start 32。
+
+### 11.3 实际停止状态解除与并行恢复
+
+17:32:02，受限恢复操作完成。旧调度状态保存在 `revisions/control_guard_20260924/archive/control_state_before.json`；旧停止快照从活动 `needs_attention.json` 移动并保留于 `archive/needs_attention_resolved.json`，可恢复，不是删除失败证据。原 `results/B_delayed_c_11/0001.json` 仍保留失败原貌。
+
+本次只解除 `B_delayed_c_11` 的已授权停止项，attempt仍为1，全部预算字节在该状态操作前后保持一致。恢复收据：
+
+```text
+B_control_guard_resume_applied:7cd57f3a7e966a36a5561987323021f63232387b995fade84d3c62e88713b92c
+```
+
+17:32:06 已启动修订入口的watchdog（首次PID 1443811）。17:32:17，新worker各自记录修订身份后进入原执行核：
+
+| 工作单元 | attempt | 初始GPU | 初始PID | 复用/继续内容 |
+| --- | ---: | ---: | ---: | --- |
+| B_delayed_c_11 | 2 | 0 | 1461517 | 复用已通过数值门的外层更新，从真实step200开始尾段 |
+| replay_B_delayed_c_29 | 1 | 5 | 1461972 | 复用已保存的全量梯度和360条反馈评分，首次执行该种子的回放 |
+
+这些是启动时身份而非永久资源分配。17:33:23时，账本已正常继续到worker_start34、optimizer1201、feedback_response594，其中seed11仍是593，seed29是1；generate_call15865、score_case1080、population3没有增加。此时新增计数表示已预留的首次工作，尚不能据此宣称训练或响应已经完成落盘。
+
+### 11.4 首次真实续跑保存点核验
+
+恢复后、17:34:54最新心跳对应的检查中，seed11已提交真实第201步。CPU读取 `jobs/B_delayed_c_11/updates/0201.pt` 并通过原 `load_training` 核验：原协议/工作单元绑定正确，参数及Adam快照和schedule cursor均为201；文件30,566,427字节。
+
+```text
+optimizer_binding:b18e1e393fdae227fa8762cb1c656f48b382854e414798e16d77c940d398b51c
+optimizer_update:08f321cfc6628da4926dd6ac7f9cf205d5b0e83ecc5cdabdce8de0ce2dcad334
+```
+
+同次检查seed29回放已原子保存3个响应，第4个响应已预留执行；seed11的593个响应计费没有增加。训练计费1202对应既有1200步、第201步已提交及第202步在途，不将1202全部声称为已完成保存点。生成调用仍15865、评分case仍1080、population仍3，证明本次恢复未通过重生成反馈、重评分或重算完整类梯度来绕过原错误。
+
+两个修订worker继续运行，心跳没有新的科学失败，活动 `needs_attention.json` 不再存在且原快照已归档。此证据证明已越过原准入阻断并实际推进，不代表三个Delayed-C尾段或最终确认已经完成；确认生成仍尚未开始。
