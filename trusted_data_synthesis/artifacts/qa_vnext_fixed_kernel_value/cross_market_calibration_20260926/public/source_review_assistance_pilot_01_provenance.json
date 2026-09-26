@@ -1,0 +1,101 @@
+{
+  "protocol_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_assistance_pilot_01/protocol.json",
+    "sha256": "037d4c09d8f20a6071517291e89754768d13517233d6fd7d7aa742c38cab3249",
+    "bytes": 13882
+  },
+  "summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_assistance_pilot_01/summary.json",
+    "sha256": "389d18ecfb10e87c33f3bcbf9c50a5d48cff5307d4ef51099025b030df120a74",
+    "bytes": 3788
+  },
+  "budget_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_assistance_pilot_01/budget_approval.json",
+    "sha256": "1d0acf41235d057adda695d8ef8bab086fbbc08d37450fe0f2043efb73410d19",
+    "bytes": 1704
+  },
+  "registered_at": "2026-09-26T17:12:26.748269+00:00",
+  "code_commit": "7fe58252e2ea3ee9f69e33130f26f03cff016e6b",
+  "requests": [
+    {
+      "lane": "discovery",
+      "original_packet_bytes": 44167,
+      "packet_id": "cross_market_source_review_packet:000472583d647af4243726185e6ea81ea1d3604d0d148d9b249f90fb3b0e3849",
+      "projection_id": "cross_market_review_text_request_projection:b3c86d8cc9a3e5a29e0f839e21813600f89f9e7bbfd8e3485ce9dc0534fa05bb",
+      "request_bytes": 37343,
+      "request_sha256": "d9571601d7157944b75e483c982d9cbc811e0370f1b7fe9c4520ec050113430d"
+    },
+    {
+      "lane": "challenge",
+      "original_packet_bytes": 44167,
+      "packet_id": "cross_market_source_review_packet:000472583d647af4243726185e6ea81ea1d3604d0d148d9b249f90fb3b0e3849",
+      "projection_id": "cross_market_review_text_request_projection:b3c86d8cc9a3e5a29e0f839e21813600f89f9e7bbfd8e3485ce9dc0534fa05bb",
+      "request_bytes": 37510,
+      "request_sha256": "ed594ae2119f5c0d5f32d4d20f5e2add4553f24b74ba809487ec473c7a2f9bff"
+    },
+    {
+      "lane": "discovery",
+      "original_packet_bytes": 111174,
+      "packet_id": "cross_market_source_review_packet:002f16a3eaa342488323929f9bfac1cd23fcf3e4842ab662cf7ca04beb5d72e9",
+      "projection_id": "cross_market_review_text_request_projection:7c2bda40389069c509721b8a42c4f05e13627301fa2bbc86dce0f559aef1b626",
+      "request_bytes": 35127,
+      "request_sha256": "e69fe7f857b36e8a8465baa22b962f295ca7db420ef70521711c2a888e1b4604"
+    },
+    {
+      "lane": "challenge",
+      "original_packet_bytes": 111174,
+      "packet_id": "cross_market_source_review_packet:002f16a3eaa342488323929f9bfac1cd23fcf3e4842ab662cf7ca04beb5d72e9",
+      "projection_id": "cross_market_review_text_request_projection:7c2bda40389069c509721b8a42c4f05e13627301fa2bbc86dce0f559aef1b626",
+      "request_bytes": 35294,
+      "request_sha256": "7f91ef7d049eb070ceb45de22f0e7f88f812fc16980699ffd33ac47f298f111c"
+    },
+    {
+      "lane": "discovery",
+      "original_packet_bytes": 32303,
+      "packet_id": "cross_market_source_review_packet:004eccb0a5bb65f72eb7f71b31a3b4df3b1f319bdfb03387330294c1be26e36d",
+      "projection_id": "cross_market_review_text_request_projection:4d85cba3fd6641aba0b87264f885732a70593b2df3bf3d95d3527ef10161a1e3",
+      "request_bytes": 36685,
+      "request_sha256": "db247971afa2e21eb5590c53029c78f9450ba520593a5e740ad7120231a09d27"
+    },
+    {
+      "lane": "challenge",
+      "original_packet_bytes": 32303,
+      "packet_id": "cross_market_source_review_packet:004eccb0a5bb65f72eb7f71b31a3b4df3b1f319bdfb03387330294c1be26e36d",
+      "projection_id": "cross_market_review_text_request_projection:4d85cba3fd6641aba0b87264f885732a70593b2df3bf3d95d3527ef10161a1e3",
+      "request_bytes": 36852,
+      "request_sha256": "6367717ee156c8b6a7951f877c05348fb52567d23b42c77b3fc8ea48326f7760"
+    },
+    {
+      "lane": "discovery",
+      "original_packet_bytes": 34914,
+      "packet_id": "cross_market_source_review_packet:0069894ba80641d4e259e07ca985c118367d90d826d9b4e7d7ef90d61c6f94d9",
+      "projection_id": "cross_market_review_text_request_projection:13ba34b1e0ea4da892fff436d035e080fd77abd704037d81363089f0d5a650de",
+      "request_bytes": 39533,
+      "request_sha256": "c415acc1717f30c8234c227d07bc5bc0d084c68bd39dea4c075e2fb1fbff5a07"
+    },
+    {
+      "lane": "challenge",
+      "original_packet_bytes": 34914,
+      "packet_id": "cross_market_source_review_packet:0069894ba80641d4e259e07ca985c118367d90d826d9b4e7d7ef90d61c6f94d9",
+      "projection_id": "cross_market_review_text_request_projection:13ba34b1e0ea4da892fff436d035e080fd77abd704037d81363089f0d5a650de",
+      "request_bytes": 39700,
+      "request_sha256": "7fa8a7b8aea1676ff2a38520108e5bfe36fa0dda8e5a92e7f7045f2e48f23cea"
+    },
+    {
+      "lane": "discovery",
+      "original_packet_bytes": 8079396,
+      "packet_id": "cross_market_source_review_packet:1200e28c235bc74c7dce4530d8edbe0e4ffdde05051f987cbd9dd620bc7db678",
+      "projection_id": "cross_market_review_text_request_projection:333b9691c78bfb4bd7c332877aa07af9c14b208cf761d8f4c4edb238d79c89bd",
+      "request_bytes": 36455,
+      "request_sha256": "ed6a5951abdb1f93c46a223ab76fb13a7a38ba9c0d1094301f4f9eb29d58a812"
+    },
+    {
+      "lane": "challenge",
+      "original_packet_bytes": 8079396,
+      "packet_id": "cross_market_source_review_packet:1200e28c235bc74c7dce4530d8edbe0e4ffdde05051f987cbd9dd620bc7db678",
+      "projection_id": "cross_market_review_text_request_projection:333b9691c78bfb4bd7c332877aa07af9c14b208cf761d8f4c4edb238d79c89bd",
+      "request_bytes": 36622,
+      "request_sha256": "733d5b1b4f75faa4d16201274d48e73b2d718cf97e8a54b049ae29cb20d4036b"
+    }
+  ]
+}
