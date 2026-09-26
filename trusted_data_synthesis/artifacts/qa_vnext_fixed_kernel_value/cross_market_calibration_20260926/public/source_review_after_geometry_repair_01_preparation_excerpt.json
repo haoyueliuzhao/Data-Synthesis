@@ -1,0 +1,40 @@
+{
+  "actual_API_calls": 0,
+  "approved_API_attempts": 0,
+  "composition_candidates": 231,
+  "is_source_review_certificate": false,
+  "kind": "cross_market_source_review_preparation_excerpt",
+  "model_evaluation_started": false,
+  "original_empty_text_pages": 171,
+  "original_text_characters": 80883608,
+  "source_documents": 153,
+  "source_fields": {
+    "API_authorized": false,
+    "any_source_review_certificate_created": false,
+    "input_character_exposure_upper_bound": 323538528,
+    "input_token_count": "NOT_ESTIMATED_WITH_AN_UNVERIFIED_PROVIDER_TOKENIZER",
+    "network_requests": 0,
+    "packet_JSON_bytes": 151679050,
+    "packet_count": 4076,
+    "planned_scan_jobs": 8152,
+    "proposed_attempt_cap": 16304,
+    "proposed_maximum_output_tokens": 66781184,
+    "protocol_id": "cross_market_source_review_protocol:eea9f8d89b18a414e4c2ebcf015528b4a89839589c289b3ca813bfdcc540d1d9",
+    "request_UTF8_bytes_upper_bound": 740278568
+  },
+  "source_manifest": {
+    "bytes": 3103723,
+    "id": "cross_market_source_review_packet_manifest:2f9911530a74e613c3fc75f194ef62445cba5aecc00d53773c055426f24a0477",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_after_geometry_repair_01/packet_manifest.json",
+    "sha256": "201a0982f66bb4414a3d0636c5619b73af57a187570079048e6c1b2d4d1ca2ac"
+  },
+  "source_pages": 36546,
+  "source_protocol": {
+    "bytes": 833109,
+    "id": "cross_market_source_review_protocol:eea9f8d89b18a414e4c2ebcf015528b4a89839589c289b3ca813bfdcc540d1d9",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_after_geometry_repair_01/protocol.json",
+    "sha256": "4db1e72eec0d71557e3e2dbe5e09191ca5ebdf06853033d9d50135f663932771"
+  },
+  "source_semantic_review_performed": false,
+  "status": "PACKETS_PREPARED_NOT_SEMANTICALLY_REVIEWED"
+}

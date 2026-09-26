@@ -1,0 +1,112 @@
+{
+  "API_calls": 0,
+  "GPU_processes": 0,
+  "at": "2026-09-26T14:30:18.469367+00:00",
+  "counts": {
+    "coverage_pages": 3385,
+    "coverage_words": 781248,
+    "geometry_pages": 256,
+    "image_placements": 399547,
+    "new_renders": 6,
+    "payload_bytes": 122101475,
+    "reused_images": 10,
+    "saved_images": 16,
+    "words": 43715
+  },
+  "documents": 15,
+  "downstream_authorized": false,
+  "evaluation_started": false,
+  "financial_parser_calls": 0,
+  "four_cached_encoding_recoveries_unchanged": true,
+  "id": "cross_market_geometry_capacity_repair_completed:4e67c48b8df932240861234b1c929c4a8acc4f6ae85246464d9eaccc5ea9a420",
+  "model_calls": 0,
+  "network_requests": 0,
+  "original_421_19_outcome_unchanged": true,
+  "protocol_id": "cross_market_geometry_capacity_repair_protocol:f3e3e601ed13fa57d3a9ec684a5c516ed8292f91a2eaee3d9019725f1d202ff0",
+  "reserved_original_PDF_attempts": 15,
+  "results": [
+    {
+      "bytes": 6529,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/0e19057e777a38720bc62a00.json",
+      "sha256": "1b69b46a2432b9d0bb9b001e49c6d0042bd480bf9ad6633c2c216b060ce04b95"
+    },
+    {
+      "bytes": 10323,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/35b4801ca6732d2c3943a75b.json",
+      "sha256": "64ede7a681345eec57a7dac6d0592bca2b9357d9bdfd0d766960262c7df2578a"
+    },
+    {
+      "bytes": 6550,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/433f3f2bf98f894537435b40.json",
+      "sha256": "52c526884178283a59d8df06f57fb862478e2fb5b633ac93127c97fd411fba89"
+    },
+    {
+      "bytes": 6417,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/6e190c692786fe1278523cac.json",
+      "sha256": "3d18d6029ff8c7421ca1823248d673b14271a8a3f723c08583d2bf289c247c98"
+    },
+    {
+      "bytes": 6455,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/6f96cbe8b339c04ee6d66e16.json",
+      "sha256": "6a4ad462becd19dc010cdb921202aa2883ab04e9ba343017b51a9a409c4e3b4e"
+    },
+    {
+      "bytes": 6097,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/726828e0e30e83b6b8106061.json",
+      "sha256": "7e3b5ec0f46dd51137dec8170b78ee0b59cdb73d0e71dc2e4bedd4bf3d47d1e4"
+    },
+    {
+      "bytes": 6163,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/786077561da526f02e831e17.json",
+      "sha256": "235853b737ef4038f565d0dbfa2831902f504f41eaecf6285d50c67ff876779b"
+    },
+    {
+      "bytes": 6398,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/85bb002fa263baa067af2b45.json",
+      "sha256": "58f4ccd9cacca4f89c0849507455ebccd5468d897a5c92ec09bc9207e7976784"
+    },
+    {
+      "bytes": 6630,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/a89ab37ee2b914b8347e1005.json",
+      "sha256": "0a8f68f3d2d3a0acca666e0a28b0258f7cbebc36bc0de547a4ef4f4b9a97b97f"
+    },
+    {
+      "bytes": 7132,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/c887953b47d830411792e071.json",
+      "sha256": "a1cc7c12ffb596ba22f44ffc7e431d17d1523fb379710c0151a037421b1b335e"
+    },
+    {
+      "bytes": 6169,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/d54e752c5746cc01dc4151fa.json",
+      "sha256": "344866ef21102eff267eabdc3becbad2e16790468b251b6be7437cc332063577"
+    },
+    {
+      "bytes": 6406,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/d78385669c671bbfd9ec75ee.json",
+      "sha256": "dbb9ba531321387f8ab98075019aef62812e69a74238621e919d27a8a14cd7d5"
+    },
+    {
+      "bytes": 6409,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/e063706957f12717cb26e418.json",
+      "sha256": "83fee40e950fa467b8e1a81e7b3457fa2fb294be3a62b2136d30e35c78665b6d"
+    },
+    {
+      "bytes": 5180,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/e42aff1dcb7b8c16bc7d9e20.json",
+      "sha256": "9f5191cec476ab12736881ae1af329cf3ff84fbd84840302320c24a7d4037af4"
+    },
+    {
+      "bytes": 6644,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_capacity_repair_01/documents/edff6017481f455735bb61d4.json",
+      "sha256": "152b4a3db75c2a3cef94e8d99c39dcd93864cd0aab550c6f2ae9e4010b9e6424"
+    }
+  ],
+  "schema_version": "cross_market_calibration.v1.cross_market_geometry_capacity_repair_completed",
+  "scoring_calls": 0,
+  "source_review_complete": false,
+  "status": "GEOMETRY_CAPACITY_REPAIR_COMPLETE_NOT_ADMITTED",
+  "status_counts": {
+    "CAPACITY_REPAIRED_GEOMETRY_NOT_ADMITTED": 15
+  },
+  "training_updates": 0
+}

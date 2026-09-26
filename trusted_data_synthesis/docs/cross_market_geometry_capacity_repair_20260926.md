@@ -1,5 +1,7 @@
 # 十五份原文图像数量上限修订
 
+执行更新：本修订15份已全部成功，15次预算全部按登记使用，后续完整几何与原财务资格亦已执行；详见[实际计数和剩余阻断](cross_market_geometry_capacity_continuation_20260926.md)。以下保留读取前的规则说明。
+
 用户已授权最多新增15次原PDF打开，仅限上一阶段图像放置数量超限的15份报告，各一次。本新阶段为`original_evidence_revision_02/geometry_capacity_repair_01`；本文只描述待登记规则，不预填执行成功。
 
 ## 固定范围
