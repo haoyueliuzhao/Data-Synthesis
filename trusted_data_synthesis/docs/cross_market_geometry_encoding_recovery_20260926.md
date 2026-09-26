@@ -16,7 +16,7 @@
 
 ## 对下游的影响
 
-预期可保存的缓存内容为69个几何页、1,180页覆盖目录、16,413词和19幅已有PNG；这些是只读诊断计数，正式恢复结果须另据真实summary报告。原几何完成状态仍是421成功/19失败；4份缓存派生成功也不意味着原440份几何已完整。
+可保存的缓存内容为69个几何页、1,180页覆盖目录、16,413词和19幅已有PNG；正式恢复结果与此前只读诊断计数一致。原几何完成状态仍是421成功/19失败；4份缓存派生成功也不意味着原440份几何已完整。
 
 本程序不生成财务事实、任务、gold或来源审阅证书，不调用API/模型、不评分/训练、不使用GPU，不打开或哈希原PDF。恢复4份后仍有15份缺少几何，且冻结下游要求全部440份完整；因此不会通过缓存恢复自动解除阻断。原图像容量问题如需重新采集，必须另行登记有限新增PDF预算。
 
@@ -24,4 +24,13 @@
 
 实现冻结前22项针对性合成测试及Ruff通过，覆盖严格AST、无损往返、错误surrogate位置、页/图不一致、缓存预算不退款、原文件隔离以及复用时payload缺失/篡改拒绝。没有运行真实PDF或模型测试。
 
-此处留待冻结代码、正式登记和运行完成后填入实际协议、结果与测试计数；不能把恢复可行性当作已经执行。
+实现冻结于`8ea0b5aa36`，2026-09-26北京时间22:00:04登记，22:00:59正式完成。4次缓存预约全部成功，状态`FOUR_CACHE_PAYLOADS_PRESERVED_NOT_ADMITTED`。
+
+- 协议：`cross_market_geometry_encoding_recovery_protocol:3465cc0a3b96a5f2e5bf2e088078b2d7a2dede1aec1c65646e278a7b61b84ef4`。
+- 完成：`cross_market_geometry_encoding_recovery_completed:a8733941b6537077f69f2b80d4a4db657d5e23dc51d64eef8218dd0b482532c6`。
+- 实际69个几何页、1,180页覆盖、16,413词、19幅已存在PNG；141字段中的282个surrogate码点原样保存，无删改/替换字符。
+- 新payload保存在`geometry_encoding_recovery_01/payloads/`，逐份来源/新hash/编码及码点位置保存在`documents/`，4次预约及完成摘要独立保存。
+- 原几何协议、完成摘要和4份失败文件hash均核对未变；原421／19状态不变。
+- 新增原PDF读取、网络、API、GPU、模型调用、评分和训练更新均0；`geometry_complete=false`、`downstream_authorized=false`、`evaluation_started=false`。
+
+[正式完成摘要公开副本](../artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/geometry_encoding_recovery_01_completed.json)保留原内容身份及逐份恢复结果引用；仅JSON显示缩进不同。它不是金融准入证书或完整几何通过证书。后续仍需处理另外15份容量失败，并履行原财务/完整来源审阅门槛。

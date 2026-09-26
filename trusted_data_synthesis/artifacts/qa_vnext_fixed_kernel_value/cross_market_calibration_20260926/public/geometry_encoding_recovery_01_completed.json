@@ -1,0 +1,56 @@
+{
+  "API_calls": 0,
+  "GPU_processes": 0,
+  "PDF_opens": 0,
+  "at": "2026-09-26T14:00:59.058168+00:00",
+  "cached_attempts": 4,
+  "counts": {
+    "coverage_pages": 1180,
+    "geometry_pages": 69,
+    "saved_images": 19,
+    "surrogate_characters": 282,
+    "surrogate_fields": 141,
+    "words": 16413
+  },
+  "downstream_authorized": false,
+  "evaluation_started": false,
+  "geometry_complete": false,
+  "id": "cross_market_geometry_encoding_recovery_completed:a8733941b6537077f69f2b80d4a4db657d5e23dc51d64eef8218dd0b482532c6",
+  "model_calls": 0,
+  "network_requests": 0,
+  "original_geometry_status_counts": {
+    "GEOMETRY_ACQUISITION_FAILED": 19,
+    "GEOMETRY_COLLECTED_NOT_ADMITTED": 421
+  },
+  "protocol_id": "cross_market_geometry_encoding_recovery_protocol:3465cc0a3b96a5f2e5bf2e088078b2d7a2dede1aec1c65646e278a7b61b84ef4",
+  "results": [
+    {
+      "bytes": 12698,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_encoding_recovery_01/documents/29b58e8200c548acaeddf027.json",
+      "sha256": "8855a9c0bdd726894505fa239c08253b000f8073a6c4949012155bcb1da9e43f"
+    },
+    {
+      "bytes": 5101,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_encoding_recovery_01/documents/2d85fd5acf468b4c17d59a92.json",
+      "sha256": "7d6385bd6bd73fcf5252956107d2dfe33c8631ac3f77ad9a50061f859fb20a42"
+    },
+    {
+      "bytes": 10494,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_encoding_recovery_01/documents/73f4f06a1129d829a58a3017.json",
+      "sha256": "726feba3afe4dc4d72d6f276dbe95ac9f2a595ae2c5748c71ad08366a60fd4ad"
+    },
+    {
+      "bytes": 5097,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_encoding_recovery_01/documents/d963642a9bb06c92692ce727.json",
+      "sha256": "7fc76c0fcb41cb1d5b17ef823e1e0b3e4e7352e9dfa8688d1a1cde5e42dd8d42"
+    }
+  ],
+  "schema_version": "cross_market_calibration.v1.cross_market_geometry_encoding_recovery_completed",
+  "scoring_calls": 0,
+  "source_review_complete": false,
+  "status": "FOUR_CACHE_PAYLOADS_PRESERVED_NOT_ADMITTED",
+  "status_counts": {
+    "LOSSLESS_CACHED_PAYLOAD_PRESERVED_NOT_ADMITTED": 4
+  },
+  "training_updates": 0
+}
