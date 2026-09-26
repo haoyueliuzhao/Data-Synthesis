@@ -1,0 +1,28 @@
+{
+  "status": "READ_ONLY_LOCATION_AUDIT_NOT_SEMANTIC_CERTIFICATE",
+  "source_summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/source_review_line_locator_pilot_02/summary.json",
+    "sha256": "cbd165373ebf8ae18cce9f3bd1661fa04bb8117c66e8381420b07907588559bb",
+    "bytes": 3812
+  },
+  "physical_HTTP_successes": 10,
+  "finish_stop": 10,
+  "length_truncations": 0,
+  "parseable_JSON": 9,
+  "invalid_JSON_unescaped_reason_newline": 1,
+  "validated_responses": 6,
+  "validated_nonempty_responses": 6,
+  "validated_locator_findings": 64,
+  "total_findings_in_parseable_responses": 118,
+  "rejected_response_findings_not_partially_admitted": 54,
+  "inverse_ranges": 1,
+  "cross_segment_ranges": 8,
+  "unknown_line_IDs": 0,
+  "saved_to_recomputed_proof_differences": 0,
+  "paired_fully_valid_packets_before": 0,
+  "paired_fully_valid_packets_after": 2,
+  "potential_aggregate_findings_are_not_accepted_financial_aggregates": true,
+  "semantic_certificates": 0,
+  "original_responses_modified": false,
+  "API_retries": 0
+}
