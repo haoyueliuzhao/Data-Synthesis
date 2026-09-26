@@ -101,3 +101,5 @@ qa_vnext_fixed_kernel_value/direction_calibration_cache_20260926
 本轮原B结论引用 [B完成报告](fixed_kernel_B_confirmation_report_20260925.md)。真实登记ID、进程、首批响应保存与新来源阻断情况见[执行补充](direction_calibration_launch_20260926.md)；本说明不预填尚未发生的结果。
 
 2026-09-26后续状态：阶段一已于05:53完成，见[机制核查完成记录](direction_reliability_completed_20260926.md)。用户批准的来源修订01已执行，TLS成功后首个目录GET返回403并停止；未生成新面板或启动阶段二。诊断预算、旧证据保留和实际响应见[来源修订记录](direction_calibration_source_retry_20260926.md)。
+
+2026-09-26 10:28起，用户进一步要求排查并恢复后，另行登记、启动了不依赖新面板的三个反向40步训练尾段；这不动用阶段一预算，也不开放评价。采集合规修订02使用获确认真实邮箱，在冷却后一次目录尝试仍遇TLS EOF并停止。范围拆分依据、真实登记与进程见[恢复说明](calibration_recovery_20260926.md)。
