@@ -1,0 +1,92 @@
+{
+  "status": "READ_ONLY_COMPARISON_AND_PREFLIGHT_NOT_ADMISSION",
+  "financial_summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_unit_encoding_revision_05/summary.json",
+    "bytes": 3832,
+    "sha256": "0305292e70ddfdb6a6adacf8c0435a341b32c28566d4fd8744f84df108ffddd9"
+  },
+  "financial_protocol_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_unit_encoding_revision_05/protocol.json",
+    "bytes": 1094055,
+    "sha256": "40fb82516a9b12b6b01abadfe298daa3f43af6cd37e909921d0b215de80b3154"
+  },
+  "comparison_04_to_05": {
+    "facts": {
+      "retained": 1660,
+      "added": 566,
+      "removed": 0,
+      "common_core_financial_binding_changes": 0
+    },
+    "original_anchor_membership_unchanged": 9513,
+    "supplementary_anchor_records_identical": 20,
+    "original_passed_anchors": {
+      "retained": 1710,
+      "added": 600,
+      "removed": 0
+    },
+    "supplementary_passed_anchors": {
+      "before": 3,
+      "after": 9
+    },
+    "supplementary_facts": {
+      "before": 6,
+      "after": 18
+    },
+    "tasks": {
+      "dual_sufficient": {
+        "retained": 68,
+        "added": 12,
+        "removed": 0
+      },
+      "composition_required": {
+        "retained": 323,
+        "added": 128,
+        "removed": 0
+      },
+      "other_financial": {
+        "retained": 127,
+        "added": 42,
+        "removed": 0
+      }
+    },
+    "common_task_core_binding_changes": 0,
+    "prior_654_unit_rejections": {
+      "original_anchors_passed": 600,
+      "supplementary_anchors_passed": 6,
+      "semantic_subcolumns_still_rejected": 42,
+      "nonmonetary_tokens_still_rejected": 6
+    }
+  },
+  "public_view_preflight": {
+    "dual_sufficient": {
+      "raw": 80,
+      "issuer_pass": 80,
+      "public_pass": 72,
+      "issuers": 9,
+      "public_observation_ambiguities": 8
+    },
+    "composition_required": {
+      "raw": 451,
+      "issuer_pass": 449,
+      "public_pass": 406,
+      "issuers": 43,
+      "issuer_rejections": 2,
+      "public_observation_ambiguities": 43,
+      "full_source_review_pending": true
+    },
+    "other_financial": {
+      "raw": 169,
+      "issuer_pass": 168,
+      "public_pass": 147,
+      "issuers": 24,
+      "issuer_rejections": 1,
+      "public_observation_ambiguities": 21
+    },
+    "ID_deduplication_removals": 0,
+    "additional_target_fact_visibility_rejections": 0,
+    "no_chooser_or_formal_panel_compile": true,
+    "no_tokenizer_or_model_calls": true
+  },
+  "API_calls": 0,
+  "source_exhaustion_certificates_created": 0
+}

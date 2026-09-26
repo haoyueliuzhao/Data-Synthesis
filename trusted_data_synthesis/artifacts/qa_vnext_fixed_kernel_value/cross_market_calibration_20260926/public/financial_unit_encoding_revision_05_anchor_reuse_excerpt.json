@@ -1,0 +1,26 @@
+{
+  "source_summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_unit_encoding_revision_05/scan_summary.json",
+    "bytes": 153231,
+    "sha256": "739dc76d2006fbc2f526fa1eb7a6f48e94442c497580a4a59d722c4c574dee8d"
+  },
+  "added_anchors": 20,
+  "at": "2026-09-26T16:36:50.458981+00:00",
+  "documents": 440,
+  "explicit_cached_view": true,
+  "id": "cross_market_direct_label_anchor_scan_completed:6dd02095c02acd8dab66b04226af1daf11a2c7468ead005054e4db45ae6bec7e",
+  "new_original_source_scans": 0,
+  "original_PDF_opens": 0,
+  "original_anchors": 9513,
+  "parser_calls": 0,
+  "protocol_id": "cross_market_layout_qualification_protocol:fc83aed4c128312bb9628d3b332e70c9f309a3e42870f1587d0cb079e2205895",
+  "qa_eligible": false,
+  "schema_version": "cross_market_calibration.v1.cross_market_direct_label_anchor_scan_completed",
+  "source_scan_reference": {
+    "bytes": 150663,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_evidence_revision_04/scan_summary.json",
+    "sha256": "91098bbc7eedc44e41acff2a68e27c20211d0a33c1a196008be223bb927e979b"
+  },
+  "status": "FROZEN_LITERAL_ANCHORS_REUSED_NO_NEW_SCAN",
+  "total_anchors": 9533
+}
