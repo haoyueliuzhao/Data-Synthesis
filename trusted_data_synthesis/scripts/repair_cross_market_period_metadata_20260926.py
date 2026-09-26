@@ -123,7 +123,8 @@ def register(root):
         code_commit=head,
         adapter_sha256=base.sha(payload),
         repair=(
-            "manifest year -> parser record_period_hint; all same documents; no numerical rule change"
+            "manifest year -> parser record_period_hint; "
+            "all same documents; no numerical rule change"
         ),
         metadata_inventory=corrected_inventory(parent["metadata_inventory"]),
         parser_attempts_per_document=1,
