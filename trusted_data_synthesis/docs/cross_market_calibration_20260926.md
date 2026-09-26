@@ -94,3 +94,27 @@ cross_market_source_qualification_protocol:de57260e5204e7799d507dea4923e8d54b24f
 新增 `repair_cross_market_period_metadata_20260926.py`，不热改首版脚本或旧解析器。在原440份PDF和原名单上，统一添加 `record_period_hint=str(year)`；不只挑选HKEX或零产出的文件，不改数值计算、标签、日期解析规则或财务门槛。旧结果保留，修订输出独立放在 `period_metadata_revision_01/`。
 
 执行修订必须先提交、登记，再读取原PDF。只新增每文件一次、合440次解析，总累计最多880次，仍不超过首次计划的总尝试上限。原账本440次保留；修订不是把它归零，也不是额外开放无限重跑。4项纯元数据与隔离测试通过，证明修正使用原年度、不改父记录、同时适用CN/HK，并保持spawn进程函数可序列化。
+
+### 修订后的实际完成状态
+
+修订代码在提交 `b79296eb88` 冻结；19:15:27登记并启动PID2967767，19:17:21完成同一440份PDF的修订遍。修订ID：
+
+```text
+cross_market_period_metadata_revision:3bda9c5492df413c939a0bd0de279bd31db22b29fcc14369ba29b3b95a6dda05
+```
+
+| 项目 | 实际结果 |
+| --- | ---: |
+| CNInfo文档／候选 | 218／5,195 |
+| HKEX文档／候选 | 222／4,318 |
+| 全部候选 | 9,513 |
+| parser页内证据检测通过 | 9,431 |
+| 未通过上述检测的候选 | 82，仍保留 |
+| 候选币种 | CNY8,021；HKD1,152；USD340 |
+| 修订解析尝试 | 440 |
+| 连同首轮累计解析尝试 | 880 |
+| 新模型调用／训练／评价 | 全部0 |
+
+440份文档均保存了解析结果，无文档级异常或未结算项；这不等于全部数值通过财务准入。通过parser文本/标签检测的9,431个候选也不能直接当金标准，82个检测失败候选更不能静默丢弃或计作模型答错。两个解析进程均已退出，不继续占用worker。
+
+当前精确状态为 `EXTRACTION_COMPLETE_NOT_EVALUATION_READY`：发行人独立性尚未确认，180题尚未构建，模型评价尚未开始。完成摘要ID为 `cross_market_source_qualification_completed:13d8cdaa97440bce313d941c4111850a0fd00c45b05b5407b298811cee416c0b`，原始结果在 `period_metadata_revision_01/documents/`；[公开完成摘要](../artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/source_qualification_completed.json)只发布计量与未完成门槛，不发布效果结论。
