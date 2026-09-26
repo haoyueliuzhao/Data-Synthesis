@@ -33,3 +33,9 @@ composition的状态`PENDING_ISSUER_AND_SOURCE_EXHAUSTION`不满足准入。编�
 ## 核验范围
 
 14项纯合成CPU测试覆盖四种目标及实际PDF运行时脚本证明、composition pending／regex不足／内容变更、完整公开指标而非私有角色过滤、冲突vintage拒绝、历史／逐文档身份双门槛、确定性发行人目标去重、配额不足、不替换失败题、完整180公开／私有索引与评价桥接口，以及context溢出。完整180序列化测试隔离验证接口，使用mock控制结果；四类真实符号证明另有独立合成测试。没有访问新PDF、网络、真实Student或GPU。
+
+## 实际执行补充：20:56已拒绝发布
+
+本说明初版之后，代码在`d4304e8f06`冻结，20:56:18登记、20:56:21完成一次生产准入。最终来源/公开视图候选为14／0／25，返回`BLOCKED_GROUP_QUOTAS_OR_SOURCE_GATES`；163个composition保留完整源审阅pending，4个other因公开报告版本的观察冲突被拒绝。未达到60×3，因此没有加载tokenizer、运行真实面板scripted控制、发布公开/私有面板或启动评价。
+
+完成记录为`cross_market_panel_compilation_completed:d26191334b221ed13f58744d92e45aa60db18090ac182bb24be5b8a52214cda3`。[完整执行记录](cross_market_admission_progress_20260926.md)及[失败摘要](../artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/panel_01_completed.json)保留真实数量与每个拒绝，不将其计作模型Q=0。
