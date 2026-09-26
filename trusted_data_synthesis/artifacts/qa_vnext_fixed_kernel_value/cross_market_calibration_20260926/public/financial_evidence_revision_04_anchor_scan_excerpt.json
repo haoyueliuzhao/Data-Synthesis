@@ -1,0 +1,23 @@
+{
+  "kind": "cross_market_evidence04_anchor_scan_excerpt",
+  "source_completion": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_evidence_revision_04/scan_summary.json",
+    "bytes": 150663,
+    "sha256": "91098bbc7eedc44e41acff2a68e27c20211d0a33c1a196008be223bb927e979b",
+    "id": "cross_market_direct_label_anchor_scan_completed:3a4f8d51e44d7616f5f0856569a126362ba332a3d240e21988c80b31ae9411c5"
+  },
+  "source_fields": {
+    "added_anchors": 20,
+    "at": "2026-09-26T16:10:31.464986+00:00",
+    "documents": 440,
+    "original_PDF_opens": 0,
+    "original_anchors": 9513,
+    "original_candidates_unchanged": true,
+    "parser_calls": 0,
+    "protocol_id": "cross_market_layout_qualification_protocol:4f7827abe06f37d8f262f6a2d8e6bd709665007617a3b81db51b8708b530ee99",
+    "qa_eligible": false,
+    "status": "DIRECT_LABEL_ANCHORS_SCANNED_NOT_ADMITTED",
+    "total_anchors": 9533
+  },
+  "is_financial_admission": false
+}
