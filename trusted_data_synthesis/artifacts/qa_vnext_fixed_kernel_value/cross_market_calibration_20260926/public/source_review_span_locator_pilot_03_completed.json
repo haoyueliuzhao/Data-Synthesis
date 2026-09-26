@@ -1,0 +1,87 @@
+{
+  "Student_calls": 0,
+  "at": "2026-09-26T18:03:50.599212+00:00",
+  "attempts_with_unknown_token_usage": 0,
+  "execution_protocol_id": "cross_market_source_review_assistance_execution_protocol:c5fd5f27ea1447ce7998cd631293039810850c789d2c2a72bc28053cd326315c",
+  "full_corpus_dispatched": false,
+  "id": "cross_market_source_review_assistance_pilot_completed:f8f00a09d19fbb5b763457d33801e7bb2d66f994efd3722d34f0f602b86d2c97",
+  "independent_reviews": 0,
+  "jobs": 10,
+  "new_training_updates": 0,
+  "physical_attempts": 10,
+  "results": [
+    {
+      "id": "cross_market_source_scan_result:f77e49f21ceae74df94579a67a0bd92359d6b09839fcc2f8065b1f59353d3913",
+      "lane": "discovery",
+      "packet_id": "cross_market_source_review_packet:000472583d647af4243726185e6ea81ea1d3604d0d148d9b249f90fb3b0e3849",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:caae0ae92d7dcf1afd07a758b5c03601bc28b04964edf359ef5ecfabc2ec2042",
+      "lane": "challenge",
+      "packet_id": "cross_market_source_review_packet:000472583d647af4243726185e6ea81ea1d3604d0d148d9b249f90fb3b0e3849",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:983c9e7f3d9b9d56f7c970810c1125f0dda51b58e76f8ba937192dc4526846ae",
+      "lane": "discovery",
+      "packet_id": "cross_market_source_review_packet:002f16a3eaa342488323929f9bfac1cd23fcf3e4842ab662cf7ca04beb5d72e9",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:c4194ee8bf7564d642b107c4ab9c80f2a66c04ab0091194d3caed9637e42c975",
+      "lane": "challenge",
+      "packet_id": "cross_market_source_review_packet:002f16a3eaa342488323929f9bfac1cd23fcf3e4842ab662cf7ca04beb5d72e9",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:97bd4e9c06c43f5efe15595f2364fa095c0e9e533a1500588d87e95132f004a4",
+      "lane": "discovery",
+      "packet_id": "cross_market_source_review_packet:004eccb0a5bb65f72eb7f71b31a3b4df3b1f319bdfb03387330294c1be26e36d",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:60773677ddc998eaced2bcb1578bcd86287f9d91210d88b15e255bb5c30d73e3",
+      "lane": "challenge",
+      "packet_id": "cross_market_source_review_packet:004eccb0a5bb65f72eb7f71b31a3b4df3b1f319bdfb03387330294c1be26e36d",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:a167ef38a5e5fd275626ea9daaa31f16241de745929d613a7f7b200fabbd17df",
+      "lane": "discovery",
+      "packet_id": "cross_market_source_review_packet:0069894ba80641d4e259e07ca985c118367d90d826d9b4e7d7ef90d61c6f94d9",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:b4a717080c98df85cbb51694fa7ff56340ccb196fd662b9262500f6f0dfb80c6",
+      "lane": "challenge",
+      "packet_id": "cross_market_source_review_packet:0069894ba80641d4e259e07ca985c118367d90d826d9b4e7d7ef90d61c6f94d9",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:b6eb528d0e2798ecaddc49e9119ef705e7975ece819c7ab8b6910eca747dafc7",
+      "lane": "discovery",
+      "packet_id": "cross_market_source_review_packet:1200e28c235bc74c7dce4530d8edbe0e4ffdde05051f987cbd9dd620bc7db678",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    },
+    {
+      "id": "cross_market_source_scan_result:0c786c7ba0f202613ce0509daadef26731a268e83aacfa9b5adfc8518bc80995",
+      "lane": "challenge",
+      "packet_id": "cross_market_source_review_packet:1200e28c235bc74c7dce4530d8edbe0e4ffdde05051f987cbd9dd620bc7db678",
+      "status": "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED"
+    }
+  ],
+  "schema_version": "cross_market_calibration.v1.cross_market_source_review_assistance_pilot_completed",
+  "source_certificates": 0,
+  "status": "FINITE_TEXT_PILOT_COMPLETE_NOT_ADMITTED",
+  "status_counts": {
+    "ASSISTANCE_RESPONSE_SAVED_NOT_ADMITTED": 10
+  },
+  "usage_totals": {
+    "completion_tokens": 14174,
+    "prompt_tokens": 186776,
+    "total_tokens": 200950
+  },
+  "usage_totals_are_reported_usage_not_proof_of_zero_cost_for_failed_calls": true,
+  "visual_reviews": 0
+}

@@ -1,0 +1,52 @@
+{
+  "build_protocol_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_source_cached_build_02/protocol.json",
+    "sha256": "db56aea01c8c9004d44b7b0c42b08e80ac3d5b73d5f1687e99ee78146821bcb8",
+    "bytes": 7541
+  },
+  "build_summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_source_cached_build_02/summary.json",
+    "sha256": "313375c5a3c3389001d89fa54affdeae5fa294185e92e9f908e98e551d975a88",
+    "bytes": 8983
+  },
+  "build_registered_at": "2026-09-26T18:02:10.912419+00:00",
+  "build_code_commit": "d269c8f8d9c251f79880ae50ca43ec1ca32bedef",
+  "first_build_failure_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_source_build_01/summary.json",
+    "sha256": "de71c8baaefba0b05a10ac524c5e7bb80e8849e493e9b2e6651cfd5efbf9c40f",
+    "bytes": 4465
+  },
+  "model_acquisition_protocol_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/protocol.json",
+    "sha256": "0a47f870ca381750d10823ce4c2fad44bd7dc6d6603b1d150ca672c55c6993ae",
+    "bytes": 10564
+  },
+  "model_acquisition_summary_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/summary.json",
+    "sha256": "147e81c66671621768fab9f52ae321fcb997eb97962dee112faefc15c3eaf7f0",
+    "bytes": 10587
+  },
+  "model_acquisition_registered_at": "2026-09-26T18:08:11.065280+00:00",
+  "model_acquisition_code_commit": "75bab5b03fd9ec30bc7843b899296a573d39cecb",
+  "first_acquisition_failure_reference": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_01/summary.json",
+    "sha256": "a3c2a3e07c2831986e7f569e775bedfbc4d90bd316027a27a6ad12bb5917dd95",
+    "bytes": 4913
+  },
+  "rate_limit_observations": [
+    {
+      "HTTP_status": 429,
+      "at": "2026-09-26T18:09:44.479770+00:00",
+      "automatic_retry_scheduled": false,
+      "error_type": "HTTPError",
+      "filename": "generation_config.json",
+      "hop": 0,
+      "id": "cross_market_vision_rate_limit_observation:92434c2009f243193d829cc62a14862c67f634b7fc2ef5a51040881fa310e36f",
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "rate_headers": {},
+      "reservation_id": "cross_market_vision_artifact_HTTP_reservation:abc77fb102d4521c69876fa14ce95b13585e470062ea4b70e2b9281273959c74",
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_rate_limit_observation",
+      "start_record_id": "cross_market_vision_paced_HTTP_start:75ce4f51e42a6b7513ac9ab3b9991ec9fef27a3c0773e26707e7fce011193b8b"
+    }
+  ]
+}

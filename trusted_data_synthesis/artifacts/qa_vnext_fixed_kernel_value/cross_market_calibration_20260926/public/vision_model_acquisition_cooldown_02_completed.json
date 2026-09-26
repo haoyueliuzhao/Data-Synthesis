@@ -1,0 +1,264 @@
+{
+  "GPU_processes": 0,
+  "PDF_opens": 0,
+  "at": "2026-09-26T18:09:44.552293+00:00",
+  "dependency_installs": 0,
+  "files": 18,
+  "id": "cross_market_vision_weight_acquisition_summary:e0c83893fdbac493d1b33429e3a9f5639d0f1a1fd9788808bcb63cf1e47b04a8",
+  "maximum_HTTP_requests": 90,
+  "maximum_initial_GETs": 18,
+  "model_loads": 0,
+  "physical_request_count_is_conservative_reservation_count": true,
+  "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+  "reserved_file_attempts": 5,
+  "reserved_physical_HTTP_requests": 9,
+  "results": [
+    {
+      "artifact": {
+        "bytes": 43006,
+        "expected_hash_verified": "bbd87a4cc296c77608f66adfe9411b6c7e84b1e8",
+        "hash_kind": "git_blob_sha1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/README.md",
+        "sha256": "d2d98f1570e294ae88b05b36f3c32a76f67a50c96933cbafb82788833a30cf8a"
+      },
+      "at": "2026-09-26T18:08:52.541404+00:00",
+      "automatic_retries": 0,
+      "duration_seconds": 14.599207496736199,
+      "filename": "README.md",
+      "http_status": 200,
+      "id": "cross_market_vision_artifact_receipt:ed607a764086555c1c33e0b7ea033458b93907223f50e9009b21551824efdf61",
+      "manifest_entry_sha256": "d217866312615750d827c447ae5b964ebbd16376e0b5a6e5c2508c2373bdb5f9",
+      "model_loaded": false,
+      "partial_bytes": 0,
+      "partial_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/README.md.partial",
+      "physical_HTTP_requests": 2,
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "redirects": [
+        {
+          "destination": {
+            "full_URL_sha256": "6158add34840a2eda94229f551a6580cc411517748d056960a3f49e2df432d2b",
+            "host": "huggingface.co",
+            "path": "/api/resolve-cache/models/OpenGVLab/InternVL3_5-8B-HF/741a7d03020411e666c6109218ab71e08151ef86/README.md",
+            "scheme": "https",
+            "signed_query_not_logged": true
+          },
+          "status": 307
+        }
+      ],
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_artifact_receipt",
+      "status": "DOWNLOADED_HASH_VERIFIED_NOT_LOADED"
+    },
+    {
+      "artifact": {
+        "bytes": 913,
+        "expected_hash_verified": "3ecaee9890f76c964b4bf550a85293b874b71b87",
+        "hash_kind": "git_blob_sha1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/added_tokens.json",
+        "sha256": "21d196327bf587cb24ec39db1dbe52cd68d243fdde8bc60dff2c867261b703fe"
+      },
+      "at": "2026-09-26T18:09:06.589919+00:00",
+      "automatic_retries": 0,
+      "duration_seconds": 14.037454202771187,
+      "filename": "added_tokens.json",
+      "http_status": 200,
+      "id": "cross_market_vision_artifact_receipt:01418e26ae1992b7aa00299a74b3fd92d83038744035a64a91cecd83475413b9",
+      "manifest_entry_sha256": "fc2937aabe0c07fc6a4ac5743961678d357e7e86465ce5daab3600fdf7b344f6",
+      "model_loaded": false,
+      "partial_bytes": 0,
+      "partial_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/added_tokens.json.partial",
+      "physical_HTTP_requests": 2,
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "redirects": [
+        {
+          "destination": {
+            "full_URL_sha256": "f8eaf803b4ad7576c27bc5d911a3b5a610fb829136e31efc146a80464e56e291",
+            "host": "huggingface.co",
+            "path": "/api/resolve-cache/models/OpenGVLab/InternVL3_5-8B-HF/741a7d03020411e666c6109218ab71e08151ef86/added_tokens.json",
+            "scheme": "https",
+            "signed_query_not_logged": true
+          },
+          "status": 307
+        }
+      ],
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_artifact_receipt",
+      "status": "DOWNLOADED_HASH_VERIFIED_NOT_LOADED"
+    },
+    {
+      "artifact": {
+        "bytes": 481,
+        "expected_hash_verified": "0b19f45e0cd40b10374f24065639b0c2eee18a22",
+        "hash_kind": "git_blob_sha1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/chat_template.jinja",
+        "sha256": "b3e3fa7cdeceec1d3dfe0d17b77724baf3857714e688f3a700261567e96140eb"
+      },
+      "at": "2026-09-26T18:09:21.235200+00:00",
+      "automatic_retries": 0,
+      "duration_seconds": 14.634415719192475,
+      "filename": "chat_template.jinja",
+      "http_status": 200,
+      "id": "cross_market_vision_artifact_receipt:ef00b02805043eb0da5374dd215a5c6e527f8114b7ca4a6c5fcab6d45c16b346",
+      "manifest_entry_sha256": "9b6173f73f04d0ff604b58e0bab964055ff905cc9b6e850741005b9bd5af9619",
+      "model_loaded": false,
+      "partial_bytes": 0,
+      "partial_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/chat_template.jinja.partial",
+      "physical_HTTP_requests": 2,
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "redirects": [
+        {
+          "destination": {
+            "full_URL_sha256": "5a985fe4c03dd0f7a602423a5bb5adc83c66a58da7f2b357c76ee40b054a6f1c",
+            "host": "huggingface.co",
+            "path": "/api/resolve-cache/models/OpenGVLab/InternVL3_5-8B-HF/741a7d03020411e666c6109218ab71e08151ef86/chat_template.jinja",
+            "scheme": "https",
+            "signed_query_not_logged": true
+          },
+          "status": 307
+        }
+      ],
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_artifact_receipt",
+      "status": "DOWNLOADED_HASH_VERIFIED_NOT_LOADED"
+    },
+    {
+      "artifact": {
+        "bytes": 2998,
+        "expected_hash_verified": "e649dc4968d1a55b93277a3ee38951308c43b7c8",
+        "hash_kind": "git_blob_sha1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/config.json",
+        "sha256": "32a9a726c8fd4d2386038bb1eab9fd34c6e04cf89c070e44aab346a41d9454e6"
+      },
+      "at": "2026-09-26T18:09:37.021853+00:00",
+      "automatic_retries": 0,
+      "duration_seconds": 15.775569537188858,
+      "filename": "config.json",
+      "http_status": 200,
+      "id": "cross_market_vision_artifact_receipt:fd75718ab71b85c31a5333842f723cb6a53dc84ce8cd27d422465014bad024b8",
+      "manifest_entry_sha256": "0c2708b6a3e1139cfa2fb40d93c4ff030b2607d4f09bc8a224857ee6bb7c9325",
+      "model_loaded": false,
+      "partial_bytes": 0,
+      "partial_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/config.json.partial",
+      "physical_HTTP_requests": 2,
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "redirects": [
+        {
+          "destination": {
+            "full_URL_sha256": "d67960edab678f60a09ab15eaea6c7b2cefb72929afdf992260a18a6e2cecb8a",
+            "host": "huggingface.co",
+            "path": "/api/resolve-cache/models/OpenGVLab/InternVL3_5-8B-HF/741a7d03020411e666c6109218ab71e08151ef86/config.json",
+            "scheme": "https",
+            "signed_query_not_logged": true
+          },
+          "status": 307
+        }
+      ],
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_artifact_receipt",
+      "status": "DOWNLOADED_HASH_VERIFIED_NOT_LOADED"
+    },
+    {
+      "artifact": null,
+      "at": "2026-09-26T18:09:44.482839+00:00",
+      "automatic_retries": 0,
+      "duration_seconds": 7.449786695186049,
+      "error_reason": "Transport detail and signed URLs deliberately not persisted",
+      "error_type": "HTTPError",
+      "filename": "generation_config.json",
+      "http_status": 429,
+      "id": "cross_market_vision_artifact_receipt:9a16edc6cae47c8b1cbd2b1c43d994aed9718dba1f100b7d233d38b1186f1f67",
+      "manifest_entry_sha256": "2acfad04c7831c330729dd9c39ffb17d79f6d1d49fc2f2a56245149211592b34",
+      "model_loaded": false,
+      "partial_bytes": 0,
+      "partial_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/vision_model_acquisition_cooldown_02/models/741a7d03020411e666c6109218ab71e08151ef86/generation_config.json.partial",
+      "physical_HTTP_requests": 1,
+      "protocol_id": "cross_market_vision_weight_cooldown_protocol:3bb3d086a713bbc50141c934fee5732fd9d511d3453b3f7d0c29a86883ed29e4",
+      "redirects": [],
+      "schema_version": "cross_market_calibration.v1.cross_market_vision_artifact_receipt",
+      "status": "TRANSFER_FAILED_NOT_REFUNDED"
+    },
+    {
+      "artifact": null,
+      "filename": "merges.txt",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "model-00001-of-00004.safetensors",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "model-00002-of-00004.safetensors",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "model-00003-of-00004.safetensors",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "model-00004-of-00004.safetensors",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "model.safetensors.index.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "preprocessor_config.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "processor_config.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "special_tokens_map.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "tokenizer.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "tokenizer_config.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "video_preprocessor_config.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    },
+    {
+      "artifact": null,
+      "filename": "vocab.json",
+      "physical_HTTP_requests": 0,
+      "status": "NOT_STARTED_INTERRUPTED"
+    }
+  ],
+  "schema_version": "cross_market_calibration.v1.cross_market_vision_weight_acquisition_summary",
+  "semantic_certificates": 0,
+  "status": "MODEL_ACQUISITION_NOT_READY_FAILED_OR_INTERRUPTED",
+  "statuses": {
+    "DOWNLOADED_HASH_VERIFIED_NOT_LOADED": 4,
+    "NOT_STARTED_INTERRUPTED": 13,
+    "TRANSFER_FAILED_NOT_REFUNDED": 1
+  },
+  "verified_files": 4
+}
