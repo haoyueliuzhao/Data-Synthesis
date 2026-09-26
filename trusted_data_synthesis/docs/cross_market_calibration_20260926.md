@@ -78,3 +78,19 @@ qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/
 新增12项合成／mock CPU测试通过，ruff通过。覆盖元数据选择固定、来源/路径拒绝、原文件变更、逐文件缓存、有限恢复预算、完整文档身份、候选不等于金标准，以及日志携带时间戳不触发重复字段错误。没有用真实新财务值调节规则。
 
 本说明初版为正式登记前说明。协议ID、运行PID、实际文档保存及解析结果在真实运行后补充；没有预填发行人准入、180题就绪或跨市场效果。
+
+### 首轮实际运行与期间元数据接线修订
+
+首版代码提交为 `85a4e539ef`。北京时间19:08:11登记：
+
+```text
+cross_market_source_qualification_protocol:de57260e5204e7799d507dea4923e8d54b24fdae151297325e54c7db02cca629
+```
+
+19:08:30启动PID2961252及8个CPU解析worker；19:09:56完成440份PDF的第一遍处理，恰好440次解析，无额外尝试。得到5,816个parser候选，均来自CNInfo；HKEX候选为0。首轮完整结果保留于 `documents/` 与 `extraction_summary.json`，不将此完成状态当作财务准入。
+
+针对HKEX全为0的诊断定位到新增适配器的元数据接线错误：manifest的年度保存在`year`，既有解析器 `_report_year` 只读取`record_period_hint`。因此HKEX的年度消歧器收到None，导致报表期间识别失败；CNInfo部分显式日期仍能解析，但也未获得预期的年度约束。不是证明HKEX年报没有财务数据。
+
+新增 `repair_cross_market_period_metadata_20260926.py`，不热改首版脚本或旧解析器。在原440份PDF和原名单上，统一添加 `record_period_hint=str(year)`；不只挑选HKEX或零产出的文件，不改数值计算、标签、日期解析规则或财务门槛。旧结果保留，修订输出独立放在 `period_metadata_revision_01/`。
+
+执行修订必须先提交、登记，再读取原PDF。只新增每文件一次、合440次解析，总累计最多880次，仍不超过首次计划的总尝试上限。原账本440次保留；修订不是把它归零，也不是额外开放无限重跑。4项纯元数据与隔离测试通过，证明修正使用原年度、不改父记录、同时适用CN/HK，并保持spawn进程函数可序列化。
