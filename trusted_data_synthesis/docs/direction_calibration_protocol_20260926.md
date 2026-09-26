@@ -99,3 +99,5 @@ qa_vnext_fixed_kernel_value/direction_calibration_cache_20260926
 主要独立登记/输出为 `protocol.json`、`reuse_admission.json`、`reliability/B_direction_reliability_SEED/`、`panel_sources/acquisition_plan.json`、`panel_sources/roster.json`、`panel_sources/source_registration.json`、`calibration_panel/public/manifest.json`及`calibration_panel/admission.json`。阶段一会单独封存并发布机制汇总，不会把它写作阶段二已完成。
 
 本轮原B结论引用 [B完成报告](fixed_kernel_B_confirmation_report_20260925.md)。真实登记ID、进程、首批响应保存与新来源阻断情况见[执行补充](direction_calibration_launch_20260926.md)；本说明不预填尚未发生的结果。
+
+2026-09-26后续状态：阶段一已于05:53完成，见[机制核查完成记录](direction_reliability_completed_20260926.md)。用户批准的来源修订01已执行，TLS成功后首个目录GET返回403并停止；未生成新面板或启动阶段二。诊断预算、旧证据保留和实际响应见[来源修订记录](direction_calibration_source_retry_20260926.md)。

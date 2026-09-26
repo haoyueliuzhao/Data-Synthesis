@@ -66,4 +66,35 @@ panel_sources_retry_revision_01/
 
 ## 6. 实际运行补充
 
-本文初版用于冻结前说明。修订登记ID、实际连接结果、测试及最终来源状态将在真实运行后补充；此处不预填网络已恢复或面板已就绪。
+初版说明与实现于提交 `148e67da3fed9f3d41fd5490424c5e8968fb75c9` 冻结并推送后才开始登记。新增28项纯mock测试全部通过（3.12秒），ruff通过；没有通过真实请求调试或调整科学规则。
+
+实际修订ID：
+
+```text
+direction_calibration_source_acquisition_plan:
+c7ce0b7e3e644dfa0f6e6c3e477838918e7f06010ba522e5325972db28b6f87d
+```
+
+以上换行只用于显示，真实ID的冒号后直接连接64位摘要。时间记录如下（北京时间）：
+
+| 时间 | 实际事件 |
+| --- | --- |
+| 10:00:51 | 新采集合同登记完成，尚未联网 |
+| 10:01:09—10 | 原本机代理路径TLS握手成功，TLSv1.3、TLS_AES_256_GCM_SHA384，正常证书验证 |
+| 10:01:10 | 将原代理路径封存为固定路线，预留目录GET尝试1 |
+| 10:01:11 | 目录请求返回HTTP403，先写停止标记，再保留响应体与失败；执行退出 |
+| 10:01:36 | 原阶段一守护与三个worker PID均已不存在 |
+
+**结果：TLS层本次可通，但实际目录HTTP访问被拒绝。** 这不说明原TLS EOF的根因已经确定，也不能将TLS握手成功写成SEC数据可获取。
+
+403响应体共1,925字节，保存于修订目录 `raw_attempts/directory/0001.bin`，SHA256为 `572d14b9bc5309c646cfd2b3e8911ea7201437c9ce8a586d50b6408d2350e3f8`。HTML标题为“SEC.gov | Request Rate Threshold Exceeded”，内容提示自动访问须符合SEC政策。该响应支持“本次收到访问拒绝”，**不单独证明本实验发送速率超标**；本修订实际上只进行了1次目录GET尝试，具体限制原因仍未知。
+
+修订实际消耗1次TLS诊断连接、1次HTTP采集尝试。未进行直连诊断、未更换代理或身份、未发起第2次目录请求。加上原3次失败，累计4次HTTP采集尝试；原计划剩余额度不代表可以绕过新的403停止条件。
+
+停止后的只读核验确认：旧 `panel_sources` 的全部文件摘要仍与登记时一致；旧账本requests=3，新账本requests=1；修订 `access_blocked.json` 存在。没有 `roster.json`、`source_registration.json`或生产 `calibration_panel`，没有取得64CIK名单、任何companyfacts或新180题。阶段二训练、生成、评分仍均未启动。
+
+原始证据位于修订目录的 `acquisition_plan.json`、`diagnostic_intents/01.json`、`diagnostics/01.json`、`route.json`、`network/state.json`、`network/directory/0001.json`、`failures/directory/0001.json`、`access_blocked.json`、`needs_attention.json`及原始响应体。重复执行命令会保留并遵守停止标记，不自动重启采集。
+
+## 7. 后续边界
+
+本次授权的有限诊断与重试已执行并如实停止，未实现“新面板就绪”。后续需要确认合规访问恢复，或提供具有官方来源、获取时间及原始字节证据的合法独立数据材料，再另行修订准入与恢复合同。不能通过换IP、代理或身份绕过本次403，也不能把旧面板重新命名为新面板。阶段一已完成的结果和六个旧step240复用信用继续保留，不因该网络阻断而重算。
