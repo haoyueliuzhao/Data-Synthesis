@@ -18,6 +18,7 @@ def fixture(count=1):
             issuer_cluster_id=cluster,
             admitted=True,
             legal_name="Issuer",
+            exposure=dict(project_source_identity_screen_passed=True),
             document_bindings=[dict(raw_object_id="raw-" + security, admitted=True)],
         )
         for security in ("CN-A", "HK-H")
@@ -97,7 +98,9 @@ def test_security_code_or_CIK_is_not_valid_issuer_cluster(cluster):
         run(tasks, outcomes, admission)
 
 
-@pytest.mark.parametrize("which", ["issuer", "document", "wrong_document", "cluster", "digest"])
+@pytest.mark.parametrize(
+    "which", ["issuer", "document", "wrong_document", "cluster", "digest", "project_history"]
+)
 def test_admission_is_required_for_each_task_and_document(which):
     tasks, outcomes, admission = fixture()
     if which == "issuer":
@@ -108,6 +111,8 @@ def test_admission_is_required_for_each_task_and_document(which):
         tasks[0]["raw_object_ids"] = ["unregistered"]
     elif which == "cluster":
         tasks[0]["issuer_cluster_id"] = "issuer:" + "b" * 64
+    elif which == "project_history":
+        admission["rows"][0]["exposure"]["project_source_identity_screen_passed"] = False
     if which != "digest":
         admission = seal(admission)
     else:

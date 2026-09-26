@@ -82,6 +82,10 @@ def validate(tasks, outcomes, expected_group_sizes, mapping):
             "task_issuer_not_admitted",
         )
         issuer = mapping[security]
+        require(
+            issuer.get("exposure", {}).get("project_source_identity_screen_passed") is True,
+            "task_project_history_screen_not_admitted",
+        )
         require(issuer["issuer_cluster_id"] == cluster, "changed_task_issuer_cluster")
         bound = {d["raw_object_id"] for d in issuer["document_bindings"] if d["admitted"] is True}
         require(
