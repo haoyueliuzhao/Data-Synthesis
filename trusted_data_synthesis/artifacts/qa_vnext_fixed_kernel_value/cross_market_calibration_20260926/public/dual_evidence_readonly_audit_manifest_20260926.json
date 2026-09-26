@@ -1,0 +1,82 @@
+{
+  "audit_is_not_admission": true,
+  "audit_reports": [
+    {
+      "bytes": 425271,
+      "file": "cost_anchor_audit_20260926.json",
+      "sha256": "81205e992ad6c837208fe51003239115eed07e47a09ce34084af2217f6b2e71b"
+    },
+    {
+      "bytes": 438206,
+      "file": "gross_profit_anchor_audit_20260926.json",
+      "sha256": "f3df0367a175546250f8efa83d259be03a21d3f855e7509177e5bac44a91d114"
+    },
+    {
+      "bytes": 183834,
+      "file": "dual_relation_gap_audit_20260926.json",
+      "sha256": "15b063733d68791b96a6ab9ce364431ac61741c890f40d9dc76da756e84bfa5a"
+    }
+  ],
+  "coverage": {
+    "anchor_source_report_union": 51,
+    "cost_failed_candidate_ids": 98,
+    "cost_physical_rows": 49,
+    "gross_profit_failed_candidate_ids": 110,
+    "gross_profit_physical_rows": 55,
+    "overlap_with_existing_20_dual_windows": 0,
+    "recorded_dual_relation_rejections": 18,
+    "relation_gap_windows": 18
+  },
+  "created_at_utc": "2026-09-26T15:37:34.931084+00:00",
+  "guaranteed_added_task_count": null,
+  "method": "AI-assisted read-only existing-cache evidence inspection; not human audit certification or source-exhaustion admission",
+  "operations": {
+    "API_calls": 0,
+    "GPU_processes": 0,
+    "PNG_opens": 0,
+    "certify_calls": 0,
+    "compile_candidates_calls": 0,
+    "financial_facts_calls": 0,
+    "model_calls": 0,
+    "new_facts": 0,
+    "new_tasks": 0,
+    "original_PDF_opens": 0,
+    "parser_calls": 0,
+    "source_exhaustion_certificates": 0
+  },
+  "original_outputs_modified": false,
+  "qualification_code_changed": false,
+  "row_classification_not_recovery_prediction": {
+    "locator_evidence_other_gates_not_tested": {
+      "cost": 26,
+      "gross_profit": 18
+    },
+    "locator_plus_specific_source_or_component_issue": {
+      "cost": 7,
+      "gross_profit": 13
+    },
+    "source_version_scope_or_structure_requirement": {
+      "cost": 16,
+      "gross_profit": 24
+    }
+  },
+  "schema_version": "cross_market_dual_evidence_readonly_audit_manifest.v1",
+  "unchanged_experiment_state": {
+    "conditional_candidate_counts": {
+      "composition_required": 417,
+      "dual_sufficient": 40,
+      "other_financial": 158
+    },
+    "conditionally_qualified_observations": 1964,
+    "evaluation_started": false,
+    "financial_completion_id": "cross_market_financial_qualification_completed:061431eb41f7870d3580466b2bf7c93fc224fa03a2bc71f56b96f72998602ad3",
+    "panel_ready": false
+  },
+  "verification": {
+    "duplicate_target_IDs": 0,
+    "exact_candidate_and_relation_index_coverage": true,
+    "original_experiment_fingerprints_unchanged": 5,
+    "raw_PDFs_hashed_or_opened": 0,
+    "unique_cached_JSON_or_code_references_verified": 297
+  }
+}

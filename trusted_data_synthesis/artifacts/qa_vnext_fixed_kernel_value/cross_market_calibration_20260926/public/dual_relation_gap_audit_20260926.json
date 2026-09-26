@@ -1,0 +1,5049 @@
+{
+  "schema_version": "cross_market_calibration.v1.cross_market_dual_relation_gap_audit",
+  "at": "2026-09-26T15:23:51.590850+00:00",
+  "source_candidate_tasks": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/candidate_tasks.json",
+    "bytes": 1495103,
+    "sha256": "2d4765e03349fbf32b65e2185ae6e3ac76bf296f6969731998a396f73f7369d7"
+  },
+  "source_completion": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/summary.json",
+    "bytes": 3079,
+    "sha256": "86aa88634a9a2cb9375d73981dd5163e4500d8e90a5e05d06f68b307c2b7de61"
+  },
+  "source_task_record_id": "cross_market_financial_task_candidates:a071077097dfd4da890c1f8a71ac4f68af99d3ed9cd41f1db1aac630d5bf0c32",
+  "source_completion_id": "cross_market_financial_qualification_completed:061431eb41f7870d3580466b2bf7c93fc224fa03a2bc71f56b96f72998602ad3",
+  "code_read_references": [
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/trusted_data_synthesis/scripts/cross_market_financial_qualification_20260926.py",
+      "bytes": 49601,
+      "sha256": "525bc1c0e3fc77d95adfe81b6566758fbaa81b784588d520a7dc05258bb28794"
+    },
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/trusted_data_synthesis/scripts/cross_market_layout_qualification_20260926.py",
+      "bytes": 39294,
+      "sha256": "17edca95405249c68e5d6eac1920fb2eb6826af2b6d17f490f123132451a256a"
+    },
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/trusted_data_synthesis/scripts/cross_market_locator_revision_20260926.py",
+      "bytes": 11183,
+      "sha256": "836623a9f49bfc138a0543bd813b1a7c604fa886b8ecaf465a7ca3ecbbdd6091"
+    },
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/trusted_data_synthesis/scripts/prepare_cross_market_sources_20260926.py",
+      "bytes": 27406,
+      "sha256": "39c0a2b285c8cee26de34195bcb1a2271f9f5e9457dd239f006fd8817bd55f16"
+    },
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/raw_financial_data_lake/finraw/cn_financial_statements.py",
+      "bytes": 112812,
+      "sha256": "092e64d6420b7207bdf915589cd5e11e72a256267ab359bbbbe55a1858f350fc"
+    },
+    {
+      "path": "/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914/raw_financial_data_lake/finraw/metric_ontology.py",
+      "bytes": 74702,
+      "sha256": "85f3e5ab5e2c7af343f066d93f42090ff827e33e385d8404fa73f6ad335e86fd"
+    }
+  ],
+  "audit_scope": "exactly all 18 already-recorded dual_sufficient relation rejections; cached inputs and frozen code only",
+  "allowed_display_function": "cross_market_layout_qualification_20260926.lines_for_page only; no certification or requalification",
+  "counts": {
+    "recorded_dual_rejections": 18,
+    "distinct_reports": 18,
+    "missing_revenue": 12,
+    "missing_cost": 6,
+    "original_target_anchor_absent_reports": 16,
+    "existing_target_anchors_but_rejected_reports": 2,
+    "existing_target_anchors_in_those_two_reports": 4,
+    "additional_tencent_cost_gaps_hidden_by_first_error": 6,
+    "proven_source_absence": 0,
+    "existing_eligible_dual_tasks": 40,
+    "existing_eligible_dual_windows": 20,
+    "unique_recorded_gap_windows": 18,
+    "gap_windows_overlapping_existing": 0,
+    "gap_windows_not_overlapping_existing": 18
+  },
+  "classification_counts": {
+    "DIRECT_REVENUES_ALIAS_NOT_IN_ORIGINAL_ANCHOR_POOL": 3,
+    "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED": 6,
+    "COST_OF_GOODS_SOLD_UNREGISTERED_SOURCE_AND_FINANCIAL_ALIAS": 4,
+    "REVENUE_HEADING_AND_GOODS_SERVICES_VALUE_ROW_UNANCHORED": 3,
+    "EXISTING_COST_ANCHORS_REJECTED_MULTITOKEN_NOTE": 2
+  },
+  "parser_strict_HK_aliases": {
+    "revenue": [
+      "Revenue",
+      "Turnover",
+      "Operating revenue"
+    ],
+    "cost_of_revenue": [
+      "Cost of sales"
+    ]
+  },
+  "downstream_financial_alias_distinction": "revenues and costofrevenues are already strict downstream labels; costofgoodssold is not. Downstream labels do not manufacture omitted original anchors.",
+  "compiler_interpretation": "The frozen compiler first requires two usable consecutive gross_profit observations in one report. It looks up revenue then cost for the earlier period first; a KeyError short-circuits later checks. Reports without usable GP pairs are not exhaustively represented by these 18 records.",
+  "window_overlap_interpretation": "Window comparison uses only security_id and exact period tuples. Non-overlap is not proof of admission and must not be multiplied by two to promise added difference/growth tasks.",
+  "no_arithmetic_closure_or_revenue_derivation_performed": true,
+  "further_semantics_unresolved": true,
+  "read_only_audit_not_admission": true,
+  "original_PDF_opens": 0,
+  "PNG_opens": 0,
+  "API_calls": 0,
+  "network_requests": 0,
+  "certify_calls": 0,
+  "financial_facts_calls": 0,
+  "compile_candidates_calls": 0,
+  "new_facts_created": 0,
+  "new_tasks_admitted": 0,
+  "model_calls": 0,
+  "GPU_processes": 0,
+  "rows": [
+    {
+      "audit_ordinal1": 1,
+      "original_rejected_relations_index0": 89,
+      "original_rejection_sha256": "0fef41684a054c9a789a372bf90d0d208a8574dc493bd2b1365aaef29a44d592",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2018-07-01",
+            "2019-06-30"
+          ],
+          [
+            "2019-07-01",
+            "2020-06-30"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_83b14697a788d37040a9f943",
+        "reason": "('revenue', '2018-07-01', '2019-06-30')",
+        "security_id": "hkex_disclosures:00017"
+      },
+      "document_key": "7e489f6aa4a39897ca50b4da",
+      "security_id": "hkex_disclosures:00017",
+      "report_year": 2020,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_83b14697a788d37040a9f943",
+        "sha256": "6b5723e13a907b6ef88d8b3b7f01f92d5324049d1024accd147a4d4aad1df38c",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2020/1027/2020102700674.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00017/year=2020/report_type=annual/2020102700674.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2018-07-01",
+        "period_end": "2019-06-30"
+      },
+      "classification": "DIRECT_REVENUES_ALIAS_NOT_IN_ORIGINAL_ANCHOR_POOL",
+      "diagnosis": "原页有带金额的Revenues行；原HK严格提取别名为Revenue/Turnover/Operating revenue，不包含Revenues，当前报告收入anchor为0。下游金融别名虽已有revenues，也不能自行生成缺失原anchor。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:1c843a8e43c21c837ff49945e947070f8381bd5b5dbca45374dffd89433def91",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2019-07-01",
+          "period_end": "2020-06-30",
+          "page": 163,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:47b17fd6ec47a1b5242a1fc3cad763eb89bf1c86b216678b3b869c59c002a669",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2018-07-01",
+          "period_end": "2019-06-30",
+          "page": 163,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:f61bd5a6fd238784f500c64b23156938b4f1109e78570899cd89cf811a43fe1a",
+          "metric_id": "gross_profit",
+          "period_start": "2019-07-01",
+          "period_end": "2020-06-30",
+          "page": 163,
+          "row": 6
+        },
+        {
+          "fact_id": "pdf_layout_fact:0a5e72cc9a1dccc3f07e2e64d1c573b9ad1950756e12d7573008d35dfc145914",
+          "metric_id": "gross_profit",
+          "period_start": "2018-07-01",
+          "period_end": "2019-06-30",
+          "page": 163,
+          "row": 6
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/7e489f6aa4a39897ca50b4da.json",
+          "bytes": 145157,
+          "sha256": "d1a8f82ef99d4ad9d3ef978fbbf584cc06bebcd8c0e02d8a41b42d945d65011f"
+        },
+        "audit": {
+          "bytes": 17672,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/7e489f6aa4a39897ca50b4da.json",
+          "sha256": "9be4f35ee993fe1a9bbaf325e16bd4ed151db9e8749c320b90187ff34a90df18"
+        },
+        "extraction": {
+          "bytes": 86444,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/7e489f6aa4a39897ca50b4da.json",
+          "sha256": "6396d59ee3c02c5eb897f7709e61866f7221be2b5f5f9ac3e3da3f5c80c724cf"
+        },
+        "geometry": {
+          "bytes": 1108895,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/7e489f6aa4a39897ca50b4da.json",
+          "sha256": "47a2a13db43b4a5b60cdb8634fa76e75bb523a43e8d2ff0e5ba46273efbd8b3b"
+        },
+        "text_bundle": {
+          "bytes": 822589,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/7e489f6aa4a39897ca50b4da.json",
+          "sha256": "05d411ee69ccaabcd35f81d325f51afb6514a7d82ea0740dc35cc93e34f536a3"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 163,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 30 June 2020",
+          "original_word_indices": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 2,
+          "text": "2020 2019",
+          "original_word_indices": [
+            16,
+            17
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 3,
+          "text": "Note HK$m HK$m",
+          "original_word_indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 4,
+          "text": "Revenues 7 59,007.8 76,763.6",
+          "original_word_indices": [
+            21,
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 5,
+          "text": "Cost of sales (39,076.6) (51,742.1)",
+          "original_word_indices": [
+            25,
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 163,
+          "geometric_line_index0": 6,
+          "text": "Gross profit 19,931.2 25,021.5",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 163,
+          "character_start": 137,
+          "character_end": 145,
+          "exact_original_text": "Revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "若继续，须另行明确并登记可否新增原始行锚点；本次固定9513候选不能自动补行。",
+        "复核原两年列、Note列、原币单位、合并范围及完整收入/成本/毛利关系；不能只依金额闭合。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 2,
+      "original_rejected_relations_index0": 90,
+      "original_rejection_sha256": "2c52a4719fdfe816fd8bd362386178d73292facbee69defcc53acedf6085741b",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2019-07-01",
+            "2020-06-30"
+          ],
+          [
+            "2020-07-01",
+            "2021-06-30"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_49bccc1e55fee3815faab81c",
+        "reason": "('revenue', '2019-07-01', '2020-06-30')",
+        "security_id": "hkex_disclosures:00017"
+      },
+      "document_key": "503a6bdec020b8780f669cb2",
+      "security_id": "hkex_disclosures:00017",
+      "report_year": 2021,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_49bccc1e55fee3815faab81c",
+        "sha256": "8c4d958e5da3e8f167b76801f759c64b6b7d8d9acf0063c92fbaf411de6bce39",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/1022/2021102200454.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00017/year=2021/report_type=annual/2021102200454.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2019-07-01",
+        "period_end": "2020-06-30"
+      },
+      "classification": "DIRECT_REVENUES_ALIAS_NOT_IN_ORIGINAL_ANCHOR_POOL",
+      "diagnosis": "原页有带金额的Revenues行；原HK严格提取别名为Revenue/Turnover/Operating revenue，不包含Revenues，当前报告收入anchor为0。下游金融别名虽已有revenues，也不能自行生成缺失原anchor。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:21c7fa9cf58a0988457216edfdd9038b66eeb13d315105adf63591dafb2233a0",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2020-07-01",
+          "period_end": "2021-06-30",
+          "page": 170,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:0fd389c930a96a434f960d1addf91cb77694123abf2f72f6947b7681b989448d",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2019-07-01",
+          "period_end": "2020-06-30",
+          "page": 170,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:08ed6e9d15d7a863c0c26f2a96ee105c0671454713a7d8679f2fc6ae7ea2f9d9",
+          "metric_id": "gross_profit",
+          "period_start": "2020-07-01",
+          "period_end": "2021-06-30",
+          "page": 170,
+          "row": 6
+        },
+        {
+          "fact_id": "pdf_layout_fact:879731e5351348f267d67a0c1f395b3afb4662792be38aac863838e1efe4dc03",
+          "metric_id": "gross_profit",
+          "period_start": "2019-07-01",
+          "period_end": "2020-06-30",
+          "page": 170,
+          "row": 6
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/503a6bdec020b8780f669cb2.json",
+          "bytes": 141906,
+          "sha256": "508a68753845c1ac6baddd839f9b141910fa3c851effd509de7b9cf1314bf0af"
+        },
+        "audit": {
+          "bytes": 16446,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/503a6bdec020b8780f669cb2.json",
+          "sha256": "f8c2cbc8b979e399d484ef35b088d473a9b8fab6a747e6db076d6dd4eab659d8"
+        },
+        "extraction": {
+          "bytes": 80417,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/503a6bdec020b8780f669cb2.json",
+          "sha256": "03ecb8df6ba1eb169f6802dff2cd9e23f9294651bd619e941d7b76dd60f26155"
+        },
+        "geometry": {
+          "bytes": 1946372,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/503a6bdec020b8780f669cb2.json",
+          "sha256": "0a8d06b381e3b472d8720691305dc6141b53af03f31db707dd8a8813e4a997b9"
+        },
+        "text_bundle": {
+          "bytes": 792794,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/503a6bdec020b8780f669cb2.json",
+          "sha256": "6e394472d0ebc24e00c2ee7f31a04b2ccabce68ca176952e209b1b2fb8093844"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 170,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 30 June 2021",
+          "original_word_indices": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 2,
+          "text": "2021 2020",
+          "original_word_indices": [
+            16,
+            17
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 3,
+          "text": "Note HK$m HK$m",
+          "original_word_indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 4,
+          "text": "Revenues 6 68,233.2 59,007.8",
+          "original_word_indices": [
+            21,
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 5,
+          "text": "Cost of sales (49,082.0) (39,076.6)",
+          "original_word_indices": [
+            25,
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 6,
+          "text": "Gross profit 19,151.2 19,931.2",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 170,
+          "character_start": 137,
+          "character_end": 145,
+          "exact_original_text": "Revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "若继续，须另行明确并登记可否新增原始行锚点；本次固定9513候选不能自动补行。",
+        "复核原两年列、Note列、原币单位、合并范围及完整收入/成本/毛利关系；不能只依金额闭合。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 3,
+      "original_rejected_relations_index0": 91,
+      "original_rejection_sha256": "1e4b15381a2c811ac4632547b07fdd5d8b7223ee1ef5256066f5aa0e2786e5c5",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2021-07-01",
+            "2022-06-30"
+          ],
+          [
+            "2022-07-01",
+            "2023-06-30"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_a659ca8d2c72890478c50137",
+        "reason": "('revenue', '2021-07-01', '2022-06-30')",
+        "security_id": "hkex_disclosures:00017"
+      },
+      "document_key": "35b4801ca6732d2c3943a75b",
+      "security_id": "hkex_disclosures:00017",
+      "report_year": 2023,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_a659ca8d2c72890478c50137",
+        "sha256": "fed37494a63e27bffa92c06bd6741b67b613f7ec31cc4777b60ac69a8e8ced44",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2023/1024/2023102400378.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00017/year=2023/report_type=annual/2023102400378.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2021-07-01",
+        "period_end": "2022-06-30"
+      },
+      "classification": "DIRECT_REVENUES_ALIAS_NOT_IN_ORIGINAL_ANCHOR_POOL",
+      "diagnosis": "原页有带金额的Revenues行；原HK严格提取别名为Revenue/Turnover/Operating revenue，不包含Revenues，当前报告收入anchor为0。下游金融别名虽已有revenues，也不能自行生成缺失原anchor。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:61f0899745300989b856bb097019ac28143fd5d339910cce51df7ee0b1e49eea",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2022-07-01",
+          "period_end": "2023-06-30",
+          "page": 171,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:20c79e0275d8ced87b9c7698179d3e709d0407dd0d813dddc0e0970deb44b23d",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2021-07-01",
+          "period_end": "2022-06-30",
+          "page": 171,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:ff44c97063674bfdd038183f951e845def19d924b3774a2e2fdc90f138a0a9f6",
+          "metric_id": "gross_profit",
+          "period_start": "2022-07-01",
+          "period_end": "2023-06-30",
+          "page": 171,
+          "row": 6
+        },
+        {
+          "fact_id": "pdf_layout_fact:46691504b0eba30859b45eb785c5758bb44705c695bf7c7d84f622483c410036",
+          "metric_id": "gross_profit",
+          "period_start": "2021-07-01",
+          "period_end": "2022-06-30",
+          "page": 171,
+          "row": 6
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/35b4801ca6732d2c3943a75b.json",
+          "bytes": 149354,
+          "sha256": "8232c9f5e6640afa7c75809cb1038994e526013f62962f42b881c8f4aea1910a"
+        },
+        "audit": {
+          "bytes": 17788,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/35b4801ca6732d2c3943a75b.json",
+          "sha256": "df654817caea54a668da8f54464cb2807145268e42e9bdef546b9d213c925ce3"
+        },
+        "extraction": {
+          "bytes": 90049,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/35b4801ca6732d2c3943a75b.json",
+          "sha256": "c5632a47000006501a474ad17ff766cadf52265743ba9522efcc06884bfb1e53"
+        },
+        "geometry": {
+          "bytes": 2641706,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/35b4801ca6732d2c3943a75b.json",
+          "sha256": "9f1e7ba6937edfa3d1fb94044f95b4e9116040de91bcac8d2f77cd5777214573"
+        },
+        "text_bundle": {
+          "bytes": 866574,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/35b4801ca6732d2c3943a75b.json",
+          "sha256": "def5aea6f03b5e848e3ccd1a1126ef73de0b1f1fb8ada3101a3532b52415a12b"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 171,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 30 June 2023",
+          "original_word_indices": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 2,
+          "text": "2023 2022",
+          "original_word_indices": [
+            16,
+            17
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 3,
+          "text": "Note HK$m HK$m",
+          "original_word_indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 4,
+          "text": "Revenues 6 95,213.8 68,212.7",
+          "original_word_indices": [
+            21,
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 5,
+          "text": "Cost of sales (73,764.3) (49,967.0)",
+          "original_word_indices": [
+            25,
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 171,
+          "geometric_line_index0": 6,
+          "text": "Gross profit 21,449.5 18,245.7",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 171,
+          "character_start": 137,
+          "character_end": 145,
+          "exact_original_text": "Revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "若继续，须另行明确并登记可否新增原始行锚点；本次固定9513候选不能自动补行。",
+        "复核原两年列、Note列、原币单位、合并范围及完整收入/成本/毛利关系；不能只依金额闭合。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 4,
+      "original_rejected_relations_index0": 98,
+      "original_rejection_sha256": "ebe3280ad5bba48772ac289d7b44390238782d38e8af7b96573987a3f0c1fe7c",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2018-01-01",
+            "2018-12-31"
+          ],
+          [
+            "2019-01-01",
+            "2019-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_dd399edf7f9719de2cb81f27",
+        "reason": "('revenue', '2018-01-01', '2018-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "b5b15d0ad347baaad676efd9",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2019,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_dd399edf7f9719de2cb81f27",
+        "sha256": "147f4258ab73ad06866e9d892d387301027a0d61c781bc0614ce34e8bf6423f6",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2020/0402/2020040201883.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2019/report_type=annual/2020040201883.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2018-01-01",
+        "period_end": "2018-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:f265e101b7b1b8a667594138ae3723ea319abace85764aa3e84c035e38cfab2e",
+          "metric_id": "gross_profit",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 137,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:5148f871ea53680e79bf0d0126069b8f750bb2c91c595a380af69dae4230978e",
+          "metric_id": "gross_profit",
+          "period_start": "2018-01-01",
+          "period_end": "2018-12-31",
+          "page": 137,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2018-01-01",
+              "2018-12-31"
+            ],
+            [
+              "2019-01-01",
+              "2019-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/b5b15d0ad347baaad676efd9.json",
+          "bytes": 102362,
+          "sha256": "06b42f41b0697392f4b8419864fb831f5a5cecabe60c6e7fde07bc2c69f93ac9"
+        },
+        "audit": {
+          "bytes": 16102,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/b5b15d0ad347baaad676efd9.json",
+          "sha256": "948329f3bdb697b3d94a25ef9ea649f23ff8281b57516b9c5e463e0fa942141b"
+        },
+        "extraction": {
+          "bytes": 78361,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/b5b15d0ad347baaad676efd9.json",
+          "sha256": "c5294e90abb224905932182dd9df20339d4bf71780fb94ae09051ee6e88123f8"
+        },
+        "geometry": {
+          "bytes": 938657,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/b5b15d0ad347baaad676efd9.json",
+          "sha256": "d7b6e61dca8eb4f16e9bc20788479c4eb8c8fb50d5a3a70d6522f76d4c925bdb"
+        },
+        "text_bundle": {
+          "bytes": 614577,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/b5b15d0ad347baaad676efd9.json",
+          "sha256": "8c71220f96707d377d73fb298209f401bdd650cbb49919336d5196d230ef0e4f"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 137,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2019",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 3,
+          "text": "2019 2018",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 199,991 176,646",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 7,
+          "text": "FinTech and Business Services (*) 101,355 73,138",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 8,
+          "text": "Online Advertising 68,377 58,079",
+          "original_word_indices": [
+            35,
+            36,
+            37,
+            38
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 9,
+          "text": "Others (*) 7,566 4,831",
+          "original_word_indices": [
+            39,
+            40,
+            41,
+            42
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 10,
+          "text": "5 377,289 312,694",
+          "original_word_indices": [
+            43,
+            44,
+            45
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 8 (209,756) (170,574)",
+          "original_word_indices": [
+            46,
+            47,
+            48,
+            49,
+            50,
+            51
+          ]
+        },
+        {
+          "page": 137,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 167,533 142,120",
+          "original_word_indices": [
+            52,
+            53,
+            54,
+            55
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 137,
+          "character_start": 157,
+          "character_end": 165,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 137,
+          "character_start": 330,
+          "character_end": 346,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 5,
+      "original_rejected_relations_index0": 99,
+      "original_rejection_sha256": "f84d932a29700764eb90994400b35be376c5bbb26e8bbeb6c96a6187e99fa721",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2019-01-01",
+            "2019-12-31"
+          ],
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_9e75d2f3d8cb9b53e677d278",
+        "reason": "('revenue', '2019-01-01', '2019-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "38e20e2cb9f5340d73c51057",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2020,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_9e75d2f3d8cb9b53e677d278",
+        "sha256": "bddc6be8e5a819bfc66e02be90691d022c10b0c8e197311558c9b61f736926fd",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/0408/2021040802045.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2020/report_type=annual/2021040802045.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2019-01-01",
+        "period_end": "2019-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:7ce36a416f99409cc3b77579cceddd3fffcfeab75ccbbba08241eb60ff8d8c7b",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 165,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:dec85b8ed23c39012d2d95f965078b997316d735ff2538bca9a017571a96af3b",
+          "metric_id": "gross_profit",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 165,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2019-01-01",
+              "2019-12-31"
+            ],
+            [
+              "2020-01-01",
+              "2020-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/38e20e2cb9f5340d73c51057.json",
+          "bytes": 98712,
+          "sha256": "94b24a8fb93906c55f466a4bc819859a9945544a654a136d30fb8eb7f0077af7"
+        },
+        "audit": {
+          "bytes": 16102,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/38e20e2cb9f5340d73c51057.json",
+          "sha256": "8add9058c1950a10244f10097d99459452fbc2bf09681bec83c83953add401c9"
+        },
+        "extraction": {
+          "bytes": 78113,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/38e20e2cb9f5340d73c51057.json",
+          "sha256": "56ee2d074e2fbbb4dc107aedfa4cc18be412512b7cb74de2cb12fffa9460f2a5"
+        },
+        "geometry": {
+          "bytes": 969924,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/38e20e2cb9f5340d73c51057.json",
+          "sha256": "f53d00fea72819dfd1b6d138389ce81fe8a2b5035d5d720defb1f4e5527f610c"
+        },
+        "text_bundle": {
+          "bytes": 687115,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/38e20e2cb9f5340d73c51057.json",
+          "sha256": "7e6181263fdbc676b84b6da2240d281c8f899978637860978a7f57b18b5481c8"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 165,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2020",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 3,
+          "text": "2020 2019",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 264,212 199,991",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 7,
+          "text": "Online Advertising 82,271 68,377",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 8,
+          "text": "FinTech and Business Services 128,086 101,355",
+          "original_word_indices": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 9,
+          "text": "Others 7,495 7,566",
+          "original_word_indices": [
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 10,
+          "text": "5 482,064 377,289",
+          "original_word_indices": [
+            41,
+            42,
+            43
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 8 (260,532) (209,756)",
+          "original_word_indices": [
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        },
+        {
+          "page": 165,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 221,532 167,533",
+          "original_word_indices": [
+            50,
+            51,
+            52,
+            53
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 165,
+          "character_start": 157,
+          "character_end": 165,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 165,
+          "character_start": 323,
+          "character_end": 339,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 6,
+      "original_rejected_relations_index0": 100,
+      "original_rejection_sha256": "76a98484518013be8d3d4bbac663ef9dca8e78bcdcae7a079b54d42598799d82",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ],
+          [
+            "2021-01-01",
+            "2021-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_3d70e08aa20e516d03bfec00",
+        "reason": "('revenue', '2020-01-01', '2020-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "abdd50750bfa332a9c216cfb",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2021,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_3d70e08aa20e516d03bfec00",
+        "sha256": "6c9172a17b378c5127a344d6955864c6fd6ff0de67eb5bf77acce0abb98fa142",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2022/0407/2022040701694.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2021/report_type=annual/2022040701694.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2020-01-01",
+        "period_end": "2020-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:d4e56a28272b7844eb918cb85d0024e27c255e4df8d498f64b2c2ead44c43985",
+          "metric_id": "gross_profit",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 170,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:2c1010040af622e42ba18aa2794b909d76842c99403f51cd55bd4b427f051d00",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 170,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2020-01-01",
+              "2020-12-31"
+            ],
+            [
+              "2021-01-01",
+              "2021-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/abdd50750bfa332a9c216cfb.json",
+          "bytes": 96947,
+          "sha256": "9d190f568a98ec213d8c77975bfefc84777b10633beb12b528f8c398fe3d2ae4"
+        },
+        "audit": {
+          "bytes": 16226,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/abdd50750bfa332a9c216cfb.json",
+          "sha256": "b48cfb923093072f30cd1ccd3f19c047c1d88083e9a6613c4c72edf1de6584e3"
+        },
+        "extraction": {
+          "bytes": 79458,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/abdd50750bfa332a9c216cfb.json",
+          "sha256": "6d91e66dac3f1108892a45b91ee890441e1e4fbdaad4e6d6115a47e7b27e5983"
+        },
+        "geometry": {
+          "bytes": 971032,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/abdd50750bfa332a9c216cfb.json",
+          "sha256": "cd90175fa3d3ef95199ba72b5b0ae86b9f429bff0806f8811868bc8a6baaa7d8"
+        },
+        "text_bundle": {
+          "bytes": 704683,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/abdd50750bfa332a9c216cfb.json",
+          "sha256": "5e9c6bd3162f9145a1a1028a3922247a3e1788a6bd710e4ad65396db2e8a2568"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 170,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2021",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 3,
+          "text": "2021 2020",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 291,572 264,212",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 7,
+          "text": "Online Advertising 88,666 82,271",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 8,
+          "text": "FinTech and Business Services 172,195 128,086",
+          "original_word_indices": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 9,
+          "text": "Others 7,685 7,495",
+          "original_word_indices": [
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 10,
+          "text": "5 560,118 482,064",
+          "original_word_indices": [
+            41,
+            42,
+            43
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 8 (314,174) (260,532)",
+          "original_word_indices": [
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        },
+        {
+          "page": 170,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 245,944 221,532",
+          "original_word_indices": [
+            50,
+            51,
+            52,
+            53
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 170,
+          "character_start": 151,
+          "character_end": 159,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 170,
+          "character_start": 321,
+          "character_end": 337,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 7,
+      "original_rejected_relations_index0": 101,
+      "original_rejection_sha256": "8e3586c49ee4d5733479dfe8af987847bdd6e716817998303289fdc12293a089",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2021-01-01",
+            "2021-12-31"
+          ],
+          [
+            "2022-01-01",
+            "2022-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_536c7f877ba7d25604bbb12a",
+        "reason": "('revenue', '2021-01-01', '2021-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "c80e7ff77a91b9c8cdfa3ab1",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2022,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_536c7f877ba7d25604bbb12a",
+        "sha256": "ea8beff1ed60f54eb4cd9981e37ed299ef9aeac1a0b4c476d736a15a02d3932b",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2023/0406/2023040601848.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2022/report_type=annual/2023040601848.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2021-01-01",
+        "period_end": "2021-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:4094188735c0e3d835d019f7917b2eb603a7d21ba5c816d5e865dafec6cd7cf9",
+          "metric_id": "gross_profit",
+          "period_start": "2022-01-01",
+          "period_end": "2022-12-31",
+          "page": 132,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:d7192cbb150bcf73199d2c0c5434645c23817980eabfa271cb73c54195ebe4bd",
+          "metric_id": "gross_profit",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 132,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2021-01-01",
+              "2021-12-31"
+            ],
+            [
+              "2022-01-01",
+              "2022-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/c80e7ff77a91b9c8cdfa3ab1.json",
+          "bytes": 93487,
+          "sha256": "00389ed28b0fab43e8bdfe1f3f10d897cef7022aafc56b87ab3ac0bda9322cf7"
+        },
+        "audit": {
+          "bytes": 16087,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/c80e7ff77a91b9c8cdfa3ab1.json",
+          "sha256": "139006fb44e6f55b9c3091768f2f92b30c84504b70b39a93f83148cb5ff9ca9e"
+        },
+        "extraction": {
+          "bytes": 80406,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/c80e7ff77a91b9c8cdfa3ab1.json",
+          "sha256": "c47021e468d66c870e97550fe7d86b1b5b5b8ac5fc52760a880058c163970500"
+        },
+        "geometry": {
+          "bytes": 970384,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/c80e7ff77a91b9c8cdfa3ab1.json",
+          "sha256": "cd564d2dd775951f592be4872208daa968649d5e96f4462ae5bef6a723dba169"
+        },
+        "text_bundle": {
+          "bytes": 603498,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/c80e7ff77a91b9c8cdfa3ab1.json",
+          "sha256": "5dd02aa33e69bc1bc091dc2f5535bf99c9eb3966df3cc324c78625ac97d7a2ab"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 132,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2022",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 3,
+          "text": "2022 2021",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 287,565 291,572",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 7,
+          "text": "Online Advertising 82,729 88,666",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 8,
+          "text": "FinTech and Business Services 177,064 172,195",
+          "original_word_indices": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 9,
+          "text": "Others 7,194 7,685",
+          "original_word_indices": [
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 10,
+          "text": "5 554,552 560,118",
+          "original_word_indices": [
+            41,
+            42,
+            43
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 8 (315,806) (314,174)",
+          "original_word_indices": [
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        },
+        {
+          "page": 132,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 238,746 245,944",
+          "original_word_indices": [
+            50,
+            51,
+            52,
+            53
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 132,
+          "character_start": 151,
+          "character_end": 159,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 132,
+          "character_start": 321,
+          "character_end": 337,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 8,
+      "original_rejected_relations_index0": 102,
+      "original_rejection_sha256": "9e94e240f91dcb7850e22d37eb757fd281e3a19089507f69c62083dda30a2582",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2023-01-01",
+            "2023-12-31"
+          ],
+          [
+            "2024-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_4631a9e710055d057300f615",
+        "reason": "('revenue', '2023-01-01', '2023-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "7e0f786c1e5dc90be1a77ff9",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2024,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_4631a9e710055d057300f615",
+        "sha256": "95b0652da8294527d150a56a9de293627b53e73b4a4c21202c153ea6eb4e9134",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0408/2025040800667.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2024/report_type=annual/2025040800667.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2023-01-01",
+        "period_end": "2023-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:4c6e23f7285f44954cd53dcd939c0bdbdeba2252db293d1fda19caf210bb913d",
+          "metric_id": "gross_profit",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 124,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:bd075cded1ee72c4ee0cf62f105b1f9ba4152ed2546ac7d13d2cd9a3d13d0a6f",
+          "metric_id": "gross_profit",
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "page": 124,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2023-01-01",
+              "2023-12-31"
+            ],
+            [
+              "2024-01-01",
+              "2024-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/7e0f786c1e5dc90be1a77ff9.json",
+          "bytes": 97307,
+          "sha256": "d044e11fb0af9372f25e50d9511a3c9f8199ec77e6a1222e14d9c40c11000f6d"
+        },
+        "audit": {
+          "bytes": 18784,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/7e0f786c1e5dc90be1a77ff9.json",
+          "sha256": "a2449f9c64c5f4556762d9a2db6dcd58d68df82f7864ee5b893bacb11b0328c9"
+        },
+        "extraction": {
+          "bytes": 99407,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/7e0f786c1e5dc90be1a77ff9.json",
+          "sha256": "46432ad51127b6e0037c1a549a11dd8a64951e3491d8df5c5d91f3e8eab47739"
+        },
+        "geometry": {
+          "bytes": 997442,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/7e0f786c1e5dc90be1a77ff9.json",
+          "sha256": "4dbc1042ff30d204d31d74dfdf34c885fe927b50dcad0b39a976a5ce5dd90277"
+        },
+        "text_bundle": {
+          "bytes": 570221,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/7e0f786c1e5dc90be1a77ff9.json",
+          "sha256": "25c6013b6bafa05654320769bb59645fee65273a0a48f2f0959ce81ada2496c3"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 124,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2024",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 3,
+          "text": "2024 2023",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 319,168 298,375",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 7,
+          "text": "Marketing Services* 121,374 101,482",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 8,
+          "text": "FinTech and Business Services 211,956 203,763",
+          "original_word_indices": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 9,
+          "text": "Others 7,759 5,395",
+          "original_word_indices": [
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 10,
+          "text": "6 660,257 609,015",
+          "original_word_indices": [
+            41,
+            42,
+            43
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 7 (311,011) (315,906)",
+          "original_word_indices": [
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        },
+        {
+          "page": 124,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 349,246 293,109",
+          "original_word_indices": [
+            50,
+            51,
+            52,
+            53
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 124,
+          "character_start": 151,
+          "character_end": 159,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 124,
+          "character_start": 324,
+          "character_end": 340,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 9,
+      "original_rejected_relations_index0": 103,
+      "original_rejection_sha256": "07ab1eefea13dbe222582161c02bf036762ee5ac3b1c52f4f526ff23fbe6f34e",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2024-01-01",
+            "2024-12-31"
+          ],
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_f22f33c6e8ea5849a9c87909",
+        "reason": "('revenue', '2024-01-01', '2024-12-31')",
+        "security_id": "hkex_disclosures:00700"
+      },
+      "document_key": "ea137af44dfc62102ea8601b",
+      "security_id": "hkex_disclosures:00700",
+      "report_year": 2025,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_f22f33c6e8ea5849a9c87909",
+        "sha256": "2a7547168077c3d9994af673125e77612e8656bc0f17ad189371d7e4088f4e98",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0409/2026040901231.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=00700/year=2025/report_type=annual/2026040901231.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2024-01-01",
+        "period_end": "2024-12-31"
+      },
+      "classification": "REVENUE_HEADING_COMPONENTS_UNLABELED_PAIR_AND_COST_ALIAS_UNANCHORED",
+      "diagnosis": "原页Revenues是无金额标题，随后四个分项，之后有Note编号及无名称的双年金额行，再到Cost of revenues和Gross profit。无名称金额行位于疑似合计位置，但本审计未认证其总收入口径，也没有求和或用成本加毛利倒推。收入、成本两个指标在原候选池均为0；成本缺口被先发生的收入KeyError遮蔽。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:c10dcd0729acdf7f176e4a740df010863dc24a0e96b51904e3ff673cad6ab384",
+          "metric_id": "gross_profit",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "page": 130,
+          "row": 12
+        },
+        {
+          "fact_id": "pdf_layout_fact:06c4f5dfbc738372f8d2a9792e16c99c935569a34f9640b73d4a0cb6e5a67e9a",
+          "metric_id": "gross_profit",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 130,
+          "row": 12
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [
+        {
+          "metric_id": "cost_of_revenue",
+          "original_candidates": 0,
+          "saved_usable_facts": 0,
+          "periods": [
+            [
+              "2024-01-01",
+              "2024-12-31"
+            ],
+            [
+              "2025-01-01",
+              "2025-12-31"
+            ]
+          ],
+          "explanation": "Revenue lookup fails first, so recorded rejection does not reach this absent cost component."
+        }
+      ],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/ea137af44dfc62102ea8601b.json",
+          "bytes": 96192,
+          "sha256": "0cf4815fa82fc8672f1b3fa0e430f71e8db7924e831e0a62cbaef662006ded92"
+        },
+        "audit": {
+          "bytes": 19519,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/ea137af44dfc62102ea8601b.json",
+          "sha256": "32acc51c4d524b442f1be3befd5f19f559837c802b0855c5a688566d14b599c0"
+        },
+        "extraction": {
+          "bytes": 98921,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/ea137af44dfc62102ea8601b.json",
+          "sha256": "075e33bd97b5964a03e2afb861d6ee36cf47b107cce2a303be213e2a9c944274"
+        },
+        "geometry": {
+          "bytes": 968925,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/ea137af44dfc62102ea8601b.json",
+          "sha256": "4ef6691ac58faac4dea6120c3e2489308a5b42a399d0687817b3a5a18c934b34"
+        },
+        "text_bundle": {
+          "bytes": 574583,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/ea137af44dfc62102ea8601b.json",
+          "sha256": "b10b4a6cd14fe3f4860d633798e7ba3de2c3a308a361c46843a5a74f8e0732ba"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 130,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Income Statement",
+          "original_word_indices": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2025",
+          "original_word_indices": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 3,
+          "text": "2025 2024",
+          "original_word_indices": [
+            18,
+            19
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’Million RMB’Million",
+          "original_word_indices": [
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 5,
+          "text": "Revenues",
+          "original_word_indices": [
+            23
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 6,
+          "text": "Value-added Services 369,281 319,168",
+          "original_word_indices": [
+            24,
+            25,
+            26,
+            27
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 7,
+          "text": "Marketing Services 144,973 121,374",
+          "original_word_indices": [
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 8,
+          "text": "FinTech and Business Services 229,435 211,956",
+          "original_word_indices": [
+            32,
+            33,
+            34,
+            35,
+            36,
+            37
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 9,
+          "text": "Others 8,077 7,759",
+          "original_word_indices": [
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 10,
+          "text": "6 751,766 660,257",
+          "original_word_indices": [
+            41,
+            42,
+            43
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 11,
+          "text": "Cost of revenues 7 (329,173) (311,011)",
+          "original_word_indices": [
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        },
+        {
+          "page": 130,
+          "geometric_line_index0": 12,
+          "text": "Gross profit 422,593 349,246",
+          "original_word_indices": [
+            50,
+            51,
+            52,
+            53
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenues",
+          "page": 130,
+          "character_start": 151,
+          "character_end": 159,
+          "exact_original_text": "Revenues"
+        },
+        {
+          "label": "Cost of revenues",
+          "page": 130,
+          "character_start": 323,
+          "character_end": 339,
+          "exact_original_text": "Cost of revenues"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先用官方表格/说明证明收入标题、四分项与无名称金额行的层级、总额和完整口径，不得仅依算术闭合。",
+        "Cost of revenues原文存在但原严格提取别名仅Cost of sales；须保存原名并证明对应的成本定义。",
+        "若继续，需要独立授权及有界原始行锚点/层级适配，不能靠现有9513候选定位阈值补齐；原直接行序和其余来源门槛仍需成立。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 10,
+      "original_rejected_relations_index0": 110,
+      "original_rejection_sha256": "8171ef2bcde13a645261c200df6c451d9ed971655ce6b762de9900f75852a2a5",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2018-01-01",
+            "2018-12-31"
+          ],
+          [
+            "2019-01-01",
+            "2019-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_e15cbaa8ee41ab9318a6bd7f",
+        "reason": "('cost_of_revenue', '2018-01-01', '2018-12-31')",
+        "security_id": "hkex_disclosures:01044"
+      },
+      "document_key": "96f6ceb78c4a0eebe22efe2e",
+      "security_id": "hkex_disclosures:01044",
+      "report_year": 2019,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_e15cbaa8ee41ab9318a6bd7f",
+        "sha256": "422308a50b4c8e750e9c290042237bf9931097e2fd4c24fcea35e5583687a52a",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2020/0417/2020041700350.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01044/year=2019/report_type=annual/2020041700350.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2018-01-01",
+        "period_end": "2018-12-31"
+      },
+      "classification": "COST_OF_GOODS_SOLD_UNREGISTERED_SOURCE_AND_FINANCIAL_ALIAS",
+      "diagnosis": "原页Cost of goods sold带Note及两年负数金额，夹在Revenue与Gross profit之间；没有cost_of_revenue候选，也没有同一打印标签被映射到其他指标的候选。原提取只登记Cost of sales；下游严格成本别名也不包含costofgoodssold。该概念不能因接近或数值可能闭合而自动等同全部收入成本。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:bed4980839a927d60cff4f833a1c455dfab422c2be07bed74f581e8fed4f462f",
+          "metric_id": "revenue",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 52,
+          "row": 6
+        },
+        {
+          "fact_id": "pdf_layout_fact:571a38bae9be0518adf1865ec5a7263577f62d66067ba65e314c4fb5f5d0ba42",
+          "metric_id": "revenue",
+          "period_start": "2018-01-01",
+          "period_end": "2018-12-31",
+          "page": 52,
+          "row": 6
+        },
+        {
+          "fact_id": "pdf_layout_fact:61eb9239e818bfa50046518ded536ee73a54112100ea8f0b2ebe3893a4c73d7b",
+          "metric_id": "gross_profit",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 52,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:8c362326da53e39c51f914c918ea201d49b2bc9c43f11cbe5e98afc4eaabacad",
+          "metric_id": "gross_profit",
+          "period_start": "2018-01-01",
+          "period_end": "2018-12-31",
+          "page": 52,
+          "row": 8
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/96f6ceb78c4a0eebe22efe2e.json",
+          "bytes": 102145,
+          "sha256": "b601cbd50fe25c1abec313d524cdc8d07b1c1e58d727f7211004dbc55da9ea27"
+        },
+        "audit": {
+          "bytes": 22361,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/96f6ceb78c4a0eebe22efe2e.json",
+          "sha256": "34fb93e07f35cdf2e25e677cf8c1bcab16b4999af42dc3621ca4ba227481dada"
+        },
+        "extraction": {
+          "bytes": 79897,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/96f6ceb78c4a0eebe22efe2e.json",
+          "sha256": "14dd76f8caf66df713ab7cbc28aa45e2a81971f846649f9cf182abd0a78c2a6f"
+        },
+        "geometry": {
+          "bytes": 1102773,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/96f6ceb78c4a0eebe22efe2e.json",
+          "sha256": "bb2dc05ddd42e7c9477834699859dbadf1e61497c7ae1598b89a5c67f0773387"
+        },
+        "text_bundle": {
+          "bytes": 327316,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/96f6ceb78c4a0eebe22efe2e.json",
+          "sha256": "627571497520ab07aaa826347ce7b21ca9bb7fb60bd93f49878eb52bdfed0d7a"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 52,
+          "geometric_line_index0": 0,
+          "text": "CONSOLIDATED STATEMENT OF",
+          "original_word_indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 1,
+          "text": "PROFIT OR LOSS",
+          "original_word_indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 2,
+          "text": "For the year ended 31 December 2019",
+          "original_word_indices": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 3,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 4,
+          "text": "2019 2018",
+          "original_word_indices": [
+            26,
+            27
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 5,
+          "text": "Note RMB’000 RMB’000",
+          "original_word_indices": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 6,
+          "text": "Revenue 5 22,492,845 20,513,881",
+          "original_word_indices": [
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 7,
+          "text": "Cost of goods sold 7 (13,803,888) (12,678,128)",
+          "original_word_indices": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 8,
+          "text": "Gross profit 8,688,957 7,835,753",
+          "original_word_indices": [
+            42,
+            43,
+            44,
+            45
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of goods sold",
+          "page": 52,
+          "character_start": 229,
+          "character_end": 247,
+          "exact_original_text": "Cost of goods sold"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先证明该发行人的Cost of goods sold与拟使用的销售成本关系及完整经营口径；本审计不作自动语义等价。",
+        "如果后续选择扩充受支持原生定义/新增原行锚点，须明确授权和前瞻协议；保留旧缺口和原标签。",
+        "实际期间、币种/单位、Note列和同报表直接关系均须独立通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 11,
+      "original_rejected_relations_index0": 111,
+      "original_rejection_sha256": "6f6566554aaf67b84d6797779adc8bbdb4fe138461efb8446273e07c8fda3c57",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2019-01-01",
+            "2019-12-31"
+          ],
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_6688250ec37c5795a620a5f8",
+        "reason": "('cost_of_revenue', '2019-01-01', '2019-12-31')",
+        "security_id": "hkex_disclosures:01044"
+      },
+      "document_key": "428e0e8da5b8f14cf9d7f92e",
+      "security_id": "hkex_disclosures:01044",
+      "report_year": 2020,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_6688250ec37c5795a620a5f8",
+        "sha256": "36cb8f493a1f38773a4e1b123737666b7c080df5e7d817f8c851cfbcac2ca6c0",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/0413/2021041300400.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01044/year=2020/report_type=annual/2021041300400.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2019-01-01",
+        "period_end": "2019-12-31"
+      },
+      "classification": "COST_OF_GOODS_SOLD_UNREGISTERED_SOURCE_AND_FINANCIAL_ALIAS",
+      "diagnosis": "原页Cost of goods sold带Note及两年负数金额，夹在Revenue与Gross profit之间；没有cost_of_revenue候选，也没有同一打印标签被映射到其他指标的候选。原提取只登记Cost of sales；下游严格成本别名也不包含costofgoodssold。该概念不能因接近或数值可能闭合而自动等同全部收入成本。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:50b34f55060bfb74bd483e487e622cb6ebdf2379e7dc055b6eef4c3babcbdf60",
+          "metric_id": "revenue",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 52,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:d6083ce69f9fe4fa965b1697317bddbcc325c353a07c324486e226631f883cd1",
+          "metric_id": "revenue",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 52,
+          "row": 5
+        },
+        {
+          "fact_id": "pdf_layout_fact:87b5e914aa33e6fafee92e56b6fca762d4618861c12bab74f1e0dd6833e4bf06",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 52,
+          "row": 7
+        },
+        {
+          "fact_id": "pdf_layout_fact:0929cc452d0a819b3c5bef5e315fecbd235bcf12ae2bedee2b0c1bcf15beec2b",
+          "metric_id": "gross_profit",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 52,
+          "row": 7
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/428e0e8da5b8f14cf9d7f92e.json",
+          "bytes": 150880,
+          "sha256": "47da037729d7942cefe27fe1dce74112dc9a2081c6657066cb6346d80b0a8d73"
+        },
+        "audit": {
+          "bytes": 25166,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/428e0e8da5b8f14cf9d7f92e.json",
+          "sha256": "7b25310e21f9eddcb46b591bb1d04765582ad84071344b3b52d08c6184c2f824"
+        },
+        "extraction": {
+          "bytes": 88342,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/428e0e8da5b8f14cf9d7f92e.json",
+          "sha256": "be023aa69e935bb5196a76bf4ebac738fd80e1a7736d4881f51774f066aa7601"
+        },
+        "geometry": {
+          "bytes": 1217771,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/428e0e8da5b8f14cf9d7f92e.json",
+          "sha256": "ac18ea3d309ed8bf4f083479881ef4c7eabe3bb966286032ae6fc7476963e7a9"
+        },
+        "text_bundle": {
+          "bytes": 313988,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/428e0e8da5b8f14cf9d7f92e.json",
+          "sha256": "9f62ffc1e7e60ed130457ef38a1349170af1207410647d69eefa5cbca74d1fec"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 52,
+          "geometric_line_index0": 0,
+          "text": "CONSOLIDATED STATEMENT OF PROFIT OR LOSS",
+          "original_word_indices": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 1,
+          "text": "For the year ended 31 December 2020",
+          "original_word_indices": [
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 2,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 3,
+          "text": "2020 2019",
+          "original_word_indices": [
+            26,
+            27
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 4,
+          "text": "Note RMB’000 RMB’000",
+          "original_word_indices": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 5,
+          "text": "Revenue 5 22,374,001 22,492,845",
+          "original_word_indices": [
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 6,
+          "text": "Cost of goods sold 7 (12,918,146) (13,803,888)",
+          "original_word_indices": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ]
+        },
+        {
+          "page": 52,
+          "geometric_line_index0": 7,
+          "text": "Gross profit 9,455,855 8,688,957",
+          "original_word_indices": [
+            42,
+            43,
+            44,
+            45
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of goods sold",
+          "page": 52,
+          "character_start": 228,
+          "character_end": 246,
+          "exact_original_text": "Cost of goods sold"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先证明该发行人的Cost of goods sold与拟使用的销售成本关系及完整经营口径；本审计不作自动语义等价。",
+        "如果后续选择扩充受支持原生定义/新增原行锚点，须明确授权和前瞻协议；保留旧缺口和原标签。",
+        "实际期间、币种/单位、Note列和同报表直接关系均须独立通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 12,
+      "original_rejected_relations_index0": 112,
+      "original_rejection_sha256": "542de41205d4291395448616982cef0d702fbccc37d93f9127404c00b373edaf",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ],
+          [
+            "2021-01-01",
+            "2021-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_22fadddba2d8d484d00d7194",
+        "reason": "('cost_of_revenue', '2020-01-01', '2020-12-31')",
+        "security_id": "hkex_disclosures:01044"
+      },
+      "document_key": "1af70b4902e9aa947db56a24",
+      "security_id": "hkex_disclosures:01044",
+      "report_year": 2021,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_22fadddba2d8d484d00d7194",
+        "sha256": "33353513f97d241bf90f900a0912b6a74b1f7251edde466b77c1ddf2d2a5c110",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2022/0412/2022041201006.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01044/year=2021/report_type=annual/2022041201006.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2020-01-01",
+        "period_end": "2020-12-31"
+      },
+      "classification": "COST_OF_GOODS_SOLD_UNREGISTERED_SOURCE_AND_FINANCIAL_ALIAS",
+      "diagnosis": "原页Cost of goods sold带Note及两年负数金额，夹在Revenue与Gross profit之间；没有cost_of_revenue候选，也没有同一打印标签被映射到其他指标的候选。原提取只登记Cost of sales；下游严格成本别名也不包含costofgoodssold。该概念不能因接近或数值可能闭合而自动等同全部收入成本。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:e6b8afafc2237281d10e8be1a52aca1e5da036813db2b2caab1f1b5e7be2d428",
+          "metric_id": "revenue",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 55,
+          "row": 7
+        },
+        {
+          "fact_id": "pdf_layout_fact:ab1e860f2a80264ef8d76357940a967945d71912885898b2c6119d7af46d2686",
+          "metric_id": "revenue",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 55,
+          "row": 7
+        },
+        {
+          "fact_id": "pdf_layout_fact:dc01075d01d55f46073a5c818ad88093ad98a0a32bd84b9a4367f857e141ecb9",
+          "metric_id": "gross_profit",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 55,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:5df17a6ee4a859a64fc29a3ffabe10f7101a91dc396a2236596463e8f9e01327",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 55,
+          "row": 9
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/1af70b4902e9aa947db56a24.json",
+          "bytes": 152744,
+          "sha256": "3f837354c5b52203949920c73b93193478f5c1cbea65e6f99618f53fb0633bfc"
+        },
+        "audit": {
+          "bytes": 25188,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/1af70b4902e9aa947db56a24.json",
+          "sha256": "00afae17d46cf676e6b592f331510bbabe7e8c0b9612ce3dceb9ca346dba5dbb"
+        },
+        "extraction": {
+          "bytes": 85815,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/1af70b4902e9aa947db56a24.json",
+          "sha256": "063cfe48f3229cf89660a3ad6ab7e6ec28cd2103bcfcc22ff181b87e274bd26f"
+        },
+        "geometry": {
+          "bytes": 892680,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/1af70b4902e9aa947db56a24.json",
+          "sha256": "114c2ffa655143f93db867759f226ca035bb40cc247fd5f13e8b922559fd35bf"
+        },
+        "text_bundle": {
+          "bytes": 345542,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/1af70b4902e9aa947db56a24.json",
+          "sha256": "7d90bf5494a0266fb9ff84f93966302605af18cc54e2827fda2eb69dc18480c7"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 55,
+          "geometric_line_index0": 0,
+          "text": "HENGAN INTERNATIONAL GROUP COMPANY LIMITED 53",
+          "original_word_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            8
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 1,
+          "text": "Annual Report 2021",
+          "original_word_indices": [
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 2,
+          "text": "CONSOLIDATED STATEMENT OF PROFIT OR LOSS",
+          "original_word_indices": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 3,
+          "text": "For the year ended 31 December 2021",
+          "original_word_indices": [
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 4,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            38,
+            39,
+            40,
+            41
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 5,
+          "text": "2021 2020",
+          "original_word_indices": [
+            42,
+            43
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 6,
+          "text": "Note RMB’000 RMB’000",
+          "original_word_indices": [
+            44,
+            45,
+            46
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 7,
+          "text": "Revenue 5 20,790,144 22,374,001",
+          "original_word_indices": [
+            47,
+            48,
+            49,
+            50
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 8,
+          "text": "Cost of goods sold 7 (13,017,826) (12,918,146)",
+          "original_word_indices": [
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57
+          ]
+        },
+        {
+          "page": 55,
+          "geometric_line_index0": 9,
+          "text": "Gross profit 7,772,318 9,455,855",
+          "original_word_indices": [
+            58,
+            59,
+            60,
+            61
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of goods sold",
+          "page": 55,
+          "character_start": 320,
+          "character_end": 338,
+          "exact_original_text": "Cost of goods sold"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先证明该发行人的Cost of goods sold与拟使用的销售成本关系及完整经营口径；本审计不作自动语义等价。",
+        "如果后续选择扩充受支持原生定义/新增原行锚点，须明确授权和前瞻协议；保留旧缺口和原标签。",
+        "实际期间、币种/单位、Note列和同报表直接关系均须独立通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 13,
+      "original_rejected_relations_index0": 113,
+      "original_rejection_sha256": "ad537cf4bd34d418ef0fe2ff40ccccd07f431c5464eebbf5480cd045e6552f39",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2021-01-01",
+            "2021-12-31"
+          ],
+          [
+            "2022-01-01",
+            "2022-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_541a323c1b305564acd85b5d",
+        "reason": "('cost_of_revenue', '2021-01-01', '2021-12-31')",
+        "security_id": "hkex_disclosures:01044"
+      },
+      "document_key": "eed2486f96621b21ae9597ba",
+      "security_id": "hkex_disclosures:01044",
+      "report_year": 2022,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_541a323c1b305564acd85b5d",
+        "sha256": "2f5936b015ea5ac54b1a2736e18e017a2d067255acf93ac21a2d7348d5e50552",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2023/0417/2023041700634.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01044/year=2022/report_type=annual/2023041700634.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2021-01-01",
+        "period_end": "2021-12-31"
+      },
+      "classification": "COST_OF_GOODS_SOLD_UNREGISTERED_SOURCE_AND_FINANCIAL_ALIAS",
+      "diagnosis": "原页Cost of goods sold带Note及两年负数金额，夹在Revenue与Gross profit之间；没有cost_of_revenue候选，也没有同一打印标签被映射到其他指标的候选。原提取只登记Cost of sales；下游严格成本别名也不包含costofgoodssold。该概念不能因接近或数值可能闭合而自动等同全部收入成本。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 4,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:755a90a0514caacc0d8a6fa31a2649558563bde10f2791c6617f570bcee14cdb",
+          "metric_id": "revenue",
+          "period_start": "2022-01-01",
+          "period_end": "2022-12-31",
+          "page": 56,
+          "row": 7
+        },
+        {
+          "fact_id": "pdf_layout_fact:6409c1914726045829b8381be4af18d40905497abae767291de3c9233cf3eca6",
+          "metric_id": "revenue",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 56,
+          "row": 7
+        },
+        {
+          "fact_id": "pdf_layout_fact:6f143b92b757d5e9a0be666352f7378f3c707f9e33598f19ddc1de15e13247b2",
+          "metric_id": "gross_profit",
+          "period_start": "2022-01-01",
+          "period_end": "2022-12-31",
+          "page": 56,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:e97f6102d003368888c4603c3e661d7bdaeaa5acae9cbfb448fca3edcd0de398",
+          "metric_id": "gross_profit",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 56,
+          "row": 9
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/eed2486f96621b21ae9597ba.json",
+          "bytes": 133551,
+          "sha256": "9b775bcb5b7579ec35fdf9fd6147e39abddbdd5cd17213e40ec58857755732bd"
+        },
+        "audit": {
+          "bytes": 24183,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/eed2486f96621b21ae9597ba.json",
+          "sha256": "80e933e77f047e866f99196c915acde2057f75fb1b32b0d3bc36675c04dbff62"
+        },
+        "extraction": {
+          "bytes": 89602,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/eed2486f96621b21ae9597ba.json",
+          "sha256": "574c8b77ca5279808445aac046141da8d992aeecbb5985119c6f174a04151ccf"
+        },
+        "geometry": {
+          "bytes": 2453009,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/eed2486f96621b21ae9597ba.json",
+          "sha256": "6622a79ee783af6b7a6286ace1af5300d306a4e0b449198594ae70d26f3ca8ef"
+        },
+        "text_bundle": {
+          "bytes": 368513,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/eed2486f96621b21ae9597ba.json",
+          "sha256": "fee9a62a6ee4cdb8eaeb303bb7034f6b000eba985363877ee18f2236c0488708"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 56,
+          "geometric_line_index0": 0,
+          "text": "54 HENGAN INTERNATIONAL GROUP COMPANY LIMITED",
+          "original_word_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 1,
+          "text": "Annual Report 2022",
+          "original_word_indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 2,
+          "text": "CONSOLIDATED STATEMENT OF PROFIT OR LOSS",
+          "original_word_indices": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 3,
+          "text": "For the year ended 31 December 2022",
+          "original_word_indices": [
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 4,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 5,
+          "text": "2022 2021",
+          "original_word_indices": [
+            26,
+            27
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 6,
+          "text": "Note RMB’000 RMB’000",
+          "original_word_indices": [
+            28,
+            29,
+            30
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 7,
+          "text": "Revenue 5 22,615,878 20,790,144",
+          "original_word_indices": [
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 8,
+          "text": "Cost of goods sold 7 (14,926,379) (13,017,826)",
+          "original_word_indices": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41
+          ]
+        },
+        {
+          "page": 56,
+          "geometric_line_index0": 9,
+          "text": "Gross profit 7,689,499 7,772,318",
+          "original_word_indices": [
+            42,
+            43,
+            44,
+            45
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of goods sold",
+          "page": 56,
+          "character_start": 230,
+          "character_end": 248,
+          "exact_original_text": "Cost of goods sold"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "先证明该发行人的Cost of goods sold与拟使用的销售成本关系及完整经营口径；本审计不作自动语义等价。",
+        "如果后续选择扩充受支持原生定义/新增原行锚点，须明确授权和前瞻协议；保留旧缺口和原标签。",
+        "实际期间、币种/单位、Note列和同报表直接关系均须独立通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 14,
+      "original_rejected_relations_index0": 114,
+      "original_rejection_sha256": "7912b6aee2afaf5899e277abd4e087a1d83604d34b29c9de2c7993dd0cff9e5e",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2019-01-01",
+            "2019-12-31"
+          ],
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_f04ae8f1705c23d624461e9c",
+        "reason": "('revenue', '2019-01-01', '2019-12-31')",
+        "security_id": "hkex_disclosures:01088"
+      },
+      "document_key": "819aa69670800e4633809660",
+      "security_id": "hkex_disclosures:01088",
+      "report_year": 2020,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_f04ae8f1705c23d624461e9c",
+        "sha256": "7903fc59b9e8cfc62912d6e8f5545e9ebf45399e8bf08f4eec1164026ecfd8f0",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2021/0328/2021032800509.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01088/year=2020/report_type=annual/2021032800509.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2019-01-01",
+        "period_end": "2019-12-31"
+      },
+      "classification": "REVENUE_HEADING_AND_GOODS_SERVICES_VALUE_ROW_UNANCHORED",
+      "diagnosis": "原页Revenue是无金额标题，下一行Goods and services带Note和两年金额，随后为Cost of sales和Gross profit；原收入anchor为0。Revenue本身已在严格提取别名中，故不能把该缺口只解释为复数别名问题。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:1a34cafff20da2d1e4eef07803bee492f61ba391e505e10da939c3338fd473dd",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 177,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:93cf34fc0c5e615f05a5df374c79b128058d80456c54c4c0fbc1738d8ba3658f",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 177,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:2871bcfc56b2cd1162a5c74809863998c405afce731d51145ea9f8376f7810b8",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 177,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:8e41f1a0630546e96c6b74a9c69cca0f09ec6d108a57123dfa7ef8c3c4674d55",
+          "metric_id": "gross_profit",
+          "period_start": "2019-01-01",
+          "period_end": "2019-12-31",
+          "page": 177,
+          "row": 9
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/819aa69670800e4633809660.json",
+          "bytes": 134840,
+          "sha256": "5f134376a0ad00445a97491ba6547ce85c4af06481199e0cec8f8078613324ac"
+        },
+        "audit": {
+          "bytes": 16487,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/819aa69670800e4633809660.json",
+          "sha256": "f62d80148a92e0ffb3adf2b7258f8fb3e128adca13eae53a08f8902ca31b294b"
+        },
+        "extraction": {
+          "bytes": 79761,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/819aa69670800e4633809660.json",
+          "sha256": "adb03323c5d94194339fbe85d6bb5f58c5ba93dc95ebd6eb0d31c6bdc03123db"
+        },
+        "geometry": {
+          "bytes": 1055112,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/819aa69670800e4633809660.json",
+          "sha256": "09daa3a0c215d764b4d40647d24fe675485d616b1d6d366d4ad9c112a1d0bdc0"
+        },
+        "text_bundle": {
+          "bytes": 696484,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/819aa69670800e4633809660.json",
+          "sha256": "3b5a6bd1352d4a6a39c56b3bea3a9236e05d64eb8d5b890a4206243b39574a5e"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 177,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Statement of Profit or Loss and",
+          "original_word_indices": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 1,
+          "text": "Other Comprehensive Income",
+          "original_word_indices": [
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 2,
+          "text": "For the year ended 31 December 2020",
+          "original_word_indices": [
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 3,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            21,
+            22,
+            23,
+            24
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 4,
+          "text": "2020 2019",
+          "original_word_indices": [
+            25,
+            26
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 5,
+          "text": "Notes RMB million RMB million",
+          "original_word_indices": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 6,
+          "text": "Revenue",
+          "original_word_indices": [
+            32
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 7,
+          "text": "Goods and services 5 233,263 241,871",
+          "original_word_indices": [
+            33,
+            34,
+            35,
+            36,
+            37,
+            38
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 8,
+          "text": "Cost of sales 7 (162,374) (164,979)",
+          "original_word_indices": [
+            39,
+            40,
+            41,
+            42,
+            43,
+            44
+          ]
+        },
+        {
+          "page": 177,
+          "geometric_line_index0": 9,
+          "text": "Gross profit 70,889 76,892",
+          "original_word_indices": [
+            45,
+            46,
+            47,
+            48
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenue",
+          "page": 177,
+          "character_start": 207,
+          "character_end": 214,
+          "exact_original_text": "Revenue"
+        },
+        {
+          "label": "Goods and services",
+          "page": 177,
+          "character_start": 215,
+          "character_end": 233,
+          "exact_original_text": "Goods and services"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "证明Revenue标题与Goods and services金额行的层级关系及其是否为完整原生收入，而非任取分项。",
+        "核对Note 5等官方说明和两年列的同一合并口径；不以成本加毛利倒推收入。",
+        "若继续关联未被原parser锚定的金额行，需要另行授权和有界锚点适配；本次不新增事实。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 15,
+      "original_rejected_relations_index0": 115,
+      "original_rejection_sha256": "001794da465449ee4bd336f7bee1f6ab44c368176be036231d7621ef134ad213",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2020-01-01",
+            "2020-12-31"
+          ],
+          [
+            "2021-01-01",
+            "2021-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_451f3e28b16822a3fec6d254",
+        "reason": "('revenue', '2020-01-01', '2020-12-31')",
+        "security_id": "hkex_disclosures:01088"
+      },
+      "document_key": "ac28dedc44587cf947934133",
+      "security_id": "hkex_disclosures:01088",
+      "report_year": 2021,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_451f3e28b16822a3fec6d254",
+        "sha256": "41d1d92969654ee754c26accaa8a52ccbda383112e5f7a494f2016851fe002fc",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2022/0328/2022032800084.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01088/year=2021/report_type=annual/2022032800084.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2020-01-01",
+        "period_end": "2020-12-31"
+      },
+      "classification": "REVENUE_HEADING_AND_GOODS_SERVICES_VALUE_ROW_UNANCHORED",
+      "diagnosis": "原页Revenue是无金额标题，下一行Goods and services带Note和两年金额，随后为Cost of sales和Gross profit；原收入anchor为0。Revenue本身已在严格提取别名中，故不能把该缺口只解释为复数别名问题。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:54dfc7e139cda1bec6d95e0aaee184e4b94b7fd75280fc6fa0257ed16e1dc317",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 186,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:de7df13833e112039b10b4be5ff1defb7a2def495faf868fdda969be3925bfdb",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 186,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:b7325a3bb1fa10c40c3ea2ab7c0ad004892912db46435e4e2c950f515b5ac35d",
+          "metric_id": "gross_profit",
+          "period_start": "2021-01-01",
+          "period_end": "2021-12-31",
+          "page": 186,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:ea85e6a7682637c76a20ea77cf417a7ad767664cc16a5eff4bc7a5363a133a26",
+          "metric_id": "gross_profit",
+          "period_start": "2020-01-01",
+          "period_end": "2020-12-31",
+          "page": 186,
+          "row": 9
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/ac28dedc44587cf947934133.json",
+          "bytes": 98293,
+          "sha256": "b56d2c9ed316c4bc6d9f167f67507414b43715ba177e3ec4cc00fada9787fd3a"
+        },
+        "audit": {
+          "bytes": 15799,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/ac28dedc44587cf947934133.json",
+          "sha256": "d041a3020a4b300c539a1f20511b15fc0bbd824702a22d3751530c7854469e3d"
+        },
+        "extraction": {
+          "bytes": 81172,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/ac28dedc44587cf947934133.json",
+          "sha256": "c34d796a9e2dc5237f49c855fa2b229deb6e7782980867f9551091c79c77e78e"
+        },
+        "geometry": {
+          "bytes": 1072665,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/ac28dedc44587cf947934133.json",
+          "sha256": "eb0c949528f380fd1d7f28c8bd1f78678b3539ab8570e57ae9bddf227565e4db"
+        },
+        "text_bundle": {
+          "bytes": 700824,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/ac28dedc44587cf947934133.json",
+          "sha256": "63a3b50a64a1bd59002ef27f095a97d61028b6d92b8cfd6c84edde05053a4d39"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 186,
+          "geometric_line_index0": 0,
+          "text": "Consolidated statement of Profit or Loss and",
+          "original_word_indices": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 1,
+          "text": "Other Comprehensive Income",
+          "original_word_indices": [
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 2,
+          "text": "For the year ended 31 December 2021",
+          "original_word_indices": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 3,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            23,
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 4,
+          "text": "2021 2020",
+          "original_word_indices": [
+            27,
+            28
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 5,
+          "text": "Notes RMB million RMB million",
+          "original_word_indices": [
+            29,
+            30,
+            31,
+            32,
+            33
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 6,
+          "text": "Revenue",
+          "original_word_indices": [
+            34
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 7,
+          "text": "Goods and services 5 335,216 233,263",
+          "original_word_indices": [
+            35,
+            36,
+            37,
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 8,
+          "text": "Cost of sales 7 (239,156) (162,374)",
+          "original_word_indices": [
+            41,
+            42,
+            43,
+            44,
+            45,
+            46
+          ]
+        },
+        {
+          "page": 186,
+          "geometric_line_index0": 9,
+          "text": "Gross profit 96,060 70,889",
+          "original_word_indices": [
+            47,
+            48,
+            49,
+            50
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenue",
+          "page": 186,
+          "character_start": 225,
+          "character_end": 232,
+          "exact_original_text": "Revenue"
+        },
+        {
+          "label": "Goods and services",
+          "page": 186,
+          "character_start": 233,
+          "character_end": 251,
+          "exact_original_text": "Goods and services"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "证明Revenue标题与Goods and services金额行的层级关系及其是否为完整原生收入，而非任取分项。",
+        "核对Note 5等官方说明和两年列的同一合并口径；不以成本加毛利倒推收入。",
+        "若继续关联未被原parser锚定的金额行，需要另行授权和有界锚点适配；本次不新增事实。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 16,
+      "original_rejected_relations_index0": 116,
+      "original_rejection_sha256": "3f374a73f87668890f4dedb8ca0837b5f9bc9b851d84734aec32af73eb8d4740",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2023-01-01",
+            "2023-12-31"
+          ],
+          [
+            "2024-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_7fe13cdcfeecb06e075dc188",
+        "reason": "('revenue', '2023-01-01', '2023-12-31')",
+        "security_id": "hkex_disclosures:01088"
+      },
+      "document_key": "f6372a269a781695399d6b8a",
+      "security_id": "hkex_disclosures:01088",
+      "report_year": 2024,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_7fe13cdcfeecb06e075dc188",
+        "sha256": "11db3b1073bec134ea949af91ef9aa8330bd2f8cf6f4e5d148bb551a9a55a7bf",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0321/2025032101835.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01088/year=2024/report_type=annual/2025032101835.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "revenue",
+        "period_start": "2023-01-01",
+        "period_end": "2023-12-31"
+      },
+      "classification": "REVENUE_HEADING_AND_GOODS_SERVICES_VALUE_ROW_UNANCHORED",
+      "diagnosis": "原页Revenue是无金额标题，下一行Goods and services带Note和两年金额，随后为Cost of sales和Gross profit；原收入anchor为0。Revenue本身已在严格提取别名中，故不能把该缺口只解释为复数别名问题。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 0,
+          "saved_usable_facts": 0
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:f202e82c4fa2ca18bae2b40615d53b4a812299de580d705006253fa345176276",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 222,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:2c526ba218991d6dd3758363bc7e8c601c8b8dc792a31a81212d7f3c18f0e91a",
+          "metric_id": "cost_of_revenue",
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "page": 222,
+          "row": 9
+        },
+        {
+          "fact_id": "pdf_layout_fact:7970888bd2f00a45046cef987d2c1f73fda9a43180776a258e2a2fabb349ab99",
+          "metric_id": "gross_profit",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 222,
+          "row": 10
+        },
+        {
+          "fact_id": "pdf_layout_fact:b5c9787115008bccf395c977a29ccd13dba42ae60e9132f460c10cdb276754f8",
+          "metric_id": "gross_profit",
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "page": 222,
+          "row": 10
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/f6372a269a781695399d6b8a.json",
+          "bytes": 125791,
+          "sha256": "4cfb71d30cdc79735e9c9f36adf0f688f6f6de8fa8347c7864559d82aab23a44"
+        },
+        "audit": {
+          "bytes": 17628,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/f6372a269a781695399d6b8a.json",
+          "sha256": "2bc4be704b2e1a5090362f0e08e2a66c81894383df4514ce060cc9ed00917464"
+        },
+        "extraction": {
+          "bytes": 91197,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/f6372a269a781695399d6b8a.json",
+          "sha256": "e73f6989a9af7224fd7694b887b03548b02f706fd9dcdfe5a303656d22b23701"
+        },
+        "geometry": {
+          "bytes": 1175595,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/f6372a269a781695399d6b8a.json",
+          "sha256": "21026d37b948cdda0d7a658bd58e84627ee7d9c3d06732ea3334798c94f414ea"
+        },
+        "text_bundle": {
+          "bytes": 780054,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/f6372a269a781695399d6b8a.json",
+          "sha256": "29fc209311d4de96b329b50272f109f5bb0342876db7239c146146a1d507755c"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 222,
+          "geometric_line_index0": 0,
+          "text": "Consolidated Statement of Profit or Loss and",
+          "original_word_indices": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 1,
+          "text": "Other Comprehensive Income",
+          "original_word_indices": [
+            16,
+            17,
+            18
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 2,
+          "text": "For the year ended 31 December 2024",
+          "original_word_indices": [
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 3,
+          "text": "(Expressed in Renminbi (“RMB”))",
+          "original_word_indices": [
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 4,
+          "text": "Year ended 31 December",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 5,
+          "text": "2024 2023",
+          "original_word_indices": [
+            34,
+            35
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 6,
+          "text": "Notes RMB million RMB million",
+          "original_word_indices": [
+            36,
+            37,
+            38,
+            39,
+            40
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 7,
+          "text": "Revenue",
+          "original_word_indices": [
+            41
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 8,
+          "text": "Goods and services 5 338,375 343,074",
+          "original_word_indices": [
+            42,
+            43,
+            44,
+            45,
+            46,
+            47
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 9,
+          "text": "Cost of sales 7 (236,555) (232,537)",
+          "original_word_indices": [
+            48,
+            49,
+            50,
+            51,
+            52,
+            53
+          ]
+        },
+        {
+          "page": 222,
+          "geometric_line_index0": 10,
+          "text": "Gross profit 101,820 110,537",
+          "original_word_indices": [
+            54,
+            55,
+            56,
+            57
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Revenue",
+          "page": 222,
+          "character_start": 265,
+          "character_end": 272,
+          "exact_original_text": "Revenue"
+        },
+        {
+          "label": "Goods and services",
+          "page": 222,
+          "character_start": 273,
+          "character_end": 291,
+          "exact_original_text": "Goods and services"
+        }
+      ],
+      "multi_note_geometry": [],
+      "next_required_proof_not_performed": [
+        "证明Revenue标题与Goods and services金额行的层级关系及其是否为完整原生收入，而非任取分项。",
+        "核对Note 5等官方说明和两年列的同一合并口径；不以成本加毛利倒推收入。",
+        "若继续关联未被原parser锚定的金额行，需要另行授权和有界锚点适配；本次不新增事实。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 17,
+      "original_rejected_relations_index0": 117,
+      "original_rejection_sha256": "5b9918c052ba431cdffbd6027b90f49312e1501d47dd6317084e5cc13269cddb",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2023-01-01",
+            "2023-12-31"
+          ],
+          [
+            "2024-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_fb16e5f36b33f37815c2af6b",
+        "reason": "('cost_of_revenue', '2023-01-01', '2023-12-31')",
+        "security_id": "hkex_disclosures:01810"
+      },
+      "document_key": "89176a23c6809e0aba236110",
+      "security_id": "hkex_disclosures:01810",
+      "report_year": 2024,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_fb16e5f36b33f37815c2af6b",
+        "sha256": "9fbb8a9baa8bb9b559ae3789080e56cd498ab1f0db6d8853ff2a63c598ccad11",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0424/2025042401119.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01810/year=2024/report_type=annual/2025042401119.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2023-01-01",
+        "period_end": "2023-12-31"
+      },
+      "classification": "EXISTING_COST_ANCHORS_REJECTED_MULTITOKEN_NOTE",
+      "diagnosis": "原成本两年候选均存在且期间对应当前/比较年度，均已记录geometry_extra_numeric_column_not_certified_note。原Note列的5, 8是两个词token，均位于Note列下方，之后才是两列括号负数金额；现代码只允许一个纯整数Note，不支持该多注释形式。不是已证实的期间错绑或来源缺失。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [
+        {
+          "candidate_id": "cncand_74c8f953976b438c35a652ff",
+          "metric_id": "cost_of_revenue",
+          "original_label": "costofsales",
+          "page": 230,
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "recorded_qualification_reason": "geometry_extra_numeric_column_not_certified_note",
+          "same_as_recorded_missing_period": false
+        },
+        {
+          "candidate_id": "cncand_c352f06b753eb96a5aa1f42a",
+          "metric_id": "cost_of_revenue",
+          "original_label": "costofsales",
+          "page": 230,
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "recorded_qualification_reason": "geometry_extra_numeric_column_not_certified_note",
+          "same_as_recorded_missing_period": true
+        }
+      ],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:b2ec9104885ac66b474b56ab6e47ac91432ce9a94245a3a7e69ef4413de62d22",
+          "metric_id": "revenue",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 230,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:a0b5ec63a22282640f6a1793db7f3e051ff81b5180480e23a82e6617748527f8",
+          "metric_id": "revenue",
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "page": 230,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:0b71e446b73196b73c88b878f40bd59f5f611f29175fdf6d363f1cde1ccd83f6",
+          "metric_id": "gross_profit",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 230,
+          "row": 10
+        },
+        {
+          "fact_id": "pdf_layout_fact:c9de73e36335b784e1ee664632a58317cb3043e90c7c9d214812a52ab40a1b20",
+          "metric_id": "gross_profit",
+          "period_start": "2023-01-01",
+          "period_end": "2023-12-31",
+          "page": 230,
+          "row": 10
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/89176a23c6809e0aba236110.json",
+          "bytes": 194832,
+          "sha256": "0de8a7511081e5e88cab8a7d23d0f15f35c7683a8c98a9d4843b72ab7c082f91"
+        },
+        "audit": {
+          "bytes": 23472,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/89176a23c6809e0aba236110.json",
+          "sha256": "e5aaafd4a91ecac9bf20248339d7dcc998a44a108ca1281aa143c07ef7aea225"
+        },
+        "extraction": {
+          "bytes": 119652,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/89176a23c6809e0aba236110.json",
+          "sha256": "f0ac4fb163fc19d8c6d18ea2f8a5676c6de4e19e938551c7e748204b397306b7"
+        },
+        "geometry": {
+          "bytes": 1222227,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/89176a23c6809e0aba236110.json",
+          "sha256": "2ab7bfeee96a2c0c4e6df41f22fbe529b77da91feec131430d3d607f26299b52"
+        },
+        "text_bundle": {
+          "bytes": 913121,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/89176a23c6809e0aba236110.json",
+          "sha256": "5c6e6225c12cf4dd46cc1d606f2934f27eb1995842dfd7cdefa9542b324f668d"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 230,
+          "geometric_line_index0": 0,
+          "text": "228 XIAOMI CORPORATION",
+          "original_word_indices": [
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 1,
+          "text": "CONSOLIDATED INCOME",
+          "original_word_indices": [
+            0,
+            1
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 2,
+          "text": "STATEMENT",
+          "original_word_indices": [
+            2
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 3,
+          "text": "For the year ended December 31, 2024",
+          "original_word_indices": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 4,
+          "text": "(Expressed in Renminbi (“RMB”))",
+          "original_word_indices": [
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 5,
+          "text": "Year ended December 31,",
+          "original_word_indices": [
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 6,
+          "text": "Note 2024 2023",
+          "original_word_indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 7,
+          "text": "RMB’000 RMB’000",
+          "original_word_indices": [
+            24,
+            25
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 8,
+          "text": "Revenue 5 365,906,350 270,970,141",
+          "original_word_indices": [
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 9,
+          "text": "Cost of sales 5, 8 (289,346,156) (213,493,902)",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 10,
+          "text": "Gross profit 76,560,194 57,476,239",
+          "original_word_indices": [
+            37,
+            38,
+            39,
+            40
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of sales",
+          "page": 230,
+          "character_start": 212,
+          "character_end": 225,
+          "exact_original_text": "Cost of sales"
+        }
+      ],
+      "multi_note_geometry": [
+        {
+          "page": 230,
+          "geometric_line_index0": 6,
+          "words": [
+            {
+              "text": "Note",
+              "x0": 373.53399658203125,
+              "x1": 391.818359375,
+              "y0": 228.20547485351562,
+              "y1": 236.70547485351562,
+              "original_word_index": 21
+            },
+            {
+              "text": "2024",
+              "x0": 437.9504089355469,
+              "x1": 456.37841796875,
+              "y0": 228.1649169921875,
+              "y1": 236.6649169921875,
+              "original_word_index": 22
+            },
+            {
+              "text": "2023",
+              "x0": 500.9396667480469,
+              "x1": 518.7395629882812,
+              "y0": 228.20547485351562,
+              "y1": 236.70547485351562,
+              "original_word_index": 23
+            }
+          ]
+        },
+        {
+          "page": 230,
+          "geometric_line_index0": 9,
+          "words": [
+            {
+              "text": "Cost",
+              "x0": 76.53472900390625,
+              "x1": 93.76507568359375,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 30
+            },
+            {
+              "text": "of",
+              "x0": 96.365234375,
+              "x1": 103.52818298339844,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 31
+            },
+            {
+              "text": "sales",
+              "x0": 106.12833404541016,
+              "x1": 126.29713439941406,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 32
+            },
+            {
+              "text": "5,",
+              "x0": 375.85205078125,
+              "x1": 382.5220031738281,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 33
+            },
+            {
+              "text": "8",
+              "x0": 385.1221618652344,
+              "x1": 389.49114990234375,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 34
+            },
+            {
+              "text": "(289,346,156)",
+              "x0": 407.0614929199219,
+              "x1": 459.07305908203125,
+              "y0": 276.165283203125,
+              "y1": 284.665283203125,
+              "original_word_index": 35
+            },
+            {
+              "text": "(213,493,902)",
+              "x0": 471.3180847167969,
+              "x1": 521.1485595703125,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 36
+            }
+          ]
+        }
+      ],
+      "next_required_proof_not_performed": [
+        "如获另行有界实现授权，需证明多个注释编号整体属于Notes列，而不是金额列；原单一Note门槛不能事后直接删除。",
+        "不得取最后两个数字就宣称正确；须保留所有token、坐标、两年列和负号，排除真实多金额列。",
+        "全部财务语义、源版本及关系门槛仍未因本审计自动通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    },
+    {
+      "audit_ordinal1": 18,
+      "original_rejected_relations_index0": 118,
+      "original_rejection_sha256": "d162c360413790b1f830f7263423045e6e6681e860c020fb98e370056ca594ea",
+      "original_rejection": {
+        "group": "dual_sufficient",
+        "periods": [
+          [
+            "2024-01-01",
+            "2024-12-31"
+          ],
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "raw_object_id": "rawobj_hkex_disclosures_99f1e075ef3b20cc9abdc6b4",
+        "reason": "('cost_of_revenue', '2024-01-01', '2024-12-31')",
+        "security_id": "hkex_disclosures:01810"
+      },
+      "document_key": "239bfab03a836ee8f079b43c",
+      "security_id": "hkex_disclosures:01810",
+      "report_year": 2025,
+      "source_document": {
+        "raw_object_id": "rawobj_hkex_disclosures_99f1e075ef3b20cc9abdc6b4",
+        "sha256": "b787f0290513e48a95078ed2a68dc1e240da68d204e5dd9aedc59b66a7c75ec2",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0428/2026042800526.pdf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/raw_financial_data_lake/data/fin_raw/hkex/reports/stock_code=01810/year=2025/report_type=annual/2026042800526.pdf"
+      },
+      "missing_usable_lookup": {
+        "metric_id": "cost_of_revenue",
+        "period_start": "2024-01-01",
+        "period_end": "2024-12-31"
+      },
+      "classification": "EXISTING_COST_ANCHORS_REJECTED_MULTITOKEN_NOTE",
+      "diagnosis": "原成本两年候选均存在且期间对应当前/比较年度，均已记录geometry_extra_numeric_column_not_certified_note。原Note列的5, 8是两个词token，均位于Note列下方，之后才是两列括号负数金额；现代码只允许一个纯整数Note，不支持该多注释形式。不是已证实的期间错绑或来源缺失。",
+      "source_absence_proven": false,
+      "saved_original_source_material_present": true,
+      "financial_qualification_changed": false,
+      "recorded_metric_counts": {
+        "revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        },
+        "cost_of_revenue": {
+          "original_candidates": 2,
+          "saved_usable_facts": 0
+        },
+        "gross_profit": {
+          "original_candidates": 2,
+          "saved_usable_facts": 2
+        }
+      },
+      "original_target_candidates": [
+        {
+          "candidate_id": "cncand_d30ba365247f39694b2334ca",
+          "metric_id": "cost_of_revenue",
+          "original_label": "costofsales",
+          "page": 270,
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "recorded_qualification_reason": "geometry_extra_numeric_column_not_certified_note",
+          "same_as_recorded_missing_period": false
+        },
+        {
+          "candidate_id": "cncand_286f028d797458f2172be753",
+          "metric_id": "cost_of_revenue",
+          "original_label": "costofsales",
+          "page": 270,
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "recorded_qualification_reason": "geometry_extra_numeric_column_not_certified_note",
+          "same_as_recorded_missing_period": true
+        }
+      ],
+      "target_label_assigned_to_other_metric_candidates": [],
+      "saved_usable_component_facts": [
+        {
+          "fact_id": "pdf_layout_fact:90317ed595e5cfc45c5cefd5458e37a2f1f6c1671db73bfb2a21e495c5914272",
+          "metric_id": "revenue",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "page": 270,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:7ce3e7dd888726b0be74f386688b42223ad01267ae99597b334e4c4cc5d9bb8d",
+          "metric_id": "revenue",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 270,
+          "row": 8
+        },
+        {
+          "fact_id": "pdf_layout_fact:cf7a79e6091b4b5fac191732ae0f39d4816bdcb3638d6743bb546467f25e64df",
+          "metric_id": "gross_profit",
+          "period_start": "2025-01-01",
+          "period_end": "2025-12-31",
+          "page": 270,
+          "row": 10
+        },
+        {
+          "fact_id": "pdf_layout_fact:a2033fe1fae22e1087663186201c34530c07d3b631120c1c5c93e204d05576d2",
+          "metric_id": "gross_profit",
+          "period_start": "2024-01-01",
+          "period_end": "2024-12-31",
+          "page": 270,
+          "row": 10
+        }
+      ],
+      "original_candidate_absence_scope": "only the frozen corrected parser pool for this original report; not absence from PDF",
+      "primary_actual_period_mismatch_identified": false,
+      "actual_period_note": "Original source header and saved GP facts show the same window; no missing metric was reassigned or newly period-certified.",
+      "additional_short_circuited_gap": [],
+      "overlap_with_existing_eligible_dual_window": false,
+      "source_refs": {
+        "financial_document": {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/financial_locator_revision_03/documents/239bfab03a836ee8f079b43c.json",
+          "bytes": 200757,
+          "sha256": "3f1d8378070149a5f1a27ef2a16580c0b1110bc7869fce74d1d37c50403ba13f"
+        },
+        "audit": {
+          "bytes": 22846,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/documents/239bfab03a836ee8f079b43c.json",
+          "sha256": "b91dcee9a4d24193784960c696d832c38c4dd0f68561e0937be6b89e6584d239"
+        },
+        "extraction": {
+          "bytes": 120360,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/period_metadata_revision_01/documents/239bfab03a836ee8f079b43c.json",
+          "sha256": "f85f1cc4f1b139c90e361eef6d9a1f10f62bb2e6e5dd3f517922ce6d4b453c75"
+        },
+        "geometry": {
+          "bytes": 1267532,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/geometry_reconciled_01/documents/239bfab03a836ee8f079b43c.json",
+          "sha256": "4bed6ff002da8d236cbb06f0c3a0195ef6de12bb1089dceb14d64c6f952b0a69"
+        },
+        "text_bundle": {
+          "bytes": 981791,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evidence_audit_01/page_text/239bfab03a836ee8f079b43c.json",
+          "sha256": "3b2330ef4a8e34a895c8b55ded9a156ee335a215064f3855c49ece275fd6e036"
+        }
+      },
+      "saved_geometry_display_lines": [
+        {
+          "page": 270,
+          "geometric_line_index0": 0,
+          "text": "268 XIAOMI CORPORATION",
+          "original_word_indices": [
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 1,
+          "text": "CONSOLIDATED INCOME",
+          "original_word_indices": [
+            0,
+            1
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 2,
+          "text": "STATEMENT",
+          "original_word_indices": [
+            2
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 3,
+          "text": "For the year ended December 31, 2025",
+          "original_word_indices": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 4,
+          "text": "(Expressed in Renminbi (“RMB”))",
+          "original_word_indices": [
+            10,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 5,
+          "text": "Year ended December 31,",
+          "original_word_indices": [
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 6,
+          "text": "Note 2025 2024",
+          "original_word_indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 7,
+          "text": "RMB’000 RMB’000",
+          "original_word_indices": [
+            24,
+            25
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 8,
+          "text": "Revenue 5 457,286,687 365,906,350",
+          "original_word_indices": [
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 9,
+          "text": "Cost of sales 5, 8 (355,480,840) (289,346,156)",
+          "original_word_indices": [
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 10,
+          "text": "Gross profit 101,805,847 76,560,194",
+          "original_word_indices": [
+            37,
+            38,
+            39,
+            40
+          ]
+        }
+      ],
+      "saved_original_page_text_label_locators": [
+        {
+          "label": "Cost of sales",
+          "page": 270,
+          "character_start": 212,
+          "character_end": 225,
+          "exact_original_text": "Cost of sales"
+        }
+      ],
+      "multi_note_geometry": [
+        {
+          "page": 270,
+          "geometric_line_index0": 6,
+          "words": [
+            {
+              "text": "Note",
+              "x0": 373.53399658203125,
+              "x1": 391.818359375,
+              "y0": 228.20547485351562,
+              "y1": 236.70547485351562,
+              "original_word_index": 21
+            },
+            {
+              "text": "2025",
+              "x0": 437.9504089355469,
+              "x1": 456.37841796875,
+              "y0": 228.1649169921875,
+              "y1": 236.6649169921875,
+              "original_word_index": 22
+            },
+            {
+              "text": "2024",
+              "x0": 500.9396667480469,
+              "x1": 518.7395629882812,
+              "y0": 228.20547485351562,
+              "y1": 236.70547485351562,
+              "original_word_index": 23
+            }
+          ]
+        },
+        {
+          "page": 270,
+          "geometric_line_index0": 9,
+          "words": [
+            {
+              "text": "Cost",
+              "x0": 76.53472900390625,
+              "x1": 93.76507568359375,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 30
+            },
+            {
+              "text": "of",
+              "x0": 96.365234375,
+              "x1": 103.52818298339844,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 31
+            },
+            {
+              "text": "sales",
+              "x0": 106.12833404541016,
+              "x1": 126.29713439941406,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 32
+            },
+            {
+              "text": "5,",
+              "x0": 375.85205078125,
+              "x1": 382.5220031738281,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 33
+            },
+            {
+              "text": "8",
+              "x0": 385.1221618652344,
+              "x1": 389.49114990234375,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 34
+            },
+            {
+              "text": "(355,480,840)",
+              "x0": 407.0614929199219,
+              "x1": 459.07305908203125,
+              "y0": 276.165283203125,
+              "y1": 284.665283203125,
+              "original_word_index": 35
+            },
+            {
+              "text": "(289,346,156)",
+              "x0": 471.3180847167969,
+              "x1": 521.1485595703125,
+              "y0": 276.2058410644531,
+              "y1": 284.7058410644531,
+              "original_word_index": 36
+            }
+          ]
+        }
+      ],
+      "next_required_proof_not_performed": [
+        "如获另行有界实现授权，需证明多个注释编号整体属于Notes列，而不是金额列；原单一Note门槛不能事后直接删除。",
+        "不得取最后两个数字就宣称正确；须保留所有token、坐标、两年列和负号，排除真实多金额列。",
+        "全部财务语义、源版本及关系门槛仍未因本审计自动通过。"
+      ],
+      "new_facts_created": 0,
+      "new_tasks_admitted": 0,
+      "qa_eligible": false
+    }
+  ],
+  "id": "cross_market_dual_relation_gap_audit:aeda97f5dd058cdfa073d12585a15248c86e2d0dca736433e54377f47239228e"
+}
