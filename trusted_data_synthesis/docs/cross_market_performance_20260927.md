@@ -92,4 +92,20 @@ CPU／mock 共 16 项定向测试通过，包含严格长度不符拒绝、空�
 
 统计 watcher、原生成调用上限、每分片 attempt 上限、全局 4,860 会话封存门槛、18 个评分 cohort 和固定发行人簇统计均保持不变。默认 API 模型政策仍为后续新实验 `deepseek-flash`；本次没有任何 API 模型选择或调用。
 
-部署状态及当时已提交会话数将在实际切换验证后追加。上述微基准通过不等于整个实验完成，不得据其宣称训练价值成立或最终 ETA 已被证明缩短。
+上述微基准通过不等于整个实验完成，不得据其宣称训练价值成立或最终 ETA 已被证明缩短。
+
+## 实际部署与剩余阻塞
+
+性能代码登记提交为 `a963a1a79e01ba33398d143ef5ca37e3d7778567`。该提交也保存实际运行微基准时的脚本字节；后续只对微基准脚本进行导入排序及格式化，没有重新执行 GPU 测试，原 JSON 的 `benchmark_script_sha256` 应对应登记提交中的版本。
+
+13:07:15，新 coordinator PID `3973364` 启动，原 coordinator `3777009` 已确认退出，未向任何生成 worker 发信号。登记时已有 332 个提交会话，继承四个存活 worker。独立运行协议为 `cross_market_performance_operational_protocol:5f45908a84dee1613d9ec7cfdf16d291071166a7d405f130bebb8cedb7dc9b39`，logprob 优化已明确启用。
+
+13:07:58 复核：335／4,860 个会话、3,945 个生成调用预留、20 次 worker_start，四个 worker 在运行，统计 watcher PID `3570662` 仍存活。四个在途 worker 都仍用旧实现，新调度器已正确接管；本次没有为了获得优化实测而中断它们。因此目前还没有新适配器的真实 Student 会话吞吐对照，也不能把接管后完成数增长归因于优化。
+
+在部署前的代码验证期间，旧调度器又产生两次已保存的容量退出：`generate_negative_11_stochastic_0` attempt3 于 13:02:56 因 48,580<49,152 MiB 退出，attempt4 于 13:04:01 因 48,620<49,152 MiB 退出。该分片现因原定四次上限进入 `finite_attempt_budget_exhausted`；新适配器没有绕过或重置这一状态。其他分片继续。
+
+已向用户单独询问是否为这一明确分片登记最多两次额外恢复机会，同时仍守住全局资源预算、保留全部失败。**本性能修订本身不授权或实施额外尝试**；若获同意，应另行绑定原失败并登记恢复修订，不能直接修改此冻结协议或把原失败写成成功。
+
+定向验证共 32 项通过：logprob helper 16 项、新性能适配器 8 项、已有 CUDA 恢复回归 8 项。独立只读复核确认原协议、namespace 隔离、在途进程接管和私有评分屏障不变。完整实验仍未完成，当前存在上述一个待授权恢复的分片；不能承诺不经处理就会自动收口。
+
+公共快照及完整微基准结果：`artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/performance_optimization_20260927.json`。实时运行仍以 `evaluation_01/control/status.json` 和 `budget/state.json` 为准。
