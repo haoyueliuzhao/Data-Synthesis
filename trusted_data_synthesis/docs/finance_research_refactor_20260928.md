@@ -153,3 +153,13 @@ vtdo-finance run --provider deepseek --resume --output /path/to/new-generation \
 - MultiHiertt、BankMathBench、长文 RAG、EdgarTools／OpenBB 数据接入和完整 FinanceHarness 系统对照。这些是后续独立扩展，不应为了给定表文 FinQA 第一轮而整栈引入。
 
 因此，本次可以宣称“新的原始 QA 工程主线已落地，保留研究内核且界限可审计”，不能宣称已完成报告的全部后续研究，也不能宣称获得新的正向训练收益。
+
+## 最终工程验收记录
+
+实现源码提交：`abcb8247c0`。新模块统一测试 **134 passed，0 skipped**；最后补充保留内核源码绑定后，对受影响的 storage／CLI 再验 **27 passed**，不是另增加 27 个独立测试。项目自编新增代码 Ruff 通过；上游官方 scorer 的原始空白／正则格式保留，不为消除格式警告改动其算法或字节绑定。
+
+`preflight_02` 在当前 28 个新／保留源码绑定下通过，生成 seal 为 `ebe48d357b079e166edb6b6cfc799f06388f31348029b2d97b75b6a8ef747cf2`。`preflight_01` 是补充保留内核绑定前的零模型控制记录，仍保留，不覆盖。当前 wheel 构建成功，已核对 console entry、官方评分来源清单、MIT 和 Apache-2.0 许可证均随安装包分发。
+
+原跨市场评价协议的 9 个科学源码 hash 仍全部一致；本次未读取其未封存 Q，也没有停止原 worker。新的 SFT／反馈角色计划仍只是准备材料，尚未进入真实生成或训练。
+
+可审计公共记录：[`refactor_acceptance.json`](../artifacts/finance_research_20260928/public/refactor_acceptance.json)。其中保留两份输入调研文件 hash、上游 revision／原文件 hash、真实 snapshot 数量、角色计划、测试与 preflight 身份、安装包 hash，以及逐项未完成准入声明。服务器原始快照、角色清单、事件及参考侧数据保留在上述独立 cache 根目录。
