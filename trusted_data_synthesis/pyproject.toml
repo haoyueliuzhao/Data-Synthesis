@@ -14,6 +14,14 @@ dependencies = [
 [project.optional-dependencies]
 finance = ["pyarrow>=16.0.0", "sympy>=1.13.0,<2"]
 online = ["httpx>=0.28.1,<1"]
+research = [
+    "httpx>=0.28.1,<1",
+    "numpy>=1.26,<3",
+    "pandas>=2,<4",
+    "scipy>=1.14,<2",
+    "sympy>=1.13,<2",
+    "tqdm>=4.66,<5",
+]
 training = [
     "accelerate>=1.7.0,<2",
     "datasets>=3.6.0,<4",
@@ -35,6 +43,13 @@ dev = [
 
 [project.scripts]
 trusted-synthesis = "trusted_synthesis.cli:main"
+vtdo-finance = "trusted_synthesis.finance_research.cli:main"
+
+[tool.setuptools.package-data]
+"trusted_synthesis.finance_research.metric_vendor" = ["*.json", "*.LICENSE"]
+
+[tool.setuptools.data-files]
+"share/trusted-data-synthesis/bigfinance" = ["vendor/bigfinance/LICENSE", "vendor/bigfinance/PROVENANCE.md"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

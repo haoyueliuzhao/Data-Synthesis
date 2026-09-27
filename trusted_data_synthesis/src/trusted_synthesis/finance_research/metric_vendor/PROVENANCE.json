@@ -1,0 +1,46 @@
+{
+  "FinQA": {
+    "repository": "https://github.com/czyssrs/FinQA",
+    "revision": "0f16e2867befa6840783e58be38c9efb9229d742",
+    "license": "MIT"
+  },
+  "TAT-QA": {
+    "repository": "https://github.com/NExTplusplus/TAT-QA",
+    "revision": "870accc41953dcde885aabeb963d94aabdc0fbc3",
+    "license": "MIT scorer; CC BY 4.0 dataset"
+  },
+  "files": {
+    "finqa_evaluate.py": {
+      "upstream_path": "code/evaluate/evaluate.py",
+      "upstream_sha256": "845cd131cab843eceff256cf6d392978cc470a7da4a80107beb56027fdca5c13",
+      "local_sha256": "b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2",
+      "changes": ["final newline added; evaluator code unchanged"]
+    },
+    "FinQA.LICENSE": {
+      "upstream_path": "LICENSE",
+      "upstream_sha256": "92c0e67bd762c15c07ba60de09558338315a8ebf99aac4f51f487179809ac087",
+      "local_sha256": "92c0e67bd762c15c07ba60de09558338315a8ebf99aac4f51f487179809ac087",
+      "changes": []
+    },
+    "tatqa_metric.py": {
+      "upstream_path": "tatqa_metric.py",
+      "upstream_sha256": "2aeeac479f89f8c76300af1cc0e8d098eb86af84bc386b38b6ab4af484a6dea8",
+      "local_sha256": "b8286fb1799164781c209fa4c2509877ebe4d256e8e0fe74e75b4b73f77ab59f",
+      "changes": [
+        "package-relative import only; final newline added"
+      ]
+    },
+    "tatqa_utils.py": {
+      "upstream_path": "tatqa_utils.py",
+      "upstream_sha256": "a84bb2f960737cf0a53733637a674cc4b20ef030a2be6a4b21dc2c4356f415ec",
+      "local_sha256": "a84bb2f960737cf0a53733637a674cc4b20ef030a2be6a4b21dc2c4356f415ec",
+      "changes": []
+    },
+    "TATQA.LICENSE": {
+      "upstream_path": "LICENSE",
+      "upstream_sha256": "46e27ffbc49c3fd44a9595c2213f8a5f4319a81b53238e49ce1eec39e7e25662",
+      "local_sha256": "46e27ffbc49c3fd44a9595c2213f8a5f4319a81b53238e49ce1eec39e7e25662",
+      "changes": []
+    }
+  }
+}

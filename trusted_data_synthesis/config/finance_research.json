@@ -1,0 +1,13 @@
+{
+  "harness_id": "bigfinance-derived-vtdo-v1",
+  "max_steps": 32,
+  "max_new_tokens": 2048,
+  "context_limit": 24576,
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "top_k": 0,
+  "seed": 20260928,
+  "tier": "EVAL_NATIVE",
+  "role": "calibration",
+  "api_model": "deepseek-flash"
+}

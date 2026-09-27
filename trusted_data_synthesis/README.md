@@ -1,4 +1,29 @@
-# Trusted Data Synthesis
+# Trusted Data Synthesis / VTDO Finance Research
+
+## Current research entry (2026-09-28)
+
+New financial-QA research uses `src/trusted_synthesis/finance_research/` and the
+`vtdo-finance` command. See the [new architecture, real dataset audit, and execution
+guide](docs/finance_research_refactor_20260928.md). This path consumes original
+FinQA QA/context and a restricted BigFinance-derived loop; it reuses the anchored
+VTDO numerical core without requiring the financial data lake or rewriting old
+experimental sources. TAT-QA/FinanceMath are separate external evaluation roles.
+
+```bash
+python -m pip install -e ".[research]"
+vtdo-finance catalog
+vtdo-finance preflight --output /tmp/vtdo-finance-preflight-unique
+# Without installing the new console entry, use:
+PYTHONPATH=src python -m trusted_synthesis.finance_research catalog
+```
+
+Preflight is synthetic and makes zero API/GPU/model calls. Local model generation
+and new training are not implied by passing it. The existing material, optimizer,
+feedback and trajectory-training code remains available behind new adapters;
+old pipelines documented below are historical/reference paths, not the default
+data-production route for the new FinQA experiment.
+
+## Historical framework and experiment entries
 
 Trusted Data Synthesis is a domain-agnostic framework for constructing and evaluating
 proof-carrying agent trajectories. Finance is the first full reference implementation, not the
