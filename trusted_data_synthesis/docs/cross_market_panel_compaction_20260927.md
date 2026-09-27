@@ -51,3 +51,13 @@
 恢复保持确定性开启，使用此前B确认和校准训练启动器同样的`CUBLAS_WORKSPACE_CONFIG=:4096:8`。12:11:22完成一次独立微型CUDA验证：16×16 float32矩阵乘法两次结果一致且有限，Torch2.7.1+cu128／CUDA12.8，peak allocated约33.56MB；没有加载Student或产生评价样本。这个检查仅验证所需启动环境，不替代真实worker运行。
 
 独立启动修订将只允许已冻结、确实退出且错误消息完全匹配上述遗漏的generation尝试恢复；不扩大到其他FATAL，不放松确定性、评分隔离、样本数或预算。新worker仍使用同一面板、参数点与评分器，所有已消耗尝试继续计账。
+
+## 已核实的恢复状态
+
+CUDA启动修订代码及8项mock测试通过后，登记了`cross_market_cuda_launch_recovery_protocol:14fee4b2bfd3dc1f5778434a118b445a3fb980c3ca975c4a1c1983fe58803c88`。12:15:14新coordinator启动，12:15:17原失败分片以attempt2恢复；后续未尝试过的分片仍从attempt1开始，不重置全局额度。
+
+12:17:48的真实快照确认4个GPU worker正常运行（GPU0、1、6、7），已完成并提交25个会话，状态`GENERATION`、无当前blocked项；这不是只加载模型或发出启动命令。统计watcher已登记，正在等待完整4,860条生成及全局封存，尚未读取私有评分结果。
+
+本次修复源码与必要定向测试合计23项通过：公开压缩10项、180题编译桥5项、CUDA恢复8项。原始失败面板、原始源审核、12次CUDA失败及消耗继续保留。本轮整体尚未完成，不据启动或初期吞吐宣称训练价值成立，也不据25个早期样本给出精确完成时刻。
+
+公开快照：`artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/input_compaction_and_evaluation_resume_20260927.json`。实时进度以`evaluation_01/control/status.json`和`evaluation_01/budget/state.json`为准；原文本阶段的当前状态已更新为指向这两个评价入口，避免误读旧`PANEL_NOT_ADMITTED`。

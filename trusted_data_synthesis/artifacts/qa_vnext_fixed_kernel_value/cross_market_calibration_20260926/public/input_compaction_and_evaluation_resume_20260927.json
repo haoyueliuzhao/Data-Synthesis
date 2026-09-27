@@ -1,0 +1,89 @@
+{
+  "schema_version": "cross_market_calibration.v1.cross_market_input_repair_and_evaluation_resume",
+  "at": "2026-09-27T04:17:48.155888+00:00",
+  "panel_compilation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/panel_compact_03/summary.json",
+    "sha256": "e450f3d3d0ee220dbb62a0470276cf6833a2b6f63e3a1235bb5494c749d3106e",
+    "bytes": 254278,
+    "id": "cross_market_panel_compact_completed:9c3eb653cb0c42e205ea86bafbb1b5aed2c53593e0d64f75cf2036c1300abc68"
+  },
+  "panel_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/panel_compact_03/protocol.json",
+    "sha256": "010c5e96cf466d2c05474901271ae069e71459fc057ca5b0f473dad6dd88845f",
+    "bytes": 532771,
+    "id": "cross_market_panel_compact_protocol:6f328af8d2447924726cde73271b3e9d5e6d7dc459e0c811ec9d1c45532724cb"
+  },
+  "prior_panel_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/panel_text_table_02/summary.json",
+    "sha256": "bc9b81e8113d0390fdba7a67cf922cf0a19dd35e4c18387b56062895e4c6d683",
+    "bytes": 252594,
+    "id": "cross_market_panel_text_table_compilation_completed:07eadcd7a367699949ad5a5372a38067d3756b817fbe725848d9be3629f0d54e"
+  },
+  "panel_passed": true,
+  "selected_tasks": 180,
+  "groups": {
+    "composition_required": 60,
+    "dual_sufficient": 60,
+    "other_financial": 60
+  },
+  "issuer_count": 43,
+  "original_max_prompt_tokens": 28604,
+  "compact_max_prompt_tokens": 17875,
+  "input_limit": 18432,
+  "all_scripted_controls_passed": true,
+  "scripted_controls": 420,
+  "exact_public_restorations": 180,
+  "runtime_and_scorer_unchanged": true,
+  "source_semantic_API_calls_in_repair": 0,
+  "new_training_updates": 0,
+  "CUDA_smoke": {
+    "at": "2026-09-27T04:11:22.828230+00:00",
+    "passed": true,
+    "shape": [
+      16,
+      16
+    ],
+    "matmul_calls": 2,
+    "Student_generations": 0
+  },
+  "CUDA_recovery_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evaluation_01/cuda_launch_recovery_01/protocol.json",
+    "sha256": "6a0806a72264959d33632d10c0b52b2c7b79aa52c8744c907f9e585027cea2ff",
+    "bytes": 26161
+  },
+  "preserved_CUDA_failures": 12,
+  "original_failure_reservations_not_refunded": true,
+  "evaluation_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evaluation_01/protocol.json",
+    "sha256": "d2a041fc78e313d4e5792c62440e91aa02dfb8ac98ce5221a75dabe2dc7d5918",
+    "bytes": 35649,
+    "id": "cross_market_evaluation_protocol:b08d65419ccf18cc01be00aebb0d3eea7824c6426c402289070463bfbea40470"
+  },
+  "evaluation_status_snapshot": {
+    "active_workers": 4,
+    "at": "2026-09-27T04:17:38.608896+00:00",
+    "blocked": [],
+    "generation_shards": 45,
+    "generation_shards_complete": 0,
+    "phase": "GENERATION",
+    "protocol_id": "cross_market_evaluation_protocol:b08d65419ccf18cc01be00aebb0d3eea7824c6426c402289070463bfbea40470",
+    "scoring_cohorts_complete": 0
+  },
+  "committed_generation_sessions_at_snapshot": 25,
+  "physical_budget_counts_at_snapshot": {
+    "generate_call": 212,
+    "worker_start": 16
+  },
+  "planned_sessions": 4860,
+  "all_generation_before_private_scoring": true,
+  "live_evaluation_status_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evaluation_01/control/status.json",
+  "live_generation_budget_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/evaluation_01/budget/state.json",
+  "latest_run_entry": "trusted_data_synthesis/scripts/run_cross_market_cuda_recovery_20260927.py",
+  "statistics_status": {
+    "at": "2026-09-27T04:17:42.384363+00:00",
+    "status": "WAITING_COMPLETE4860_AND_GENERATION_SEAL"
+  },
+  "overall_experiment_complete": false,
+  "scientific_training_value_not_yet_assessed": true,
+  "id": "cross_market_input_repair_and_evaluation_resume:c0498f129742a2084d36236e67ee7563aac941456f60fd4ac622f80fb9c11535"
+}
