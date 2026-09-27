@@ -39,3 +39,15 @@
 运行时、评价控制器、评分器和固定统计代码均不改，已有统计等待合同继续有效。所有生成与worker结束并封存后才私有评分，再自动执行发行人簇统计、生成详细报告并定向提交推送。
 
 真实全180准入结果及GPU启动情况由该阶段的完成摘要和评价控制状态记录；上述是执行说明，不预先宣布成功。
+
+## 正式准入结果与首次GPU启动问题
+
+北京时间12:05:46登记，12:06:13正式完成：180题全部通过，最大输入17,875 tokens，420次脚本控制全部符合预期。公开源全量保留、逐题还原180／180成功；原runtime和scorer未改。新完成记录为`cross_market_panel_compact_completed:9c3eb653cb0c42e205ea86bafbb1b5aed2c53593e0d64f75cf2036c1300abc68`。
+
+12:07:24登记4,860会话评价，协议`cross_market_evaluation_protocol:b08d65419ccf18cc01be00aebb0d3eea7824c6426c402289070463bfbea40470`。统计watcher由等待协议进入等待完整生成封存，说明面板到评价的引用已接通。
+
+随后真实GPU首解码发现另一项启动器遗漏：既有跨市场`launch`未传入`CUBLAS_WORKSPACE_CONFIG`，而固定decoder启用了PyTorch确定性算法。12次worker尝试均在首调用收到相同CuBLAS确定性异常，0个有效会话、0个Q；不是财务控制失败，也不把执行异常补为Q=0。发现后仅停止本轮coordinator，已在途worker自然退出，全部原失败、12次worker_start及12次generate_call reservation保留，不返还额度。
+
+恢复保持确定性开启，使用此前B确认和校准训练启动器同样的`CUBLAS_WORKSPACE_CONFIG=:4096:8`。12:11:22完成一次独立微型CUDA验证：16×16 float32矩阵乘法两次结果一致且有限，Torch2.7.1+cu128／CUDA12.8，peak allocated约33.56MB；没有加载Student或产生评价样本。这个检查仅验证所需启动环境，不替代真实worker运行。
+
+独立启动修订将只允许已冻结、确实退出且错误消息完全匹配上述遗漏的generation尝试恢复；不扩大到其他FATAL，不放松确定性、评分隔离、样本数或预算。新worker仍使用同一面板、参数点与评分器，所有已消耗尝试继续计账。
