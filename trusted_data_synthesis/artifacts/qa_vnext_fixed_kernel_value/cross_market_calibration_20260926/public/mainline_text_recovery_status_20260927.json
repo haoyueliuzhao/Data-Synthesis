@@ -1,0 +1,78 @@
+{
+  "snapshot_at_utc": "2026-09-27T01:47:59.669890+00:00",
+  "status": "RUNNING_TEXT_TABLE_MAINLINE_NOT_COMPLETE",
+  "historical_vision_blocker_withdrawn": true,
+  "original_visual_records_preserved": true,
+  "current_process_pid": 3596741,
+  "statistics_watch_pid": 3570662,
+  "latest_live_status_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/text_table_mainline_01/status.json",
+  "execution_entry": "trusted_data_synthesis/scripts/run_cross_market_text_task_resolution_20260927.py",
+  "source_status_snapshot": {
+    "GPU_processes": 0,
+    "at": "2026-09-27T01:47:54.797144+00:00",
+    "elapsed_seconds": 192.71620011143386,
+    "observed_remaining_seconds": 621.5957793772811,
+    "remaining_estimate_is_wave_only": true,
+    "saved_packet_reviews": 891,
+    "state": "TEXT_REVIEW_RUNNING",
+    "technical_failed_packets": 0,
+    "wave": 3,
+    "wave_packets": 1893,
+    "wave_packets_completed": 448
+  },
+  "source_packet_reviews_saved": 903,
+  "physical_HTTP_receipts": 922,
+  "physical_receipt_status_counts": {
+    "RESPONSE_SAVED_NOT_SEMANTICALLY_REVIEWED": 922
+  },
+  "provider_known_usage": {
+    "prompt_tokens": 20735446,
+    "completion_tokens": 326376,
+    "total_tokens": 21061822
+  },
+  "usage_unknown_receipts": 0,
+  "reused_step240_models": 9,
+  "new_Student_evaluation_sessions_completed": 0,
+  "planned_Student_evaluation_sessions": 4860,
+  "new_training_updates": 0,
+  "visual_calls": 0,
+  "source_task_adjudications_completed": 0,
+  "next_stages": [
+    "complete_fixed_text_frontier",
+    "resolve_only_concrete_task_doubts",
+    "compile_180_panel_and_controls",
+    "evaluate_fixed_nine_models_4860_sessions",
+    "sealed_issuer_cluster_statistics_and_report"
+  ],
+  "automatic_final_publication_paths": [
+    "trusted_data_synthesis/docs/cross_market_calibration_report_20260927.md",
+    "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/calibration_final_report_20260927.json"
+  ],
+  "protocols": {
+    "mainline": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/text_table_mainline_01/protocol.json",
+      "sha256": "8c904bfefd8f8ceb98160f61ea220f05799721dd14ccb99ffa3b41a7d1d105ed",
+      "bytes": 3760639
+    },
+    "wire_capacity": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/text_table_mainline_01/request_capacity_revision_01.json",
+      "sha256": "5c8a766f9db945203509d9a6eea374f4c05c6edfd02048129744b7a48d7390e0",
+      "bytes": 17071
+    },
+    "schema_recovery": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/text_table_mainline_01/schema_recovery_revision_01.json",
+      "sha256": "762ad37a1a9e8c9a1d1c19110395443d166158e08adf48f7a8d83fd9a4619119",
+      "bytes": 173575
+    },
+    "task_adjudication": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_cache_20260926/original_evidence_revision_02/text_table_mainline_01/task_adjudication_01/protocol.json",
+      "sha256": "8b5e7dc5bff7dad6c98b9175b95358eb05539d45821484c2fa500b7561e15bd2",
+      "bytes": 37633
+    }
+  },
+  "limitations": [
+    "Snapshot only; read live status for current progress.",
+    "No completion or positive training-value claim.",
+    "Source certificates limited to complete saved text/table text, not unseen images."
+  ]
+}
