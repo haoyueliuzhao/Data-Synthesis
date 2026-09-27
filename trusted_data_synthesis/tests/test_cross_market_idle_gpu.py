@@ -1,7 +1,6 @@
 """Idle-only resource admission; CPU mocks, no real GPU or model execution."""
 
 import pytest
-
 import run_cross_market_idle_gpu_20260927 as m
 
 
