@@ -55,4 +55,10 @@ GPU 准入先沿用原 48 GiB 检查，再过滤至四个保留 UUID；每张卡
 
 仅执行 CPU/mock 定向测试：目标第 5、6 次放行，第 7 次阻断，非目标与评分次数上限不变；完整 coordinator code tree 只有 cap 表达式差异；原 FATAL 不洗白；旧 worker 接管、CUDA 环境、性能适配、原四次失败绑定和 worker 入口限制保留；白名单外 GPU 被过滤且不能从 worker 入口绕过。
 
-真实登记 ID、接管后的队列状态、进度和最终代码提交将在部署完成后追加，并保存定向公共快照。不以计划代替真实启动或完成状态。
+17 项 CPU/mock 定向测试通过，新增源码与测试 Ruff 检查通过。登记源码提交为 `899a3c25111c6fb2bfa3b42afe6800bb901b1fe4`。
+
+13:19:34，新 coordinator PID `3991300` 启动。已登记修订 `cross_market_authorized_shard_retry_protocol:4bfd2d93982db8c6152ae9ceb4afd2b52ae17fbc667f7fa94f2341f4ccea8b5d`，登记时 478 条已提交会话、继承 4 个保留 GPU 的存活 worker。原科学协议与已有性能协议文件不改。
+
+13:19:51 复核：479／4,860 会话已提交，累计 5,396 次生成调用预留、24 次 worker_start，状态 GENERATION、4 个 active worker、blocked 为空；四个实际在途 worker 都位于 GPU0／1／6／7。原耗尽分片的下一次编号为 5，新有效上限为 6；尚未为它新启动 worker，因为保留四卡仍有在途任务。这是“已重新入队等待”，不是声称 attempt5 已执行。
+
+公共快照为 `artifacts/qa_vnext_fixed_kernel_value/cross_market_calibration_20260926/public/authorized_retry_and_gpu_release_20260927.json`，包括实际释放请求／退出记录、运行协议引用、白名单、次数授权、接管状态及预算。原始完整记录仍保留在 `evaluation_01/gpu_release_01` 与 `authorized_retry_01`。
