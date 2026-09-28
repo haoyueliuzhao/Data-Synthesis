@@ -25,6 +25,8 @@ WARNING_MICROCNY = 700_000_000
 REQUEST_CAP = 256_000
 PURPOSE = "finqa_fixed_probe_inventory_v1"
 V6_PURPOSE = "finqa_v6_generation_and_semantic_review_v1"
+V6_REVIEW_AMENDMENT_PAUSE = "user_authorized_review_capacity_audit"
+V6_REVIEW_AMENDMENT_ACTION = "v6_review_capacity_amended"
 
 
 def validated_budget_limits(
@@ -62,6 +64,27 @@ class DuplicateInvocation(RuntimeError):
 
 class InvalidUsage(ValueError):
     """The response does not establish complete tariff-accountable token usage."""
+
+
+class BudgetAmendmentError(ValueError):
+    """An explicit review-capacity amendment cannot change this ledger safely."""
+
+
+def _review_output_limits(value, *, official_max_output_tokens):
+    if (
+        not isinstance(value, (list, tuple))
+        or any(
+            type(item) is not int or not 0 < item <= official_max_output_tokens for item in value
+        )
+        or len(value) != len(set(value))
+        or not {2048, 16384} <= set(value)
+        or any(item not in {2048, 16384} and item <= 16384 for item in value)
+    ):
+        raise BudgetAmendmentError(
+            "explicit distinct review limits must retain 2048/16384 "
+            "and only add larger official caps"
+        )
+    return tuple(sorted(value))
 
 
 @dataclass(frozen=True)
@@ -188,6 +211,183 @@ class ProbePriceSheet:
         return {name: value[name] for name in names}
 
 
+def apply_v6_review_amendment(
+    path,
+    *,
+    expected_run_id,
+    expected_config_sha256,
+    amendment_id,
+    allowed_review_output_limits,
+    evidence,
+):
+    """Atomically extend an existing paused V6 ledger; never reset or reconstruct spend.
+
+    The output limits are the complete explicitly authorized set, including the
+    original 2048-generation and 16384-review caps. No request, counter, price,
+    monetary limit, or request ceiling is rewritten. Only the specific authorized
+    audit pause may be cleared, after every paid request has settled.
+    """
+    path = Path(path)
+    if not path.is_file():
+        raise BudgetAmendmentError("original paid database is missing; amendment never creates one")
+    if (
+        not isinstance(expected_run_id, str)
+        or not expected_run_id
+        or not isinstance(expected_config_sha256, str)
+        or len(expected_config_sha256) != 64
+        or not isinstance(amendment_id, str)
+        or not amendment_id.strip()
+        or not isinstance(evidence, dict)
+        or not evidence
+    ):
+        raise BudgetAmendmentError(
+            "explicit run, old configuration hash, amendment ID and evidence required"
+        )
+    evidence = json.loads(_json(evidence))  # Freeze the caller's authorization evidence.
+    connection = sqlite3.connect(
+        path.resolve().as_uri() + "?mode=rw", uri=True, timeout=30, isolation_level=None
+    )
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute("PRAGMA synchronous=FULL")
+        connection.execute("PRAGMA busy_timeout=30000")
+        connection.execute("BEGIN IMMEDIATE")
+        row = connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()
+        if row is None:
+            raise BudgetAmendmentError("original paid configuration is absent")
+        old = json.loads(row[0])
+        if (
+            digest(old) != expected_config_sha256
+            or old.get("run_id") != expected_run_id
+            or old.get("purpose") != V6_PURPOSE
+            or old.get("schema") != "probe_budget.v2"
+            or old.get("hard_cap_microcny") != HARD_CAP_MICROCNY
+            or old.get("warning_microcny") != WARNING_MICROCNY
+            or old.get("joint_generation_and_review_cap") is not True
+            or old.get("variable_reservation_bound_to_each_actual_request") is not True
+        ):
+            raise BudgetAmendmentError("original V6 run/configuration or 800/700 CNY limits differ")
+        limits = validated_budget_limits(
+            **{name: old[name] for name in ("hard_cap_microcny", "warning_microcny", "request_cap")}
+        )
+        sheet = ProbePriceSheet(**old["price_sheet"])
+        previous = _review_output_limits(
+            old.get("allowed_output_limits"),
+            official_max_output_tokens=sheet.official_max_output_tokens,
+        )
+        allowed = _review_output_limits(
+            allowed_review_output_limits,
+            official_max_output_tokens=sheet.official_max_output_tokens,
+        )
+        if (
+            old.get("price_sheet_id") != sheet.id
+            or old.get("max_output_tokens") != max(previous)
+            or old.get("reservation_microcny_per_request")
+            != sheet.cost_microcny(
+                hit=0, miss=sheet.context_input_token_ceiling, output=max(previous)
+            )
+            or not set(previous) < set(allowed)
+        ):
+            raise BudgetAmendmentError(
+                "amendment must extend, never replace, the frozen original caps/tariff"
+            )
+        event_key = "v6_review_amendment:" + amendment_id
+        if connection.execute("SELECT 1 FROM metadata WHERE key=?", (event_key,)).fetchone():
+            raise BudgetAmendmentError(
+                "amendment ID already recorded; no overwrite or second application"
+            )
+        halt = connection.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
+        if halt is None or json.loads(halt[0]).get("reason") != V6_REVIEW_AMENDMENT_PAUSE:
+            raise BudgetAmendmentError(
+                "only the explicit user-authorized review audit pause may clear"
+            )
+        pause_event = connection.execute(
+            "SELECT sequence FROM events WHERE action='halt' AND payload_json=? "
+            "ORDER BY sequence DESC LIMIT 1",
+            (halt[0],),
+        ).fetchone()
+        if pause_event is None or any(
+            json.loads(event[0]).get("reason") != V6_REVIEW_AMENDMENT_PAUSE
+            for event in connection.execute(
+                "SELECT payload_json FROM events WHERE action='halt' AND sequence>?",
+                (pause_event[0],),
+            )
+        ):
+            # INSERT OR IGNORE preserves the first halt in metadata. A later
+            # in-flight service failure must not disappear behind that pause.
+            raise BudgetAmendmentError(
+                "another halt occurred during the audit pause; cannot clear it"
+            )
+        unsettled = connection.execute(
+            "SELECT COUNT(*) FROM requests WHERE state!='SETTLED'"
+        ).fetchone()[0]
+        counters = connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+        aggregate = connection.execute(
+            "SELECT COUNT(*) AS requests,COALESCE(SUM(settled_microcny),0) AS spent,"
+            "SUM(CASE WHEN settled_microcny IS NULL OR settled_microcny<0 "
+            "OR dispatched_at IS NULL THEN 1 ELSE 0 END) AS invalid FROM requests"
+        ).fetchone()
+        if (
+            unsettled
+            or counters is None
+            or any(counters[name] != 0 for name in ("pending", "held", "unknown"))
+            or counters["requests"] != aggregate["requests"]
+            or counters["dispatched"] != aggregate["requests"]
+            or counters["spent"] != aggregate["spent"]
+            or aggregate["invalid"]
+            or not 0 <= counters["spent"] <= limits["hard_cap_microcny"]
+            or not 0 <= counters["requests"] <= limits["request_cap"]
+        ):
+            raise BudgetAmendmentError(
+                "all original requests/costs must settle and conserve before amendment"
+            )
+        new = {
+            **old,
+            "amendment_id": amendment_id,
+            "allowed_output_limits": list(allowed),
+            "max_output_tokens": max(allowed),
+            "reservation_microcny_per_request": sheet.cost_microcny(
+                hit=0, miss=sheet.context_input_token_ceiling, output=max(allowed)
+            ),
+        }
+        record = dict(
+            schema="v6_review_capacity_amendment.v1",
+            amendment_id=amendment_id,
+            run_id=expected_run_id,
+            old_config=old,
+            new_config=new,
+            old_config_sha256=digest(old),
+            new_config_sha256=digest(new),
+            cleared_halt=json.loads(halt[0]),
+            authorization_evidence=evidence,
+            preserved_counters=dict(counters),
+            all_original_requests_settled=True,
+            monetary_and_request_caps_unchanged=True,
+            old_request_limits_unchanged=True,
+            at_unix=time.time(),
+        )
+        connection.execute(
+            "INSERT INTO metadata(key,value) VALUES (?,?)", (event_key, _json(record))
+        )
+        connection.execute("UPDATE metadata SET value=? WHERE key='config'", (_json(new),))
+        deleted = connection.execute(
+            "DELETE FROM metadata WHERE key='halt' AND value=?", (halt[0],)
+        )
+        if deleted.rowcount != 1:
+            raise BudgetAmendmentError("authorized pause identity changed during amendment")
+        connection.execute(
+            "INSERT INTO events(invocation_id,action,payload_json,at_unix) VALUES (?,?,?,?)",
+            (amendment_id, V6_REVIEW_AMENDMENT_ACTION, _json(record), record["at_unix"]),
+        )
+        connection.commit()
+        return record
+    except BaseException:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
 class ProbeBudget:
     """One SQLite database per registered inventory, safe across worker processes."""
 
@@ -202,6 +402,8 @@ class ProbeBudget:
         hard_cap_microcny=HARD_CAP_MICROCNY,
         warning_microcny=WARNING_MICROCNY,
         request_cap=REQUEST_CAP,
+        amendment_id=None,
+        allowed_output_limits=None,
     ):
         limits = validated_budget_limits(
             hard_cap_microcny=hard_cap_microcny,
@@ -212,7 +414,23 @@ class ProbeBudget:
         self.warning_microcny = limits["warning_microcny"]
         self.request_cap = limits["request_cap"]
         self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._require_existing = amendment_id is not None or allowed_output_limits is not None
+        if self._require_existing:
+            if (
+                purpose != V6_PURPOSE
+                or not isinstance(amendment_id, str)
+                or not amendment_id.strip()
+                or allowed_output_limits is None
+            ):
+                raise BudgetAmendmentError(
+                    "amended V6 open requires explicit amendment ID and output limits"
+                )
+            if not self.path.is_file():
+                raise BudgetAmendmentError(
+                    "original amended database is missing; never recreate the ledger"
+                )
+        else:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
         self.run_id, self.price_sheet = (
             run_id,
             price_sheet
@@ -222,12 +440,27 @@ class ProbeBudget:
         self.max_output_tokens = max_output_tokens
         self.purpose = purpose
         self.allowed_output_limits = (
-            (2048, 16384) if purpose == V6_PURPOSE else (max_output_tokens,)
+            _review_output_limits(
+                allowed_output_limits,
+                official_max_output_tokens=self.price_sheet.official_max_output_tokens,
+            )
+            if self._require_existing
+            else (2048, 16384)
+            if purpose == V6_PURPOSE
+            else (max_output_tokens,)
         )
         if not isinstance(run_id, str) or not run_id or purpose not in {PURPOSE, V6_PURPOSE}:
             raise ValueError("a dedicated registered Probe run and purpose are required")
         if (
-            max_output_tokens not in ((16384,) if purpose == V6_PURPOSE else (2048, 4096))
+            type(max_output_tokens) is not int
+            or max_output_tokens
+            not in (
+                (max(self.allowed_output_limits),)
+                if self._require_existing
+                else (16384,)
+                if purpose == V6_PURPOSE
+                else (2048, 4096)
+            )
             or max_output_tokens > self.price_sheet.official_max_output_tokens
         ):
             raise ValueError(
@@ -255,9 +488,12 @@ class ProbeBudget:
                 joint_generation_and_review_cap=True,
                 variable_reservation_bound_to_each_actual_request=True,
             )
+        if self._require_existing:
+            config["amendment_id"] = amendment_id
         self.config = config
-        with closing(self._connect()) as connection:
-            connection.executescript("""
+        if not self._require_existing:
+            with closing(self._connect()) as connection:
+                connection.executescript("""
                 CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS requests (
                     invocation_id TEXT PRIMARY KEY,
@@ -298,7 +534,7 @@ class ProbeBudget:
                     payload_json TEXT NOT NULL,
                     at_unix REAL NOT NULL
                 );
-            """)
+                """)
         with self._transaction() as connection:
             existing = connection.execute(
                 "SELECT value FROM metadata WHERE key='config'"
@@ -308,12 +544,35 @@ class ProbeBudget:
                     "budget database belongs to a different run, purpose, tariff, "
                     "output or budget limit"
                 )
+            if self._require_existing:
+                amendment = connection.execute(
+                    "SELECT value FROM metadata WHERE key=?",
+                    ("v6_review_amendment:" + amendment_id,),
+                ).fetchone()
+                if existing is None or amendment is None:
+                    raise BudgetAmendmentError("explicit capacity amendment evidence is absent")
+                record = json.loads(amendment[0])
+                if record.get("new_config") != config or record.get("new_config_sha256") != digest(
+                    config
+                ):
+                    raise BudgetAmendmentError(
+                        "amended configuration differs from its durable authorization"
+                    )
             connection.execute(
                 "INSERT OR IGNORE INTO metadata VALUES ('config',?)", (_json(config),)
             )
 
     def _connect(self):
-        connection = sqlite3.connect(self.path, timeout=30, isolation_level=None)
+        connection = (
+            sqlite3.connect(
+                self.path.resolve().as_uri() + "?mode=rw",
+                uri=True,
+                timeout=30,
+                isolation_level=None,
+            )
+            if self._require_existing
+            else sqlite3.connect(self.path, timeout=30, isolation_level=None)
+        )
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA journal_mode=WAL")
         connection.execute("PRAGMA synchronous=FULL")
@@ -325,6 +584,11 @@ class ProbeBudget:
         connection = self._connect()
         try:
             connection.execute("BEGIN IMMEDIATE")
+            stored = connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()
+            if stored is not None and json.loads(stored[0]) != self.config:
+                raise ValueError(
+                    "different or stale budget configuration; reopen with explicit frozen amendment"
+                )
             yield connection
             connection.commit()
         except BaseException:

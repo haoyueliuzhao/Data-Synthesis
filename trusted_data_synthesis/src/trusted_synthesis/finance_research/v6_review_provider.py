@@ -41,21 +41,39 @@ def _request_body(ledger, request):
     ):
         raise ValueError("semantic review metadata/request binding differs")
     payload = strict_json_decoder().decode(messages[1]["content"])
+    compact = request.get("wire_protocol") == "v6_compact_review.v1"
     if (
         not isinstance(payload, dict)
         or payload.get("task_bundle_sha256") != request.get("task_bundle_sha256")
         or type(payload.get("reviewer")) is not int
         or payload["reviewer"] not in (0, 1)
         or request["reviewer"] != payload["reviewer"]
-        or payload.get("document_index") != request.get("document_index")
     ):
         raise ValueError("review task bundle/reviewer/documents differ from sent payload")
+    if compact:
+        if (
+            not ledger.config.get("amendment_id")
+            or payload.get("document_catalog") != request.get("document_catalog")
+            or request.get("catalog_sha256") != digest(request.get("document_catalog"))
+            or not request.get("capacity_policy_id")
+            or type(request.get("max_output_tokens")) is not int
+            or request["max_output_tokens"] not in ledger.allowed_output_limits
+            or request["max_output_tokens"] < OUTPUT_LIMIT
+        ):
+            raise ValueError("compact review requires its amended joint budget and bound capacity")
+        output_limit = request["max_output_tokens"]
+    else:
+        if request.get("wire_protocol") is not None or payload.get("document_index") != request.get(
+            "document_index"
+        ):
+            raise ValueError("review document index or wire protocol differs")
+        output_limit = OUTPUT_LIMIT
     body = dict(
         model=MODEL,
         messages=copy.deepcopy(messages),
         temperature=0,
         top_p=1,
-        max_tokens=OUTPUT_LIMIT,
+        max_tokens=output_limit,
         thinking={"type": "disabled"},
         response_format={"type": "json_object"},
         stream=False,
@@ -73,6 +91,7 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
     if not isinstance(api_key, str) or not api_key:
         raise ValueError("caller must supply an in-memory API key")
     body, reviewer = _request_body(ledger, request)
+    output_limit = body["max_tokens"]
     wire = _json(body).encode("utf-8")
     if api_key.encode() in wire:
         raise ValueError("credential must not appear in a retained public request")
@@ -165,7 +184,7 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
         value = strict_json_decoder().decode(raw_text)
         if not isinstance(value, dict):
             raise ValueError("review service envelope must be a JSON object")
-        ledger.price_sheet.usage(value.get("usage"), output_limit=OUTPUT_LIMIT)
+        ledger.price_sheet.usage(value.get("usage"), output_limit=output_limit)
         if 200 <= status < 300 and value.get("model") != MODEL:
             raise ValueError("review returned another model")
         if 200 <= status < 300:
