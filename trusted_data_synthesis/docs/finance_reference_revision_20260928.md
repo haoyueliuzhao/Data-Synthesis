@@ -69,3 +69,29 @@ H2生成上限是240×32＋240＝**7920**，加G2最多16，共**7936**；不再
 实际运行 `test_finance_research_*.py`：**304 passed，12.15秒，无失败或跳过**；Ruff（排除未修改的官方metric_vendor）和diff检查通过。包括实际冻结模板可见引用正控、Direct严格提交、v1合同不变、v2原生分母政策、G2回放入口/上限、H2固定预算、全部worker退出后评分以及原有材料/编码/反馈接口回归。这些是CPU／接口验证，不是模型金融效果。
 
 JUnit记录保留在 `r2_preparation_20260928/cpu_controls.xml`，登记器绑定其字节摘要及实际执行的测试源码摘要；没有重新生成旧实验，也没有读取参考答案用于选择公共例子。
+
+### 已登记并实际启动（北京时间2026-09-28）
+
+执行代码冻结于 `88ca246abdba217f217afb5edd679d1e391a9d34`，已推送main。新协议ID为 `2c8fdc96d6c3cfae31cf8055bfb74737e00b441779a8b169bbd4cc33d14528d2`，原文件SHA-256为 `b1663cc181789509db4728debfe86a7b0ac1cde93093e04538cdd907f3ebcb0c`；CPU JUnit SHA-256为 `d02c09b0cdf759c94be59452aa3872f3398a85748e5c4a1f3b22b83d354feac6`。协调器PID1220048，G2于12:48:09在GPU4启动。
+
+G2耗时340.57秒，实际16／16次新生成，16份同点回放全部通过，最大logP绝对误差均0；实际参数、模式、RNG和优化器状态隔离检查通过。API与真实优化步仍为0。脚本可见引用正控通过、`eval_native_passed=true`、`feedback_replay_passed=true`，但 **`real_reference_chain_passed=false`**：
+
+| 参数点／样例 | 实际动作 | 终态 | 事前精确链 |
+|---|---|---|---|
+| real／normal | list_sources→read_source→calculate→final_answer | final_answer | 失败：多出list_sources |
+| real／error_recovery | 错误read→正确read→calculate→非法封套 | no_tool_call | 失败：未提交Final |
+| virtual／normal | list_sources→read_source→calculate→final_answer | final_answer | 失败：多出list_sources |
+| virtual／error_recovery | 错误read→正确read→calculate→calculate | max_steps | 失败：未提交Final |
+
+没有因此重采、替换样例、放宽动作序列或追加第17次生成。H2依据**事前登记**的普通执行准入进入开发复测，不把上述数值通过解释为完整模型链通过或训练资格。
+
+精确链诊断函数在动作序列不匹配时提前返回；其中初始化的 `observed_prev_reference_used=false`、可见性false表示该严格分支没有继续核验，不能在这些失败例中直接当作“实际从未用prev／模型看不见句柄”的事实。原报告字段未改写。独立只读的事后局部检查发现：
+
+- real/normal实际2881-token计算输入可见r2成功表格，模型执行variables中的prev:r2得到30；3008-tokenFinal输入可见r3结果，模型通过prev:r3提交30和 `subtract(120, 90)`。原Token解码再编码逐项一致，因此这条**局部引用链成功**；仍不改其事前精确链失败结论。
+- real/error_recovery看到r1错误后改读table:0，纠错读取成功。但第三响应虽然在文字前缀提到prev，实际可执行封套的variables是字面120/90，不能声称它使用了引用；第四响应把DSL与算式／未正确加引号的引用混用，JSON非法，无工具动作或Final。错误动作token也照常保留和严格回放。
+
+G2结果原文件为 `reference_revision_01/gate_complete/record.json`，SHA-256 `ef920aa86272dc5cd1866941908a5b7b0ac23b190abcf665217f62de369554ae`；逐步原事件、回执和回放位于 `reference_revision_01/gate/cases`。
+
+H2于12:53:52自动启动，首批分别运行Base/Direct、Base/H1-R和Static/Direct。12:55:29只读快照已保存 **61／480会话、64次H2调用、未结算0**，无阻塞；随后已接上Static/H1-R等后续分片。未提前读取本轮参考评分，不能由这些进度作准确率结论。
+
+用户随后明确允许使用GPU5、7。它们在12:54:04各短暂预留49152MiB、上限90秒（占位调用0），与自动启动的本项目H2模型加载存在短时重叠；确认模型已驻留后，仅向自己精确核对的holder PID1227430／1227431发送交接信号，并于12:54:54／55释放占位。实际实验现在使用GPU4／5／7，GPU0–3与6的其他项目未触碰；没有继续持有空占位。该资源交接不修改冻结科学协议、分母或7936调用预算。
