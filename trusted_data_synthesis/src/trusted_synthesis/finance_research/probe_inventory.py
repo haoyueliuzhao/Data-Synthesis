@@ -159,14 +159,17 @@ def register_inventory(
         config["role"] == "sft"
         and config["tier"] == "EVAL_NATIVE"
         and config["api_model"] == "deepseek-flash"
-        and config["harness_id"] == "bigfinance-derived-vtdo-v3"
-        and config["submission_profile"] == "finqa_program_v2"
+        and (config["harness_id"], config["submission_profile"])
+        in {
+            ("bigfinance-derived-vtdo-v3", "finqa_program_v2"),
+            ("bigfinance-derived-vtdo-v4", "finqa_program_v3_structured"),
+        }
         and config["local_tool_protocol"] == "qwen2.5-native-tool-call-v1"
         and config["max_steps"] == 32
         and config["max_new_tokens"] == 2048
         and config["context_limit"] == 1048576
         and (config["temperature"], config["top_p"], config["top_k"]) == (1.0, 1.0, 0),
-        "inventory requires frozen H1-R, FinQA v2, SFT role and deepseek-flash",
+        "inventory requires a registered H1-R/profile pair, SFT role and deepseek-flash",
     )
     body = dict(
         schema="finance_research.fixed_probe_inventory.v1",
@@ -303,6 +306,16 @@ def record_slot_result(registration, slot_id, episode: Episode, qualification):
         all_provider_calls_settled=True,
         episode_complete=True,
         actual_model_calls=episode.actual_model_calls,
+        actual_API_prompt_tokens=(
+            sum(turn.usage["prompt_tokens"] for turn in episode.turns)
+            if all(type(turn.usage.get("prompt_tokens")) is int for turn in episode.turns)
+            else None
+        ),
+        actual_API_completion_tokens=(
+            sum(turn.usage["completion_tokens"] for turn in episode.turns)
+            if all(type(turn.usage.get("completion_tokens")) is int for turn in episode.turns)
+            else None
+        ),
         stop_reason=episode.stop_reason,
         original_episode_retained=True,
         semantic_decision_produced_by_inventory=False,
@@ -438,6 +451,11 @@ def freeze_inventory(registration, slot_results):
         single_state_static_task_ids=static,
         multi_state_task_ids=varying,
         nontrivial_pi_support_present=bool(varying),
+        observed_D_pi=sum(max(0, len(support[task]) - 1) for task in tasks),
+        D_pi=(sum(len(support[task]) - 1 for task in tasks) if not missing else None),
+        M_flex=str(Fraction(len(varying), count)),
+        D_pi_null_means_full_population_support_missing=True,
+        nontrivial_support_does_not_establish_statistical_power=True,
         pi_optimization_support_ready=not missing and bool(varying),
         material_registration=material,
         slot_results=ordered_results,
@@ -465,4 +483,25 @@ def freeze_inventory(registration, slot_results):
             exclusions_precede_Probe_generation=True,
             no_further_task_deletion_or_mass_renormalization=True,
         )
+    token_counts = {purpose: {} for purpose in ("train", "sealed_diagnostic")}
+    for row in ordered_results:
+        if row["decision"]["verdict"] != "CompletePass":
+            continue
+        state = (
+            token_counts[row["purpose"]]
+            .setdefault(row["task_id"], {})
+            .setdefault(
+                row["decision"]["state_id"],
+                dict(packages=0, API_prompt_tokens=0, API_completion_tokens=0),
+            )
+        )
+        state["packages"] += 1
+        for key in ("API_prompt_tokens", "API_completion_tokens"):
+            value = row.get("actual_" + key)
+            state[key] = (
+                state[key] + value if state[key] is not None and value is not None else None
+            )
+    body["qualified_state_sample_and_API_token_counts"] = token_counts
+    body["API_tokens_are_not_Student_supervised_tokens"] = True
+    body["Student_supervised_token_counts"] = None
     return {**body, "frozen_inventory_id": "finqa_frozen_probe_support:" + digest(body)}

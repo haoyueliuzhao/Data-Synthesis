@@ -30,7 +30,7 @@ class _Invalid(ValueError):
     pass
 
 
-def qualification_rules() -> dict[str, Any]:
+def qualification_rules(*, harness_id="bigfinance-derived-vtdo-v3") -> dict[str, Any]:
     body = {
         "version": RULE_VERSION,
         "scope": (
@@ -100,6 +100,19 @@ def qualification_rules() -> dict[str, Any]:
             "32 linear steps; exact author evidence text/row binding; unique data leaf match"
         ),
     }
+    if harness_id == "bigfinance-derived-vtdo-v4":
+        body.update(
+            previous_financial_rule_id="finqa_qualification:" + digest(body),
+            execution_protocol_binding={
+                "harness_id": harness_id,
+                "submission_profile": "finqa_program_v3_structured",
+                "system_and_tools": "same shared selectors as live execution",
+                "public_content": "empty/null; noncompliance retained, never removed",
+                "financial_DAG_source_unit_Final_and_Mapper_rules_changed": False,
+            },
+        )
+    elif harness_id != "bigfinance-derived-vtdo-v3":
+        raise ValueError("unsupported material execution protocol")
     return {**body, "id": "finqa_qualification:" + digest(body)}
 
 
@@ -659,25 +672,25 @@ def _author_basis(bundle):
 def _replay_episode(bundle, episode):
     from .contracts import invocation_identity, invocation_scope
     from .encoding import probe_generation_record
-    from .harness import SYSTEM_PROMPT_V3
+    from .harness import episode_tool_specs, system_message
     from .materials import _training_rows
     from .profiles import public_run_view
     from .providers import _api_messages, canonical_assistant_message
     from .settlement import episode_is_complete
-    from .tools import VISIBLE_REFERENCE_PROTOCOL, PublicToolSession, tool_specs
+    from .tools import VISIBLE_REFERENCE_PROTOCOL, PublicToolSession
 
     if episode.config.role != "sft" or bundle.lineage.original_split != "train":
         raise _Unknown("qualification_requires_original_train_SFT_role")
-    if (episode.config.harness_id, episode.config.submission_profile) != (
-        "bigfinance-derived-vtdo-v3",
-        "finqa_program_v2",
-    ):
+    if (episode.config.harness_id, episode.config.submission_profile) not in {
+        ("bigfinance-derived-vtdo-v3", "finqa_program_v2"),
+        ("bigfinance-derived-vtdo-v4", "finqa_program_v3_structured"),
+    }:
         raise _Unknown("unsupported_frozen_material_execution_protocol")
     if not episode_is_complete(episode):
         raise _Unknown("generation_or_call_settlement_incomplete")
     if episode.stop_reason != "final_answer" or episode.final_answer is None:
         raise _Invalid("normal_terminal_has_no_completed_Final")
-    task = public_run_view(bundle.public, "finqa_program_v2")
+    task = public_run_view(bundle.public, episode.config.submission_profile)
     if (episode.dataset, episode.task_id, episode.public_task_sha256) != (
         task.dataset,
         task.task_id,
@@ -712,7 +725,7 @@ def _replay_episode(bundle, episode):
         task, reference_protocol=VISIBLE_REFERENCE_PROTOCOL, invocation_context=scope
     )
     history = [
-        {"role": "system", "content": SYSTEM_PROMPT_V3},
+        system_message(episode.config),
         {
             "role": "user",
             "content": json.dumps(
@@ -721,15 +734,7 @@ def _replay_episode(bundle, episode):
         },
     ]
     replay = []
-    expected_tools = tool_specs(VISIBLE_REFERENCE_PROTOCOL)
-    final_spec = next(
-        item["function"] for item in expected_tools if item["function"]["name"] == "final_answer"
-    )
-    final_spec["parameters"]["required"] = ["answer", "program"]
-    final_spec["description"] += (
-        " FinQA program profile: submit your predicted DSL program. Missing/invalid predictions "
-        "at a normal terminal receive zero official execution/program score; no oracle repair."
-    )
+    expected_tools = episode_tool_specs(episode.config)
     for index, (turn, event, request) in enumerate(
         zip(episode.turns, episode.tool_events, requests, strict=True)
     ):
@@ -981,7 +986,7 @@ def _compatible_final(episode, basis):
 def qualify_episode(
     bundle: TaskBundle, episode: Episode, *, qualification_rule_id=None, mapper_rule_id=None
 ) -> dict[str, Any]:
-    """Return one candidate decision; the inventory enforces the all-8000 barrier.
+    """Return one candidate decision; the inventory enforces the fixed-slot barrier.
 
     The caller passes registered rule IDs to prevent a rule-version substitution.
     This function does not select slots, freeze supports, normalize task mass,
@@ -991,7 +996,8 @@ def qualify_episode(
     from .native_metrics import _load_finqa_scorer, _program_tokens
     from .state_mapping import map_proved_state, mapper_rules
 
-    rules, mapping = qualification_rules(), mapper_rules()
+    rules = qualification_rules(harness_id=episode.config.harness_id)
+    mapping = mapper_rules()
     if qualification_rule_id not in (None, rules["id"]) or mapper_rule_id not in (
         None,
         mapping["id"],

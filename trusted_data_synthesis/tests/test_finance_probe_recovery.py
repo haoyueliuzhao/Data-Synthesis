@@ -31,18 +31,33 @@ def write(path, value):
     path.write_bytes(encode(value))
 
 
-@pytest.fixture
-def evidence(tmp_path):
+def _evidence(tmp_path, *, structured=False, limits=None):
     output = tmp_path / "inventory"
     output.mkdir()
     slot = {"slot_id": "finqa_probe_slot:" + "a" * 64, "task_id": "fixture", "slot_index": 0}
+    cfg = config(
+        **(
+            {
+                "harness_id": "bigfinance-derived-vtdo-v4",
+                "submission_profile": "finqa_program_v3_structured",
+            }
+            if structured
+            else {}
+        )
+    )
     plan = {
         "id": "registered-inventory-fixture",
         "price_sheet": asdict(sheet()),
-        "inventory": {"slots": [slot], "slot_config": config().model_dump(mode="json")},
+        "inventory": {"slots": [slot], "slot_config": cfg.model_dump(mode="json")},
     }
+    if limits is not None:
+        plan["budget_limits"] = dict(limits)
     ledger = ProbeBudget(
-        output / "budget.sqlite3", run_id=plan["id"], price_sheet=sheet(), max_output_tokens=2048
+        output / "budget.sqlite3",
+        run_id=plan["id"],
+        price_sheet=sheet(),
+        max_output_tokens=2048,
+        **(limits or {}),
     )
     initial_database = ledger.path.read_bytes()  # Before any mocked paid requests.
     responses = [
@@ -92,7 +107,7 @@ def evidence(tmp_path):
         run_episode(
             task,
             provider(ledger, ChainClient(), slot["slot_id"]),
-            config(),
+            cfg,
             invocation_context={
                 "run_id": plan["id"],
                 "episode_id": slot["slot_id"],
@@ -124,6 +139,11 @@ def evidence(tmp_path):
         "episode": episode,
         "episode_path": path,
     }
+
+
+@pytest.fixture
+def evidence(tmp_path):
+    return _evidence(tmp_path)
 
 
 def test_fresh_output_does_not_create_any_budget_database(tmp_path):
@@ -208,3 +228,35 @@ def test_generation_seal_must_retain_the_actual_durable_outcomes(evidence):
     write(root / "generation_seal/record.json", seal)
     with pytest.raises(ProbeRecoveryError, match="generation seal"):
         validate_ledger_recovery(root, plan)
+
+
+def test_new_structured_episode_recovers_only_with_its_own_explicit_100_CNY_limits(tmp_path):
+    limits = {
+        "hard_cap_microcny": 100_000_000,
+        "warning_microcny": 80_000_000,
+        "request_cap": 42_240,
+    }
+    record = _evidence(tmp_path, structured=True, limits=limits)
+    result = validate_ledger_recovery(record["output"], record["plan"], record["completed"])
+    assert (
+        result["settled_requests"] == 3
+        and result["settled_peak_tariff_upper_bound_microcny"] == 840
+    )
+    assert record["ledger"].snapshot()["hard_cap_microcny"] == 100_000_000
+    record["plan"]["budget_limits"] = {
+        "hard_cap_microcny": 800_000_000,
+        "warning_microcny": 700_000_000,
+        "request_cap": 256_000,
+    }
+    with pytest.raises(ProbeRecoveryError, match="configuration mismatch"):
+        validate_ledger_recovery(record["output"], record["plan"])
+
+
+def test_fresh_structured_plan_cannot_implicitly_inherit_old_budget_defaults(tmp_path):
+    cfg = config(
+        harness_id="bigfinance-derived-vtdo-v4", submission_profile="finqa_program_v3_structured"
+    )
+    plan = {"inventory": {"slot_config": cfg.model_dump(mode="json")}}
+    with pytest.raises(ProbeRecoveryError, match="explicit budget_limits"):
+        validate_ledger_recovery(tmp_path, plan)
+    assert not (tmp_path / "budget.sqlite3").exists()

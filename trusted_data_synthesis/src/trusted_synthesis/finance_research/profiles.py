@@ -14,7 +14,10 @@ from .contracts import PublicTask, digest
 PUBLIC_PROFILE_ID = "finqa_program_v1"
 PUBLIC_PROFILE_V2_ID = "finqa_program_v2"
 PUBLIC_PROFILE_V2 = PUBLIC_PROFILE_V2_ID
-FINQA_PROFILE_IDS = frozenset({PUBLIC_PROFILE_ID, PUBLIC_PROFILE_V2_ID})
+PUBLIC_PROFILE_V3_STRUCTURED_ID = "finqa_program_v3_structured"
+FINQA_PROFILE_IDS = frozenset(
+    {PUBLIC_PROFILE_ID, PUBLIC_PROFILE_V2_ID, PUBLIC_PROFILE_V3_STRUCTURED_ID}
+)
 MISSING_PREDICTION_POLICY = "settled_model_terminal_missing_or_invalid_prediction_is_zero_v1"
 FINQA_OPERATORS = (
     "add",
@@ -195,6 +198,33 @@ def profile_definition(profile_id: str = PUBLIC_PROFILE_ID) -> dict[str, Any]:
             ),
         },
     )
+    if profile_id == PUBLIC_PROFILE_V3_STRUCTURED_ID:
+        # V1/V2 definitions above remain byte-identical. Only the future public
+        # action language changes; task evidence, DSL and scoring policy do not.
+        profile.update(
+            id=PUBLIC_PROFILE_V3_STRUCTURED_ID,
+            version=3,
+            previous_profile_id=PUBLIC_PROFILE_V2_ID,
+            public_assistant_output={
+                "schema": "structured_public_actions_only_v1",
+                "native_tool_calls_per_response": 1,
+                "assistant_content": "empty string or null; no public free-text commentary",
+                "instruction": (
+                    "Emit exactly one actual native tool call per response and no public "
+                    "assistant explanation, narration, action announcement, or answer text. "
+                    "Express source reads, calculations, references, error recovery and "
+                    "Final only through the existing native tool arguments."
+                ),
+                "local_native_serialization": (
+                    "One Qwen native tool_call envelope with no prose outside the envelope."
+                ),
+                "nonconforming_output": (
+                    "Retain original content and tool calls unchanged; do not strip text, "
+                    "repair, continue secretly, or resample to replace this response."
+                ),
+                "private_reference_or_target_state_disclosed": False,
+            },
+        )
     return profile
 
 

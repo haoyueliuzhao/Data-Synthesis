@@ -1,0 +1,178 @@
+# FinQA 结构化公开动作后继协议（2026-09-28）
+
+## 1. 审计结论和本轮范围
+
+依据用户新审计，旧条件库存按 `PASS_AS_SCOPED` 收口：1320 槽真实采集、费用已结算、
+完整保留原判、正确停止训练准入。旧结果不是 Static、Delayed-C 或 VTDO 训练算法失败，
+也不是 Probe 在 FinQA 上整体能力接近零。
+
+原规则对任何非空 assistant 公开正文作 unknown 早退；旧生成合同却允许这种正文。
+这是生成语言与有限验证范围不匹配。另一个独立限制仍然存在：资格器要求作者锚定的同一
+规范依赖 DAG，不接受仅数值相等的任意替代算法，也不自动认可额外回算核验。
+
+本次只做两个连续步骤：A 为旧库存非准入诊断；B 为同一165题上的独立结构化公开动作批次。
+不扫描更早的 R/G/H 轮次，不重复短句柄可见性实验，不改来源范围、DAG/Mapper、模型、
+采样温度、Loss、C/N 或已有金融判定条件。不加数据集、工具平台或辅助损失。
+
+旧执行源码 `5ca0e7675da482769ddcfc8a8540c80a6498f9e9`、旧结果提交 `ae2d04ec2a` 及旧工作树保留。
+新修订使用独立工作树 `/tmp/data-synthesis-finqa-structured-actions-20260928`，
+运行原件仍放 `/data1` 数据盘的 `artifacts/finance_research_20260928/structured_probe_followup_01`。
+
+## 2. 阶段A：一次离线原生诊断，不改变旧资格
+
+在读取评分所需私有引用和执行离线评分前，登记不可变协议，固定旧1320槽及其原文件哈希，
+同时固定旧 native scorer/profile 源码、新诊断脚本哈希和以下交叉统计：
+
+`公开正文非空 × 预测程序结构合法/可执行 × 原生execution × 旧资格首因`。
+
+train990、sealed330 和整体1320 分别统计，正常无预测按原生合同计0；基础设施、
+引用或评分异常保留 unknown，不能作模型错误0。Final 数字相等不是 FinQA 原生 execution：
+仍使用原作者私有参考程序与 unchanged 官方执行/程序评分。
+
+没有既存原生汇总时，执行这一次已登记的 CPU 离线评分，不做新模型调用。
+只解析所需165个 SFT 私有引用；不从 dev/test/feedback 抽题，不检查私有 reasoning。
+公开正文样本固定为原 task/slot 顺序中的前12个非空正文槽，每槽至多2段、每段200字符。
+样本用于说明实际输出形式，不作为随机代表性抽样，不外推1153条全部相同或全对。
+
+旧 CompletePass/invalid/unknown、原公开文字、实际历史、费用账本与 sealed 身份均不改动。
+诊断不能将 native 正确的 unknown 升级为训练材料，不能把旧2个 train 包搬入新训练核。
+诊断必须完整封存后才登记阶段B。
+
+## 3. 阶段B：新公开输出合同与线上/重放对齐
+
+新身份：`bigfinance-derived-vtdo-v4` + `finqa_program_v3_structured`。
+旧 `v3` / `finqa_program_v2` 常量和定义保留不变，新旧身份不能混配。
+
+新 SYSTEM 与 profile 仅新增以下要求：公开 assistant 正文为空/null，每个响应为一个
+真实原生 tool call；不得附加说明性正文。仍可读取来源、计算、引用、保留错误及恢复、提交 Final。
+原题和原始公开表文不变，不向模型提供 gold 程序、答案、正确来源叶子或目标状态。
+
+`system_message(config)` 与 `episode_tool_specs(config)` 是线上 harness 和资格重放器的共同入口。
+Provider 在新身份下也校验实际 SYSTEM 与工具声明，不能只在外部包装一个提示。
+旧 profile/SYSTEM 字节和新旧工具 schema 相等性有无模型集成测试。
+
+如果模型仍返回非空正文、无工具或多个工具，保留原请求、响应和已发生的完整轨迹；
+不删除正文、不修复、不重新采样，不通过改变资格器来放行。非空正文仍按原有限语义规则 unknown。
+这次改动是前瞻的输出语言约束，不是事后裁剪旧轨迹。
+
+不增加 `tool_choice=required` 参数，也不声称该参数能保证正文为空。
+thinking 仍显式 disabled；它与普通 content 和 tool_calls 是不同字段。
+参见 [官方请求接口](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/) 和
+[思考模式说明](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/)。
+
+新资格 ID 只新增执行协议绑定；原作者来源、期间、单位、Final、DAG 判定声明原样保留。
+登记时核对18个来源/数值/推导辅助函数的 AST、资格决定核心及 Mapper/native scorer 未变。
+不能用新旧资格数量差异宣称已独立证明某一句提示的因果效应：它是联合协议修订的开发观察。
+
+## 4. 名册、槽位和隔离
+
+直接沿用旧事前范围的165个任务与原顺序，不重新按模型输出筛题。
+原1000行候选、835项排除原因和旧静态证据摘要完整保留。新范围只重新绑定执行协议身份，
+明确指向原 scope `c8c1344db6367b9495af9f451731d3dd255bee9ea54fe3d7880ae745bd4d199e`。
+
+新批次1320会话 = 每题8槽，其中0–5为train、6–7为sealed。槽位ID与旧批次不同，
+这是独立库存，不是补旧失败。全部槽完成并结算后才统一做资格和支持冻结。
+不逐题补至成功、不删缺支持题、不合并旧2个train或4个sealed合格包，不按NLL、
+文风、长度或未来 Student 成绩择优保留。所有新合格 train 原包均保留。
+
+本轮仍固定 `deepseek-flash`，无回退；T=1、top_p=1、top_k=0、thinking disabled；
+每响应2048输出Token、每会话最多32响应，调用上限42240。API上下文预留1048576，
+不等同于 Student 的24576上下文。最多16会话并发；首个正式槽串行检查传输与结算，
+不额外做付费小试或提示搜索。单请求超时120秒，网络自动重试0。
+
+## 5. 独立预算、有效价格和安全恢复
+
+审计建议阶段B采用**独立100元硬上限**。这不是自动继承旧800元余额；启动前必须得到
+新用途金额确认，命令也必须显式提供 `--authorize-cny 100`。
+预警设为80元，账本冻结 `hard_cap_microcny=100000000`、`warning_microcny=80000000`、
+`request_cap=42240`。漏传新预算或用旧账本限额重开均拒绝。
+
+本日重新核验并保存三份官方HTML：
+[模型与价格](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。
+本次检查的 flash 高峰人民币/百万Token单价为：缓存命中0.04、未命中2、输出8；
+非高峰对应0.02、1、4。官方价格有时效性，此处不把旧6.684336元费用当作新报价。
+新原件 `official_docs_01/snapshot.json` SHA256：
+`608313b8749a3e491f7ef238ec4e9cb9e50623c705339911cc7750d54c2bc897`。
+登记要求核验距现在不超过24小时。
+
+本轮仍统一按高峰价作保守费用上界，不宣称供应商账单。每请求发送前按完整输入容量与2048输出
+预留2.113536元；按实际cache_hit/cache_miss/completion usage结算，微元向上取整。
+总暴露为已结算费用加在途/未知预留，超过上限不发请求；未知费用保留预留并停发，不自动重试。
+100元是安全上限，不是成本预测、不保证跑满所有槽，也不是需要花完的目标。
+
+SQLite/WAL、真实请求/响应、invocation身份与每槽episode共同保存。恢复前必须核对已有调用
+与账本守恒，缺库、陈旧库、孤立调用、未知费用或源码漂移都阻断；不能建空库重新获得额度。
+旧库完全不修改，新批次有独立目录、run ID、价格与金额登记。
+
+## 6. 材料、分布自由度、编码与统计功效分开
+
+新状态字段使用 `assessed_slots` 表示已经处理资格的槽数，不再用易误解的 `qualified_slots`。
+旧完成记录字段不覆盖。CompletePass 数量继续单独报告。
+
+报告每题状态数、每状态真实包数与API输入/输出Token，并分别隔离train与sealed。
+API Token不是 Student 监督Token；没有实际离线编码时后者必须标记未执行，不用API数代替。
+完整轨迹不截断、超长不静默丢包。编码是另一项明确的CPU处理与准入关口。
+
+当165题全支持成立时，报告 `D_pi=Σ(|Z_x|-1)`；若有任务缺失，完整165题参数域不能实例化，
+`D_pi=null`，另报告 `observed_D_pi=Σmax(0,|Z_x|-1)`，不把空支持算成负自由度。
+`M_flex=多状态任务数/165`，任务边际不变。材料有多状态只是供给条件，不证明统计功效足够。
+
+只有全165题材料支持、全部所需编码与后继功效/资源登记成立后才考虑训练。
+若 D_pi=0，不能跑两个数学上相同的π条件声称完成分布优化；普通SFT可以另立明确方案。
+若轨迹路线仍无法形成规模，本轮应停止该供给路线并如实报告，不继续压缩子集或扩建通用验证器。
+作者参考程序监督SFT是可另行登记的数据用途，不是把旧unknown重命名为Agent轨迹。
+
+## 7. 有条件的后继训练剂量，不在本批次自动启动
+
+保留原始Qwen2.5-7B-Instruct + 新q/v LoRA、配对seed11/29/47、共同Static前缀再分支。
+165题、每批5题、10遍对应330步，共同前缀165步；三种子真实物理SFT步数1485，
+六个最终模型有效训练历史1980步。这些不是本轮已经执行的步数。
+
+初始 `r=pi0=n_xz/n_x`，每监督Token系数 `pi/(5*n_xz*L_P)`，不再除以165或全局Token。
+350反馈题×2仍是每种子700反馈，实际采样Token与SFT监督域分离。
+一次延迟更新current=prior时N=0，不宣称Novelty验证，不修改C/N或引入直接policy gradient。
+
+本轮采集/资格只需要API与CPU，当前无GPU预留。按用户资源授权，在真正通过准入、
+明确GPU任务时才提前申请空闲卡并设置到期释放，避免未具备训练条件就长期占卡。
+
+## 8. 入口与后续实际记录
+
+在新执行工作树、项目虚拟环境下设置 `PYTHONPATH=trusted_data_synthesis/src:trusted_data_synthesis/scripts`。
+阶段A脚本使用旧冻结src执行原评分；运行细节以其不可变protocol为准。
+阶段B入口如下，只有新预算确认且源码提交后才能注册：
+
+```bash
+python -m trusted_synthesis.finance_research.structured_probe_collection register --authorize-cny 100
+python -m trusted_synthesis.finance_research.structured_probe_collection start
+python -m trusted_synthesis.finance_research.structured_probe_collection status
+```
+
+本文件截至事前段落不宣称新批次已调用API、已合格或已训练。实际启动、诊断与结果另行补记，
+不得用计划值替代实测值。
+
+## 9. 已完成的阶段A结果（不作为新批次训练材料）
+
+1320槽全部完成这一次登记的离线诊断，异常0、native未知0，新增API/GPU/模型调用0。
+完整逐槽结果和交叉表位于 `legacy_output_diagnostic_01/results`，另有独立完成标记。
+
+| 用途 | 分母 | 正文非空 | 程序可执行 | 原生execution正确 | 原生program正确 |
+|---|---:|---:|---:|---:|---:|
+| train | 990 | 927 | 914 | 606 | 521 |
+| sealed | 330 | 308 | 303 | 198 | 177 |
+| 全体 | 1320 | 1235 | 1217 | 804 | 698 |
+
+全分母原生execution为60.91%。旧正文首因1153槽中，1137个程序可执行、751个execution正确；
+正文非空但首因是未完成Final的另82槽仍按原合同计缺失预测。
+因此存在“结构化程序具有一定原生正确性、但完整资格被公开正文验证范围挡住”的明确证据；
+不能推断751条正文都正确，不能自动升级资格，也不能称为经过训练得到的收益。
+
+旧资格仍为6 CompletePass、128 invalid、1186 unknown；2个有train支持任务均单状态，
+不构成非平凡π干预。来源835题排除、本轮165题和所有sealed用途均未改变。
+
+阶段A protocol ID：`finqa_legacy_output_diagnostic:e2dc2fe33312f74d684fd051041e92224049f34c6c3938f0bbce8ce58fff54d1`。
+完成ID：`finqa_legacy_output_diagnostic_complete:8cd993bc388686c5f79062fafb8e78b230c96e0c89834299e17bf6fb751a3458`。
+summary文件SHA256：`5cf96c1f487179f842ce43a29b3fbd93f4e9987264d90058c79026e290f0b28f`。
+
+工程核验：419项主回归通过（14.82秒），上游固定TAT-QA代码产生3条转义字符串SyntaxWarning，
+未修改vendor文件。阶段A另有4项CPU控制；库存自由度与Token计数有补充定向检查。
+这些是实现与计数检查，不是新的模型成绩。新批次未获金额确认前，登记与API调用保持为0。

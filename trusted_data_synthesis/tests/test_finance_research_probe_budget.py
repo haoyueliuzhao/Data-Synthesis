@@ -178,3 +178,78 @@ def test_request_cap_is_independent_of_money(tmp_path):
         db.execute("UPDATE counters SET requests=256000 WHERE singleton=1")
     with pytest.raises(BudgetUnavailable, match="256000"):
         reserve(ledger)
+
+
+def test_new_100_CNY_run_freezes_80_warning_and_42240_requests(tmp_path):
+    limits = {
+        "hard_cap_microcny": 100_000_000,
+        "warning_microcny": 80_000_000,
+        "request_cap": 42_240,
+    }
+    ledger = ProbeBudget(
+        tmp_path / "new.sqlite",
+        run_id="new-structured-inventory",
+        price_sheet=sheet(),
+        max_output_tokens=2048,
+        **limits,
+    )
+
+    def attempt(index):
+        try:
+            reserve(ledger, str(index))
+            return True
+        except BudgetUnavailable:
+            return False
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(attempt, range(52)))
+    state = ledger.snapshot()
+    assert sum(results) == 47 and state["exposure_microcny"] == 99_336_192
+    assert state["hard_cap_microcny"] == 100_000_000
+    assert state["warning_microcny"] == 80_000_000 and state["exposure_warning_reached"]
+    assert state["request_cap"] == 42_240
+    with pytest.raises(ValueError, match="different"):
+        ProbeBudget(ledger.path, run_id=ledger.run_id, price_sheet=sheet(), max_output_tokens=2048)
+    with pytest.raises(ValueError, match="different"):
+        ProbeBudget(
+            ledger.path,
+            run_id="old-inventory",
+            price_sheet=sheet(),
+            max_output_tokens=2048,
+            **limits,
+        )
+
+
+def test_new_request_cap_does_not_fall_back_to_old_256000(tmp_path):
+    ledger = ProbeBudget(
+        tmp_path / "new.sqlite",
+        run_id="new-structured-inventory",
+        price_sheet=sheet(),
+        max_output_tokens=2048,
+        hard_cap_microcny=100_000_000,
+        warning_microcny=80_000_000,
+        request_cap=42_240,
+    )
+    with sqlite3.connect(ledger.path) as db:
+        db.execute("UPDATE counters SET requests=42240 WHERE singleton=1")
+    with pytest.raises(BudgetUnavailable, match="42240"):
+        reserve(ledger)
+
+
+@pytest.mark.parametrize(
+    "limits",
+    [
+        {"hard_cap_microcny": True},
+        {"hard_cap_microcny": 0},
+        {"hard_cap_microcny": 100_000_000, "warning_microcny": 700_000_000},
+        {"request_cap": 1.5},
+        {"request_cap": 0},
+    ],
+)
+def test_invalid_explicit_limits_fail_before_database_creation(tmp_path, limits):
+    path = tmp_path / "invalid.sqlite"
+    with pytest.raises(ValueError):
+        ProbeBudget(
+            path, run_id="bad-limits", price_sheet=sheet(), max_output_tokens=2048, **limits
+        )
+    assert not path.exists()

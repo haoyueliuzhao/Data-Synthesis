@@ -378,6 +378,9 @@ def test_conditional_freeze_uses_mu_over_registered_N_and_never_claims_original_
     assert frozen["conditional_scope"] == conditional["conditional_scope"]
     assert frozen["scope_id"] == conditional["scope_id"]
     assert not frozen["training_authorized"] and frozen["sealed_packages_in_training"] == 0
+    assert frozen["D_pi"] == frozen["observed_D_pi"] == 1
+    assert frozen["M_flex"] == "1/2"
+    assert frozen["Student_supervised_token_counts"] is None
 
 
 def test_missing_qualified_task_inside_conditional_scope_blocks_without_another_subset(
@@ -398,10 +401,33 @@ def test_missing_qualified_task_inside_conditional_scope_blocks_without_another_
     assert frozen["mu"] == {task: "1/2" for task in conditional["task_ids"]}
     assert frozen["state_support"][missing] == []
     assert frozen["sealed_state_counts"][missing] == {"sealed-only-state": 2}
+    assert frozen["D_pi"] is None and frozen["observed_D_pi"] == 1
+    assert frozen["M_flex"] == "1/2"
     assert (
         not frozen["original_1000_admitted"]
         and frozen["no_further_task_deletion_or_mass_renormalization"]
     )
+
+
+def test_per_state_API_tokens_are_actual_sums_and_not_Student_supervision(registration):
+    conditional = conditional_registration(registration)
+    results = [fixture_result(conditional, slot) for slot in conditional["slots"]]
+    for row in results:
+        row.update(actual_API_prompt_tokens=10, actual_API_completion_tokens=2)
+        row["slot_result_id"] = "finqa_probe_slot_result:" + digest(
+            {key: value for key, value in row.items() if key != "slot_result_id"}
+        )
+    frozen = freeze_inventory(conditional, results)
+    counts = frozen["qualified_state_sample_and_API_token_counts"]
+    for task in conditional["task_ids"]:
+        packages = 3 if task == conditional["task_ids"][0] else 6
+        assert counts["train"][task]["a"] == {
+            "packages": packages,
+            "API_prompt_tokens": packages * 10,
+            "API_completion_tokens": packages * 2,
+        }
+        assert counts["sealed_diagnostic"][task]["sealed-only-state"]["packages"] == 2
+    assert frozen["API_tokens_are_not_Student_supervised_tokens"]
 
 
 def test_conditional_roster_requires_valid_external_scope_and_exact_original_order(registration):

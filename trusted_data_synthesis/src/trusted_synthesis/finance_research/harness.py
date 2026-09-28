@@ -41,6 +41,8 @@ from .tools import (
 )
 
 HARNESS_ID = "bigfinance-derived-vtdo-v3"
+STRUCTURED_HARNESS_ID = "bigfinance-derived-vtdo-v4"
+STRUCTURED_PROFILE_ID = "finqa_program_v3_structured"
 LEGACY_HARNESS_ID = "bigfinance-derived-vtdo-v2"
 UPSTREAM_COMMIT = "d794a65fe583edc6852b44c817b0a2aef33ca831"
 EventSink = Callable[[dict[str, Any]], None | Awaitable[None]]
@@ -69,6 +71,66 @@ SYSTEM_PROMPT_V3 = SYSTEM_PROMPT.replace(
     "never put prev references inside it. Do not invent handles or reference other sessions.\n"
     "The initial sources remain available: list_sources or read_source is not mandatory.",
 )
+SYSTEM_PROMPT_V4 = (
+    SYSTEM_PROMPT_V3
+    + """
+Public output contract: structured actions only. On every response emit exactly one
+actual native tool call. The public assistant content must be empty or null: do not
+add explanations, reasoning text, narration, action announcements, or answer prose.
+Express source reads, calculations, references, error recovery and the final answer
+only through the existing native tool arguments. For the local Qwen serialization,
+output one native <tool_call> envelope and no prose outside that envelope.
+This is an output-language restriction, not a change to the available evidence,
+arithmetic, FinQA program language, tool behavior or financial correctness rules.
+"""
+)
+
+
+def _episode_version(config):
+    if config.harness_id not in {HARNESS_ID, LEGACY_HARNESS_ID, STRUCTURED_HARNESS_ID}:
+        raise ValueError(f"unsupported harness_id: {config.harness_id}")
+    if config.harness_id == STRUCTURED_HARNESS_ID:
+        if (
+            config.submission_profile != STRUCTURED_PROFILE_ID
+            or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
+        ):
+            raise ValueError("H1-R v4 requires finqa_program_v3_structured and native tools")
+    elif config.submission_profile == STRUCTURED_PROFILE_ID:
+        raise ValueError("structured public actions require the explicit v4 harness identity")
+    elif config.harness_id == HARNESS_ID and (
+        config.submission_profile != "finqa_program_v2"
+        or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
+    ):
+        raise ValueError("H1-R v3 requires finqa_program_v2 and the Qwen native tool protocol")
+    return config.harness_id in {HARNESS_ID, STRUCTURED_HARNESS_ID}
+
+
+def system_message(config: RunConfig) -> dict[str, str]:
+    """One exact system-message source for online execution and offline replay."""
+    _episode_version(config)
+    prompt = (
+        SYSTEM_PROMPT_V4
+        if config.harness_id == STRUCTURED_HARNESS_ID
+        else (SYSTEM_PROMPT_V3 if config.harness_id == HARNESS_ID else SYSTEM_PROMPT)
+    )
+    return {"role": "system", "content": prompt}
+
+
+def episode_tool_specs(config: RunConfig):
+    """The new output language does not change the tools or financial action schema."""
+    revised = _episode_version(config)
+    specs = versioned_tool_specs(
+        VISIBLE_REFERENCE_PROTOCOL if revised else LEGACY_REFERENCE_PROTOCOL
+    )
+    if config.submission_profile in {"finqa_program_v1", "finqa_program_v2", STRUCTURED_PROFILE_ID}:
+        final_spec = next(tool for tool in specs if tool["function"]["name"] == "final_answer")
+        final_spec["function"]["parameters"]["required"] = ["answer", "program"]
+        final_spec["function"]["description"] += (
+            " FinQA program profile: submit your predicted DSL program. "
+            "Missing/invalid predictions "
+            "at a normal terminal receive zero official execution/program score; no oracle repair."
+        )
+    return specs
 
 
 def _invocation_evidence(evidence, invocation):
@@ -102,14 +164,7 @@ async def run_episode(
     if not isinstance(task, PublicTask):
         raise TypeError("run_episode accepts PublicTask only, not a TaskBundle/reference")
     config = config or RunConfig()
-    if config.harness_id not in {HARNESS_ID, LEGACY_HARNESS_ID}:
-        raise ValueError(f"unsupported harness_id: {config.harness_id}")
-    revised = config.harness_id == HARNESS_ID
-    if revised and (
-        config.submission_profile != "finqa_program_v2"
-        or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
-    ):
-        raise ValueError("H1-R v3 requires finqa_program_v2 and the Qwen native tool protocol")
+    revised = _episode_version(config)
     if config.submission_profile != "original":
         from .profiles import public_run_view
 
@@ -121,7 +176,7 @@ async def run_episode(
     )
     started = time.monotonic()
     messages: list[dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT_V3 if revised else SYSTEM_PROMPT},
+        system_message(config),
         {
             "role": "user",
             "content": json.dumps(
@@ -129,15 +184,7 @@ async def run_episode(
             ),
         },
     ]
-    tool_specs = versioned_tool_specs(reference_protocol)
-    if config.submission_profile in {"finqa_program_v1", "finqa_program_v2"}:
-        final_spec = next(tool for tool in tool_specs if tool["function"]["name"] == "final_answer")
-        final_spec["function"]["parameters"]["required"] = ["answer", "program"]
-        final_spec["function"]["description"] += (
-            " FinQA program profile: submit your predicted DSL program. "
-            "Missing/invalid predictions "
-            "at a normal terminal receive zero official execution/program score; no oracle repair."
-        )
+    tool_specs = episode_tool_specs(config)
     turns, events = [], []
     settlements = []
     final_answer, final_scale, final_program = None, "", None

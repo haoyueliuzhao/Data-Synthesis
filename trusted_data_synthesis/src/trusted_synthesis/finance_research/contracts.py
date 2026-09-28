@@ -89,7 +89,9 @@ class RunConfig(Record):
     local_tool_protocol: Literal[
         "qwen2.5-native-tool-call-v1", "legacy-json-v1", "direct-json-v1"
     ] = "qwen2.5-native-tool-call-v1"
-    submission_profile: Literal["original", "finqa_program_v1", "finqa_program_v2"] = "original"
+    submission_profile: Literal[
+        "original", "finqa_program_v1", "finqa_program_v2", "finqa_program_v3_structured"
+    ] = "original"
     max_steps: int = Field(default=32, ge=1, le=256)
     max_new_tokens: int = Field(default=2048, ge=1)
     context_limit: int = Field(default=24576, ge=1)

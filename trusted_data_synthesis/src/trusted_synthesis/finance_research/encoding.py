@@ -26,7 +26,7 @@ EOS_POLICY = "successful_response_student_eos_included_failure_eos_masked_v1"
 
 def events_for_turns(episode: Episode):
     """H1-R executions use invocation coordinates, not content-addressed call IDs."""
-    if episode.config.harness_id == "bigfinance-derived-vtdo-v3":
+    if episode.config.harness_id in {"bigfinance-derived-vtdo-v3", "bigfinance-derived-vtdo-v4"}:
         events = {event.invocation_id: event for event in episode.tool_events}
         if None in events or len(events) != len(episode.tool_events):
             raise ValueError("missing or duplicate H1-R tool invocation identity")
@@ -147,7 +147,8 @@ class ProbeGenerationRecord(Record):
             ):
                 raise ValueError("Probe lacks original public API request/response binding")
             if ("thinking" in request and request["thinking"] != {"type": "disabled"}) or (
-                episode.config.harness_id == "bigfinance-derived-vtdo-v3"
+                episode.config.harness_id
+                in {"bigfinance-derived-vtdo-v3", "bigfinance-derived-vtdo-v4"}
                 and request.get("thinking") != {"type": "disabled"}
             ):
                 raise ValueError("new H1-R API Probe requires explicitly disabled thinking")

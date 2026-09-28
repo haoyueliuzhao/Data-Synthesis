@@ -11,12 +11,16 @@ import hashlib
 
 from .contracts import ModelIdentity, ModelTurn, ProviderCallError, digest, invocation_identity
 from .probe_budget import InvalidUsage, ProbeBudget
-from .providers import _api_messages, _json, parse_tool_calls
+from .providers import _api_messages, _json, parse_tool_calls, validate_structured_context
 from .qwen_protocol import strict_json_decoder
 
 ENDPOINT = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-flash"
 INFRA_FINISH_REASONS = {"insufficient_system_resource", "aborted"}
+PROBE_HARNESS_PROFILE_PAIRS = {
+    ("bigfinance-derived-vtdo-v3", "finqa_program_v2"),
+    ("bigfinance-derived-vtdo-v4", "finqa_program_v3_structured"),
+}
 
 
 class BudgetedDeepSeekFlashProvider:
@@ -86,15 +90,15 @@ class BudgetedDeepSeekFlashProvider:
             and config.api_model == MODEL
             and config.tier == "EVAL_NATIVE"
             and config.role == "sft"
-            and config.harness_id == "bigfinance-derived-vtdo-v3"
+            and (config.harness_id, config.submission_profile) in PROBE_HARNESS_PROFILE_PAIRS
             and config.local_tool_protocol == "qwen2.5-native-tool-call-v1"
-            and config.submission_profile == "finqa_program_v2"
             and (config.temperature, config.top_p, config.top_k) == (1.0, 1.0, 0)
             and config.max_new_tokens == self.ledger.max_output_tokens
             and config.context_limit == self.ledger.price_sheet.context_input_token_ceiling
             and config.max_steps == 32
         ):
             raise ValueError("Probe differs from the frozen SFT/H1-R Flash T=1 output contract")
+        validate_structured_context(messages, tools, config)
         coordinates = invocation_identity(self.scope, turn_index=self._turn_index)
         invocation_id = coordinates["invocation_id"]
         body = {

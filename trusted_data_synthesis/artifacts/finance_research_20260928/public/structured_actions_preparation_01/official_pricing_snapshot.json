@@ -1,0 +1,67 @@
+{
+  "CNY_per_million_tokens": {
+    "off_peak": {
+      "input_cache_hit": "0.02",
+      "input_cache_miss": "1",
+      "output": "4"
+    },
+    "peak": {
+      "input_cache_hit": "0.04",
+      "input_cache_miss": "2",
+      "output": "8"
+    }
+  },
+  "billing_estimate_policy": "use peak prices at every hour as a conservative upper bound",
+  "budget_authority": "separate run protocol; this public-document capture authorizes no calls",
+  "budget_not_a_guarantee_of_all_registered_sessions": true,
+  "checked_at_utc": "2026-09-28T09:05:59.263041+00:00",
+  "collection_max_output_tokens": 2048,
+  "collection_thinking": {
+    "type": "disabled"
+  },
+  "conservative_input_token_reservation": 1048576,
+  "credentials_used": false,
+  "documents": [
+    {
+      "bytes": 24116,
+      "final_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "name": "pricing",
+      "sha256": "5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3",
+      "status": 200,
+      "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    {
+      "bytes": 113131,
+      "final_url": "https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/",
+      "name": "thinking",
+      "sha256": "68c98245682a6ae33c38c2e2d1849c8c031fec38b9f021364d9aa88387de9f52",
+      "status": 200,
+      "url": "https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/"
+    },
+    {
+      "bytes": 141091,
+      "final_url": "https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/",
+      "name": "chat",
+      "sha256": "77665d74fcfb4f81b51eaae6750a704c1bdfeee598c770947444ef0b2cdebebb",
+      "status": 200,
+      "url": "https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/"
+    }
+  ],
+  "model": "deepseek-flash",
+  "model_context_advertised": "1M",
+  "model_requests": 0,
+  "model_version_as_documented": "DeepSeek-V4.1-Flash",
+  "observation_method": "official live web reading plus captured original HTML; not an API invoice",
+  "official_max_output_tokens": 393216,
+  "official_usage_fields": [
+    "prompt_tokens",
+    "prompt_cache_hit_tokens",
+    "prompt_cache_miss_tokens",
+    "completion_tokens",
+    "total_tokens"
+  ],
+  "peak_hours_description": "Asia/Shanghai Monday-Friday excluding China statutory holidays, 09:00-12:00 and 14:00-18:00; all other hours off-peak",
+  "reservation_size_is_upper_bound_not_independent_tokenizer_measurement": true,
+  "retries": 0,
+  "schema": "finqa_probe_official_docs.v1"
+}

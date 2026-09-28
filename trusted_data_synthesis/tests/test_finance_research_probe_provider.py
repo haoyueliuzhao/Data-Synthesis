@@ -20,11 +20,13 @@ from trusted_synthesis.finance_research.probe_provider import BudgetedDeepSeekFl
 
 def config(**changes):
     return RunConfig(
-        role="sft",
-        harness_id="bigfinance-derived-vtdo-v3",
-        submission_profile="finqa_program_v2",
-        context_limit=1048576,
-        **changes,
+        **{
+            "role": "sft",
+            "harness_id": "bigfinance-derived-vtdo-v3",
+            "submission_profile": "finqa_program_v2",
+            "context_limit": 1048576,
+            **changes,
+        }
     )
 
 
@@ -270,3 +272,68 @@ def test_three_turn_probe_encoder_binding_uses_exact_sent_thinking_and_invocatio
             == turn.provider_metadata["harness_invocation"]["invocation_id"]
         )
     assert ledger.snapshot()["requests_dispatched"] == 3
+
+
+def test_structured_identity_preserves_nonempty_content_without_tool_choice_or_retry(tmp_path):
+    from test_finance_research_probe_budget import sheet
+
+    from trusted_synthesis.finance_research.harness import episode_tool_specs, system_message
+    from trusted_synthesis.finance_research.probe_budget import ProbeBudget
+
+    ledger = ProbeBudget(
+        tmp_path / "new.sqlite",
+        run_id="new-structured-inventory",
+        price_sheet=sheet(),
+        max_output_tokens=2048,
+        hard_cap_microcny=100_000_000,
+        warning_microcny=80_000_000,
+        request_cap=42_240,
+    )
+    cfg = config(
+        harness_id="bigfinance-derived-vtdo-v4", submission_profile="finqa_program_v3_structured"
+    )
+    returned = value()
+    returned["choices"][0]["message"]["content"] = "I will inspect the source."
+    client = Client(returned)
+    api = provider(ledger, client)
+    turn = asyncio.run(
+        api.chat(
+            [system_message(cfg), {"role": "user", "content": "public task"}],
+            episode_tool_specs(cfg),
+            cfg,
+        )
+    )
+    assert turn.raw_text == "I will inspect the source."
+    assert turn.provider_metadata["api_response"] == returned
+    assert len(client.calls) == api.actual_model_calls == 1
+    assert "tool_choice" not in json.loads(client.calls[0][1]["content"])
+    assert turn.tool_calls[0].name == "read_source"
+    assert not ledger.snapshot()["halt"]
+
+
+@pytest.mark.parametrize(
+    "harness,profile",
+    [
+        ("bigfinance-derived-vtdo-v3", "finqa_program_v3_structured"),
+        ("bigfinance-derived-vtdo-v4", "finqa_program_v2"),
+    ],
+)
+def test_mixed_harness_profile_is_rejected_before_any_fee(tmp_path, harness, profile):
+    ledger = budget(tmp_path)
+    api = provider(ledger, Client())
+    with pytest.raises(ValueError, match="frozen"):
+        asyncio.run(api.chat([], [], config(harness_id=harness, submission_profile=profile)))
+    assert api.actual_model_calls == ledger.snapshot()["requests_reserved"] == 0
+
+
+def test_structured_provider_rejects_old_system_under_new_identity(tmp_path):
+    from trusted_synthesis.finance_research.harness import episode_tool_specs, system_message
+
+    ledger = budget(tmp_path)
+    api = provider(ledger, Client())
+    new = config(
+        harness_id="bigfinance-derived-vtdo-v4", submission_profile="finqa_program_v3_structured"
+    )
+    with pytest.raises(ValueError, match="system/tool context"):
+        asyncio.run(api.chat([system_message(config())], episode_tool_specs(new), new))
+    assert api.actual_model_calls == ledger.snapshot()["requests_reserved"] == 0

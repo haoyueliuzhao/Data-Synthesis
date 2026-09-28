@@ -14,11 +14,9 @@ from pathlib import Path
 
 from .contracts import Episode, digest, invocation_identity
 from .probe_budget import (
-    HARD_CAP_MICROCNY,
     PURPOSE,
-    REQUEST_CAP,
-    WARNING_MICROCNY,
     ProbePriceSheet,
+    validated_budget_limits,
 )
 from .providers import _json, parse_tool_calls
 from .settlement import episode_is_complete
@@ -41,7 +39,28 @@ def _read(path):
     return json.loads(Path(path).read_bytes())
 
 
-def _configuration(connection, plan):
+def _plan_limits(plan):
+    config = plan.get("inventory", {}).get("slot_config", {})
+    explicit = plan.get("budget_limits")
+    if explicit is None:
+        _require(
+            config.get("harness_id") != "bigfinance-derived-vtdo-v4"
+            and config.get("submission_profile") != "finqa_program_v3_structured",
+            "new structured-action runs require their own explicit budget_limits",
+        )
+        return validated_budget_limits()
+    _require(
+        isinstance(explicit, dict)
+        and set(explicit) == {"hard_cap_microcny", "warning_microcny", "request_cap"},
+        "plan budget_limits must explicitly bind all three monetary/request limits",
+    )
+    try:
+        return validated_budget_limits(**explicit)
+    except ValueError as error:
+        raise ProbeRecoveryError("plan budget_limits are invalid") from error
+
+
+def _configuration(connection, plan, limits):
     stored = connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()
     _require(stored is not None, "existing paid ledger has no registered configuration")
     stored = json.loads(stored[0])
@@ -56,9 +75,7 @@ def _configuration(connection, plan):
         "price_sheet": asdict(sheet),
         "price_sheet_id": sheet.id,
         "max_output_tokens": output_limit,
-        "hard_cap_microcny": HARD_CAP_MICROCNY,
-        "warning_microcny": WARNING_MICROCNY,
-        "request_cap": REQUEST_CAP,
+        **limits,
         "reservation_microcny_per_request": reservation,
     }
     _require(
@@ -188,6 +205,7 @@ def validate_ledger_recovery(output, plan, completed=None):
     in-flight/unknown rows, incomplete slots, stale databases, or unclaimed settled
     calls are blocking; no new network call or automatic state repair is performed.
     """
+    limits = _plan_limits(plan)
     output = Path(output).resolve()
     database = output / "budget.sqlite3"
     traces = any(
@@ -206,7 +224,7 @@ def validate_ledger_recovery(output, plan, completed=None):
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA query_only=ON")
         connection.execute("BEGIN")
-        sheet, output_limit, reservation = _configuration(connection, plan)
+        sheet, output_limit, reservation = _configuration(connection, plan, limits)
         states = list(connection.execute("SELECT invocation_id,state FROM requests"))
         _require(
             all(row["state"] == "SETTLED" for row in states),
@@ -327,9 +345,11 @@ def validate_ledger_recovery(output, plan, completed=None):
             "paid ledger counters do not conserve the original completed calls/cost/tokens",
         )
         _require(
-            0 <= spent <= HARD_CAP_MICROCNY
+            0 <= spent <= limits["hard_cap_microcny"]
             and len(seen)
-            <= min(REQUEST_CAP, len(slots) * plan["inventory"]["slot_config"]["max_steps"]),
+            <= min(
+                limits["request_cap"], len(slots) * plan["inventory"]["slot_config"]["max_steps"]
+            ),
             "paid evidence exceeds the authorized cost or registered request cap",
         )
         if (output / "generation_seal" / "record.json").exists():

@@ -234,6 +234,7 @@ def ledger_for(output, plan):
         run_id=plan["id"],
         price_sheet=ProbePriceSheet(**plan["price_sheet"]),
         max_output_tokens=2048,
+        **plan.get("budget_limits", {}),
     )
 
 
@@ -349,7 +350,7 @@ def qualify(output):
             phase="QUALIFYING",
             denominator=denominator,
             completed=denominator,
-            qualified_slots=0,
+            assessed_slots=0,
             automatic_training=False,
             budget=ledger.snapshot(),
         ),
@@ -374,7 +375,7 @@ def qualify(output):
                             phase="QUALIFYING",
                             denominator=denominator,
                             completed=denominator,
-                            qualified_slots=len(results),
+                            assessed_slots=len(results),
                             automatic_training=False,
                             budget=ledger.snapshot(),
                         ),
@@ -391,12 +392,15 @@ def qualify(output):
                 phase="INVENTORY_COMPLETE",
                 denominator=denominator,
                 completed=denominator,
-                qualified_slots=denominator,
+                assessed_slots=denominator,
                 admitted=frozen["admitted"],
                 missing_train_task_count=frozen["missing_train_task_count"],
                 budget=ledger.snapshot(),
                 training_authorized=False,
                 Student_encoding_admission_separate=True,
+                observed_D_pi=frozen["observed_D_pi"],
+                D_pi=frozen["D_pi"],
+                M_flex=frozen["M_flex"],
             ),
         )
     except BaseException as error:
@@ -407,7 +411,7 @@ def qualify(output):
                 phase="QUALIFICATION_BLOCKED",
                 denominator=denominator,
                 completed=denominator,
-                qualified_slots=len(results),
+                assessed_slots=len(results),
                 error_type=type(error).__name__,
                 new_model_calls=0,
                 budget=ledger.snapshot(),

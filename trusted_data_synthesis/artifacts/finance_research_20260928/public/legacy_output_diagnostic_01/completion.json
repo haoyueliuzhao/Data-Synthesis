@@ -1,0 +1,32 @@
+{
+  "API_calls": 0,
+  "GPU_calls": 0,
+  "complete": true,
+  "denominator": 1320,
+  "diagnostic_exceptions": 0,
+  "id": "finqa_legacy_output_diagnostic_complete:8cd993bc388686c5f79062fafb8e78b230c96e0c89834299e17bf6fb751a3458",
+  "model_calls": 0,
+  "old_labels_changed": false,
+  "protocol_id": "finqa_legacy_output_diagnostic:e2dc2fe33312f74d684fd051041e92224049f34c6c3938f0bbce8ce58fff54d1",
+  "qualifications_reexecuted": 0,
+  "results_manifest": {
+    "report.md": {
+      "bytes": 5558,
+      "sha256": "cb287739872cd5c7a888f35ddef9d986572bde1fa44743c35cf13951538b0a93"
+    },
+    "slots.jsonl": {
+      "bytes": 3318091,
+      "sha256": "c9f373f00e0645567e7ddb6f3cfb6854f7f58113994828a16259e8d82f126d8f"
+    },
+    "slots.tsv": {
+      "bytes": 376236,
+      "sha256": "13043602b02bfa90f8a9bfa99557fbfa0e751c6c7e197980262e623d09c14e7f"
+    },
+    "summary.json": {
+      "bytes": 158277,
+      "sha256": "5cf96c1f487179f842ce43a29b3fbd93f4e9987264d90058c79026e290f0b28f"
+    }
+  },
+  "summary_id": "finqa_legacy_output_summary:5fda3d676d3baa9478c60b75dbed4ddc1cfc4ca5a44d73e00b99223e152db8bb",
+  "summary_sha256": "5cf96c1f487179f842ce43a29b3fbd93f4e9987264d90058c79026e290f0b28f"
+}

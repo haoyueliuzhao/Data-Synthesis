@@ -1,7 +1,9 @@
 """Independent Probe monetary ledger: reserve before HTTP, settle actual token usage.
 
 All money is integer micro-CNY, rounded upward per request using a frozen official
-tariff. The 800 CNY cap covers settled cost plus every pending/unknown reservation.
+tariff. Each frozen run cap covers settled cost plus all pending/unknown reservations.
+Historical defaults remain 800 CNY / 700 CNY warning / 256000 requests; a new
+purpose must explicitly register its own limits rather than inherit prior spend.
 This is tariff accounting from actual usage, not a fabricated provider invoice.
 """
 
@@ -22,6 +24,25 @@ HARD_CAP_MICROCNY = 800_000_000
 WARNING_MICROCNY = 700_000_000
 REQUEST_CAP = 256_000
 PURPOSE = "finqa_fixed_probe_inventory_v1"
+
+
+def validated_budget_limits(
+    *,
+    hard_cap_microcny=HARD_CAP_MICROCNY,
+    warning_microcny=WARNING_MICROCNY,
+    request_cap=REQUEST_CAP,
+):
+    """Return explicit immutable-registration values, never floats or booleans."""
+    values = {
+        "hard_cap_microcny": hard_cap_microcny,
+        "warning_microcny": warning_microcny,
+        "request_cap": request_cap,
+    }
+    if any(type(value) is not int or not 0 < value <= 2**63 - 1 for value in values.values()):
+        raise ValueError("budget limits must be positive SQLite-range integers")
+    if warning_microcny > hard_cap_microcny:
+        raise ValueError("budget warning threshold cannot exceed the hard cap")
+    return values
 
 
 def _json(value):
@@ -169,7 +190,26 @@ class ProbePriceSheet:
 class ProbeBudget:
     """One SQLite database per registered inventory, safe across worker processes."""
 
-    def __init__(self, path, *, run_id, price_sheet, max_output_tokens, purpose=PURPOSE):
+    def __init__(
+        self,
+        path,
+        *,
+        run_id,
+        price_sheet,
+        max_output_tokens,
+        purpose=PURPOSE,
+        hard_cap_microcny=HARD_CAP_MICROCNY,
+        warning_microcny=WARNING_MICROCNY,
+        request_cap=REQUEST_CAP,
+    ):
+        limits = validated_budget_limits(
+            hard_cap_microcny=hard_cap_microcny,
+            warning_microcny=warning_microcny,
+            request_cap=request_cap,
+        )
+        self.hard_cap_microcny = limits["hard_cap_microcny"]
+        self.warning_microcny = limits["warning_microcny"]
+        self.request_cap = limits["request_cap"]
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.run_id, self.price_sheet = (
@@ -198,9 +238,7 @@ class ProbeBudget:
             "price_sheet": asdict(self.price_sheet),
             "price_sheet_id": self.price_sheet.id,
             "max_output_tokens": max_output_tokens,
-            "hard_cap_microcny": HARD_CAP_MICROCNY,
-            "warning_microcny": WARNING_MICROCNY,
-            "request_cap": REQUEST_CAP,
+            **limits,
             "reservation_microcny_per_request": self.reservation_microcny,
             "reservation_input_policy": "official_entire_context_at_cache_miss_price",
             "currency_scale": "1 CNY = 1000000 micro-CNY",
@@ -255,7 +293,8 @@ class ProbeBudget:
             ).fetchone()
             if existing is not None and json.loads(existing[0]) != config:
                 raise ValueError(
-                    "budget database belongs to a different run, purpose, tariff or output limit"
+                    "budget database belongs to a different run, purpose, tariff, "
+                    "output or budget limit"
                 )
             connection.execute(
                 "INSERT OR IGNORE INTO metadata VALUES ('config',?)", (_json(config),)
@@ -294,11 +333,12 @@ class ProbeBudget:
             "settled_tariff_microcny": spent,
             "held_microcny": held,
             "exposure_microcny": spent + held,
-            "remaining_exposure_microcny": HARD_CAP_MICROCNY - spent - held,
-            "hard_cap_microcny": HARD_CAP_MICROCNY,
-            "warning_microcny": WARNING_MICROCNY,
-            "warning_reached": spent >= WARNING_MICROCNY,
-            "exposure_warning_reached": spent + held >= WARNING_MICROCNY,
+            "remaining_exposure_microcny": self.hard_cap_microcny - spent - held,
+            "hard_cap_microcny": self.hard_cap_microcny,
+            "warning_microcny": self.warning_microcny,
+            "request_cap": self.request_cap,
+            "warning_reached": spent >= self.warning_microcny,
+            "exposure_warning_reached": spent + held >= self.warning_microcny,
             "unknown_requests": row["unknown"],
             "pending_requests": row["pending"],
             "actual_prompt_tokens_settled": row["prompt_tokens"],
@@ -353,11 +393,12 @@ class ProbeBudget:
             state = self._snapshot(connection)
             if state["halt"] or state["unknown_requests"]:
                 raise BudgetUnavailable("unknown or halted Probe ledger forbids new requests")
-            if state["requests_reserved"] >= REQUEST_CAP:
-                raise BudgetUnavailable("256000-request Probe cap exhausted")
-            if state["exposure_microcny"] + self.reservation_microcny > HARD_CAP_MICROCNY:
+            if state["requests_reserved"] >= self.request_cap:
+                raise BudgetUnavailable(f"{self.request_cap}-request Probe cap exhausted")
+            if state["exposure_microcny"] + self.reservation_microcny > self.hard_cap_microcny:
                 raise BudgetUnavailable(
-                    "next full official-context reservation exceeds the 800 CNY cap"
+                    "next full official-context reservation exceeds the frozen "
+                    f"{self.hard_cap_microcny} micro-CNY cap"
                 )
             connection.execute(
                 """INSERT INTO requests

@@ -149,6 +149,34 @@ def canonical_assistant_message(turn: ModelTurn) -> dict[str, Any]:
     return message
 
 
+def validate_structured_context(messages, tools, config: RunConfig):
+    """Bind the future contract explicitly; never erase nonconforming responses.
+
+    Historical callers keep their existing contexts. A v4 system message cannot
+    silently be used under an older experiment identity, and v4 must use the exact
+    shared system/tools contract that its offline replay will expect.
+    """
+    from .harness import (
+        STRUCTURED_HARNESS_ID,
+        STRUCTURED_PROFILE_ID,
+        SYSTEM_PROMPT_V4,
+        episode_tool_specs,
+        system_message,
+    )
+
+    requested = (
+        config.harness_id == STRUCTURED_HARNESS_ID
+        or config.submission_profile == STRUCTURED_PROFILE_ID
+    )
+    new_context = bool(messages and messages[0] == {"role": "system", "content": SYSTEM_PROMPT_V4})
+    if requested:
+        expected = system_message(config)  # Also checks the new identity pair.
+        if not messages or messages[0] != expected or tools != episode_tool_specs(config):
+            raise ValueError("structured-action request differs from its bound system/tool context")
+    elif new_context:
+        raise ValueError("old experiment identity cannot use the new structured-action context")
+
+
 def _api_messages(messages):
     """Native API arguments are JSON strings; canonical local messages use dicts."""
     actual = copy.deepcopy(messages)
@@ -289,6 +317,7 @@ class LocalTorchProvider:
         import torch
         from transformers import GenerationConfig
 
+        validate_structured_context(messages, tools, config)
         if self._storage_versions() != self._versions:
             raise ValueError("provider parameter point changed; rebind before generation")
         if config.tier == "VTDO_FEEDBACK":
@@ -534,6 +563,7 @@ class DeepSeekFlashProvider:
         self.actual_model_calls = 0
 
     async def chat(self, messages, tools, config: RunConfig):
+        validate_structured_context(messages, tools, config)
         if config.tier != "EVAL_NATIVE":
             raise ValueError("API responses cannot supply VTDO_FEEDBACK token gradients")
         if self.identity.model_id != "deepseek-flash" or config.api_model != "deepseek-flash":

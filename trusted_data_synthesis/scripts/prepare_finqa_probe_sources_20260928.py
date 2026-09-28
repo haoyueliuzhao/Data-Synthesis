@@ -78,8 +78,8 @@ def main():
             "completion_tokens",
             "total_tokens",
         ],
-        user_budget_CNY=dict(warning=700, hard_ceiling=800),
-        budget_not_a_guarantee_of_all_8000_sessions=True,
+        budget_authority="separate run protocol; this public-document capture authorizes no calls",
+        budget_not_a_guarantee_of_all_registered_sessions=True,
     )
     raw = (json.dumps(snapshot, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode()
     write_immutable_artifact_directory(args.output, {**bodies, "snapshot.json": raw})
