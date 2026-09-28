@@ -1,0 +1,1435 @@
+{
+  "error": null,
+  "error_kind": null,
+  "interface_admitted": true,
+  "semantic_consistent": true,
+  "validation": {
+    "catalog_sha256": "04e06794198599efcb7c9cb4fd20239ecdc939ae5629ae8c3f92f09147ef8091",
+    "compact_catalog_sha256": "94356025a515593211324fa1e65355b3b256ba324bffdbf79520b37b391c9005",
+    "derived": {
+      "chi": 0,
+      "chi_evidence": [],
+      "graph": {
+        "edges": [
+          [
+            "308e479c68c85918159aefdf98ff473394ed6049cb5bb08208a15c96b736f5e4",
+            "derives",
+            "6ba780bddb3e09b1e5fc0396a4ef2ac1568031a599b9bc67dea313cf6787beff"
+          ],
+          [
+            "6ba780bddb3e09b1e5fc0396a4ef2ac1568031a599b9bc67dea313cf6787beff",
+            "checks",
+            "a56125a263d6c065c317d773e38871db7e65795264ef0ff9d5ede49a6b8df9fd"
+          ],
+          [
+            "a56125a263d6c065c317d773e38871db7e65795264ef0ff9d5ede49a6b8df9fd",
+            "accepts",
+            "f11bd97072bd5c026626f21bdf550cee409ccffc806937aa70f24d97e8b9d78e"
+          ],
+          [
+            "e2bf7ee2136671df0d93aa2c44a1d81dac520cc2791082a505a573e0514d480b",
+            "derives",
+            "6ba780bddb3e09b1e5fc0396a4ef2ac1568031a599b9bc67dea313cf6787beff"
+          ]
+        ],
+        "nodes": [
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0014:row:0006:cell:0003"
+            ],
+            "terms": [
+              {
+                "attribute": "operating profit margin as adjusted",
+                "period": "2015",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0003"
+                ],
+                "subject": "company",
+                "unit": "percent",
+                "value": "13.0"
+              }
+            ]
+          },
+          {
+            "operation": "subtract",
+            "predicate": "derivation",
+            "sources": [
+              "shared/source:0014:row:0006:cell:0002",
+              "shared/source:0014:row:0006:cell:0003"
+            ],
+            "terms": [
+              {
+                "attribute": "operating profit margin as adjusted",
+                "period": "2016",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0002"
+                ],
+                "subject": "company",
+                "unit": "percent",
+                "value": "14.6"
+              },
+              {
+                "attribute": "operating profit margin as adjusted",
+                "period": "2015",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0003"
+                ],
+                "subject": "company",
+                "unit": "percent",
+                "value": "13.0"
+              },
+              {
+                "attribute": "difference in operating profit margin as adjusted",
+                "period": "2015 to 2016",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0002",
+                  "shared/source:0014:row:0006:cell:0003"
+                ],
+                "subject": "company",
+                "unit": "percentage points",
+                "value": "1.6"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "verification",
+            "sources": [],
+            "terms": [
+              {
+                "attribute": "difference in operating profit margin as adjusted",
+                "period": "2015 to 2016",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0002",
+                  "shared/source:0014:row:0006:cell:0003"
+                ],
+                "subject": "company",
+                "unit": "percentage points",
+                "value": "1.6"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0014:row:0006:cell:0002"
+            ],
+            "terms": [
+              {
+                "attribute": "operating profit margin as adjusted",
+                "period": "2016",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0002"
+                ],
+                "subject": "company",
+                "unit": "percent",
+                "value": "14.6"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "answer",
+            "sources": [],
+            "terms": [
+              {
+                "attribute": "difference in operating profit margin as adjusted",
+                "period": "2015 to 2016",
+                "source_doc_ids": [
+                  "shared/source:0014:row:0006:cell:0002",
+                  "shared/source:0014:row:0006:cell:0003"
+                ],
+                "subject": "company",
+                "unit": "percentage points",
+                "value": "1.6"
+              }
+            ]
+          }
+        ]
+      },
+      "mapping_established": false,
+      "mask": [
+        {
+          "component": "action",
+          "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+          "end": 35,
+          "label": "approved",
+          "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+          "end": 217,
+          "label": "approved",
+          "quote": "R: The question asks for the change in \"operating profit margins as adjusted\" from 2015 to 2016. The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. The difference is 14.6 - 13.0.",
+          "start": 0
+        },
+        {
+          "component": "final",
+          "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+          "end": 35,
+          "label": "approved",
+          "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+          "end": 214,
+          "label": "approved",
+          "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\nU: The tool returned 1.6, confirming the arithmetic prior to submission.\n\n",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+          "end": 222,
+          "label": "nonassertive_context",
+          "quote": "Q: None.",
+          "start": 214
+        }
+      ],
+      "mask_complete": true
+    },
+    "document_index": {
+      "shared/source:0000:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:0",
+        "text": "affected by lower sales volume of cabinets , the divestiture of our arrow and moores businesses , and an unfavorable sales mix of international plumbing products , which , in aggregate , decreased sales by approximately two percent compared to 2016 .",
+        "turn_index": null
+      },
+      "shared/source:0001:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:1",
+        "text": "net sales for 2016 were positively affected by increased sales volume of plumbing products , paints and other coating products and builders' hardware , which , in aggregate , increased sales by approximately five percent compared to 2015 .",
+        "turn_index": null
+      },
+      "shared/source:0002:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:2",
+        "text": "net sales for 2016 were also positively affected by favorable sales mix of cabinets and windows , and net selling price increases of north american windows and north american and international plumbing products , which , in aggregate , increased sales approximately one percent .",
+        "turn_index": null
+      },
+      "shared/source:0003:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:3",
+        "text": "net sales for 2016 were negatively affected by lower sales volume of cabinets and lower net selling prices of paints and other coating products , which , in aggregate , decreased sales by approximately two percent .",
+        "turn_index": null
+      },
+      "shared/source:0004:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:4",
+        "text": "net sales for 2015 were positively affected by increased sales volume of plumbing products , paints and other coating products , windows and builders' hardware .",
+        "turn_index": null
+      },
+      "shared/source:0005:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:5",
+        "text": "net sales for 2015 were also positively affected by net selling price increases of plumbing products , cabinets and windows , as well as sales mix of north american cabinets and windows .",
+        "turn_index": null
+      },
+      "shared/source:0006:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:6",
+        "text": "net sales for 2015 were negatively affected by lower sales volume of cabinets and lower net selling prices of paints and other coating products .",
+        "turn_index": null
+      },
+      "shared/source:0007:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:7",
+        "text": "our gross profit margins were 34.2 percent , 33.4 percent and 31.5 percent in 2017 , 2016 and 2015 , respectively .",
+        "turn_index": null
+      },
+      "shared/source:0008:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:8",
+        "text": "the 2017 and 2016 gross profit margins were positively impacted by increased sales volume , a more favorable relationship between net selling prices and commodity costs , and cost savings initiatives .",
+        "turn_index": null
+      },
+      "shared/source:0009:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:9",
+        "text": "2016 gross profit margins were negatively impacted by an increase in warranty costs resulting from a change in our estimate of expected future warranty claim costs .",
+        "turn_index": null
+      },
+      "shared/source:0010:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:10",
+        "text": "selling , general and administrative expenses as a percent of sales were 18.9 percent in 2017 compared with 19.1 percent in 2016 and 18.7 percent in 2015 .",
+        "turn_index": null
+      },
+      "shared/source:0011:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:11",
+        "text": "selling , general and administrative expenses as a percent of sales in 2017 reflect increased sales and the effect of cost containment measures , partially offset by an increase in strategic growth investments , stock-based compensation , health insurance costs and trade show costs .",
+        "turn_index": null
+      },
+      "shared/source:0012:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:12",
+        "text": "selling , general and administrative expenses as a percent of sales in 2016 reflect strategic growth investments , erp system implementation costs and higher insurance costs .",
+        "turn_index": null
+      },
+      "shared/source:0013:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:13",
+        "text": "the following table reconciles reported operating profit to operating profit , as adjusted to exclude certain items , dollars in millions: .",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0000:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0000:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2017",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0000:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2016",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0000:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2015",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0001:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "operating profit as reported",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0001:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 1169",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0001:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 1053",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0001:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 914",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0002:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "rationalization charges",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0002:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "4",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0002:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "22",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0002:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "18",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0003:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "gain from sale of property and equipment",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0003:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0003:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0003:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-5 ( 5 )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0004:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "operating profit as adjusted",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0004:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 1173",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0004:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 1075",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0004:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 927",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0005:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "operating profit margins as reported",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0005:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "15.3% ( 15.3 % )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0005:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "14.3% ( 14.3 % )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0005:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "12.8% ( 12.8 % )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0006:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "operating profit margins as adjusted",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0006:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "15.3% ( 15.3 % )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0006:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "14.6% ( 14.6 % )",
+        "turn_index": null
+      },
+      "shared/source:0014:row:0006:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "13.0% ( 13.0 % )",
+        "turn_index": null
+      },
+      "shared/source:0015:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:0",
+        "text": "operating profit margins in 2017 and 2016 were positively affected by increased sales volume , cost savings initiatives , and a more favorable relationship between net selling prices and commodity costs .",
+        "turn_index": null
+      },
+      "shared/source:0016:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:1",
+        "text": "operating profit margin in 2017 was negatively impacted by an increase in strategic growth investments and certain other expenses , including stock-based compensation , health insurance costs , trade show costs and increased head count .",
+        "turn_index": null
+      },
+      "shared/source:0017:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:2",
+        "text": "operating profit margin in 2016 was negatively impacted by an increase in warranty costs by a business in our windows and other specialty products segment and an increase in strategic growth investments , as well as erp system implementation costs and higher insurance costs .",
+        "turn_index": null
+      },
+      "shared/source:0018:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:3",
+        "text": ".......................................................... .",
+        "turn_index": null
+      },
+      "shared/source:0019:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:4",
+        "text": ".................................................................. .",
+        "turn_index": null
+      },
+      "shared/source:0020:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:5",
+        "text": "..................................... .",
+        "turn_index": null
+      },
+      "shared/source:0021:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:6",
+        "text": "........................................................ .",
+        "turn_index": null
+      },
+      "shared/source:0022:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:7",
+        "text": "............................................ .",
+        "turn_index": null
+      },
+      "shared/source:0023:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:8",
+        "text": "............................................. .",
+        "turn_index": null
+      },
+      "shared/task:question": {
+        "event_index": null,
+        "kind": "question",
+        "slot_id": null,
+        "source_id": null,
+        "text": "what was the difference in operating profit margins as adjusted from 2015 to 2016?",
+        "turn_index": null
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation": {
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": 0,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0001:observation": {
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": 1,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0001:observation",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "{\"output\": {\"program\": \"subtract(14.6, 13.0)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments": {
+        "action_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "{\"program\": \"subtract(14.6, 13.0)\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content": {
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "R: The question asks for the change in \"operating profit margins as adjusted\" from 2015 to 2016. The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. The difference is 14.6 - 13.0.",
+        "turn_index": 0,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments": {
+        "action_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000",
+        "action_name": "submit_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "{\"program\": \"subtract(14.6, 13.0)\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      },
+      "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content": {
+        "episode_sha256": "3aadc32b27ce69d3048b0dc5e6532584945baeb67270e3f59e87f6e7aed8735f",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "source_id": null,
+        "text": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\nU: The tool returned 1.6, confirming the arithmetic prior to submission.\n\nQ: None.",
+        "turn_index": 1,
+        "view_id": "public_trajectory:9e93ebbf3a21296bba06d4a131a19874dd033f185553a8168fef70a154cd6882",
+        "view_slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5"
+      }
+    },
+    "encoding_manifest": null,
+    "expanded_review_sha256": "d5a190d58a007c9c7e5f634e8b05c4367997978dab0e87a6adc3aa6d2155f4e9",
+    "host_mask_repair": false,
+    "human_reviewed": false,
+    "interface_admitted": true,
+    "locator_mapped_review_sha256": "2339b08c796231bc04fcf466ddf6e3a31e2068e59e24940e38b9b38b18abb71e",
+    "mask_amendment": "explicit_empty_Q_nonassertive_zero_loss.v1",
+    "mask_complete": true,
+    "mathematical_proof": false,
+    "original_document_index_sha256": "c909de50c81d8d5a7ab6d2594819cf365fb810c337a503b4f577333581e33a6c",
+    "original_review_reclassified": false,
+    "parsed": {
+      "slot": {
+        "actions": [
+          {
+            "action_doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0002",
+                "end": 16,
+                "quote": "14.6% ( 14.6 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0003",
+                "end": 16,
+                "quote": "13.0% ( 13.0 % )",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0002",
+                "end": 16,
+                "quote": "14.6% ( 14.6 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0003",
+                "end": 16,
+                "quote": "13.0% ( 13.0 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                "end": 188,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3",
+              "p4"
+            ]
+          }
+        ],
+        "coverage_complete": true,
+        "mask": [
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+            "end": 35,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ],
+            "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+            "start": 0
+          },
+          {
+            "component": "final",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+            "end": 35,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3",
+              "p4"
+            ],
+            "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+            "end": 97,
+            "label": "approved",
+            "proposition_ids": [
+              "p0"
+            ],
+            "quote": "R: The question asks for the change in \"operating profit margins as adjusted\" from 2015 to 2016. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+            "end": 187,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2"
+            ],
+            "quote": "The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. ",
+            "start": 97
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+            "end": 217,
+            "label": "approved",
+            "proposition_ids": [
+              "p3"
+            ],
+            "quote": "The difference is 14.6 - 13.0.",
+            "start": 187
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+            "end": 140,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p4"
+            ],
+            "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\n",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+            "end": 214,
+            "label": "approved",
+            "proposition_ids": [
+              "p5"
+            ],
+            "quote": "U: The tool returned 1.6, confirming the arithmetic prior to submission.\n\n",
+            "start": 140
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+            "end": 222,
+            "label": "nonassertive_context",
+            "proposition_ids": [],
+            "quote": "Q: None.",
+            "start": 214
+          }
+        ],
+        "propositions": [
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p0",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/task:question",
+                "end": 82,
+                "quote": "what was the difference in operating profit margins as adjusted from 2015 to 2016?",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+                "end": 97,
+                "quote": "R: The question asks for the change in \"operating profit margins as adjusted\" from 2015 to 2016. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p1",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0002",
+                "end": 16,
+                "quote": "14.6% ( 14.6 % )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+                "end": 187,
+                "quote": "The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. ",
+                "start": 97
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+                "end": 140,
+                "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p2",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0003",
+                "end": 16,
+                "quote": "13.0% ( 13.0 % )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+                "end": 187,
+                "quote": "The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. ",
+                "start": 97
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+                "end": 140,
+                "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p3",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0002",
+                "end": 16,
+                "quote": "14.6% ( 14.6 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0003",
+                "end": 16,
+                "quote": "13.0% ( 13.0 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                "end": 188,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+                "end": 217,
+                "quote": "The difference is 14.6 - 13.0.",
+                "start": 187
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+                "end": 140,
+                "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p4",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0002",
+                "end": 16,
+                "quote": "14.6% ( 14.6 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0014:row:0006:cell:0003",
+                "end": 16,
+                "quote": "13.0% ( 13.0 % )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                "end": 188,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0001:observation",
+                "end": 105,
+                "quote": "{\"output\": {\"program\": \"subtract(14.6, 13.0)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+                "end": 140,
+                "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p5",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                "end": 188,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+                "end": 214,
+                "quote": "U: The tool returned 1.6, confirming the arithmetic prior to submission.\n\n",
+                "start": 140
+              }
+            ]
+          }
+        ],
+        "reason_codes": [
+          "no_retraction_needed",
+          "single_derivation_no_redundant_recheck",
+          "source_anchors_are_table_cells",
+          "q_none_nonassertive"
+        ],
+        "semantic_graph": {
+          "edges": [
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0002",
+                  "end": 16,
+                  "quote": "14.6% ( 14.6 % )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0003",
+                  "end": 16,
+                  "quote": "13.0% ( 13.0 % )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_margin_2016",
+              "relation": "derives",
+              "to_node": "n_diff"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0002",
+                  "end": 16,
+                  "quote": "14.6% ( 14.6 % )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0003",
+                  "end": 16,
+                  "quote": "13.0% ( 13.0 % )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_margin_2015",
+              "relation": "derives",
+              "to_node": "n_diff"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                  "end": 188,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_diff",
+              "relation": "checks",
+              "to_node": "n_verify"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(14.6, 13.0)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_verify",
+              "relation": "accepts",
+              "to_node": "n_answer"
+            }
+          ],
+          "nodes": [
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0002",
+                  "end": 16,
+                  "quote": "14.6% ( 14.6 % )",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_margin_2016",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p1"
+              ],
+              "source_doc_ids": [
+                "shared/source:0014:row:0006:cell:0002"
+              ],
+              "term_ids": [
+                "t_margin_2016"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0003",
+                  "end": 16,
+                  "quote": "13.0% ( 13.0 % )",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_margin_2015",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p2"
+              ],
+              "source_doc_ids": [
+                "shared/source:0014:row:0006:cell:0003"
+              ],
+              "term_ids": [
+                "t_margin_2015"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0002",
+                  "end": 16,
+                  "quote": "14.6% ( 14.6 % )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0014:row:0006:cell:0003",
+                  "end": 16,
+                  "quote": "13.0% ( 13.0 % )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                  "end": 188,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_diff",
+              "operation": "subtract",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p3"
+              ],
+              "source_doc_ids": [
+                "shared/source:0014:row:0006:cell:0002",
+                "shared/source:0014:row:0006:cell:0003"
+              ],
+              "term_ids": [
+                "t_margin_2016",
+                "t_margin_2015",
+                "t_diff"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0000:observation",
+                  "end": 188,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"subtract(14.6, 13.0)\", \"result\": 1.6}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_verify",
+              "operation": "none",
+              "predicate": "verification",
+              "proposition_ids": [
+                "p5"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_diff"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(14.6, 13.0)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_answer",
+              "operation": "none",
+              "predicate": "answer",
+              "proposition_ids": [
+                "p4"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_diff"
+              ]
+            }
+          ]
+        },
+        "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+        "updates": [],
+        "v_trace": "valid"
+      },
+      "terms": [
+        {
+          "attribute": "operating profit margin as adjusted",
+          "period": "2016",
+          "source_doc_ids": [
+            "shared/source:0014:row:0006:cell:0002"
+          ],
+          "subject": "company",
+          "term_id": "t_margin_2016",
+          "unit": "percent",
+          "value": "14.6"
+        },
+        {
+          "attribute": "operating profit margin as adjusted",
+          "period": "2015",
+          "source_doc_ids": [
+            "shared/source:0014:row:0006:cell:0003"
+          ],
+          "subject": "company",
+          "term_id": "t_margin_2015",
+          "unit": "percent",
+          "value": "13.0"
+        },
+        {
+          "attribute": "difference in operating profit margin as adjusted",
+          "period": "2015 to 2016",
+          "source_doc_ids": [
+            "shared/source:0014:row:0006:cell:0002",
+            "shared/source:0014:row:0006:cell:0003"
+          ],
+          "subject": "company",
+          "term_id": "t_diff",
+          "unit": "percentage points",
+          "value": "1.6"
+        }
+      ]
+    },
+    "positive_target_mask": [
+      {
+        "component": "action",
+        "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:action:0000:arguments",
+        "end": 35,
+        "label": "approved",
+        "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0000:content",
+        "end": 217,
+        "label": "approved",
+        "quote": "R: The question asks for the change in \"operating profit margins as adjusted\" from 2015 to 2016. The table row \"operating profit margins as adjusted\" gives 2016 = 14.6% and 2015 = 13.0%. The difference is 14.6 - 13.0.",
+        "start": 0
+      },
+      {
+        "component": "final",
+        "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:action:0000:arguments",
+        "end": 35,
+        "label": "approved",
+        "quote": "{\"program\": \"subtract(14.6, 13.0)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+        "end": 214,
+        "label": "approved",
+        "quote": "R: The table gives adjusted operating profit margins of 14.6% in 2016 and 13.0% in 2015; the computed difference is 1.6 percentage points.\n\nU: The tool returned 1.6, confirming the arithmetic prior to submission.\n\n",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5/turn:0001:content",
+        "end": 222,
+        "label": "nonassertive_context",
+        "quote": "Q: None.",
+        "start": 214
+      }
+    ],
+    "raw_review_sha256": "a8d3aebcd690cd9b82ba9389315d96b1e11012b232a763254f908f45161ca6af",
+    "reported_v_trace": "valid",
+    "requires_second_review_and_task_alignment": true,
+    "reviewer": 1,
+    "schema": "v6_slot_review.v5",
+    "semantic_consistent": true,
+    "semantic_repair_performed": false,
+    "semantic_validation_error": null,
+    "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+    "strict_format_is_semantic_correctness": false,
+    "strict_tool_sha256": "56341cae0e673248c706127b98e470d7611d96553b12d464cc05db6e745db133",
+    "task_bundle_sha256": "962d3abf1390d203c91c637b3736d62edb02ff62b2ed59cac4af1dfc16b1b388",
+    "task_id": "MAS/2017/page_37.pdf-1",
+    "terms": {
+      "t_diff": {
+        "attribute": "difference in operating profit margin as adjusted",
+        "period": "2015 to 2016",
+        "source_doc_ids": [
+          "shared/source:0014:row:0006:cell:0002",
+          "shared/source:0014:row:0006:cell:0003"
+        ],
+        "subject": "company",
+        "unit": "percentage points",
+        "value": "1.6"
+      },
+      "t_margin_2015": {
+        "attribute": "operating profit margin as adjusted",
+        "period": "2015",
+        "source_doc_ids": [
+          "shared/source:0014:row:0006:cell:0003"
+        ],
+        "subject": "company",
+        "unit": "percent",
+        "value": "13.0"
+      },
+      "t_margin_2016": {
+        "attribute": "operating profit margin as adjusted",
+        "period": "2016",
+        "source_doc_ids": [
+          "shared/source:0014:row:0006:cell:0002"
+        ],
+        "subject": "company",
+        "unit": "percent",
+        "value": "14.6"
+      }
+    },
+    "v_trace": "valid",
+    "wire_protocol": "v6_slot_review.v5"
+  }
+}

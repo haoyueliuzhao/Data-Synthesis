@@ -1,0 +1,2365 @@
+{
+  "error": null,
+  "error_kind": null,
+  "interface_admitted": true,
+  "semantic_consistent": true,
+  "validation": {
+    "catalog_sha256": "d2b393ad12d9551912d146933b2a98376c592f9376c274ed76ce746bc1fb48dd",
+    "compact_catalog_sha256": "b4a5cdbbe0583d04c340d1d14ffd10959a75dc4f85ea01c9d0ee2c96b063c1d9",
+    "derived": {
+      "chi": 0,
+      "chi_evidence": [],
+      "graph": {
+        "edges": [
+          [
+            "2550300a270538fd185f0ef6227f0d75eca477b0e479958345c7b7cfa2edbb2f",
+            "derives",
+            "c0d4ebf965df6ce82386a4f84ae999bb0a5156472ae344a9c2120487a79ac1b6"
+          ],
+          [
+            "ad2ee32be88110cded4da58643ee55bf025b625395cab5a4fea5f02e0c153256",
+            "supports",
+            "e0bd89cfdcfe08d69e79e8fdf02c4d04de2e6e18e61f4dc4ab9283921e487e82"
+          ],
+          [
+            "c0d4ebf965df6ce82386a4f84ae999bb0a5156472ae344a9c2120487a79ac1b6",
+            "selects",
+            "ad2ee32be88110cded4da58643ee55bf025b625395cab5a4fea5f02e0c153256"
+          ],
+          [
+            "dd656c7fc1b16cddfc062187f4108bf07f9d59dda9a2d3830145fafbb799d2a8",
+            "derives",
+            "c0d4ebf965df6ce82386a4f84ae999bb0a5156472ae344a9c2120487a79ac1b6"
+          ]
+        ],
+        "nodes": [
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0011:row:0006:cell:0000",
+              "shared/source:0011:row:0006:cell:0005"
+            ],
+            "terms": [
+              {
+                "attribute": "accumulated other comprehensive income (loss) opening balance",
+                "period": "opening balance as of December 31, 2017",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0006:cell:0000",
+                  "shared/source:0011:row:0006:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-928"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0011:row:0012:cell:0000",
+              "shared/source:0011:row:0012:cell:0001",
+              "shared/source:0011:row:0012:cell:0002",
+              "shared/source:0011:row:0012:cell:0003",
+              "shared/source:0011:row:0012:cell:0004",
+              "shared/source:0011:row:0012:cell:0005"
+            ],
+            "terms": [
+              {
+                "attribute": "other comprehensive income (loss) total row",
+                "period": "2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0012:cell:0000",
+                  "shared/source:0011:row:0012:cell:0001",
+                  "shared/source:0011:row:0012:cell:0002",
+                  "shared/source:0011:row:0012:cell:0003",
+                  "shared/source:0011:row:0012:cell:0004",
+                  "shared/source:0011:row:0012:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-46"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "decision",
+            "sources": [],
+            "terms": [
+              {
+                "attribute": "net change in accumulated other comprehensive income (loss)",
+                "period": "2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0006:cell:0000",
+                  "shared/source:0011:row:0006:cell:0005",
+                  "shared/source:0011:row:0013:cell:0000",
+                  "shared/source:0011:row:0013:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-1836"
+              }
+            ]
+          },
+          {
+            "operation": "subtract",
+            "predicate": "derivation",
+            "sources": [
+              "shared/source:0011:row:0006:cell:0000",
+              "shared/source:0011:row:0006:cell:0005",
+              "shared/source:0011:row:0013:cell:0000",
+              "shared/source:0011:row:0013:cell:0005"
+            ],
+            "terms": [
+              {
+                "attribute": "accumulated other comprehensive income (loss) opening balance",
+                "period": "opening balance as of December 31, 2017",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0006:cell:0000",
+                  "shared/source:0011:row:0006:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-928"
+              },
+              {
+                "attribute": "accumulated other comprehensive income (loss) ending balance",
+                "period": "December 29, 2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0013:cell:0000",
+                  "shared/source:0011:row:0013:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-974"
+              },
+              {
+                "attribute": "net change in accumulated other comprehensive income (loss)",
+                "period": "2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0006:cell:0000",
+                  "shared/source:0011:row:0006:cell:0005",
+                  "shared/source:0011:row:0013:cell:0000",
+                  "shared/source:0011:row:0013:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-1836"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0011:row:0013:cell:0000",
+              "shared/source:0011:row:0013:cell:0005"
+            ],
+            "terms": [
+              {
+                "attribute": "accumulated other comprehensive income (loss) ending balance",
+                "period": "December 29, 2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0013:cell:0000",
+                  "shared/source:0011:row:0013:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-974"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "answer",
+            "sources": [],
+            "terms": [
+              {
+                "attribute": "net change in accumulated other comprehensive income (loss)",
+                "period": "2018",
+                "source_doc_ids": [
+                  "shared/source:0011:row:0006:cell:0000",
+                  "shared/source:0011:row:0006:cell:0005",
+                  "shared/source:0011:row:0013:cell:0000",
+                  "shared/source:0011:row:0013:cell:0005"
+                ],
+                "subject": "Intel",
+                "unit": "USD millions",
+                "value": "-1836"
+              }
+            ]
+          }
+        ]
+      },
+      "mapping_established": false,
+      "mask": [
+        {
+          "component": "action",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+          "end": 24,
+          "label": "approved",
+          "quote": "{\"source_id\": \"table:0\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+          "end": 95,
+          "label": "approved",
+          "quote": "R: The question asks for the net change in accumulated other comprehensive income during 2018. ",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+          "end": 235,
+          "label": "unknown",
+          "quote": "The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\n",
+          "start": 95
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+          "end": 308,
+          "label": "approved",
+          "quote": "U: Let me verify by reading the table source to confirm the relevant row.",
+          "start": 235
+        },
+        {
+          "component": "final",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+          "end": 35,
+          "label": "approved",
+          "quote": "{\"program\": \"subtract(-974, -928)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+          "end": 364,
+          "label": "unknown",
+          "quote": "R: The 2018 \"other comprehensive income (loss)\" total row is -46. This equals the net change in accumulated other comprehensive income during 2018 (opening -928 → ending -974 gives -46, confirming).\n\nU: The net change is the 2018 total OCI of -46, which is a subtract-implied value. I'll express it as the row's total. Using the table, the value is directly -46.\n\n",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+          "end": 372,
+          "label": "nonassertive_context",
+          "quote": "Q: None.",
+          "start": 364
+        }
+      ],
+      "mask_complete": false
+    },
+    "document_index": {
+      "shared/source:0000:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:0",
+        "text": "assets measured and recorded at fair value on a non-recurring basis our non-marketable equity securities , equity method investments , and certain non-financial assets , such as intangible assets and property , plant and equipment , are recorded at fair value only if an impairment or observable price adjustment is recognized in the current period .",
+        "turn_index": null
+      },
+      "shared/source:0001:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:1",
+        "text": "if an impairment or observable price adjustment is recognized on our non-marketable equity securities during the period , we classify these assets as level 3 within the fair value hierarchy based on the nature of the fair value inputs .",
+        "turn_index": null
+      },
+      "shared/source:0002:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:2",
+        "text": "we classified non-marketable equity securities and non-marketable equity method investments as level 3 .",
+        "turn_index": null
+      },
+      "shared/source:0003:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:3",
+        "text": "impairments recognized on these investments held as of december 29 , 2018 were $ 416 million ( $ 537 million held as of december 30 , 2017 and $ 153 million held as of december 31 , 2016 ) .",
+        "turn_index": null
+      },
+      "shared/source:0004:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:4",
+        "text": "financial instruments not recorded at fair value on a recurring basis financial instruments not recorded at fair value on a recurring basis include non-marketable equity securities and equity method investments that have not been remeasured or impaired in the current period , grants receivable , loans receivable , reverse repurchase agreements , and our short-term and long-term debt .",
+        "turn_index": null
+      },
+      "shared/source:0005:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:5",
+        "text": "prior to the adoption of the new financial instrument standard , our non-marketable cost method investments were disclosed at fair value on a recurring basis .",
+        "turn_index": null
+      },
+      "shared/source:0006:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:6",
+        "text": "the carrying amount and fair value of our non-marketable cost method investments as of december 30 , 2017 were $ 2.6 billion and $ 3.6 billion , respectively .",
+        "turn_index": null
+      },
+      "shared/source:0007:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:7",
+        "text": "these measures are classified as level 3 within the fair value hierarchy based on the nature of the fair value inputs .",
+        "turn_index": null
+      },
+      "shared/source:0008:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:8",
+        "text": "as of december 29 , 2018 , the aggregate carrying value of grants receivable , loans receivable , and reverse repurchase agreements was $ 833 million ( the aggregate carrying amount as of december 30 , 2017 was $ 935 million ) .",
+        "turn_index": null
+      },
+      "shared/source:0009:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:9",
+        "text": "the estimated fair value of these financial instruments approximates their carrying value and is categorized as level 2 within the fair value hierarchy based on the nature of the fair value inputs .",
+        "turn_index": null
+      },
+      "shared/source:0010:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:10",
+        "text": "for information related to the fair value of our short-term and long-term debt , see 201cnote 15 : borrowings . 201d note 17 : other comprehensive income ( loss ) the changes in accumulated other comprehensive income ( loss ) by component and related tax effects for each period were as follows : ( in millions ) unrealized holding ( losses ) on available-for -sale equity investments unrealized holding ( losses ) on derivatives actuarial valuation and other pension expenses translation adjustments and other total .",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "( in millions )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "unrealized holding gains ( losses ) on available-for-sale equity investments",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "unrealized holding gains ( losses ) on derivatives",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "actuarial valuation and other pension expenses",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "translation adjustments and other",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0000:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "total",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "december 31 2016",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 2179",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -259 ( 259 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -1280 ( 1280 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -534 ( 534 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0001:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 106",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "other comprehensive income ( loss ) before reclassifications",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2765",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "605",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "275",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-2 ( 2 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0002:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "3643",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "amounts reclassified out of accumulated other comprehensive income ( loss )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-3433 ( 3433 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-69 ( 69 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "103",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "509",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0003:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-2890 ( 2890 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "tax effects",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "234",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-171 ( 171 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-61 ( 61 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "1",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0004:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "3",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "other comprehensive income ( loss )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-434 ( 434 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "365",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "317",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "508",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0005:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "756",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "december 30 2017",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "1745",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "106",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-963 ( 963 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-26 ( 26 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0006:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "862",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "impact of change in accounting standards",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-1745 ( 1745 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "24",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-65 ( 65 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-4 ( 4 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0007:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-1790 ( 1790 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "opening balance as of december 31 2017",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "130",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-1028 ( 1028 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-30 ( 30 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0008:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-928 ( 928 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "other comprehensive income ( loss ) before reclassifications",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-310 ( 310 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "157",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-16 ( 16 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0009:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-169 ( 169 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "amounts reclassified out of accumulated other comprehensive income ( loss )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "9",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "109",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "8",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0010:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "126",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "tax effects",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "48",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-56 ( 56 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "5",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0011:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-3 ( 3 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "other comprehensive income ( loss )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-253 ( 253 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "210",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-3 ( 3 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0012:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "-46 ( 46 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "december 29 2018",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 2014",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -123 ( 123 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -818 ( 818 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -33 ( 33 )",
+        "turn_index": null
+      },
+      "shared/source:0011:row:0013:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ -974 ( 974 )",
+        "turn_index": null
+      },
+      "shared/source:0012:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:0",
+        "text": "financial statements notes to financial statements 97 .",
+        "turn_index": null
+      },
+      "shared/task:question": {
+        "event_index": null,
+        "kind": "question",
+        "slot_id": null,
+        "source_id": null,
+        "text": "what is the net change in the accumulated other comprehensive income during 2018?",
+        "turn_index": null
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation": {
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": 0,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "{\"output\": {\"content\": [[\"( in millions )\", \"unrealized holding gains ( losses ) on available-for-sale equity investments\", \"unrealized holding gains ( losses ) on derivatives\", \"actuarial valuation and other pension expenses\", \"translation adjustments and other\", \"total\"], [\"december 31 2016\", \"$ 2179\", \"$ -259 ( 259 )\", \"$ -1280 ( 1280 )\", \"$ -534 ( 534 )\", \"$ 106\"], [\"other comprehensive income ( loss ) before reclassifications\", \"2765\", \"605\", \"275\", \"-2 ( 2 )\", \"3643\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"-3433 ( 3433 )\", \"-69 ( 69 )\", \"103\", \"509\", \"-2890 ( 2890 )\"], [\"tax effects\", \"234\", \"-171 ( 171 )\", \"-61 ( 61 )\", \"1\", \"3\"], [\"other comprehensive income ( loss )\", \"-434 ( 434 )\", \"365\", \"317\", \"508\", \"756\"], [\"december 30 2017\", \"1745\", \"106\", \"-963 ( 963 )\", \"-26 ( 26 )\", \"862\"], [\"impact of change in accounting standards\", \"-1745 ( 1745 )\", \"24\", \"-65 ( 65 )\", \"-4 ( 4 )\", \"-1790 ( 1790 )\"], [\"opening balance as of december 31 2017\", \"2014\", \"130\", \"-1028 ( 1028 )\", \"-30 ( 30 )\", \"-928 ( 928 )\"], [\"other comprehensive income ( loss ) before reclassifications\", \"2014\", \"-310 ( 310 )\", \"157\", \"-16 ( 16 )\", \"-169 ( 169 )\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"2014\", \"9\", \"109\", \"8\", \"126\"], [\"tax effects\", \"2014\", \"48\", \"-56 ( 56 )\", \"5\", \"-3 ( 3 )\"], [\"other comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], \"kind\": \"table\", \"locator\": \"table\", \"source_id\": \"table:0\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation": {
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": 1,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments": {
+        "action_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000",
+        "action_name": "read_source",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "{\"source_id\": \"table:0\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content": {
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "R: The question asks for the net change in accumulated other comprehensive income during 2018. The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\nU: Let me verify by reading the table source to confirm the relevant row.",
+        "turn_index": 0,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments": {
+        "action_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000",
+        "action_name": "submit_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "{\"program\": \"subtract(-974, -928)\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      },
+      "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content": {
+        "episode_sha256": "bdcdb02ce85cda594b76d7d8474ad04b261f123ef29b068ddd74fb660fa6fcf7",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "source_id": null,
+        "text": "R: The 2018 \"other comprehensive income (loss)\" total row is -46. This equals the net change in accumulated other comprehensive income during 2018 (opening -928 → ending -974 gives -46, confirming).\n\nU: The net change is the 2018 total OCI of -46, which is a subtract-implied value. I'll express it as the row's total. Using the table, the value is directly -46.\n\nQ: None.",
+        "turn_index": 1,
+        "view_id": "public_trajectory:af6b40f00c8b7689642845e53202b4e614b6eb7de37791fc16bc2ad1b0c60dd4",
+        "view_slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de"
+      }
+    },
+    "encoding_manifest": null,
+    "expanded_review_sha256": "0453f51fd9d375b680c6f1edb12f5be83202b76a1e93120c1bd7836ec14f4ea9",
+    "host_mask_repair": false,
+    "human_reviewed": false,
+    "interface_admitted": true,
+    "locator_mapped_review_sha256": "556c0eab6850a4e2bc299d0bd4e93195b234590e55acc6f69bcaa7543c619e60",
+    "mask_amendment": "explicit_empty_Q_nonassertive_zero_loss.v1",
+    "mask_complete": false,
+    "mathematical_proof": false,
+    "original_document_index_sha256": "da38304f27ad0867a67f40b37c00ed4d789f09f0f51514a29204cafdcda241e9",
+    "original_review_reclassified": false,
+    "parsed": {
+      "slot": {
+        "actions": [
+          {
+            "action_doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0011:row:0000:cell:0000",
+                "end": 15,
+                "quote": "( in millions )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0000",
+                "end": 16,
+                "quote": "december 29 2018",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0001",
+                "end": 6,
+                "quote": "$ 2014",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0002",
+                "end": 14,
+                "quote": "$ -123 ( 123 )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0003",
+                "end": 14,
+                "quote": "$ -818 ( 818 )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0004",
+                "end": 12,
+                "quote": "$ -33 ( 33 )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0005",
+                "end": 14,
+                "quote": "$ -974 ( 974 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 199,
+                "quote": "{\"output\": {\"content\": [[\"( in millions )\", \"unrealized holding gains ( losses ) on available-for-sale equity investments\", \"unrealized holding gains ( losses ) on derivatives\", \"actuarial valuation ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 394,
+                "quote": "and other pension expenses\", \"translation adjustments and other\", \"total\"], [\"december 31 2016\", \"$ 2179\", \"$ -259 ( 259 )\", \"$ -1280 ( 1280 )\", \"$ -534 ( 534 )\", \"$ 106\"], [\"other comprehensive ",
+                "start": 199
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 592,
+                "quote": "income ( loss ) before reclassifications\", \"2765\", \"605\", \"275\", \"-2 ( 2 )\", \"3643\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"-3433 ( 3433 )\", \"-69 ( 69 )\", ",
+                "start": 394
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 788,
+                "quote": "\"103\", \"509\", \"-2890 ( 2890 )\"], [\"tax effects\", \"234\", \"-171 ( 171 )\", \"-61 ( 61 )\", \"1\", \"3\"], [\"other comprehensive income ( loss )\", \"-434 ( 434 )\", \"365\", \"317\", \"508\", \"756\"], [\"december 30 ",
+                "start": 592
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 986,
+                "quote": "2017\", \"1745\", \"106\", \"-963 ( 963 )\", \"-26 ( 26 )\", \"862\"], [\"impact of change in accounting standards\", \"-1745 ( 1745 )\", \"24\", \"-65 ( 65 )\", \"-4 ( 4 )\", \"-1790 ( 1790 )\"], [\"opening balance as of ",
+                "start": 788
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1185,
+                "quote": "december 31 2017\", \"2014\", \"130\", \"-1028 ( 1028 )\", \"-30 ( 30 )\", \"-928 ( 928 )\"], [\"other comprehensive income ( loss ) before reclassifications\", \"2014\", \"-310 ( 310 )\", \"157\", \"-16 ( 16 )\", \"-169 ",
+                "start": 986
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1379,
+                "quote": "( 169 )\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"2014\", \"9\", \"109\", \"8\", \"126\"], [\"tax effects\", \"2014\", \"48\", \"-56 ( 56 )\", \"5\", \"-3 ( 3 )\"], [\"other ",
+                "start": 1185
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1572,
+                "quote": "comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], ",
+                "start": 1379
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1672,
+                "quote": "\"kind\": \"table\", \"locator\": \"table\", \"source_id\": \"table:0\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 1572
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p_read_table"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0000",
+                "end": 16,
+                "quote": "december 30 2017",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0005",
+                "end": 3,
+                "quote": "862",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0000",
+                "end": 16,
+                "quote": "december 29 2018",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0005",
+                "end": 14,
+                "quote": "$ -974 ( 974 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                "end": 105,
+                "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p_program"
+            ]
+          }
+        ],
+        "coverage_complete": true,
+        "mask": [
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+            "end": 24,
+            "label": "approved",
+            "proposition_ids": [
+              "p_read_table"
+            ],
+            "quote": "{\"source_id\": \"table:0\"}",
+            "start": 0
+          },
+          {
+            "component": "final",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+            "end": 35,
+            "label": "approved",
+            "proposition_ids": [
+              "p_program"
+            ],
+            "quote": "{\"program\": \"subtract(-974, -928)\"}",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+            "end": 95,
+            "label": "approved",
+            "proposition_ids": [
+              "p_question"
+            ],
+            "quote": "R: The question asks for the net change in accumulated other comprehensive income during 2018. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+            "end": 235,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_oci_2018_row",
+              "p_ending_2018"
+            ],
+            "quote": "The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\n",
+            "start": 95
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+            "end": 308,
+            "label": "approved",
+            "proposition_ids": [
+              "p_verify_intent"
+            ],
+            "quote": "U: Let me verify by reading the table source to confirm the relevant row.",
+            "start": 235
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 66,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_oci_2018_row"
+            ],
+            "quote": "R: The 2018 \"other comprehensive income (loss)\" total row is -46. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 200,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_net_change_claim"
+            ],
+            "quote": "This equals the net change in accumulated other comprehensive income during 2018 (opening -928 → ending -974 gives -46, confirming).\n\n",
+            "start": 66
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 283,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_net_change_claim"
+            ],
+            "quote": "U: The net change is the 2018 total OCI of -46, which is a subtract-implied value. ",
+            "start": 200
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 319,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_net_change_claim"
+            ],
+            "quote": "I'll express it as the row's total. ",
+            "start": 283
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 364,
+            "label": "unknown",
+            "proposition_ids": [
+              "p_net_change_claim"
+            ],
+            "quote": "Using the table, the value is directly -46.\n\n",
+            "start": 319
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+            "end": 372,
+            "label": "nonassertive_context",
+            "proposition_ids": [],
+            "quote": "Q: None.",
+            "start": 364
+          }
+        ],
+        "propositions": [
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p_question",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/task:question",
+                "end": 81,
+                "quote": "what is the net change in the accumulated other comprehensive income during 2018?",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+                "end": 95,
+                "quote": "R: The question asks for the net change in accumulated other comprehensive income during 2018. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p_read_table",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 199,
+                "quote": "{\"output\": {\"content\": [[\"( in millions )\", \"unrealized holding gains ( losses ) on available-for-sale equity investments\", \"unrealized holding gains ( losses ) on derivatives\", \"actuarial valuation ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 394,
+                "quote": "and other pension expenses\", \"translation adjustments and other\", \"total\"], [\"december 31 2016\", \"$ 2179\", \"$ -259 ( 259 )\", \"$ -1280 ( 1280 )\", \"$ -534 ( 534 )\", \"$ 106\"], [\"other comprehensive ",
+                "start": 199
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 592,
+                "quote": "income ( loss ) before reclassifications\", \"2765\", \"605\", \"275\", \"-2 ( 2 )\", \"3643\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"-3433 ( 3433 )\", \"-69 ( 69 )\", ",
+                "start": 394
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 788,
+                "quote": "\"103\", \"509\", \"-2890 ( 2890 )\"], [\"tax effects\", \"234\", \"-171 ( 171 )\", \"-61 ( 61 )\", \"1\", \"3\"], [\"other comprehensive income ( loss )\", \"-434 ( 434 )\", \"365\", \"317\", \"508\", \"756\"], [\"december 30 ",
+                "start": 592
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 986,
+                "quote": "2017\", \"1745\", \"106\", \"-963 ( 963 )\", \"-26 ( 26 )\", \"862\"], [\"impact of change in accounting standards\", \"-1745 ( 1745 )\", \"24\", \"-65 ( 65 )\", \"-4 ( 4 )\", \"-1790 ( 1790 )\"], [\"opening balance as of ",
+                "start": 788
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1185,
+                "quote": "december 31 2017\", \"2014\", \"130\", \"-1028 ( 1028 )\", \"-30 ( 30 )\", \"-928 ( 928 )\"], [\"other comprehensive income ( loss ) before reclassifications\", \"2014\", \"-310 ( 310 )\", \"157\", \"-16 ( 16 )\", \"-169 ",
+                "start": 986
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1379,
+                "quote": "( 169 )\"], [\"amounts reclassified out of accumulated other comprehensive income ( loss )\", \"2014\", \"9\", \"109\", \"8\", \"126\"], [\"tax effects\", \"2014\", \"48\", \"-56 ( 56 )\", \"5\", \"-3 ( 3 )\"], [\"other ",
+                "start": 1185
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1572,
+                "quote": "comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], ",
+                "start": 1379
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1672,
+                "quote": "\"kind\": \"table\", \"locator\": \"table\", \"source_id\": \"table:0\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 1572
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+                "end": 24,
+                "quote": "{\"source_id\": \"table:0\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p_verify_intent",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 199,
+                "quote": "{\"output\": {\"content\": [[\"( in millions )\", \"unrealized holding gains ( losses ) on available-for-sale equity investments\", \"unrealized holding gains ( losses ) on derivatives\", \"actuarial valuation ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1672,
+                "quote": "\"kind\": \"table\", \"locator\": \"table\", \"source_id\": \"table:0\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 1572
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+                "end": 308,
+                "quote": "U: Let me verify by reading the table source to confirm the relevant row.",
+                "start": 235
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_oci_2018_row",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0000",
+                "end": 35,
+                "quote": "other comprehensive income ( loss )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0001",
+                "end": 4,
+                "quote": "2014",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0002",
+                "end": 12,
+                "quote": "-253 ( 253 )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0003",
+                "end": 3,
+                "quote": "210",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0004",
+                "end": 8,
+                "quote": "-3 ( 3 )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0012:cell:0005",
+                "end": 10,
+                "quote": "-46 ( 46 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1572,
+                "quote": "comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], ",
+                "start": 1379
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+                "end": 235,
+                "quote": "The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\n",
+                "start": 95
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+                "end": 66,
+                "quote": "R: The 2018 \"other comprehensive income (loss)\" total row is -46. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_ending_2018",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0000",
+                "end": 16,
+                "quote": "december 29 2018",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0005",
+                "end": 14,
+                "quote": "$ -974 ( 974 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                "end": 1572,
+                "quote": "comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], ",
+                "start": 1379
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+                "end": 235,
+                "quote": "The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\n",
+                "start": 95
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": true,
+            "judgment": "contradicted",
+            "proposition_id": "p_net_change_claim",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0000",
+                "end": 16,
+                "quote": "december 30 2017",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0005",
+                "end": 3,
+                "quote": "862",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0000",
+                "end": 16,
+                "quote": "december 29 2018",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0005",
+                "end": 14,
+                "quote": "$ -974 ( 974 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                "end": 105,
+                "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+                "end": 200,
+                "quote": "This equals the net change in accumulated other comprehensive income during 2018 (opening -928 → ending -974 gives -46, confirming).\n\n",
+                "start": 66
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+                "end": 283,
+                "quote": "U: The net change is the 2018 total OCI of -46, which is a subtract-implied value. ",
+                "start": 200
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+                "end": 319,
+                "quote": "I'll express it as the row's total. ",
+                "start": 283
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+                "end": 364,
+                "quote": "Using the table, the value is directly -46.\n\n",
+                "start": 319
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_program",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0000",
+                "end": 16,
+                "quote": "december 30 2017",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0006:cell:0005",
+                "end": 3,
+                "quote": "862",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0000",
+                "end": 16,
+                "quote": "december 29 2018",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0011:row:0013:cell:0005",
+                "end": 14,
+                "quote": "$ -974 ( 974 )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                "end": 105,
+                "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+                "end": 35,
+                "quote": "{\"program\": \"subtract(-974, -928)\"}",
+                "start": 0
+              }
+            ]
+          }
+        ],
+        "reason_codes": [
+          "unretracted_critical_contradiction",
+          "net_change_misidentified_as_period_oci_row",
+          "final_answer_contradicts_own_submitted_program",
+          "no_substantive_verification_or_revision",
+          "v_trace_invalid"
+        ],
+        "semantic_graph": {
+          "edges": [
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0000",
+                  "end": 16,
+                  "quote": "december 30 2017",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0005",
+                  "end": 3,
+                  "quote": "862",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_open_2018",
+              "relation": "derives",
+              "to_node": "n_net_change"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_end_2018",
+              "relation": "derives",
+              "to_node": "n_net_change"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_net_change",
+              "relation": "selects",
+              "to_node": "n_program"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_program",
+              "relation": "supports",
+              "to_node": "n_answer"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0000",
+                  "end": 35,
+                  "quote": "other comprehensive income ( loss )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0001",
+                  "end": 4,
+                  "quote": "2014",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0002",
+                  "end": 12,
+                  "quote": "-253 ( 253 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0003",
+                  "end": 3,
+                  "quote": "210",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0004",
+                  "end": 8,
+                  "quote": "-3 ( 3 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0005",
+                  "end": 10,
+                  "quote": "-46 ( 46 )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_oci_row_2018",
+              "relation": "supports",
+              "to_node": "n_claim_net_change"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0000",
+                  "end": 16,
+                  "quote": "december 30 2017",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0005",
+                  "end": 3,
+                  "quote": "862",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_net_change",
+              "relation": "checks",
+              "to_node": "n_claim_net_change"
+            }
+          ],
+          "nodes": [
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0000",
+                  "end": 16,
+                  "quote": "december 30 2017",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0005",
+                  "end": 3,
+                  "quote": "862",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_open_2018",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p_program"
+              ],
+              "source_doc_ids": [
+                "shared/source:0011:row:0006:cell:0000",
+                "shared/source:0011:row:0006:cell:0005"
+              ],
+              "term_ids": [
+                "t_open_2018"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_end_2018",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p_ending_2018"
+              ],
+              "source_doc_ids": [
+                "shared/source:0011:row:0013:cell:0000",
+                "shared/source:0011:row:0013:cell:0005"
+              ],
+              "term_ids": [
+                "t_end_2018"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0000",
+                  "end": 16,
+                  "quote": "december 30 2017",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0005",
+                  "end": 3,
+                  "quote": "862",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_net_change",
+              "operation": "subtract",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p_program"
+              ],
+              "source_doc_ids": [
+                "shared/source:0011:row:0006:cell:0000",
+                "shared/source:0011:row:0006:cell:0005",
+                "shared/source:0011:row:0013:cell:0000",
+                "shared/source:0011:row:0013:cell:0005"
+              ],
+              "term_ids": [
+                "t_open_2018",
+                "t_end_2018",
+                "t_net_change"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_program",
+              "operation": "none",
+              "predicate": "decision",
+              "proposition_ids": [
+                "p_program"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_net_change"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_answer",
+              "operation": "none",
+              "predicate": "answer",
+              "proposition_ids": [
+                "p_program"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_net_change"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0000",
+                  "end": 35,
+                  "quote": "other comprehensive income ( loss )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0001",
+                  "end": 4,
+                  "quote": "2014",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0002",
+                  "end": 12,
+                  "quote": "-253 ( 253 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0003",
+                  "end": 3,
+                  "quote": "210",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0004",
+                  "end": 8,
+                  "quote": "-3 ( 3 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0012:cell:0005",
+                  "end": 10,
+                  "quote": "-46 ( 46 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0000:observation",
+                  "end": 1572,
+                  "quote": "comprehensive income ( loss )\", \"2014\", \"-253 ( 253 )\", \"210\", \"-3 ( 3 )\", \"-46 ( 46 )\"], [\"december 29 2018\", \"$ 2014\", \"$ -123 ( 123 )\", \"$ -818 ( 818 )\", \"$ -33 ( 33 )\", \"$ -974 ( 974 )\"]], ",
+                  "start": 1379
+                }
+              ],
+              "node_id": "n_oci_row_2018",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p_oci_2018_row"
+              ],
+              "source_doc_ids": [
+                "shared/source:0011:row:0012:cell:0000",
+                "shared/source:0011:row:0012:cell:0001",
+                "shared/source:0011:row:0012:cell:0002",
+                "shared/source:0011:row:0012:cell:0003",
+                "shared/source:0011:row:0012:cell:0004",
+                "shared/source:0011:row:0012:cell:0005"
+              ],
+              "term_ids": [
+                "t_oci_2018"
+              ]
+            },
+            {
+              "accepted": false,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0000",
+                  "end": 16,
+                  "quote": "december 30 2017",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0006:cell:0005",
+                  "end": 3,
+                  "quote": "862",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0000",
+                  "end": 16,
+                  "quote": "december 29 2018",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0011:row:0013:cell:0005",
+                  "end": 14,
+                  "quote": "$ -974 ( 974 )",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/event:0001:observation",
+                  "end": 105,
+                  "quote": "{\"output\": {\"program\": \"subtract(-974, -928)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_claim_net_change",
+              "operation": "none",
+              "predicate": "decision",
+              "proposition_ids": [
+                "p_net_change_claim"
+              ],
+              "source_doc_ids": [
+                "shared/source:0011:row:0012:cell:0000",
+                "shared/source:0011:row:0012:cell:0001",
+                "shared/source:0011:row:0012:cell:0002",
+                "shared/source:0011:row:0012:cell:0003",
+                "shared/source:0011:row:0012:cell:0004",
+                "shared/source:0011:row:0012:cell:0005"
+              ],
+              "term_ids": [
+                "t_oci_2018"
+              ]
+            }
+          ]
+        },
+        "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+        "updates": [],
+        "v_trace": "invalid"
+      },
+      "terms": [
+        {
+          "attribute": "accumulated other comprehensive income (loss) opening balance",
+          "period": "opening balance as of December 31, 2017",
+          "source_doc_ids": [
+            "shared/source:0011:row:0006:cell:0000",
+            "shared/source:0011:row:0006:cell:0005"
+          ],
+          "subject": "Intel",
+          "term_id": "t_open_2018",
+          "unit": "USD millions",
+          "value": "-928"
+        },
+        {
+          "attribute": "accumulated other comprehensive income (loss) ending balance",
+          "period": "December 29, 2018",
+          "source_doc_ids": [
+            "shared/source:0011:row:0013:cell:0000",
+            "shared/source:0011:row:0013:cell:0005"
+          ],
+          "subject": "Intel",
+          "term_id": "t_end_2018",
+          "unit": "USD millions",
+          "value": "-974"
+        },
+        {
+          "attribute": "net change in accumulated other comprehensive income (loss)",
+          "period": "2018",
+          "source_doc_ids": [
+            "shared/source:0011:row:0006:cell:0000",
+            "shared/source:0011:row:0006:cell:0005",
+            "shared/source:0011:row:0013:cell:0000",
+            "shared/source:0011:row:0013:cell:0005"
+          ],
+          "subject": "Intel",
+          "term_id": "t_net_change",
+          "unit": "USD millions",
+          "value": "-1836"
+        },
+        {
+          "attribute": "other comprehensive income (loss) total row",
+          "period": "2018",
+          "source_doc_ids": [
+            "shared/source:0011:row:0012:cell:0000",
+            "shared/source:0011:row:0012:cell:0001",
+            "shared/source:0011:row:0012:cell:0002",
+            "shared/source:0011:row:0012:cell:0003",
+            "shared/source:0011:row:0012:cell:0004",
+            "shared/source:0011:row:0012:cell:0005"
+          ],
+          "subject": "Intel",
+          "term_id": "t_oci_2018",
+          "unit": "USD millions",
+          "value": "-46"
+        }
+      ]
+    },
+    "positive_target_mask": [
+      {
+        "component": "action",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:action:0000:arguments",
+        "end": 24,
+        "label": "approved",
+        "quote": "{\"source_id\": \"table:0\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+        "end": 95,
+        "label": "approved",
+        "quote": "R: The question asks for the net change in accumulated other comprehensive income during 2018. ",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+        "end": 235,
+        "label": "unknown",
+        "quote": "The table shows \"other comprehensive income (loss)\" for 2018 is -46 (in millions), with the ending balance at december 29 2018 being -974.\n\n",
+        "start": 95
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0000:content",
+        "end": 308,
+        "label": "approved",
+        "quote": "U: Let me verify by reading the table source to confirm the relevant row.",
+        "start": 235
+      },
+      {
+        "component": "final",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:action:0000:arguments",
+        "end": 35,
+        "label": "approved",
+        "quote": "{\"program\": \"subtract(-974, -928)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+        "end": 364,
+        "label": "unknown",
+        "quote": "R: The 2018 \"other comprehensive income (loss)\" total row is -46. This equals the net change in accumulated other comprehensive income during 2018 (opening -928 → ending -974 gives -46, confirming).\n\nU: The net change is the 2018 total OCI of -46, which is a subtract-implied value. I'll express it as the row's total. Using the table, the value is directly -46.\n\n",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de/turn:0001:content",
+        "end": 372,
+        "label": "nonassertive_context",
+        "quote": "Q: None.",
+        "start": 364
+      }
+    ],
+    "raw_review_sha256": "0648f442e022f228996ce16fdb0f769a15dd68205095c5f25a27be4f55616f94",
+    "reported_v_trace": "invalid",
+    "requires_second_review_and_task_alignment": true,
+    "reviewer": 0,
+    "schema": "v6_slot_review.v5",
+    "semantic_consistent": true,
+    "semantic_repair_performed": false,
+    "semantic_validation_error": null,
+    "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+    "strict_format_is_semantic_correctness": false,
+    "strict_tool_sha256": "21f0a1c52ce82d2fff3be29a23fd490d47191dcce9e42757a95d642629e3636d",
+    "task_bundle_sha256": "2f384cc1fcfe615edc369aef42176747ecfee555a091b8d86efb3fc470ca95e2",
+    "task_id": "INTC/2018/page_105.pdf-2",
+    "terms": {
+      "t_end_2018": {
+        "attribute": "accumulated other comprehensive income (loss) ending balance",
+        "period": "December 29, 2018",
+        "source_doc_ids": [
+          "shared/source:0011:row:0013:cell:0000",
+          "shared/source:0011:row:0013:cell:0005"
+        ],
+        "subject": "Intel",
+        "unit": "USD millions",
+        "value": "-974"
+      },
+      "t_net_change": {
+        "attribute": "net change in accumulated other comprehensive income (loss)",
+        "period": "2018",
+        "source_doc_ids": [
+          "shared/source:0011:row:0006:cell:0000",
+          "shared/source:0011:row:0006:cell:0005",
+          "shared/source:0011:row:0013:cell:0000",
+          "shared/source:0011:row:0013:cell:0005"
+        ],
+        "subject": "Intel",
+        "unit": "USD millions",
+        "value": "-1836"
+      },
+      "t_oci_2018": {
+        "attribute": "other comprehensive income (loss) total row",
+        "period": "2018",
+        "source_doc_ids": [
+          "shared/source:0011:row:0012:cell:0000",
+          "shared/source:0011:row:0012:cell:0001",
+          "shared/source:0011:row:0012:cell:0002",
+          "shared/source:0011:row:0012:cell:0003",
+          "shared/source:0011:row:0012:cell:0004",
+          "shared/source:0011:row:0012:cell:0005"
+        ],
+        "subject": "Intel",
+        "unit": "USD millions",
+        "value": "-46"
+      },
+      "t_open_2018": {
+        "attribute": "accumulated other comprehensive income (loss) opening balance",
+        "period": "opening balance as of December 31, 2017",
+        "source_doc_ids": [
+          "shared/source:0011:row:0006:cell:0000",
+          "shared/source:0011:row:0006:cell:0005"
+        ],
+        "subject": "Intel",
+        "unit": "USD millions",
+        "value": "-928"
+      }
+    },
+    "v_trace": "invalid",
+    "wire_protocol": "v6_slot_review.v5"
+  }
+}

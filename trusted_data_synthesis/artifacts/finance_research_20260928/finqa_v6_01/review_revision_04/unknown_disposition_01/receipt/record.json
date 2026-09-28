@@ -1,0 +1,69 @@
+{
+  "actual_charge_known": false,
+  "actual_usage_known": false,
+  "at_unix": 1790613135.1152422,
+  "authorization_evidence": {
+    "actual_usage_known": false,
+    "authorization_record_id": "b5c667232186bad33049f5c6ad241fd52f25bdcd9495aea0e0c7343f99fab2e3",
+    "original_800_CNY_cap_unchanged": true,
+    "user_response": "预算充足，整体仍有七百左右的预算"
+  },
+  "authorization_id": "b5c667232186bad33049f5c6ad241fd52f25bdcd9495aea0e0c7343f99fab2e3",
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "expected_halt_reason": "review transport response or usage unknown",
+  "expected_request_sha256": "d8d1b10f146eb9d1e66339cb57a20c74412dc21fb274f8824c7d1ad989c7f58a",
+  "future_calls_within_original_cap_only": true,
+  "id": "4846587e20af9546f899cc4c06e2d8a9ff863801d9236195e636085bbc61de3d",
+  "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+  "original_halt": {
+    "at_unix": 1790611893.7751684,
+    "evidence": {
+      "automatic_retry": false,
+      "billing_usage_known": false,
+      "budget_coordinates": {
+        "attempt_index": 1,
+        "episode_id": "v6d3-slot:655de443c02fcf2b43ba1dc6a51fe40d86ee4714d3213c32bbcb8e0456dd6cd7",
+        "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+        "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+        "turn_index": 0
+      },
+      "budget_invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+      "endpoint": "https://api.deepseek.com/beta/chat/completions",
+      "exception_type": "RemoteProtocolError",
+      "request_sha256": "d8d1b10f146eb9d1e66339cb57a20c74412dc21fb274f8824c7d1ad989c7f58a",
+      "reservation_retained": true,
+      "review_request_metadata_sha256": "ee99b40ae437f5dafa245c0f4a6db08ac2d3bd0812a7d43e0644798c2759963c",
+      "reviewer": 1,
+      "rubric_sha256": "ad1d81fe9fe8c66a89daab73beb7ec6b911a05a08edabb4fe5379d5f8b4fe2a8",
+      "semantic_review_request_sha256": "ee99b40ae437f5dafa245c0f4a6db08ac2d3bd0812a7d43e0644798c2759963c",
+      "service_response_received": false,
+      "strict_tool_sha256": "6ae682e4d63f3cd67494348c0a080d5ad7acfe185cb82d6ea1835d8ba64db2b6",
+      "task_bundle_sha256": "2f384cc1fcfe615edc369aef42176747ecfee555a091b8d86efb3fc470ca95e2",
+      "wire_protocol": "v6_slot_review.v4"
+    },
+    "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+    "reason": "review transport response or usage unknown"
+  },
+  "original_unknown_record_sha256": "bd775b3e046835b19ceb938d2243b145614c8a1f080907a052a5db408dfd6f13",
+  "original_unknown_state_preserved": true,
+  "permanent_reserved_microcny": 2228224,
+  "preserved_counters": {
+    "completion_tokens": 9327386,
+    "dispatched": 18918,
+    "held": 2228224,
+    "hit_tokens": 61501562,
+    "miss_tokens": 20971341,
+    "pending": 0,
+    "prompt_tokens": 82472903,
+    "requests": 18918,
+    "singleton": 1,
+    "spent": 119030706,
+    "unknown": 1
+  },
+  "reason": "user authorized continuation; exact unbilled call permanently abandoned with full hold",
+  "replacement_call_authorized": false,
+  "reservation_released": false,
+  "retry_authorized": false,
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v6_unknown_abandonment.v1"
+}

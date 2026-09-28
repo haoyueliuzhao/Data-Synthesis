@@ -1,0 +1,9 @@
+{
+  "derived": null,
+  "error": "v5 interface KeyError: 'terms'",
+  "error_kind": "mechanical_interface",
+  "interface_admitted": false,
+  "semantic_consistent": false,
+  "v_trace": "unknown",
+  "validation": null
+}

@@ -1,0 +1,9 @@
+{
+  "derived": null,
+  "error": "slot interface ValidationError: 1 validation error for NonassertiveSlotOutput\nsemantic_graph.edges_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='n/a', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+  "error_kind": "mechanical_interface",
+  "interface_admitted": false,
+  "semantic_consistent": false,
+  "v_trace": "unknown",
+  "validation": null
+}

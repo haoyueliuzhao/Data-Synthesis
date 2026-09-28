@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-28T16:33:07.858672+00:00",
+  "budget": {
+    "acknowledged_unknown_held_microcny": 2228224,
+    "acknowledged_unknown_requests": 1,
+    "actual_cache_hit_tokens_settled": 61501562,
+    "actual_cache_miss_tokens_settled": 20971341,
+    "actual_completion_tokens_settled": 9327386,
+    "actual_prompt_tokens_settled": 82472903,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "exposure_microcny": 121258930,
+    "exposure_warning_reached": false,
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 2228224,
+    "pending_requests": 0,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 678741070,
+    "request_cap": 258000,
+    "requests_dispatched": 18918,
+    "requests_reserved": 18918,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 119030706,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 1,
+    "warning_microcny": 700000000,
+    "warning_reached": false
+  },
+  "id": "d5b337ac351430f000ff7019ce6476111f9ca0b7cb9cef4492fb6d8b7c279e37",
+  "protocol_id": "bd4b13a7d86001261b0e711f171c319dafa70d9698bac7124179a7a5740b5415"
+}
