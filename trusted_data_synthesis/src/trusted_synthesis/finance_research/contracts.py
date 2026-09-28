@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -85,10 +86,10 @@ class TaskBundle(Record):
 
 class RunConfig(Record):
     harness_id: str = "bigfinance-derived-vtdo-v2"
-    local_tool_protocol: Literal["qwen2.5-native-tool-call-v1", "legacy-json-v1"] = (
-        "qwen2.5-native-tool-call-v1"
-    )
-    submission_profile: Literal["original", "finqa_program_v1"] = "original"
+    local_tool_protocol: Literal[
+        "qwen2.5-native-tool-call-v1", "legacy-json-v1", "direct-json-v1"
+    ] = "qwen2.5-native-tool-call-v1"
+    submission_profile: Literal["original", "finqa_program_v1", "finqa_program_v2"] = "original"
     max_steps: int = Field(default=32, ge=1, le=256)
     max_new_tokens: int = Field(default=2048, ge=1)
     context_limit: int = Field(default=24576, ge=1)
@@ -156,6 +157,11 @@ class ToolEvent(Record):
     raw_output: Any
     visible_output: str
     is_error: bool = False
+    result_handle: str | None = None
+    invocation_id: str | None = None
+    reference_protocol: Literal["technical-call-id-v1", "visible-result-handle-v2"] = (
+        "technical-call-id-v1"
+    )
 
 
 class CallSettlement(Record):
@@ -210,3 +216,49 @@ class ProviderCallError(RuntimeError):
         self.settlement = settlement
         self.evidence = evidence
         self.actual_model_calls = actual_model_calls
+
+
+def invocation_scope(context: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Invocation coordinates, never an identity inferred from generated content.
+
+    Production callers pass registered run/episode/attempt. Standalone diagnostic
+    fixtures receive a new UUID scope each time and cannot impersonate a run.
+    """
+    if context is None:
+        return {
+            "run_id": "ephemeral:" + uuid.uuid4().hex,
+            "episode_id": "ephemeral:" + uuid.uuid4().hex,
+            "attempt_index": 0,
+        }
+    if not isinstance(context, dict):
+        raise TypeError("invocation_context must be a mapping")
+    attempt = context.get("attempt_index", context.get("attempt", 0))
+    if "attempt" in context and "attempt_index" in context and context["attempt"] != attempt:
+        raise ValueError("conflicting invocation attempt coordinates")
+    if (
+        type(attempt) is not int
+        or attempt < 0
+        or any(
+            not isinstance(context.get(key), str) or not context[key]
+            for key in ("run_id", "episode_id")
+        )
+    ):
+        raise ValueError("invocation scope requires run_id, episode_id and nonnegative attempt")
+    return {
+        "run_id": context["run_id"],
+        "episode_id": context["episode_id"],
+        "attempt_index": attempt,
+    }
+
+
+def invocation_identity(scope: dict[str, Any], *, turn_index: int, tool_index: int | None = None):
+    """Digest registered coordinates, not output/request or model-parameter bytes."""
+    scope = invocation_scope(scope)
+    if type(turn_index) is not int or turn_index < 0:
+        raise ValueError("invocation turn_index must be nonnegative")
+    if tool_index is not None and (type(tool_index) is not int or tool_index < 0):
+        raise ValueError("invocation tool_index must be nonnegative")
+    coordinates = {**scope, "turn_index": turn_index}
+    if tool_index is not None:
+        coordinates["tool_index"] = tool_index
+    return {**coordinates, "invocation_id": "invocation:" + digest(coordinates)}

@@ -302,6 +302,28 @@ def test_legacy_provider_does_not_inject_native_tools_or_parse_old_loop_output()
     assert canonical_assistant_message(turn) == {"role": "assistant", "content": raw}
 
 
+def test_direct_provider_keeps_raw_submission_and_never_injects_or_executes_tools():
+    local = provider()
+    raw = '{"answer":"3","scale":"","program":"add(1, 2)"}'
+    local.tokenizer.decode = lambda ids, **kwargs: raw
+    config = RunConfig(local_tool_protocol="direct-json-v1", temperature=0, max_steps=1)
+    messages = [
+        {"role": "system", "content": "Submit one strict JSON object."},
+        {"role": "user", "content": "Original public task"},
+    ]
+    turn = asyncio.run(local.chat(messages, [], config))
+    assert "tools" not in local.tokenizer.template_kwargs
+    assert local.tokenizer.messages == messages
+    assert turn.raw_text == raw and turn.tool_calls == ()
+    assert turn.receipt.raw_generated_token_ids == (3, 2) and turn.receipt.actual_eos
+    assert (
+        turn.provider_metadata["tool_schemas_rendered_by"] == "direct_public_submission_prompt_only"
+    )
+    with pytest.raises(ValueError, match="no tools"):
+        asyncio.run(local.chat(messages, [{"type": "function"}], config))
+    assert local.actual_model_calls == 1
+
+
 @pytest.mark.parametrize("bad_arguments", ["{broken", '{"x":1,"x":2}', '{"x":NaN}', "[]", None])
 def test_api_fully_accounted_tool_format_error_is_retained_model_failure(bad_arguments):
     function = {"name": "read_source"}

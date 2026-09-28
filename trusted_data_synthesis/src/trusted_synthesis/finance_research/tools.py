@@ -14,7 +14,10 @@ import re
 from decimal import Decimal, DecimalException, localcontext
 from typing import Any
 
-from .contracts import PublicTask, ToolCall, ToolEvent
+from .contracts import PublicTask, ToolCall, ToolEvent, invocation_identity, invocation_scope
+
+LEGACY_REFERENCE_PROTOCOL = "technical-call-id-v1"
+VISIBLE_REFERENCE_PROTOCOL = "visible-result-handle-v2"
 
 
 class ToolInputError(ValueError):
@@ -220,10 +223,42 @@ TOOL_SPECS: list[dict[str, Any]] = [
 ]
 
 
+def tool_specs(reference_protocol=LEGACY_REFERENCE_PROTOCOL):
+    """New model-facing grammar is versioned; the legacy specifications stay intact."""
+    if reference_protocol not in {LEGACY_REFERENCE_PROTOCOL, VISIBLE_REFERENCE_PROTOCOL}:
+        raise ValueError("unknown tool reference protocol")
+    specs = copy.deepcopy(TOOL_SPECS)
+    if reference_protocol == VISIBLE_REFERENCE_PROTOCOL:
+        for tool in specs:
+            name = tool["function"]["name"]
+            if name == "calculate":
+                tool["function"]["description"] = (
+                    "Bounded decimal scalar arithmetic: +, -, *, /, **, parentheses and variables. "
+                    "Place a complete prev:rN.output.<path> reference only in variables values, "
+                    "never inside expression. rN must name a previous successful tool result "
+                    "visible in this session. No functions, table operators, unit/comma repair "
+                    "or FinQA #k notation are accepted here."
+                )
+            elif name == "final_answer":
+                tool["function"]["description"] = (
+                    "Submit answer and predicted FinQA program and terminate. Answer may be a "
+                    "complete prev:rN.output.<path> reference to a successful result in this "
+                    "session. FinQA program is a separate linear DSL: never use tool handles "
+                    "inside program. Scale is separate. No expected answer is returned."
+                )
+    return specs
+
+
 class PublicToolSession:
     """Per-episode state containing ONLY public sources and real successful outputs."""
 
-    def __init__(self, task: PublicTask):
+    def __init__(
+        self,
+        task: PublicTask,
+        *,
+        reference_protocol=LEGACY_REFERENCE_PROTOCOL,
+        invocation_context=None,
+    ):
         if not isinstance(task, PublicTask):
             raise TypeError("PublicToolSession requires a PublicTask, not a bundle/reference")
         self.sources = {source.source_id: source for source in task.sources}
@@ -231,6 +266,13 @@ class PublicToolSession:
             raise ValueError("public source IDs must be unique")
         self.outputs: dict[str, Any] = {}
         self.seen_call_ids: set[str] = set()
+        if reference_protocol not in {LEGACY_REFERENCE_PROTOCOL, VISIBLE_REFERENCE_PROTOCOL}:
+            raise ValueError("unknown tool reference protocol")
+        self.reference_protocol = reference_protocol
+        self.invocation_scope = invocation_scope(invocation_context)
+        self.events_by_handle: dict[str, ToolEvent] = {}
+        self._invocation_ids: set[str] = set()
+        self._tool_attempts = 0
 
     def _resolve(self, value: Any, depth: int = 0) -> Any:
         if depth > 32:
@@ -243,6 +285,10 @@ class PublicToolSession:
             return value
         target = value[5:]
         call_id, separator, path = target.partition(".")
+        if self.reference_protocol == VISIBLE_REFERENCE_PROTOCOL and (
+            re.fullmatch(r"r[1-9][0-9]*", call_id) is None or not path.startswith("output.")
+        ):
+            raise ToolInputError("reference must use prev:rN.output.<path> in this session")
         if not separator or not path or call_id not in self.outputs:
             raise ToolInputError(
                 "reference must identify a previous successful call and output path"
@@ -257,17 +303,54 @@ class PublicToolSession:
                 raise ToolInputError("reference path does not exist in the actual previous output")
         return copy.deepcopy(result)
 
-    def execute(self, call: ToolCall) -> ToolEvent:
+    def execute(self, call: ToolCall, *, invocation_id: str | None = None) -> ToolEvent:
+        new_protocol = self.reference_protocol == VISIBLE_REFERENCE_PROTOCOL
+        result_handle = f"r{self._tool_attempts + 1}" if new_protocol else None
+        actual_invocation = (
+            invocation_id
+            or invocation_identity(
+                self.invocation_scope, turn_index=self._tool_attempts, tool_index=0
+            )["invocation_id"]
+        )
+        if new_protocol and (
+            not isinstance(actual_invocation, str)
+            or not actual_invocation
+            or actual_invocation in self._invocation_ids
+        ):
+            raise ValueError("one invocation identity cannot execute twice in a tool session")
+        self._invocation_ids.add(actual_invocation)
+        self._tool_attempts += 1
         normalized: dict[str, Any] = {}
         executed: dict[str, Any] = {}
         try:
-            if not call.call_id or "." in call.call_id or call.call_id in self.seen_call_ids:
+            if not call.call_id or (
+                not new_protocol and ("." in call.call_id or call.call_id in self.seen_call_ids)
+            ):
                 raise ToolInputError("tool call ID must be nonempty, dot-free, and unique")
             self.seen_call_ids.add(call.call_id)
             normalized = _strict_object(call.raw_arguments)
             if _json(normalized) != _json(call.arguments):
                 raise ToolInputError("raw and provider-parsed arguments disagree")
-            executed = self._resolve(normalized)
+            if new_protocol:
+                # Only the declared argument positions accept tool references.
+                # The linear FinQA DSL is recorded literally, never substituted.
+                if call.name == "calculate":
+                    executed = copy.deepcopy(normalized)
+                    if (
+                        isinstance(normalized.get("expression"), str)
+                        and "prev:" in normalized["expression"]
+                    ):
+                        raise ToolInputError("put result references in variables, not expression")
+                    if "variables" in normalized:
+                        executed["variables"] = self._resolve(normalized["variables"])
+                elif call.name == "final_answer":
+                    executed = copy.deepcopy(normalized)
+                    if "answer" in normalized:
+                        executed["answer"] = self._resolve(normalized["answer"])
+                else:
+                    executed = self._resolve(normalized)
+            else:
+                executed = self._resolve(normalized)
             if call.name == "list_sources":
                 _fields(executed, set())
                 output = {
@@ -289,18 +372,40 @@ class PublicToolSession:
                 output = _final_answer(executed)
             else:
                 raise ToolInputError(f"unknown tool: {call.name}")
-            self.outputs[call.call_id] = copy.deepcopy(output)
+            if new_protocol:
+                self.outputs[result_handle] = {
+                    "result_handle": result_handle,
+                    "status": "ok",
+                    "output": copy.deepcopy(output),
+                }
+            else:
+                self.outputs[call.call_id] = copy.deepcopy(output)
             is_error = False
         except (ToolInputError, ValueError, TypeError, OverflowError, RecursionError) as error:
             output = {"error": type(error).__name__, "message": str(error)}
             is_error = True
-        return ToolEvent(
+        envelope = (
+            {
+                "result_handle": result_handle,
+                "status": "error" if is_error else "ok",
+                "output": output,
+            }
+            if new_protocol
+            else output
+        )
+        event = ToolEvent(
             call_id=call.call_id,
             name=call.name,
             raw_arguments=call.raw_arguments,
             normalized_arguments=normalized,
             executed_arguments=executed,
             raw_output=output,
-            visible_output=_json(output),
+            visible_output=_json(envelope),
             is_error=is_error,
+            result_handle=result_handle,
+            invocation_id=actual_invocation if new_protocol else None,
+            reference_protocol=self.reference_protocol,
         )
+        if new_protocol:
+            self.events_by_handle[result_handle] = event
+        return event

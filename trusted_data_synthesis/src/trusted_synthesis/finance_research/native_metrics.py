@@ -20,8 +20,8 @@ from typing import Any
 from .contracts import TaskBundle, digest
 from .profiles import (
     FINQA_OPERATORS,
+    FINQA_PROFILE_IDS,
     MODEL_TERMINAL_REASONS,
-    PUBLIC_PROFILE_ID,
     profile_definition,
 )
 
@@ -222,7 +222,7 @@ def score_native(
 ) -> dict[str, Any]:
     """Return separate native metrics and project diagnostics.
 
-    New FinQA runs explicitly declare ``submission_profile='finqa_program_v1'``
+    FinQA runs explicitly declare ``finqa_program_v1`` or ``finqa_program_v2``
     and supply actual terminal/settlement evidence. That profile counts missing
     or invalid model predictions as zero, but never converts unknown calls,
     dependency errors or reference contradictions into zeros. Omitting a profile
@@ -236,7 +236,7 @@ def score_native(
     dataset = bundle.public.dataset
     if submission_profile is not None:
         profile_definition(submission_profile)
-        if dataset != "finqa" or submission_profile != PUBLIC_PROFILE_ID:
+        if dataset != "finqa" or submission_profile not in FINQA_PROFILE_IDS:
             raise ValueError("native scoring profile does not match dataset")
     output = {
         "dataset": dataset,

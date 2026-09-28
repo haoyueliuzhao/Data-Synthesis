@@ -318,12 +318,16 @@ class LocalTorchProvider:
             rendered = self.tokenizer.apply_chat_template(
                 actual_messages, tools=tools, tokenize=False, add_generation_prompt=True
             )
-        elif protocol == "legacy-json-v1":
+        elif protocol in {"legacy-json-v1", "direct-json-v1"}:
             if any(
                 message.get("tool_calls") or message.get("role") == "tool"
                 for message in actual_messages
             ):
-                raise ValueError("legacy history must contain raw assistant JSON and user feedback")
+                raise ValueError(
+                    "plain JSON history cannot contain structured tool calls or tool feedback"
+                )
+            if protocol == "direct-json-v1" and tools:
+                raise ValueError("Direct-DSL permits no tools")
             # H0 owns the complete old JSON grammar and schemas in its system prompt.
             # Supplying tools here would silently inject the incompatible native grammar.
             rendered = self.tokenizer.apply_chat_template(
@@ -509,6 +513,8 @@ class LocalTorchProvider:
                     "native_chat_template_only"
                     if protocol == QWEN_TOOL_PROTOCOL
                     else "legacy_system_prompt_only"
+                    if protocol == "legacy-json-v1"
+                    else "direct_public_submission_prompt_only"
                 ),
             },
         )

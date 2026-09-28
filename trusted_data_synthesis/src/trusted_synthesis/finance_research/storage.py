@@ -220,6 +220,8 @@ async def execute_run(root, provider):
         config = RunConfig.model_validate(run["config"])
         if config.harness_id == "fixed-kernel-finqa-compat-v1":
             from .legacy_harness import run_episode
+        elif config.harness_id == "finqa-direct-dsl-v1":
+            from .direct_harness import run_episode
         if provider.identity.model_dump(mode="json") != run["provider"]:
             raise ValueError("provider differs from registered model/parameter identity")
         manifest, tasks, lineages = load_public_snapshot(run["snapshot"])
@@ -237,7 +239,14 @@ async def execute_run(root, provider):
                 episode = Episode.model_validate_json(path.read_bytes())
             else:
                 sink = EventSink(root / "events" / episode_id)
-                episode = await run_episode(by_key[key], provider, config, sink=sink)
+                invocation = {}
+                if config.harness_id in {"bigfinance-derived-vtdo-v3", "finqa-direct-dsl-v1"}:
+                    invocation["invocation_context"] = {
+                        "run_id": run["id"],
+                        "episode_id": episode_id,
+                        "attempt": 1,
+                    }
+                episode = await run_episode(by_key[key], provider, config, sink=sink, **invocation)
                 write_immutable_artifact_directory(
                     path.parent, {"episode.json": encode(episode.model_dump(mode="json"))}
                 )

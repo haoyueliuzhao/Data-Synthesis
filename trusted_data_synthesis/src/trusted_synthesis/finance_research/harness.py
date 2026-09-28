@@ -26,12 +26,22 @@ from .contracts import (
     PublicTask,
     RunConfig,
     digest,
+    invocation_identity,
+    invocation_scope,
 )
 from .providers import canonical_assistant_message
 from .settlement import calls_settled, counter_delta, failed_call
-from .tools import TOOL_SPECS, PublicToolSession
+from .tools import (
+    LEGACY_REFERENCE_PROTOCOL,
+    VISIBLE_REFERENCE_PROTOCOL,
+    PublicToolSession,
+)
+from .tools import (
+    tool_specs as versioned_tool_specs,
+)
 
-HARNESS_ID = "bigfinance-derived-vtdo-v2"
+HARNESS_ID = "bigfinance-derived-vtdo-v3"
+LEGACY_HARNESS_ID = "bigfinance-derived-vtdo-v2"
 UPSTREAM_COMMIT = "d794a65fe583edc6852b44c817b0a2aef33ca831"
 EventSink = Callable[[dict[str, Any]], None | Awaitable[None]]
 SYSTEM_PROMPT = """You solve the supplied financial question using only its public sources.
@@ -47,6 +57,29 @@ Do not assume a tool returning successfully proves the financial answer is corre
 There are no network, filesystem, arbitrary Python, answer-checking, or oracle tools.
 No hidden retry, continue, summary, repair, or history compaction is performed.
 """
+SYSTEM_PROMPT_V3 = SYSTEM_PROMPT.replace(
+    "Structured arguments can refer to successful prior tool output using\n"
+    "prev:<call_id>.<dot.path>, with numeric path components for list indices.",
+    'Tool content explicitly contains {"result_handle":"rN","status":"ok" or "error",'
+    '"output":...}. Only previous status="ok" results in this session may be referenced\n'
+    "with prev:rN.output.<path>; numeric path components index lists. Put each reference\n"
+    "as a whole variables value for calculate, or an answer value for final_answer.\n"
+    "calculate.expression is scalar arithmetic over variable names, not reference syntax\n"
+    "and not the FinQA DSL. final_answer.program is a separate linear FinQA program;\n"
+    "never put prev references inside it. Do not invent handles or reference other sessions.\n"
+    "The initial sources remain available: list_sources or read_source is not mandatory.",
+)
+
+
+def _invocation_evidence(evidence, invocation):
+    """Preserve provider evidence verbatim even if a reserved metadata name collides."""
+    result = copy.deepcopy(evidence)
+    if "harness_invocation" in result or "invocation_id" in result:
+        result["provider_evidence_before_harness_invocation"] = copy.deepcopy(evidence)
+    result["harness_invocation"] = copy.deepcopy(invocation)
+    # Keep provider-owned scalar fields intact. The namespace is authoritative.
+    result.setdefault("invocation_id", invocation["invocation_id"])
+    return result
 
 
 async def run_episode(
@@ -55,6 +88,7 @@ async def run_episode(
     config: RunConfig | None = None,
     *,
     sink: EventSink | None = None,
+    invocation_context: dict[str, Any] | None = None,
 ) -> Episode:
     """Run one public task; sink failures propagate and never trigger a model retry.
 
@@ -68,16 +102,26 @@ async def run_episode(
     if not isinstance(task, PublicTask):
         raise TypeError("run_episode accepts PublicTask only, not a TaskBundle/reference")
     config = config or RunConfig()
-    if config.harness_id != HARNESS_ID:
+    if config.harness_id not in {HARNESS_ID, LEGACY_HARNESS_ID}:
         raise ValueError(f"unsupported harness_id: {config.harness_id}")
+    revised = config.harness_id == HARNESS_ID
+    if revised and (
+        config.submission_profile != "finqa_program_v2"
+        or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
+    ):
+        raise ValueError("H1-R v3 requires finqa_program_v2 and the Qwen native tool protocol")
     if config.submission_profile != "original":
         from .profiles import public_run_view
 
         task = public_run_view(task, config.submission_profile)
-    session = PublicToolSession(task)
+    scope = invocation_scope(invocation_context) if revised else None
+    reference_protocol = VISIBLE_REFERENCE_PROTOCOL if revised else LEGACY_REFERENCE_PROTOCOL
+    session = PublicToolSession(
+        task, reference_protocol=reference_protocol, invocation_context=scope
+    )
     started = time.monotonic()
     messages: list[dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": SYSTEM_PROMPT_V3 if revised else SYSTEM_PROMPT},
         {
             "role": "user",
             "content": json.dumps(
@@ -85,8 +129,8 @@ async def run_episode(
             ),
         },
     ]
-    tool_specs = copy.deepcopy(TOOL_SPECS)
-    if config.submission_profile == "finqa_program_v1":
+    tool_specs = versioned_tool_specs(reference_protocol)
+    if config.submission_profile in {"finqa_program_v1", "finqa_program_v2"}:
         final_spec = next(tool for tool in tool_specs if tool["function"]["name"] == "final_answer")
         final_spec["function"]["parameters"]["required"] = ["answer", "program"]
         final_spec["function"]["description"] += (
@@ -114,7 +158,7 @@ async def run_episode(
             "public_task_sha256": digest(task),
             "config": config.model_dump(mode="json"),
             "provider": provider.identity.model_dump(mode="json"),
-            "harness_id": HARNESS_ID,
+            "harness_id": config.harness_id,
             "upstream_commit": UPSTREAM_COMMIT,
             "model_call_count_semantics": (
                 "provider_attempts count chat invocations; "
@@ -124,12 +168,24 @@ async def run_episode(
     )
 
     for step in range(config.max_steps):
+        invocation = (
+            {
+                **invocation_identity(scope, turn_index=step),
+                "parameter_digest": provider.identity.parameter_digest,
+                "point_id": provider.identity.point_id,
+            }
+            if revised
+            else None
+        )
         request = {
             "messages": copy.deepcopy(messages),
             "tools": copy.deepcopy(tool_specs),
             "config": config.model_dump(mode="json"),
         }
-        await emit("model_call_intent", step, {**request, "request_sha256": digest(request)})
+        intent = {**request, "request_sha256": digest(request)}
+        if revised:
+            intent = _invocation_evidence(intent, invocation)
+        await emit("model_call_intent", step, intent)
         call_count += 1
         before_call = getattr(provider, "actual_model_calls", None)
         try:
@@ -145,6 +201,10 @@ async def run_episode(
                 request_sha256=digest(request),
                 attempt_index=step,
             )
+            if revised:
+                settlement = settlement.model_copy(
+                    update={"evidence": _invocation_evidence(settlement.evidence, invocation)}
+                )
             settlements.append(settlement)
             await emit(
                 "model_call_failed",
@@ -165,6 +225,10 @@ async def run_episode(
                 request_sha256=digest(request),
                 attempt_index=step,
             )
+            if revised:
+                settlement = settlement.model_copy(
+                    update={"evidence": _invocation_evidence(settlement.evidence, invocation)}
+                )
             settlements.append(settlement)
             await emit(
                 "model_call_failed",
@@ -176,6 +240,20 @@ async def run_episode(
                 },
             )
             break
+        provider_response_digest = digest(response)
+        if revised:
+            response = response.model_copy(
+                update={
+                    "provider_metadata": _invocation_evidence(
+                        response.provider_metadata, invocation
+                    )
+                }
+            )
+        evidence = {"response_sha256": digest(response)}
+        if revised:
+            evidence = _invocation_evidence(
+                {**evidence, "provider_response_sha256": provider_response_digest}, invocation
+            )
         settlements.append(
             CallSettlement(
                 attempt_index=step,
@@ -184,7 +262,7 @@ async def run_episode(
                     before_call, getattr(provider, "actual_model_calls", None)
                 ),
                 request_sha256=digest(request),
-                evidence={"response_sha256": digest(response)},
+                evidence=evidence,
             )
         )
         turns.append(response)
@@ -215,8 +293,23 @@ async def run_episode(
             )
             break
         call = response.tool_calls[0]
-        await emit("tool_call_intent", step, call.model_dump(mode="json"))
-        event = session.execute(call)
+        tool_invocation = (
+            invocation_identity(scope, turn_index=step, tool_index=0) if revised else None
+        )
+        tool_intent = call.model_dump(mode="json")
+        if revised:
+            tool_intent = _invocation_evidence(
+                tool_intent,
+                {
+                    **tool_invocation,
+                    "parameter_digest": provider.identity.parameter_digest,
+                    "point_id": provider.identity.point_id,
+                },
+            )
+        await emit("tool_call_intent", step, tool_intent)
+        event = session.execute(
+            call, invocation_id=tool_invocation["invocation_id"] if revised else None
+        )
         events.append(event)
         await emit("tool_call_returned", step, event.model_dump(mode="json"))
         messages.append(
