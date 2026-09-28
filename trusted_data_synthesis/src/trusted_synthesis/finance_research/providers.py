@@ -157,9 +157,12 @@ def validate_structured_context(messages, tools, config: RunConfig):
     shared system/tools contract that its offline replay will expect.
     """
     from .harness import (
+        PUBLIC_REASONING_HARNESS_ID,
+        PUBLIC_REASONING_PROFILE_ID,
         STRUCTURED_HARNESS_ID,
         STRUCTURED_PROFILE_ID,
         SYSTEM_PROMPT_V4,
+        SYSTEM_PROMPT_V6,
         episode_tool_specs,
         system_message,
     )
@@ -167,8 +170,17 @@ def validate_structured_context(messages, tools, config: RunConfig):
     requested = (
         config.harness_id == STRUCTURED_HARNESS_ID
         or config.submission_profile == STRUCTURED_PROFILE_ID
+        or config.harness_id == PUBLIC_REASONING_HARNESS_ID
+        or config.submission_profile == PUBLIC_REASONING_PROFILE_ID
     )
-    new_context = bool(messages and messages[0] == {"role": "system", "content": SYSTEM_PROMPT_V4})
+    new_context = bool(
+        messages
+        and messages[0]
+        in [
+            {"role": "system", "content": SYSTEM_PROMPT_V4},
+            {"role": "system", "content": SYSTEM_PROMPT_V6},
+        ]
+    )
     if requested:
         expected = system_message(config)  # Also checks the new identity pair.
         if not messages or messages[0] != expected or tools != episode_tool_specs(config):
@@ -576,6 +588,8 @@ class DeepSeekFlashProvider:
             "max_tokens": config.max_new_tokens,
             "stream": False,
         }
+        if config.harness_id == "bigfinance-derived-vtdo-v6":
+            body["thinking"] = {"type": "disabled"}
         if tools:
             body["tools"] = copy.deepcopy(tools)
         headers = {"Authorization": "Bearer " + self._key}

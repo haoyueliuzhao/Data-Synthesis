@@ -15,8 +15,13 @@ PUBLIC_PROFILE_ID = "finqa_program_v1"
 PUBLIC_PROFILE_V2_ID = "finqa_program_v2"
 PUBLIC_PROFILE_V2 = PUBLIC_PROFILE_V2_ID
 PUBLIC_PROFILE_V3_STRUCTURED_ID = "finqa_program_v3_structured"
+PUBLIC_REASONING_PROFILE_ID = "finqa-public-reasoning-v1"
 FINQA_PROFILE_IDS = frozenset(
-    {PUBLIC_PROFILE_ID, PUBLIC_PROFILE_V2_ID, PUBLIC_PROFILE_V3_STRUCTURED_ID}
+    {
+        PUBLIC_PROFILE_ID,
+        PUBLIC_PROFILE_V2_ID,
+        PUBLIC_PROFILE_V3_STRUCTURED_ID,
+    }
 )
 MISSING_PREDICTION_POLICY = "settled_model_terminal_missing_or_invalid_prediction_is_zero_v1"
 FINQA_OPERATORS = (
@@ -105,9 +110,63 @@ def _profile_v1() -> dict[str, Any]:
 
 def profile_definition(profile_id: str = PUBLIC_PROFILE_ID) -> dict[str, Any]:
     """Return a fresh common contract, without reading tasks or private references."""
-    if profile_id not in FINQA_PROFILE_IDS:
+    # The legacy native scorer consumes FINQA_PROFILE_IDS and requires answer +
+    # program. V6 must use its independent submit-program scorer, not that path.
+    if profile_id not in FINQA_PROFILE_IDS | {PUBLIC_REASONING_PROFILE_ID}:
         raise ValueError(f"unknown submission profile: {profile_id}")
     profile = _profile_v1()
+    if profile_id == PUBLIC_REASONING_PROFILE_ID:
+        # Separate public contract, not the historical empty-content experiment.
+        dsl = deepcopy(profile["dsl"])
+        dsl["syntax"] = (
+            "Submit a nonempty string op(arg1, arg2), op(arg1, arg2), ... . "
+            "Use exactly comma-space between operands and steps; no nested calls, "
+            "token arrays, code fences, tool handles or prev: inside programs. "
+            "The last step is the program result."
+        )
+        dsl["numeric_semantics"] = (
+            "Official FinQA execution uses floating-point arithmetic and rounds the "
+            "last numeric result to five decimal places. A percent literal is divided "
+            "by 100. submit_program accepts only the predicted program, not answer or scale."
+        )
+        return {
+            "id": profile_id,
+            "dataset": "finqa",
+            "version": 1,
+            "required_final_fields": ["program"],
+            "final_submission": (
+                "Submit the original predicted program string through submit_program."
+            ),
+            "dsl": dsl,
+            "public_assistant_output": {
+                "native_tool_calls_per_response": 1,
+                "content": (
+                    "Brief public evidence/derivation summary R, "
+                    "observation update U, unresolved Q."
+                ),
+                "labels": (
+                    "R:, U:, Q: are readable suggestions, not a rigid parsing or correctness gate."
+                ),
+                "scope": "Task-relevant public explanation only, not internal private reasoning.",
+                "no_forced_behavior": (
+                    "No required error, extra verification, long explanation "
+                    "or fixed action sequence."
+                ),
+                "preserve_original": True,
+            },
+            "tools": ["list_sources", "read_source", "run_program", "submit_program"],
+            "tool_execution": (
+                "run_program executes the supplied FinQA DSL on the original public table. "
+                "It returns its computed result, never correctness or a reference answer. "
+                "submit_program records the string and terminates without execution. "
+                "A successful execution is not proof of financial correctness."
+            ),
+            "missing_prediction_policy": MISSING_PREDICTION_POLICY,
+            "model_terminal_reasons": sorted(MODEL_TERMINAL_REASONS),
+            "scoring_policy": profile["scoring_policy"],
+            "same_contract_for_all_conditions": True,
+            "contains_task_specific_reference": False,
+        }
     if profile_id == PUBLIC_PROFILE_ID:
         return profile
     profile.update(
@@ -242,6 +301,9 @@ def public_run_view(task: PublicTask, profile_id: str = PUBLIC_PROFILE_ID) -> Pu
     if "submission_profile" in task.answer_contract:
         raise ValueError("runtime view must be derived from the original public task")
     contract = deepcopy(task.answer_contract)
+    if profile_id == PUBLIC_REASONING_PROFILE_ID:
+        contract.pop("answer", None)
+        contract.pop("scale", None)
     contract.update(
         {
             "program": "required predicted FinQA DSL program; see submission_profile",

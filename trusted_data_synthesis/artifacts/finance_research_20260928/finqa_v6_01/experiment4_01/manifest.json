@@ -1,0 +1,22 @@
+{
+  "API_calls": 0,
+  "GPU_calls": 0,
+  "complete": true,
+  "files": {
+    "record.json": "df01279f9d9a841dfbe429436177197836ffa8b1c34536ab49759852c25bb196"
+  },
+  "id": "finqa_v6_experiment4_manifest:833bb49aaf767f3ee9aa26ee2aec7cdb17ed394701e3fc33c66c6e6ce8549496",
+  "mathematical_proof_is_in_document": true,
+  "model_calls": 0,
+  "no_real_trajectory_or_score_read": true,
+  "numeric_examples_are_not_proof": true,
+  "real_closed_loop_convergence": false,
+  "result_id": "finqa_v6_experiment4:97e43c1da30d7d2f1276da671b7590b523a0233de7554e42551593e951a22ccc",
+  "schema": "finqa_v6_experiment4_pure_arithmetic.v1",
+  "source_sha256": {
+    "/tmp/data-synthesis-finqa-five-arm-v6-20260928/trusted_data_synthesis/docs/finqa_v6_experiment4_math_20260928.md": "15d1c3585a5aaeb93c326db9383a432811724926ed21a53e7db1008b5686509f",
+    "/tmp/data-synthesis-finqa-five-arm-v6-20260928/trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_anchored_vtdo/distribution.py": "26e782cdbd081993294c4d1c2b96d5d80f3c240fbeb51018b1e89843d12175de",
+    "/tmp/data-synthesis-finqa-five-arm-v6-20260928/trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_anchored_vtdo/protocol.py": "56ccfa43086ce89f1e23b669229186bdf52fba3fcdb1f4f8393674522ec36f79",
+    "/tmp/data-synthesis-finqa-five-arm-v6-20260928/trusted_data_synthesis/src/trusted_synthesis/finance_research/v6_distribution.py": "d292a7d4f83a6b264ad2091f083307d5abe50dc56501b23f3f9de1e82cea125d"
+  }
+}

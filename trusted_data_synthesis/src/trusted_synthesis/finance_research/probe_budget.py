@@ -24,6 +24,7 @@ HARD_CAP_MICROCNY = 800_000_000
 WARNING_MICROCNY = 700_000_000
 REQUEST_CAP = 256_000
 PURPOSE = "finqa_fixed_probe_inventory_v1"
+V6_PURPOSE = "finqa_v6_generation_and_semantic_review_v1"
 
 
 def validated_budget_limits(
@@ -219,10 +220,14 @@ class ProbeBudget:
             else ProbePriceSheet(**price_sheet),
         )
         self.max_output_tokens = max_output_tokens
-        if not isinstance(run_id, str) or not run_id or purpose != PURPOSE:
+        self.purpose = purpose
+        self.allowed_output_limits = (
+            (2048, 16384) if purpose == V6_PURPOSE else (max_output_tokens,)
+        )
+        if not isinstance(run_id, str) or not run_id or purpose not in {PURPOSE, V6_PURPOSE}:
             raise ValueError("a dedicated registered Probe run and purpose are required")
         if (
-            max_output_tokens not in (2048, 4096)
+            max_output_tokens not in ((16384,) if purpose == V6_PURPOSE else (2048, 4096))
             or max_output_tokens > self.price_sheet.official_max_output_tokens
         ):
             raise ValueError(
@@ -243,6 +248,13 @@ class ProbeBudget:
             "reservation_input_policy": "official_entire_context_at_cache_miss_price",
             "currency_scale": "1 CNY = 1000000 micro-CNY",
         }
+        if purpose == V6_PURPOSE:
+            config.update(
+                schema="probe_budget.v2",
+                allowed_output_limits=list(self.allowed_output_limits),
+                joint_generation_and_review_cap=True,
+                variable_reservation_bound_to_each_actual_request=True,
+            )
         self.config = config
         with closing(self._connect()) as connection:
             connection.executescript("""
@@ -327,7 +339,7 @@ class ProbeBudget:
         spent, held = row["spent"], row["held"]
         return {
             "run_id": self.run_id,
-            "purpose": PURPOSE,
+            "purpose": self.purpose,
             "requests_reserved": row["requests"],
             "requests_dispatched": row["dispatched"],
             "settled_tariff_microcny": spent,
@@ -379,12 +391,16 @@ class ProbeBudget:
             )
         if (
             request.get("model") != "deepseek-flash"
-            or request.get("max_tokens") != self.max_output_tokens
+            or type(request.get("max_tokens")) is not int
+            or request["max_tokens"] not in self.allowed_output_limits
             or request.get("thinking") != {"type": "disabled"}
         ):
             raise ValueError("request differs from the frozen Probe model/output/thinking contract")
         if not isinstance(request_body, bytes) or json.loads(request_body) != request:
             raise ValueError("retained public request bytes differ from the actual HTTP body")
+        reservation = self.price_sheet.cost_microcny(
+            hit=0, miss=self.price_sheet.context_input_token_ceiling, output=request["max_tokens"]
+        )
         with self._transaction() as connection:
             if connection.execute(
                 "SELECT 1 FROM requests WHERE invocation_id=?", (invocation_id,)
@@ -395,7 +411,7 @@ class ProbeBudget:
                 raise BudgetUnavailable("unknown or halted Probe ledger forbids new requests")
             if state["requests_reserved"] >= self.request_cap:
                 raise BudgetUnavailable(f"{self.request_cap}-request Probe cap exhausted")
-            if state["exposure_microcny"] + self.reservation_microcny > self.hard_cap_microcny:
+            if state["exposure_microcny"] + reservation > self.hard_cap_microcny:
                 raise BudgetUnavailable(
                     "next full official-context reservation exceeds the frozen "
                     f"{self.hard_cap_microcny} micro-CNY cap"
@@ -410,14 +426,14 @@ class ProbeBudget:
                     digest(request),
                     request_body,
                     "RESERVED",
-                    self.reservation_microcny,
+                    reservation,
                     time.time(),
                 ),
             )
             connection.execute(
                 "UPDATE counters SET requests=requests+1,pending=pending+1,held=held+? "
                 "WHERE singleton=1",
-                (self.reservation_microcny,),
+                (reservation,),
             )
             self._event(
                 connection,
@@ -425,10 +441,10 @@ class ProbeBudget:
                 "reserved",
                 {
                     "request_sha256": digest(request),
-                    "reservation_microcny": self.reservation_microcny,
+                    "reservation_microcny": reservation,
                 },
             )
-        return self.reservation_microcny
+        return reservation
 
     def mark_dispatched(self, invocation_id):
         with self._transaction() as connection:
@@ -529,13 +545,14 @@ class ProbeBudget:
         )
         with self._transaction() as connection:
             row = connection.execute(
-                "SELECT state,reserved_microcny FROM requests WHERE invocation_id=?",
+                "SELECT state,reserved_microcny,request_body FROM requests WHERE invocation_id=?",
                 (invocation_id,),
             ).fetchone()
             if row is None or row[0] != "DISPATCHED":
                 raise ValueError(
                     "settlement requires one dispatched, not previously settled request"
                 )
+            self.price_sheet.usage(usage, output_limit=json.loads(row[2])["max_tokens"])
             if amount > row[1]:
                 raise InvalidUsage(
                     "actual tariff cost exceeds the official upper-bound reservation"

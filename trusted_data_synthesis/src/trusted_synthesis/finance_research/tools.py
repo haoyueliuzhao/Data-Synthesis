@@ -252,6 +252,14 @@ def tool_specs(reference_protocol=LEGACY_REFERENCE_PROTOCOL):
 class PublicToolSession:
     """Per-episode state containing ONLY public sources and real successful outputs."""
 
+    literal_argument_tools: frozenset[str] = frozenset()
+
+    def _validate_tool_name(self, name: str):
+        """Versioned sessions may restrict their declared public tool vocabulary."""
+
+    def _execute_extra_tool(self, name: str, arguments: dict[str, Any]):
+        raise ToolInputError(f"unknown tool: {name}")
+
     def __init__(
         self,
         task: PublicTask,
@@ -331,7 +339,10 @@ class PublicToolSession:
             normalized = _strict_object(call.raw_arguments)
             if _json(normalized) != _json(call.arguments):
                 raise ToolInputError("raw and provider-parsed arguments disagree")
-            if new_protocol:
+            self._validate_tool_name(call.name)
+            if call.name in self.literal_argument_tools:
+                executed = copy.deepcopy(normalized)
+            elif new_protocol:
                 # Only the declared argument positions accept tool references.
                 # The linear FinQA DSL is recorded literally, never substituted.
                 if call.name == "calculate":
@@ -371,7 +382,7 @@ class PublicToolSession:
             elif call.name == "final_answer":
                 output = _final_answer(executed)
             else:
-                raise ToolInputError(f"unknown tool: {call.name}")
+                output = self._execute_extra_tool(call.name, executed)
             if new_protocol:
                 self.outputs[result_handle] = {
                     "result_handle": result_handle,

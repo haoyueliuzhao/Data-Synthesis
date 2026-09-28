@@ -10,7 +10,7 @@ import copy
 import hashlib
 
 from .contracts import ModelIdentity, ModelTurn, ProviderCallError, digest, invocation_identity
-from .probe_budget import InvalidUsage, ProbeBudget
+from .probe_budget import V6_PURPOSE, InvalidUsage, ProbeBudget
 from .providers import _api_messages, _json, parse_tool_calls, validate_structured_context
 from .qwen_protocol import strict_json_decoder
 
@@ -20,6 +20,7 @@ INFRA_FINISH_REASONS = {"insufficient_system_resource", "aborted"}
 PROBE_HARNESS_PROFILE_PAIRS = {
     ("bigfinance-derived-vtdo-v3", "finqa_program_v2"),
     ("bigfinance-derived-vtdo-v4", "finqa_program_v3_structured"),
+    ("bigfinance-derived-vtdo-v6", "finqa-public-reasoning-v1"),
 }
 
 
@@ -91,9 +92,14 @@ class BudgetedDeepSeekFlashProvider:
             and config.tier == "EVAL_NATIVE"
             and config.role == "sft"
             and (config.harness_id, config.submission_profile) in PROBE_HARNESS_PROFILE_PAIRS
+            and (
+                (config.harness_id == "bigfinance-derived-vtdo-v6")
+                == (self.ledger.purpose == V6_PURPOSE)
+            )
             and config.local_tool_protocol == "qwen2.5-native-tool-call-v1"
             and (config.temperature, config.top_p, config.top_k) == (1.0, 1.0, 0)
-            and config.max_new_tokens == self.ledger.max_output_tokens
+            and config.max_new_tokens in self.ledger.allowed_output_limits
+            and config.max_new_tokens in (2048, 4096)
             and config.context_limit == self.ledger.price_sheet.context_input_token_ceiling
             and config.max_steps == 32
         ):
@@ -106,7 +112,7 @@ class BudgetedDeepSeekFlashProvider:
             "messages": _api_messages(messages),
             "temperature": 1.0,
             "top_p": 1.0,
-            "max_tokens": self.ledger.max_output_tokens,
+            "max_tokens": config.max_new_tokens,
             "stream": False,
             "thinking": {"type": "disabled"},
         }
@@ -178,9 +184,7 @@ class BudgetedDeepSeekFlashProvider:
                 raise ValueError("API response is not a JSON object")
             if 200 <= status < 300 and value.get("model") != MODEL:
                 raise ValueError("API response model differs from the requested frozen model")
-            self.ledger.price_sheet.usage(
-                value.get("usage"), output_limit=self.ledger.max_output_tokens
-            )
+            self.ledger.price_sheet.usage(value.get("usage"), output_limit=config.max_new_tokens)
         except (ValueError, TypeError, UnicodeError, InvalidUsage, RecursionError) as failure:
             raise self._unknown(
                 invocation_id,
