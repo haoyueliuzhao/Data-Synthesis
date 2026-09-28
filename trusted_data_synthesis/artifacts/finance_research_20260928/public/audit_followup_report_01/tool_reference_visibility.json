@@ -1,0 +1,30 @@
+{
+  "schema": "finance_research.prev_visibility_observation.v1",
+  "protocol_id": "1f8840f9ba4cb10301fb06362d25a37357ad4e1a4d9917da02dd3736cd24921a",
+  "task_id": "ETFC/2013/page_84.pdf-1",
+  "episode_path": "jobs/base_H1_000/generation/episodes/9dfb15ee7500b760e10c590df3e57e0ef8a826319ae2a1f5b067e37979fc1e69/episode.json",
+  "episode_sha256": "b7614ffa54fe580822b13a0348af102ea30ed85bfeee32dc16a06b82430ad4e1",
+  "sampled_history_before_turn_index": 2,
+  "raw_chat_template_sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+  "provider_chat_template_digest": "2e2d2512cfe46af53dc1eed45368ecaab26ac4461c480e6b69fe571cf0ceaa75",
+  "actual_receipt_decoded_prompt_sha256": "5e3cd05ea8d22f839f672785dc25da1a72a5cc7a19f95ff2cffa5bda895211e4",
+  "decoded_prompt_roundtrip_equals_original_ids": true,
+  "prompt_tokens": 3853,
+  "successful_prior_tools": [
+    {
+      "name": "list_sources",
+      "call_id": "local:583da71edf5788ac41dc3c46f5a82a153df0d99db5648b5ecf66f94e9e1a3cf2:0",
+      "call_id_in_actual_receipt_decoded_prompt": false,
+      "call_id_in_own_visible_output": false
+    },
+    {
+      "name": "read_source",
+      "call_id": "local:bc56ad37961b6f59704933155f1f42f35d170a32fc2aacdf59f5d3f2d1276532:0",
+      "call_id_in_actual_receipt_decoded_prompt": false,
+      "call_id_in_own_visible_output": false
+    }
+  ],
+  "new_model_calls": 0,
+  "new_private_reference_reads": 0,
+  "scope": "one original H1 public history; actual prompt IDs decoded with exact roundtrip; demonstrates missing reference identity, not a causal failure attribution for all tasks"
+}
