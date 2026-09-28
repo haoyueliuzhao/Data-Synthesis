@@ -220,7 +220,7 @@ def build_registration(output, source_commit):
                 slot_requests=96,
                 alignment_requests=12,
                 included_in_formal_matrix=False,
-                cohort_type="engineering validation on retained old material, not new training data",
+                cohort_type="engineering validation on old material; not new training data",
                 requires_positive_v_trace=False,
                 minimum_interface_fraction=0.95,
                 no_output_truncation=True,
