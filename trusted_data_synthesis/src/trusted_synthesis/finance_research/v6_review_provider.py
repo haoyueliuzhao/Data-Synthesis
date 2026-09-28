@@ -17,6 +17,13 @@ from .qwen_protocol import strict_json_decoder
 
 OUTPUT_LIMIT = 16384
 STRICT_WIRE_PROTOCOL = "v6_strict_review.v2"
+STRICT_WIRE_PROTOCOLS = frozenset(
+    {
+        STRICT_WIRE_PROTOCOL,
+        "v6_slot_review.v3",
+        "v6_alignment_review.v3",
+    }
+)
 STRICT_ENDPOINT = "https://api.deepseek.com/beta/chat/completions"
 
 
@@ -39,7 +46,8 @@ def _strict_tool(request, payload):
         or parameters.get("type") != "object"
         or "output_schema" in payload
         or "strict_tool" in payload
-        or payload.get("wire_protocol") != STRICT_WIRE_PROTOCOL
+        or request.get("wire_protocol") not in STRICT_WIRE_PROTOCOLS
+        or payload.get("wire_protocol") != request["wire_protocol"]
         or request.get("strict_tool_sha256") != digest(tool)
     ):
         raise ValueError("strict submit_review schema belongs only in the bound tool declaration")
@@ -114,8 +122,8 @@ def _request_body(ledger, request):
     ):
         raise ValueError("semantic review metadata/request binding differs")
     payload = strict_json_decoder().decode(messages[1]["content"])
-    strict = request.get("wire_protocol") == STRICT_WIRE_PROTOCOL
-    compact = request.get("wire_protocol") in {"v6_compact_review.v1", STRICT_WIRE_PROTOCOL}
+    strict = request.get("wire_protocol") in STRICT_WIRE_PROTOCOLS
+    compact = request.get("wire_protocol") == "v6_compact_review.v1" or strict
     if (
         not isinstance(payload, dict)
         or payload.get("task_bundle_sha256") != request.get("task_bundle_sha256")
@@ -171,7 +179,7 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
     if not isinstance(api_key, str) or not api_key:
         raise ValueError("caller must supply an in-memory API key")
     body, reviewer = _request_body(ledger, request)
-    strict = request.get("wire_protocol") == STRICT_WIRE_PROTOCOL
+    strict = request.get("wire_protocol") in STRICT_WIRE_PROTOCOLS
     endpoint = STRICT_ENDPOINT if strict else ENDPOINT
     output_limit = body["max_tokens"]
     wire = _json(body).encode("utf-8")
@@ -191,7 +199,7 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
     )
     if strict:
         local_binding.update(
-            wire_protocol=STRICT_WIRE_PROTOCOL,
+            wire_protocol=request["wire_protocol"],
             endpoint=endpoint,
             strict_tool_sha256=digest(body["tools"][0]),
         )

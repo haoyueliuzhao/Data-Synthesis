@@ -562,7 +562,9 @@ def response_binding(artifact, request, row):
         thinking={"type": "disabled"},
         response_format={"type": "json_object"},
     )
-    strict = request.get("wire_protocol") == "v6_strict_review.v2"
+    from .v6_review_provider import STRICT_WIRE_PROTOCOLS
+
+    strict = request.get("wire_protocol") in STRICT_WIRE_PROTOCOLS
     if strict:
         expected_body.pop("response_format")
         expected_body.update(
