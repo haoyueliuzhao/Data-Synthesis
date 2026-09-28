@@ -45,6 +45,11 @@ STRUCTURED_HARNESS_ID = "bigfinance-derived-vtdo-v4"
 STRUCTURED_PROFILE_ID = "finqa_program_v3_structured"
 PUBLIC_REASONING_HARNESS_ID = "bigfinance-derived-vtdo-v6"
 PUBLIC_REASONING_PROFILE_ID = "finqa-public-reasoning-v1"
+PUBLIC_REASONING_V7_HARNESS_ID = "bigfinance-derived-vtdo-v7"
+PUBLIC_REASONING_V7_PROFILE_ID = "finqa-public-reasoning-v2"
+PUBLIC_REASONING_HARNESSES = frozenset(
+    {PUBLIC_REASONING_HARNESS_ID, PUBLIC_REASONING_V7_HARNESS_ID}
+)
 LEGACY_HARNESS_ID = "bigfinance-derived-vtdo-v2"
 UPSTREAM_COMMIT = "d794a65fe583edc6852b44c817b0a2aef33ca831"
 EventSink = Callable[[dict[str, Any]], None | Awaitable[None]]
@@ -107,6 +112,24 @@ There are no network, filesystem, arbitrary Python, gold-answer or oracle tools.
 Original responses, errors and subsequent revisions are retained without hidden
 retry, repair, summary, continuation, or history compaction.
 """
+SYSTEM_PROMPT_V7 = (
+    SYSTEM_PROMPT_V6
+    + """
+All original sources are already present; do not reread them merely for formality.
+If several source reads are useful, make one read_source call per response in
+successive turns, never simultaneous calls. No extra verification is required.
+A raw program number is not its percentage display: divide(1, 20) returns 0.05,
+which is a ratio displayed as 5%. Do not automatically append multiply by 100 just
+because a percentage sign is used. Determine ratios, percentages, percentage-point
+changes and units from the actual question and evidence. Reference scales differ
+across questions; neither multiplying by 100 nor avoiding it is a universal rule.
+Use complete linear FinQA steps with comma-space separators. A synthetic example
+is subtract(9, 4), divide(#0, const_10), yielding 0.5; #0 is the first step's result.
+For a constant result, a legal complete example is add(const_1, const_0), yielding 1.
+Never submit a bare number, a bare constant, or nested function calls as a program.
+These invented examples are syntax guidance only, not evidence for the current QA.
+"""
+)
 
 
 def _episode_version(config):
@@ -115,9 +138,18 @@ def _episode_version(config):
         LEGACY_HARNESS_ID,
         STRUCTURED_HARNESS_ID,
         PUBLIC_REASONING_HARNESS_ID,
+        PUBLIC_REASONING_V7_HARNESS_ID,
     }:
         raise ValueError(f"unsupported harness_id: {config.harness_id}")
-    if config.harness_id == PUBLIC_REASONING_HARNESS_ID:
+    if config.harness_id == PUBLIC_REASONING_V7_HARNESS_ID:
+        if (
+            config.submission_profile != PUBLIC_REASONING_V7_PROFILE_ID
+            or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
+        ):
+            raise ValueError("H1-R v7 requires finqa-public-reasoning-v2 and native tools")
+    elif config.submission_profile == PUBLIC_REASONING_V7_PROFILE_ID:
+        raise ValueError("revised public reasoning requires the explicit v7 harness identity")
+    elif config.harness_id == PUBLIC_REASONING_HARNESS_ID:
         if (
             config.submission_profile != PUBLIC_REASONING_PROFILE_ID
             or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
@@ -138,12 +170,14 @@ def _episode_version(config):
         or config.local_tool_protocol != "qwen2.5-native-tool-call-v1"
     ):
         raise ValueError("H1-R v3 requires finqa_program_v2 and the Qwen native tool protocol")
-    return config.harness_id in {HARNESS_ID, STRUCTURED_HARNESS_ID, PUBLIC_REASONING_HARNESS_ID}
+    return config.harness_id in {HARNESS_ID, STRUCTURED_HARNESS_ID} | PUBLIC_REASONING_HARNESSES
 
 
 def system_message(config: RunConfig) -> dict[str, str]:
     """One exact system-message source for online execution and offline replay."""
     _episode_version(config)
+    if config.harness_id == PUBLIC_REASONING_V7_HARNESS_ID:
+        return {"role": "system", "content": SYSTEM_PROMPT_V7}
     if config.harness_id == PUBLIC_REASONING_HARNESS_ID:
         return {"role": "system", "content": SYSTEM_PROMPT_V6}
     prompt = (
@@ -157,7 +191,7 @@ def system_message(config: RunConfig) -> dict[str, str]:
 def episode_tool_specs(config: RunConfig):
     """The new output language does not change the tools or financial action schema."""
     revised = _episode_version(config)
-    if config.harness_id == PUBLIC_REASONING_HARNESS_ID:
+    if config.harness_id in PUBLIC_REASONING_HARNESSES:
         from .v6_task import public_reasoning_tool_specs
 
         return public_reasoning_tool_specs()
@@ -234,7 +268,7 @@ async def run_episode(
     scope = invocation_scope(invocation_context) if revised else None
     reference_protocol = VISIBLE_REFERENCE_PROTOCOL if revised else LEGACY_REFERENCE_PROTOCOL
     session_type = PublicToolSession
-    if config.harness_id == PUBLIC_REASONING_HARNESS_ID:
+    if config.harness_id in PUBLIC_REASONING_HARNESSES:
         from .v6_task import PublicProgramSession
 
         session_type = PublicProgramSession
@@ -424,7 +458,7 @@ async def run_episode(
             stop_reason = "final_answer"
             break
         if (
-            config.harness_id == PUBLIC_REASONING_HARNESS_ID
+            config.harness_id in PUBLIC_REASONING_HARNESSES
             and call.name == "submit_program"
             and not event.is_error
         ):

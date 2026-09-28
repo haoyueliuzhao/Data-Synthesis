@@ -17,10 +17,13 @@ from .qwen_protocol import strict_json_decoder
 ENDPOINT = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-flash"
 INFRA_FINISH_REASONS = {"insufficient_system_resource", "aborted"}
+V6_HARNESS_PROFILE_PAIR = ("bigfinance-derived-vtdo-v6", "finqa-public-reasoning-v1")
+V7_HARNESS_PROFILE_PAIR = ("bigfinance-derived-vtdo-v7", "finqa-public-reasoning-v2")
 PROBE_HARNESS_PROFILE_PAIRS = {
     ("bigfinance-derived-vtdo-v3", "finqa_program_v2"),
     ("bigfinance-derived-vtdo-v4", "finqa_program_v3_structured"),
-    ("bigfinance-derived-vtdo-v6", "finqa-public-reasoning-v1"),
+    V6_HARNESS_PROFILE_PAIR,
+    V7_HARNESS_PROFILE_PAIR,
 }
 
 
@@ -86,20 +89,31 @@ class BudgetedDeepSeekFlashProvider:
         )
 
     async def chat(self, messages, tools, config):
+        pair = (config.harness_id, config.submission_profile)
+        # This is a prospective V7 generation allowance, not an enlargement of
+        # V6 or either earlier frozen generation protocol. The monetary ledger
+        # remains the same joint run, with each request's own cap/usage receipt.
+        output_limits = (
+            (2048, 16384)
+            if pair == V7_HARNESS_PROFILE_PAIR
+            else (2048,)
+            if pair == V6_HARNESS_PROFILE_PAIR
+            else (2048, 4096)
+        )
         if not (
             self.identity.model_id == MODEL
             and config.api_model == MODEL
             and config.tier == "EVAL_NATIVE"
             and config.role == "sft"
-            and (config.harness_id, config.submission_profile) in PROBE_HARNESS_PROFILE_PAIRS
+            and pair in PROBE_HARNESS_PROFILE_PAIRS
             and (
-                (config.harness_id == "bigfinance-derived-vtdo-v6")
+                (pair in {V6_HARNESS_PROFILE_PAIR, V7_HARNESS_PROFILE_PAIR})
                 == (self.ledger.purpose == V6_PURPOSE)
             )
             and config.local_tool_protocol == "qwen2.5-native-tool-call-v1"
             and (config.temperature, config.top_p, config.top_k) == (1.0, 1.0, 0)
             and config.max_new_tokens in self.ledger.allowed_output_limits
-            and config.max_new_tokens in (2048, 4096)
+            and config.max_new_tokens in output_limits
             and config.context_limit == self.ledger.price_sheet.context_input_token_ceiling
             and config.max_steps == 32
         ):

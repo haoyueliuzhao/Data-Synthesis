@@ -159,10 +159,13 @@ def validate_structured_context(messages, tools, config: RunConfig):
     from .harness import (
         PUBLIC_REASONING_HARNESS_ID,
         PUBLIC_REASONING_PROFILE_ID,
+        PUBLIC_REASONING_V7_HARNESS_ID,
+        PUBLIC_REASONING_V7_PROFILE_ID,
         STRUCTURED_HARNESS_ID,
         STRUCTURED_PROFILE_ID,
         SYSTEM_PROMPT_V4,
         SYSTEM_PROMPT_V6,
+        SYSTEM_PROMPT_V7,
         episode_tool_specs,
         system_message,
     )
@@ -172,6 +175,8 @@ def validate_structured_context(messages, tools, config: RunConfig):
         or config.submission_profile == STRUCTURED_PROFILE_ID
         or config.harness_id == PUBLIC_REASONING_HARNESS_ID
         or config.submission_profile == PUBLIC_REASONING_PROFILE_ID
+        or config.harness_id == PUBLIC_REASONING_V7_HARNESS_ID
+        or config.submission_profile == PUBLIC_REASONING_V7_PROFILE_ID
     )
     new_context = bool(
         messages
@@ -179,6 +184,7 @@ def validate_structured_context(messages, tools, config: RunConfig):
         in [
             {"role": "system", "content": SYSTEM_PROMPT_V4},
             {"role": "system", "content": SYSTEM_PROMPT_V6},
+            {"role": "system", "content": SYSTEM_PROMPT_V7},
         ]
     )
     if requested:
@@ -588,7 +594,7 @@ class DeepSeekFlashProvider:
             "max_tokens": config.max_new_tokens,
             "stream": False,
         }
-        if config.harness_id == "bigfinance-derived-vtdo-v6":
+        if config.harness_id in {"bigfinance-derived-vtdo-v6", "bigfinance-derived-vtdo-v7"}:
             body["thinking"] = {"type": "disabled"}
         if tools:
             body["tools"] = copy.deepcopy(tools)

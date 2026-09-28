@@ -37,6 +37,7 @@ def test_only_explicit_registered_strict_wires_preserve_their_actual_identity(tm
     assert STRICT_WIRE_PROTOCOLS == {
         "v6_strict_review.v2",
         "v6_slot_review.v3",
+        "v6_slot_review.v4",
         "v6_alignment_review.v3",
     }
     ledger, request = ledger_fixture(tmp_path), rewired_request(wire)
@@ -54,7 +55,7 @@ def test_only_explicit_registered_strict_wires_preserve_their_actual_identity(tm
     assert ledger.snapshot()["halt"] is None
 
 
-@pytest.mark.parametrize("wire", ["v6_slot_review.v4", "v6_alignment_review.v2", "unregistered"])
+@pytest.mark.parametrize("wire", ["v6_slot_review.v5", "v6_alignment_review.v2", "unregistered"])
 def test_unregistered_wire_never_reserves_or_sends(tmp_path, wire):
     ledger, client = ledger_fixture(tmp_path), Client(response_fixture())
     before = ledger.snapshot()

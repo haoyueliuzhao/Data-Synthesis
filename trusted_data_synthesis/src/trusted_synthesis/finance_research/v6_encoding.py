@@ -12,7 +12,7 @@ import json
 
 from .contracts import Episode, digest
 from .encoding import _native_response, _student_messages
-from .harness import PUBLIC_REASONING_HARNESS_ID, episode_tool_specs, system_message
+from .harness import PUBLIC_REASONING_HARNESSES, episode_tool_specs, system_message
 from .providers import _api_messages, canonical_assistant_message, tokenizer_binding
 from .settlement import episode_is_complete
 from .v6_task import public_trajectory_view
@@ -29,7 +29,7 @@ def _sha(text):
 def _api_requests(episode, view):
     """Bind real public API requests without accepting local or invented receipts."""
     if (
-        episode.config.harness_id != PUBLIC_REASONING_HARNESS_ID
+        episode.config.harness_id not in PUBLIC_REASONING_HARNESSES
         or episode.provider.backend != "deepseek_api"
         or episode.provider.model_id != "deepseek-flash"
         or episode.config.role != "sft"

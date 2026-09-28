@@ -407,7 +407,12 @@ def assess(job, artifact, request):
             output_truncated=artifact["finish_reason"] == "length",
         )
     if job["stage"] == "slot":
-        result = inspect_slot_review(artifact["review_text"], request)
+        if request.get("wire_protocol") == "v6_slot_review.v4":
+            from .v7_slot_review import inspect_slot_review as inspect_typed_slot
+
+            result = inspect_typed_slot(artifact["review_text"], request)
+        else:
+            result = inspect_slot_review(artifact["review_text"], request)
     else:
         from .v6_state_alignment import inspect_alignment
 
@@ -596,9 +601,9 @@ async def run_batch(context, ledger, key, completed, jobs, phase, concurrency):
                 protocol_id=context.plan["id"],
                 phase=phase if not halted.is_set() else "STOPPING",
                 slot_reviews_completed=counts["slot"],
-                slot_review_denominator=16000,
+                slot_review_denominator=context.plan.get("slot_review_denominator", 16000),
                 alignments_completed=counts["alignment"],
-                alignment_denominator=2000,
+                alignment_denominator=context.plan.get("alignment_denominator", 2000),
                 original_generation_completed=8000,
                 blocked=failures,
                 budget=ledger.snapshot(),

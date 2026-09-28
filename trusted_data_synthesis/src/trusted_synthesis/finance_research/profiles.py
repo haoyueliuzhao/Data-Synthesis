@@ -16,6 +16,7 @@ PUBLIC_PROFILE_V2_ID = "finqa_program_v2"
 PUBLIC_PROFILE_V2 = PUBLIC_PROFILE_V2_ID
 PUBLIC_PROFILE_V3_STRUCTURED_ID = "finqa_program_v3_structured"
 PUBLIC_REASONING_PROFILE_ID = "finqa-public-reasoning-v1"
+PUBLIC_REASONING_V2_PROFILE_ID = "finqa-public-reasoning-v2"
 FINQA_PROFILE_IDS = frozenset(
     {
         PUBLIC_PROFILE_ID,
@@ -112,8 +113,46 @@ def profile_definition(profile_id: str = PUBLIC_PROFILE_ID) -> dict[str, Any]:
     """Return a fresh common contract, without reading tasks or private references."""
     # The legacy native scorer consumes FINQA_PROFILE_IDS and requires answer +
     # program. V6 must use its independent submit-program scorer, not that path.
-    if profile_id not in FINQA_PROFILE_IDS | {PUBLIC_REASONING_PROFILE_ID}:
+    if profile_id not in FINQA_PROFILE_IDS | {
+        PUBLIC_REASONING_PROFILE_ID,
+        PUBLIC_REASONING_V2_PROFILE_ID,
+    }:
         raise ValueError(f"unknown submission profile: {profile_id}")
+    if profile_id == PUBLIC_REASONING_V2_PROFILE_ID:
+        profile = profile_definition(PUBLIC_REASONING_PROFILE_ID)
+        profile.update(
+            id=PUBLIC_REASONING_V2_PROFILE_ID,
+            version=2,
+            previous_profile_id=PUBLIC_REASONING_PROFILE_ID,
+            examples_are_synthetic_not_selected_from_benchmark_references=True,
+            source_access=(
+                "All original public text and tables are already supplied. Read again only "
+                "if useful; no formal rereading is required. If multiple sources must be "
+                "read, call one read_source per response, in successive turns. Never combine "
+                "multiple tool calls into one response. No fixed tool route is required."
+            ),
+        )
+        profile["dsl"]["numeric_representation"] = (
+            "Distinguish a program's raw numeric value from its display as a percentage. "
+            "For example, divide(1, 20) returns 0.05, a ratio displayed as 5%; displaying "
+            "5% alone does not justify adding multiply(#0, const_100). Interpret ratios, "
+            "percentages, percentage-point changes and units from the actual question "
+            "and public evidence. Reference scales are not uniform across questions; "
+            "there is no universal rule that every percentage question requires either "
+            "multiplying by 100 or leaving the result unchanged. No host scale correction occurs."
+        )
+        profile["dsl"]["complete_program_requirement"] = (
+            "Every program, including a constant result, requires a complete allowed "
+            "operator(arg1, arg2) step. A bare number or bare constant is not a program. "
+            "Never nest operator calls; use #k only for an earlier zero-based step. "
+            "Use comma-space separators. Constants such as const_0, const_1 and const_10 "
+            "are operands, not standalone programs."
+        )
+        profile["dsl"]["synthetic_examples"] = [
+            {"program": "subtract(9, 4), divide(#0, const_10)", "result": 0.5},
+            {"program": "add(const_1, const_0)", "result": 1.0},
+        ]
+        return profile
     profile = _profile_v1()
     if profile_id == PUBLIC_REASONING_PROFILE_ID:
         # Separate public contract, not the historical empty-content experiment.
@@ -301,7 +340,7 @@ def public_run_view(task: PublicTask, profile_id: str = PUBLIC_PROFILE_ID) -> Pu
     if "submission_profile" in task.answer_contract:
         raise ValueError("runtime view must be derived from the original public task")
     contract = deepcopy(task.answer_contract)
-    if profile_id == PUBLIC_REASONING_PROFILE_ID:
+    if profile_id in {PUBLIC_REASONING_PROFILE_ID, PUBLIC_REASONING_V2_PROFILE_ID}:
         contract.pop("answer", None)
         contract.pop("scale", None)
     contract.update(

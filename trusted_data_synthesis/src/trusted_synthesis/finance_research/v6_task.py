@@ -20,7 +20,12 @@ from .native_metrics import (
     _program_tokens,
     metric_provenance,
 )
-from .profiles import MODEL_TERMINAL_REASONS, PUBLIC_REASONING_PROFILE_ID, public_run_view
+from .profiles import (
+    MODEL_TERMINAL_REASONS,
+    PUBLIC_REASONING_PROFILE_ID,
+    PUBLIC_REASONING_V2_PROFILE_ID,
+    public_run_view,
+)
 from .providers import canonical_assistant_message
 from .settlement import episode_is_complete
 from .tools import (
@@ -32,6 +37,17 @@ from .tools import (
 )
 
 HARNESS_ID = "bigfinance-derived-vtdo-v6"
+PUBLIC_REASONING_PROFILE_BY_HARNESS = {
+    HARNESS_ID: PUBLIC_REASONING_PROFILE_ID,
+    "bigfinance-derived-vtdo-v7": PUBLIC_REASONING_V2_PROFILE_ID,
+}
+
+
+def _episode_profile(episode):
+    expected = PUBLIC_REASONING_PROFILE_BY_HARNESS.get(episode.config.harness_id)
+    if expected is None or episode.config.submission_profile != expected:
+        raise ValueError("public-reasoning episode requires an explicit matching harness/profile")
+    return expected
 
 
 def public_reasoning_tool_specs() -> list[dict[str, Any]]:
@@ -135,21 +151,16 @@ class PublicProgramSession(PublicToolSession):
 
 def score_public_reasoning_program(bundle: TaskBundle, episode: Episode) -> dict[str, Any]:
     """Offline pinned native metrics; never certifies public reasoning or Trace quality."""
-    if (
-        episode.config.harness_id != HARNESS_ID
-        or episode.config.submission_profile != PUBLIC_REASONING_PROFILE_ID
-    ):
-        raise ValueError("V6 native scorer requires the explicit V6 identity pair")
+    profile_id = _episode_profile(episode)
     if (
         episode.task_id != bundle.public.task_id
         or episode.dataset != "finqa"
-        or episode.public_task_sha256
-        != digest(public_run_view(bundle.public, PUBLIC_REASONING_PROFILE_ID))
+        or episode.public_task_sha256 != digest(public_run_view(bundle.public, profile_id))
     ):
         raise ValueError("episode and original public source binding disagree")
     output = {
         "task_id": episode.task_id,
-        "submission_profile": PUBLIC_REASONING_PROFILE_ID,
+        "submission_profile": profile_id,
         "metric_tier": "native_program_metric_not_trace_quality",
         "native": {"execution_accuracy": None, "program_accuracy": None},
         "status": "unknown",
@@ -230,11 +241,7 @@ def public_trajectory_view(episode: Episode, *, slot_id: str | None = None) -> d
     """
     from .harness import episode_tool_specs, system_message
 
-    if (
-        episode.config.harness_id != HARNESS_ID
-        or episode.config.submission_profile != PUBLIC_REASONING_PROFILE_ID
-    ):
-        raise ValueError("public trajectory view requires V6")
+    _episode_profile(episode)
     if slot_id is not None and (not isinstance(slot_id, str) or not slot_id):
         raise ValueError("slot_id must be a nonempty string")
     if len(episode.messages) < 2 or episode.messages[0] != system_message(episode.config):

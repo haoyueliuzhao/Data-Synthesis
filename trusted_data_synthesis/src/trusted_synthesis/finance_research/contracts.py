@@ -95,6 +95,7 @@ class RunConfig(Record):
         "finqa_program_v2",
         "finqa_program_v3_structured",
         "finqa-public-reasoning-v1",
+        "finqa-public-reasoning-v2",
     ] = "original"
     max_steps: int = Field(default=32, ge=1, le=256)
     max_new_tokens: int = Field(default=2048, ge=1)
