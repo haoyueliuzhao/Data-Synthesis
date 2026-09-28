@@ -150,8 +150,70 @@ def paid_row(row, price):
     )
 
 
-def historical_audit():
+def historical_audit(parent_revision=None):
     """One byte-level, quiescent audit; permits only the recorded intentional pause."""
+    if parent_revision is not None:
+        parent_revision = Path(parent_revision)
+        parent = read_json(protocol_path(parent_revision))
+        require(
+            parent["id"] == digest({k: v for k, v in parent.items() if k != "id"}),
+            "parent revision registration changed",
+        )
+        completed = recover(parent_revision, parent)
+        gate = read_json(parent_revision / "capacity_gate/record.json")
+        fixed_ids = {
+            review_id(parent, t, i) for t in parent["calibration"]["task_ids"] for i in (0, 1)
+        }
+        require(
+            gate["id"] == digest({k: v for k, v in gate.items() if k != "id"})
+            and gate["protocol_id"] == parent["id"]
+            and gate["admitted"] is False
+            and len(set(parent["calibration"]["task_ids"])) == 6
+            and len(completed) == 12
+            and set(completed) == fixed_ids,
+            "only the settled failed fixed cohort may seed this revision",
+        )
+        old_history = read_json(parent_revision / "historical_audit/record.json")
+        price = ProbePriceSheet(**parent["budget"]["price_sheet"])
+        with connect() as con:
+            require(
+                con.execute("SELECT value FROM metadata WHERE key='halt'").fetchone() is None,
+                "other budget halt cannot be bypassed by a format revision",
+            )
+            cfg = json.loads(
+                con.execute("SELECT value FROM metadata WHERE key='config'").fetchone()[0]
+            )
+            entries = [
+                paid_row(row, price)[0]
+                for row in con.execute("SELECT * FROM requests ORDER BY invocation_id")
+            ]
+            counters = dict(con.execute("SELECT * FROM counters WHERE singleton=1").fetchone())
+        require(
+            cfg["amendment_id"] == parent["budget"].get("amendment_id", parent["id"]),
+            "shared budget amendment changed",
+        )
+        return bound(
+            dict(
+                at=now(),
+                original_protocol_id=parent["original_protocol_id"],
+                original_protocol_sha256=old_history["original_protocol_sha256"],
+                generation_seal_sha256=old_history["generation_seal_sha256"],
+                parent_revision=str(parent_revision),
+                parent_revision_id=parent["id"],
+                parent_gate_sha256=sha(parent_revision / "capacity_gate/record.json"),
+                parent_calibration_task_ids=parent["calibration"]["task_ids"],
+                budget_config=cfg,
+                budget_config_sha256=digest(cfg),
+                budget_counters=counters,
+                paid_entries=entries,
+                generation_output_tokens_by_task=old_history["generation_output_tokens_by_task"],
+                old_review_finish_reasons=old_history["old_review_finish_reasons"],
+                previous_capacity_reviews_retained=12,
+                no_old_artifacts_replaced=True,
+                original_generation_reused=8000,
+                new_generation_calls=0,
+            )
+        )
     plan = original_protocol()
     seal = read_json(ORIGINAL / "generation_seal/record.json")
     require(
@@ -243,8 +305,13 @@ def input_directory(output, task_id):
     return Path(output) / "inputs" / digest(task_id)
 
 
-def build_inputs(output, historical):
+def build_inputs(output, historical, *, strict=False):
     from .v6_compact_review import capacity_features, compact_review_request
+
+    if strict:
+        from .v6_strict_review import capacity_features, strict_review_request
+
+        compact_review_request = strict_review_request
 
     old = original_protocol()
     rows = []
@@ -266,6 +333,8 @@ def build_inputs(output, historical):
                 capacity_policy_id=CAPACITY_POLICY["id"],
             )
             wire_bytes = sum(len(m["content"].encode()) for m in request["messages"])
+            if strict:
+                wire_bytes += len(json.dumps(request["strict_tool"], ensure_ascii=False).encode())
             require(
                 wire_bytes + capacity["max_output_tokens"] < 1048576,
                 "conservative request-byte/context capacity check failed; no silent truncation",
@@ -292,7 +361,7 @@ def build_inputs(output, historical):
     return rows
 
 
-def register(output):
+def register(output, *, parent_revision=None):
     output = Path(output)
     if protocol_path(output).exists():
         return checked_plan(output)
@@ -308,9 +377,14 @@ def register(output):
             ),
             "commit capacity revision before registration",
         )
-    historical = historical_audit()
+    strict = parent_revision is not None
+    historical = historical_audit(parent_revision) if strict else historical_audit()
     publish(output / "historical_audit", historical)
-    rows = build_inputs(output, historical)
+    rows = (
+        build_inputs(output, historical, strict=True)
+        if strict
+        else build_inputs(output, historical)
+    )
     old = original_protocol()
     order = {task: i for i, task in enumerate(old["task_ids"])}
     by_load = sorted(
@@ -318,8 +392,14 @@ def register(output):
     )
     positions = [0, 250, 500, 900, 990, 999]
     selected = [by_load[i]["task_id"] for i in positions]
+    if strict:
+        require(
+            selected == historical["parent_calibration_task_ids"],
+            "technical revision must keep the same six preselected capacity tasks",
+        )
     body = dict(
         schema="v6_review_capacity_revision.v1",
+        wire_protocol="v6_strict_review.v2" if strict else "v6_compact_review.v1",
         at=now(),
         source_commit=head,
         runtime_binding=runtime_binding(),
@@ -327,6 +407,7 @@ def register(output):
         original_protocol_id=old["id"],
         historical_audit_id=historical["id"],
         original_budget_config_sha256=historical["budget_config_sha256"],
+        parent_revision=historical.get("parent_revision"),
         authorization="上限应该根据实际问题调整，审计问题，做调整，可以重新采集轨迹",
         original_generation_retained=8000,
         original_task_denominator=1000,
@@ -361,7 +442,11 @@ def register(output):
             selection="pre-review load quantiles, never native score or semantic verdict",
             part_of_fixed_2000=True,
             extra_pilot_requests=0,
-            criterion="all 12 finish stop and validate binding; no positivity requirement",
+            criterion=(
+                "12 complete named strict tool submissions and validate; no positivity requirement"
+                if strict
+                else "all 12 finish stop and validate binding; no positivity requirement"
+            ),
             automatic_expansion_on_failure=False,
         ),
         stop_new_dispatch_on_format_capacity_failure=True,
@@ -369,6 +454,9 @@ def register(output):
         automatic_training=False,
         GPU_reservation=False,
     )
+    if strict:
+        body["budget"]["amendment_id"] = historical["budget_config"]["amendment_id"]
+        body["budget"]["reuse_existing_amendment"] = True
     plan = bound(body)
     persist(output / "registration", plan, "protocol.json")
     # Input preparation already occupies the root; use its own immutable registration directory.
@@ -402,13 +490,30 @@ def ledger_for(plan):
         request_cap=args["request_cap"],
         max_output_tokens=max(plan["allowed_output_limits"]),
         allowed_output_limits=plan["allowed_output_limits"],
-        amendment_id=plan["id"],
+        amendment_id=args.get("amendment_id", plan["id"]),
     )
 
 
 def activate(output, plan):
     path = Path(output) / "budget_amendment/record.json"
     if not path.exists():
+        if plan["budget"].get("reuse_existing_amendment"):
+            ledger = ledger_for(plan)
+            require(
+                digest(ledger.config) == plan["original_budget_config_sha256"],
+                "existing shared capacity amendment changed",
+            )
+            publish(
+                path.parent,
+                dict(
+                    amendment_id=plan["budget"]["amendment_id"],
+                    reused=True,
+                    new_monetary_authorization=False,
+                    counters_at_reuse=ledger.snapshot(),
+                    all_old_spending_preserved=True,
+                ),
+            )
+            return ledger
         result = apply_v6_review_amendment(
             database(),
             expected_run_id=plan["budget"]["run_id"],
@@ -457,6 +562,13 @@ def response_binding(artifact, request, row):
         thinking={"type": "disabled"},
         response_format={"type": "json_object"},
     )
+    strict = request.get("wire_protocol") == "v6_strict_review.v2"
+    if strict:
+        expected_body.pop("response_format")
+        expected_body.update(
+            tools=[request["strict_tool"]],
+            tool_choice={"type": "function", "function": {"name": "submit_review"}},
+        )
     require(
         artifact["public_request"] == json.loads(row["request_body"]) == expected_body
         and artifact["api_response_raw"].encode() == row["response_body"]
@@ -471,6 +583,16 @@ def response_binding(artifact, request, row):
         and artifact["finish_reason"] == choice["finish_reason"],
         "derived review differs from raw paid response",
     )
+    if strict:
+        from .v6_review_provider import STRICT_ENDPOINT, _strict_review_payload
+
+        actual = _strict_review_payload(choice["message"], choice["finish_reason"])
+        require(
+            all(artifact.get(k) == v for k, v in actual.items())
+            and artifact.get("endpoint") == STRICT_ENDPOINT
+            and artifact.get("strict_tool_sha256") == digest(request["strict_tool"]),
+            "review arguments differ from actual strict tool response",
+        )
     require(
         artifact["public_request"]["max_tokens"] == request["max_output_tokens"],
         "actual per-task output capacity changed",
@@ -550,10 +672,21 @@ def assess(artifact, request):
     from .v6_compact_review import validate_compact_review
 
     try:
-        require(
-            artifact["finish_reason"] == "stop", "review stopped at capacity or non-normal finish"
-        )
-        validated = validate_compact_review(artifact["content"], request)
+        if request.get("wire_protocol") == "v6_strict_review.v2":
+            from .v6_strict_review import validate_strict_review
+
+            require(
+                artifact["finish_reason"] == "tool_calls"
+                and not artifact.get("review_format_error"),
+                "strict review stopped at capacity or lacks a valid tool submission",
+            )
+            validated = validate_strict_review(artifact["review_text"], request)
+        else:
+            require(
+                artifact["finish_reason"] == "stop",
+                "review stopped at capacity or non-normal finish",
+            )
+            validated = validate_compact_review(artifact["content"], request)
         return dict(format_capacity_admitted=True, validated=validated, error=None)
     except (ValueError, TypeError, KeyError, IndexError) as error:
         return dict(
@@ -846,9 +979,10 @@ def main(argv=None):
     parser.add_argument("action", choices=("register", "start", "run", "status"))
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--env-file", type=Path, default=ENV_FILE)
+    parser.add_argument("--parent-revision", type=Path)
     args = parser.parse_args(argv)
     if args.action == "register":
-        print(dict(protocol_id=register(args.output)["id"]))
+        print(dict(protocol_id=register(args.output, parent_revision=args.parent_revision)["id"]))
     elif args.action == "status":
         print(read_json(args.output / "status.json"))
     elif args.action == "run":

@@ -1,0 +1,110 @@
+{
+  "all_original_requests_settled": true,
+  "amendment_id": "9c44809540e6d559c651e5322a0ac4c30d3c048b50a98c291d1c5b5348a1d2b5",
+  "at_unix": 1790605911.8573616,
+  "authorization_evidence": {
+    "authorization": "上限应该根据实际问题调整，审计问题，做调整，可以重新采集轨迹",
+    "historical_spend_counted": true,
+    "protocol_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/registration/protocol.json",
+    "protocol_sha256": "d9de9b2fca9c631e97ece61f4b5e857f09ed09da2d22d20e029634c8a458241d"
+  },
+  "cleared_halt": {
+    "at_unix": 1790604701.8927052,
+    "evidence": {
+      "action": "stop new dispatches, allow in-flight requests to settle, retain all raw artifacts and spending",
+      "at": "2026-09-28T14:11:41.892454+00:00",
+      "authorization": "用户要求审计输出上限问题并调整实验，允许必要时重新采集轨迹",
+      "protocol_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "reason": "review output capacity not calibrated to actual eight-trajectory rubric; near-universal length truncation"
+    },
+    "invocation_id": "v6-capacity-audit:9f79f0f5be89e99401441ef913baaa5907eb841d2ab6a3fd2108390116709375",
+    "reason": "user_authorized_review_capacity_audit"
+  },
+  "monetary_and_request_caps_unchanged": true,
+  "new_config": {
+    "allowed_output_limits": [
+      2048,
+      16384,
+      32768,
+      65536,
+      131072
+    ],
+    "amendment_id": "9c44809540e6d559c651e5322a0ac4c30d3c048b50a98c291d1c5b5348a1d2b5",
+    "currency_scale": "1 CNY = 1000000 micro-CNY",
+    "hard_cap_microcny": 800000000,
+    "joint_generation_and_review_cap": true,
+    "max_output_tokens": 131072,
+    "price_sheet": {
+      "checked_at_utc": "2026-09-28T12:44:39.955212+00:00",
+      "context_input_token_ceiling": 1048576,
+      "currency": "CNY",
+      "input_hit_cny_per_million": "0.04",
+      "input_miss_cny_per_million": "2",
+      "model": "deepseek-flash",
+      "official_max_output_tokens": 393216,
+      "output_cny_per_million": "8",
+      "pricing_policy": "conservative_peak_upper_bound_all_hours",
+      "source_sha256": "7ecbec2f65374cd27cf4f96fb6f9e9e683f0b94e13f62cf249afe12d4eea5fbe",
+      "source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "request_cap": 258000,
+    "reservation_input_policy": "official_entire_context_at_cache_miss_price",
+    "reservation_microcny_per_request": 3145728,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "schema": "probe_budget.v2",
+    "variable_reservation_bound_to_each_actual_request": true,
+    "warning_microcny": 700000000
+  },
+  "new_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "old_config": {
+    "allowed_output_limits": [
+      2048,
+      16384
+    ],
+    "currency_scale": "1 CNY = 1000000 micro-CNY",
+    "hard_cap_microcny": 800000000,
+    "joint_generation_and_review_cap": true,
+    "max_output_tokens": 16384,
+    "price_sheet": {
+      "checked_at_utc": "2026-09-28T12:44:39.955212+00:00",
+      "context_input_token_ceiling": 1048576,
+      "currency": "CNY",
+      "input_hit_cny_per_million": "0.04",
+      "input_miss_cny_per_million": "2",
+      "model": "deepseek-flash",
+      "official_max_output_tokens": 393216,
+      "output_cny_per_million": "8",
+      "pricing_policy": "conservative_peak_upper_bound_all_hours",
+      "source_sha256": "7ecbec2f65374cd27cf4f96fb6f9e9e683f0b94e13f62cf249afe12d4eea5fbe",
+      "source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "request_cap": 258000,
+    "reservation_input_policy": "official_entire_context_at_cache_miss_price",
+    "reservation_microcny_per_request": 2228224,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "schema": "probe_budget.v2",
+    "variable_reservation_bound_to_each_actual_request": true,
+    "warning_microcny": 700000000
+  },
+  "old_config_sha256": "fed5f94ee5be80a3ccf22bd9a669ec5fe7e712802def0144b798d10b3d98d07c",
+  "old_request_limits_unchanged": true,
+  "preserved_counters": {
+    "completion_tokens": 8895089,
+    "dispatched": 18864,
+    "held": 0,
+    "hit_tokens": 61469434,
+    "miss_tokens": 20099888,
+    "pending": 0,
+    "prompt_tokens": 81569322,
+    "requests": 18864,
+    "singleton": 1,
+    "spent": 113828123,
+    "unknown": 0
+  },
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v6_review_capacity_amendment.v1"
+}

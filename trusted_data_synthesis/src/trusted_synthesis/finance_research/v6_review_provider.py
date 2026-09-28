@@ -16,6 +16,79 @@ from .providers import _json
 from .qwen_protocol import strict_json_decoder
 
 OUTPUT_LIMIT = 16384
+STRICT_WIRE_PROTOCOL = "v6_strict_review.v2"
+STRICT_ENDPOINT = "https://api.deepseek.com/beta/chat/completions"
+
+
+def _strict_tool(request, payload):
+    tool = request.get("strict_tool")
+    if (
+        not isinstance(tool, dict)
+        or set(tool) != {"type", "function"}
+        or tool["type"] != "function"
+        or not isinstance(tool["function"], dict)
+    ):
+        raise ValueError("strict review requires one explicit function schema")
+    function = tool["function"]
+    parameters = function.get("parameters")
+    if (
+        set(function) - {"name", "description", "strict", "parameters"}
+        or function.get("name") != "submit_review"
+        or function.get("strict") is not True
+        or not isinstance(parameters, dict)
+        or parameters.get("type") != "object"
+        or "output_schema" in payload
+        or "strict_tool" in payload
+        or payload.get("wire_protocol") != STRICT_WIRE_PROTOCOL
+        or request.get("strict_tool_sha256") != digest(tool)
+    ):
+        raise ValueError("strict submit_review schema belongs only in the bound tool declaration")
+
+    def inline(value):
+        if isinstance(value, dict):
+            if "$ref" in value or "$defs" in value or "definitions" in value:
+                raise ValueError("strict review schema must be inline, not unresolved references")
+            for child in value.values():
+                inline(child)
+        elif isinstance(value, list):
+            for child in value:
+                inline(child)
+
+    inline(parameters)
+    return copy.deepcopy(tool)
+
+
+def _strict_review_payload(message, finish):
+    """Extract a real function-argument string only; never interpret or repair its JSON."""
+    result = dict(
+        review_text=None,
+        review_payload_source=None,
+        review_tool_call_id=None,
+        review_format_error=None,
+    )
+    calls = message.get("tool_calls")
+    if not isinstance(calls, list) or len(calls) != 1:
+        result["review_format_error"] = "expected_exactly_one_submit_review_tool_call"
+        return result
+    call = calls[0]
+    if (
+        not isinstance(call, dict)
+        or call.get("type") != "function"
+        or not isinstance(call.get("id"), str)
+        or not call["id"].strip()
+        or not isinstance(call.get("function"), dict)
+        or call["function"].get("name") != "submit_review"
+        or not isinstance(call["function"].get("arguments"), str)
+    ):
+        result["review_format_error"] = "invalid_submit_review_name_id_or_argument_string"
+        return result
+    result.update(
+        review_text=call["function"]["arguments"],
+        review_payload_source="tool_call.function.arguments",
+        review_tool_call_id=call["id"],
+        review_format_error=None if finish == "tool_calls" else "strict_finish_not_tool_calls",
+    )
+    return result
 
 
 def _request_body(ledger, request):
@@ -41,7 +114,8 @@ def _request_body(ledger, request):
     ):
         raise ValueError("semantic review metadata/request binding differs")
     payload = strict_json_decoder().decode(messages[1]["content"])
-    compact = request.get("wire_protocol") == "v6_compact_review.v1"
+    strict = request.get("wire_protocol") == STRICT_WIRE_PROTOCOL
+    compact = request.get("wire_protocol") in {"v6_compact_review.v1", STRICT_WIRE_PROTOCOL}
     if (
         not isinstance(payload, dict)
         or payload.get("task_bundle_sha256") != request.get("task_bundle_sha256")
@@ -75,9 +149,15 @@ def _request_body(ledger, request):
         top_p=1,
         max_tokens=output_limit,
         thinking={"type": "disabled"},
-        response_format={"type": "json_object"},
         stream=False,
     )
+    if strict:
+        body.update(
+            tools=[_strict_tool(request, payload)],
+            tool_choice={"type": "function", "function": {"name": "submit_review"}},
+        )
+    else:
+        body["response_format"] = {"type": "json_object"}
     return body, payload["reviewer"]
 
 
@@ -91,6 +171,8 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
     if not isinstance(api_key, str) or not api_key:
         raise ValueError("caller must supply an in-memory API key")
     body, reviewer = _request_body(ledger, request)
+    strict = request.get("wire_protocol") == STRICT_WIRE_PROTOCOL
+    endpoint = STRICT_ENDPOINT if strict else ENDPOINT
     output_limit = body["max_tokens"]
     wire = _json(body).encode("utf-8")
     if api_key.encode() in wire:
@@ -107,6 +189,12 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
         review_request_metadata_sha256=metadata_hash,
         semantic_review_request_sha256=digest(request),
     )
+    if strict:
+        local_binding.update(
+            wire_protocol=STRICT_WIRE_PROTOCOL,
+            endpoint=endpoint,
+            strict_tool_sha256=digest(body["tools"][0]),
+        )
     reserved = ledger.reserve(
         invocation_id, coordinates=coordinates, request=body, request_body=wire
     )
@@ -145,10 +233,10 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
                 timeout=timeout, transport=httpx.AsyncHTTPTransport(retries=0)
             ) as actual:
                 actual_calls += 1
-                response = await actual.post(ENDPOINT, content=wire, headers=headers)
+                response = await actual.post(endpoint, content=wire, headers=headers)
         else:
             actual_calls += 1
-            response = await client.post(ENDPOINT, content=wire, headers=headers, timeout=timeout)
+            response = await client.post(endpoint, content=wire, headers=headers, timeout=timeout)
     except BaseException as failure:
         error = unknown(
             "review transport response or usage unknown",
@@ -302,5 +390,6 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
         actual_model_calls=1,
         retries=0,
         content_repair_performed=False,
+        **(_strict_review_payload(message, finish) if strict else {}),
         **local_binding,
     )

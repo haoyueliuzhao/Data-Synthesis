@@ -1,0 +1,7 @@
+{
+  "action": "stop new dispatches, allow in-flight requests to settle, retain all raw artifacts and spending",
+  "at": "2026-09-28T14:11:41.892454+00:00",
+  "authorization": "用户要求审计输出上限问题并调整实验，允许必要时重新采集轨迹",
+  "protocol_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "reason": "review output capacity not calibrated to actual eight-trajectory rubric; near-universal length truncation"
+}

@@ -315,3 +315,126 @@ def test_paid_original_body_cannot_be_relabelled_as_another_frozen_review_reques
     relabelled["semantic_review_request_sha256"] = digest(other)
     with pytest.raises(ValueError, match="request|body|wire"):
         revision.response_binding(relabelled, other, original)
+
+
+def test_strict_successor_reuses_existing_paid_budget_without_new_authorization_or_reset(
+    tmp_path, monkeypatch
+):
+    _, _, ledger, _, _, _ = _paid_fixture(tmp_path, monkeypatch)
+    before = ledger.snapshot()
+    config = ledger.config
+    plan = dict(
+        id="strict-successor-different-protocol",
+        allowed_output_limits=revision.ALLOWED_OUTPUTS,
+        original_budget_config_sha256=digest(config),
+        budget=dict(
+            path=str(ledger.path),
+            run_id=ledger.run_id,
+            purpose=V6_PURPOSE,
+            hard_cap_microcny=config["hard_cap_microcny"],
+            warning_microcny=config["warning_microcny"],
+            request_cap=config["request_cap"],
+            price_sheet=config["price_sheet"],
+            amendment_id=config["amendment_id"],
+            reuse_existing_amendment=True,
+        ),
+    )
+
+    def no_new_amendment(*args, **kwargs):
+        pytest.fail("strict schema successor must not reauthorize/reset the shared paid ledger")
+
+    monkeypatch.setattr(revision, "apply_v6_review_amendment", no_new_amendment)
+    output = tmp_path / "strict-successor"
+    current = revision.activate(output, plan)
+    assert current.snapshot() == before and current.config == config
+    reuse = revision.read_json(output / "budget_amendment/record.json")
+    assert reuse["reused"] and not reuse["new_monetary_authorization"]
+    assert reuse["counters_at_reuse"]["settled_tariff_microcny"] == 560
+    assert revision.activate(output, plan).snapshot() == before
+
+
+@pytest.mark.parametrize(
+    "admitted,count,wrong_ids",
+    [(True, 12, False), (False, 11, False), (False, 13, False), (False, 12, True)],
+)
+def test_strict_parent_must_be_exact_failed_twelve_cohort_before_reusing_budget(
+    tmp_path, monkeypatch, admitted, count, wrong_ids
+):
+    parent = revision.bound(
+        dict(
+            original_protocol_id="original",
+            budget=dict(price_sheet=sheet().__dict__),
+            calibration=dict(task_ids=[f"calibration-{i}" for i in range(6)]),
+        )
+    )
+    directory = tmp_path / "parent"
+    write(directory / "protocol.json", parent)
+    write(
+        directory / "capacity_gate/record.json",
+        revision.bound(dict(protocol_id=parent["id"], admitted=admitted)),
+    )
+    ids = [
+        revision.review_id(parent, task, index)
+        for task in parent["calibration"]["task_ids"]
+        for index in (0, 1)
+    ]
+    if wrong_ids:
+        ids[-1] = revision.review_id(parent, "not-original-calibration", 0)
+    completed = dict.fromkeys((ids + ["extra"])[:count], {})
+    monkeypatch.setattr(revision, "recover", lambda *args: completed)
+    write(directory / "historical_audit/record.json", {})
+
+    def no_budget_open():
+        pytest.fail("unadmitted parent cohort must fail before touching shared budget")
+
+    monkeypatch.setattr(revision, "connect", no_budget_open)
+    with pytest.raises(ValueError, match="cohort|calibration"):
+        revision.historical_audit(directory)
+
+
+def test_strict_review_arguments_and_format_flags_bind_actual_original_tool_call(
+    tmp_path, monkeypatch
+):
+    from test_finance_v6_strict_review import setup as strict_setup
+    from test_finance_v6_strict_review_provider import response_fixture
+
+    _, _, ledger, _, _, _ = _paid_fixture(tmp_path, monkeypatch)
+    request, semantic_review = strict_setup()
+    request.update(max_output_tokens=32768, capacity_policy_id=revision.CAPACITY_POLICY["id"])
+    raw_arguments = json.dumps(semantic_review)
+    original = asyncio.run(
+        request_review(
+            ledger=ledger,
+            api_key="temporary-mock-key",
+            episode_id="strict-actual-response",
+            request=request,
+            client=Client(response_fixture(raw_arguments)),
+        )
+    )
+    row = ledger.request_record(original["budget_invocation_id"])
+    revision.response_binding(original, request, row)
+    for key, replacement in (
+        ("review_text", raw_arguments + "host repair"),
+        ("review_format_error", "host rewrote format judgment"),
+    ):
+        changed = copy.deepcopy(original)
+        changed[key] = replacement
+        with pytest.raises(ValueError, match="strict|arguments|format|derived"):
+            revision.response_binding(changed, request, row)
+    malformed = response_fixture(raw_arguments)
+    malformed["choices"][0]["message"]["tool_calls"][0]["id"] = ""
+    failed = asyncio.run(
+        request_review(
+            ledger=ledger,
+            api_key="temporary-mock-key",
+            episode_id="strict-missing-id",
+            request=request,
+            client=Client(malformed),
+        )
+    )
+    assert failed["review_text"] is None and failed["review_format_error"]
+    # Correctly retained format failure is not confused with artifact tampering.
+    revision.response_binding(
+        failed, request, ledger.request_record(failed["budget_invocation_id"])
+    )
+    assert not revision.assess(failed, request)["format_capacity_admitted"]
