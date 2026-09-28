@@ -158,6 +158,10 @@ Student 上下文上限 24576，超长不截断、不静默丢包。全部实际
 冻结范围：`scripts/prepare_finqa_conditional_scope_20260928.py`，输出固定 1000 行范围及计数。
 付费协议必须绑定已提交的源码，注册入口：
 
+下列命令在执行源码工作树根目录运行，使用项目虚拟环境 Python，并设置
+`PYTHONPATH=trusted_data_synthesis/src:trusted_data_synthesis/scripts`。
+已有运行只能使用原协议执行 `status` 或安全恢复，不能再次注册新批次以重置预算。
+
 ```bash
 python -m trusted_synthesis.finance_research.probe_collection register --coverage-acknowledgement author_anchored_conditional
 python -m trusted_synthesis.finance_research.probe_collection start
@@ -172,3 +176,46 @@ python -m trusted_synthesis.finance_research.probe_collection status
 对应恢复与采集入口的 **17 项定向测试通过（0.62秒）**，其中 6 项与前一批重复，不将两批相加
 冒称独立测试总量。记录分别见 `public/conditional_probe_preparation_01/validation_01.xml`
 与 `validation_recovery_01.xml`。这些是接口和防护验证，不是模型实测成绩。
+
+## 10. 实际启动登记（与上述事前设计分开）
+
+执行源码提交：`5ca0e7675da482769ddcfc8a8540c80a6498f9e9`，已推送 main。
+实际不可变协议：`d17c2861b9b729081d41a7c79d48db0227be9dd53eeb6e2925f50f37e54c0d96`。
+北京时间 **2026-09-28 16:15:16** 启动，控制器 PID 1419435，进程身份 300771118。
+这些是启动时身份，并不保证该 PID 在未来查询时仍属于此实验。
+
+16:15:47 的早期执行快照为：完成 119/1320 会话、16 路活跃、累计发出 427 请求，
+其中 16 请求在途，未知费用 0，halt 为 null。已结算高峰价费用上界 **1.387165 元**，
+尚未包含在途请求实际结算；不能把这个早期数值当最终总费用。
+截至此快照没有进行生成材料资格审查，也没有启动 GPU 训练。
+后续以运行目录的状态、generation seal 和 inventory_complete 为准，不追改这份早期快照。
+
+## 11. 执行后补记：采集完整，但条件性材料准入失败
+
+北京时间 **16:20:11** 控制器完成全部 1320 槽的采集、结算与资格检查并退出。
+实际 **4356 次 API 请求**，已结算高峰价费用上界 **6.684336 元**；在途 0、未知费用 0、halt=null。
+没有重试、补采、GPU 调用或训练，不需要为本批次保留 GPU。
+
+| 用途 | 固定分母 | CompletePass | invalid | unknown |
+|---|---:|---:|---:|---:|
+| 训练候选 | 990 | 2 | 97 | 891 |
+| 封存诊断 | 330 | 4 | 31 | 295 |
+
+只有 2/165 个任务各有一个合格训练包，163 题缺少训练支持；没有多状态任务。
+因此 `admitted=false`、`pi_optimization_support_ready=false`，未创建 MaterialRegistration，
+未进行 Student 编码或训练。4 个封存合格包没有被转入训练，165 题也没有再次缩为 2 题。
+
+最主要的 unknown 首失败原因是 `additional_free_text_claims_not_semantically_verified`：
+训练槽 865、封存槽 288，合计 1153。**当前判定器对非空 assistant 自由文本直接返回 unknown，
+不区分行动意图与数值解释。**这说明实际轨迹的语义覆盖不足，不能解释为 1153 条金融答案错误，
+也不能认为这些轨迹除自由文本外的所有步骤已经通过验证：该判据会提前返回。
+静态作者依据可绑定与实际模型全轨迹可证明之间存在实质缺口。
+
+执行后按固定库存顺序读取该原因的前 3 个训练槽作为说明，三者均来自
+`APD/2019/page_53.pdf-2`，不是随机或代表性抽样。其中既有“将读取表格”的行动说明，也有
+养老金费用数值和减法的叙述。此次读取未用于改规则或重判；不能据这 3 条推断所有 unknown 的正确性。
+本轮没有额外跑原生得分汇总，资格表不是 FinQA execution accuracy。
+
+后续若修订自由文本资格能力，须保留本轮原判与固定库存，显式记录新规则和新研究用途；
+不能删去文本冒充原轨迹、将 unknown 改作 pass、拿这批选择新规则后声称独立确认，或静默追加付费采样。
+原 1000 题总体仍未准入，本轮也没有建立新 FinQA 训练的正向价值。
