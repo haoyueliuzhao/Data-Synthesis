@@ -49,4 +49,31 @@ H 检验的是接口／迁移，不是 VTDO 收益；旧 Static 对旧协议更�
 
 正式 worker 先在对应卡剩余空间内加载模型，再按精确 PID＋出生标识释放自己的预留进程，减少从持有到实用的空窗。预留不等于模型已经开始运行，也不是操作系统级独占保证。
 
-运行目录为 `artifacts/finance_research_20260928/audit_followup_01`，`protocol.json` 固定任务、点身份、预算、公开规则、源码和初始 lease；`status.json` 给出 G/H、活动 worker 与阻塞；G 原调用意图和回放结果、H 各分片事件/会话/封存分别保存。实际启动、测试和结果将追加，不预先写作通过。
+运行目录为 `artifacts/finance_research_20260928/audit_followup_01`，`protocol.json` 固定任务、点身份、预算、公开规则、源码和初始 lease；`status.json` 给出 G/H、活动 worker 与阻塞；G 原调用意图和回放结果、H 各分片事件/会话/封存分别保存。
+
+## 实际启动与首批结果（2026-09-28，北京时间）
+
+修订代码和本次冻结执行版本为 `954ad6dab6`。集成测试先完成 238 项；之后控制器新增 5 项测试，并与调用结算、G 检查共 21 项相关回归一同通过。它们是 CPU／接口测试，不等同于金融准确率或训练收益。第一轮测试未覆盖真实 tokenizer 的登记返回类型，具体偏差见下一节。
+
+09:02:57 启动协调器 PID1037391。协议 ID 为 `1f8840f9ba4cb10301fb06362d25a37357ad4e1a4d9917da02dd3736cd24921a`。
+
+G 在 GPU0 上完成，耗时约 85.21 秒，实际新生成 4／4 次、API 调用 0、真实 optimizer.step 0。四个响应均为 16 个实际 token，包含 EOS；原生工具协议往返与原 token 的 logP／可微回放均通过，四例最大 logP 绝对误差均为 0，沿用 atol=1e-6／rtol=1e-5；真实状态和 RNG 未改变。该结论仅覆盖所测两种输入、两个参数点和短 `list_sources` 响应，不是任意长响应、多轮训练链路或金融效用验证。虚拟点仍为固定梯度数值诊断，不是新 FinQA 总体梯度。
+
+H 于 09:04:26 开始启动，四个条件已经在 GPU0／1／2／3 实际并行。对应预留 holder 已释放，卡上保留的是模型计算进程，不再只是占位。09:08:25 的只读快照中已保存 37／480 会话，完整会话内模型调用合计 218，未结算会话 0。这只是即时进度，不是四条件均衡的可比结果；在途调用不计入该已保存合计，也不能由正常终止推断答案正确。全部生成封存前未进行本轮参考评分。
+
+协调器会在 GPU 可用时继续剩余分片，完成全部 480 会话后再评分；遇到未知调用或 worker 失败则保留证据、停止启动新分片，不擅自重采。训练资格和训练收益仍未确认，新的大材料采集和训练尚未启动。
+
+## G 长度登记偏差与只读纠错
+
+登记器调用 `apply_chat_template(tokenize=True)` 后直接取 `len()`。本机 Transformers 返回包含 `input_ids`、`attention_mask` 的 BatchEncoding，因此原协议 `gate_prompt_lengths=[2,2]` 实为字段数，选择器退化为按 task_key 字典序取首尾。原协议及四次采样均原样保留，不能追写成“选择算法正确”。
+
+发现后，仅用原公开 120 题、原公开模板和原 tokenizer 在 CPU 重算真实 token 数，不读取参考答案、不调用 GPU/API。选中的 `AAPL/2008/page_38.pdf-2` 为 2309 token（排名 1），`NCLH/2018/page_69.pdf-1` 为 6299 token（排名 120）；两者恰好也是真正极值。120 题均满足 prompt+2048≤24576。因此实际长短输入覆盖没有丢失，但登记字段和选择器有实现缺陷，二者必须分别表述。无需追加任何 G 生成。
+
+后续登记器将在独立工作树修复并加入回归；本轮 G/H 继续使用冻结版本，避免运行中改变源码绑定。纠错只补充旁证，不重写旧协议、旧结果或挑选新响应。
+
+审计定位（SHA-256 为原文件字节摘要）：
+
+- `audit_followup_01/protocol.json`：`59f530eb10503612920fd88166e9cb1d1d303c4c423d8d1c0f28513953024408`。
+- `audit_followup_01/gate_complete/record.json`：`611cb483441a63316c79651496f8dc743f170912c8c9c200e25ecf7022895da6`。
+- CPU 长度表按 task_key 排序、每行 `{task_key,tokens}`，使用 `contracts.digest`（UTF-8、ensure_ascii=False、sort_keys=True、紧凑 JSON）得到 `0a60df957063b2eac23d5211432de1e0c45871f510a73b3955ba040e48c9f01c`；原 calibration_tasks 同口径摘要为 `54756f03ecff4e638f1580308bfae68e0a789b82761cfee34979d995554e7eda`。计数为公开模板 tokenize=False 后、add_special_tokens=False 的 input_ids 数，未截断或填充。
+- 全部逐次生成／回放／参数状态证据位于 `audit_followup_01/gate`；四条件会话位于 `audit_followup_01/jobs`。
