@@ -1,0 +1,375 @@
+{
+  "GPU_reservation": false,
+  "all_capacity_pilots_untruncated": true,
+  "at": "2026-09-28T14:55:45.741655+00:00",
+  "currently_running": false,
+  "full_review_admission": false,
+  "held_microcny": 0,
+  "id": "02f93a701a141c6a7eda34652c3c7b589958daa1b0dcef4203390693871d6259",
+  "new_generation_calls": 0,
+  "next_structure_change_not_implemented": "per-trajectory process review plus separately registered within-task state alignment",
+  "old_review_calls_retained": 427,
+  "original_generation_retained": 8000,
+  "original_protocol_unchanged": true,
+  "remaining_hard_budget_CNY": 682.216931,
+  "runs": [
+    {
+      "completed": 12,
+      "finish_counts": {
+        "stop": 12
+      },
+      "gate_sha256": "d41a73b48bed39c6d7843792b376537b06ceb1560dc17c9e400ef0be34856473",
+      "name": "review_revision_01",
+      "passed": 0,
+      "protocol_id": "9c44809540e6d559c651e5322a0ac4c30d3c048b50a98c291d1c5b5348a1d2b5",
+      "protocol_sha256": "d9de9b2fca9c631e97ece61f4b5e857f09ed09da2d22d20e029634c8a458241d",
+      "rows": [
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 19308,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/29f7024dcf0078374f86378496ad60eff4faef8b40635743d6cb13cb4fc45cb6/response/record.json",
+          "sha256": "214fd3852e1163d9c0903f7db66ebdc82e109b7415b2247b99533d3758a45627",
+          "validation_error": {
+            "reason": "unknown compact fragment: d0",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 10786,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/2ef6ff0920dca604cdec2641f43b6dc33c0f19e7b8e673de7bb00e6230d37c04/response/record.json",
+          "sha256": "ab419d3ad8c5e9d1efb2102b73bd4fcb210f12f0d1758c9efb110d4b3b7aea44",
+          "validation_error": {
+            "reason": "unknown compact fragment: d89",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 10422,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/3ad75e6dc7b8914109f7e2fee377ba7ee55dfd6d5a394c8377fc741eb6d2900d/response/record.json",
+          "sha256": "249a3cd2fc4678bce3c7ee18a35507f0ab302a15cd4c72b80d03298bc9336470",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 6277 (char 6276)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 12292,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/5b49f1884330c08702509356023eb27bdfebada14dabe53bd8b0acfd8794f342/response/record.json",
+          "sha256": "1b5111e6500a3bb872945e05cb3dd2ce19cd0c0b7746292fb83b0095356de4d4",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 8014 (char 8013)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 8553,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/7f233ec2a4198474af42b66aeeb6c8b10ae2377fb91f11ed67a8da6e45271e57/response/record.json",
+          "sha256": "ebd6da79fd79c097905597434db6eb03a49c0182006d63d6499e1c23bd312133",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 2792 (char 2791)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 12569,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/8dd6ab10727d3a6dd07af6452feab45465e4371fe36c32967a20d1927cd4f357/response/record.json",
+          "sha256": "5d45e75bc95f2f3719ee65ba8373396d1cdb2e603bc91b35331079fe8750f489",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 5620 (char 5619)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 10769,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/9294fc02db424c2fa653b6b1b66df9edf0b3a2430c2112de9bf9a5e2572f0051/response/record.json",
+          "sha256": "ed4b900c441af1b5703131a432d0fbab91af03c673a6c21fb34ebecba99f47da",
+          "validation_error": {
+            "reason": "unknown compact fragment: The table gives cumulative values indexed to 100 at Dec 31, 2010.",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 10258,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/9fa2332cbc0863a5475048455a309997fd978e70562649ca94d77ec82a0fbe17/response/record.json",
+          "sha256": "ddb025302819fb41d6b283770afd660ea46d6d245cef2f2c4592849b3a792c2b",
+          "validation_error": {
+            "reason": "unknown compact fragment: The table gives cumulative values indexed to 100 at Dec 31, 2010.",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 7982,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/b6c70dafbc97f96bc592710c35470d653cd3f02f6f782867540b3f74c008efc3/response/record.json",
+          "sha256": "6129b59d6532cbd9a46e70889ee0de0fe93f31e502044f2af3bf4b67e0ab9366",
+          "validation_error": {
+            "reason": "unknown compact fragment: d12",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 10618,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/bb2078473503fd1c44b6f8dc8f2810e706bb6bcb565b484ad8cfb0990052cc8e/response/record.json",
+          "sha256": "17999a2bd4bc987026399fb842b144af64ba10c604b3777b966e8b2da22ba144",
+          "validation_error": {
+            "reason": "unknown compact fragment: d34",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 20380,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/d4883604803a279e2b3aa1ca6b9a01e029bfbe25d0ed7ff5dec187e8e428eadb/response/record.json",
+          "sha256": "1adb03df08aca442c4d80c60688f9616046ee861999cc677acef3c377ae98c3a",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 9412 (char 9411)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "stop",
+          "format_capacity_admitted": false,
+          "output_tokens": 13090,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_01/reviews/f26b2546ad94c7fe0d654fd018fe45f5d72f924a936dc26059b9c35bd07885fd/response/record.json",
+          "sha256": "2e9a4dc3cbd9a9c485c11935efc382ef3069b7e3379b32ec11a112b175a7cdf8",
+          "validation_error": {
+            "reason": "unknown compact fragment: d41",
+            "type": "ReviewError"
+          }
+        }
+      ],
+      "status": {
+        "at": "2026-09-28T14:33:11.173092+00:00",
+        "budget": {
+          "actual_cache_hit_tokens_settled": 61473018,
+          "actual_cache_miss_tokens_settled": 20311356,
+          "actual_completion_tokens_settled": 9042116,
+          "actual_prompt_tokens_settled": 81784374,
+          "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+          "exposure_microcny": 115427419,
+          "exposure_warning_reached": false,
+          "halt": null,
+          "hard_cap_microcny": 800000000,
+          "held_microcny": 0,
+          "pending_requests": 0,
+          "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+          "purpose": "finqa_v6_generation_and_semantic_review_v1",
+          "remaining_exposure_microcny": 684572581,
+          "request_cap": 258000,
+          "requests_dispatched": 18876,
+          "requests_reserved": 18876,
+          "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+          "settled_tariff_microcny": 115427419,
+          "unknown_requests": 0,
+          "warning_microcny": 700000000,
+          "warning_reached": false
+        },
+        "expanded_beyond_12": false,
+        "phase": "CAPACITY_FORMAT_BLOCKED",
+        "review_completed": 12,
+        "review_denominator": 2000,
+        "training_started": false
+      }
+    },
+    {
+      "completed": 12,
+      "finish_counts": {
+        "tool_calls": 12
+      },
+      "gate_sha256": "c33ca030efffc30c604e60607aaf8956125634559ceb7ae66ab73b9732010124",
+      "name": "review_revision_02",
+      "passed": 0,
+      "protocol_id": "544747d28a67b1bbe4937e521fdc411f78731cb1dae605057bfa58bf03557fcb",
+      "protocol_sha256": "fdb4d62e9cb1cf7366f256bdc4ca9919aba725b6c43f00e5be8929a63196cbb8",
+      "rows": [
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 12520,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/0761946fb9d2b30437f5504e9b10369d2bc85a1f9862af6dc796a8d101f2ef2b/response/record.json",
+          "sha256": "1247e982ad6ab68b0078076d82b43e52410b84b1e13849a39490339fbce42c62",
+          "validation_error": {
+            "reason": "cross-slot evidence in individual judgment",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 14057,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/334c7c0bb79863fa43828977c8fb43fb26bebb59c3815b9bc37713d73696d460/response/record.json",
+          "sha256": "ef18714b3e0ade55ef42b73c18e95760cd0759e3bef5fe496104c83614109e00",
+          "validation_error": {
+            "reason": "Expecting ',' delimiter: line 1 column 17612 (char 17611)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 9654,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/4f4e7f30eef221fcb2943100a779bd033bb030c53c4a66c0b4c408b3fd1de90b/response/record.json",
+          "sha256": "7bf16aac4d1affdeef6fc4650776b87c28e01f6e9163ba0ffd8e47438be4dee5",
+          "validation_error": {
+            "reason": "model proposition cannot be invented from a source alone",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 33246,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/647ce699ab19b13556e2a5ed4a3e44ea89a17d664bd0ced417a083ec78c5d693/response/record.json",
+          "sha256": "0bb8b5c378de8ee88bdf1b1b9b40f97e541bf13e51ec3bdf19c9d94c4dfec040",
+          "validation_error": {
+            "reason": "Extra data: line 1 column 94287 (char 94286)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 10059,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/8085a61920702fa0190638d541a72685f87f7db57f3fa10bd2e8b6196f38a44b/response/record.json",
+          "sha256": "33a1038959a390ac44184345c0238e9ca83c39630ece76f73c508cdb75ae2ee9",
+          "validation_error": {
+            "reason": "substantive update must quote actual action/observation and accepted consequence",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 13872,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/a854745637564aabe0a0512036494c0123204e072c21ef0db6bdf60b5cd7504a/response/record.json",
+          "sha256": "471f3a7654b8d48c26a76e2d6c2051ae6acf4870952ec8a81b931d81fe1c0d19",
+          "validation_error": {
+            "reason": "Extra data: line 1 column 38782 (char 38781)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 38942,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/b8b40df9d9d70e979ae5fc499c9e89c1c500c2f845e083eaa6afd3930a40666c/response/record.json",
+          "sha256": "b6d781f79431a7c372730b62f190af517909211c5bed38e95b4dbe0b30c1b69b",
+          "validation_error": {
+            "reason": "10 validation errors for CompactTaskReview\nslots.0.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's0', 'v_trac... 'evidence': ['e98']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's1', 'v_trac...'evidence': ['e151']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.2.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's2', 'v_trac...'evidence': ['e197']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.3.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's3', 'v_trac...'evidence': ['e254']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.4.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's4', 'v_trac...'evidence': ['e282']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.5.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's5', 'v_trac...'evidence': ['e324']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.6.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's6', 'v_trac...'evidence': ['e369']}]}}, input_type=dict]\n    For further information visit https://e",
+            "type": "ValidationError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 16329,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/bafd9962d4ee7f5e4c3c8b9af7583bfeb1f599f439f0bd23bcd8d191cbe39199/response/record.json",
+          "sha256": "fd718cd5aa3939e1b486e7432a73f7e6769334b241b8cc52103fe0b2798611cd",
+          "validation_error": {
+            "reason": "duplicate JSON key",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 13671,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/bdf36c1c57334409bb195a135a177424a43e2cf5381c707f9fa7233548674a75/response/record.json",
+          "sha256": "2ed3936d64d3651a7047af16c3e98fec79bfb779f81f8cc49f4d183c91456db7",
+          "validation_error": {
+            "reason": "Expecting ',' delimiter: line 1 column 36734 (char 36733)",
+            "type": "JSONDecodeError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 16702,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/e7d56fe48a409eae287db2ee0ed2b50596537287a4781f19bba7b969f9f529b0/response/record.json",
+          "sha256": "b9d4ac5e6ffac7291cb76e22c6ef3d4cfa2c870150673fcf6b7738297d4702d7",
+          "validation_error": {
+            "reason": "valid trace retains an unresolved key claim",
+            "type": "ReviewError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 21284,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/ed3c9e3008857a5ee4d116326c00c9147f12c74c3f806aee842eb7d36799d3ec/response/record.json",
+          "sha256": "20ded50b5507494240a1890b02e45a65817fdc6cb3d17e99080611d18b4da1d3",
+          "validation_error": {
+            "reason": "9 validation errors for CompactTaskReview\nslots.0.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's0', 'v_trac...'evidence': ['e113']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.1.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's1', 'v_trac...'evidence': ['e125']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.2.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's2', 'v_trac...'evidence': ['e161']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.3.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's3', 'v_trac...'evidence': ['e176']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.4.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's4', 'v_trac...'evidence': ['e187']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.5.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's5', 'v_trac...'evidence': ['e199']}]}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nslots.6.reason_codes\n  Field required [type=missing, input_value={'slot_id': 's6', 'v_trac...'evidence': ['e217']}]}}, input_type=dict]\n    For further information visit https://er",
+            "type": "ValidationError"
+          }
+        },
+        {
+          "finish_reason": "tool_calls",
+          "format_capacity_admitted": false,
+          "output_tokens": 16503,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_02/reviews/f7f6fb25fbcdc9827729f358f3333c2f6580e7d34853cfb2156f58adf75a64c6/response/record.json",
+          "sha256": "5fc5bdcb548fe2838070237cafd551822d15192b8d5c7cb895c119d226627d7c",
+          "validation_error": {
+            "reason": "Expecting property name enclosed in double quotes: line 1 column 19571 (char 19570)",
+            "type": "JSONDecodeError"
+          }
+        }
+      ],
+      "status": {
+        "at": "2026-09-28T14:53:08.338514+00:00",
+        "budget": {
+          "actual_cache_hit_tokens_settled": 61482490,
+          "actual_cache_miss_tokens_settled": 20621634,
+          "actual_completion_tokens_settled": 9258955,
+          "actual_prompt_tokens_settled": 82104124,
+          "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+          "exposure_microcny": 117783069,
+          "exposure_warning_reached": false,
+          "halt": null,
+          "hard_cap_microcny": 800000000,
+          "held_microcny": 0,
+          "pending_requests": 0,
+          "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+          "purpose": "finqa_v6_generation_and_semantic_review_v1",
+          "remaining_exposure_microcny": 682216931,
+          "request_cap": 258000,
+          "requests_dispatched": 18888,
+          "requests_reserved": 18888,
+          "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+          "settled_tariff_microcny": 117783069,
+          "unknown_requests": 0,
+          "warning_microcny": 700000000,
+          "warning_reached": false
+        },
+        "expanded_beyond_12": false,
+        "phase": "CAPACITY_FORMAT_BLOCKED",
+        "review_completed": 12,
+        "review_denominator": 2000,
+        "training_started": false
+      }
+    }
+  ],
+  "schema": "v6_capacity_audit_actual_results.v1",
+  "total_cost_upper_CNY": 117.783069,
+  "training_started": false,
+  "unknown_billing_requests": 0
+}
