@@ -1,0 +1,1135 @@
+{
+  "API_model": "deepseek-flash",
+  "API_tokens_are_not_Student_supervised_tokens": true,
+  "D_pi": null,
+  "D_pi_null_means_full_registered_task_support_missing": true,
+  "M_flex": "14/165",
+  "Student_encoding_admission_performed": false,
+  "Student_supervised_token_counts": null,
+  "active_task_denominator": 165,
+  "actual_API_requests": 4151,
+  "actual_cache_hit_tokens": 19049620,
+  "actual_cache_miss_tokens": 1409168,
+  "actual_completion_tokens": 288760,
+  "actual_prompt_tokens": 20458788,
+  "admission_scope": "qualified original Probe support for all 165 tasks in the explicit static-supported conditional population, not original 1,000",
+  "assessed_slots": 1320,
+  "assessed_slots_means_qualification_processed_not_qualified": true,
+  "base_report_id": "e2cdaec6d88d362b1f3d43f327331d7acf2ce1c20d5420118e2d0fffef581c24",
+  "base_report_script_sha256": "59ce16907326958fcf9506208897a8b9e5150ff4b2474aba2696b03d122903d9",
+  "canonical_author_DAG_scope_not_all_algebraically_equivalent_solutions": true,
+  "complete_inventory_source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/structured_probe_followup_01/structured_inventory_01/inventory_complete/record.json",
+  "conditional_qualified_support_admitted": false,
+  "conditional_scope_source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/structured_probe_followup_01/structured_inventory_01/protocol.json",
+  "content_compliance_definition": "empty raw_text + one native call; whitespace separate",
+  "content_compliance_is_financial_qualification": false,
+  "episode_file_hashes_checked": 1320,
+  "episode_file_manifest_digest": "ce8800387165e7257d563b9081d9d395224952328690e06801ac1c413d2266f6",
+  "excluded_original_tasks": 835,
+  "execution_source_commit": "572179e0e3a21b71c81a4f60081e836ad5a9b7fe",
+  "frozen_inventory_id": "finqa_frozen_probe_support:a670a515998094a856bff2b3a58309bb606b320231ced43d93dc8bf73351bea9",
+  "generation_sealed_at": "2026-09-28T09:33:16.184382+00:00",
+  "id": "93a2e46b723648bca1683fd425f371b5570299d54ad5cbb5eceaa2efdfbb0687",
+  "inventory_id": "finqa_probe_inventory:07030589c7624604ab7bb14e5cc6f86382b10c4a68bae5817777d1725732c83e",
+  "mapper_rule_id": "finqa_state_mapper:d1fcd38443f10ab7e3961a5350617b5c4e77c16b357e9ffc99ed7f1ec65f66a9",
+  "missing_train_task_count": 111,
+  "missing_train_task_ids": [
+    "APD/2019/page_53.pdf-2",
+    "C/2009/page_195.pdf-1",
+    "GPN/2016/page_83.pdf-1",
+    "MRO/2012/page_39.pdf-3",
+    "EOG/2017/page_78.pdf-1",
+    "MAR/2018/page_42.pdf-2",
+    "LMT/2015/page_52.pdf-2",
+    "VLO/2012/page_27.pdf-1",
+    "C/2015/page_73.pdf-1",
+    "LMT/2015/page_106.pdf-3",
+    "C/2015/page_73.pdf-3",
+    "IPG/2018/page_104.pdf-2",
+    "MRO/2008/page_135.pdf-3",
+    "LMT/2014/page_45.pdf-4",
+    "APD/2019/page_100.pdf-1",
+    "CDW/2015/page_53.pdf-1",
+    "C/2009/page_200.pdf-2",
+    "HFC/2011/page_92.pdf-6",
+    "MRO/2008/page_146.pdf-2",
+    "JPM/2017/page_69.pdf-3",
+    "AAPL/2010/page_42.pdf-3",
+    "LMT/2013/page_49.pdf-1",
+    "DG/2008/page_73.pdf-4",
+    "IP/2006/page_19.pdf-1",
+    "EOG/2017/page_85.pdf-1",
+    "KIM/2014/page_59.pdf-1",
+    "IQV/2016/page_57.pdf-2",
+    "AON/2015/page_72.pdf-1",
+    "LMT/2013/page_49.pdf-2",
+    "MRO/2008/page_70.pdf-3",
+    "C/2009/page_41.pdf-1",
+    "LMT/2015/page_86.pdf-1",
+    "LMT/2007/page_39.pdf-2",
+    "LMT/2013/page_45.pdf-1",
+    "AAPL/2014/page_26.pdf-2",
+    "LMT/2015/page_53.pdf-1",
+    "C/2015/page_46.pdf-1",
+    "CDW/2015/page_54.pdf-1",
+    "LMT/2014/page_85.pdf-3",
+    "MRO/2012/page_40.pdf-2",
+    "IP/2018/page_50.pdf-2",
+    "LMT/2015/page_86.pdf-2",
+    "IP/2006/page_84.pdf-1",
+    "HFC/2011/page_92.pdf-2",
+    "DRE/2016/page_64.pdf-2",
+    "MAS/2010/page_29.pdf-4",
+    "LMT/2007/page_55.pdf-4",
+    "LMT/2013/page_81.pdf-2",
+    "MRO/2008/page_42.pdf-2",
+    "LMT/2014/page_46.pdf-2",
+    "APD/2019/page_53.pdf-1",
+    "LMT/2007/page_55.pdf-2",
+    "IQV/2016/page_79.pdf-2",
+    "UPS/2013/page_56.pdf-1",
+    "AAPL/2010/page_42.pdf-2",
+    "UA/2009/page_63.pdf-1",
+    "MRO/2012/page_40.pdf-1",
+    "LMT/2007/page_55.pdf-3",
+    "C/2009/page_248.pdf-4",
+    "C/2009/page_41.pdf-2",
+    "EOG/2017/page_93.pdf-2",
+    "SNA/2013/page_59.pdf-1",
+    "LMT/2014/page_45.pdf-3",
+    "AAPL/2013/page_39.pdf-2",
+    "ORLY/2016/page_29.pdf-1",
+    "IP/2005/page_32.pdf-2",
+    "SNA/2013/page_56.pdf-1",
+    "MRO/2012/page_41.pdf-2",
+    "LMT/2014/page_85.pdf-2",
+    "SNA/2013/page_56.pdf-2",
+    "HIG/2012/page_132.pdf-1",
+    "PNC/2018/page_81.pdf-3",
+    "LMT/2013/page_47.pdf-2",
+    "LMT/2014/page_47.pdf-1",
+    "MRO/2008/page_135.pdf-1",
+    "C/2009/page_48.pdf-2",
+    "MRO/2008/page_146.pdf-4",
+    "EOG/2017/page_93.pdf-1",
+    "C/2009/page_195.pdf-2",
+    "RE/2013/page_109.pdf-2",
+    "MAS/2010/page_89.pdf-2",
+    "C/2015/page_46.pdf-2",
+    "LMT/2014/page_85.pdf-1",
+    "STT/2013/page_54.pdf-1",
+    "IP/2005/page_32.pdf-1",
+    "LMT/2015/page_86.pdf-3",
+    "MRO/2012/page_39.pdf-2",
+    "AAPL/2010/page_42.pdf-4",
+    "AON/2015/page_43.pdf-3",
+    "LMT/2015/page_53.pdf-2",
+    "AON/2015/page_50.pdf-2",
+    "STT/2013/page_175.pdf-2",
+    "C/2009/page_248.pdf-2",
+    "AAPL/2010/page_43.pdf-2",
+    "NCLH/2016/page_84.pdf-2",
+    "RSG/2013/page_69.pdf-2",
+    "LMT/2014/page_49.pdf-3",
+    "CDW/2015/page_34.pdf-1",
+    "LMT/2015/page_106.pdf-2",
+    "JPM/2017/page_83.pdf-2",
+    "AAPL/2014/page_78.pdf-2",
+    "AAPL/2014/page_67.pdf-2",
+    "SNA/2013/page_93.pdf-4",
+    "IP/2018/page_83.pdf-3",
+    "IP/2018/page_50.pdf-3",
+    "HOLX/2009/page_153.pdf-4",
+    "PPG/2015/page_40.pdf-4",
+    "KIM/2014/page_59.pdf-2",
+    "IP/2006/page_19.pdf-3",
+    "KIM/2006/page_67.pdf-4",
+    "BDX/2009/page_81.pdf-4"
+  ],
+  "multi_state_task_ids": [
+    "STT/2013/page_71.pdf-1",
+    "MAS/2010/page_29.pdf-1",
+    "LMT/2014/page_46.pdf-1",
+    "HWM/2016/page_79.pdf-2",
+    "C/2009/page_248.pdf-3",
+    "STT/2013/page_71.pdf-2",
+    "IP/2006/page_84.pdf-2",
+    "VTR/2007/page_48.pdf-3",
+    "DG/2008/page_73.pdf-2",
+    "ORLY/2015/page_28.pdf-3",
+    "RE/2013/page_109.pdf-4",
+    "BLK/2017/page_77.pdf-1",
+    "BLK/2017/page_77.pdf-2",
+    "BLK/2017/page_81.pdf-4"
+  ],
+  "multi_state_tasks": 14,
+  "new_model_calls": 0,
+  "new_old_difference_is_joint_protocol_development_observation_not_isolated_cause": true,
+  "new_private_reference_reads": 0,
+  "new_qualification_or_native_scoring": false,
+  "nonpass_reason_counts": {
+    "sealed_diagnostic": {
+      "invalid": {
+        "Final_value_or_declared_scale_contradicts_source_bound_program": 88,
+        "normal_terminal_has_no_completed_Final": 5,
+        "submitted_program_does_not_execute": 1,
+        "submitted_program_result_contradicts_anchored_task": 104,
+        "submitted_program_structure_invalid": 6
+      },
+      "unknown": {
+        "Final_currency_scale_outside_finite_policy": 10,
+        "actual_calculation_not_a_proved_required_dependency": 10,
+        "non_numeric_value": 3,
+        "non_scalar_Final_outside_numerical_qualification": 2,
+        "numeric_leaf_missing_or_ambiguous_in_author_sources": 22,
+        "undeclared_Final_dimensionless_scale": 30,
+        "unproved_alternative_or_extra_program_dependency": 4
+      }
+    },
+    "train": {
+      "invalid": {
+        "Final_value_or_declared_scale_contradicts_source_bound_program": 263,
+        "normal_terminal_has_no_completed_Final": 30,
+        "submitted_program_does_not_execute": 2,
+        "submitted_program_result_contradicts_anchored_task": 335,
+        "submitted_program_structure_invalid": 11
+      },
+      "unknown": {
+        "Final_currency_scale_outside_finite_policy": 35,
+        "actual_calculation_not_a_proved_required_dependency": 10,
+        "additional_free_text_claims_not_semantically_verified": 2,
+        "non_numeric_value": 1,
+        "non_scalar_Final_outside_numerical_qualification": 5,
+        "numeric_leaf_missing_or_ambiguous_in_author_sources": 74,
+        "undeclared_Final_dimensionless_scale": 95,
+        "unproved_alternative_or_extra_program_dependency": 6
+      }
+    }
+  },
+  "nontrivial_pi_support_present": true,
+  "nontrivial_support_does_not_establish_statistical_power": true,
+  "observed_D_pi": 19,
+  "original_1000_admitted": false,
+  "original_exclusion_reason_counts": {
+    "ambiguous_source_scale": 12,
+    "ambiguous_source_unit_or_scale": 3,
+    "author_table_anchor_outside_original_table": 7,
+    "author_text_anchor_not_unique_exact_public_text": 3,
+    "compound_product_unit_outside_finite_domain": 3,
+    "explicit_question_period_not_in_bound_evidence": 17,
+    "final_quantity_unit_or_scale_not_proved": 14,
+    "incompatible_or_unproved_operand_units": 22,
+    "mixed_public_source_scales_not_proved": 41,
+    "mixed_text_units_require_finer_author_evidence": 29,
+    "no_source_bound_numeric_leaf": 302,
+    "numeric_leaf_missing_or_ambiguous_in_author_sources": 60,
+    "per_share_unit_outside_finite_domain": 3,
+    "program_operation_outside_registered_qualification_scope": 9,
+    "question_metric_not_corroborated_in_author_source_context": 17,
+    "source_cell_has_conflicting_percent_and_currency": 1,
+    "table_aggregate_not_bound_to_author_row": 1,
+    "text_evidence_period_not_unique": 212,
+    "text_numeric_unit_not_explicit": 27,
+    "unproved_ratio_dimension_or_scale": 29,
+    "unsupported_currency_conversion_or_currency_ambiguity": 5,
+    "unsupported_currency_or_per_share_unit": 18
+  },
+  "original_task_denominator": 1000,
+  "protocol_id": "cebb38c517cd48e3a68aea0b9c800a0f41bbf028b6d86589a7443ed5eee90624",
+  "public_content_compliance": {
+    "all": {
+      "all_responses_structured_episodes": 1283,
+      "empty_public_content_responses": 4116,
+      "episodes": 1320,
+      "episodes_with_nonempty_public_content": 35,
+      "episodes_with_nonwhitespace_public_content": 35,
+      "nonempty_public_content_responses": 35,
+      "nonwhitespace_public_content_responses": 35,
+      "responses": 4151,
+      "single_native_tool_call_responses": 4116,
+      "structured_compliant_responses": 4114,
+      "zero_response_episodes": 0
+    },
+    "sealed_diagnostic": {
+      "all_responses_structured_episodes": 325,
+      "empty_public_content_responses": 1009,
+      "episodes": 330,
+      "episodes_with_nonempty_public_content": 5,
+      "episodes_with_nonwhitespace_public_content": 5,
+      "nonempty_public_content_responses": 5,
+      "nonwhitespace_public_content_responses": 5,
+      "responses": 1014,
+      "single_native_tool_call_responses": 1009,
+      "structured_compliant_responses": 1009,
+      "zero_response_episodes": 0
+    },
+    "train": {
+      "all_responses_structured_episodes": 958,
+      "empty_public_content_responses": 3107,
+      "episodes": 990,
+      "episodes_with_nonempty_public_content": 30,
+      "episodes_with_nonwhitespace_public_content": 30,
+      "nonempty_public_content_responses": 30,
+      "nonwhitespace_public_content_responses": 30,
+      "responses": 3137,
+      "single_native_tool_call_responses": 3107,
+      "structured_compliant_responses": 3105,
+      "zero_response_episodes": 0
+    }
+  },
+  "qualification_meaning": "limited frozen qualification, not universal financial correctness",
+  "qualification_rule_id": "finqa_qualification:1a09c0c6f0c0958a3908f6e24aaef39dc85c79d3d844469ad8d8b6780f57b615",
+  "qualified_state_sample_and_API_token_counts": {
+    "sealed_diagnostic": {
+      "AAPL/2013/page_27.pdf-3": {
+        "finqa_state:7b93065a0bd2039f45379fc7d50415e98391939cd5b037061184821311b33399": {
+          "API_completion_tokens": 250,
+          "API_prompt_tokens": 16657,
+          "packages": 1
+        }
+      },
+      "AMT/2004/page_76.pdf-1": {
+        "finqa_state:1b4b3d8198351cadf6fd3a71c8192693111f44f280bcdca86b36ebed48755219": {
+          "API_completion_tokens": 379,
+          "API_prompt_tokens": 30868,
+          "packages": 2
+        }
+      },
+      "BLK/2017/page_77.pdf-2": {
+        "finqa_state:001fdb1b141ac91a9b13765538ffdb44a2d576016e246740553a9adcb5f98d7a": {
+          "API_completion_tokens": 283,
+          "API_prompt_tokens": 22643,
+          "packages": 1
+        }
+      },
+      "C/2009/page_248.pdf-3": {
+        "finqa_state:f436f8d5ec965af5f058e446c8a59dc4d423440371125cffca57c5c5da10e386": {
+          "API_completion_tokens": 616,
+          "API_prompt_tokens": 48365,
+          "packages": 2
+        }
+      },
+      "DG/2008/page_73.pdf-2": {
+        "finqa_state:dc55f01dfe2e30fb3e8917b89ff25b000f6ba890bb9ba1edefb140d0a35c55f8": {
+          "API_completion_tokens": 82,
+          "API_prompt_tokens": 4197,
+          "packages": 1
+        },
+        "finqa_state:dffc2ba432034b52bc53b1c3bf61b357c1201f6eccbc6aff03d0adbd481338f3": {
+          "API_completion_tokens": 165,
+          "API_prompt_tokens": 12998,
+          "packages": 1
+        }
+      },
+      "DISCA/2017/page_41.pdf-1": {
+        "finqa_state:e16cdfea5b758f5820207409f9536fcd29ef105fea679ad3693e46ed0f0950bf": {
+          "API_completion_tokens": 332,
+          "API_prompt_tokens": 34656,
+          "packages": 2
+        }
+      },
+      "GPN/2016/page_83.pdf-1": {
+        "finqa_state:5676bf5ca642220ed157df8535346a45867d67ff230efc60f2d8419ca0415be8": {
+          "API_completion_tokens": 305,
+          "API_prompt_tokens": 25705,
+          "packages": 1
+        }
+      },
+      "GPN/2016/page_83.pdf-4": {
+        "finqa_state:3806a62d91907ad59b95e48ce41cddad223be0221e6a6a6a59fca7a6b967a6a3": {
+          "API_completion_tokens": 271,
+          "API_prompt_tokens": 20282,
+          "packages": 1
+        }
+      },
+      "HWM/2016/page_79.pdf-2": {
+        "finqa_state:20ff3749c3834686d91211235c334d94abf0486a3a185e2e72304c0f93c00d90": {
+          "API_completion_tokens": 229,
+          "API_prompt_tokens": 19338,
+          "packages": 2
+        }
+      },
+      "IP/2005/page_32.pdf-2": {
+        "finqa_state:4c82fdfad45aee7847cfaee25e0520e62b8dd3a1159dc825db6038134646e903": {
+          "API_completion_tokens": 143,
+          "API_prompt_tokens": 10334,
+          "packages": 1
+        }
+      },
+      "KIM/2014/page_108.pdf-1": {
+        "finqa_state:d978b01f27dd3aa8c0ef6030a5dc1aa07a6924cd67ac8786309296bc0feb2fc3": {
+          "API_completion_tokens": 382,
+          "API_prompt_tokens": 28790,
+          "packages": 2
+        }
+      },
+      "LMT/2007/page_55.pdf-2": {
+        "finqa_state:07605c1d2bc6b18aa392b75e915e8d7d4dd75e4fda227830fae3793550548a27": {
+          "API_completion_tokens": 82,
+          "API_prompt_tokens": 5022,
+          "packages": 1
+        }
+      },
+      "LMT/2007/page_55.pdf-4": {
+        "finqa_state:f2e9cbd4000b6de1c8346f9fa84d2882bbcda929bc61ff60f3f85fb6c8118238": {
+          "API_completion_tokens": 157,
+          "API_prompt_tokens": 10201,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_44.pdf-2": {
+        "finqa_state:9eebdd2b9cb7ed486e90ae0f984039d8ac0e7e860f15a6a74561d59856a29160": {
+          "API_completion_tokens": 121,
+          "API_prompt_tokens": 9344,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_45.pdf-4": {
+        "finqa_state:add2642a9303d69f5a16b0088e90a33d1fde76843c19d25f1145a0fac44801bf": {
+          "API_completion_tokens": 81,
+          "API_prompt_tokens": 4698,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_87.pdf-1": {
+        "finqa_state:4c4591277ca06a8af5979a1e236b6ee1bc5f6d3fbfa4f21b6da69bc854eaf0ef": {
+          "API_completion_tokens": 228,
+          "API_prompt_tokens": 20249,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_45.pdf-3": {
+        "finqa_state:96827e74ef43a63e788bf90d548ae4f75495833f11166f4cb7d7e6a636948219": {
+          "API_completion_tokens": 156,
+          "API_prompt_tokens": 9581,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_46.pdf-3": {
+        "finqa_state:1b43063296dbc49090249d194d805eb26a8c11f3c29613c5fcec7f6d84fc0b55": {
+          "API_completion_tokens": 151,
+          "API_prompt_tokens": 9251,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_47.pdf-3": {
+        "finqa_state:75e6844ed65b88b15bac17e571c4238bcf2e6e017b36596d66d33db37e3a7265": {
+          "API_completion_tokens": 214,
+          "API_prompt_tokens": 14413,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_49.pdf-3": {
+        "finqa_state:4a1df37ef7501c34111b348efee4dd36f07a6a9d0301ae235034cd0f2cadb644": {
+          "API_completion_tokens": 282,
+          "API_prompt_tokens": 19867,
+          "packages": 1
+        }
+      },
+      "MAR/2018/page_42.pdf-1": {
+        "finqa_state:10c58a0895cdeaf4416f5c145976848838ee2d78f2e218dc032a8ac68424d0d4": {
+          "API_completion_tokens": 78,
+          "API_prompt_tokens": 4897,
+          "packages": 1
+        }
+      },
+      "MAS/2010/page_29.pdf-1": {
+        "finqa_state:9ae5e73c2b4b798ec9bf5b41db28aede6073680ae5128e1b1236406bd16fcdb9": {
+          "API_completion_tokens": 263,
+          "API_prompt_tokens": 16403,
+          "packages": 1
+        }
+      },
+      "MRO/2008/page_119.pdf-4": {
+        "finqa_state:0707766489d332e23ac7f9330b8540fb2ba38c0390a2f28bf2bafce12cfb0f92": {
+          "API_completion_tokens": 181,
+          "API_prompt_tokens": 12972,
+          "packages": 1
+        }
+      },
+      "MRO/2012/page_39.pdf-2": {
+        "finqa_state:4bd3160c5ca9395ab6e1ebf20a139985fec69f9c9188824504c40d1fb0947fc7": {
+          "API_completion_tokens": 162,
+          "API_prompt_tokens": 10655,
+          "packages": 1
+        },
+        "finqa_state:dab11147ffecb87378604346dc9a7dc8b1fd618297db93d1fbac04af99fd4b0e": {
+          "API_completion_tokens": 287,
+          "API_prompt_tokens": 22066,
+          "packages": 1
+        }
+      },
+      "NCLH/2016/page_84.pdf-3": {
+        "finqa_state:08d6697b1091f5b8061bd44fb1bbdcde26898c6d8f77be9e788848f0c597d98f": {
+          "API_completion_tokens": 397,
+          "API_prompt_tokens": 42510,
+          "packages": 1
+        },
+        "finqa_state:0d861af2f8fe7ea732a7f50e2f389574383b3b842a8846aab65529320b08f526": {
+          "API_completion_tokens": 289,
+          "API_prompt_tokens": 27262,
+          "packages": 1
+        }
+      },
+      "ORLY/2015/page_28.pdf-3": {
+        "finqa_state:2b3cc70eb182a2230d9a030bb19a190dbb80f24df2c19a2f2882718fc1406ea6": {
+          "API_completion_tokens": 113,
+          "API_prompt_tokens": 6859,
+          "packages": 1
+        }
+      },
+      "PPG/2015/page_40.pdf-4": {
+        "finqa_state:ab8f95bc0515f48161f981f32a35adc0c579577511ced1a5be8e1dd040a980df": {
+          "API_completion_tokens": 160,
+          "API_prompt_tokens": 10207,
+          "packages": 1
+        }
+      },
+      "RE/2013/page_109.pdf-1": {
+        "finqa_state:2de89eb349e49b86fecb7dd97edb07faaa11166a8f3db1e3b745c99f59c41b48": {
+          "API_completion_tokens": 202,
+          "API_prompt_tokens": 15066,
+          "packages": 1
+        },
+        "finqa_state:84a0a98f0e79f6156c5399d8c1148b8feb101ccdfa553df843137cc53cf6c472": {
+          "API_completion_tokens": 242,
+          "API_prompt_tokens": 20328,
+          "packages": 1
+        }
+      },
+      "RE/2013/page_109.pdf-3": {
+        "finqa_state:92e409697e470df00055717b85fa9df025de1ebc81b67eff0b7ddcaf6247e954": {
+          "API_completion_tokens": 87,
+          "API_prompt_tokens": 4877,
+          "packages": 1
+        },
+        "finqa_state:a3febf47a17eac3402dfed2a94df946f3f3539a28f35bb98121a2a81154306ec": {
+          "API_completion_tokens": 159,
+          "API_prompt_tokens": 9907,
+          "packages": 1
+        }
+      },
+      "RE/2013/page_109.pdf-4": {
+        "finqa_state:9fca38501f3c474d27740a477721fd46d57c6268beb559612d5aa18673f605d2": {
+          "API_completion_tokens": 538,
+          "API_prompt_tokens": 40700,
+          "packages": 2
+        }
+      },
+      "STT/2013/page_54.pdf-3": {
+        "finqa_state:88c9618528f6f3396ea9d624099396080ccb5c269a2cd698961221398de2b8fb": {
+          "API_completion_tokens": 122,
+          "API_prompt_tokens": 7189,
+          "packages": 1
+        }
+      },
+      "STT/2013/page_71.pdf-1": {
+        "finqa_state:bd2e7e95a09b2480f56f498cf807473de54bd529796215f197f23484769c862f": {
+          "API_completion_tokens": 155,
+          "API_prompt_tokens": 9525,
+          "packages": 1
+        }
+      },
+      "UPS/2013/page_56.pdf-1": {
+        "finqa_state:a902d110f607e37a688394792a88801d17eddbc2528abe59138c785bb857a0ea": {
+          "API_completion_tokens": 280,
+          "API_prompt_tokens": 19496,
+          "packages": 1
+        }
+      },
+      "VTR/2007/page_48.pdf-2": {
+        "finqa_state:d2ae1c3a1d11d10f37940885077a6ebb999fab865543dd325a8af5bc62bef48d": {
+          "API_completion_tokens": 275,
+          "API_prompt_tokens": 15859,
+          "packages": 1
+        }
+      }
+    },
+    "train": {
+      "AAPL/2013/page_27.pdf-3": {
+        "finqa_state:9ba7ee8c9561fd2f2f2cb67115e21c787e7c0df27fba4c8d5b1a6cb5077782c1": {
+          "API_completion_tokens": 1102,
+          "API_prompt_tokens": 66772,
+          "packages": 4
+        }
+      },
+      "AAPL/2014/page_26.pdf-1": {
+        "finqa_state:d3d6416113245f054293388c26e805a864695d7e02f4197eb1a6861bc30db26f": {
+          "API_completion_tokens": 82,
+          "API_prompt_tokens": 4001,
+          "packages": 1
+        }
+      },
+      "AMT/2004/page_76.pdf-1": {
+        "finqa_state:1b4b3d8198351cadf6fd3a71c8192693111f44f280bcdca86b36ebed48755219": {
+          "API_completion_tokens": 690,
+          "API_prompt_tokens": 56409,
+          "packages": 4
+        }
+      },
+      "BLK/2017/page_77.pdf-1": {
+        "finqa_state:c125027171f8e6305b021696af475605a3b30fe36c2da197c8142d50e493cb56": {
+          "API_completion_tokens": 497,
+          "API_prompt_tokens": 39065,
+          "packages": 2
+        },
+        "finqa_state:c83480cebcd3e0a56a6faed3e648170280c37aab30a8a3839a06121243f7a3c8": {
+          "API_completion_tokens": 560,
+          "API_prompt_tokens": 45294,
+          "packages": 2
+        }
+      },
+      "BLK/2017/page_77.pdf-2": {
+        "finqa_state:001fdb1b141ac91a9b13765538ffdb44a2d576016e246740553a9adcb5f98d7a": {
+          "API_completion_tokens": 281,
+          "API_prompt_tokens": 22643,
+          "packages": 1
+        },
+        "finqa_state:b7e1d97c23fa0fd392360e8ef7682ab04f77b2b96906495770ca2aa3e29e9854": {
+          "API_completion_tokens": 297,
+          "API_prompt_tokens": 29075,
+          "packages": 1
+        }
+      },
+      "BLK/2017/page_81.pdf-3": {
+        "finqa_state:80af62621de0d576f98a9a500e0c6c97ca3b77dcc307b8c4f4eaee880d2c8935": {
+          "API_completion_tokens": 155,
+          "API_prompt_tokens": 11429,
+          "packages": 1
+        }
+      },
+      "BLK/2017/page_81.pdf-4": {
+        "finqa_state:0d78ac84e9c62ba10f35dee98bf427d14ba5f55067fb96d6a667f174165eeacb": {
+          "API_completion_tokens": 155,
+          "API_prompt_tokens": 11437,
+          "packages": 1
+        },
+        "finqa_state:575357a089d3b3cb554f4e0035a5af98857155e4ed9c5772b65ecad467c8d925": {
+          "API_completion_tokens": 280,
+          "API_prompt_tokens": 23655,
+          "packages": 1
+        }
+      },
+      "C/2009/page_141.pdf-2": {
+        "finqa_state:30d41373b2ec8d3959662a447b781bb5b3331b476e07fd11d97736033e9ad708": {
+          "API_completion_tokens": 295,
+          "API_prompt_tokens": 22607,
+          "packages": 1
+        }
+      },
+      "C/2009/page_248.pdf-3": {
+        "finqa_state:64fbc30a8667601a4f34764795b9f378985cba62a54753fd5991e760688be422": {
+          "API_completion_tokens": 282,
+          "API_prompt_tokens": 27039,
+          "packages": 1
+        },
+        "finqa_state:b499db476e6731188d378411de194da2f5033131c11f5cc9ed96f8497febbed6": {
+          "API_completion_tokens": 201,
+          "API_prompt_tokens": 15806,
+          "packages": 1
+        },
+        "finqa_state:f436f8d5ec965af5f058e446c8a59dc4d423440371125cffca57c5c5da10e386": {
+          "API_completion_tokens": 1108,
+          "API_prompt_tokens": 91367,
+          "packages": 4
+        }
+      },
+      "C/2009/page_255.pdf-3": {
+        "finqa_state:7ed93a91a0dc690a169fe93d1bf4c968d7254b770c5207a09402c6b4083a0270": {
+          "API_completion_tokens": 216,
+          "API_prompt_tokens": 14290,
+          "packages": 1
+        }
+      },
+      "C/2009/page_48.pdf-1": {
+        "finqa_state:322ee39c2ec01efc7107860b6aa859851436488bad2892bf18dd814b0ceacae9": {
+          "API_completion_tokens": 152,
+          "API_prompt_tokens": 8220,
+          "packages": 1
+        }
+      },
+      "C/2015/page_73.pdf-2": {
+        "finqa_state:a855d46cb63d2f64f2f91da691c6322d61a6be838a5fbb03d3cbd043706e662a": {
+          "API_completion_tokens": 122,
+          "API_prompt_tokens": 10250,
+          "packages": 1
+        }
+      },
+      "DG/2008/page_73.pdf-2": {
+        "finqa_state:dc55f01dfe2e30fb3e8917b89ff25b000f6ba890bb9ba1edefb140d0a35c55f8": {
+          "API_completion_tokens": 205,
+          "API_prompt_tokens": 12742,
+          "packages": 2
+        },
+        "finqa_state:dffc2ba432034b52bc53b1c3bf61b357c1201f6eccbc6aff03d0adbd481338f3": {
+          "API_completion_tokens": 728,
+          "API_prompt_tokens": 47704,
+          "packages": 4
+        }
+      },
+      "DISCA/2017/page_41.pdf-1": {
+        "finqa_state:e16cdfea5b758f5820207409f9536fcd29ef105fea679ad3693e46ed0f0950bf": {
+          "API_completion_tokens": 1089,
+          "API_prompt_tokens": 104106,
+          "packages": 6
+        }
+      },
+      "EOG/2017/page_78.pdf-2": {
+        "finqa_state:ee099075a5ddddb292770613261edcbabb50bc69895b5c845546a9a4fca1b789": {
+          "API_completion_tokens": 330,
+          "API_prompt_tokens": 24430,
+          "packages": 2
+        }
+      },
+      "GPN/2016/page_83.pdf-4": {
+        "finqa_state:3806a62d91907ad59b95e48ce41cddad223be0221e6a6a6a59fca7a6b967a6a3": {
+          "API_completion_tokens": 265,
+          "API_prompt_tokens": 20274,
+          "packages": 1
+        }
+      },
+      "HWM/2016/page_79.pdf-2": {
+        "finqa_state:20ff3749c3834686d91211235c334d94abf0486a3a185e2e72304c0f93c00d90": {
+          "API_completion_tokens": 362,
+          "API_prompt_tokens": 29672,
+          "packages": 2
+        },
+        "finqa_state:8ee4652501916c67c93c3241f9f061e4cd42cd3f88910f522fae6aec863e071f": {
+          "API_completion_tokens": 318,
+          "API_prompt_tokens": 33990,
+          "packages": 1
+        },
+        "finqa_state:a56b02ff4714f67891712f7fa406c5cf87a5f6777ad7cd2906770a1671dd7cf3": {
+          "API_completion_tokens": 61,
+          "API_prompt_tokens": 4785,
+          "packages": 1
+        }
+      },
+      "IP/2006/page_19.pdf-2": {
+        "finqa_state:b0f2f29a73ebad96c9bc7090b5313ba140369863ea49b91ceb6614a3875e4230": {
+          "API_completion_tokens": 72,
+          "API_prompt_tokens": 5050,
+          "packages": 1
+        }
+      },
+      "IP/2006/page_84.pdf-2": {
+        "finqa_state:1761c95698fbc64aa1a312ab16dbbd9d297f6c5940e6d21abc09ab580839a52b": {
+          "API_completion_tokens": 150,
+          "API_prompt_tokens": 9981,
+          "packages": 1
+        },
+        "finqa_state:4bb33e88d4a25f88177e67f7a0db064cf64be9d3945c71b05779b09f5673c5fb": {
+          "API_completion_tokens": 275,
+          "API_prompt_tokens": 20765,
+          "packages": 1
+        }
+      },
+      "IQV/2016/page_65.pdf-2": {
+        "finqa_state:586231ffca407252306bed4cf5dbe18fe134800f1fd68f480906369df3a9206f": {
+          "API_completion_tokens": 325,
+          "API_prompt_tokens": 22519,
+          "packages": 1
+        }
+      },
+      "KIM/2014/page_108.pdf-1": {
+        "finqa_state:d978b01f27dd3aa8c0ef6030a5dc1aa07a6924cd67ac8786309296bc0feb2fc3": {
+          "API_completion_tokens": 957,
+          "API_prompt_tokens": 72149,
+          "packages": 5
+        }
+      },
+      "LKQ/2016/page_48.pdf-1": {
+        "finqa_state:992e8beaafedcbdc4c95dbdfcf9f26d49e3f83d5f6fe782413cb2a332f7a9717": {
+          "API_completion_tokens": 79,
+          "API_prompt_tokens": 4735,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_44.pdf-2": {
+        "finqa_state:9eebdd2b9cb7ed486e90ae0f984039d8ac0e7e860f15a6a74561d59856a29160": {
+          "API_completion_tokens": 121,
+          "API_prompt_tokens": 9344,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_45.pdf-2": {
+        "finqa_state:322ead18c2ad5b0c1f4cc843d2ceef048eb5ac0f162f0543b1fad3f8dc7da9c5": {
+          "API_completion_tokens": 78,
+          "API_prompt_tokens": 4707,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_45.pdf-4": {
+        "finqa_state:add2642a9303d69f5a16b0088e90a33d1fde76843c19d25f1145a0fac44801bf": {
+          "API_completion_tokens": 81,
+          "API_prompt_tokens": 4698,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_47.pdf-1": {
+        "finqa_state:05b95a29a969c16c9b40ed4af14084baf671f9884e430a897ccebce147fa5451": {
+          "API_completion_tokens": 118,
+          "API_prompt_tokens": 9589,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_47.pdf-4": {
+        "finqa_state:a115fe5c46bfa1e22366f82d03d9af077afcbeff0c8b984c680108a13e0bf7e2": {
+          "API_completion_tokens": 81,
+          "API_prompt_tokens": 4692,
+          "packages": 1
+        }
+      },
+      "LMT/2013/page_87.pdf-1": {
+        "finqa_state:4c4591277ca06a8af5979a1e236b6ee1bc5f6d3fbfa4f21b6da69bc854eaf0ef": {
+          "API_completion_tokens": 580,
+          "API_prompt_tokens": 50343,
+          "packages": 3
+        }
+      },
+      "LMT/2014/page_46.pdf-1": {
+        "finqa_state:c939093d3463d858f99a71b7fe0aabf25cbad51d6aa3c587fc8fa22ec2c6a401": {
+          "API_completion_tokens": 299,
+          "API_prompt_tokens": 19170,
+          "packages": 1
+        },
+        "finqa_state:d28e5538045a1c3ba03796c9350128a980efbb62853fda893d4f86f3c49e576e": {
+          "API_completion_tokens": 158,
+          "API_prompt_tokens": 9251,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_46.pdf-3": {
+        "finqa_state:1b43063296dbc49090249d194d805eb26a8c11f3c29613c5fcec7f6d84fc0b55": {
+          "API_completion_tokens": 211,
+          "API_prompt_tokens": 14240,
+          "packages": 1
+        }
+      },
+      "LMT/2014/page_47.pdf-2": {
+        "finqa_state:9d294763af6f1c392e9851d1c5d82dbb716ab7a799faa0be683da54906abb68a": {
+          "API_completion_tokens": 429,
+          "API_prompt_tokens": 28830,
+          "packages": 2
+        }
+      },
+      "LMT/2014/page_47.pdf-3": {
+        "finqa_state:75e6844ed65b88b15bac17e571c4238bcf2e6e017b36596d66d33db37e3a7265": {
+          "API_completion_tokens": 638,
+          "API_prompt_tokens": 43239,
+          "packages": 3
+        }
+      },
+      "LMT/2014/page_49.pdf-1": {
+        "finqa_state:ef696426f8172ae9d9e531365e9cbd95af8fb1e348c0ef18e901957b524a27d5": {
+          "API_completion_tokens": 497,
+          "API_prompt_tokens": 34636,
+          "packages": 2
+        }
+      },
+      "LMT/2014/page_49.pdf-4": {
+        "finqa_state:342330fa6f5604b663eb251d5c190f19b94b10846da10dc2afb4a0772c580074": {
+          "API_completion_tokens": 281,
+          "API_prompt_tokens": 19851,
+          "packages": 1
+        }
+      },
+      "LMT/2015/page_55.pdf-4": {
+        "finqa_state:998c96feefa8dc5b50344ef15cbce2b1cbcc7105e9e8cef6a5e1274bdd468e27": {
+          "API_completion_tokens": 121,
+          "API_prompt_tokens": 9561,
+          "packages": 1
+        }
+      },
+      "MAR/2018/page_42.pdf-1": {
+        "finqa_state:71d2cc2297a47bfbae7e76b0d4da4aa15b4c24a8aaa957421fde7bbfc1eb9c8c": {
+          "API_completion_tokens": 118,
+          "API_prompt_tokens": 9908,
+          "packages": 1
+        }
+      },
+      "MAS/2010/page_29.pdf-1": {
+        "finqa_state:0aa2a4763a122dbc768508c44a0cf1e8b4c4d0bb660d69c7e3e1bf6fe5bbd593": {
+          "API_completion_tokens": 246,
+          "API_prompt_tokens": 16387,
+          "packages": 1
+        },
+        "finqa_state:9ae5e73c2b4b798ec9bf5b41db28aede6073680ae5128e1b1236406bd16fcdb9": {
+          "API_completion_tokens": 273,
+          "API_prompt_tokens": 16423,
+          "packages": 1
+        }
+      },
+      "MAS/2010/page_29.pdf-3": {
+        "finqa_state:af7f052e5590f6c0a1165237ac29017522edc26d294b9e15de15a2869b84ffca": {
+          "API_completion_tokens": 229,
+          "API_prompt_tokens": 12148,
+          "packages": 1
+        }
+      },
+      "MAS/2010/page_89.pdf-3": {
+        "finqa_state:ecebdc1ba79bd34b40388d888050edfc78b458ac362e106473ff55fecc5b569c": {
+          "API_completion_tokens": 208,
+          "API_prompt_tokens": 14368,
+          "packages": 1
+        }
+      },
+      "MRO/2008/page_119.pdf-4": {
+        "finqa_state:0707766489d332e23ac7f9330b8540fb2ba38c0390a2f28bf2bafce12cfb0f92": {
+          "API_completion_tokens": 181,
+          "API_prompt_tokens": 12972,
+          "packages": 1
+        }
+      },
+      "NCLH/2016/page_84.pdf-3": {
+        "finqa_state:0d861af2f8fe7ea732a7f50e2f389574383b3b842a8846aab65529320b08f526": {
+          "API_completion_tokens": 806,
+          "API_prompt_tokens": 52163,
+          "packages": 5
+        }
+      },
+      "ORLY/2015/page_28.pdf-3": {
+        "finqa_state:038478c592c9b5a53dc98f1b34478ae8e3a6476bf1e61cdf29338e74a616bbdc": {
+          "API_completion_tokens": 259,
+          "API_prompt_tokens": 14374,
+          "packages": 1
+        },
+        "finqa_state:2b3cc70eb182a2230d9a030bb19a190dbb80f24df2c19a2f2882718fc1406ea6": {
+          "API_completion_tokens": 196,
+          "API_prompt_tokens": 10552,
+          "packages": 1
+        },
+        "finqa_state:3440a56f1d10598b0036e526f3ef78f351ddee4b28d58fcc65811ba96f92395d": {
+          "API_completion_tokens": 328,
+          "API_prompt_tokens": 21054,
+          "packages": 2
+        }
+      },
+      "ORLY/2015/page_28.pdf-4": {
+        "finqa_state:edba9106ad2c1d70ef10018038b2fec5c123f778c07384da6a7167f22ba263db": {
+          "API_completion_tokens": 276,
+          "API_prompt_tokens": 14383,
+          "packages": 1
+        }
+      },
+      "ORLY/2016/page_29.pdf-3": {
+        "finqa_state:1905ada2867ab303cf61b14754ed2cb983f2d095194f43dd85058b8ad2ec7e67": {
+          "API_completion_tokens": 233,
+          "API_prompt_tokens": 14411,
+          "packages": 1
+        }
+      },
+      "RE/2013/page_109.pdf-1": {
+        "finqa_state:4dd87080b537ca33ed25d08366ad3c52876f603b57655a50b134853205ac1c96": {
+          "API_completion_tokens": 1342,
+          "API_prompt_tokens": 101824,
+          "packages": 5
+        }
+      },
+      "RE/2013/page_109.pdf-3": {
+        "finqa_state:ddea7e5e783e8170936298248f36c539076e1435e01de908f07a27d1b7453cab": {
+          "API_completion_tokens": 281,
+          "API_prompt_tokens": 20379,
+          "packages": 1
+        }
+      },
+      "RE/2013/page_109.pdf-4": {
+        "finqa_state:254cd628280a4ab464263b11be75643de6e7b3e664cd6be8e70ce64eb4970ed9": {
+          "API_completion_tokens": 324,
+          "API_prompt_tokens": 25744,
+          "packages": 1
+        },
+        "finqa_state:98014254ffda65a1cabac4607dceceabd8f270dc8e53f234787af7b470da75f1": {
+          "API_completion_tokens": 266,
+          "API_prompt_tokens": 19930,
+          "packages": 2
+        },
+        "finqa_state:9fca38501f3c474d27740a477721fd46d57c6268beb559612d5aa18673f605d2": {
+          "API_completion_tokens": 806,
+          "API_prompt_tokens": 61048,
+          "packages": 3
+        }
+      },
+      "STT/2013/page_175.pdf-3": {
+        "finqa_state:ff422f03a68fdbe01f5270f9034b35f03320cda1433250866efa2c9ed095cd80": {
+          "API_completion_tokens": 199,
+          "API_prompt_tokens": 13895,
+          "packages": 1
+        }
+      },
+      "STT/2013/page_54.pdf-3": {
+        "finqa_state:88c9618528f6f3396ea9d624099396080ccb5c269a2cd698961221398de2b8fb": {
+          "API_completion_tokens": 82,
+          "API_prompt_tokens": 3481,
+          "packages": 1
+        }
+      },
+      "STT/2013/page_71.pdf-1": {
+        "finqa_state:54cc6d4c2c7bd41ab956cbd37d2bdb1c4f54f6821308971c003c1a68fa8ff68e": {
+          "API_completion_tokens": 560,
+          "API_prompt_tokens": 39470,
+          "packages": 2
+        },
+        "finqa_state:bd2e7e95a09b2480f56f498cf807473de54bd529796215f197f23484769c862f": {
+          "API_completion_tokens": 155,
+          "API_prompt_tokens": 9525,
+          "packages": 1
+        }
+      },
+      "STT/2013/page_71.pdf-2": {
+        "finqa_state:af9b0bf1acfea4ee1cbab69b2b62588a39345abf50e60f249bb1a33e85747453": {
+          "API_completion_tokens": 156,
+          "API_prompt_tokens": 9515,
+          "packages": 1
+        },
+        "finqa_state:b3254abadacc5cf711c0ee56d989fcb1775fa35fbf28d584a906c8237c5950b7": {
+          "API_completion_tokens": 562,
+          "API_prompt_tokens": 39430,
+          "packages": 2
+        }
+      },
+      "UPS/2013/page_56.pdf-4": {
+        "finqa_state:f55f7987c4484f0c3c6cc7e5738b5810ab129d59a61dc5bf9ff03aec7b03c7c8": {
+          "API_completion_tokens": 86,
+          "API_prompt_tokens": 4543,
+          "packages": 1
+        }
+      },
+      "VTR/2007/page_48.pdf-2": {
+        "finqa_state:d2ae1c3a1d11d10f37940885077a6ebb999fab865543dd325a8af5bc62bef48d": {
+          "API_completion_tokens": 555,
+          "API_prompt_tokens": 31726,
+          "packages": 2
+        }
+      },
+      "VTR/2007/page_48.pdf-3": {
+        "finqa_state:a153f0115e029b8e693337385426f1338b8a731ce4c1cdc2ba964c50a7ac23dd": {
+          "API_completion_tokens": 551,
+          "API_prompt_tokens": 31670,
+          "packages": 2
+        },
+        "finqa_state:e5590d4865e447a1ad5496c85ca415ea836761db868808211f05174ed7ee8821": {
+          "API_completion_tokens": 82,
+          "API_prompt_tokens": 3630,
+          "packages": 1
+        },
+        "finqa_state:fa2c14e3ecdb6d8ea42ba435aca6eb78cf23915c5200da4e78c7f97b45507b93": {
+          "API_completion_tokens": 289,
+          "API_prompt_tokens": 20466,
+          "packages": 1
+        }
+      }
+    }
+  },
+  "report_script_sha256": "d8714d5ebf7a8068d5b848dfd05d8bf0855d8fe104777c153c0e31121b3b8459",
+  "retained_qualified_train_packages": 121,
+  "run_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/structured_probe_followup_01/structured_inventory_01",
+  "schema": "finqa_structured_probe_descriptive_report.v1",
+  "scope_id": "finqa_conditional_scope:9640f35247ef21fdb23f65a9c57d46328bb34f846dc9712ffbf5b828259dde88",
+  "sealed_budget": {
+    "actual_cache_hit_tokens_settled": 19049620,
+    "actual_cache_miss_tokens_settled": 1409168,
+    "actual_completion_tokens_settled": 288760,
+    "actual_prompt_tokens_settled": 20458788,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "exposure_microcny": 5892471,
+    "exposure_warning_reached": false,
+    "halt": null,
+    "hard_cap_microcny": 100000000,
+    "held_microcny": 0,
+    "pending_requests": 0,
+    "price_sheet_id": "probe_price_sheet:54771a372492f341cde9513a0a361e4659730d5edfa4789aeae9151936354798",
+    "purpose": "finqa_fixed_probe_inventory_v1",
+    "remaining_exposure_microcny": 94107529,
+    "request_cap": 42240,
+    "requests_dispatched": 4151,
+    "requests_reserved": 4151,
+    "run_id": "cebb38c517cd48e3a68aea0b9c800a0f41bbf028b6d86589a7443ed5eee90624",
+    "settled_tariff_microcny": 5892471,
+    "unknown_requests": 0,
+    "warning_microcny": 80000000,
+    "warning_reached": false
+  },
+  "sealed_packages_in_training": 0,
+  "sealed_slot_denominator": 330,
+  "single_state_task_ids": [
+    "STT/2013/page_175.pdf-3",
+    "LMT/2015/page_55.pdf-4",
+    "AAPL/2013/page_27.pdf-3",
+    "ORLY/2015/page_28.pdf-4",
+    "LMT/2013/page_47.pdf-4",
+    "VTR/2007/page_48.pdf-2",
+    "LMT/2013/page_44.pdf-2",
+    "C/2009/page_141.pdf-2",
+    "MRO/2008/page_119.pdf-4",
+    "C/2015/page_73.pdf-2",
+    "RE/2013/page_109.pdf-3",
+    "LMT/2014/page_47.pdf-2",
+    "AMT/2004/page_76.pdf-1",
+    "C/2009/page_48.pdf-1",
+    "EOG/2017/page_78.pdf-2",
+    "LMT/2013/page_45.pdf-2",
+    "IP/2006/page_19.pdf-2",
+    "ORLY/2016/page_29.pdf-3",
+    "LMT/2014/page_49.pdf-4",
+    "LMT/2014/page_49.pdf-1",
+    "UPS/2013/page_56.pdf-4",
+    "AAPL/2014/page_26.pdf-1",
+    "GPN/2016/page_83.pdf-4",
+    "LMT/2013/page_45.pdf-4",
+    "MAR/2018/page_42.pdf-1",
+    "KIM/2014/page_108.pdf-1",
+    "LMT/2014/page_47.pdf-3",
+    "LKQ/2016/page_48.pdf-1",
+    "RE/2013/page_109.pdf-1",
+    "IQV/2016/page_65.pdf-2",
+    "C/2009/page_255.pdf-3",
+    "MAS/2010/page_29.pdf-3",
+    "MAS/2010/page_89.pdf-3",
+    "STT/2013/page_54.pdf-3",
+    "DISCA/2017/page_41.pdf-1",
+    "LMT/2014/page_46.pdf-3",
+    "LMT/2013/page_47.pdf-1",
+    "LMT/2013/page_87.pdf-1",
+    "NCLH/2016/page_84.pdf-3",
+    "BLK/2017/page_81.pdf-3"
+  ],
+  "single_state_tasks": 40,
+  "slot_denominator": 1320,
+  "source_evidence": [
+    {
+      "bytes": 2411631,
+      "path": "protocol.json",
+      "sha256": "4062f7d7e9053343190100a09c2edee19fc10c9dcfe25d86ee36dfaa3f8fe6f8"
+    },
+    {
+      "bytes": 1171050,
+      "path": "generation_seal/record.json",
+      "sha256": "63f9105ca0d187d40c7004261d1d6bb3ba609ddd1fda4fe77ae60ef30400581f"
+    },
+    {
+      "bytes": 2696796,
+      "path": "inventory_complete/record.json",
+      "sha256": "e7f3ac6d34f578384b2aa9b1c7404aab0f62d94f716f52e4d1ae7dcce65cf0fc"
+    }
+  ],
+  "spending_is_provider_invoice": false,
+  "spending_peak_upper_bound_CNY": "5.892471",
+  "student_encoding_admission_separate": true,
+  "train_slot_denominator": 990,
+  "training_authorized": false,
+  "training_ready_claimed": false,
+  "training_value_claimed": false,
+  "verdict_counts": {
+    "sealed_diagnostic": {
+      "CompletePass": 45,
+      "invalid": 204,
+      "unknown": 81
+    },
+    "train": {
+      "CompletePass": 121,
+      "invalid": 641,
+      "unknown": 228
+    }
+  }
+}
