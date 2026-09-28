@@ -22,6 +22,7 @@ from .encoding import (
     SUPERVISION_POLICY,
     StudentEncodingRecord,
     _native_response,
+    events_for_turns,
     probe_generation_record,
     supervised_turns,
 )
@@ -201,9 +202,10 @@ def _training_rows(episode: Episode):
     ):
         raise ValueError("incomplete generated episode cannot become a training package")
     rows, calls = [], set()
-    previous_request, previous_turn = None, None
-    events = {event.call_id: event for event in episode.tool_events}
-    for turn, supervise in zip(episode.turns, supervised_turns(episode), strict=True):
+    previous_request, previous_turn, previous_event = None, None, None
+    for turn, supervise, event in zip(
+        episode.turns, supervised_turns(episode), events_for_turns(episode), strict=True
+    ):
         receipt = turn.receipt
         if receipt is None or receipt.identity != episode.provider:
             raise ValueError("missing or foreign actual token receipt")
@@ -222,10 +224,7 @@ def _training_rows(episode: Episode):
         ):
             raise ValueError("training receipt request/config binding mismatch")
         if previous_turn is not None:
-            if (
-                len(previous_turn.tool_calls) != 1
-                or previous_turn.tool_calls[0].call_id not in events
-            ):
+            if len(previous_turn.tool_calls) != 1 or previous_event is None:
                 raise ValueError("continued local trajectory lacks its actual tool event")
             previous_call = previous_turn.tool_calls[0]
             expected_messages = previous_request["messages"] + [
@@ -233,12 +232,12 @@ def _training_rows(episode: Episode):
                 {
                     "role": "tool",
                     "tool_call_id": previous_call.call_id,
-                    "content": events[previous_call.call_id].visible_output,
+                    "content": previous_event.visible_output,
                 },
             ]
             if request.get("messages") != expected_messages:
                 raise ValueError("local SFT history was dropped, altered or compacted")
-        previous_request, previous_turn = request, turn
+        previous_request, previous_turn, previous_event = request, turn, event
         if receipt.sampling.get("actual_model_generate_calls") != 1 or any(
             receipt.sampling.get(key) is not False
             for key in ("context_truncated", "host_JSON_repair", "SFT_mask_used")

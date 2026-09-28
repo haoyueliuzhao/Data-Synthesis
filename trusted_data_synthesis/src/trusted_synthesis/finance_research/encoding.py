@@ -12,7 +12,7 @@ import json
 
 from pydantic import model_validator
 
-from .contracts import Episode, Record, TokenReceipt, digest
+from .contracts import Episode, Record, TokenReceipt, digest, invocation_identity
 from .providers import _api_messages, _sha, canonical_assistant_message, tokenizer_binding
 from .qwen_protocol import strict_json_decoder
 from .settlement import episode_is_complete
@@ -24,17 +24,53 @@ SUPERVISION_POLICY = "successful_public_responses_and_first_final_v1"
 EOS_POLICY = "successful_response_student_eos_included_failure_eos_masked_v1"
 
 
-def supervised_turns(episode: Episode) -> tuple[bool, ...]:
-    """Tool success selects positive response targets, not semantic qualification."""
+def events_for_turns(episode: Episode):
+    """H1-R executions use invocation coordinates, not content-addressed call IDs."""
+    if episode.config.harness_id == "bigfinance-derived-vtdo-v3":
+        events = {event.invocation_id: event for event in episode.tool_events}
+        if None in events or len(events) != len(episode.tool_events):
+            raise ValueError("missing or duplicate H1-R tool invocation identity")
+        found, seen, model_seen = [], set(), set()
+        for index, turn in enumerate(episode.turns):
+            context = turn.provider_metadata.get("harness_invocation")
+            if not isinstance(context, dict):
+                raise ValueError("H1-R response lacks actual invocation coordinates")
+            model_identity = invocation_identity(context, turn_index=context["turn_index"])
+            if (
+                model_identity["invocation_id"] != context.get("invocation_id")
+                or context["turn_index"] != index
+                or context["invocation_id"] in model_seen
+            ):
+                raise ValueError("H1-R model invocation coordinate mismatch")
+            model_seen.add(context["invocation_id"])
+            tool_id = invocation_identity(context, turn_index=context["turn_index"], tool_index=0)[
+                "invocation_id"
+            ]
+            event = events.get(tool_id)
+            if event is not None:
+                if len(turn.tool_calls) != 1 or turn.tool_calls[0].call_id != event.call_id:
+                    raise ValueError("H1-R tool invocation does not match its returned call")
+                seen.add(tool_id)
+            found.append(event)
+        if seen != set(events):
+            raise ValueError("orphan H1-R execution event")
+        return tuple(found)
     events = {event.call_id: event for event in episode.tool_events}
     if len(events) != len(episode.tool_events):
-        raise ValueError("duplicate tool execution identity")
+        raise ValueError("duplicate legacy tool execution identity")
+    return tuple(
+        events.get(turn.tool_calls[0].call_id) if len(turn.tool_calls) == 1 else None
+        for turn in episode.turns
+    )
+
+
+def supervised_turns(episode: Episode) -> tuple[bool, ...]:
+    """Tool success selects positive response targets, not semantic qualification."""
     selected, final_seen = [], False
-    for turn in episode.turns:
+    for turn, event in zip(episode.turns, events_for_turns(episode), strict=True):
         valid = False
         if not final_seen and len(turn.tool_calls) == 1:
             call = turn.tool_calls[0]
-            event = events.get(call.call_id)
             if event and (event.name != call.name or event.raw_arguments != call.raw_arguments):
                 raise ValueError("executed tool event disagrees with the raw response")
             valid = bool(event and not event.is_error)
@@ -76,7 +112,7 @@ class ProbeGenerationRecord(Record):
             or self.api_sampling_token_ids_available
         ):
             raise ValueError("Probe requires settled complete real generation, not token claims")
-        events = {event.call_id: event for event in episode.tool_events}
+        events = events_for_turns(episode)
         response_ids = set()
         for index, (turn, request) in enumerate(
             zip(episode.turns, self.public_requests, strict=True)
@@ -89,7 +125,16 @@ class ProbeGenerationRecord(Record):
                 or digest(request) != metadata.get("request_sha256")
                 or request.get("model") != "deepseek-flash"
                 or set(request)
-                - {"model", "messages", "tools", "temperature", "top_p", "max_tokens", "stream"}
+                - {
+                    "model",
+                    "messages",
+                    "tools",
+                    "temperature",
+                    "top_p",
+                    "max_tokens",
+                    "stream",
+                    "thinking",
+                }
                 or request.get("temperature") != episode.config.temperature
                 or request.get("top_p") != episode.config.top_p
                 or request.get("max_tokens") != episode.config.max_new_tokens
@@ -101,6 +146,11 @@ class ProbeGenerationRecord(Record):
                 or not response["id"]
             ):
                 raise ValueError("Probe lacks original public API request/response binding")
+            if ("thinking" in request and request["thinking"] != {"type": "disabled"}) or (
+                episode.config.harness_id == "bigfinance-derived-vtdo-v3"
+                and request.get("thinking") != {"type": "disabled"}
+            ):
+                raise ValueError("new H1-R API Probe requires explicitly disabled thinking")
             if response["id"] in response_ids:
                 raise ValueError("one actual API response cannot fill multiple Probe turns")
             response_ids.add(response["id"])
@@ -110,6 +160,22 @@ class ProbeGenerationRecord(Record):
                 or (choices[0].get("message", {}).get("content") or "") != turn.raw_text
             ):
                 raise ValueError("Probe raw response content mismatch")
+
+            def reasoning_tokens(value):
+                if isinstance(value, dict):
+                    return any(
+                        (key == "reasoning_tokens" and item not in (None, 0))
+                        or reasoning_tokens(item)
+                        for key, item in value.items()
+                    )
+                if isinstance(value, list):
+                    return any(reasoning_tokens(item) for item in value)
+                return False
+
+            if choices[0].get("message", {}).get("reasoning_content") or reasoning_tokens(
+                response.get("usage", {})
+            ):
+                raise ValueError("thinking evidence cannot enter disabled-thinking Probe material")
             raw_calls = choices[0].get("message", {}).get("tool_calls", [])
             if len(raw_calls) != len(turn.tool_calls) or any(
                 raw.get("function", {}).get("name") != call.name
@@ -118,7 +184,7 @@ class ProbeGenerationRecord(Record):
             ):
                 raise ValueError("Probe raw tool arguments mismatch")
             if index + 1 < len(self.public_requests):
-                if len(turn.tool_calls) != 1 or turn.tool_calls[0].call_id not in events:
+                if len(turn.tool_calls) != 1 or events[index] is None:
                     raise ValueError("continued Probe lacks its actual tool execution")
                 call = turn.tool_calls[0]
                 expected = (
@@ -128,7 +194,7 @@ class ProbeGenerationRecord(Record):
                         {
                             "role": "tool",
                             "tool_call_id": call.call_id,
-                            "content": events[call.call_id].visible_output,
+                            "content": events[index].visible_output,
                         }
                     ]
                 )

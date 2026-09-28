@@ -1,0 +1,269 @@
+{
+  "cases": [
+    {
+      "definition": {
+        "null": "not checked or no corresponding observation; never shorthand for false",
+        "prev_reference_used": "at least one actually successful, value-checked dereference",
+        "visible_handle_verified": "all checked preceding tool envelopes occur in original inputs"
+      },
+      "episode_sha256": "d4079aec3d6937510de072d41df0450634ecfffa13ad1b17a102187bb7c34c17",
+      "exact_registered_chain_match": false,
+      "index": 0,
+      "kind": "normal",
+      "new_model_calls": 0,
+      "numerical_replay_passed": true,
+      "observation_checked": true,
+      "original_prompt_token_roundtrips_verified": 4,
+      "point": "real",
+      "prev_reference_used": true,
+      "reference_observations": [
+        {
+          "event_is_error": false,
+          "reference": "prev:r2.output.content.1.1",
+          "successful_value_verified": true,
+          "tool": "calculate",
+          "turn_index": 2
+        },
+        {
+          "event_is_error": false,
+          "reference": "prev:r2.output.content.1.2",
+          "successful_value_verified": true,
+          "tool": "calculate",
+          "turn_index": 2
+        },
+        {
+          "event_is_error": false,
+          "reference": "prev:r3.output.result",
+          "successful_value_verified": true,
+          "tool": "final_answer",
+          "turn_index": 3
+        }
+      ],
+      "schema": "finance_G2_observation_diagnostic.v3",
+      "source_records_overwritten": false,
+      "visibility_observation_checked": true,
+      "visibility_observations": [
+        {
+          "handle": "r1",
+          "turn_index": 1,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r3",
+          "turn_index": 3,
+          "verified": true
+        }
+      ],
+      "visible_handle_verified": true
+    },
+    {
+      "definition": {
+        "null": "not checked or no corresponding observation; never shorthand for false",
+        "prev_reference_used": "at least one actually successful, value-checked dereference",
+        "visible_handle_verified": "all checked preceding tool envelopes occur in original inputs"
+      },
+      "episode_sha256": "d7636ad7ef6222c0eeab08cdc3b1eccbd60f3d069a5064b50432f43097c7ea87",
+      "exact_registered_chain_match": false,
+      "index": 1,
+      "kind": "error_recovery",
+      "new_model_calls": 0,
+      "numerical_replay_passed": true,
+      "observation_checked": true,
+      "original_prompt_token_roundtrips_verified": 4,
+      "point": "real",
+      "prev_reference_used": false,
+      "reference_observations": [],
+      "schema": "finance_G2_observation_diagnostic.v3",
+      "source_records_overwritten": false,
+      "visibility_observation_checked": true,
+      "visibility_observations": [
+        {
+          "handle": "r1",
+          "turn_index": 1,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r3",
+          "turn_index": 3,
+          "verified": true
+        }
+      ],
+      "visible_handle_verified": true
+    },
+    {
+      "definition": {
+        "null": "not checked or no corresponding observation; never shorthand for false",
+        "prev_reference_used": "at least one actually successful, value-checked dereference",
+        "visible_handle_verified": "all checked preceding tool envelopes occur in original inputs"
+      },
+      "episode_sha256": "bcd5c3cee923771477dd51e403294178117cdb3c200913648698e5119879d206",
+      "exact_registered_chain_match": false,
+      "index": 2,
+      "kind": "normal",
+      "new_model_calls": 0,
+      "numerical_replay_passed": true,
+      "observation_checked": true,
+      "original_prompt_token_roundtrips_verified": 4,
+      "point": "virtual",
+      "prev_reference_used": true,
+      "reference_observations": [
+        {
+          "event_is_error": false,
+          "reference": "prev:r2.output.content.1.1",
+          "successful_value_verified": true,
+          "tool": "calculate",
+          "turn_index": 2
+        },
+        {
+          "event_is_error": false,
+          "reference": "prev:r2.output.content.1.2",
+          "successful_value_verified": true,
+          "tool": "calculate",
+          "turn_index": 2
+        },
+        {
+          "event_is_error": false,
+          "reference": "prev:r3.output.result",
+          "successful_value_verified": true,
+          "tool": "final_answer",
+          "turn_index": 3
+        }
+      ],
+      "schema": "finance_G2_observation_diagnostic.v3",
+      "source_records_overwritten": false,
+      "visibility_observation_checked": true,
+      "visibility_observations": [
+        {
+          "handle": "r1",
+          "turn_index": 1,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r3",
+          "turn_index": 3,
+          "verified": true
+        }
+      ],
+      "visible_handle_verified": true
+    },
+    {
+      "definition": {
+        "null": "not checked or no corresponding observation; never shorthand for false",
+        "prev_reference_used": "at least one actually successful, value-checked dereference",
+        "visible_handle_verified": "all checked preceding tool envelopes occur in original inputs"
+      },
+      "episode_sha256": "cb72541d93ce92dadefc1847a5037c2d7332bf17370e83a367becd44a06ef080",
+      "exact_registered_chain_match": false,
+      "index": 3,
+      "kind": "error_recovery",
+      "new_model_calls": 0,
+      "numerical_replay_passed": true,
+      "observation_checked": true,
+      "original_prompt_token_roundtrips_verified": 4,
+      "point": "virtual",
+      "prev_reference_used": false,
+      "reference_observations": [],
+      "schema": "finance_G2_observation_diagnostic.v3",
+      "source_records_overwritten": false,
+      "visibility_observation_checked": true,
+      "visibility_observations": [
+        {
+          "handle": "r1",
+          "turn_index": 1,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 2,
+          "verified": true
+        },
+        {
+          "handle": "r1",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r2",
+          "turn_index": 3,
+          "verified": true
+        },
+        {
+          "handle": "r3",
+          "turn_index": 3,
+          "verified": true
+        }
+      ],
+      "visible_handle_verified": true
+    }
+  ],
+  "exact_registered_passes": 0,
+  "new_model_calls": 0,
+  "original_results_overwritten": false,
+  "schema": "finance_G2_existing_record_addendum.v1",
+  "source_gate_sha256": "46818f49e75ed24956a148f828bb783f71c0df464955c53e83756975560cd985"
+}
