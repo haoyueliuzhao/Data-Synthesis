@@ -1,0 +1,62 @@
+{
+  "GPU_reservation_started": false,
+  "all_eight_slots_common_candidates": true,
+  "at": "2026-09-28T13:11:31.371164+00:00",
+  "checks": [
+    {
+      "passed": 125,
+      "scope": "joint provider, ledger, collector, semantics, encoder, public harness, distribution"
+    },
+    {
+      "passed": 32,
+      "scope": "final collector+semantic focused controls, overlapping prior suite"
+    }
+  ],
+  "controller_pid": 1736779,
+  "first_observed_status": {
+    "active": 16,
+    "at": "2026-09-28T13:11:28.633807+00:00",
+    "blocked": [],
+    "budget": {
+      "actual_cache_hit_tokens_settled": 2323968,
+      "actual_cache_miss_tokens_settled": 1386301,
+      "actual_completion_tokens_settled": 106428,
+      "actual_prompt_tokens_settled": 3710269,
+      "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+      "exposure_microcny": 37534014,
+      "exposure_warning_reached": false,
+      "halt": null,
+      "hard_cap_microcny": 800000000,
+      "held_microcny": 33816576,
+      "pending_requests": 16,
+      "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+      "purpose": "finqa_v6_generation_and_semantic_review_v1",
+      "remaining_exposure_microcny": 762465986,
+      "request_cap": 258000,
+      "requests_dispatched": 1037,
+      "requests_reserved": 1037,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "settled_tariff_microcny": 3717438,
+      "unknown_requests": 0,
+      "warning_microcny": 700000000,
+      "warning_reached": false
+    },
+    "completed": 439,
+    "denominator": 8000,
+    "phase": "GENERATING",
+    "private_review_started": false,
+    "protocol_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "training_started": false
+  },
+  "hard_cap_CNY": 800,
+  "independent_new_budget": true,
+  "paid_generation_started": true,
+  "process_identity": "302541200",
+  "protocol_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "protocol_sha256": "ebc9aa1d6c283884d00d68ec48179004e0432fd7ca644d4ab3b681d31cf13b26",
+  "review_started": false,
+  "schema": "v6_launch_receipt.v1",
+  "source_commit": "5feae6dafcb9776befa78b2ba73c1f3e6c0c7ddc",
+  "training_started": false,
+  "warning_CNY": 700
+}
