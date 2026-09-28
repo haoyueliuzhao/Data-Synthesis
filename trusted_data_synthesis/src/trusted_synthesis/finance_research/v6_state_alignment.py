@@ -15,6 +15,8 @@ from typing import Literal
 from .contracts import digest
 from .semantic_review import (
     MaskSpan,
+    NonassertiveMaskSpan,
+    NonassertiveSlotReview,
     ReviewError,
     SlotReview,
     _canonical_mask,
@@ -67,7 +69,7 @@ def _slot_order(prepared):
     return slots
 
 
-def _slot_inputs(prepared, reviews, reviewer):
+def _slot_inputs(prepared, reviews, reviewer, *, allow_nonassertive_context=False):
     _require(type(reviewer) is int and reviewer in (0, 1), "invalid reviewer coordinate")
     slots = _slot_order(prepared)
     _require(
@@ -92,6 +94,7 @@ def _slot_inputs(prepared, reviews, reviewer):
                 and isinstance(item.get("parsed", {}).get("slot"), dict),
                 "effective valid slot requires its validated original graph",
             )
+        _validate_slot_shape(item, allow_nonassertive_context=allow_nonassertive_context)
         checks = prepared["mechanical"][sid]
         _require(
             all(
@@ -102,6 +105,16 @@ def _slot_inputs(prepared, reviews, reviewer):
             "mechanical checks must explicitly retain unknown values",
         )
     return slots
+
+
+def _validate_slot_shape(item, *, allow_nonassertive_context=False):
+    parsed = (item.get("parsed") or {}).get("slot")
+    if parsed is not None:
+        model = NonassertiveSlotReview if allow_nonassertive_context is True else SlotReview
+        try:
+            model.model_validate(parsed)
+        except ValueError as error:
+            raise ReviewError("sealed slot shape is outside this alignment version") from error
 
 
 def _own_eligible(prepared, reviews, slots):
@@ -171,7 +184,10 @@ def _strict_tool(catalog):
             if name in original
         }
         if key == "evidence":
-            value["items"] = {"type": "string", "enum": list(catalog)}
+            value["items"] = {
+                "type": "string",
+                "enum": sorted(catalog, key=lambda eid: int(eid[1:])),
+            }
         pair["properties"][key] = value
     pairs = {
         "type": "object",
@@ -208,7 +224,8 @@ def _summary(item, local):
     )
     needed_terms = {key for node in accepted for key in node["term_ids"]}
     by_doc, by_span = {}, {}
-    for eid, span in local["spans"].items():
+    for eid in sorted(local["spans"], key=lambda value: int(value[1:])):
+        span = local["spans"][eid]
         by_doc.setdefault(span["doc_id"], []).append(eid)
         by_span[digest(span)] = eid
 
@@ -251,10 +268,14 @@ def _summary(item, local):
     )
 
 
-def alignment_request(prepared, slot_reviews_for_one_reviewer, reviewer=0):
+def alignment_request(
+    prepared, slot_reviews_for_one_reviewer, reviewer=0, *, allow_nonassertive_context=False
+):
     """No joint-valid roster or other-reviewer result is read or placed in this request."""
     reviews = slot_reviews_for_one_reviewer
-    slots = _slot_inputs(prepared, reviews, reviewer)
+    slots = _slot_inputs(
+        prepared, reviews, reviewer, allow_nonassertive_context=allow_nonassertive_context
+    )
     docs, public, local = _catalog(prepared)
     reverse = {sid: alias for alias, sid in local["slot_aliases"].items()}
     judgments = {}
@@ -301,7 +322,7 @@ def alignment_request(prepared, slot_reviews_for_one_reviewer, reviewer=0):
     }
 
 
-def _checked_request(request):
+def _checked_request(request, *, allow_nonassertive_context=False):
     _require(
         request.get("wire_protocol") == WIRE_PROTOCOL
         and request.get("model") == "deepseek-flash"
@@ -338,6 +359,7 @@ def _checked_request(request):
     )
     for alias, sid in aliases.items():
         item = request["own_slot_reviews"][sid]
+        _validate_slot_shape(item, allow_nonassertive_context=allow_nonassertive_context)
         _require(
             digest(item) == request["slot_review_bindings"][sid]
             and item["reviewer"] == request["reviewer"]
@@ -362,7 +384,7 @@ def _checked_request(request):
     return payload
 
 
-def _semantic_pair(pair, left, right, request, evidence):
+def _semantic_pair(pair, left, right, request, evidence, *, allow_nonassertive_context=False):
     own = set(request["own_eligible_slot_ids"])
     applicable = left in own and right in own
     if not applicable:
@@ -384,7 +406,8 @@ def _semantic_pair(pair, left, right, request, evidence):
         return "substantive_judgment_needs_both_original_trajectories"
     graphs, named = [], []
     for sid, names in ((left, pair.left_nodes), (right, pair.right_nodes)):
-        slot = SlotReview.model_validate(request["own_slot_reviews"][sid]["parsed"]["slot"])
+        model = NonassertiveSlotReview if allow_nonassertive_context is True else SlotReview
+        slot = model.model_validate(request["own_slot_reviews"][sid]["parsed"]["slot"])
         nodes = {node.node_id: node for node in slot.semantic_graph.nodes}
         if not names or any(
             not nodes[name].accepted or not _reaches_answer(slot.semantic_graph, name)
@@ -419,9 +442,9 @@ def _semantic_pair(pair, left, right, request, evidence):
     return None
 
 
-def _validate_alignment(raw, request):
+def _validate_alignment(raw, request, *, allow_nonassertive_context=False):
     """Bad shape/IDs raise; finite semantic contradictions remain reported + unknown."""
-    _checked_request(request)
+    _checked_request(request, allow_nonassertive_context=allow_nonassertive_context)
     value = _strict_json(raw)
     _require(
         isinstance(value, dict)
@@ -455,7 +478,14 @@ def _validate_alignment(raw, request):
             ),
             "pair evidence belongs to another slot",
         )
-        semantic_error = _semantic_pair(pair, left, right, request, evidence)
+        semantic_error = _semantic_pair(
+            pair,
+            left,
+            right,
+            request,
+            evidence,
+            allow_nonassertive_context=allow_nonassertive_context,
+        )
         result[key] = {
             **pair.model_dump(),
             "left": left,
@@ -486,20 +516,24 @@ def _validate_alignment(raw, request):
     }
 
 
-def validate_alignment(raw, request):
+def validate_alignment(raw, request, *, allow_nonassertive_context=False):
     """Only shape/coordinate errors raise; semantic inconsistency is retained unknown."""
     try:
-        return _validate_alignment(raw, request)
+        return _validate_alignment(
+            raw, request, allow_nonassertive_context=allow_nonassertive_context
+        )
     except ReviewError:
         raise
     except (ValueError, TypeError, KeyError, AttributeError) as failure:
         raise ReviewError(f"alignment interface {type(failure).__name__}: {failure}") from failure
 
 
-def inspect_alignment(raw, request):
+def inspect_alignment(raw, request, *, allow_nonassertive_context=False):
     """Mechanical capacity gate independent of successful material/state yield."""
     try:
-        result = validate_alignment(raw, request)
+        result = validate_alignment(
+            raw, request, allow_nonassertive_context=allow_nonassertive_context
+        )
     except ReviewError as failure:
         return {
             "interface_admitted": False,
@@ -530,11 +564,21 @@ def inspect_alignment(raw, request):
     }
 
 
-def resolve_decomposed_pair(prepared, slot_reviews0, slot_reviews1, alignment0, alignment1):
+def resolve_decomposed_pair(
+    prepared,
+    slot_reviews0,
+    slot_reviews1,
+    alignment0,
+    alignment1,
+    *,
+    allow_nonassertive_context=False,
+):
     """Classify every jointly eligible original package together or leave all unmapped."""
     sides = (slot_reviews0, slot_reviews1)
-    slots = _slot_inputs(prepared, slot_reviews0, 0)
-    _slot_inputs(prepared, slot_reviews1, 1)
+    slots = _slot_inputs(
+        prepared, slot_reviews0, 0, allow_nonassertive_context=allow_nonassertive_context
+    )
+    _slot_inputs(prepared, slot_reviews1, 1, allow_nonassertive_context=allow_nonassertive_context)
     docs = document_index(prepared["bundle"])
     results, mapping_errors = {}, []
     for sid in slots:
@@ -544,13 +588,14 @@ def resolve_decomposed_pair(prepared, slot_reviews0, slot_reviews1, alignment0, 
         v_trace = a["v_trace"] if a["v_trace"] == b["v_trace"] and clean else "unknown"
         eligible = checks["native_correct"] is True and v_trace == "valid"
         da, db = a.get("derived"), b.get("derived")
+        mask_model = NonassertiveMaskSpan if allow_nonassertive_context is True else MaskSpan
         mask_a = (
-            _canonical_mask([MaskSpan.model_validate(m) for m in a["parsed"]["slot"]["mask"]])
+            _canonical_mask([mask_model.model_validate(m) for m in a["parsed"]["slot"]["mask"]])
             if da
             else None
         )
         mask_b = (
-            _canonical_mask([MaskSpan.model_validate(m) for m in b["parsed"]["slot"]["mask"]])
+            _canonical_mask([mask_model.model_validate(m) for m in b["parsed"]["slot"]["mask"]])
             if db
             else None
         )
