@@ -118,9 +118,26 @@ def register(output=OUTPUT):
     return plan
 
 
-async def run(output, env_file):
+async def run(
+    output,
+    env_file,
+    *,
+    plan_loader=None,
+    review_inspector=None,
+    episode_prefix="v7m5:",
+):
+    """Shared fixed-12 executor; each prospective caller binds its own plan/wire.
+
+    Historical CLI defaults remain v5. This does not resume or relabel a prior
+    started trial; the immutable started barrier applies to every caller.
+    """
     output = Path(output)
-    plan = checked_plan(output)
+    plan = (plan_loader or checked_plan)(output)
+    require(
+        plan.get("maximum_calls") == 12 and len(plan.get("jobs", [])) == 12,
+        "fixed executor requires exactly twelve independently registered calls",
+    )
+    inspector = review_inspector or inspect_slot_review
     require(
         not (output / "started").exists(),
         "started R5 requires explicit audit, never implicit resend",
@@ -173,7 +190,7 @@ async def run(output, env_file):
                 except asyncio.QueueEmpty:
                     return
                 directory = output / "jobs" / digest(job["key"])
-                episode = "v7m5:" + digest(dict(protocol_id=plan["id"], job_key=job["key"]))
+                episode = episode_prefix + digest(dict(protocol_id=plan["id"], job_key=job["key"]))
                 request = job["request"]
                 require(digest(request) == job["request_sha256"], "registered R5 request changed")
                 publish(
@@ -199,7 +216,7 @@ async def run(output, env_file):
                             error=artifact.get("review_format_error") or "non-normal finish",
                         )
                     else:
-                        assessment = inspect_slot_review(artifact["review_text"], request)
+                        assessment = inspector(artifact["review_text"], request)
                     publish(directory / "assessment", assessment)
                     completed[job["key"]] = dict(artifact=artifact, assessment=assessment)
                 except Exception as error:
