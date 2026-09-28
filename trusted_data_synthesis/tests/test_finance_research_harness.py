@@ -79,10 +79,9 @@ def test_complete_public_history_strict_final_and_durable_event_order(task):
     assert result.provider_attempts == 2 and result.actual_model_calls == 0
     assert json.loads(provider.requests[0][1]["content"]) == task.model_dump(mode="json")
     assert provider.requests[1][:2] == provider.requests[0]
-    assert (
-        provider.requests[1][2]["tool_calls"][0]["function"]["arguments"]
-        == '{"expression": "120 / 2"}'
-    )
+    assert provider.requests[1][2]["tool_calls"][0]["function"]["arguments"] == {
+        "expression": "120 / 2"
+    }
     assert provider.requests[1][3]["content"] == result.tool_events[0].visible_output
     assert [event["kind"] for event in events] == [
         "episode_started",
@@ -205,6 +204,8 @@ def test_provider_without_actual_counter_has_unknown_actual_calls(task):
 
     result = asyncio.run(run_episode(task, UnmeteredProvider()))
     assert result.actual_model_calls is None and result.provider_attempts == 1
+    assert not result.all_provider_calls_settled
+    assert result.call_settlements[0].actual_model_calls is None
 
 
 def test_reject_private_or_bundled_inputs(task):

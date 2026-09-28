@@ -84,7 +84,11 @@ class TaskBundle(Record):
 
 
 class RunConfig(Record):
-    harness_id: str = "bigfinance-derived-vtdo-v1"
+    harness_id: str = "bigfinance-derived-vtdo-v2"
+    local_tool_protocol: Literal["qwen2.5-native-tool-call-v1", "legacy-json-v1"] = (
+        "qwen2.5-native-tool-call-v1"
+    )
+    submission_profile: Literal["original", "finqa_program_v1"] = "original"
     max_steps: int = Field(default=32, ge=1, le=256)
     max_new_tokens: int = Field(default=2048, ge=1)
     context_limit: int = Field(default=24576, ge=1)
@@ -154,6 +158,14 @@ class ToolEvent(Record):
     is_error: bool = False
 
 
+class CallSettlement(Record):
+    attempt_index: int
+    state: Literal["returned", "pre_call_rejected", "service_failure", "unknown"]
+    actual_model_calls: int | None
+    request_sha256: str
+    evidence: dict[str, Any] = Field(default_factory=dict)
+
+
 class Episode(Record):
     task_id: str
     dataset: str
@@ -170,6 +182,8 @@ class Episode(Record):
     error: str | None = None
     actual_model_calls: int | None
     provider_attempts: int = 0
+    call_settlements: tuple[CallSettlement, ...] = ()
+    all_provider_calls_settled: bool = False
     elapsed_seconds: float
     # Native accuracy is assigned offline; it is never a model-visible observation.
 
@@ -184,3 +198,15 @@ class ModelProvider(Protocol):
 
 class ContextLimitError(RuntimeError):
     """No history compaction, truncation, or hidden retry is permitted."""
+
+
+class ProviderCallError(RuntimeError):
+    """Transport evidence, not a financial/model prediction failure."""
+
+    def __init__(self, message, *, settlement, evidence, actual_model_calls=None):
+        if settlement not in {"pre_call_rejected", "service_failure", "unknown"}:
+            raise ValueError("invalid provider failure settlement")
+        super().__init__(message)
+        self.settlement = settlement
+        self.evidence = evidence
+        self.actual_model_calls = actual_model_calls

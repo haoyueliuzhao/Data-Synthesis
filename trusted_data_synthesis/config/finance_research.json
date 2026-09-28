@@ -1,5 +1,7 @@
 {
-  "harness_id": "bigfinance-derived-vtdo-v1",
+  "harness_id": "bigfinance-derived-vtdo-v2",
+  "local_tool_protocol": "qwen2.5-native-tool-call-v1",
+  "submission_profile": "finqa_program_v1",
   "max_steps": 32,
   "max_new_tokens": 2048,
   "context_limit": 24576,

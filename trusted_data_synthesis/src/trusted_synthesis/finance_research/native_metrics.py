@@ -11,12 +11,19 @@ import contextlib
 import hashlib
 import io
 import json
+import math
 from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from .contracts import TaskBundle
+from .contracts import TaskBundle, digest
+from .profiles import (
+    FINQA_OPERATORS,
+    MODEL_TERMINAL_REASONS,
+    PUBLIC_PROFILE_ID,
+    profile_definition,
+)
 
 VENDOR = Path(__file__).with_name("metric_vendor")
 
@@ -41,10 +48,185 @@ def _derived_answer_match(prediction: Any, reference: Any) -> float:
         return float(prediction == reference)
 
 
-def score_native(
-    bundle: TaskBundle, prediction: Any, scale: str = "", program: str | list[str] | None = None
+def _load_finqa_scorer():
+    from .metric_vendor import finqa_evaluate
+
+    return finqa_evaluate
+
+
+def _program_tokens(program: Any, scorer) -> list[str] | None:
+    """Validate the declared submission container, not replace upstream scoring."""
+    if isinstance(program, str):
+        program = scorer.program_tokenization(program)
+    if (
+        not isinstance(program, list)
+        or len(program) < 5
+        or program[-1] != "EOF"
+        or (len(program) - 1) % 4
+        or any(not isinstance(token, str) for token in program)
+    ):
+        return None
+    for offset in range(0, len(program) - 1, 4):
+        op, left, right, close = program[offset : offset + 4]
+        if op not in {f"{name}(" for name in FINQA_OPERATORS} or close != ")":
+            return None
+        if not left.strip() or not right.strip():
+            return None
+    return program
+
+
+def _finite_execution(value: Any) -> bool:
+    return (
+        value in ("yes", "no")
+        if isinstance(value, str)
+        else (type(value) in (int, float) and math.isfinite(value))
+    )
+
+
+def _score_finqa_profile(
+    output: dict[str, Any],
+    bundle: TaskBundle,
+    prediction: Any,
+    program: Any,
+    *,
+    submission_profile: str,
+    stop_reason: str | None,
+    all_provider_calls_settled: bool | None,
 ) -> dict[str, Any]:
-    """Return per-task scores; unsupported metrics are null, never invented zeros.
+    """Apply the declared no-prediction policy around unchanged official functions."""
+    profile = profile_definition(submission_profile)
+    output["submission_profile"] = profile["id"]
+    output["submission_profile_sha256"] = digest(profile)
+    output["missing_prediction_policy"] = profile["missing_prediction_policy"]
+    output["final_program_consistency"] = {
+        "status": "not_comparable",
+        "match": None,
+        "program_execution_result": None,
+        "definition": (
+            "project exact numeric/string Final-versus-predicted-program comparison; "
+            "separate from native accuracy and not actual tool-trajectory CompletePass"
+        ),
+    }
+    if all_provider_calls_settled is not True or stop_reason not in MODEL_TERMINAL_REASONS:
+        output.update(
+            status="unknown",
+            reason="native model scoring requires known-settled normal model termination",
+        )
+        return output
+    try:
+        provenance = metric_provenance()
+        scorer = _load_finqa_scorer()
+    except ImportError as exc:
+        output["reason"] = f"optional native metric dependency missing: {exc.name}"
+        return output
+    except (RuntimeError, OSError, ValueError) as exc:
+        output.update(
+            status="unknown", reason=f"metric provenance unavailable: {type(exc).__name__}"
+        )
+        return output
+    output["provenance"] = {
+        **provenance["FinQA"],
+        "source": provenance["files"]["finqa_evaluate.py"],
+    }
+    # Check the reference even for a missing prediction. A broken reference must
+    # not become a model zero merely because this particular model omitted Final.
+    tables = [source.content for source in bundle.public.sources if source.locator == "table"]
+    if len(tables) != 1 or not isinstance(tables[0], list):
+        output.update(status="reference_inconsistency", reason="missing or ambiguous public table")
+        return output
+    table = tables[0]
+    gold = _program_tokens(bundle.reference.program, scorer)
+    if gold is None:
+        output.update(
+            status="reference_inconsistency", reason="invalid reference program container"
+        )
+        return output
+    try:
+        gold_invalid, gold_result = scorer.eval_program(gold, table)
+        if (
+            gold_invalid
+            or not _finite_execution(gold_result)
+            or gold_result != bundle.reference.answer
+        ):
+            output.update(
+                status="reference_inconsistency",
+                reason="reference program does not execute to the original exe_ans",
+            )
+            return output
+        with contextlib.redirect_stdout(io.StringIO()):
+            if not scorer.equal_program(gold, gold):
+                output.update(
+                    status="reference_inconsistency",
+                    reason="reference program is not self-equivalent",
+                )
+                return output
+    except Exception as exc:
+        output.update(
+            status="unknown",
+            reason=f"reference scoring failed: {type(exc).__name__}",
+        )
+        return output
+
+    def no_prediction(reason: str) -> dict[str, Any]:
+        output.update(status="invalid_prediction", reason=reason)
+        output["native"] = {"execution_accuracy": 0.0, "program_accuracy": 0.0}
+        return output
+
+    if stop_reason != "final_answer" or prediction is None:
+        return no_prediction("no valid explicit Final at the settled model terminal")
+    if program is None:
+        return no_prediction("required predicted FinQA program missing")
+    predicted = _program_tokens(program, scorer)
+    if predicted is None:
+        return no_prediction("invalid predicted FinQA program container or structure")
+    # eval_program itself classifies arithmetic/operand/table errors as invalid.
+    # An exception escaping the pinned scorer is not silently treated as model error.
+    try:
+        invalid, executed = scorer.eval_program(predicted, table)
+        if invalid or not _finite_execution(executed):
+            return no_prediction("predicted FinQA program is not executable")
+        with contextlib.redirect_stdout(io.StringIO()):
+            program_equal = scorer.equal_program(gold, predicted)
+    except Exception as exc:
+        output.update(status="unknown", reason=f"native scoring failed: {type(exc).__name__}")
+        return output
+    if program_equal and executed != bundle.reference.answer:
+        output.update(
+            status="reference_inconsistency",
+            reason="upstream program-equivalence/execution assertion would fail",
+        )
+        return output
+    consistency = _derived_answer_match(prediction, executed)
+    output["final_program_consistency"].update(
+        status="consistent" if consistency else "inconsistent",
+        match=consistency,
+        program_execution_result=executed,
+    )
+    output["native"] = {
+        "execution_accuracy": float(executed == bundle.reference.answer),
+        "program_accuracy": float(program_equal),
+    }
+    output["status"] = "scored"
+    return output
+
+
+def score_native(
+    bundle: TaskBundle,
+    prediction: Any,
+    scale: str = "",
+    program: str | list[str] | None = None,
+    *,
+    submission_profile: str | None = None,
+    stop_reason: str | None = None,
+    all_provider_calls_settled: bool | None = None,
+) -> dict[str, Any]:
+    """Return separate native metrics and project diagnostics.
+
+    New FinQA runs explicitly declare ``submission_profile='finqa_program_v1'``
+    and supply actual terminal/settlement evidence. That profile counts missing
+    or invalid model predictions as zero, but never converts unknown calls,
+    dependency errors or reference contradictions into zeros. Omitting a profile
+    retains the historical interface for old artifacts, not a new-run default.
 
     The ``native`` and ``derived`` dictionaries must not be pooled into one
     CompletePass, nor averaged across datasets with different metric semantics.
@@ -52,6 +234,10 @@ def score_native(
     when the numerical scorer is exactly upstream.
     """
     dataset = bundle.public.dataset
+    if submission_profile is not None:
+        profile_definition(submission_profile)
+        if dataset != "finqa" or submission_profile != PUBLIC_PROFILE_ID:
+            raise ValueError("native scoring profile does not match dataset")
     output = {
         "dataset": dataset,
         "task_id": bundle.public.task_id,
@@ -67,6 +253,16 @@ def score_native(
             "definition": "project exact numeric/string match; no tolerance; not official FinQA",
         }
         output["native"] = {"execution_accuracy": None, "program_accuracy": None}
+        if submission_profile is not None:
+            return _score_finqa_profile(
+                output,
+                bundle,
+                prediction,
+                program,
+                submission_profile=submission_profile,
+                stop_reason=stop_reason,
+                all_provider_calls_settled=all_provider_calls_settled,
+            )
         if program is None:
             output["reason"] = (
                 "official FinQA execution/program metrics require predicted DSL program"

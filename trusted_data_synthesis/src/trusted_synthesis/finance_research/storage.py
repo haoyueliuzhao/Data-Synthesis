@@ -12,6 +12,19 @@ from trusted_synthesis.core.immutable_artifacts import write_immutable_artifact_
 
 from .contracts import Episode, Lineage, PrivateReference, PublicTask, RunConfig, TaskBundle, digest
 from .planning import task_key, verify_role_plan
+from .settlement import episode_is_complete
+
+
+class UnsettledExecution(RuntimeError):
+    """A durable incomplete episode needs explicit disposition, never hidden retry."""
+
+
+def runtime_task_view(task, config):
+    if config.submission_profile == "original":
+        return task
+    from .profiles import public_run_view
+
+    return public_run_view(task, config.submission_profile)
 
 
 def encode(value):
@@ -96,6 +109,10 @@ def runtime_binding():
         "experiments/finance_qa_vnext_anchored_vtdo/distribution.py",
         "experiments/finance_qa_vnext_anchored_vtdo/protocol.py",
         "experiments/finance_qa_vnext_fixed_kernel_value/trajectory_consumer.py",
+        "experiments/finance_qa_vnext_fixed_kernel_value/runtime.py",
+        "experiments/finance_qa_vnext_fixed_kernel_value/protocol.py",
+        "experiments/finance_qa_vnext_catalog_bridge/worker.py",
+        "experiments/finance_qa_vnext_eval_readiness/training_runtime.py",
         "experiments/finance_qa_vnext_pq_student/model.py",
         "experiments/finance_qa_vnext_pq_student/plan.py",
     )
@@ -120,7 +137,7 @@ def episode_key(task, config, identity):
     )
 
 
-def prepare_run(snapshot, role_plan, output, *, role, config, identity, limit=None):
+def prepare_run(snapshot, role_plan, output, *, role, config, identity, limit=None, task_keys=None):
     snapshot, output = Path(snapshot).resolve(), Path(output).resolve()
     manifest, tasks, lineages = load_public_snapshot(snapshot)
     verify_role_plan(role_plan, tasks, lineages)
@@ -129,6 +146,15 @@ def prepare_run(snapshot, role_plan, output, *, role, config, identity, limit=No
     if config.tier == "VTDO_FEEDBACK" and role != "feedback":
         raise ValueError("only the original feedback role can enter VTDO")
     chosen = [task for task in tasks if role_plan["assignments"][task_key(task)] == role]
+    if task_keys is not None:
+        if limit is not None or len(set(task_keys)) != len(task_keys):
+            raise ValueError(
+                "explicit registered task keys cannot be duplicated or combined with limit"
+            )
+        available = {task_key(task): task for task in chosen}
+        if not set(task_keys) <= set(available):
+            raise ValueError("requested shard crosses registered role boundary")
+        chosen = [available[key] for key in task_keys]
     if limit is not None:
         if type(limit) is not int or limit <= 0:
             raise ValueError("limit must be positive and fixed before the first model call")
@@ -136,7 +162,7 @@ def prepare_run(snapshot, role_plan, output, *, role, config, identity, limit=No
     if not chosen:
         raise ValueError("no tasks in requested role")
     value = dict(
-        schema="finance_research_run.v1",
+        schema="finance_research_run.v2",
         snapshot=str(snapshot),
         snapshot_id=manifest["id"],
         role_plan=role_plan,
@@ -145,6 +171,9 @@ def prepare_run(snapshot, role_plan, output, *, role, config, identity, limit=No
         config=config.model_dump(mode="json"),
         provider=identity.model_dump(mode="json"),
         tasks=[task_key(task) for task in chosen],
+        public_view_sha256={
+            task_key(task): digest(runtime_task_view(task, config)) for task in chosen
+        },
         episode_keys=[episode_key(task, config, identity) for task in chosen],
         registered_denominator=len(chosen),
         source_manifest_sha256=digest(manifest),
@@ -189,6 +218,8 @@ async def execute_run(root, provider):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         run = _run_manifest(root)
         config = RunConfig.model_validate(run["config"])
+        if config.harness_id == "fixed-kernel-finqa-compat-v1":
+            from .legacy_harness import run_episode
         if provider.identity.model_dump(mode="json") != run["provider"]:
             raise ValueError("provider differs from registered model/parameter identity")
         manifest, tasks, lineages = load_public_snapshot(run["snapshot"])
@@ -198,13 +229,15 @@ async def execute_run(root, provider):
         by_key = {task_key(task): task for task in tasks}
         references = []
         for key, episode_id in zip(run["tasks"], run["episode_keys"], strict=True):
-            task = by_key[key]
+            task = runtime_task_view(by_key[key], config)
+            if run["public_view_sha256"][key] != digest(task):
+                raise ValueError("registered public submission view changed")
             path = root / "episodes" / episode_id / "episode.json"
             if path.exists():
                 episode = Episode.model_validate_json(path.read_bytes())
             else:
                 sink = EventSink(root / "events" / episode_id)
-                episode = await run_episode(task, provider, config, sink=sink)
+                episode = await run_episode(by_key[key], provider, config, sink=sink)
                 write_immutable_artifact_directory(
                     path.parent, {"episode.json": encode(episode.model_dump(mode="json"))}
                 )
@@ -224,13 +257,34 @@ async def execute_run(root, provider):
                 "payload"
             ) != episode.model_dump(mode="json"):
                 raise ValueError("completed episode differs from durable completion event")
+            if not episode_is_complete(episode):
+                pending = dict(
+                    schema="finance_research_incomplete_call.v1",
+                    run_id=run["id"],
+                    episode_key=episode_id,
+                    episode_sha256=digest(episode),
+                    stop_reason=episode.stop_reason,
+                    all_provider_calls_settled=episode.all_provider_calls_settled,
+                    call_settlements=[
+                        row.model_dump(mode="json") for row in episode.call_settlements
+                    ],
+                    new_work_stopped=True,
+                    automatic_retry_allowed=False,
+                    disposition="pending explicit evidence-based resolution or new registered run",
+                )
+                pending_dir = root / "incomplete" / episode_id
+                if not pending_dir.exists():
+                    write_immutable_artifact_directory(
+                        pending_dir, {"record.json": encode(pending)}
+                    )
+                raise UnsettledExecution(f"incomplete provider execution retained: {episode_id}")
             references.append(
                 dict(
                     key=episode_id, path=str(path.relative_to(root)), sha256=_sha(path.read_bytes())
                 )
             )
         seal = dict(
-            schema="finance_research_generation_seal.v1",
+            schema="finance_research_generation_seal.v2",
             run_id=run["id"],
             episodes=references,
             complete=True,
@@ -256,6 +310,7 @@ def sealed_episodes(root):
         seal.get("id") != digest({k: v for k, v in seal.items() if k != "id"})
         or seal["run_id"] != run["id"]
         or seal["complete"] is not True
+        or seal.get("all_provider_calls_settled") is not True
         or seal["registered_denominator"] != run["registered_denominator"]
         or [row["key"] for row in seal["episodes"]] != run["episode_keys"]
     ):
@@ -268,7 +323,10 @@ def sealed_episodes(root):
         raw = path.read_bytes()
         if _sha(raw) != row["sha256"]:
             raise ValueError("sealed episode bytes changed")
-        episodes.append(Episode.model_validate_json(raw))
+        episode = Episode.model_validate_json(raw)
+        if not episode_is_complete(episode):
+            raise ValueError("seal cannot promote an unknown/infrastructure episode to complete")
+        episodes.append(episode)
     return run, seal, episodes
 
 
@@ -293,7 +351,15 @@ def score_run(root, output):
     for key, episode in zip(run["tasks"], episodes, strict=True):
         bundle = bundles[key]
         native = score_native(
-            bundle, episode.final_answer, scale=episode.final_scale, program=episode.final_program
+            bundle,
+            episode.final_answer,
+            scale=episode.final_scale,
+            program=episode.final_program,
+            submission_profile=None
+            if episode.config.submission_profile == "original"
+            else episode.config.submission_profile,
+            stop_reason=episode.stop_reason,
+            all_provider_calls_settled=episode.all_provider_calls_settled,
         )
         trajectory = dict(
             stop_reason=episode.stop_reason,

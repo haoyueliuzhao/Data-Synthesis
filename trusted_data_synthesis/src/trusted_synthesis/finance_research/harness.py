@@ -18,10 +18,20 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from .contracts import ContextLimitError, Episode, ModelProvider, PublicTask, RunConfig, digest
+from .contracts import (
+    CallSettlement,
+    ContextLimitError,
+    Episode,
+    ModelProvider,
+    PublicTask,
+    RunConfig,
+    digest,
+)
+from .providers import canonical_assistant_message
+from .settlement import calls_settled, counter_delta, failed_call
 from .tools import TOOL_SPECS, PublicToolSession
 
-HARNESS_ID = "bigfinance-derived-vtdo-v1"
+HARNESS_ID = "bigfinance-derived-vtdo-v2"
 UPSTREAM_COMMIT = "d794a65fe583edc6852b44c817b0a2aef33ca831"
 EventSink = Callable[[dict[str, Any]], None | Awaitable[None]]
 SYSTEM_PROMPT = """You solve the supplied financial question using only its public sources.
@@ -60,6 +70,10 @@ async def run_episode(
     config = config or RunConfig()
     if config.harness_id != HARNESS_ID:
         raise ValueError(f"unsupported harness_id: {config.harness_id}")
+    if config.submission_profile != "original":
+        from .profiles import public_run_view
+
+        task = public_run_view(task, config.submission_profile)
     session = PublicToolSession(task)
     started = time.monotonic()
     messages: list[dict[str, Any]] = [
@@ -72,7 +86,16 @@ async def run_episode(
         },
     ]
     tool_specs = copy.deepcopy(TOOL_SPECS)
+    if config.submission_profile == "finqa_program_v1":
+        final_spec = next(tool for tool in tool_specs if tool["function"]["name"] == "final_answer")
+        final_spec["function"]["parameters"]["required"] = ["answer", "program"]
+        final_spec["function"]["description"] += (
+            " FinQA program profile: submit your predicted DSL program. "
+            "Missing/invalid predictions "
+            "at a normal terminal receive zero official execution/program score; no oracle repair."
+        )
     turns, events = [], []
+    settlements = []
     final_answer, final_scale, final_program = None, "", None
     stop_reason, error, call_count = "max_steps", None, 0
     initial_model_calls = getattr(provider, "actual_model_calls", None)
@@ -108,31 +131,65 @@ async def run_episode(
         }
         await emit("model_call_intent", step, {**request, "request_sha256": digest(request)})
         call_count += 1
+        before_call = getattr(provider, "actual_model_calls", None)
         try:
             response = await provider.chat(
                 copy.deepcopy(messages), copy.deepcopy(tool_specs), config
             )
         except ContextLimitError as exception:
             stop_reason, error = "context_exceeded", f"{type(exception).__name__}: {exception}"
-            await emit("model_call_failed", step, {"stop_reason": stop_reason, "error": error})
+            settlement = failed_call(
+                exception,
+                before=before_call,
+                after=getattr(provider, "actual_model_calls", None),
+                request_sha256=digest(request),
+                attempt_index=step,
+            )
+            settlements.append(settlement)
+            await emit(
+                "model_call_failed",
+                step,
+                {
+                    "stop_reason": stop_reason,
+                    "error": error,
+                    "settlement": settlement.model_dump(mode="json"),
+                },
+            )
             break
         except Exception as exception:
             stop_reason, error = "provider_error", f"{type(exception).__name__}: {exception}"
-            await emit("model_call_failed", step, {"stop_reason": stop_reason, "error": error})
+            settlement = failed_call(
+                exception,
+                before=before_call,
+                after=getattr(provider, "actual_model_calls", None),
+                request_sha256=digest(request),
+                attempt_index=step,
+            )
+            settlements.append(settlement)
+            await emit(
+                "model_call_failed",
+                step,
+                {
+                    "stop_reason": stop_reason,
+                    "error": error,
+                    "settlement": settlement.model_dump(mode="json"),
+                },
+            )
             break
+        settlements.append(
+            CallSettlement(
+                attempt_index=step,
+                state="returned",
+                actual_model_calls=counter_delta(
+                    before_call, getattr(provider, "actual_model_calls", None)
+                ),
+                request_sha256=digest(request),
+                evidence={"response_sha256": digest(response)},
+            )
+        )
         turns.append(response)
         await emit("model_call_returned", step, response.model_dump(mode="json"))
-        assistant = {"role": "assistant", "content": response.raw_text}
-        if response.tool_calls:
-            assistant["tool_calls"] = [
-                {
-                    "id": call.call_id,
-                    "type": "function",
-                    "function": {"name": call.name, "arguments": call.raw_arguments},
-                }
-                for call in response.tool_calls
-            ]
-        messages.append(assistant)
+        messages.append(canonical_assistant_message(response))
         if config.tier == "VTDO_FEEDBACK":
             receipt = response.receipt
             if (
@@ -195,6 +252,8 @@ async def run_episode(
         error=error,
         provider_attempts=call_count,
         actual_model_calls=actual_model_calls,
+        call_settlements=tuple(settlements),
+        all_provider_calls_settled=calls_settled(settlements, call_count, actual_model_calls),
         elapsed_seconds=time.monotonic() - started,
     )
     await emit("episode_completed", None, episode.model_dump(mode="json"))

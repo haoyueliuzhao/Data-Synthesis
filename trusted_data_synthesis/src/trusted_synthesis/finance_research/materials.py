@@ -17,7 +17,16 @@ from typing import Literal
 from pydantic import model_validator
 
 from .contracts import Episode, Record, digest
-from .providers import _sha
+from .encoding import (
+    EOS_POLICY,
+    SUPERVISION_POLICY,
+    StudentEncodingRecord,
+    _native_response,
+    probe_generation_record,
+    supervised_turns,
+)
+from .providers import _sha, canonical_assistant_message
+from .settlement import episode_is_complete
 
 
 class QualificationDecision(Record):
@@ -115,6 +124,12 @@ class TrainingPackage(Record):
     tokenizer_digest: str
     chat_template_digest: str
     rows: tuple[TokenTrainingRow, ...]
+    encoding_origin: Literal["actual_local_tokens", "offline_student_tokenizer"] = (
+        "actual_local_tokens"
+    )
+    student_encoding_id: str | None = None
+    supervision_policy: str = SUPERVISION_POLICY
+    eos_policy: str = EOS_POLICY
 
 
 class MaterialPoolManifest(Record):
@@ -129,6 +144,7 @@ class MaterialPoolManifest(Record):
     validation_scope: str = "byte binding and structural admission, not state-semantic proof"
     original_response_rows_retained: bool = True
     target_retokenization_performed: bool = False
+    offline_student_encoding_used: bool = False
 
 
 class MaterialPool:
@@ -163,7 +179,13 @@ class MaterialPool:
     def row_arrays(self, package_id):
         if not self.admitted:
             raise ValueError("incomplete registered support is not an admitted training cache")
-        return tuple(row.model_dump(exclude={"call_id"}) for row in self._packages[package_id].rows)
+        # Zero-target failed turns remain in the frozen package and all later
+        # actual prompts. Do not ask the consumer to backpropagate an empty loss.
+        return tuple(
+            row.model_dump(exclude={"call_id"})
+            for row in self._packages[package_id].rows
+            if row.target_ids
+        )
 
 
 def _training_rows(episode: Episode):
@@ -175,10 +197,13 @@ def _training_rows(episode: Episode):
         or episode.stop_reason != "final_answer"
         or episode.error is not None
         or episode.final_answer is None
+        or not episode_is_complete(episode)
     ):
         raise ValueError("incomplete generated episode cannot become a training package")
     rows, calls = [], set()
-    for turn in episode.turns:
+    previous_request, previous_turn = None, None
+    events = {event.call_id: event for event in episode.tool_events}
+    for turn, supervise in zip(episode.turns, supervised_turns(episode), strict=True):
         receipt = turn.receipt
         if receipt is None or receipt.identity != episode.provider:
             raise ValueError("missing or foreign actual token receipt")
@@ -196,6 +221,24 @@ def _training_rows(episode: Episode):
             or request.get("config") != episode.config.model_dump(mode="json")
         ):
             raise ValueError("training receipt request/config binding mismatch")
+        if previous_turn is not None:
+            if (
+                len(previous_turn.tool_calls) != 1
+                or previous_turn.tool_calls[0].call_id not in events
+            ):
+                raise ValueError("continued local trajectory lacks its actual tool event")
+            previous_call = previous_turn.tool_calls[0]
+            expected_messages = previous_request["messages"] + [
+                canonical_assistant_message(previous_turn),
+                {
+                    "role": "tool",
+                    "tool_call_id": previous_call.call_id,
+                    "content": events[previous_call.call_id].visible_output,
+                },
+            ]
+            if request.get("messages") != expected_messages:
+                raise ValueError("local SFT history was dropped, altered or compacted")
+        previous_request, previous_turn = request, turn
         if receipt.sampling.get("actual_model_generate_calls") != 1 or any(
             receipt.sampling.get(key) is not False
             for key in ("context_truncated", "host_JSON_repair", "SFT_mask_used")
@@ -216,23 +259,41 @@ def _training_rows(episode: Episode):
         rows.append(
             TokenTrainingRow(
                 input_ids=prompt + targets,
-                target_positions=tuple(range(len(prompt), len(prompt) + len(targets))),
-                target_ids=targets,
+                target_positions=tuple(range(len(prompt), len(prompt) + len(targets)))
+                if supervise
+                else (),
+                target_ids=targets if supervise else (),
                 call_id=receipt.call_id,
             )
         )
     return tuple(rows)
 
 
-def build_material_pool(episodes, registration: MaterialRegistration) -> MaterialPool:
-    """Bind decisions to original tokens; do not infer or certify state semantics."""
+def build_material_pool(
+    episodes, registration: MaterialRegistration, *, student_encodings=()
+) -> MaterialPool:
+    """Bind qualifications to local tokens or separate offline API Probe encoding.
+
+    API SFT does not require API logP. Its Student IDs are never presented as
+    actual Probe sampling tokens. Neither pathway infers CompletePass, changes
+    the registered support, or drops missing tasks.
+    """
     registration = MaterialRegistration.model_validate_json(registration.model_dump_json())
     episodes = tuple(episodes)
+    encodings = tuple(
+        StudentEncodingRecord.model_validate_json(row.model_dump_json())
+        for row in student_encodings
+    )
+    by_encoding = {row.episode_sha256: row for row in encodings}
+    if len(by_encoding) != len(encodings):
+        raise ValueError("one Student encoding is permitted per frozen episode")
     by_hash = {digest(episode): episode for episode in episodes}
     if len(by_hash) != len(episodes) or set(by_hash) != {
         decision.episode_sha256 for decision in registration.decisions
     }:
         raise ValueError("every distinct source episode needs exactly one explicit decision")
+    if set(by_encoding) - set(by_hash):
+        raise ValueError("Student encoding has no source episode in this pool")
     inventory, packages, calls = [], [], set()
     for decision in registration.decisions:
         episode = by_hash[decision.episode_sha256]
@@ -245,7 +306,45 @@ def build_material_pool(episodes, registration: MaterialRegistration) -> Materia
         inventory.append({**decision.model_dump(), "retained": True})
         if decision.verdict != "CompletePass":
             continue
-        rows = _training_rows(episode)
+        encoded = by_encoding.get(decision.episode_sha256)
+        if episode.provider.backend == "deepseek_api":
+            probe = probe_generation_record(episode)
+            if encoded is None or encoded.generation_record_id != probe.generation_record_id:
+                raise ValueError("API Probe SFT requires a separately bound StudentEncodingRecord")
+            positive = supervised_turns(episode)
+            if (
+                len(encoded.rows) != len(episode.turns)
+                or tuple(row.supervised for row in encoded.rows) != positive
+            ):
+                raise ValueError("Student encoding supervision differs from actual tool outcomes")
+            if any(
+                row.public_request_sha256 != digest(request)
+                or row.raw_response_sha256 != _sha(turn.raw_text)
+                or row.rendered_response != _native_response(turn)
+                for row, request, turn in zip(
+                    encoded.rows, probe.public_requests, episode.turns, strict=True
+                )
+            ):
+                raise ValueError("Student encoding raw evidence binding mismatch")
+            rows = tuple(
+                TokenTrainingRow(
+                    **row.model_dump(
+                        include={"call_id", "input_ids", "target_positions", "target_ids"}
+                    )
+                )
+                for row in encoded.rows
+            )
+            token_hash, template_hash = encoded.tokenizer_digest, encoded.chat_template_digest
+        else:
+            if encoded is not None:
+                raise ValueError("offline API encoding cannot replace actual local token receipts")
+            rows = _training_rows(episode)
+            token_hash, template_hash = (
+                episode.provider.tokenizer_digest,
+                episode.provider.chat_template_digest,
+            )
+        if not sum(len(row.target_ids) for row in rows):
+            raise ValueError("qualified package has no positive-response target tokens")
         if calls & {row.call_id for row in rows}:
             raise ValueError("one actual response cannot fill multiple training packages")
         calls.update(row.call_id for row in rows)
@@ -254,13 +353,17 @@ def build_material_pool(episodes, registration: MaterialRegistration) -> Materia
             task_id=decision.task_id,
             state_id=decision.state_id,
             whole_package_target_tokens=sum(len(row.target_ids) for row in rows),
-            tokenizer_digest=episode.provider.tokenizer_digest,
-            chat_template_digest=episode.provider.chat_template_digest,
+            tokenizer_digest=token_hash,
+            chat_template_digest=template_hash,
             rows=[row.model_dump(mode="json") for row in rows],
+            encoding_origin="offline_student_tokenizer" if encoded else "actual_local_tokens",
+            student_encoding_id=encoded.encoding_id if encoded else None,
         )
         packages.append(TrainingPackage(package_id="package:" + digest(body), **body))
     if len({package.tokenizer_digest for package in packages}) > 1:
         raise ValueError("one training cache cannot mix incompatible tokenizers")
+    if len({package.chat_template_digest for package in packages}) > 1:
+        raise ValueError("one training cache cannot mix incompatible Student templates")
     counts = Counter((package.task_id, package.state_id) for package in packages)
     missing = tuple(
         (task, state)
@@ -277,6 +380,8 @@ def build_material_pool(episodes, registration: MaterialRegistration) -> Materia
         static_control_tasks=tuple(
             task for task, states in registration.state_support.items() if len(states) == 1
         ),
+        offline_student_encoding_used=any(package.student_encoding_id for package in packages),
+        target_retokenization_performed=any(package.student_encoding_id for package in packages),
     )
     prototype = MaterialPoolManifest(cache_id="pending", **body)
     manifest = prototype.model_copy(
@@ -289,7 +394,7 @@ def build_material_pool(episodes, registration: MaterialRegistration) -> Materia
 
 
 def weighted_examples(pool: MaterialPool, pi):
-    """General mu*pi/(n_state*whole-package targets), with no old batch-size five."""
+    """Full-population G/control coefficients, not a mini-batch training update."""
     if not pool.admitted:
         raise ValueError("all preregistered states need explicitly qualified material")
     registration = pool._manifest.registration
@@ -356,8 +461,8 @@ def execute_training_update(
         "schema_version": "finance_research.qualified_token_update.v1",
         **fields,
         "loss_rule": "mu(task)*pi(state|task)/(n_state*whole_package_target_tokens)",
-        "loss_domain": "all original response tokens including EOS; no retokenization",
-        "execution_design": "original_response_rows_v1",
+        "loss_domain": SUPERVISION_POLICY + "; " + EOS_POLICY,
+        "execution_design": "positive_response_rows_v2",
         "full_pool_update": True,
         "legacy_consumer_result_sha256": digest(original),
         "qualification_registration_id": pool._manifest.registration.qualification_registration_id,
@@ -365,3 +470,112 @@ def execute_training_update(
         "state_semantics_independently_proven": False,
     }
     return {**result, "id": "qualified_token_update:" + digest(result)}
+
+
+class TaskBatch(Record):
+    """A realized task draw with the preregistered marginal sampling law.
+
+    Repeated IID draws repeat a task's whole original package set; they do not
+    create new states or change n_state. Epoch permutations use uniform p_s and
+    disallow duplicate tasks within a batch. Batch normalization occurs here once.
+    """
+
+    task_ids: tuple[str, ...]
+    sampling_probability: dict[str, str | float]
+    sampling_design: Literal["iid_with_replacement", "uniform_epoch_permutation"]
+    schedule_id: str
+    step: int
+
+    @model_validator(mode="after")
+    def valid_draw(self):
+        if not self.task_ids or not self.schedule_id or self.step < 0:
+            raise ValueError("TaskBatch requires nonempty registered schedule coordinates")
+        _validate_mass(self.sampling_probability, "task sampling probability")
+        if set(self.task_ids) - set(self.sampling_probability):
+            raise ValueError("drawn task has no sampling probability")
+        if self.sampling_design == "uniform_epoch_permutation" and (
+            len(set(self.task_ids)) != len(self.task_ids)
+            or any(
+                _fraction(value) != Fraction(1, len(self.sampling_probability))
+                for value in self.sampling_probability.values()
+            )
+        ):
+            raise ValueError(
+                "uniform permutation batches require uniform probabilities and unique draws"
+            )
+        return self
+
+
+def task_batch_examples(pool: MaterialPool, pi, batch: TaskBatch):
+    """mu/(B*p_s) * pi/(n_state*L); no subsequent division by B."""
+    batch = TaskBatch.model_validate_json(batch.model_dump_json())
+    if set(batch.sampling_probability) != set(pool._manifest.registration.state_support):
+        raise ValueError("task sampler cannot omit a registered task or renormalize support")
+    by_task = {}
+    for package in weighted_examples(pool, pi):
+        by_task.setdefault(package["task_id"], []).append(package)
+    result = []
+    for draw_index, task in enumerate(batch.task_ids):
+        divisor = len(batch.task_ids) * _fraction(batch.sampling_probability[task])
+        for package in by_task[task]:
+            coefficient = Fraction(package["target_token_coefficient"]) / divisor
+            result.append(
+                {
+                    **package,
+                    "target_token_coefficient": str(coefficient),
+                    "coefficient_float": float(coefficient),
+                    "task_draw_index": draw_index,
+                }
+            )
+    return result
+
+
+def execute_task_batch_update(
+    model,
+    optimizer,
+    pool: MaterialPool,
+    pi,
+    batch: TaskBatch,
+    *,
+    device,
+    arm="vtdo",
+    event_sink=None,
+):
+    """Really execute exactly one optimizer update via the original consumer."""
+    from trusted_synthesis.experiments.finance_qa_vnext_fixed_kernel_value import (
+        trajectory_consumer,
+    )
+
+    examples = task_batch_examples(pool, pi, batch)
+    original = trajectory_consumer.execute_update(
+        model,
+        optimizer,
+        examples,
+        {"tasks": list(batch.task_ids)},
+        pool=pool._manifest.registration.dataset,
+        arm=arm,
+        device=device,
+        trajectory_cache=pool,
+        event_sink=event_sink,
+    )
+    fields = {
+        key: value
+        for key, value in original.items()
+        if key not in {"id", "schema_version", "loss_rule", "execution_design", "loss_domain"}
+    }
+    result = {
+        **fields,
+        "schema_version": "finance_research.task_batch_update.v1",
+        "loss_rule": "mu(task)/(B*p_s(task))*pi(state|task)/(n_state*whole_package_target_tokens)",
+        "loss_domain": SUPERVISION_POLICY + "; " + EOS_POLICY,
+        "execution_design": "positive_response_rows_v2",
+        "full_pool_update": False,
+        "batch_size": len(batch.task_ids),
+        "additional_batch_division": False,
+        "task_batch": batch.model_dump(mode="json"),
+        "legacy_consumer_result_sha256": digest(original),
+        "qualification_registration_id": pool._manifest.registration.qualification_registration_id,
+        "validator_binding_id": pool._manifest.registration.validator_binding_id,
+        "state_semantics_independently_proven": False,
+    }
+    return {**result, "id": "task_batch_update:" + digest(result)}

@@ -8,7 +8,6 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-import math
 import os
 from contextlib import nullcontext
 from typing import Any
@@ -17,10 +16,16 @@ from .contracts import (
     ContextLimitError,
     ModelIdentity,
     ModelTurn,
+    ProviderCallError,
     RunConfig,
     TokenReceipt,
     ToolCall,
     digest,
+)
+from .qwen_protocol import (
+    QWEN_TOOL_PROTOCOL,
+    parse_qwen_native_response,
+    strict_json_decoder,
 )
 
 
@@ -37,26 +42,7 @@ def _sha(raw: str | bytes) -> str:
 def parse_tool_calls(raw: str, *, call_prefix: str) -> tuple[ToolCall, ...]:
     """Strict JSON parsing only: malformed text remains an ordinary model response."""
 
-    def pairs(items):
-        result = {}
-        for key, item in items:
-            if key in result:
-                raise ValueError("duplicate JSON object key")
-            result[key] = item
-        return result
-
-    def constant(value):
-        raise ValueError("nonfinite JSON constant")
-
-    def finite_float(value):
-        result = float(value)
-        if not math.isfinite(result):
-            raise ValueError("nonfinite JSON number")
-        return result
-
-    decoder = json.JSONDecoder(
-        object_pairs_hook=pairs, parse_constant=constant, parse_float=finite_float
-    )
+    decoder = strict_json_decoder()
 
     def skip(index):
         while index < len(raw) and raw[index].isspace():
@@ -101,7 +87,12 @@ def parse_tool_calls(raw: str, *, call_prefix: str) -> tuple[ToolCall, ...]:
         if not isinstance(row, dict):
             return ()
         function = row.get("function", row)
-        if not isinstance(function, dict) or not isinstance(function.get("name"), str):
+        if (
+            not isinstance(function, dict)
+            or not isinstance(function.get("name"), str)
+            or not function["name"]
+            or "arguments" not in function
+        ):
             return ()
         raw_arguments = function.get("arguments", {})
         try:
@@ -127,6 +118,53 @@ def parse_tool_calls(raw: str, *, call_prefix: str) -> tuple[ToolCall, ...]:
     return tuple(calls)
 
 
+def canonical_assistant_message(turn: ModelTurn) -> dict[str, Any]:
+    """Keep raw samples in the turn, not duplicated beside structured tool calls.
+
+    Local Qwen history uses object-valued arguments as its template requires. The
+    API transport converts those objects into JSON strings separately. A malformed
+    native response keeps its entire raw text and no fabricated structured call.
+    """
+    protocol = turn.provider_metadata.get("tool_protocol")
+    if protocol == QWEN_TOOL_PROTOCOL:
+        content, parsed = parse_qwen_native_response(turn.raw_text, call_prefix="history")
+        if [(c.name, c.raw_arguments, c.arguments) for c in parsed] != [
+            (c.name, c.raw_arguments, c.arguments) for c in turn.tool_calls
+        ]:
+            raise ValueError("native tool history disagrees with the retained raw response")
+    elif protocol == "scripted-json-fixture-v1" and turn.tool_calls:
+        content = ""
+    else:
+        content = turn.raw_text
+    message: dict[str, Any] = {"role": "assistant", "content": content}
+    if turn.tool_calls:
+        message["tool_calls"] = [
+            {
+                "id": call.call_id,
+                "type": "function",
+                "function": {"name": call.name, "arguments": copy.deepcopy(call.arguments)},
+            }
+            for call in turn.tool_calls
+        ]
+    return message
+
+
+def _api_messages(messages):
+    """Native API arguments are JSON strings; canonical local messages use dicts."""
+    actual = copy.deepcopy(messages)
+    decoder = strict_json_decoder()
+    for message in actual:
+        for call in message.get("tool_calls", []):
+            function = call["function"]
+            arguments = function["arguments"]
+            if isinstance(arguments, str):
+                arguments = decoder.decode(arguments)
+            if not isinstance(arguments, dict):
+                raise ValueError("canonical tool arguments must be a JSON object")
+            function["arguments"] = _json(arguments)
+    return actual
+
+
 class ScriptedProvider:
     """Deterministic test fixture, never admissible as VTDO feedback."""
 
@@ -145,6 +183,7 @@ class ScriptedProvider:
             turn = ModelTurn(
                 raw_text=turn,
                 tool_calls=parse_tool_calls(turn, call_prefix=f"fixture:{self._calls}"),
+                provider_metadata={"tool_protocol": "scripted-json-fixture-v1"},
             )
         if turn.receipt is not None:
             raise ValueError("scripted fixtures cannot carry a real token receipt")
@@ -269,16 +308,29 @@ class LocalTorchProvider:
             if config.context_limit > 24576 or config.max_new_tokens > 2048:
                 raise ValueError("feedback exceeds the admitted replay backend limits")
         actual_messages = copy.deepcopy(messages)
-        # Make tool schemas visible even if a tokenizer template ignores its tools kwarg.
-        if tools:
-            tool_message = "Available tools (JSON schemas):\n" + _json(tools)
-            if actual_messages and actual_messages[0].get("role") == "system":
-                actual_messages[0]["content"] += "\n" + tool_message
-            else:
-                actual_messages.insert(0, {"role": "system", "content": tool_message})
-        rendered = self.tokenizer.apply_chat_template(
-            actual_messages, tools=tools, tokenize=False, add_generation_prompt=True
-        )
+        protocol = config.local_tool_protocol
+        if protocol == QWEN_TOOL_PROTOCOL:
+            # The native template renders schemas once. Never add another schema prompt.
+            for message in actual_messages:
+                for call in message.get("tool_calls", []):
+                    if not isinstance(call.get("function", {}).get("arguments"), dict):
+                        raise ValueError("Qwen canonical history requires object-valued arguments")
+            rendered = self.tokenizer.apply_chat_template(
+                actual_messages, tools=tools, tokenize=False, add_generation_prompt=True
+            )
+        elif protocol == "legacy-json-v1":
+            if any(
+                message.get("tool_calls") or message.get("role") == "tool"
+                for message in actual_messages
+            ):
+                raise ValueError("legacy history must contain raw assistant JSON and user feedback")
+            # H0 owns the complete old JSON grammar and schemas in its system prompt.
+            # Supplying tools here would silently inject the incompatible native grammar.
+            rendered = self.tokenizer.apply_chat_template(
+                actual_messages, tokenize=False, add_generation_prompt=True
+            )
+        else:
+            raise ValueError("unregistered local tool protocol")
         prompt = self.tokenizer(
             rendered, add_special_tokens=False, truncation=False, padding=False
         )["input_ids"]
@@ -298,9 +350,11 @@ class LocalTorchProvider:
         eos_ids = list(eos) if isinstance(eos, (tuple, list)) else [eos] if eos is not None else []
         request = {
             "messages": actual_messages,
-            "tools": copy.deepcopy(tools),
+            "tools": copy.deepcopy(tools) if protocol == QWEN_TOOL_PROTOCOL else [],
             "config": config.model_dump(mode="json"),
             "rendered_prompt_sha256": _sha(rendered),
+            "tool_protocol": protocol,
+            "template_tools_kwarg_used": protocol == QWEN_TOOL_PROTOCOL,
         }
         request_hash = digest(request)
         self._calls += 1
@@ -352,12 +406,25 @@ class LocalTorchProvider:
                     delattr(self.model, "_cache")
                 ids = torch.tensor([prompt], dtype=torch.long, device=device)
                 self.actual_model_calls += 1
-                result = self.model.generate(
-                    input_ids=ids,
-                    attention_mask=torch.ones_like(ids),
-                    generation_config=generation,
-                    logits_to_keep=1,
-                )
+                try:
+                    result = self.model.generate(
+                        input_ids=ids,
+                        attention_mask=torch.ones_like(ids),
+                        generation_config=generation,
+                        logits_to_keep=1,
+                    )
+                except Exception as exception:
+                    raise ProviderCallError(
+                        "local generation started but no token receipt was returned",
+                        settlement="unknown",
+                        actual_model_calls=1,
+                        evidence={
+                            "request_sha256": request_hash,
+                            "public_request": request,
+                            "exception_type": type(exception).__name__,
+                            "token_receipt_available": False,
+                        },
+                    ) from exception
                 after = rng_hash()
                 sequence = result.sequences[0].tolist()
                 if sequence[: len(prompt)] != prompt:
@@ -422,9 +489,14 @@ class LocalTorchProvider:
             },
             raw_response_sha256=_sha(raw),
         )
+        calls = (
+            parse_qwen_native_response(raw, call_prefix=call_id)[1]
+            if protocol == QWEN_TOOL_PROTOCOL
+            else ()
+        )
         return ModelTurn(
             raw_text=raw,
-            tool_calls=parse_tool_calls(raw, call_prefix=call_id),
+            tool_calls=calls,
             finish_reason=finish,
             receipt=receipt,
             usage={"prompt_tokens": len(prompt), "completion_tokens": len(output)},
@@ -432,6 +504,12 @@ class LocalTorchProvider:
                 "request": request,
                 "actual_model_generation": True,
                 "attention_backend": "FLASH_ATTENTION" if cuda else "CPU_TEST",
+                "tool_protocol": protocol,
+                "tool_schemas_rendered_by": (
+                    "native_chat_template_only"
+                    if protocol == QWEN_TOOL_PROTOCOL
+                    else "legacy_system_prompt_only"
+                ),
             },
         )
 
@@ -456,7 +534,7 @@ class DeepSeekFlashProvider:
             raise ValueError("API model must be exactly deepseek-flash before the request")
         body = {
             "model": "deepseek-flash",
-            "messages": copy.deepcopy(messages),
+            "messages": _api_messages(messages),
             "temperature": config.temperature,
             "top_p": config.top_p,
             "max_tokens": config.max_new_tokens,
@@ -465,46 +543,126 @@ class DeepSeekFlashProvider:
         if tools:
             body["tools"] = copy.deepcopy(tools)
         headers = {"Authorization": "Bearer " + self._key}
-        if self._client is None:
-            import httpx
+        request_hash = digest(body)
+        try:
+            if self._client is None:
+                import httpx
 
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                async with httpx.AsyncClient(timeout=self.timeout) as client:
+                    self.actual_model_calls += 1
+                    response = await client.post(
+                        "https://api.deepseek.com/chat/completions", json=body, headers=headers
+                    )
+            else:
                 self.actual_model_calls += 1
-                response = await client.post(
-                    "https://api.deepseek.com/chat/completions", json=body, headers=headers
+                response = await self._client.post(
+                    "https://api.deepseek.com/chat/completions",
+                    json=body,
+                    headers=headers,
+                    timeout=self.timeout,
                 )
-        else:
-            self.actual_model_calls += 1
-            response = await self._client.post(
-                "https://api.deepseek.com/chat/completions",
-                json=body,
-                headers=headers,
-                timeout=self.timeout,
+        except Exception as exception:
+            raise ProviderCallError(
+                "API request did not return a service response; settlement is unknown",
+                settlement="unknown",
+                actual_model_calls=1,
+                evidence={
+                    "request_sha256": request_hash,
+                    "public_request": body,
+                    "exception_type": type(exception).__name__,
+                    "service_response_received": False,
+                    "retries": 0,
+                },
+            ) from exception
+        status = getattr(response, "status_code", 200)
+        if not 200 <= status < 300:
+            raise ProviderCallError(
+                f"API returned HTTP {status}; no retry or fallback",
+                settlement="service_failure",
+                actual_model_calls=1,
+                evidence={
+                    "request_sha256": request_hash,
+                    "public_request": body,
+                    "http_status": status,
+                    "raw_service_body": response.text,
+                    "service_response_received": True,
+                    "billing_status": "not_inferred_from_http_status",
+                    "retries": 0,
+                },
             )
         response.raise_for_status()
-        value = response.json()
-        choices = value.get("choices", [])
-        if len(choices) != 1:
-            raise ValueError("API must return exactly one choice")
-        choice, response_model = choices[0], value.get("model")
-        if response_model is not None and response_model != "deepseek-flash":
-            raise ValueError("API returned a different model; no fallback is allowed")
-        message = choice["message"]
-        raw = message.get("content") or ""
-        calls = parse_tool_calls(
-            _json({"tool_calls": message.get("tool_calls", [])}),
-            call_prefix=str(value.get("id", "api")),
-        )
-        if message.get("tool_calls") and not calls:
-            raise ValueError("malformed API tool-call arguments; no repair")
+        value = None
+        try:
+            value = response.json()
+            # A stored response must itself be strict JSON, including finite values.
+            _json(value)
+            choices = value.get("choices", [])
+            if len(choices) != 1:
+                raise ValueError("API must return exactly one choice")
+            choice, response_model = choices[0], value.get("model")
+            if response_model is not None and response_model != "deepseek-flash":
+                raise ValueError("API returned a different model; no fallback is allowed")
+            message = choice["message"]
+            if not isinstance(message, dict) or not ({"content", "tool_calls"} & set(message)):
+                raise ValueError("API response lacks the assistant message fields")
+            if not isinstance(choice.get("finish_reason"), str):
+                raise ValueError("API response has no completed finish_reason")
+            usage = value["usage"]
+            if not isinstance(usage, dict) or any(
+                type(usage.get(field)) is not int or usage[field] < 0
+                for field in ("prompt_tokens", "completion_tokens")
+            ):
+                raise ValueError("API response lacks complete usage accounting")
+            raw = message.get("content") or ""
+            if not isinstance(raw, str):
+                raise ValueError("API returned non-text assistant content")
+            raw_calls = message.get("tool_calls") or []
+            parse_error = None
+            try:
+                calls = parse_tool_calls(
+                    _json({"tool_calls": raw_calls}),
+                    call_prefix=str(value.get("id", "api")),
+                )
+            except (ValueError, TypeError, IndexError, RecursionError):
+                calls = ()
+            if raw_calls and not calls:
+                # A fully returned/usage-accounted model format failure is a result,
+                # not an unknown network call or an opportunity to regenerate.
+                parse_error = "malformed_native_tool_calls_no_repair"
+        except Exception as exception:
+            evidence = {
+                "request_sha256": request_hash,
+                "public_request": body,
+                "http_status": status,
+                "raw_service_body": getattr(response, "text", ""),
+                "service_response_received": True,
+                "exception_type": type(exception).__name__,
+                "valid_turn_returned": False,
+                "retries": 0,
+            }
+            try:
+                _json(value)
+                evidence["api_response"] = value
+            except (ValueError, TypeError):
+                pass  # Invalid JSON bytes remain in raw_service_body, never repaired.
+            raise ProviderCallError(
+                "API response was received but no valid turn could be settled",
+                settlement="unknown",
+                actual_model_calls=1,
+                evidence=evidence,
+            ) from exception
         return ModelTurn(
             raw_text=raw,
             tool_calls=calls,
             finish_reason=choice.get("finish_reason") or "unknown",
-            usage={key: item for key, item in value.get("usage", {}).items() if type(item) is int},
+            usage={key: item for key, item in usage.items() if type(item) is int},
             provider_metadata={
                 "request_sha256": digest(body),
                 "api_response": value,
+                "public_request": body,
+                "tool_protocol": "deepseek-native-tool-calls-v1",
+                "parse_error": parse_error,
+                "model_tool_format_failure": parse_error is not None,
                 "local_token_receipt_available": False,
                 "context_limit_locally_verified": False,
                 "requested_context_limit": config.context_limit,
