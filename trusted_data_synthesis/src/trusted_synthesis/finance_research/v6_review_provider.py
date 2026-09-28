@@ -22,6 +22,7 @@ STRICT_WIRE_PROTOCOLS = frozenset(
         STRICT_WIRE_PROTOCOL,
         "v6_slot_review.v3",
         "v6_slot_review.v4",
+        "v6_slot_review.v5",
         "v6_alignment_review.v3",
     }
 )

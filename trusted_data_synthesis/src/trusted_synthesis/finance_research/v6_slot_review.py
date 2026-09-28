@@ -15,6 +15,7 @@ from .semantic_review import (
     RUBRIC,
     SOURCE_KINDS,
     TARGET_KINDS,
+    NonassertiveSlotReview,
     ReviewError,
     SlotReview,
     Term,
@@ -57,6 +58,16 @@ class SlotOutput(_Record):
     updates: list[CompactUpdate]
     mask: dict[str, MaskValue]
     semantic_graph: CompactGraph
+
+
+class NonassertiveMaskValue(MaskValue):
+    """Separate future output model: never changes an old request's schema."""
+
+    label: Literal["approved", "retracted", "unknown", "nonassertive_context"]
+
+
+class NonassertiveSlotOutput(SlotOutput):
+    mask: dict[str, NonassertiveMaskValue]
 
 
 def _catalog(docs, slot_id):
@@ -324,9 +335,10 @@ def _checked_catalog(request):
     return local
 
 
-def _validate_slot_review(raw_arguments, request):
+def _validate_slot_review(raw_arguments, request, *, allow_nonassertive_context=False):
     local = _checked_catalog(request)
-    output = SlotOutput.model_validate(_strict_json(raw_arguments))
+    output_model = NonassertiveSlotOutput if allow_nonassertive_context is True else SlotOutput
+    output = output_model.model_validate(_strict_json(raw_arguments))
     value = output.model_dump()
     catalog, docs = request["document_catalog"], request["document_index"]
     expected_actions = {e for e, d in catalog.items() if d["kind"] == "action_arguments"}
@@ -390,14 +402,17 @@ def _validate_slot_review(raw_arguments, request):
         node["evidence"] = evidence(node["evidence"])
     for edge in value["semantic_graph"]["edges"]:
         edge["evidence"] = evidence(edge["evidence"])
-    slot = SlotReview.model_validate(dict(slot_id=request["slot_id"], **value))
+    slot_model = NonassertiveSlotReview if allow_nonassertive_context is True else SlotReview
+    slot = slot_model.model_validate(dict(slot_id=request["slot_id"], **value))
     # _meaning_terms intentionally needs only .terms; a strict minimal carrier
     # makes that unchanged validator callable without inventing seven candidates.
     terms_carrier = output.model_copy(update={"terms": [Term.model_validate(t) for t in raw_terms]})
     terms, derived, semantic_error = None, None, None
     try:
         terms = _meaning_terms(terms_carrier, docs)
-        derived = _validate_slot(slot, docs, terms)
+        derived = _validate_slot(
+            slot, docs, terms, allow_nonassertive_context=allow_nonassertive_context
+        )
     except ReviewError as failure:
         # Preserve the reviewer-authored object exactly. Internal semantic
         # inconsistency is unknown material, not repaired evidence or a failed
@@ -443,20 +458,24 @@ def _validate_slot_review(raw_arguments, request):
     )
 
 
-def validate_slot_review(raw_arguments, request):
+def validate_slot_review(raw_arguments, request, *, allow_nonassertive_context=False):
     """Raise only on mechanical binding/shape errors; retain semantic unknowns."""
     try:
-        return _validate_slot_review(raw_arguments, request)
+        return _validate_slot_review(
+            raw_arguments, request, allow_nonassertive_context=allow_nonassertive_context
+        )
     except ReviewError:
         raise
     except (ValueError, TypeError, KeyError, AttributeError) as failure:
         raise ReviewError(f"slot interface {type(failure).__name__}: {failure}") from failure
 
 
-def inspect_slot_review(raw_arguments, request):
+def inspect_slot_review(raw_arguments, request, *, allow_nonassertive_context=False):
     """Controller capacity gate, independent of positive-material yield."""
     try:
-        result = validate_slot_review(raw_arguments, request)
+        result = validate_slot_review(
+            raw_arguments, request, allow_nonassertive_context=allow_nonassertive_context
+        )
     except ReviewError as failure:
         return dict(
             interface_admitted=False,

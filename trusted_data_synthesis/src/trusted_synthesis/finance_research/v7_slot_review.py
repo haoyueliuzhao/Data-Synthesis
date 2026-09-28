@@ -74,15 +74,24 @@ def slot_rubric(reviewer):
 
 def _typed_request(base):
     baseline._checked_catalog(base)
+    # Disk records use sort_keys=True, which reorders e0,e1,e2 into e0,e1,e10.
+    # ID assignment must follow the original numeric coordinates, never the
+    # deserialized mapping's insertion order. The hash-bound wire JSON also
+    # preserves inner catalog field order for exact message-byte reconstruction.
+    payload = _strict_json(base["messages"][1]["content"])
+    wire_catalog = payload["document_catalog"]
+    ordered_ids = sorted(wire_catalog, key=lambda eid: int(eid.removeprefix("e")))
     counters, forward = Counter(), {}
-    for eid, item in base["document_catalog"].items():
+    for eid in ordered_ids:
+        item = wire_catalog[eid]
         prefix = KIND_PREFIX[item["kind"]]
         forward[eid] = f"{prefix}_{counters[prefix]}"
         counters[prefix] += 1
     reverse = {typed: old for old, typed in forward.items()}
     _require(len(reverse) == len(forward), "typed locators must be bijective")
     catalog = {}
-    for eid, item in base["document_catalog"].items():
+    for eid in ordered_ids:
+        item = wire_catalog[eid]
         value = copy.deepcopy(item)
         if "observes_action_id" in value:
             value["observes_action_id"] = forward[value["observes_action_id"]]
@@ -120,7 +129,6 @@ def _typed_request(base):
     tool = copy.deepcopy(base["strict_tool"])
     tool["function"]["parameters"] = schema(tool["function"]["parameters"])
     rubric = slot_rubric(base["reviewer"])
-    payload = _strict_json(base["messages"][1]["content"])
     payload.update(wire_protocol=WIRE_PROTOCOL, document_catalog=catalog)
     messages = [
         dict(role="system", content=rubric),

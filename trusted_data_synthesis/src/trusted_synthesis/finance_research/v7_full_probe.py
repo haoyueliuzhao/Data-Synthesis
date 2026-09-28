@@ -7,6 +7,7 @@ bound explicitly and must pass before a separate launch admission is recorded.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from collections import Counter
@@ -20,7 +21,7 @@ from .probe_budget import ProbePriceSheet
 from .profiles import public_run_view
 from .storage import load_public_snapshot, read_json, runtime_binding
 from .v6_collection import STUDY, bound, require, sha
-from .v6_decomposed_review import Context, recover
+from .v6_decomposed_review import job_directory
 from .v6_review_revision import connect, original_protocol, paid_row
 
 OUTPUT = STUDY / "new_full_probe_v7_01"
@@ -57,7 +58,25 @@ def historical_prefix(review_cohort=REVIEW_COHORT):
         parent["id"] == digest({k: v for k, v in parent.items() if k != "id"}),
         "review cohort protocol changed",
     )
-    completed = recover(Context(review_cohort, parent))
+    # Registration is read-only design work. Do not use the old run's recovery
+    # validator here: a corrected host validator must not replace its immutable
+    # original assessments or pretend that an UNKNOWN request was settled.
+    review_records = []
+    for job in parent.get("jobs", []):
+        directory = job_directory(review_cohort, job)
+        response, assessment = (
+            directory / "response/record.json",
+            directory / "assessment/record.json",
+        )
+        if response.exists():
+            require(assessment.exists(), "returned review is missing its original assessment")
+            review_records.append(
+                dict(
+                    job_key=job["key"],
+                    response_sha256=sha(response),
+                    original_assessment_sha256=sha(assessment),
+                )
+            )
     gate = read_json(review_cohort / "technical_gate/record.json")
     require(
         gate["id"] == digest({k: v for k, v in gate.items() if k != "id"})
@@ -66,17 +85,41 @@ def historical_prefix(review_cohort=REVIEW_COHORT):
     )
     price = ProbePriceSheet(**parent["budget"]["price_sheet"])
     with connect() as con:
-        require(
-            con.execute("SELECT value FROM metadata WHERE key='halt'").fetchone() is None,
-            "unknown or halted costs cannot be bypassed for a new batch",
-        )
+        halt_row = con.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
+        halt = json.loads(halt_row[0]) if halt_row else None
         config = json.loads(
             con.execute("SELECT value FROM metadata WHERE key='config'").fetchone()[0]
         )
-        rows = [
-            paid_row(row, price)[0]
-            for row in con.execute("SELECT * FROM requests ORDER BY invocation_id")
-        ]
+        rows, unknown = [], []
+        for row in con.execute("SELECT * FROM requests ORDER BY invocation_id"):
+            if row["state"] == "SETTLED":
+                rows.append(paid_row(row, price)[0])
+                continue
+            require(
+                row["state"] == "UNKNOWN", "active pending call prevents quiescent registration"
+            )
+            require(
+                row["usage_json"] is None and row["settled_microcny"] is None,
+                "unknown usage must not be fabricated or called settled",
+            )
+            require(
+                hashlib.sha256(row["request_body"]).hexdigest() == row["request_sha256"],
+                "unknown original request bytes changed",
+            )
+            coordinates = json.loads(row["coordinates_json"])
+            unknown.append(
+                dict(
+                    invocation_id=row["invocation_id"],
+                    episode_id=coordinates["episode_id"],
+                    state="UNKNOWN",
+                    request_sha256=row["request_sha256"],
+                    response_sha256=row["response_sha256"],
+                    reserved_microcny=row["reserved_microcny"],
+                    settled_microcny=None,
+                    usage_known=False,
+                    retry_authorized=False,
+                )
+            )
         counters = dict(con.execute("SELECT * FROM counters WHERE singleton=1").fetchone())
     require(
         all(
@@ -99,9 +142,11 @@ def historical_prefix(review_cohort=REVIEW_COHORT):
     )
     require(
         counters["spent"] == sum(r["settled_microcny"] for r in rows)
-        and counters["requests"] == len(rows)
-        and counters["held"] == counters["pending"] == counters["unknown"] == 0,
-        "all previous costs must remain settled and conserved",
+        and counters["requests"] == len(rows) + len(unknown)
+        and counters["held"] == sum(r["reserved_microcny"] for r in unknown)
+        and counters["pending"] == 0
+        and counters["unknown"] == len(unknown),
+        "all settled costs and unknown reservations must remain conserved",
     )
     return bound(
         dict(
@@ -110,11 +155,16 @@ def historical_prefix(review_cohort=REVIEW_COHORT):
             review_gate=gate,
             review_gate_sha256=sha(review_cohort / "technical_gate/record.json"),
             review_cohort_directory=str(review_cohort),
-            completed_decomposed_reviews=len(completed),
+            completed_decomposed_reviews=len(review_records),
+            original_review_records=review_records,
             ledger_config=config,
             ledger_config_sha256=digest(config),
             counters=counters,
             paid_entries=rows,
+            unknown_entries=unknown,
+            budget_halt=halt,
+            paid_execution_requires_separate_admission=True,
+            unknown_costs_not_relabelled_as_settled=True,
             no_old_call_or_charge_removed=True,
         )
     )
@@ -219,8 +269,12 @@ def build_plan(source_commit, history):
             request_cap=cfg["request_cap"],
             allowed_output_limits=cfg["allowed_output_limits"],
             inherited_spent_microcny=counter["spent"],
+            inherited_held_microcny=counter.get("held", 0),
+            inherited_unknown_requests=counter.get("unknown", 0),
             inherited_requests=counter["requests"],
-            remaining_cost_microcny=cfg["hard_cap_microcny"] - counter["spent"],
+            remaining_cost_microcny=cfg["hard_cap_microcny"]
+            - counter["spent"]
+            - counter.get("held", 0),
             remaining_request_budget=cfg["request_cap"] - counter["requests"],
             no_new_800_CNY_authorization=True,
             cost_and_request_caps_never_reset=True,
@@ -241,8 +295,8 @@ def build_plan(source_commit, history):
             new_review_registration_after_new_generation_seal=True,
         ),
         registration_status="REGISTERED_NOT_STARTED",
-        execution_admitted=bool(history["review_gate"]["admitted"]),
-        blocking_reason=None
+        execution_admitted=False,
+        blocking_reason="separate_launch_admission_required"
         if history["review_gate"]["admitted"]
         else "decomposed_review_interface_not_admitted",
         new_model_calls=0,

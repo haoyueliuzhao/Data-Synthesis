@@ -193,10 +193,11 @@ def history_fixture(monkeypatch, module, *, completed=15):
         )
     connection = MemoryConnection(rows, cfg)
     monkeypatch.setattr(module, "connect", lambda: connection)
-    monkeypatch.setattr(module, "Context", lambda *args: "synthetic-recovery-context")
-    monkeypatch.setattr(
-        module, "recover", lambda context: {str(i): {"failed": True} for i in range(completed)}
-    )
+    if hasattr(module, "Context"):
+        monkeypatch.setattr(module, "Context", lambda *args: "synthetic-recovery-context")
+        monkeypatch.setattr(
+            module, "recover", lambda context: {str(i): {"failed": True} for i in range(completed)}
+        )
     monkeypatch.setattr(
         module, "read_json", lambda path: parent if str(path).endswith("protocol.json") else gate
     )
@@ -228,6 +229,33 @@ def test_new_batch_registration_rejects_drifted_original_cap_or_ledger_identity(
     connection.cfg[field] = value
     with pytest.raises(ValueError, match="original joint budget"):
         full.historical_prefix(Path("synthetic-R4"))
+
+
+def test_blocked_design_retains_unknown_without_clearing_halt_or_recovering_assessments(
+    monkeypatch,
+):
+    _, connection = history_fixture(monkeypatch, full)
+    unknown = connection.rows[-1]
+    previous_cost = unknown["settled_microcny"]
+    unknown.update(
+        state="UNKNOWN",
+        usage_json=None,
+        settled_microcny=None,
+        response_sha256=None,
+        reserved_microcny=2_228_224,
+    )
+    connection.counters.update(
+        spent=connection.counters["spent"] - previous_cost, held=2_228_224, unknown=1
+    )
+    connection.halt = (json.dumps({"reason": "original transport unknown"}),)
+    value = full.historical_prefix(Path("synthetic-R4"))
+    assert len(value["paid_entries"]) == 14 and len(value["unknown_entries"]) == 1
+    assert value["unknown_entries"][0]["reserved_microcny"] == 2_228_224
+    assert value["unknown_entries"][0]["settled_microcny"] is None
+    assert value["budget_halt"]["reason"] == "original transport unknown"
+    assert not value["review_gate"]["admitted"]
+    assert value["paid_execution_requires_separate_admission"]
+    assert unknown["state"] == "UNKNOWN" and connection.counters["held"] == 2_228_224
 
 
 def r4_registration(tmp_path, monkeypatch):

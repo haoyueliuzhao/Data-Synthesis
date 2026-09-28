@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import defaultdict
 from itertools import combinations
 from typing import Literal
@@ -144,6 +145,30 @@ class SlotReview(_Record):
     updates: list[Update]
     mask: list[MaskSpan]
     semantic_graph: Graph
+
+
+class NonassertiveMaskSpan(MaskSpan):
+    """Future opt-in only; the historical MaskSpan/schema stays byte-identical."""
+
+    label: Literal["approved", "retracted", "unknown", "nonassertive_context"]
+
+
+class NonassertiveSlotReview(SlotReview):
+    mask: list[NonassertiveMaskSpan]
+
+
+def is_nonassertive_context_fragment(text):
+    """Only an entire empty optional Q field, never narration or a financial claim.
+
+    This predicate grants no positive supervision and performs no classification:
+    a future registered reviewer must explicitly choose the zero-loss class, and
+    two-review mask agreement is still required. Original text is never edited.
+    """
+    return (
+        isinstance(text, str)
+        and re.fullmatch(r"Q\s*:\s*(?:None|N/A)\s*\.?", text.strip(), flags=re.IGNORECASE)
+        is not None
+    )
 
 
 class Relation(_Record):
@@ -488,7 +513,7 @@ def _meaning_terms(review, docs):
     return meanings
 
 
-def _validate_slot(slot, docs, terms):
+def _validate_slot(slot, docs, terms, *, allow_nonassertive_context=False):
     propositions = {p.proposition_id: p for p in slot.propositions}
     _check(len(propositions) == len(slot.propositions), "duplicate proposition aliases")
     for prop in slot.propositions:
@@ -563,6 +588,16 @@ def _validate_slot(slot, docs, terms):
             span.component in expected_components, "mask layer does not match actual public event"
         )
         _check(set(span.proposition_ids) <= set(propositions), "unknown mask proposition")
+        if span.label == "nonassertive_context":
+            _check(
+                allow_nonassertive_context is True
+                and doc["kind"] == "public_content"
+                and span.component in {"reason", "update"}
+                and span.proposition_ids == []
+                and is_nonassertive_context_fragment(span.quote),
+                "nonassertive context requires explicit future opt-in "
+                "and an empty optional Q field",
+            )
         if span.label == "approved":
             _check(bool(span.proposition_ids), "approved span needs reviewed proposition")
             _check(

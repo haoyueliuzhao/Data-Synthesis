@@ -188,3 +188,34 @@ def test_empty_action_observation_domains_do_not_create_fake_locators_or_empty_e
     req = slot_review_request(bundle, "s0", {}, 0)
     assert not any(e.startswith(("action_", "obs_")) for e in req["document_catalog"])
     assert '"enum": []' not in json.dumps(req["strict_tool"])
+
+
+@pytest.mark.parametrize("extra_shared_sources", [0, 20])
+def test_sort_keys_disk_roundtrip_preserves_original_typed_ids_and_wire_bytes(extra_shared_sources):
+    bundle = fixture_bundle()
+    for slot in bundle["slots"]:
+        for i in range(extra_shared_sources):
+            text = f"Synthetic unchanged catalog entry {i}."
+            slot["trajectory"]["segments"].append(
+                dict(
+                    segment_id=f"extra_source_{i:02}",
+                    kind="source_text",
+                    text=text,
+                    start=0,
+                    end=len(text),
+                )
+            )
+    request = slot_review_request(bundle, "s0", {}, 0)
+    review = typed_fixture(request, fixture_review(bundle))
+    raw_arguments = json.dumps(review)
+    before = validate_slot_review(raw_arguments, request)
+    loaded = json.loads(json.dumps(request, ensure_ascii=False, sort_keys=True))
+    if extra_shared_sources:
+        assert list(loaded["semantic_baseline_request"]["document_catalog"])[:3] == [
+            "e0",
+            "e1",
+            "e10",
+        ]
+    assert loaded["messages"] == request["messages"]
+    assert loaded["typed_to_baseline_locators"] == request["typed_to_baseline_locators"]
+    assert validate_slot_review(raw_arguments, loaded) == before

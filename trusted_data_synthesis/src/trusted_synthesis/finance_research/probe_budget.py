@@ -9,6 +9,7 @@ This is tariff accounting from actual usage, not a fabricated provider invoice.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 import time
@@ -27,6 +28,8 @@ PURPOSE = "finqa_fixed_probe_inventory_v1"
 V6_PURPOSE = "finqa_v6_generation_and_semantic_review_v1"
 V6_REVIEW_AMENDMENT_PAUSE = "user_authorized_review_capacity_audit"
 V6_REVIEW_AMENDMENT_ACTION = "v6_review_capacity_amended"
+UNKNOWN_ABANDONMENT_PREFIX = "acknowledged_unknown:"
+UNKNOWN_ABANDONMENT_ACTION = "unknown_abandonment_acknowledged"
 
 
 def validated_budget_limits(
@@ -68,6 +71,125 @@ class InvalidUsage(ValueError):
 
 class BudgetAmendmentError(ValueError):
     """An explicit review-capacity amendment cannot change this ledger safely."""
+
+
+class UnknownAbandonmentError(ValueError):
+    """A particular unresolved paid request lacks auditable abandonment authority."""
+
+
+def _request_record_digest(row):
+    return digest(
+        {
+            key: {"bytes": len(value), "sha256": hashlib.sha256(value).hexdigest()}
+            if isinstance(value, bytes)
+            else value
+            for key, value in dict(row).items()
+        }
+    )
+
+
+def _acknowledged_unknowns(connection, config):
+    records = []
+    for item in connection.execute(
+        "SELECT key,value FROM metadata WHERE key GLOB ? ORDER BY key",
+        (UNKNOWN_ABANDONMENT_PREFIX + "*",),
+    ):
+        record = json.loads(item["value"])
+        iid = record.get("invocation_id")
+        row = connection.execute("SELECT * FROM requests WHERE invocation_id=?", (iid,)).fetchone()
+        if (
+            record.get("id") != digest({k: v for k, v in record.items() if k != "id"})
+            or item["key"] != UNKNOWN_ABANDONMENT_PREFIX + str(iid)
+            or record.get("run_id") != config["run_id"]
+            or config["purpose"] != V6_PURPOSE
+            or row is None
+            or row["state"] != "UNKNOWN"
+            or row["usage_json"] is not None
+            or row["settled_microcny"] is not None
+            or row["settled_at"] is not None
+            or row["reserved_microcny"] != record.get("permanent_reserved_microcny")
+            or row["request_sha256"] != record.get("expected_request_sha256")
+            or _request_record_digest(row) != record.get("original_unknown_record_sha256")
+            or not connection.execute(
+                "SELECT 1 FROM events WHERE action=? AND invocation_id=? AND payload_json=?",
+                (UNKNOWN_ABANDONMENT_ACTION, iid, item["value"]),
+            ).fetchone()
+        ):
+            raise UnknownAbandonmentError(
+                "acknowledged unknown no longer binds its original held request"
+            )
+        records.append(record)
+    return records
+
+
+def _budget_snapshot(connection, config):
+    row = connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+    halt = connection.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
+    acknowledged = _acknowledged_unknowns(connection, config)
+    acknowledged_hold = sum(r["permanent_reserved_microcny"] for r in acknowledged)
+    if len(acknowledged) > row["unknown"] or acknowledged_hold > row["held"]:
+        raise UnknownAbandonmentError(
+            "acknowledged reservations are not conserved in original counters"
+        )
+    spent, held = row["spent"], row["held"]
+    return {
+        "run_id": config["run_id"],
+        "purpose": config["purpose"],
+        "requests_reserved": row["requests"],
+        "requests_dispatched": row["dispatched"],
+        "settled_tariff_microcny": spent,
+        "held_microcny": held,
+        "exposure_microcny": spent + held,
+        "remaining_exposure_microcny": config["hard_cap_microcny"] - spent - held,
+        "hard_cap_microcny": config["hard_cap_microcny"],
+        "warning_microcny": config["warning_microcny"],
+        "request_cap": config["request_cap"],
+        "warning_reached": spent >= config["warning_microcny"],
+        "exposure_warning_reached": spent + held >= config["warning_microcny"],
+        "unknown_requests": row["unknown"],
+        "pending_requests": row["pending"],
+        "acknowledged_unknown_requests": len(acknowledged),
+        "unacknowledged_unknown_requests": row["unknown"] - len(acknowledged),
+        "acknowledged_unknown_held_microcny": acknowledged_hold,
+        "actual_prompt_tokens_settled": row["prompt_tokens"],
+        "actual_cache_hit_tokens_settled": row["hit_tokens"],
+        "actual_cache_miss_tokens_settled": row["miss_tokens"],
+        "actual_completion_tokens_settled": row["completion_tokens"],
+        "halt": json.loads(halt[0]) if halt else None,
+        "price_sheet_id": config["price_sheet_id"],
+        "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; "
+        "not a provider invoice",
+    }
+
+
+def read_budget_snapshot(path):
+    """Read original config/counters/abandonments without creating or migrating a ledger."""
+    path = Path(path)
+    if not path.is_file():
+        raise UnknownAbandonmentError(
+            "original paid ledger missing; read-only snapshot cannot create it"
+        )
+    with closing(
+        sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True, timeout=30)
+    ) as connection:
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA query_only=ON")
+        connection.execute("BEGIN")
+        row = connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()
+        if row is None:
+            raise UnknownAbandonmentError("original paid configuration missing")
+        config = json.loads(row[0])
+        return dict(
+            config=config,
+            config_sha256=digest(config),
+            snapshot=_budget_snapshot(connection, config),
+            acknowledged_unknowns=_acknowledged_unknowns(connection, config),
+            request_counts_by_state={
+                r[0]: r[1]
+                for r in connection.execute("SELECT state,COUNT(*) FROM requests GROUP BY state")
+            },
+            read_only=True,
+        )
 
 
 def _review_output_limits(value, *, official_max_output_tokens):
@@ -598,36 +720,7 @@ class ProbeBudget:
             connection.close()
 
     def _snapshot(self, connection):
-        row = connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
-        halt = connection.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
-        spent, held = row["spent"], row["held"]
-        return {
-            "run_id": self.run_id,
-            "purpose": self.purpose,
-            "requests_reserved": row["requests"],
-            "requests_dispatched": row["dispatched"],
-            "settled_tariff_microcny": spent,
-            "held_microcny": held,
-            "exposure_microcny": spent + held,
-            "remaining_exposure_microcny": self.hard_cap_microcny - spent - held,
-            "hard_cap_microcny": self.hard_cap_microcny,
-            "warning_microcny": self.warning_microcny,
-            "request_cap": self.request_cap,
-            "warning_reached": spent >= self.warning_microcny,
-            "exposure_warning_reached": spent + held >= self.warning_microcny,
-            "unknown_requests": row["unknown"],
-            "pending_requests": row["pending"],
-            "actual_prompt_tokens_settled": row["prompt_tokens"],
-            "actual_cache_hit_tokens_settled": row["hit_tokens"],
-            "actual_cache_miss_tokens_settled": row["miss_tokens"],
-            "actual_completion_tokens_settled": row["completion_tokens"],
-            "halt": json.loads(halt[0]) if halt else None,
-            "price_sheet_id": self.price_sheet.id,
-            "cost_semantics": (
-                "upward-rounded peak-tariff upper bound applied to actual usage; "
-                "not a provider invoice"
-            ),
-        }
+        return _budget_snapshot(connection, self.config)
 
     def snapshot(self):
         connection = self._connect()
@@ -671,7 +764,7 @@ class ProbeBudget:
             ).fetchone():
                 raise DuplicateInvocation("invocation already persisted; no duplicate API send")
             state = self._snapshot(connection)
-            if state["halt"] or state["unknown_requests"]:
+            if state["halt"] or state["unacknowledged_unknown_requests"]:
                 raise BudgetUnavailable("unknown or halted Probe ledger forbids new requests")
             if state["requests_reserved"] >= self.request_cap:
                 raise BudgetUnavailable(f"{self.request_cap}-request Probe cap exhausted")
@@ -717,7 +810,8 @@ class ProbeBudget:
             ).fetchone()
             if row is None or row[0] != "RESERVED":
                 raise DuplicateInvocation("only a fresh unsent reservation can be dispatched")
-            if self._snapshot(connection)["halt"]:
+            snapshot = self._snapshot(connection)
+            if snapshot["halt"] or snapshot["unacknowledged_unknown_requests"]:
                 raise BudgetUnavailable("ledger halted before dispatch; request not sent")
             connection.execute(
                 "UPDATE requests SET state='DISPATCHED',dispatched_at=? WHERE invocation_id=?",
@@ -867,6 +961,199 @@ class ProbeBudget:
     def halt(self, *, reason, invocation_id, evidence=None):
         with self._transaction() as connection:
             self._halt(connection, reason, invocation_id, evidence or {})
+
+    def acknowledge_unknown_abandonment(
+        self,
+        invocation_id,
+        *,
+        authorization_id,
+        expected_request_sha256,
+        expected_halt_reason,
+        reason,
+        evidence,
+    ):
+        """Authorize other future calls while permanently charging this maximum hold to exposure.
+
+        This neither verifies the unknown bill nor settles, erases, releases,
+        retries or substitutes the original call. Only its exact halt is cleared.
+        One invocation and one explicit authorization are bound transactionally.
+        """
+        if (
+            self.purpose != V6_PURPOSE
+            or any(
+                not isinstance(v, str) or not v.strip()
+                for v in (
+                    invocation_id,
+                    authorization_id,
+                    expected_request_sha256,
+                    expected_halt_reason,
+                    reason,
+                )
+            )
+            or len(expected_request_sha256) != 64
+            or not isinstance(evidence, dict)
+            or not evidence
+        ):
+            raise UnknownAbandonmentError(
+                "exact V6 invocation, authorization, hashes and evidence required"
+            )
+        bound_inputs = dict(
+            run_id=self.run_id,
+            invocation_id=invocation_id,
+            authorization_id=authorization_id,
+            expected_request_sha256=expected_request_sha256,
+            expected_halt_reason=expected_halt_reason,
+            reason=reason,
+            authorization_evidence=json.loads(_json(evidence)),
+        )
+        with self._transaction() as connection:
+            acknowledged = _acknowledged_unknowns(connection, self.config)
+            for prior in acknowledged:
+                if (
+                    prior["invocation_id"] == invocation_id
+                    or prior["authorization_id"] == authorization_id
+                ):
+                    if all(prior.get(k) == v for k, v in bound_inputs.items()):
+                        return prior  # Idempotent audit lookup; never clear a later halt.
+                    raise UnknownAbandonmentError(
+                        "abandonment identity already bound to different authorization"
+                    )
+            row = connection.execute(
+                "SELECT * FROM requests WHERE invocation_id=?", (invocation_id,)
+            ).fetchone()
+            if (
+                row is None
+                or row["state"] != "UNKNOWN"
+                or row["usage_json"] is not None
+                or row["settled_microcny"] is not None
+                or row["settled_at"] is not None
+                or row["request_sha256"] != expected_request_sha256
+            ):
+                raise UnknownAbandonmentError(
+                    "only the exact original UNKNOWN request with absent usage may be abandoned"
+                )
+            coordinates = json.loads(row["coordinates_json"])
+            request = json.loads(row["request_body"])
+            if (
+                coordinates.get("run_id") != self.run_id
+                or invocation_identity(coordinates, turn_index=coordinates["turn_index"])
+                != coordinates
+                or coordinates["invocation_id"] != invocation_id
+                or digest(request) != expected_request_sha256
+                or request.get("model") != "deepseek-flash"
+                or request.get("max_tokens") not in self.allowed_output_limits
+                or row["reserved_microcny"]
+                != self.price_sheet.cost_microcny(
+                    hit=0,
+                    miss=self.price_sheet.context_input_token_ceiling,
+                    output=request["max_tokens"],
+                )
+            ):
+                raise UnknownAbandonmentError(
+                    "unknown request/run/full reservation binding changed"
+                )
+            halt_row = connection.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
+            halt = json.loads(halt_row[0]) if halt_row else None
+            unknown_event = connection.execute(
+                "SELECT payload_json FROM events WHERE action='unknown' AND invocation_id=? "
+                "ORDER BY sequence DESC LIMIT 1",
+                (invocation_id,),
+            ).fetchone()
+            if (
+                halt is None
+                or halt.get("invocation_id") != invocation_id
+                or halt.get("reason") != expected_halt_reason
+                or unknown_event is None
+                or json.loads(unknown_event[0]).get("reason") != expected_halt_reason
+            ):
+                raise UnknownAbandonmentError("refuse to clear an absent or unrelated halt")
+            halt_event = connection.execute(
+                "SELECT sequence FROM events WHERE action='halt' AND payload_json=? "
+                "ORDER BY sequence DESC LIMIT 1",
+                (halt_row[0],),
+            ).fetchone()
+            if halt_event is None or any(
+                json.loads(event[0]).get("invocation_id") != invocation_id
+                or json.loads(event[0]).get("reason") != expected_halt_reason
+                for event in connection.execute(
+                    "SELECT payload_json FROM events WHERE action='halt' AND sequence>?",
+                    (halt_event[0],),
+                )
+            ):
+                raise UnknownAbandonmentError(
+                    "an unrelated later halt must not be hidden or cleared"
+                )
+            counters = connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+            totals = connection.execute(
+                "SELECT COUNT(*) AS requests, "
+                "SUM(CASE WHEN dispatched_at IS NOT NULL THEN 1 ELSE 0 END) AS dispatched, "
+                "SUM(CASE WHEN state='SETTLED' THEN settled_microcny ELSE 0 END) AS spent, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED','UNKNOWN') "
+                "THEN reserved_microcny ELSE 0 END) AS held, "
+                "SUM(CASE WHEN state='UNKNOWN' THEN 1 ELSE 0 END) AS unknown, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED') THEN 1 ELSE 0 END) AS pending "
+                "FROM requests"
+            ).fetchone()
+            if (
+                counters is None
+                or any(
+                    counters[k] != totals[k]
+                    for k in ("requests", "dispatched", "spent", "held", "unknown", "pending")
+                )
+                or counters["pending"] != 0
+                or counters["spent"] + counters["held"] > self.hard_cap_microcny
+            ):
+                raise UnknownAbandonmentError(
+                    "quiescent original request/fee/reservation counters must conserve"
+                )
+            record = dict(
+                schema="v6_unknown_abandonment.v1",
+                **bound_inputs,
+                config_sha256=digest(self.config),
+                original_unknown_record_sha256=_request_record_digest(row),
+                permanent_reserved_microcny=row["reserved_microcny"],
+                original_halt=halt,
+                preserved_counters=dict(counters),
+                original_unknown_state_preserved=True,
+                actual_usage_known=False,
+                actual_charge_known=False,
+                reservation_released=False,
+                retry_authorized=False,
+                replacement_call_authorized=False,
+                future_calls_within_original_cap_only=True,
+                at_unix=time.time(),
+            )
+            record["id"] = digest(record)
+            connection.execute(
+                "INSERT INTO metadata(key,value) VALUES (?,?)",
+                (UNKNOWN_ABANDONMENT_PREFIX + invocation_id, _json(record)),
+            )
+            self._event(connection, invocation_id, UNKNOWN_ABANDONMENT_ACTION, record)
+            deleted = connection.execute(
+                "DELETE FROM metadata WHERE key='halt' AND value=?", (halt_row[0],)
+            )
+            if deleted.rowcount != 1:
+                raise UnknownAbandonmentError("exact target halt changed during acknowledgement")
+            return record
+
+    def blocking_unsettled(self):
+        """Unacknowledged work only; unsettled() still truthfully lists abandoned UNKNOWNs."""
+        connection = self._connect()
+        try:
+            acknowledged = {
+                record["invocation_id"]
+                for record in _acknowledged_unknowns(connection, self.config)
+            }
+            return [
+                dict(row)
+                for row in connection.execute(
+                    "SELECT invocation_id,state,coordinates_json FROM requests "
+                    "WHERE state IN ('RESERVED','DISPATCHED','UNKNOWN') ORDER BY created_at"
+                )
+                if row["invocation_id"] not in acknowledged
+            ]
+        finally:
+            connection.close()
 
     def request_record(self, invocation_id):
         connection = self._connect()
