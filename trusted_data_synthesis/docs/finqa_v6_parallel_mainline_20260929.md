@@ -49,3 +49,15 @@ Base使用原始`Qwen2.5-7B-Instruct`冻结基座，不加载旧Static或其他L
 ## 5. 实际启动与结果记录
 
 本文件前述部分在Base登记与GPU启动前写入。实际协议ID、进程、GPU及进度将追加记录；最终分母、费用、原生指标以不可变运行工件为准，不用规划值替代已完成量。
+
+### 2026-09-29 01:02（北京时间）实际追加
+
+源码冻结及推送提交为`39f090c2f3`；Base控制器另有7项CPU生命周期测试通过，连同上述相关控制共66项，不能解释为66次真实模型实验。
+
+Base协议`64ebaffc77904b667c5cfa44a48ab262ab2e2505c152ae93ccfad085ae1e65ad`已登记并于01:01:28启动。控制器PID4066698；dev00的442题分片由GPU7上的PID4066895运行，dev01的441题分片由GPU0上的PID4066896运行。实际GPU负载已出现，两进程存活；01:02:29状态中已保存2＋3=5份episode文件。这个数只是该时刻进度，不是最终结果，更没有提前读取参考作准确率判断。
+
+完整生成封存后控制器自动转入原生评分；出现未结算/未完成会话则保留并停止，不自动重采。产物目录为`artifacts/finance_research_20260928/finqa_five_arm_mainline_20260929/base_dev883_01/`。不可变启动审计ID为`7f6d1202bb2232c5a790efe8a496714cff91a7fb28d403f7ff3c43cb318361ac`。本次没有API费用，没有训练或GPU占位进程。
+
+Experiment1–3设计也已按原始1000题真实名册登记，ID为`v6_experiment123_design:1d3f865325e3f5e2946131f2331cd7836cb1f2f82c5e424a844d0df473bed436`，目录为同一主线根下`experiment123_design_01/`。三个seed各有完整2000×5任务批次表。状态为`DESIGN_AND_CPU_READINESS_ONLY`，材料状态为`BLOCKED_MATERIAL_CLAIMS`，`execution_admitted=false`，未把库存尚不存在时的空声明填成完整材料。材料来源预期明确绑定已登记新整批`ed78f27d...`，不混入旧批成功。
+
+本次推送新增协议、批次日程和启动元数据；正在增长的Base逐题原始生成继续保存在服务器。Base最终指标尚未产生，五臂训练及Experiment5尚未启动。后续进度读取`base_dev883_01/status.json`，已完成结果读取`base_dev883_01/scores/record.json`（只有完整封存评分后才存在）。

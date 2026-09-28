@@ -1,0 +1,42 @@
+{
+  "API_calls": 0,
+  "at": "2026-09-28T17:02:37.157486+00:00",
+  "denominator": 883,
+  "id": "7f6d1202bb2232c5a790efe8a496714cff91a7fb28d403f7ff3c43cb318361ac",
+  "private_references_read_before_whole_seal": false,
+  "protocol_id": "64ebaffc77904b667c5cfa44a48ab262ab2e2505c152ae93ccfad085ae1e65ad",
+  "shard_denominators": [
+    442,
+    441
+  ],
+  "source_commit": "39f090c2f3ecd13d3b04aa26bb037c1ebf3eb05e",
+  "training_started": false,
+  "workers": {
+    "dev00": {
+      "alive": true,
+      "attempt": 1,
+      "outcome": null,
+      "process": {
+        "at": "2026-09-28T17:01:29.356995+00:00",
+        "attempt": 1,
+        "gpu": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+        "pid": 4066895,
+        "process_identity": "303928435",
+        "shard": "dev00"
+      }
+    },
+    "dev01": {
+      "alive": true,
+      "attempt": 1,
+      "outcome": null,
+      "process": {
+        "at": "2026-09-28T17:01:29.358418+00:00",
+        "attempt": 1,
+        "gpu": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "pid": 4066896,
+        "process_identity": "303928436",
+        "shard": "dev01"
+      }
+    }
+  }
+}
