@@ -131,11 +131,22 @@ def release_owned_holder(gpu, plan):
             raise RuntimeError("reservation did not exit after handoff")
 
 
+def gate_prompt_length(tokenizer, messages):
+    """Count actual IDs, not fields in Transformers' default BatchEncoding."""
+    from .tools import TOOL_SPECS
+
+    rendered = tokenizer.apply_chat_template(
+        messages, tools=TOOL_SPECS, tokenize=False, add_generation_prompt=True
+    )
+    return len(
+        tokenizer(rendered, add_special_tokens=False, truncation=False, padding=False)["input_ids"]
+    )
+
+
 def register(output=OUTPUT):
     from transformers import AutoTokenizer
 
     from .gpu_gate import DIAGNOSTIC_INSTRUCTION, gate_messages
-    from .tools import TOOL_SPECS
     from .training_policy import training_interface_policy
 
     output = Path(output).resolve()
@@ -167,10 +178,7 @@ def register(output=OUTPUT):
     )
     for task in selected:
         messages, _ = gate_messages(task, gate_config)
-        prompt = tokenizer.apply_chat_template(
-            messages, tools=TOOL_SPECS, tokenize=True, add_generation_prompt=True
-        )
-        lengths.append((len(prompt), task))
+        lengths.append((gate_prompt_length(tokenizer, messages), task))
     admissible = [(length, task) for length, task in lengths if length + 2048 <= 24576]
     if not admissible:
         raise ValueError("no calibration context fits unchanged generation budget")

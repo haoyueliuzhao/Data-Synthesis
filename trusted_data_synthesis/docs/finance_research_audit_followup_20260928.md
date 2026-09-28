@@ -63,13 +63,17 @@ H 于 09:04:26 开始启动，四个条件已经在 GPU0／1／2／3 实际并�
 
 协调器会在 GPU 可用时继续剩余分片，完成全部 480 会话后再评分；遇到未知调用或 worker 失败则保留证据、停止启动新分片，不擅自重采。训练资格和训练收益仍未确认，新的大材料采集和训练尚未启动。
 
+09:12:51 更新：67／480 会话、已保存会话内调用 522、未结算 0；1／16 分片完成、4 worker 活动、blocked 为空。该时刻 GPU0／1／2／3 的本项目计算 PID 分别为 1038790／1046367／1038723／1038724。GPU6 上其他项目 PID643277 未触碰，未追加占用 GPU4／5／7。
+
 ## G 长度登记偏差与只读纠错
 
 登记器调用 `apply_chat_template(tokenize=True)` 后直接取 `len()`。本机 Transformers 返回包含 `input_ids`、`attention_mask` 的 BatchEncoding，因此原协议 `gate_prompt_lengths=[2,2]` 实为字段数，选择器退化为按 task_key 字典序取首尾。原协议及四次采样均原样保留，不能追写成“选择算法正确”。
 
 发现后，仅用原公开 120 题、原公开模板和原 tokenizer 在 CPU 重算真实 token 数，不读取参考答案、不调用 GPU/API。选中的 `AAPL/2008/page_38.pdf-2` 为 2309 token（排名 1），`NCLH/2018/page_69.pdf-1` 为 6299 token（排名 120）；两者恰好也是真正极值。120 题均满足 prompt+2048≤24576。因此实际长短输入覆盖没有丢失，但登记字段和选择器有实现缺陷，二者必须分别表述。无需追加任何 G 生成。
 
-后续登记器将在独立工作树修复并加入回归；本轮 G/H 继续使用冻结版本，避免运行中改变源码绑定。纠错只补充旁证，不重写旧协议、旧结果或挑选新响应。
+后续登记器已在独立工作树 `/tmp/data-synthesis-finance-research-registration-20260928` 修复：先渲染原生模板，再按不补特殊 token、不截断、不填充的 input_ids 数计长，并加入 BatchEncoding 和本机真实 tokenizer 两项 CPU 回归。本轮 G/H 继续在 `/tmp/data-synthesis-fixed-kernel-parallel-tail-20260914` 使用冻结版本，避免运行中改变源码绑定。新提交只供后续登记使用，不能拿修订源码冒充本轮执行版本。纠错只补充旁证，不重写旧协议、旧结果或挑选新响应。
+
+新增两项与既有控制器测试合计 7 项，于本机真实 tokenizer 环境通过（3.80 秒，未跳过）。运行目录另存 `registration_correction/record.json` 指向原协议和上述纠错；不覆盖原始 `gate_prompt_lengths`。
 
 审计定位（SHA-256 为原文件字节摘要）：
 

@@ -8,6 +8,45 @@ from trusted_synthesis.finance_research import calibration as c
 from trusted_synthesis.finance_research.contracts import ModelIdentity, RunConfig
 
 
+def test_gate_prompt_length_counts_ids_not_batch_encoding_fields():
+    from transformers import BatchEncoding
+
+    class Tokenizer:
+        def apply_chat_template(self, messages, **kwargs):
+            assert kwargs["tokenize"] is False
+            assert kwargs["tools"] and kwargs["add_generation_prompt"] is True
+            return "rendered"
+
+        def __call__(self, rendered, **kwargs):
+            assert rendered == "rendered"
+            assert kwargs == dict(add_special_tokens=False, truncation=False, padding=False)
+            return BatchEncoding({"input_ids": [11] * 19, "attention_mask": [1] * 19})
+
+    assert c.gate_prompt_length(Tokenizer(), []) == 19
+
+
+def test_gate_prompt_length_matches_installed_real_tokenizer():
+    from pathlib import Path
+
+    from transformers import AutoTokenizer
+
+    from trusted_synthesis.finance_research.tools import TOOL_SPECS
+
+    directory = Path(
+        "/data1/zhuxinrui/models/Qwen2.5-7B-Instruct-a09a35458c702b33eeacc393d103063234e8bc28"
+    )
+    if not directory.is_dir():
+        pytest.skip("local Qwen tokenizer unavailable")
+    tokenizer = AutoTokenizer.from_pretrained(directory, local_files_only=True)
+    messages = [{"role": "user", "content": "List the available financial sources."}]
+    actual = tokenizer.apply_chat_template(
+        messages, tools=TOOL_SPECS, tokenize=True, return_dict=True, add_generation_prompt=True
+    )
+    expected = len(actual["input_ids"])
+    assert expected > 2
+    assert c.gate_prompt_length(tokenizer, messages) == expected
+
+
 def _plan():
     jobs = []
     for start in range(0, 120, 30):
