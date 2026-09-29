@@ -371,3 +371,63 @@ def test_build_plan_preserves_original_per_task_configs_and_fixed_new_ids(contex
     ]
     assert plan["api_model"] == "deepseek-flash" and plan["concurrency"] == 8
     assert plan["require_some_reason_supervision_for_reasoning_mainline"] is True
+
+
+@pytest.mark.parametrize("other_failure", ["local_binding", "connection_halt_pause"])
+def test_mixed_generation_errors_distinguish_local_stop_from_connection_paused_unsent(
+    context, monkeypatch, other_failure
+):
+    context.plan["launch_order"] = [s["slot_id"] for s in SLOTS[:2]]
+    context.plan["concurrency"] = 2
+    base = gen.RecoverableProbe
+
+    class CoordinatedProbe(base):
+        async def chat(self, messages, tools, config):
+            if self.sid == SLOTS[1]["slot_id"]:
+                if other_failure == "local_binding":
+                    raise ValueError("synthetic non-network source binding failure")
+                await asyncio.sleep(0.01)
+            return await super().chat(messages, tools, config)
+
+    class MissingReply(ChainClient):
+        async def post(self, url, **kwargs):
+            self.calls.append((url, kwargs))
+            await asyncio.sleep(0)
+            raise httpx.ReadError("synthetic lost connection")
+
+    monkeypatch.setattr(gen, "RecoverableProbe", CoordinatedProbe)
+    client = MissingReply()
+    if other_failure == "local_binding":
+        original_collect, launches, results = gen.collect, [], []
+
+        async def collect(*args, **kwargs):
+            launches.append(True)
+            value = await original_collect(*args, **kwargs, client=client)
+            results.append(value)
+            return value
+
+        context.output.mkdir()
+        monkeypatch.setattr(gen, "collect", collect)
+        monkeypatch.setattr(gen, "checked_plan", lambda output: context.plan)
+        monkeypatch.setattr(gen, "ledger_for", lambda plan: context.ledger)
+        monkeypatch.setattr(gen, "_key", lambda path: KEY)
+        assert asyncio.run(gen.run(context.output)) is None
+        assert len(launches) == 1
+        result = results[0]
+        assert result["network_only_continuation_safe"] is False
+        assert {b["failure_class"] for b in result["blocked"]} == {
+            "connection_unknown",
+            "non_network_stop",
+        }
+    else:
+        result = asyncio.run(
+            gen.collect(context.output, context.plan, context.ledger, KEY, client=client)
+        )
+        assert result["network_only_continuation_safe"] is True
+        assert {b["failure_class"] for b in result["blocked"]} == {
+            "connection_unknown",
+            "unsent_blocked_by_connection_halt",
+        }
+    assert len(client.calls) == 1 and context.ledger.snapshot()["pending_requests"] == 0
+    assert context.ledger.snapshot()["unacknowledged_unknown_requests"] == 1
+    assert not result["completed"] and not (context.output / "generation_seal").exists()

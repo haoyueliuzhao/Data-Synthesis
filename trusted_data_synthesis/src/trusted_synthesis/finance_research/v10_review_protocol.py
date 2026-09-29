@@ -22,6 +22,7 @@ from .v10_process_review import (
     inspect_process_review,
     prepare_process_request,
     require,
+    same_message_payloads,
     supervision_manifest,
 )
 from .v10_process_review import policy_definition as process_policy
@@ -416,7 +417,7 @@ def checked_request(request):
     else:
         raise ValueError("unregistered V10 production wire")
     require(
-        request["messages"] == expected_messages
+        same_message_payloads(request["messages"], expected_messages)
         and request["strict_tool"] == expected_tool
         and request["capacity"] == cap
         and request["max_output_tokens"] == cap["max_output_tokens"],

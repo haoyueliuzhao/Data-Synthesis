@@ -776,6 +776,60 @@ def seal_generation(output, plan, ledger, completed):
     return seal
 
 
+def network_continuation_classification(ledger, episode, slot):
+    """A preliminary stop classifier; the budget helper still validates every UNKNOWN.
+
+    An unrelated local/schema/subcap failure cannot inherit automatic continuation
+    from another worker's lost connection. A proved-unsent turn blocked specifically
+    by that connection halt is distinct from such a failure.
+    """
+    from .v10_budget import NETWORK_POLICY, NETWORK_REASON
+
+    result = dict(network_only_continuation_candidate=False, failure_class="non_network_stop")
+    if not episode.call_settlements:
+        return result
+    last = episode.call_settlements[-1]
+    evidence = last.evidence
+    coords = invocation_identity(
+        dict(run_id=ledger.run_id, episode_id=slot["slot_id"], attempt_index=1),
+        turn_index=episode.provider_attempts - 1,
+    )
+    row = ledger.request_record(coords["invocation_id"])
+    if (
+        last.state == "unknown"
+        and row is not None
+        and row["state"] == "UNKNOWN"
+        and all(row[k] is None for k in ("http_status", "response_body", "usage_json"))
+        and evidence.get("service_response_received") is False
+        and evidence.get("exception_type") in NETWORK_POLICY["exception_types"]
+        and evidence.get("message") == NETWORK_REASON
+    ):
+        return dict(network_only_continuation_candidate=True, failure_class="connection_unknown")
+    paused = evidence.get("message") in {
+        "dispatch paused before unsent turn",
+        "unknown or halted Probe ledger forbids new requests",
+        "ledger halted before dispatch; request not sent",
+    }
+    if last.state == "pre_call_rejected" and last.actual_model_calls == 0 and paused:
+        halt = ledger.snapshot()["halt"] or {}
+        stopped_by_connection = (
+            halt.get("reason") == NETWORK_REASON
+            and halt.get("evidence", {}).get("service_response_received") is False
+            and halt.get("evidence", {}).get("exception_type") in NETWORK_POLICY["exception_types"]
+        )
+        if stopped_by_connection and (
+            row is None or (row["state"] == "RESERVED" and row["dispatched_at"] is None)
+        ):
+            return dict(
+                # A remaining RESERVED row still requires explicit recovery: the
+                # existing network policy requires pending=0 before acknowledgment.
+                network_only_continuation_candidate=row is None,
+                failure_class="unsent_blocked_by_connection_halt",
+                original_reservation_requires_recovery=row is not None,
+            )
+    return result
+
+
 async def collect(output, plan, ledger, key, *, stop_requested=None, client=None):
     output = Path(output)
     tasks = public_tasks(plan["original"])
@@ -896,6 +950,7 @@ async def collect(output, plan, ledger, key, *, stop_requested=None, client=None
                         reason=episode.stop_reason,
                         error=episode.error,
                         attempt=str(attempt),
+                        **network_continuation_classification(ledger, episode, slot),
                     )
                 )
                 halted.set()
@@ -955,7 +1010,13 @@ async def collect(output, plan, ledger, key, *, stop_requested=None, client=None
         done.set()
         await watcher
     progress("GENERATION_ALL_TERMINAL" if len(completed) == 8000 else "GENERATION_SAVED_INCOMPLETE")
-    return dict(completed=completed, blocked=blocked, operator_stop=stop_requested.is_set())
+    return dict(
+        completed=completed,
+        blocked=blocked,
+        operator_stop=stop_requested.is_set(),
+        network_only_continuation_safe=bool(blocked)
+        and all(b.get("network_only_continuation_candidate") is True for b in blocked),
+    )
 
 
 def score_native_support(output, plan, seal):
@@ -1108,7 +1169,10 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
             if len(result["completed"]) == 8000:
                 continue
             budget = ledger.snapshot()
-            if budget["unacknowledged_unknown_requests"]:
+            if (
+                budget["unacknowledged_unknown_requests"]
+                and result["network_only_continuation_safe"]
+            ):
                 # Only the explicitly bounded new-cohort network policy can advance.
                 continue
             return None  # Budget/local/schema/service stops are not automatic retries.

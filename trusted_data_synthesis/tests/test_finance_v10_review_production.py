@@ -20,6 +20,7 @@ from trusted_synthesis.finance_research import v10_review_protocol as protocol
 from trusted_synthesis.finance_research import v10_review_provider as provider
 from trusted_synthesis.finance_research.contracts import ProviderCallError, digest
 from trusted_synthesis.finance_research.probe_budget import DuplicateInvocation
+from trusted_synthesis.finance_research.storage import encode
 from trusted_synthesis.finance_research.v10_budget import BATCH_ID, generation_episode_id
 
 KEY = "v10-unit-test-memory-key-not-real"
@@ -137,6 +138,14 @@ def test_real_ledger_binding_exact_restore_and_A_only_authority(ledger):
     assert provider.restore_artifact(row, request) == artifact
     assert protocol.validate_review_record(value["A"], row) == value["A"]
     assert ledger.snapshot() == before
+    # Actual artifact persistence sorts metadata object keys but preserves original
+    # message strings and every original HTTP byte. No call may be repeated.
+    for role in ("A", "B"):
+        saved = json.loads(encode(value[role]))
+        original_wire = provider.request_body(value[role]["request"])
+        assert provider.request_body(saved["request"]) == original_wire
+        paid_row = ledger.request_record(saved["artifact"]["budget_invocation_id"])
+        assert provider.restore_artifact(paid_row, saved["request"]) == saved["artifact"]
     client = Client()
     with pytest.raises(DuplicateInvocation):
         asyncio.run(
@@ -180,6 +189,9 @@ def test_once_mapping_keeps_whole_partition_and_actual_paid_receipt(ledger):
     value = mapping_value(request)
     artifact, row, _ = paid(ledger, request, value)
     result = protocol.mapping_record(request, artifact, row)
+    reloaded = json.loads(encode(result))
+    assert provider.request_body(reloaded["request"]) == provider.request_body(request)
+    assert provider.restore_artifact(row, reloaded["request"]) == reloaded["artifact"]
     assert protocol.validate_mapping_record(result, row) == result
     assert result["mapping_admitted"] and result["state_by_slot"] == {
         material["slot_id"]: "state-0"

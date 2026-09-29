@@ -222,6 +222,23 @@ def prepare_process_request(
     )
 
 
+def same_message_payloads(actual, expected):
+    """Preserve sent strings; disk reorders metadata keys, not JSON meaning.
+
+    Actual raw strings remain separately hash-bound. Strict decoding rejects
+    duplicate keys and never rewrites the retained messages or HTTP bytes.
+    """
+    try:
+        left, right = copy.deepcopy(actual), copy.deepcopy(expected)
+        if len(left) != 2 or len(right) != 2:
+            return False
+        left[1]["content"] = strict_json_decoder().decode(left[1]["content"])
+        right[1]["content"] = strict_json_decoder().decode(right[1]["content"])
+        return left == right
+    except (ValueError, TypeError, KeyError):
+        return False
+
+
 def _checked_request(request):
     require(
         request.get("id") == digest({k: v for k, v in request.items() if k != "id"}),
@@ -252,8 +269,8 @@ def _checked_request(request):
         dict(role="user", content=json.dumps(payload, ensure_ascii=False, separators=(",", ":"))),
     ]
     require(
-        request["messages"] == expected_messages
-        and request["messages_sha256"] == digest(expected_messages)
+        same_message_payloads(request["messages"], expected_messages)
+        and request["messages_sha256"] == digest(request["messages"])
         and request["strict_tool"] == strict_tool(view)
         and request["strict_tool_sha256"] == digest(request["strict_tool"]),
         "original process request/strict schema changed",
