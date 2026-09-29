@@ -1,0 +1,77 @@
+{
+  "A_2048_length_fraction": "5115/5193",
+  "A_4096_length_fraction": "131/525",
+  "A_length_fraction": "5246/5719",
+  "at": "2026-09-29T18:06:14.452791+00:00",
+  "auxiliary_pair_context": {
+    "A_raw_valid_paired_with_B_annotation_failed": 3,
+    "A_raw_valid_paired_with_B_valid": 2
+  },
+  "capacity_strata_are_not_randomized_comparisons": true,
+  "completed_output_requirement_cannot_be_inferred_from_truncated_usage": true,
+  "excluded_pairs": 5665,
+  "excluded_pairs_with_at_least_one_annotation_failed": 5662,
+  "excluded_pairs_with_both_annotations_succeeded": 3,
+  "first_failure_reason_group_counts": {
+    "A": {
+      "JSON_Extra_data": 244,
+      "JSON_duplicate_key": 28,
+      "JSON_other_error": 2,
+      "missing_segment": 1,
+      "non_normal_envelope": 5246,
+      "quote_absent_from_referenced_segment": 1,
+      "schema": 14,
+      "source_or_observation_input_only": 3,
+      "unique_exact_quote_wrong_offsets": 49
+    },
+    "B": {
+      "JSON_Extra_data": 3,
+      "missing_segment": 3,
+      "non_normal_envelope": 56,
+      "quote_absent_from_referenced_segment": 14,
+      "unique_exact_quote_wrong_offsets": 2286
+    }
+  },
+  "historical_qualification_changed": false,
+  "id": "5de77cb6119dcbae146bb798687b82542bec74e1e565d3e56a14cfd0431dc7c7",
+  "interpretation": "Prioritize A response representation/capacity and B exact-reference burden; auxiliary coupling exists but directly observed complete-JSON auxiliary-only failures are not the dominant measured loss. No result is promoted to valid.",
+  "length_JSON_parse_counts": {
+    "A": {
+      "length_JSON_complete": 5,
+      "length_JSON_invalid": 5241
+    },
+    "B": {
+      "length_JSON_complete": 3,
+      "length_JSON_invalid": 53
+    }
+  },
+  "length_side_counts": {
+    "A": {
+      "2048": 5115,
+      "4096": 131
+    },
+    "B": {
+      "2048": 56
+    }
+  },
+  "new_API_calls": 0,
+  "new_fixed_token_cap_established": false,
+  "output_cap_side_counts": {
+    "A": {
+      "2048": 5193,
+      "4096": 525,
+      "8192": 1
+    },
+    "B": {
+      "2048": 5718,
+      "4096": 1
+    }
+  },
+  "pair_denominator": 5719,
+  "schema": "v11_output_capacity_and_funnel_followup.v1",
+  "side_denominator": 11438,
+  "source_pairs_sha256": "8f6d2c821c9a1467e8730463cab8a476f59b83fa375a828e4e181061f2e28b1a",
+  "source_sides_sha256": "7340b3c00e8bafde545c69269e36fad3969ba9c0b445b9e855f191e30ce872cb",
+  "source_summary_id": "d16e09629af7a5864e72ea270b1b1bf707317b711f1faa96feed5a13e1e6bd71",
+  "truncated_outputs_are_right_censored": true
+}

@@ -1,0 +1,87 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "at": "2026-09-29T17:49:01.719861+00:00",
+  "cases": [
+    {
+      "error": null,
+      "input_annotation_sha256": "4d074c34a083323ef737e3efa05ba076ed3f5c6390d1e8e91f736323c91d7b75",
+      "name": "baseline",
+      "parsed_retained": true,
+      "process_validity": "valid",
+      "raw_process_statuses": {
+        "actual_revisions": "not_applicable",
+        "evidence_and_operations": "supported",
+        "observation_interpretation": "not_applicable",
+        "unwithdrawn_critical_contradictions": "supported"
+      },
+      "review_status": "annotation_succeeded"
+    },
+    {
+      "error": "ValueError: locator is not exact original text",
+      "input_annotation_sha256": "67c63ff992ea1485cc110511a1f205a018d6946be0b193ec03273e105bb4faa0",
+      "name": "context_only_end_plus1",
+      "parsed_retained": false,
+      "process_validity": "unknown",
+      "raw_process_statuses": {
+        "actual_revisions": "not_applicable",
+        "evidence_and_operations": "supported",
+        "observation_interpretation": "not_applicable",
+        "unwithdrawn_critical_contradictions": "supported"
+      },
+      "review_status": "annotation_failed"
+    },
+    {
+      "error": "ValueError: locator is not exact original text",
+      "input_annotation_sha256": "f78deb6ad903f10904e48dbc43117ca45717f946c0b7d67a0da130e3e7fa1f5b",
+      "name": "behavior_end_plus1",
+      "parsed_retained": false,
+      "process_validity": "unknown",
+      "raw_process_statuses": {
+        "actual_revisions": "not_applicable",
+        "evidence_and_operations": "supported",
+        "observation_interpretation": "not_applicable",
+        "unwithdrawn_critical_contradictions": "supported"
+      },
+      "review_status": "annotation_failed"
+    },
+    {
+      "error": null,
+      "input_annotation_sha256": "c3bbc7f680b1f8dcc5e0b96023bdcf2649e094f96a7b7b72af9beb8acb2fd429",
+      "name": "critical_error_bound",
+      "parsed_retained": true,
+      "process_validity": "invalid",
+      "raw_process_statuses": {
+        "actual_revisions": "not_applicable",
+        "evidence_and_operations": "critical_error",
+        "observation_interpretation": "not_applicable",
+        "unwithdrawn_critical_contradictions": "supported"
+      },
+      "review_status": "annotation_succeeded"
+    },
+    {
+      "error": "ValueError: locator is not exact original text",
+      "input_annotation_sha256": "05eaed9fc2743dcfa4dec43df4595fc1adcbfed81cdc6546a2621b41eea7f0a2",
+      "name": "critical_error_with_context_only_end_plus1",
+      "parsed_retained": false,
+      "process_validity": "unknown",
+      "raw_process_statuses": {
+        "actual_revisions": "not_applicable",
+        "evidence_and_operations": "critical_error",
+        "observation_interpretation": "not_applicable",
+        "unwithdrawn_critical_contradictions": "supported"
+      },
+      "review_status": "annotation_failed"
+    }
+  ],
+  "financial_truth_measured": false,
+  "fixture_source": "trusted_data_synthesis/tests/test_finance_v10_process_review.py::fixture",
+  "historical_labels_changed": false,
+  "id": "4bb407d4e89b50b235807855837ade2d133eb7c2df5cf4f6aa8114833170c936",
+  "original_production_commit": "f9cc6909293b0c5fd117ecb7324f86f009cc3b36",
+  "registration_id": "3fcf794e5832b31e78cb82e2b19f05b97db396cf3ac0e3c7a93a858e51c69886",
+  "schema": "v11_synthetic_frozen_v10_coupling_counterexamples.v1",
+  "source_sha256": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+  "synthetic_only": true,
+  "wallet_opened": false
+}

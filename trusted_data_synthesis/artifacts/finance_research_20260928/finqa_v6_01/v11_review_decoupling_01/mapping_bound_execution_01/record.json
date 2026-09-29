@@ -1,0 +1,12 @@
+{
+  "API_calls": 0,
+  "at": "2026-09-29T17:53:50.447754+00:00",
+  "diagnostic_id": "1476cdec12f4726a43e894823776ea7b16c50bdec3cf42a325e7f88b783c607e",
+  "id": "127b77c055193153e265748e904f4567be98f6a032b96c9811c1717321d30d8a",
+  "old_support_not_modified": true,
+  "original_support_D_pi": null,
+  "registration_id": "3fcf794e5832b31e78cb82e2b19f05b97db396cf3ac0e3c7a93a858e51c69886",
+  "schema": "v11_fixed_mapping_bound_execution.v1",
+  "source_sha256": "e6ec687e9efcf107418a4f97e0176b8e1d1b4e2ad9baa807cd048804be9f5690",
+  "wallet_opened": false
+}

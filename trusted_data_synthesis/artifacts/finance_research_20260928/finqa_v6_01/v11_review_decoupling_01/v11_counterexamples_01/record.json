@@ -1,0 +1,121 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "at": "2026-09-29T18:09:31.314407+00:00",
+  "capacity_or_real_response_reliability_validated": false,
+  "cases": [
+    {
+      "behavior_status": "bound",
+      "candidate_gate": true,
+      "name": "baseline",
+      "process_outcome": "valid",
+      "production_admitted": false,
+      "projection_status": "complete",
+      "raw_claim": "valid"
+    },
+    {
+      "behavior_status": "failed",
+      "candidate_gate": true,
+      "name": "bad_behavior",
+      "process_outcome": "valid",
+      "production_admitted": false,
+      "projection_status": "complete",
+      "raw_claim": "valid"
+    },
+    {
+      "behavior_status": "bound",
+      "candidate_gate": false,
+      "name": "bad_context_projection",
+      "process_outcome": "valid",
+      "production_admitted": false,
+      "projection_status": "failed",
+      "raw_claim": "valid"
+    },
+    {
+      "behavior_status": "bound",
+      "candidate_gate": false,
+      "name": "bad_critical_evidence",
+      "process_outcome": "unknown",
+      "production_admitted": false,
+      "projection_status": "complete",
+      "raw_claim": "valid"
+    },
+    {
+      "behavior_status": "bound",
+      "candidate_gate": false,
+      "name": "bound_critical_error",
+      "process_outcome": "invalid",
+      "production_admitted": false,
+      "projection_status": "complete",
+      "raw_claim": "invalid"
+    },
+    {
+      "behavior_status": "bound",
+      "candidate_gate": false,
+      "name": "bound_critical_error_bad_aux",
+      "process_outcome": "invalid",
+      "production_admitted": false,
+      "projection_status": "failed",
+      "raw_claim": "invalid"
+    }
+  ],
+  "financial_truth_measured": false,
+  "historical_qualification_changed": false,
+  "id": "e768ce44e12e61719f82d7279201c1940450fde5f8838a6f4f29ba3e710739b3",
+  "joint_pool_with_reason0_package": {
+    "all_pool_public_reasoning_masked": false,
+    "blocked_slot_ids": [],
+    "candidate_slot_ids": [
+      "v11-counterexample:baseline",
+      "v11-counterexample:reason0"
+    ],
+    "id": "fc25a6a15aba676ae1bf5dcb7a5274fa241187d643ab9fd5f4e4d93a66651f36",
+    "input_slot_ids": [
+      "v11-counterexample:baseline",
+      "v11-counterexample:reason0"
+    ],
+    "no_joint_process_candidate_dropped": true,
+    "no_reason0_package_dropped": true,
+    "original_fixed_denominator_completeness_checked": false,
+    "production_admitted": false,
+    "projection_pool_candidate_gate": true,
+    "schema": "v11_candidate_pool_check.v1",
+    "state_chi_and_encoding_checked": false
+  },
+  "joint_pool_with_unavailable_projection": {
+    "all_pool_public_reasoning_masked": null,
+    "blocked_slot_ids": [
+      "v11-counterexample:badprojection"
+    ],
+    "candidate_slot_ids": [
+      "v11-counterexample:baseline",
+      "v11-counterexample:badprojection"
+    ],
+    "id": "c59ba404059c78b977e9b7854e868a9f8ae59e0727348d0f553f2ee567e88465",
+    "input_slot_ids": [
+      "v11-counterexample:baseline",
+      "v11-counterexample:badprojection"
+    ],
+    "no_joint_process_candidate_dropped": true,
+    "no_reason0_package_dropped": true,
+    "original_fixed_denominator_completeness_checked": false,
+    "production_admitted": false,
+    "projection_pool_candidate_gate": false,
+    "schema": "v11_candidate_pool_check.v1",
+    "state_chi_and_encoding_checked": false
+  },
+  "policy_id": "bde67ad13b2cdf7db3dc8660e7c788472cbdbd596ee9827b396e579a0740bc62",
+  "pytest_controls": {
+    "count": 25,
+    "mapping_bound": 4,
+    "prospective_contract": 11,
+    "repeated_synthetic_scenarios_are_not_independent_financial_evidence": true,
+    "review_funnel": 10
+  },
+  "registration_id": "3fcf794e5832b31e78cb82e2b19f05b97db396cf3ac0e3c7a93a858e51c69886",
+  "schema": "v11_prospective_decoupling_synthetic_execution.v1",
+  "source_sha256": "bdd2cd7cd56f8d83980349d5e77c20b724bed5154fc85f599691a612f7928b93",
+  "synthetic_only": true,
+  "truncated_JSON_outcome": "unknown, never repaired",
+  "wallet_opened": false
+}

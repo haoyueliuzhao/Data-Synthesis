@@ -1,0 +1,420 @@
+{
+  "API_calls": 0,
+  "A_duplicate_key_frozen_strict_failures": 28,
+  "at": "2026-09-29T18:14:45.151333+00:00",
+  "difference_explained_by_ordinary_JSON_accepting_duplicate_keys": 13,
+  "duplicate_key_diagnostic_groups": {
+    "other_annotation_failure|ordinary_JSON_success": 13,
+    "raw_JSON_parse_failure|ordinary_JSON_failure": 15
+  },
+  "duplicate_key_records": [
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 322,
+      "record": {
+        "id": "efbeb1cf7b2d181cade10070607953242b636c34af095e6d80cb506227242f1f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/012a6d4c25ce9f8d3167e874b50abd28f746dab7b3486912cf396545d674de49/A/record/record.json",
+        "sha256": "0ca3860193ce9cd24b331e563b2afc1bbc545bf922ac31827cacd03d71a441e6"
+      },
+      "slot_id": "v10gen:012a6d4c25ce9f8d3167e874b50abd28f746dab7b3486912cf396545d674de49",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 609,
+      "record": {
+        "id": "1c7ef723f246c509e7fe08103928cc5df994e63906af711fcf6b819530a69f82",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/7448a8dd0a58ce96cc18c9ec244b103eaedfbc3286260ad1b6d243e91b3dd090/A/record/record.json",
+        "sha256": "d61a857b791632a3606133611afffee65aaabc1787b7de488cb1d6787546abf8"
+      },
+      "slot_id": "v10gen:7448a8dd0a58ce96cc18c9ec244b103eaedfbc3286260ad1b6d243e91b3dd090",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 648,
+      "record": {
+        "id": "fb2c16ddf49d38ce6fb072aa82f38cf4060c72da8434e56f4d4ba7993d25d9c9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/532c2880d87098bb86b35550d2f6b28a79e89a70deb6c008bc4e12a235ba031f/A/record/record.json",
+        "sha256": "f51973ac58dfbf715f0eb8fbf366587486c1768cf34c4572384209a4b9301ea3"
+      },
+      "slot_id": "v10gen:532c2880d87098bb86b35550d2f6b28a79e89a70deb6c008bc4e12a235ba031f",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 1151,
+      "record": {
+        "id": "749da53fd649b72e0cca2e3b65b24c705cb13dfed3be0e082c33848bc6a4e212",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/8c57e7a19ab777d852c5ddb7be31ab79505fca1c4d3a43b16e74bcc2e8c0996f/A/record/record.json",
+        "sha256": "38a07c080918a025ae24b3951b251cabe37e2b8448b6cdfb2a8b2cdb87c5b196"
+      },
+      "slot_id": "v10gen:8c57e7a19ab777d852c5ddb7be31ab79505fca1c4d3a43b16e74bcc2e8c0996f",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 1399,
+      "record": {
+        "id": "77246b7cdf4aa2e3cff2631194d5682b7954c3490c8823c2edef9333a60050d2",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/1b6f47e646e1d106824711b0f46704b4d0f5f3e2abc349b3c78ed721c4881a4e/A/record/record.json",
+        "sha256": "42afaffd1d26a087350ffdd6790c4bce4d1901b246849c635cd1d74784cc206e"
+      },
+      "slot_id": "v10gen:1b6f47e646e1d106824711b0f46704b4d0f5f3e2abc349b3c78ed721c4881a4e",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 2257,
+      "record": {
+        "id": "c5d18b1d2c0bf2be7306a713b4c9990a61474fbd81a1d8392be2b160b20b35b6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/5a5af4313bdd30d168cd789164081a5d61521a3925227a0393d256930d23907c/A/record/record.json",
+        "sha256": "1ea6ac2fdfb543cfb72565bc96493bfe51f6335f659e5f1972f8da9e42f1bc37"
+      },
+      "slot_id": "v10gen:5a5af4313bdd30d168cd789164081a5d61521a3925227a0393d256930d23907c",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 2346,
+      "record": {
+        "id": "6358263f60e983fefa57eabb4554b568d68b8c445b55ac48caf170d29ec2e16c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/6ad66e056a0ac2b2ef105e96cc8b31fcff018adf0a8c005a0bd4f8319daa5e00/A/record/record.json",
+        "sha256": "f356a5feb89ab2d2d87f6a16dd2aa1f1397dfac2697dc73f2235e4fc75395e64"
+      },
+      "slot_id": "v10gen:6ad66e056a0ac2b2ef105e96cc8b31fcff018adf0a8c005a0bd4f8319daa5e00",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 2547,
+      "record": {
+        "id": "cd0aa1bc24fafaa6afc2de03d2e57bdbbd28ab71bdbc9bbb98ad63e09b06a59a",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/4fbb8ff98d6f453cb49398efad61b5f0973a908f44062c3cd183530180494671/A/record/record.json",
+        "sha256": "19e46d89a59afffd978e92d72d50d12ebb466c91fdf1bcc3a5cdc23bd55c2583"
+      },
+      "slot_id": "v10gen:4fbb8ff98d6f453cb49398efad61b5f0973a908f44062c3cd183530180494671",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 2683,
+      "record": {
+        "id": "a2a8b3c6b14e608de36e2035b33441d1a837889fb16c6a19a30772f171fd8642",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/7cc94ae751515e173f46f764c4ae4e1d546efa4e042c5dc661b104cb2e7f7125/A/record/record.json",
+        "sha256": "6f209c71295b281f8826618c236d2121a48d6255acd70515cda771da3984fab9"
+      },
+      "slot_id": "v10gen:7cc94ae751515e173f46f764c4ae4e1d546efa4e042c5dc661b104cb2e7f7125",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 2708,
+      "record": {
+        "id": "17f6ebc8c353a46a0dd6c24417a15238d25529712b1f3547e405dfa63deec144",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/3cce268381bb86b55c56845453bd4a61af213f0050448ddc6fb9c56e07b137f5/A/record/record.json",
+        "sha256": "3eb1a102a588fe91c201210f91bde02b0e55064cca661cf8771a2223b3a03d80"
+      },
+      "slot_id": "v10gen:3cce268381bb86b55c56845453bd4a61af213f0050448ddc6fb9c56e07b137f5",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 2824,
+      "record": {
+        "id": "b1cb037fb2601419d6fefed05383332237a610f62d06a33e74bfc41b15991947",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/1bac9af6001a7b16c6f58043c894394164926daaf9766e23682982d584c64300/A/record/record.json",
+        "sha256": "ba46d730691f9a3de734771d489f67224c9877cbdeeeb236ca20aa45973a8fea"
+      },
+      "slot_id": "v10gen:1bac9af6001a7b16c6f58043c894394164926daaf9766e23682982d584c64300",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 3195,
+      "record": {
+        "id": "2531ec0817b1dc8ea6aeb394abb383dd063fcc6000bb283e4fb4234eca5ce7f3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/7eec50faccb64c2197f2d2d25f4c77c9d0f3201362fc8c482b1fb01c79fc140c/A/record/record.json",
+        "sha256": "ca142eea97d3ce4613403b8a84fdf210fc4d8c64f9646ef0e88d3a67a77063c3"
+      },
+      "slot_id": "v10gen:7eec50faccb64c2197f2d2d25f4c77c9d0f3201362fc8c482b1fb01c79fc140c",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 3814,
+      "record": {
+        "id": "cd96613f34e31908cab630aa107dc9c93812eedc4e753b668f65c7531a581fcd",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/8a0bb9adf700d438d7e6baafd5b46111d39159d4252e1c32a9209b68346098da/A/record/record.json",
+        "sha256": "fe5778d8c8dd1d931302a9491a116f0f5478422b6879a422e887979096de96a1"
+      },
+      "slot_id": "v10gen:8a0bb9adf700d438d7e6baafd5b46111d39159d4252e1c32a9209b68346098da",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 3874,
+      "record": {
+        "id": "2fa4d95ffda612b0b2e5dcae77bee6bcc94b3aeacf9dfd11139d3eae3f32486c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/4e7b1fdf1cb71598b9148b5e69e8553294f106a596085126a7329e13fec431f3/A/record/record.json",
+        "sha256": "a2c741d1424eca7f04e55a0caeb13fb2a6fb0125b404fd8aaa8cc872b5d28a58"
+      },
+      "slot_id": "v10gen:4e7b1fdf1cb71598b9148b5e69e8553294f106a596085126a7329e13fec431f3",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 4171,
+      "record": {
+        "id": "6e8e4cbfe97fb7fcb0d4552a3058f859bb1edec14cd6dad782cc4227347f1da6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/c05e8f3ea96117568dedd3234f9dc145004851f8436031286114f680eac4fef4/A/record/record.json",
+        "sha256": "e45eaef24cc999c5c0a5a7c25043d0a9dfc7165afc5e2e1474b1e8c6d6e3f61e"
+      },
+      "slot_id": "v10gen:c05e8f3ea96117568dedd3234f9dc145004851f8436031286114f680eac4fef4",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4212,
+      "record": {
+        "id": "1cb38e6f661ed61a9ead001354f46da1513035701f9a83e29194740e58e13adb",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/ee97a9b6e6279fe660324babc5d249e15cd9019316ac1a3b04f214bdc727819c/A/record/record.json",
+        "sha256": "26b54df83354a1454bd680cbe0b72d9d50ed023338feb6939d8dd64442fd2219"
+      },
+      "slot_id": "v10gen:ee97a9b6e6279fe660324babc5d249e15cd9019316ac1a3b04f214bdc727819c",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 4217,
+      "record": {
+        "id": "1c9fa38078d035c9dadba5365017a94e3cadc6ff22b0e63ee85b9840c554a36f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/c1cc228a529fdc4eb363c0e08deb3fc6589702f57353b212b6c6a53729ae5890/A/record/record.json",
+        "sha256": "41a4df70041a9973aab94ba9ecb1b45bf21acd7fbc07588eef7b23e98bc6be95"
+      },
+      "slot_id": "v10gen:c1cc228a529fdc4eb363c0e08deb3fc6589702f57353b212b6c6a53729ae5890",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4242,
+      "record": {
+        "id": "ebe29371389a0baad3f4766a47fe992ee9ec1c7642490118b24bd2044ae1b17d",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/b03ab4fae3eef31e85ad4b3d8380b1b5be0354f727c9e8d338179fcdee452f14/A/record/record.json",
+        "sha256": "56fb419400ea87e9c2aebb91e59c2317395be9d8eaa77d912c34edcf0c778e4c"
+      },
+      "slot_id": "v10gen:b03ab4fae3eef31e85ad4b3d8380b1b5be0354f727c9e8d338179fcdee452f14",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 4322,
+      "record": {
+        "id": "fe3f2f62dec716f013d635f08c0790fd2fbfdb54199e5099b5aa9f807d440651",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/5357aab4d88f9699080601d34295c27f2ed95b22f00ce439dbfc81e154096c3a/A/record/record.json",
+        "sha256": "509adb57fa478bb9e04583818114e7270faa1a8bf7372d39b55ce366deaa2769"
+      },
+      "slot_id": "v10gen:5357aab4d88f9699080601d34295c27f2ed95b22f00ce439dbfc81e154096c3a",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4526,
+      "record": {
+        "id": "557d1903be865a4039e673d4e37242259e3a6c974d70514a23086b6ad75d9de3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/e925458f175a7bdf0ed1d984d7422e7a0dd89fb0ab85755e9ef17071ec4271b9/A/record/record.json",
+        "sha256": "ee45d9b00782260efcb60cb7b24df5302eea88aeccae4e7e3b04155a9333310f"
+      },
+      "slot_id": "v10gen:e925458f175a7bdf0ed1d984d7422e7a0dd89fb0ab85755e9ef17071ec4271b9",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4663,
+      "record": {
+        "id": "56fc7eb7f046ed8ffc5c6e0f24b43297fca98b40c864bda8b3b89b39cb5bdac5",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/c291a91139201e0407664e1973345a1780257aae604b99e8e5b3381a686c9d60/A/record/record.json",
+        "sha256": "31b3cd4b8683a1c58080eea2a701b85b19789bb5fced72f1c2530d0e28680fb3"
+      },
+      "slot_id": "v10gen:c291a91139201e0407664e1973345a1780257aae604b99e8e5b3381a686c9d60",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4685,
+      "record": {
+        "id": "1e3de05f203dab0623329296ca15eaa6860078dcdc11cf259a8d5b6f837b02e6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e/A/record/record.json",
+        "sha256": "9f3eadbe90ca1e4694dd460d1f82da7b8c04b274f425f43a4f03f2375b66d0f6"
+      },
+      "slot_id": "v10gen:62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4711,
+      "record": {
+        "id": "57d0fd883b93ad06455021b41caa92b9b5dc6780e3dfa920bec9b39f3583acc8",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/da68477d507a09738575fec919fd8a047c648fd7e639cba33f625a088504f4b7/A/record/record.json",
+        "sha256": "2cad45ff1f89b281acb2e37e0fed6a3e5f5078b06035a5c121a6cd639bc22656"
+      },
+      "slot_id": "v10gen:da68477d507a09738575fec919fd8a047c648fd7e639cba33f625a088504f4b7",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4834,
+      "record": {
+        "id": "a56945b5f9896d67e77ea2b6c524d84af76b0f4c252e0753435a8ea9979704d0",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/afaa00e6ad37305eb5f87960ec2e1249024d03edbbf989b365bef9fcb85d9598/A/record/record.json",
+        "sha256": "aa41087bdf11a6ece9e760e75e61ebc72443b084b438c2221d0c65bd2b854cb7"
+      },
+      "slot_id": "v10gen:afaa00e6ad37305eb5f87960ec2e1249024d03edbbf989b365bef9fcb85d9598",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 4835,
+      "record": {
+        "id": "730c300cf1b1242ec80b9aaf44652804c55acb4d92f0d4335187a755eaff6702",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/225ad566cead2c5b48b10edfaf3165c053c82f5699da4ef1f0833a6b1600f933/A/record/record.json",
+        "sha256": "7a581f583a0ebe86aa93b70706828df9618eefeb237cff2f789bb9849ef78bb3"
+      },
+      "slot_id": "v10gen:225ad566cead2c5b48b10edfaf3165c053c82f5699da4ef1f0833a6b1600f933",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 4918,
+      "record": {
+        "id": "dce1cc877d8cae86d5eb4245ae0cb0e5c92e02eae9077edd224afbb140e9419f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/6489c9e41605c1a8ac2b35b52f1d980497c77bafd98b2173e6bb7d65c19573ef/A/record/record.json",
+        "sha256": "87c6d4fba66027e8422333b75bb05c297856763a2ff85944d6eb30d46ed5304a"
+      },
+      "slot_id": "v10gen:6489c9e41605c1a8ac2b35b52f1d980497c77bafd98b2173e6bb7d65c19573ef",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": null,
+      "ordinary_json_loads_success": true,
+      "pair_index": 4966,
+      "record": {
+        "id": "f9fab6bed78dde0e6cef55d91f7d027bf13f728c46cf615a113c5adcac992bf6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/af100f24fd741634cf63d9e985c45e3bb6916ca439f0928ec7d47d0604e6edf6/A/record/record.json",
+        "sha256": "0b6e1cf1e166f1cab2b3afc65be468e324072ac31d408f491cdbde4285751361"
+      },
+      "slot_id": "v10gen:af100f24fd741634cf63d9e985c45e3bb6916ca439f0928ec7d47d0604e6edf6",
+      "supplement_failure_family": "other_annotation_failure"
+    },
+    {
+      "does_not_reclassify_old_verdict": true,
+      "frozen_strict_error": "duplicate JSON object key",
+      "ordinary_JSON_error": "JSONDecodeError: Extra data",
+      "ordinary_json_loads_success": false,
+      "pair_index": 5227,
+      "record": {
+        "id": "605bf422e0367dae6495686feae70b4f58a76631a25381d445269661a6bb8f34",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/reviews/2cfcd6336e638f6ff39a743ce3ebdaa2e7252febc4b60672f0a4352930551aa0/A/record/record.json",
+        "sha256": "97932b0442d80366d1c8b8043081968bead0e04f400aa7270651e2dc389bd21c"
+      },
+      "slot_id": "v10gen:2cfcd6336e638f6ff39a743ce3ebdaa2e7252febc4b60672f0a4352930551aa0",
+      "supplement_failure_family": "raw_JSON_parse_failure"
+    }
+  ],
+  "id": "2ef4ccd9f5a2c8af7fd7bf11572605efd8ecf6d095cbe6c8d83c3e7a6d392fab",
+  "interpretation": "Both unchanged reports use the same original side outcomes. Thirteen duplicate-key documents parse under ordinary json.loads but fail the frozen strict duplicate-key rule; the supplement groups them as other annotation failures. Fifteen further duplicate-key documents also have ordinary syntax/extra-data failures. No parser acceptance is a valid-label repair.",
+  "matching_pairs": 5719,
+  "matching_saved_sides": 11438,
+  "old_records_or_labels_modified": false,
+  "original_saved_status_finish_cap_and_usage_all_match": true,
+  "our_frozen_strict_JSON_first_failures": 274,
+  "our_summary_id": "d16e09629af7a5864e72ea270b1b1bf707317b711f1faa96feed5a13e1e6bd71",
+  "schema": "v11_supplemental_audit_reconciliation.v1",
+  "supplement_pairs_sha256": "c2e109f4e16238ccc871c0ca5cbf06a3e915f96dea32afd553b3389144d0e408",
+  "supplement_raw_JSON_parse_failures": 261,
+  "supplement_summary": {
+    "path": "/tmp/v10_review_readonly_audit_20260930_bhrxlws0/summary.json",
+    "sha256": "ca5d1ad6b4b10bd13ced48c83c039a9c9623861d9db20d90c5584600edcf630a"
+  },
+  "supplement_text_sha256": "47fdc4c57ccccb0cfea631375c4568e61066c5e75e4efacbb1ac0c4e3613e4ff"
+}

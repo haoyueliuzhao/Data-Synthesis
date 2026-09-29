@@ -1,0 +1,81 @@
+{
+  "all_original_failures_records_and_budget_holds_preserved": true,
+  "at": "2026-09-29T17:45:18.289470+00:00",
+  "audit_source": {
+    "path": "/home/zhuxinrui/.codex/attachments/a7d27269-7ffe-4b4f-94cf-142eb5bec86d/已粘贴的文本.txt",
+    "sha256": "e387ec1a45df2253eecd4c33c9b39bbf32071ef8007d2fcf564711356f19f686"
+  },
+  "audit_zip_and_companion_markdown_not_attached": true,
+  "baseline_commit": "797b1763e8",
+  "case_rule": "first at most 2 in original registered eligible-slot order per fixed descriptive category",
+  "diagnostic_implementation_origin": "new repository implementation of supplied audit text, not the unavailable ZIP",
+  "diagnostic_workers": 8,
+  "expected_final_review_sides": 11438,
+  "expected_native_correct_packages": 5719,
+  "experiments": [
+    "complete readonly A/B loss decomposition",
+    "conditional mapping-cardinality bound, retaining old null values",
+    "synthetic prospective process/evidence/projection separation controls"
+  ],
+  "final_attempt_selection": "review_seal final records, including registered unique attempt2; no favorable selection",
+  "id": "3fcf794e5832b31e78cb82e2b19f05b97db396cf3ac0e3c7a93a858e51c69886",
+  "implementation_worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v11-review-decoupling-20260930",
+  "input_records": {
+    "audit_hold_01/completion/record.json": {
+      "id": "7bd762b27353855b0419844580d81d1a33838614c5be47f4a8fd73015fc481dc",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/audit_hold_01/completion/record.json",
+      "sha256": "58e6dceb7f811f46707ce52f6ef1bd8d0694b3744db8059382acdedd66c70c38"
+    },
+    "mapping_seal/record.json": {
+      "id": "33a180926c380ab4b1f7d3f789e300cd42b3d6663de301dabc25055ff83b0238",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping_seal/record.json",
+      "sha256": "c782329aebf2a821bb773a3bcdb5227d7845081948eb122eff1bee9f2f61158c"
+    },
+    "material/result/record.json": {
+      "id": "c6b15da768f695096f8f04caeed12f6ceafcd46f47f322a88899b2d3831baa6e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/material/result/record.json",
+      "sha256": "06d6b198bc63412858e49ff5411710de5ca20302926528190177d785e7acba8d"
+    },
+    "material/support/record.json": {
+      "id": "fcfd35b304ad3a6b2413acbe7b1eb4bfbb52f66cc7219a067351392a29b602ce",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/material/support/record.json",
+      "sha256": "7c672deae31010dde8185d1bd3d572566d14f7a9ce4ef67b59281ca7befbbc0c"
+    },
+    "network_retry_01/resolution/record.json": {
+      "id": "43bab9b99ac70065102de27759f70a7866f5401af51419385e714296193a9eba",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/network_retry_01/resolution/record.json",
+      "sha256": "f66bc4ab0c484871000383ce52a6b529215c5457df78b948621e070f864162bc"
+    },
+    "registration/protocol.json": {
+      "id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/registration/protocol.json",
+      "sha256": "9c52ccb1fd5d804ec9de29fcc631c73ff51ec2479dcadcc98f0f102e50783ae5"
+    },
+    "review_registration/record.json": {
+      "id": "02fc99f438fa39984cddee8343dbea42df2ea8d3b40dcae7a816ddab9e605c33",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/review_registration/record.json",
+      "sha256": "1320309df06a365152cf7f420a75f656299d8ad036713ecedacc15ed814f0700"
+    },
+    "review_seal/record.json": {
+      "id": "0bf1566b086edc823e9c67b9e2838bcb1c788f6e47d608363dcf84fed7648844",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/review_seal/record.json",
+      "sha256": "243e6b989ba7cafc8bcff1399bc6c9096ec72b9d590449f2efe3acf67e749f55"
+    }
+  },
+  "no_44_task_remapping": true,
+  "no_API_calls": true,
+  "no_GPU": true,
+  "no_historical_label_changes": true,
+  "no_native_rescoring": true,
+  "no_new8000_generation": true,
+  "no_training": true,
+  "no_wallet_open": true,
+  "original_production_commit": "f9cc6909293b0c5fd117ecb7324f86f009cc3b36",
+  "original_slot_denominator": 8000,
+  "original_task_denominator": 1000,
+  "paid_followup_not_dispatched": true,
+  "prospective_contract_not_production_admission": true,
+  "schema": "v11_offline_review_decoupling_registration.v1",
+  "source_batch_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01",
+  "user_request": "参照审计修订并开展后续实验"
+}

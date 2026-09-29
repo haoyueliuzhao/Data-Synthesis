@@ -1,0 +1,694 @@
+{
+  "API_calls": 0,
+  "artificial_state_splitting": false,
+  "complete_state_package_histogram": {
+    "1": 13,
+    "2": 8,
+    "3": 1
+  },
+  "conditional_D_pi_if_all_missing_mappings_complete": 0,
+  "conditional_D_pi_upper_bound": 0,
+  "conditional_assumptions": [
+    "Keep the same original admitted packages and tasks; no additions or deletions.",
+    "Freeze all already-complete partitions; never split or merge their package membership.",
+    "Only fill missing mappings; every whole original package belongs to one nonempty state.",
+    "The conclusion assumes every missing semantic mapping eventually becomes valid and complete."
+  ],
+  "consequences_if_condition_met": {
+    "centered_state_gradient_zero": true,
+    "distribution_N_zero": true,
+    "normalized_Manual_plus_minus_distribution_unchanged": true,
+    "pi_equals_r_equals_one": true
+  },
+  "denominators": {
+    "admitted_packages": 54,
+    "admitted_tasks": 44,
+    "complete_packages": 32,
+    "complete_tasks": 22,
+    "multiple_package_tasks": 9,
+    "original_slots": 8000,
+    "original_tasks": 1000,
+    "unresolved_packages": 22,
+    "unresolved_tasks": 22
+  },
+  "failed_preconditions": [],
+  "fixed_complete_partition_sha256": "70490c1092ed56b501acdabab87c9eb405fb3faf4fc875f42c279659bc9fdea1",
+  "formula": "D_pi = sum_x (number_of_nonempty_states_x - 1)",
+  "id": "1476cdec12f4726a43e894823776ea7b16c50bdec3cf42a325e7f88b783c607e",
+  "model_or_tokenizer_loads": 0,
+  "original_support_D_pi": null,
+  "original_support_modified": false,
+  "original_support_null_replaced": false,
+  "proof_scope": "cardinality only, not semantic completion or five-arm admission",
+  "schema": "v11_fixed_mapping_structural_bound.v1",
+  "semantic_mapping_performed": false,
+  "source_bindings": [
+    {
+      "bytes": 753,
+      "id": "c6b15da768f695096f8f04caeed12f6ceafcd46f47f322a88899b2d3831baa6e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/material/result/record.json",
+      "sha256": "06d6b198bc63412858e49ff5411710de5ca20302926528190177d785e7acba8d"
+    },
+    {
+      "bytes": 65792,
+      "id": "fcfd35b304ad3a6b2413acbe7b1eb4bfbb52f66cc7219a067351392a29b602ce",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/material/support/record.json",
+      "sha256": "7c672deae31010dde8185d1bd3d572566d14f7a9ce4ef67b59281ca7befbbc0c"
+    },
+    {
+      "bytes": 28121,
+      "id": "33a180926c380ab4b1f7d3f789e300cd42b3d6663de301dabc25055ff83b0238",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping_seal/record.json",
+      "sha256": "c782329aebf2a821bb773a3bcdb5227d7845081948eb122eff1bee9f2f61158c"
+    },
+    {
+      "bytes": 252443,
+      "id": "6a58f7f220d86cb80145b857c0359b425de1d9b6c87de1b420b1436f97dc63be",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/e5bb04b1c4480857a1c143e69f4eeea87e765fa9451ba0719fbd320e853b6f11/record/record.json",
+      "sha256": "8bfb57a712b34b98c2660f957554b58ededb387df541ea88254557cc2c43e758"
+    },
+    {
+      "bytes": 130671,
+      "id": "dfa049c58e3e61527123c7588b30fdf81acac5ab62551e9f4136f93508db1e0a",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/682c388a9f6e3c41919623234ebde9e5eb83f478385cbd1421a05aca78ebda59/record/record.json",
+      "sha256": "8e8aefaf6b5643fcbc6777ea34741c85c85e1dd2fdf54c92b122653806ac14af"
+    },
+    {
+      "bytes": 189239,
+      "id": "9ca5951ee64a6f6ee342d67f8ec89a1bc3d00a5d5de0fdc633038840c963d4a7",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/2d34b5a8022172ece260b73456567dad91b6f782c95163f6015401bbcff2945d/record/record.json",
+      "sha256": "6a0c308a5ffd491ef7102584d257ef24f34798ae2f859e01d3b6baf943ee4d8f"
+    },
+    {
+      "bytes": 497292,
+      "id": "b183be11c88d2712bc0825e7b0294070e62046b3db235581f7c0435b1e5087d6",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/c02cac9aa315ac8877df0f0ccba40d889febbe556eebdecfd67aaf68c3630a8c/record/record.json",
+      "sha256": "55e5a5d3e66269d89cb3fcf4bdadf8805900ece216f9dcaf2b28437cee88b579"
+    },
+    {
+      "bytes": 166647,
+      "id": "07c6464b9973d86083cb54ae9889cd3bbfd313d292291573887a43db857395e1",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/6df68eaebd11df7e03338d3d8961f7f79af1d121a3bc2317b55f05ec640477bb/record/record.json",
+      "sha256": "d9a0ce2a199bb8c8d2cb08686643a11f02e8182e7bddaae1f3727f1478c612fc"
+    },
+    {
+      "bytes": 183095,
+      "id": "8692b2249d7ed93930a22edfcebb889e23070cca686a350575330e9db87db95e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/246a66ad52cad80fe0623ab5c47fe142267921667fbd7fbbe4d281fd927b0c24/record/record.json",
+      "sha256": "9239c3aa951011f51a69d8714661f48013cfbafde7c47d1010b268ca3a674621"
+    },
+    {
+      "bytes": 317326,
+      "id": "c803e18deca284cf0b8c3cee7c69bd3e7f86e82b947d14addeea7417dc44a436",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/a1bccba82469e067fcb1b60e85457d8a8f5a62777fc776eb71066a8bc4808f00/record/record.json",
+      "sha256": "bdfa1a6c1e183532ec0bb4e51ad077aebef798fdc4a151456de1e903ac5919b7"
+    },
+    {
+      "bytes": 179182,
+      "id": "89e53cbc7095c4c6aee05bc9fd17829d4b011b807ba75dd24eaf8e5f86e18bdc",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/df92388f1db230d05c49f12dfef763ff7cf2006f3af6ed590d27c30716a1f9ae/record/record.json",
+      "sha256": "cda809e2de3fdb5666f5c5f9369cc250948e9687f53411be2b55e2b9a86ca1c5"
+    },
+    {
+      "bytes": 212578,
+      "id": "d4218c4af8da003b3e1101f984b53659b566b995d6991a9678a4828c36d26697",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/24a9eaee3041e9199e31a0af6ec18ea417c78406044fea5027e23137623e88e5/record/record.json",
+      "sha256": "336b12f0b014d9a5f6296aeb14063ae06b4847c94fb2ade30493f5b570ead8bf"
+    },
+    {
+      "bytes": 147924,
+      "id": "33c954be1f8654008186aa81b8893a35b0b7f5408c0d699a33ab19d68591b1bf",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/5f31bd7cc194e3660cd6f22bac4fad4a776e2734b35f9522c990c14e991f8799/record/record.json",
+      "sha256": "dbb44b6bc9976f7de6c27f26eb6152a19af95ff9d33f6e7eecd79c470f6adc89"
+    },
+    {
+      "bytes": 314792,
+      "id": "07926f99f55cfe747ceb747c573d9ba2651893390fb6395fabf14059bf73da36",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/38a88ecf8daead2b349027f0df20c37d0ad4cf8f114e48a8fe23803e5e0b17f6/record/record.json",
+      "sha256": "9be658260a788e6cef051ce9fd245801bdb01fb4c4fe283757f13fc2eaa3d0e5"
+    },
+    {
+      "bytes": 462349,
+      "id": "5469a665a4f971bd31d669efc3dc6ecc308f8b6cccc6c8f13bd58f1f041d318e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/fecf86f3d6f6e7e8a981218f96fd034af3735b8cf577d68f439705c599765791/record/record.json",
+      "sha256": "d6957210a6400244892053dfbcc2f633bc417591556cee542fe134d5f1841a01"
+    },
+    {
+      "bytes": 210818,
+      "id": "7633b3dbc9166b6f61c926f39e1757bab3703ae9cd2c64b4df6e80e7666929e7",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/07cd5803685b74f0d8553b956259b6df7786ea6d804c9add454e2e7d6d664125/record/record.json",
+      "sha256": "c4902ae9d50bc8474057d37630e7395862d1eca067c54c5af2ef1796a520467e"
+    },
+    {
+      "bytes": 180139,
+      "id": "d682fcd8e5673e6b7a14b0805c75e54388bbe3540bc045e05410be88f17c7c40",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/0b6b1ba5af705f33fb5e9c19858aaf0f48e7b48d9491f8a39298d19d85c80d25/record/record.json",
+      "sha256": "06282d4c4d38b7c41859da7fdc880e7b3203bce4de5995237711fcba2159ef4e"
+    },
+    {
+      "bytes": 282261,
+      "id": "8f96a925f4b5b7ca01a6e838c52db30cd0933fe7ab519db173da431556e9f7fa",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/2b9b842fb03b11144af23b0c3138342e1e45c1a882714338b7379424a8352e47/record/record.json",
+      "sha256": "bfe91d6439c9dc2096cccd36c81be42d9be2ae1f05f4f65c2b8419a9df2929ff"
+    },
+    {
+      "bytes": 173069,
+      "id": "48b98d5bb0383a360197d62edef67c3140b1172c146c3f98951f024d3a551da8",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/1e9a0b1e5b5c71caf8c6d3674ac2c4f78125c260467921980c5b7a6c87cc3dd0/record/record.json",
+      "sha256": "280b46556f8bff0fe50ff146890f397c8fcd3203aa9a9db6f8a5cf91105b9cd6"
+    },
+    {
+      "bytes": 179602,
+      "id": "ede221fff365bdc8cfa06d74354bb2b6ee5abe8d24f1d998ad343fe20ce50625",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/7a0c84bac126e97e5b063b5f5fd2aad0c3cc05f8a43cfbcfba84ef5449bdaefc/record/record.json",
+      "sha256": "9455e9eef31c0ca5b01c9d50f7618ebd975fddd6a844edd2d42e2425d83f391b"
+    },
+    {
+      "bytes": 349890,
+      "id": "406db5c08d4bd77612660ade4d2979a7d0ecc486a0606a59572fdbc5c0dad537",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/b9b8ad580ae0418cecb1202e036f1fcc52a71dbc29152f7c5678c4d2691bd088/record/record.json",
+      "sha256": "d72fb3feea244bd66da5c51b199b0bdfa4ee4535eae40b62bcd85666f64d75aa"
+    },
+    {
+      "bytes": 206591,
+      "id": "2d676b6be30ac472823c67ab17a089ac20bd21e7a85f28fdaccc601fecb4ab72",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/3676224f2d8a4df75218e7cfb3f573d06e8f788c8b1ca5b00db7510e491e1fca/record/record.json",
+      "sha256": "968828ecdb86b1fd33be21b056dd6e928a267c7486694c80ca4660c4b0580aad"
+    },
+    {
+      "bytes": 154685,
+      "id": "ff77e373b1d85993be717753b7c43fc5ebbe7b82968e1e843b2d7fa6c67b56d5",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/14031bb5b7afa965b281a8d11d606ce59f699a3abfb435316a10ddbb6c1d11b3/record/record.json",
+      "sha256": "6a8325271a2f668ecc572e976321704da4ec3cf798e070a21b96598ad0449ae7"
+    },
+    {
+      "bytes": 172598,
+      "id": "a81d7fc25451b494dd820323d14f1e6af66180046325791ec2a76d8fb8a62d64",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/fff8895245a1107a0b0bb578b9e714f9339163a37c556beb81feeaca268d65fe/record/record.json",
+      "sha256": "6575d610410ac5859384b524bf57e086d5892aea5eaac7ad07fc3a3c7fc1f793"
+    },
+    {
+      "bytes": 139857,
+      "id": "cc5e9509dc79d21500b737b0d6fd57fc5498516a8cf49da02c4963a404684a37",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/6550ae80a6a89458bb81f0fea064dedd388dd3a048451b7d2878c6dc55fd9b57/record/record.json",
+      "sha256": "57c769e83207b49e09549336972af6893af88c3cfc2aeced72a2880d8badd445"
+    },
+    {
+      "bytes": 160638,
+      "id": "12e94b0881d083460c2a1cd3e6e53058c186288f2d356bcd7fcb96f5a384ba13",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/4b7eb55a80bfcbeab6f5e6329f3646fdedfeb4083be54f4b79a481f43ebf7f39/record/record.json",
+      "sha256": "c326f7d6fa5e10ef56f9a8aa0f798b599d41723b48c1a8b095e862593a51d808"
+    },
+    {
+      "bytes": 199303,
+      "id": "cf74efb2414cbcd4468d04728aed385e1ea8175e863770d844eeed5d58e773d6",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/faf04e4c3fe1879f94b61d7d9180857e7d2e5a10aa58a02919c1727d5ce02ea1/record/record.json",
+      "sha256": "0f6ca239f4f9807e215cb8f3563325fd00b0d8f3b1b2e55b02d2706ede59af3d"
+    },
+    {
+      "bytes": 139583,
+      "id": "8c7c85886ab5c99e36ca85c3b0132f488ab05b739c7fb396e00e30d500f23824",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/3a9b95ecb27a30ed1adb48dc93679f30ff7b701a2759a551c00f24da9d37c282/record/record.json",
+      "sha256": "8fb85f6942d903f409faf0892105c72be542c16e8edc839f45260af7e0968dc5"
+    },
+    {
+      "bytes": 326081,
+      "id": "72a54ab0d3559327b19457eb055f71ecfc416e6c232ff99c02379be997d5cfcd",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/48cc3d83b2755ec49e4ee1f73c4c7466f43d01d240dc27569455e7e964542dff/record/record.json",
+      "sha256": "bc9d39870e3592b4bc788f995894dd6f142692f05b799798b5b1f64b1e50ddae"
+    },
+    {
+      "bytes": 200250,
+      "id": "84e9098763a6ff22b94db25dca4e02b2b4fd3eefb7648fb302102754fd4e338e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/7db76d4dcfe4672f61ddc5246645be0a65fc654f714e0bda2f054aef735866eb/record/record.json",
+      "sha256": "2d1b48938cb95581c1471bc869b782346bb20e7479e7155d86cfdc83ac6aac0e"
+    },
+    {
+      "bytes": 198134,
+      "id": "cc7822086da82e30897be7747b426f34345e63fcd641b9195508075a28845b9a",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/98c078b363cda89de71b5b55bf2fdabe44f2a089e8ad32226250c36cf9f6ffa0/record/record.json",
+      "sha256": "e1b15c80fd5439c93a4464dd5463a3b15f688df22832f30dfb8405194220d83a"
+    },
+    {
+      "bytes": 316681,
+      "id": "751e0ea31ebc14d17ff5a730b3bdde8a73c09612986cb2cb8b01cac8c370ccb9",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/024d2ec9864fbe773d9bed66ef9e960e96a8e5744254e79653ccec018d99c8e3/record/record.json",
+      "sha256": "55a396cdf70359de99979f09233211f896008d1d5709fb39c03b5f0f6a61522d"
+    },
+    {
+      "bytes": 183374,
+      "id": "6287d69c49dfaeb6414dc2a83856dfefe1ddcb848ef53857ff253f8ef1eadb82",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/75ee05ebf68d7794120f5621f6e307e9940aa6433ed1475af71a1ec3d3738db7/record/record.json",
+      "sha256": "b9dc8111310347c94e9b60a942fa21fd21ea1fedcc15bdbd4fd73e1dd88bf226"
+    },
+    {
+      "bytes": 178903,
+      "id": "9fb650c1b2030fcf04b2d28dba89b048d4b447b881bb0f6202f44cfba72fa4b5",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/87135f225c942754dad1d99ada86ec3509ab130378dbeca80a432f560dbe99e9/record/record.json",
+      "sha256": "28da04b5ad8e1fc5a6107f7d0eeb199e3e1e0bd0bfa3dd4616abebd9b573b1e0"
+    },
+    {
+      "bytes": 179153,
+      "id": "5f3f34dade087f16052ab51baf454009be3aa6c4ec35e31d20044c9a8ea777dd",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/e96618a68f165e942c345557e3242f36fd5ba5c10dd0c71279c7abcd48baf5a0/record/record.json",
+      "sha256": "f46688720c8758aa150dca3042729c1b22fb00770f6ab792039148f8b7e66a9f"
+    },
+    {
+      "bytes": 181981,
+      "id": "76db62554e7553a800b45e91eed1db1da6567248a370ca5199300efd184f7380",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/9dce0f87c2a70da26bc94542ecfc47fcb00a3fc9a9154a0476d86b7a5f1974ab/record/record.json",
+      "sha256": "8c3e325fa076e56a02775f5168352081a485fa85803f473ecf39b0fa8c01e511"
+    },
+    {
+      "bytes": 213937,
+      "id": "063322bed80db74f5c697574fe0654a3d0efb9693cdcf5e35dc1c32eea88685c",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/01bd05895f49daf6937c72ebb8b64567fc29386b52982e0e559a747c1fbb8825/record/record.json",
+      "sha256": "71e33c1e296551e114b6d5fab6fc78cd2833dd9575a89e7c74b50e860ee77c34"
+    },
+    {
+      "bytes": 168190,
+      "id": "b5c7f189b92e5288cd9cf5f753e7fbd64d2e07e1d2f4e40cf034e8be14f80eb1",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/36594d144d97513292f58bffcab5ca83827cb27084b8a7979efd512acbc8aba6/record/record.json",
+      "sha256": "54de0fe282891ad9e3b825fae01adf2cb65811f8417bb2193c4d8bfd4aa853b1"
+    },
+    {
+      "bytes": 149523,
+      "id": "35c0e35ef15512c59814abb0f635e728d9eb27c987a473c251f5e65d6ea81a71",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/38d68f5c9fff84a85daba2c9b50e56fb1ba5bd26583cc0385315bec628c05782/record/record.json",
+      "sha256": "78ba4f69cfb696f4bbc8fa5d278df1c240469d1b560f29004ca4bab28f5dc725"
+    },
+    {
+      "bytes": 224237,
+      "id": "5c1f08750923072584a783da874586a1817c529ae4eb5cf05417b44046050227",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/2443aac9872084bf1c088920674cf3c48557771e4bb92603e946e8b8c7581bee/record/record.json",
+      "sha256": "4ea344eaf1aa1859d1aa36f04398eda5099a76876a478763751064579a5df3ac"
+    },
+    {
+      "bytes": 176682,
+      "id": "33f437d56e100f95347ba944760596838ed901779d45b1b674e72a8986092b25",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/e8bfe69c13b10d01564602c7213b5f46d0b2a680b1bf3a419e3d6c55b03687ca/record/record.json",
+      "sha256": "70c9826f80a2138c30aa2e955e7c1d93c67f9053c119214f1089bf61b380473b"
+    },
+    {
+      "bytes": 352670,
+      "id": "9047f58a4bcae833f9a817627eb5b2195d7f104bceb913cbc24dd802891e82ec",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/4cc113506688e72eb2366017df5cfe82d7332dde8397f0baa6d3e7484f172442/record/record.json",
+      "sha256": "28c948dd3ee44d2198f4e24acb24d9d71d2a42714aef8a8e9131d0bf323977a4"
+    },
+    {
+      "bytes": 183321,
+      "id": "1459b9e1539ac27da991125f68ca11a3ec90d28d39ae80cab6c9e0abc960e737",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/1215a62596f3dc6bb4b4b6b162a72e043463aff2b4a8640f93b81f3ee13aa507/record/record.json",
+      "sha256": "c63d7d2362380a47f0ffde317a73883683a370c09031318396069602036f532c"
+    },
+    {
+      "bytes": 183694,
+      "id": "cbdfb134b801771cdbbd220ff95e4a7037034f12ee448e7af7b9b6def82f16cc",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/f8f606fe9db4f15552d50680ab2883095c0ed9472613d359c5ad003fd323df3e/record/record.json",
+      "sha256": "abd36e3d70f24d4098ea262eb18d67c5512b17a4531642d06e28b05f408505b2"
+    },
+    {
+      "bytes": 146782,
+      "id": "0417c253f67ba7df77a7724b93d6e055cbd110f50bb5fb48b65386ce2261a969",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/2afeb3266fc45924dddb2c8a643e2d5fe29e2165bd385e95b7a1118051bd4c43/record/record.json",
+      "sha256": "0877e5523f166da0d2587bf24bf06171ba7810d2ea2b5e19f74ce25fd3b6fba9"
+    },
+    {
+      "bytes": 186255,
+      "id": "44864cc2d3d1867f6c062142c1e47c6043d24b3232e807a5249fa071a33b9277",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/a218b6cc3c39f907d78238f9b0532d5ee670f4cd646adc75c8961edac7baebe2/record/record.json",
+      "sha256": "b32198f06815253b226e17b1e105a1557e69504dbc5c3a555881815001970af8"
+    },
+    {
+      "bytes": 153704,
+      "id": "ca4a89735f49b3101218b327842594c5403c56da34cd8d8b1a6abb9619f28367",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/mapping/cba1560094e30ed94f326b9a2ff22ef56cf16524992bf63e1df2fbe9dca459e3/record/record.json",
+      "sha256": "637b597ff6dd5f42fbbd871052356883ef61bafb4cf23ea17d250b1282f15d59"
+    }
+  ],
+  "status": "CONDITIONAL_ZERO_BOUND_PROVED",
+  "support_record_id": "fcfd35b304ad3a6b2413acbe7b1eb4bfbb52f66cc7219a067351392a29b602ce",
+  "task_cardinality_evidence": [
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "6a58f7f220d86cb80145b857c0359b425de1d9b6c87de1b420b1436f97dc63be",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "C/2015/page_73.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "dfa049c58e3e61527123c7588b30fdf81acac5ab62551e9f4136f93508db1e0a",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "DG/2008/page_73.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "9ca5951ee64a6f6ee342d67f8ec89a1bc3d00a5d5de0fdc633038840c963d4a7",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "MSI/2005/page_64.pdf-6"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "b183be11c88d2712bc0825e7b0294070e62046b3db235581f7c0435b1e5087d6",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 3,
+      "task_id": "TSCO/2017/page_28.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "07c6464b9973d86083cb54ae9889cd3bbfd313d292291573887a43db857395e1",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "AMAT/2012/page_37.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "8692b2249d7ed93930a22edfcebb889e23070cca686a350575330e9db87db95e",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "JPM/2017/page_104.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "c803e18deca284cf0b8c3cee7c69bd3e7f86e82b947d14addeea7417dc44a436",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "MRO/2008/page_145.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "89e53cbc7095c4c6aee05bc9fd17829d4b011b807ba75dd24eaf8e5f86e18bdc",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "KMI/2010/page_164.pdf-2"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "d4218c4af8da003b3e1101f984b53659b566b995d6991a9678a4828c36d26697",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "KIM/2006/page_67.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "33c954be1f8654008186aa81b8893a35b0b7f5408c0d699a33ab19d68591b1bf",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "RSG/2013/page_137.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "07926f99f55cfe747ceb747c573d9ba2651893390fb6395fabf14059bf73da36",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "DRE/2016/page_59.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "5469a665a4f971bd31d669efc3dc6ecc308f8b6cccc6c8f13bd58f1f041d318e",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "C/2015/page_73.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "7633b3dbc9166b6f61c926f39e1757bab3703ae9cd2c64b4df6e80e7666929e7",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "BLK/2017/page_35.pdf-2"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "d682fcd8e5673e6b7a14b0805c75e54388bbe3540bc045e05410be88f17c7c40",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "LMT/2014/page_47.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "8f96a925f4b5b7ca01a6e838c52db30cd0933fe7ab519db173da431556e9f7fa",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "HFC/2011/page_92.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "48b98d5bb0383a360197d62edef67c3140b1172c146c3f98951f024d3a551da8",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "STT/2007/page_65.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "ede221fff365bdc8cfa06d74354bb2b6ee5abe8d24f1d998ad343fe20ce50625",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "IP/2013/page_62.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "406db5c08d4bd77612660ade4d2979a7d0ecc486a0606a59572fdbc5c0dad537",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "SNA/2013/page_93.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "2d676b6be30ac472823c67ab17a089ac20bd21e7a85f28fdaccc601fecb4ab72",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "MRO/2008/page_44.pdf-4"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "ff77e373b1d85993be717753b7c43fc5ebbe7b82968e1e843b2d7fa6c67b56d5",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "HFC/2011/page_92.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "a81d7fc25451b494dd820323d14f1e6af66180046325791ec2a76d8fb8a62d64",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "AMT/2004/page_46.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "cc5e9509dc79d21500b737b0d6fd57fc5498516a8cf49da02c4963a404684a37",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "KMI/2010/page_2.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "12e94b0881d083460c2a1cd3e6e53058c186288f2d356bcd7fcb96f5a384ba13",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "AAPL/2013/page_41.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "cf74efb2414cbcd4468d04728aed385e1ea8175e863770d844eeed5d58e773d6",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "AES/2001/page_51.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "8c7c85886ab5c99e36ca85c3b0132f488ab05b739c7fb396e00e30d500f23824",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "JPM/2017/page_69.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "72a54ab0d3559327b19457eb055f71ecfc416e6c232ff99c02379be997d5cfcd",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "GPN/2016/page_84.pdf-4"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "84e9098763a6ff22b94db25dca4e02b2b4fd3eefb7648fb302102754fd4e338e",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "DISCA/2017/page_41.pdf-2"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "cc7822086da82e30897be7747b426f34345e63fcd641b9195508075a28845b9a",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "DISCA/2017/page_41.pdf-3"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "751e0ea31ebc14d17ff5a730b3bdde8a73c09612986cb2cb8b01cac8c370ccb9",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "MRO/2008/page_146.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "6287d69c49dfaeb6414dc2a83856dfefe1ddcb848ef53857ff253f8ef1eadb82",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "PNC/2018/page_45.pdf-5"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "9fb650c1b2030fcf04b2d28dba89b048d4b447b881bb0f6202f44cfba72fa4b5",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "AES/2001/page_45.pdf-2"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "5f3f34dade087f16052ab51baf454009be3aa6c4ec35e31d20044c9a8ea777dd",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "CDW/2015/page_53.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "76db62554e7553a800b45e91eed1db1da6567248a370ca5199300efd184f7380",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "IP/2018/page_50.pdf-1"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "063322bed80db74f5c697574fe0654a3d0efb9693cdcf5e35dc1c32eea88685c",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "MRO/2012/page_18.pdf-2"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "b5c7f189b92e5288cd9cf5f753e7fbd64d2e07e1d2f4e40cf034e8be14f80eb1",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "LMT/2014/page_45.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "35c0e35ef15512c59814abb0f635e728d9eb27c987a473c251f5e65d6ea81a71",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "VTR/2007/page_97.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "5c1f08750923072584a783da874586a1817c529ae4eb5cf05417b44046050227",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "CDW/2015/page_34.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "33f437d56e100f95347ba944760596838ed901779d45b1b674e72a8986092b25",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "IP/2013/page_61.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "9047f58a4bcae833f9a817627eb5b2195d7f104bceb913cbc24dd802891e82ec",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 2,
+      "task_id": "LMT/2013/page_87.pdf-1"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "1459b9e1539ac27da991125f68ca11a3ec90d28d39ae80cab6c9e0abc960e737",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "BLK/2009/page_98.pdf-4"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "cbdfb134b801771cdbbd220ff95e4a7037034f12ee448e7af7b9b6def82f16cc",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "IP/2013/page_64.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "0417c253f67ba7df77a7724b93d6e055cbd110f50bb5fb48b65386ce2261a969",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "TFX/2006/page_50.pdf-2"
+    },
+    {
+      "current_complete_state_count": 1,
+      "mapping_record_id": "44864cc2d3d1867f6c062142c1e47c6043d24b3232e807a5249fa071a33b9277",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "complete",
+      "package_count": 1,
+      "task_id": "IP/2005/page_32.pdf-3"
+    },
+    {
+      "current_complete_state_count": null,
+      "mapping_record_id": "ca4a89735f49b3101218b327842594c5403c56da34cd8d8b1a6abb9619f28367",
+      "maximum_states_under_fixed_partition_and_missing_only_completion": 1,
+      "original_mapping_status": "unknown",
+      "package_count": 1,
+      "task_id": "BDX/2009/page_80.pdf-4"
+    }
+  ],
+  "training_admitted": false,
+  "unresolved_tasks_declared_complete": false,
+  "verified_preconditions": {
+    "all_multiple_package_tasks_already_complete": true,
+    "every_complete_task_has_one_state": true,
+    "every_unresolved_task_has_one_package": true,
+    "original_task_package_and_mapping_identities_join": true
+  },
+  "wallet_opened": false
+}
