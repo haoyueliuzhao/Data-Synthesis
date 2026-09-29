@@ -228,6 +228,7 @@ class LedgerReader:
             "same original wallet configuration required",
         )
         self.run_id = cfg["run_id"]
+        self.config = cfg
         self.acks = {r["invocation_id"]: r for r in _acknowledged_unknowns(self.connection, cfg)}
 
     def row(self, iid):
@@ -241,11 +242,16 @@ class LedgerReader:
         self.connection.close()
 
 
-def _network_terminal(record, request, ledger):
+def _network_terminal(record, request, ledger, *, attempt_index=1):
     iid = record["invocation_id"]
     row, ack = ledger.row(iid), ledger.acks.get(iid)
     coords = invocation_identity(
-        dict(run_id=ledger.run_id, episode_id=request["episode_id"], attempt_index=1), turn_index=0
+        dict(
+            run_id=ledger.run_id,
+            episode_id=request["episode_id"],
+            attempt_index=attempt_index,
+        ),
+        turn_index=0,
     )
     require(
         record["protocol_id"] == request["protocol_id"]
@@ -270,6 +276,152 @@ def _network_terminal(record, request, ledger):
         and record["actual_model_call_receipt_verified"] is False,
         "network terminal must retain exact acknowledged original UNKNOWN, not invented return",
     )
+
+
+def _final_retry_binding(output, plan, reviews, reader, ledger):
+    """Audit the sole authorized side substitution without relabeling the first UNKNOWN."""
+    from .v10_final_retry import (
+        EPISODE_ID,
+        ORIGIN_INVOCATION_ID,
+        ROLE,
+        SLOT_ID,
+        TASK_ID,
+        read_final_retry_activation_from_connection,
+        read_final_retry_permit_from_connection,
+        retry_coordinates,
+        supplement_directory,
+    )
+
+    permit = read_final_retry_permit_from_connection(ledger.connection, ledger.config)
+    if permit is None:
+        require(
+            reviews.get("final_retry_resolution") is None
+            and all(t.get("physical_attempt_index", 1) == 1 for t in reviews["terminals"]),
+            "supplementary attempt is absent from the registered original wallet",
+        )
+        return None
+    directory = supplement_directory(output)
+    require(reviews.get("final_retry_resolution"), "authorized final result cannot be skipped")
+    resolution = checked(
+        reader.read(reviews["final_retry_resolution"], directory / "resolution/record.json"),
+        "v10_final_retry_resolution.v1",
+    )
+    require(
+        reader.read(resolution["authorization"], directory / "authorization/record.json") == permit,
+        "supplementary authorization must match the immutable wallet permit",
+    )
+    activation = read_final_retry_activation_from_connection(ledger.connection, ledger.config)
+    require(
+        activation is not None
+        and reader.read(resolution["activation"], directory / "activation/record.json")
+        == activation
+        and activation["permit_id"] == permit["id"]
+        and activation["primary_completion"] == resolution["primary_matrix"],
+        "attempt2 requires the original complete-matrix financial activation",
+    )
+    barrier = checked(
+        reader.read(
+            resolution["primary_matrix"], directory / "complete_primary_matrix/record.json"
+        ),
+        "v10_primary_review_matrix_complete_before_final_retry.v1",
+    )
+    phase = checked(reader.read(entry(Path(output) / "review_registration/record.json")))
+    require(
+        barrier["protocol_id"] == resolution["protocol_id"] == plan["id"]
+        and barrier["phase_id"] == phase["id"]
+        and resolution["batch_id"] == plan["batch_id"]
+        and barrier["authorization"] == resolution["authorization"]
+        and barrier["original_terminal"] == resolution["original_terminal"]
+        and barrier["all_registered_jobs_terminal"] is True
+        and barrier["expected_reviews"]
+        == activation["expected_reviews"]
+        == resolution["fixed_logical_review_denominator"]
+        == reviews["expected_reviews"]
+        == len(phase["jobs"])
+        and [t["episode_id"] for t in barrier["terminals"]]
+        == [j["episode_id"] for j in phase["jobs"]]
+        == [t["episode_id"] for t in reviews["terminals"]],
+        "only the full original fixed matrix may precede the authorized final attempt",
+    )
+    target = [t for t in reviews["terminals"] if t["episode_id"] == EPISODE_ID]
+    require(
+        len(target) == 1
+        and target[0]["slot_id"] == resolution["slot_id"] == SLOT_ID
+        and target[0]["role"] == resolution["role"] == ROLE
+        and resolution["episode_id"] == EPISODE_ID
+        and resolution["original_invocation_id"] == ORIGIN_INVOCATION_ID
+        and resolution["supplementary_attempt_index"] == target[0]["physical_attempt_index"] == 2
+        and target[0]["authorization"] == resolution["authorization"]
+        and target[0]["original_terminal"] == resolution["original_terminal"]
+        and target[0]["final_retry_resolution"] == reviews["final_retry_resolution"]
+        and target[0]["record"] == resolution["final_terminal"]
+        and resolution["only_supplementary_result_decides_final_side"] is True
+        and resolution["favorable_result_selection"] is False
+        and resolution["original_unknown_overwritten"] is False
+        and resolution["further_retry_authorized"] is False,
+        "one fixed supplementary side, not favorable selection or wider retry scope",
+    )
+    for old, final in zip(barrier["terminals"], reviews["terminals"], strict=True):
+        old_directory = Path(output) / "reviews" / final["slot_id"].split(":", 1)[1] / final["role"]
+        checked(reader.read(old["record"], old_directory / "record/record.json"))
+        if old["episode_id"] == EPISODE_ID:
+            require(
+                old["record"] == resolution["original_terminal"]
+                and old["terminal_kind"] == "acknowledged_connection_unknown",
+                "original physical UNKNOWN must remain in the full-matrix barrier",
+            )
+        else:
+            require(
+                old["record"] == final["record"]
+                and old["terminal_kind"] == final["terminal_kind"]
+                and final.get("physical_attempt_index", 1) == 1,
+                "no other original outcome may be replaced by the single final retry",
+            )
+    primary_directory = Path(output) / "reviews" / SLOT_ID.split(":", 1)[1] / ROLE
+    original = checked(reader.read(resolution["original_terminal"]))
+    request = checked(reader.read(entry(primary_directory / "request/record.json")))
+    require(
+        original["schema"] == "v10_network_unknown_review.v1"
+        and original["invocation_id"] == ORIGIN_INVOCATION_ID
+        and original["task_id"] == request["task_id"] == TASK_ID,
+        "supplementary original is not the authorized retained UNKNOWN",
+    )
+    _network_terminal(original, request, ledger)
+    require(
+        reader.read(entry(directory / "request/record.json")) == request,
+        "final attempt must preserve the original request object and HTTP message spelling",
+    )
+    coordinates = retry_coordinates(ledger.run_id)
+    row = ledger.row(resolution["supplementary_invocation_id"])
+    original_row = ledger.row(ORIGIN_INVOCATION_ID)
+    evidence = json.loads(row["evidence_json"] or "{}")
+    final_record = checked(
+        reader.read(resolution["final_terminal"], directory / "record/record.json")
+    )
+    final_iid = (
+        final_record["artifact"]["budget_invocation_id"]
+        if final_record.get("actual_model_call_receipt_verified") is True
+        else final_record["invocation_id"]
+    )
+    require(
+        coordinates["invocation_id"] == resolution["supplementary_invocation_id"] == final_iid
+        and json.loads(row["coordinates_json"]) == coordinates
+        and row["request_body"] == original_row["request_body"]
+        and row["request_sha256"] == original_row["request_sha256"]
+        and row["state"] in {"SETTLED", "UNKNOWN"}
+        and evidence.get("final_retry_permit") == permit
+        and evidence.get("final_retry_activation") == activation
+        and resolution["original_unknown_permanent_reserved_microcny"]
+        == reviews["retained_original_unknown_reserved_microcny"]
+        == original["permanent_reserved_microcny"]
+        == original_row["reserved_microcny"]
+        and reviews["physical_attempts"]
+        == resolution["physical_attempts"]
+        == reviews["expected_reviews"] + 1
+        and reviews["supplementary_attempts"] == reviews["retained_original_unknown_attempts"] == 1,
+        "logical denominator, real attempt2 and the original permanent hold must stay distinct",
+    )
+    return resolution
 
 
 def _episode(outcome, plan, reader):
@@ -474,6 +626,7 @@ def _collect(output, plan, reader, *, produce_encodings):
     originals, integrity, sides = {}, {}, {}
     ledger = LedgerReader(plan)
     try:
+        final_retry = _final_retry_binding(output, plan, reviews, reader, ledger)
         for outcome in generation["slots"]:
             if outcome["status"] != "NETWORK_UNKNOWN_TERMINAL":
                 continue
@@ -522,7 +675,15 @@ def _collect(output, plan, reader, *, produce_encodings):
             directory = output / "reviews" / sid.split(":", 1)[1] / role
             saved_request = checked(reader.read(entry(directory / "request/record.json")))
             request = _same_request_contract(saved_request, request)
-            record = checked(reader.read(terminal["record"], directory / "record/record.json"))
+            retried = (
+                final_retry is not None and terminal["episode_id"] == final_retry["episode_id"]
+            )
+            record_path = (
+                output / "final_retry_01/record/record.json"
+                if retried
+                else directory / "record/record.json"
+            )
+            record = checked(reader.read(terminal["record"], record_path))
             if terminal["terminal_kind"] == "paid_model_return":
                 require(record["request"] == request, "paid record request changed")
                 validate_review_record(
@@ -535,7 +696,7 @@ def _collect(output, plan, reader, *, produce_encodings):
                     and record["process_validity"] == "unknown",
                     "unknown connection is not a process verdict",
                 )
-                _network_terminal(record, request, ledger)
+                _network_terminal(record, request, ledger, attempt_index=2 if retried else 1)
             sides[sid, role] = record
         joints, joint_by_task = {}, {}
         for sid in eligible:

@@ -222,7 +222,14 @@ def checked_plan(output=OUTPUT):
     plan = checked(Path(output) / "registration/protocol.json")
     current_sources = source_binding()
     if plan["protected_generation_sources"] != current_sources:
-        from .v10_execution_revision import validate_source_transition
+        from .v10_retry_execution import REVISION_PATH as RETRY_REVISION_PATH
+
+        if (Path(output) / RETRY_REVISION_PATH).exists():
+            from .v10_retry_execution import (
+                validate_retry_source_transition as validate_source_transition,
+            )
+        else:
+            from .v10_execution_revision import validate_source_transition
 
         validate_source_transition(
             output,

@@ -139,8 +139,15 @@ def restore_artifact(ledger_row, request):
         "only an actual settled model response can be restored",
     )
     coords = json.loads(row["coordinates_json"])
+    attempt_index = coords.get("attempt_index")
+    if attempt_index != 1:
+        from .v10_final_retry import validate_retry_row_evidence
+
+        validate_retry_row_evidence(row, _json(body).encode())
     expected = invocation_identity(
-        dict(run_id=coords["run_id"], episode_id=request["episode_id"], attempt_index=1),
+        dict(
+            run_id=coords["run_id"], episode_id=request["episode_id"], attempt_index=attempt_index
+        ),
         turn_index=0,
     )
     require(
@@ -216,7 +223,7 @@ def validate_paid_artifact(request, artifact, ledger_record):
 
 
 async def request_review(
-    *, ledger, api_key, request, client=None, timeout=120.0, resume_reserved=False
+    *, ledger, api_key, request, client=None, timeout=120.0, resume_reserved=False, attempt_index=1
 ):
     require(
         isinstance(ledger, ProbeBudget)
@@ -238,11 +245,21 @@ async def request_review(
     body = request_body(request)
     wire = _json(body).encode()
     require(api_key.encode() not in wire, "credential cannot enter retained model input")
+    require(
+        type(attempt_index) is int and attempt_index in (1, 2),
+        "only original or expressly permitted second attempt",
+    )
     coords = invocation_identity(
-        dict(run_id=ledger.run_id, episode_id=request["episode_id"], attempt_index=1), turn_index=0
+        dict(run_id=ledger.run_id, episode_id=request["episode_id"], attempt_index=attempt_index),
+        turn_index=0,
     )
     iid = coords["invocation_id"]
     local = {**_binding(request), "price_sheet_id": ledger.price_sheet.id}
+    if attempt_index != 1:
+        require(type(attempt_index) is int and attempt_index == 2, "no automatic or third attempt")
+        from .v10_final_retry import provider_retry_binding
+
+        local.update(provider_retry_binding(ledger, request, wire))
     if resume_reserved:
         from .v10_budget import continue_reserved
 

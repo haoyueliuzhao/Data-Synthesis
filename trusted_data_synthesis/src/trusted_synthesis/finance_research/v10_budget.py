@@ -219,19 +219,27 @@ def _eligible(connection, config, coordinates, output_limit):
     ).fetchone()
     if row is None:
         raise BudgetUnavailable("old/unallocated namespace or episode has no V10 capacity")
-    if coordinates["attempt_index"] != 1 or (
-        row["kind"] != "generation" and coordinates["turn_index"] != 0
-    ):
+    if coordinates["attempt_index"] != 1:
+        from .v10_final_retry import check_retry_admission
+
+        check_retry_admission(connection, config, coordinates)
+    if row["kind"] != "generation" and coordinates["turn_index"] != 0:
         raise BudgetUnavailable("V10 forbids retries and multiple review/mapping turns")
     if output_limit not in OUTPUT_LIMITS[row["kind"]]:
         raise ValueError("output cap outside this exact V10 purpose")
     return "generation" if row["kind"] == "generation" else "review_mapping"
 
 
-def admit(connection, config, coordinates, output_limit, reservation):
+def admit(connection, config, coordinates, output_limit, reservation, *, request_body=None):
     category = _eligible(connection, config, coordinates, output_limit)
     if category is None:
         return None
+    if coordinates["attempt_index"] != 1:
+        from .v10_final_retry import check_retry_admission
+
+        if request_body is None:
+            raise BudgetUnavailable("one-off attempt2 requires exact original HTTP bytes")
+        check_retry_admission(connection, config, coordinates, request_body=request_body)
     from .v10_funding import read_overlay
 
     funding = read_overlay(connection, config)

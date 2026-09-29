@@ -1256,7 +1256,12 @@ class ProbeBudget:
             from .v10_budget import admit as v10_admit
 
             v10_category = v10_admit(
-                connection, self.config, coordinates, request["max_tokens"], reservation
+                connection,
+                self.config,
+                coordinates,
+                request["max_tokens"],
+                reservation,
+                request_body=request_body,
             )
             if v10_category is None and request["max_tokens"] not in self.allowed_output_limits:
                 raise ValueError("request differs from the frozen Probe output contract")
