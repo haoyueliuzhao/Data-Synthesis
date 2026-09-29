@@ -1,0 +1,22 @@
+{
+  "at": "2026-09-29T06:21:11.925774+00:00",
+  "automatic_training": false,
+  "cap_microcny": 1200000000,
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-m",
+    "trusted_synthesis.finance_research.v9_production_review",
+    "resume"
+  ],
+  "concurrency": 32,
+  "execution_revision_id": "2b61523a8a51b5cff00df781cb7d9ba341ed0ee36c2d0ed0276a5c9ea8699f50",
+  "failed_original_not_resent": true,
+  "frozen_worktree": "/tmp/data-synthesis-finqa-v9-terminal-frozen-20260929",
+  "id": "bb1cb753a9ffda360324eeb18a09ba1be83422d7f68d15f9049b2bf48afbf335",
+  "maximum_jobs": 13022,
+  "pid": 1905550,
+  "process_start_time_ticks": "308726710",
+  "protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "same_matrix": true,
+  "source_commit": "e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6"
+}

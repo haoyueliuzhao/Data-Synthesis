@@ -74,3 +74,27 @@ Static/Full完整test1147、Exp5和其他消融保持后续独立批，不自动
 并行交付的[终点评价链](finqa_v9_final_evaluation_20260929.md)与
 [材料暴露和C/N机制链](finqa_v9_material_mechanisms_20260929.md)已做所述CPU/mock控制和必要实接口核对。
 正式材料N、模型/CUDA、700反馈、训练和效果结果仍未产生，后续顺序仍为全量生产→材料冻结→真实五臂及评价。
+
+## 7. 已真实确认未知并恢复同一矩阵
+
+网络终态执行修订ID `2b61523a8a51b5cff00df781cb7d9ba341ed0ee36c2d0ed0276a5c9ea8699f50`，
+冻结源码`e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6`，仍绑定原生产protocol与全部原job身份。
+第一次真实确认收据ID `76f80a9682a79cec454ff9567d9c940cc1b0fade80b6b899bce934cf82ebc2df`。
+操作前后requests仍35429、已结算与held均完全相同，只追加保守确认及明确无模型响应的终态工件；
+未处置unknown从1变0，旧历史unknown与本次unknown都未删除或释放。
+
+北京时间14:21:11从独立冻结目录`/tmp/data-synthesis-finqa-v9-terminal-frozen-20260929`显式恢复，
+进程1905550。原92个返回只复用；原断连没有再次请求。
+
+截至14:23:10的运行状态：435/13022个job已有终态，其中实际返回433、连接unknown终态2，
+当前仍在逐槽审阅阶段，32并发，最新恢复段无控制器errors。在此期间新增的同类连接中断已按明确授权
+完成在途收口、永久全额预留和同矩阵继续；不是对原失败请求重试。
+
+紧邻该状态的账本读取为累计已结算峰值费率上界174.591680元，held75.759616元，剩余949.648704元，
+pending31；unknown共3条（含旧历史1条），均已保守确认，未处置unknown=0、halt=None。
+这里held含当前在途与永久unknown预留，不等于费用已经支付；状态文件与随后账本读取是两个邻近快照，
+不把微小时差当成计数不守恒。本批尚未完成，不预填N、profile或训练成绩。
+
+后续读`conditional_five_arm_v9_01/status.json`及其`current_result_path`。
+首次停止结果仍留在`result/record.json`；每个恢复段结果追加在`resume_attempts/`，网络确认收据在
+`network_terminal_acknowledgements/`，实际模型返回与显式网络unknown工件分别保留其类型。

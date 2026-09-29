@@ -79,3 +79,11 @@ CancelledError、PoolTimeout、服务HTTP失败、模型不符、usage异常、�
 并保留旧v1及条件loader回归。它们不构成真实审阅或材料产率结果。
 
 真正生效的执行修订、实际账本确认和继续运行时间将在工件及主报告中追加，不能由这些CPU控制预填。
+
+## 7. 实际生效记录
+
+执行修订`2b61523a8a51b5cff00df781cb7d9ba341ed0ee36c2d0ed0276a5c9ea8699f50`已按冻结源码
+`e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6`登记。第一次真实ack只把当前1条连接unknown保守确认，
+请求数、settled、held、unknown总数均未变；held仍4.456448元，未处置unknown变0、halt清为None。
+14:21:11已恢复原矩阵；14:23:10实际433返回＋2个网络unknown终态＝435 processed，继续运行。
+主报告保留具体快照、费用含义及原始工件路径；不把435 processed称为435模型返回。
