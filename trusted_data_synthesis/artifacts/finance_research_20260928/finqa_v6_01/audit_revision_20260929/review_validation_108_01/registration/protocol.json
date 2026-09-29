@@ -1,0 +1,2114 @@
+{
+  "GPU_reservation": false,
+  "alignment_denominator": 12,
+  "at": "2026-09-29T04:09:54.114978+00:00",
+  "automatic_next_technical_trial": false,
+  "automatic_production_review": false,
+  "automatic_training": false,
+  "budget_config": {
+    "allowed_output_limits": [
+      2048,
+      16384,
+      32768,
+      65536,
+      131072
+    ],
+    "amendment_id": "9c44809540e6d559c651e5322a0ac4c30d3c048b50a98c291d1c5b5348a1d2b5",
+    "currency_scale": "1 CNY = 1000000 micro-CNY",
+    "hard_cap_microcny": 800000000,
+    "joint_generation_and_review_cap": true,
+    "max_output_tokens": 131072,
+    "price_sheet": {
+      "checked_at_utc": "2026-09-28T12:44:39.955212+00:00",
+      "context_input_token_ceiling": 1048576,
+      "currency": "CNY",
+      "input_hit_cny_per_million": "0.04",
+      "input_miss_cny_per_million": "2",
+      "model": "deepseek-flash",
+      "official_max_output_tokens": 393216,
+      "output_cny_per_million": "8",
+      "pricing_policy": "conservative_peak_upper_bound_all_hours",
+      "source_sha256": "7ecbec2f65374cd27cf4f96fb6f9e9e683f0b94e13f62cf249afe12d4eea5fbe",
+      "source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "request_cap": 258000,
+    "reservation_input_policy": "official_entire_context_at_cache_miss_price",
+    "reservation_microcny_per_request": 3145728,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "schema": "probe_budget.v2",
+    "variable_reservation_bound_to_each_actual_request": true,
+    "warning_microcny": 700000000
+  },
+  "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "budget_database": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/experiment0_01/budget.sqlite3",
+  "generation_launch_id": "0f8f261f7ac792d77c67abb58ae8e97125dc91c0e3368b7a49f364178541ae1a",
+  "id": "a61f969b1ff1ba28193ae6359e9bc491c46efa5c36988b29dd893f6b766f8f4b",
+  "jobs": [
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8115,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 182,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5410.0
+      },
+      "key": "slot:af5c1580df3f52b17644d2620b5d075242037a10f4cd2dc7faa1db51443a05eb",
+      "request_sha256": "6d9e3a76cf8f4c6a593de742e38400a0dd916a0710ffe2f012db988a64fd14ef",
+      "reviewer": 0,
+      "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8115,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 182,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5410.0
+      },
+      "key": "slot:d9acbe0f18c6f421f91ba29455e5b619e705b5a1e89478d88d55dabd4f3d7715",
+      "request_sha256": "e9dd5dae3ca004f5d685e5f129e708b0c1edfc7a73f78062123956784455449f",
+      "reviewer": 1,
+      "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8409,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 226,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5606.0
+      },
+      "key": "slot:b6300b2f030890660e8cd0e21af5e69127570205e16d2a1ee1c090a06c63a4cb",
+      "request_sha256": "11a41786bc8ba69db1457718e7ce4d2df77a8dd2dc0d0a00f2cc1b3db86a36bc",
+      "reviewer": 0,
+      "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8409,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 226,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5606.0
+      },
+      "key": "slot:f647571fa96a1137834313f07964df8ba14c8c8bf3267dc8b598867e06b70dfc",
+      "request_sha256": "5385b141cf5dad025f8497537a0918492ca3fc2c48c2192cf9c129d3d4d339c3",
+      "reviewer": 1,
+      "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8535,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 254,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5690.0
+      },
+      "key": "slot:1b45801221935de7c01d0dbf62f2312b90cc684ad84db2df2f8b9281aaf95fe3",
+      "request_sha256": "13bcdd13a0b3637ce80e0ab973db9ee123db9aae304d81cc57752bd751647124",
+      "reviewer": 0,
+      "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8535,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 254,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5690.0
+      },
+      "key": "slot:1289c1c2702bd7c70b89527df932174a8682ba487e0dfa664db69ec808f7bc15",
+      "request_sha256": "91b47de0569fdbae1db881f08edcd6d884bc2c0b230a77246a012c4c8120d42d",
+      "reviewer": 1,
+      "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8718,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 252,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5812.0
+      },
+      "key": "slot:e1917f797e95aba06f09eff4f66035f9d40fbbb2646082c85cc2f7d40e25a5e8",
+      "request_sha256": "5dd3a41e3c8ecc869852956f261474f0c3275bab0192b397a866023080787c39",
+      "reviewer": 0,
+      "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8718,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 252,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5812.0
+      },
+      "key": "slot:6996ba7005ee750f2edb9104be258b4a627d165f14c6c53eb0892ef7245eb721",
+      "request_sha256": "1e5950195248f48739a0879343d3558c62807c4ccde23d24ed1410791fb776a3",
+      "reviewer": 1,
+      "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 11384,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 503,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 7589.333333333333
+      },
+      "key": "slot:4a846b5e4bbf457f35bc59a45f734011263ed99f0b6c23a0fcb584bbf5589265",
+      "request_sha256": "a403cb5cb11b85c94f6041c255e204dad52ee3a60e663d1169601f45fea810c9",
+      "reviewer": 0,
+      "slot_id": "v6-slot:e0ccf0d11ccabd4524c27cc96f4f1d1ad31b5b35ba377af29244c47c3580983e",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 11384,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 503,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 7589.333333333333
+      },
+      "key": "slot:6f105dbe6c91ff25b3033a9cc10bea38c77ad4b29705227256a46f57fec174dc",
+      "request_sha256": "b0f3161f25c1a6db81fc256c5d58fc2110ae41ad84d40b6d1b89a4b62156a139",
+      "reviewer": 1,
+      "slot_id": "v6-slot:e0ccf0d11ccabd4524c27cc96f4f1d1ad31b5b35ba377af29244c47c3580983e",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 4,
+        "estimated_requirement": 12440,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 695,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 8293.333333333334
+      },
+      "key": "slot:1ae410dfb4c4eb8b652d1d1f5690e66286eefb5cbb72c8f2a63ade803b2c8b97",
+      "request_sha256": "ac305ae3801f72746c0fe7648b3d1858a8589db09fd7f0af99290fc39c118cc2",
+      "reviewer": 0,
+      "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 4,
+        "estimated_requirement": 12440,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 695,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 8293.333333333334
+      },
+      "key": "slot:e3478d8a201ac0f2ca1e298674a534988eb8d74e0117d32d0ae9ba1d043788ce",
+      "request_sha256": "7651237a9a5d5679498fda0374f37e0c0a35e50e13ebbe63a3e22e9ecf72bfc4",
+      "reviewer": 1,
+      "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+      "slot_index": 0,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8043,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 166,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5362.0
+      },
+      "key": "slot:cb2178f59227ab48ebba38c08a809589c386d583ad2296459e7e91ffb3a86d28",
+      "request_sha256": "a3835823d523ea341d88b96c4339d10018e2761d5e14564f19c1ae0c50024fb8",
+      "reviewer": 0,
+      "slot_id": "v6-slot:d3ae8ddd7e323ee26e7c31da25cefd150dde824f6ef4e4c7fe24ce9b3ead2af4",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8043,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 166,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5362.0
+      },
+      "key": "slot:f9d2dd6663c7a554021fda669f1ede59d8e163237826e966985a0db5c962a3a4",
+      "request_sha256": "e5cbed479a67acebae05df34fcd523de4214505a4dc5defcc95d050ff7964a07",
+      "reviewer": 1,
+      "slot_id": "v6-slot:d3ae8ddd7e323ee26e7c31da25cefd150dde824f6ef4e4c7fe24ce9b3ead2af4",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7728,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 160,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 5152.0
+      },
+      "key": "slot:546b2f291fa803b2bfb76c7bdd121ac567ab26bcd291b0d6c667e43e7e16b5c6",
+      "request_sha256": "39880b3f36c73fb8b239816c130830a5fd08d2fb190a326a2a234317d8413195",
+      "reviewer": 0,
+      "slot_id": "v6-slot:9d82cee129915de2e426365096ca980f809a92b6de28411e1f64ea89b2628cfe",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7728,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 160,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 5152.0
+      },
+      "key": "slot:fc5c0e9c9432ba3102ce07337de5b61868ea16b5138908813b1d99a663a2a5b9",
+      "request_sha256": "bc36d1c08ba9e08b2ee36b92c4e0769f288072591d83b90345c1310e735978b5",
+      "reviewer": 1,
+      "slot_id": "v6-slot:9d82cee129915de2e426365096ca980f809a92b6de28411e1f64ea89b2628cfe",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8559,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 238,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5706.0
+      },
+      "key": "slot:f72e6b8d71c7ed7994d60fe6d9d11f51dbb3e470bedc84fcf2963367739ef33a",
+      "request_sha256": "f8f40a9ebd9232d4e1afcbe8620d8d6dd51297a19165bae941d491839f96fb5a",
+      "reviewer": 0,
+      "slot_id": "v6-slot:8390c858f681ff54ac47e12fd392db7a5c3f718d05ba0793490aa20035ff8a0d",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8559,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 238,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5706.0
+      },
+      "key": "slot:8d3d926b34ef38358eeeaf36072de178ffe2e156858ccfbcf4839eed8a0408c5",
+      "request_sha256": "8d7b41ae456af1ef232a8e4204ba5a4feea4e57257b9def603b46fb79a249085",
+      "reviewer": 1,
+      "slot_id": "v6-slot:8390c858f681ff54ac47e12fd392db7a5c3f718d05ba0793490aa20035ff8a0d",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8660,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 239,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5773.333333333333
+      },
+      "key": "slot:9d4d70c3d83bc72fed7a89bdc4b743e57a058a1bbd91111880240616082d84c6",
+      "request_sha256": "8d92bd680cb8219ed37fb3e3b9c36c32b96a35e233b51c876f61f34dceaa682b",
+      "reviewer": 0,
+      "slot_id": "v6-slot:3361f3f87a01e52d02aa19a3dfb5132ba276b2fe716ca174caa6398b828590b9",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8660,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 239,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5773.333333333333
+      },
+      "key": "slot:25e3ea1f53b0500c12d2a920098494c5be75728388a00307f6fe2464431e76f2",
+      "request_sha256": "0e8b8cdc06a69b23fa21c760fabec05b4e97fc2d92da095de568c7b5eec2553e",
+      "reviewer": 1,
+      "slot_id": "v6-slot:3361f3f87a01e52d02aa19a3dfb5132ba276b2fe716ca174caa6398b828590b9",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7449,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 98,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4966.0
+      },
+      "key": "slot:a1c1c54837ad0d07a385f97316125497666ae59ff2a55e41c655349b8bb09295",
+      "request_sha256": "c3d91ee82fb2899e50fd8ed574aa05981735c39858c5c4afce91c288af51d0b8",
+      "reviewer": 0,
+      "slot_id": "v6-slot:7dee5d8808b062ba28e56fdf05ef35140d1b42309547464e8d4f98380182e92e",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7449,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 98,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4966.0
+      },
+      "key": "slot:4608ad2c98b08a089a3b83c67b99b9ea91de74108d056b9ca2c7636e62443fca",
+      "request_sha256": "91f0e2abee4b38e9e9e0f68c171cfed04b1f2963335122a4989f7a9669f7e222",
+      "reviewer": 1,
+      "slot_id": "v6-slot:7dee5d8808b062ba28e56fdf05ef35140d1b42309547464e8d4f98380182e92e",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 5,
+        "estimated_requirement": 12059,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 589,
+        "max_output_tokens": 16384,
+        "target_fragments": 24,
+        "workload": 8039.333333333333
+      },
+      "key": "slot:31200606b035f646128cb6907c3db3e5feb8c88b7ca725ce9f566bb8222a8f40",
+      "request_sha256": "cc6dacf9ad9ec5e727b6eac005de19b7e05d17b3396be8c33d0fde9837249eb4",
+      "reviewer": 0,
+      "slot_id": "v6-slot:4af5536c0d178d6def23a250ff083a531db280dd41523ea717211846af3eb885",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 5,
+        "estimated_requirement": 12059,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 589,
+        "max_output_tokens": 16384,
+        "target_fragments": 24,
+        "workload": 8039.333333333333
+      },
+      "key": "slot:95c4c6f38b2d60801e49772ae9fb090eac9fa970770744b5f3dc15d8e53b415e",
+      "request_sha256": "3b8fa15f4e1c7d47afb91931af2f1ed6c5ce597a0057e75c5201685e563aa264",
+      "reviewer": 1,
+      "slot_id": "v6-slot:4af5536c0d178d6def23a250ff083a531db280dd41523ea717211846af3eb885",
+      "slot_index": 1,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7190,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 83,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4793.333333333333
+      },
+      "key": "slot:dcf0660bf287db9eb75ce3405e1b33193380a98804a755a83c2590f20edec19c",
+      "request_sha256": "9d207efbbdff91b1c0ae2ec9cc2295b4b510e6ac08c2767c5d358907cfbf7681",
+      "reviewer": 0,
+      "slot_id": "v6-slot:dbd6ac26ec8be8d9ac75cc89266f1e82587e9b43913a66de4cb25bbb3d0d954c",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7190,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 83,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4793.333333333333
+      },
+      "key": "slot:000338561081c17ace93e6e5746425d56a7a123f884bd055fd5d678c990c695a",
+      "request_sha256": "3d9a3ee3b78cec6e4789429568f2fe6aa4211ebd8bc847a6b69c22abc9ec6ec3",
+      "reviewer": 1,
+      "slot_id": "v6-slot:dbd6ac26ec8be8d9ac75cc89266f1e82587e9b43913a66de4cb25bbb3d0d954c",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7904,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 199,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 5269.333333333333
+      },
+      "key": "slot:f8e986eea30e4d02a7b523575f94884de89c4e77b609d0aab9e3d40a6c72e474",
+      "request_sha256": "ca0d4eea835e1f78c39b1e2001c3f2c89da463b446c96647ebbbc25ada85bb1a",
+      "reviewer": 0,
+      "slot_id": "v6-slot:2473546913f859b54b135c6a9bf2ecd406cdd68563444857c2b860a11a886164",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7904,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 199,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 5269.333333333333
+      },
+      "key": "slot:c1be771306d2f1b727654f8af39ccc637779d4cb7bc3190cf77e33c188fe3b96",
+      "request_sha256": "c3ce035ca724c094a831f9072526175fa944923a711d16cce8814ae79a918a84",
+      "reviewer": 1,
+      "slot_id": "v6-slot:2473546913f859b54b135c6a9bf2ecd406cdd68563444857c2b860a11a886164",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8717,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 273,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5811.333333333333
+      },
+      "key": "slot:4286f0d3f5ea9aefc6a944bb055f555e2212755ff783457da6e530516711ae04",
+      "request_sha256": "5c7f35a9941f68e639ba07b6bef9323b6ba3cd5ece4c04cf787ffc0762cffc40",
+      "reviewer": 0,
+      "slot_id": "v6-slot:96eaa739f3d071762787bbbd6d7f07eb846e77fb3e7785367e46473806d2ba68",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8717,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 273,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5811.333333333333
+      },
+      "key": "slot:2b60f0c13d2236ea90943641508d1effcf0b872f80a2648817cad3b89dd16926",
+      "request_sha256": "6f4efa822abf6ec688db3937037464bfd5cf3782993825d6218d9f8947836ddc",
+      "reviewer": 1,
+      "slot_id": "v6-slot:96eaa739f3d071762787bbbd6d7f07eb846e77fb3e7785367e46473806d2ba68",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 10839,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 446,
+        "max_output_tokens": 16384,
+        "target_fragments": 24,
+        "workload": 7226.0
+      },
+      "key": "slot:b197a9a1eb1c91e5c2d08ec48e9150f1c0dee3c163b4ae34c81a635c9b34d924",
+      "request_sha256": "aa711808fc17689050cdb525c7f6d9a19b811738c8441b2cc380a22b0b49d6d7",
+      "reviewer": 0,
+      "slot_id": "v6-slot:1051fe57bf9b45e8c3b439391b53a508c4fbb42282ed83db8c6005632a7fa085",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 10839,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 446,
+        "max_output_tokens": 16384,
+        "target_fragments": 24,
+        "workload": 7226.0
+      },
+      "key": "slot:a19719d609d29d56fdc116a6dd8b7cf6d9f6c40ea720a6c2663eaaeb1a2b5037",
+      "request_sha256": "3aa58563e60384b057c5c2c825d60e5fdfaac89402feec6e4123902098f3d533",
+      "reviewer": 1,
+      "slot_id": "v6-slot:1051fe57bf9b45e8c3b439391b53a508c4fbb42282ed83db8c6005632a7fa085",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7244,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 95,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4829.333333333333
+      },
+      "key": "slot:2680cba4a623db957dcf0864b51d126a16c2802fbae7db47a7fd9558cef88689",
+      "request_sha256": "d7850d840608e50d42f90b135c021c16245932fff75fc9e619e29adf67d16060",
+      "reviewer": 0,
+      "slot_id": "v6-slot:d6e6efed84cc09898a896b42ea77cf86ed3c44d0c1f9c99001e27caa83ac8d3c",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7244,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 95,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4829.333333333333
+      },
+      "key": "slot:44fffc13360f0157b2bb44628e7b346a1db5933e7c031919a92062ec349f08c7",
+      "request_sha256": "de980e1d165e460cdfc927d9794c75ded2670748912e4d0e1224ebb7e8bc49c1",
+      "reviewer": 1,
+      "slot_id": "v6-slot:d6e6efed84cc09898a896b42ea77cf86ed3c44d0c1f9c99001e27caa83ac8d3c",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 14415,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 814,
+        "max_output_tokens": 16384,
+        "target_fragments": 36,
+        "workload": 9610.0
+      },
+      "key": "slot:ee61c5fc73eb7ea22ca7c8d229560da65ae1ffd9be4e71a532e49f47b22b1496",
+      "request_sha256": "4b70d7949e1d9b003629864aa326139769744364c57e9fb85714afceef69a9a3",
+      "reviewer": 0,
+      "slot_id": "v6-slot:6d50b21f6755e563cc421cd4bc6d8c9b716fe153d2cdff46947c2554d27101c8",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 14415,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 814,
+        "max_output_tokens": 16384,
+        "target_fragments": 36,
+        "workload": 9610.0
+      },
+      "key": "slot:63a36f60c6d78a095c9fae1fdb67dbca132b8a77160a7e3bb7b025a32aa22419",
+      "request_sha256": "f18ce87ecb31b39ce14c362feb5b89337136024778d8ef2de909e8592118078e",
+      "reviewer": 1,
+      "slot_id": "v6-slot:6d50b21f6755e563cc421cd4bc6d8c9b716fe153d2cdff46947c2554d27101c8",
+      "slot_index": 2,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7239,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 94,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4826.0
+      },
+      "key": "slot:7e0c0fa3e90ae0bb848d585e7bd61696977b5c5eea318471af7d4f1e4808e896",
+      "request_sha256": "d842313990c8db7ddd21e8971b361bea06dd118b93ced01e50b5653521be7f7f",
+      "reviewer": 0,
+      "slot_id": "v6-slot:726bf697e9932af0eb4598451f3e6b6e1018bc8064624195f165e3b7ddcba42f",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7239,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 94,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4826.0
+      },
+      "key": "slot:624ca3e894e6e08c2d6fb71df9860f6fc265624a2b2b25c50f7862e83ca0bb29",
+      "request_sha256": "af7818186449cf18bf5f48f91615189a8affd169bda1c2d64b8b0f2671026895",
+      "reviewer": 1,
+      "slot_id": "v6-slot:726bf697e9932af0eb4598451f3e6b6e1018bc8064624195f165e3b7ddcba42f",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8105,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 201,
+        "max_output_tokens": 16384,
+        "target_fragments": 7,
+        "workload": 5403.333333333333
+      },
+      "key": "slot:84f13fa87b34b52b42efaed6e4146c29acf8816d2ec9869c68786e5936be440f",
+      "request_sha256": "88eafbad48444adabf6f2671a409cb33950ca56d26841ea82a34dbd05b04d2be",
+      "reviewer": 0,
+      "slot_id": "v6-slot:ca52f227037a2435d8c12f6354e6d2f9d4d938ac11db9c58ea15b68c6eebd953",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8105,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 201,
+        "max_output_tokens": 16384,
+        "target_fragments": 7,
+        "workload": 5403.333333333333
+      },
+      "key": "slot:8962e37ea6fb8332b0505324796028ceae0207469029eb71c2801884baab4ad4",
+      "request_sha256": "407383bcb622de411f38ceaa319b5142cbcf66cb9f41f8e1709c42a2b8b134c2",
+      "reviewer": 1,
+      "slot_id": "v6-slot:ca52f227037a2435d8c12f6354e6d2f9d4d938ac11db9c58ea15b68c6eebd953",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7745,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 185,
+        "max_output_tokens": 16384,
+        "target_fragments": 4,
+        "workload": 5163.333333333333
+      },
+      "key": "slot:02ca59e50e272ef1eb8390f4abc810fb9b55fa2560bd34440240a4a8136328e7",
+      "request_sha256": "f0541e12cfd9eea07104ccfe37e5c504f41d5d144e472d46385eccf1e7c69f8b",
+      "reviewer": 0,
+      "slot_id": "v6-slot:7a281867f0e850b1a4f48ac1b92ed25659d66d8aa6f6df168aa1418424dd8d49",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7745,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 185,
+        "max_output_tokens": 16384,
+        "target_fragments": 4,
+        "workload": 5163.333333333333
+      },
+      "key": "slot:ae7085a5e5fe2aa9874ad8a7a3e73e626a19ad6fffdb07261d283edf86120d82",
+      "request_sha256": "9d339adaf8859b43092950d720cefb05ac182451cdefc08d4c188cd3773db8ca",
+      "reviewer": 1,
+      "slot_id": "v6-slot:7a281867f0e850b1a4f48ac1b92ed25659d66d8aa6f6df168aa1418424dd8d49",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 10097,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 409,
+        "max_output_tokens": 16384,
+        "target_fragments": 16,
+        "workload": 6731.333333333333
+      },
+      "key": "slot:84daadfd7909649ef619783190dbf46613ffcc890e153d97f39c49b8dc591e8c",
+      "request_sha256": "2ee4d04f3726ef93bdf9c513eabfe3c67122682cc70938798065bb7187abbb08",
+      "reviewer": 0,
+      "slot_id": "v6-slot:a3394db88ca9446f18f5a2d4562ea8e53ca404484c4a923458a96b00add2aa02",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 10097,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 409,
+        "max_output_tokens": 16384,
+        "target_fragments": 16,
+        "workload": 6731.333333333333
+      },
+      "key": "slot:8a35501f052b856f5d1a02fe63b6b5df68eafe36ad14fe7d7f32f38fb727a371",
+      "request_sha256": "7e003599862640bd9b4311612479366ddd72c9ec3c8650de24878264a2d666d3",
+      "reviewer": 1,
+      "slot_id": "v6-slot:a3394db88ca9446f18f5a2d4562ea8e53ca404484c4a923458a96b00add2aa02",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 10394,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 411,
+        "max_output_tokens": 16384,
+        "target_fragments": 19,
+        "workload": 6929.333333333333
+      },
+      "key": "slot:fb2832a28f8302fd09a525b298f170c21c5d87da74bafd63bef353d04e755c04",
+      "request_sha256": "853ee581040800a4a9952d11fd6c777e88b37d98b74309c0e283aa78d7424c1f",
+      "reviewer": 0,
+      "slot_id": "v6-slot:bd9f1926ce7bb88653d39358aceffe77e1f843f339affccd44085747e974c8ec",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 10394,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 411,
+        "max_output_tokens": 16384,
+        "target_fragments": 19,
+        "workload": 6929.333333333333
+      },
+      "key": "slot:9f3cec46e870bbf159e3efc71a9698dd2b53e409ca4ce5c69fab393e1d94d219",
+      "request_sha256": "9fccabc8d8acbe26a4b3af9600805c01397dc2375abfea58fddaf88a22bbad26",
+      "reviewer": 1,
+      "slot_id": "v6-slot:bd9f1926ce7bb88653d39358aceffe77e1f843f339affccd44085747e974c8ec",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 7,
+        "estimated_requirement": 14510,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 835,
+        "max_output_tokens": 16384,
+        "target_fragments": 34,
+        "workload": 9673.333333333334
+      },
+      "key": "slot:fe85313158f83e04692c4bed5bdc7a0d36836595fff033d4982e7cfa14e79bf4",
+      "request_sha256": "56c277711b200b8e85550c425b8bb99dee5fa9d8528b5b4793f76fa765757b93",
+      "reviewer": 0,
+      "slot_id": "v6-slot:09e23f0dc36f8eba3bb0a025c822049df7fa645818e15d9561518b0511f0c05f",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 7,
+        "estimated_requirement": 14510,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 835,
+        "max_output_tokens": 16384,
+        "target_fragments": 34,
+        "workload": 9673.333333333334
+      },
+      "key": "slot:a7a9de75a370fc95303b9bfa4fb975ff537ed1a1943e1a2ccbc44084a5cc2a69",
+      "request_sha256": "2852c6a1ff429ebad67f13abafe129b1fc10ce3090bc41393205e65a7a3dd576",
+      "reviewer": 1,
+      "slot_id": "v6-slot:09e23f0dc36f8eba3bb0a025c822049df7fa645818e15d9561518b0511f0c05f",
+      "slot_index": 3,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7203,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 86,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4802.0
+      },
+      "key": "slot:210454380d38600dec439e1acd26d16c249f4f022c3f0b2b997a4a8dcf845a05",
+      "request_sha256": "3f9b34b90e800f34a9f8ebea53766bdafb8ca8865ac90acf0445a6936b71ee18",
+      "reviewer": 0,
+      "slot_id": "v6-slot:ca980b970a9dade31a700950e9aca86dace9e3971086e7f994389e79d26baefe",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7203,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 86,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4802.0
+      },
+      "key": "slot:bcf7221391b4bd144870b56cc207a3b8b39e436ec7bee202e61bb21077f61839",
+      "request_sha256": "b98f026aee672034dc0838e208068d1ac21bc5e770081ad0f0f195662c08e19d",
+      "reviewer": 1,
+      "slot_id": "v6-slot:ca980b970a9dade31a700950e9aca86dace9e3971086e7f994389e79d26baefe",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8705,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 249,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5803.333333333333
+      },
+      "key": "slot:10a7ee6a07918b193c9b5090178e5f6685c4590241a0fc1fbf43eb7b3264ed06",
+      "request_sha256": "ca8f2d039b3c27f44f985c08231f0cdb7695b2ec3b267d67138032c80404f1f5",
+      "reviewer": 0,
+      "slot_id": "v6-slot:fd9627005d81613048a698abbfb4e67c9ba0340810e330a3d83d4664bc424f99",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8705,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 249,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5803.333333333333
+      },
+      "key": "slot:100b92d00f9f31a1fb029422115483334466306f8af4b7890f6c11be5935ff25",
+      "request_sha256": "f2c2d79e8de40888b35c4e37d48a8e3a5bbb5d1ef7f0c1912d40b303c5da3c0d",
+      "reviewer": 1,
+      "slot_id": "v6-slot:fd9627005d81613048a698abbfb4e67c9ba0340810e330a3d83d4664bc424f99",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 9060,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 328,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 6040.0
+      },
+      "key": "slot:cd20f90b4cfda9bf45451ae3681350546cbd77c3d7098918e6bec7dce5b13989",
+      "request_sha256": "9c68ec89227a1935c604b5d4b393637fe3b18e31776f54d7ab18d9e802a69ae2",
+      "reviewer": 0,
+      "slot_id": "v6-slot:708d8178333705dd0f663fe6317f062272839ac759d6595f47c0a902766a4e46",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 9060,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 328,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 6040.0
+      },
+      "key": "slot:b70853c4e2fb1b2e56cc02770edb779afc6eea13d0f2c12637e777eb725bd7c0",
+      "request_sha256": "8b680ec8ea9c448b0118f8518713af1081350aba90dca973b27a0a179cee44d9",
+      "reviewer": 1,
+      "slot_id": "v6-slot:708d8178333705dd0f663fe6317f062272839ac759d6595f47c0a902766a4e46",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 9591,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 318,
+        "max_output_tokens": 16384,
+        "target_fragments": 15,
+        "workload": 6394.0
+      },
+      "key": "slot:cb3c43ab1c05f3dcf63a708ac6f53c00eeacfb1e2a847483ae0b0f7eb8579e53",
+      "request_sha256": "cf81131aa7e27d41861396bd17a7c6c5d990fd9af0339d4772cfe0b9f86ab7ee",
+      "reviewer": 0,
+      "slot_id": "v6-slot:1c0a9d5bafc9542e78c24b1273775989db138860f7d7298042b71b1fc9419ebe",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 9591,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 318,
+        "max_output_tokens": 16384,
+        "target_fragments": 15,
+        "workload": 6394.0
+      },
+      "key": "slot:1f0722ebb39d7fa3eb78ed11f2a77c004e4028307be133069a1a977baa89d4f9",
+      "request_sha256": "0baa5861630b1397e17d2ef6c4f2d97828dcf26df2dc87572197886fd7616317",
+      "reviewer": 1,
+      "slot_id": "v6-slot:1c0a9d5bafc9542e78c24b1273775989db138860f7d7298042b71b1fc9419ebe",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 13152,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 704,
+        "max_output_tokens": 16384,
+        "target_fragments": 28,
+        "workload": 8768.0
+      },
+      "key": "slot:c6e05f3d1a90470b846fa38b08b274f8c25ab3e1fe1c208f6582b809fee4624a",
+      "request_sha256": "99e088ac28ff5beb8265670fd89f55e75a2c8d57635f165fd1e33d1adccd0219",
+      "reviewer": 0,
+      "slot_id": "v6-slot:4abf7d6592d50bcbc138d1ba7b833b0302e8edf9d516fe6e63c3b66baddbce25",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 13152,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 704,
+        "max_output_tokens": 16384,
+        "target_fragments": 28,
+        "workload": 8768.0
+      },
+      "key": "slot:a9a96b299426c4b4a837a9c79865f2de79b44c030c0843db85f7e77ef13b3c9e",
+      "request_sha256": "dff37d35afdc1c46ac3234be1a66894fb43f7b4148141e70286189c0a22a226f",
+      "reviewer": 1,
+      "slot_id": "v6-slot:4abf7d6592d50bcbc138d1ba7b833b0302e8edf9d516fe6e63c3b66baddbce25",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 8,
+        "estimated_requirement": 16914,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1092,
+        "max_output_tokens": 32768,
+        "target_fragments": 45,
+        "workload": 11276.0
+      },
+      "key": "slot:76aab29f53f52d4290f826c12ba125b9a18e0e82139144026ebf99240b51baeb",
+      "request_sha256": "c7f50c6a11b5e91e4d5fb4ed743679189ca4818d49825a212b701d00ad6b3119",
+      "reviewer": 0,
+      "slot_id": "v6-slot:0909206fd7c3cab14a0b623228ded593060cfdd5ca51f65fd5cf495ac25ba4ca",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 8,
+        "estimated_requirement": 16914,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1092,
+        "max_output_tokens": 32768,
+        "target_fragments": 45,
+        "workload": 11276.0
+      },
+      "key": "slot:96cda963c0e8e41b8bb0121912f75e640459c534fa319c6200fcb2e1a31e6abb",
+      "request_sha256": "076ad04d487e9b0a1ac6e31afe4067931cc2669f02db40c69e9f88a64d2b02c7",
+      "reviewer": 1,
+      "slot_id": "v6-slot:0909206fd7c3cab14a0b623228ded593060cfdd5ca51f65fd5cf495ac25ba4ca",
+      "slot_index": 4,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7221,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 90,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4814.0
+      },
+      "key": "slot:342773bdbd825b74cfae5ad4a051a4f612eb5a8e948b849b94ea7ea4277bcd07",
+      "request_sha256": "24be04ab227dd8308000cf524d1c1de393bfb90c04181a10827cc9f6cdab4ea2",
+      "reviewer": 0,
+      "slot_id": "v6-slot:46457f0dfbbc3a86d0e6b5378f26a5f7b7ed470fd9491fdea86bb1a92bf1e842",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7221,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 90,
+        "max_output_tokens": 16384,
+        "target_fragments": 3,
+        "workload": 4814.0
+      },
+      "key": "slot:2d4159da29bb98c38ec226ea2c39d45651e05bfe634988d549efa00cac7d6cb3",
+      "request_sha256": "b6e4c11541c5b48388f32b07c615759f147f738c2b4fd003c43f1dcea154a9fe",
+      "reviewer": 1,
+      "slot_id": "v6-slot:46457f0dfbbc3a86d0e6b5378f26a5f7b7ed470fd9491fdea86bb1a92bf1e842",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8205,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 202,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5470.0
+      },
+      "key": "slot:afd43cc5d9a719560fec132356caffcde5cc0aecccbb5d1453751c4cca49a853",
+      "request_sha256": "f0487039d44af6065a27b10f54a08366961338bce325223963b43070f99703e6",
+      "reviewer": 0,
+      "slot_id": "v6-slot:c5aed9123d0390828de4da56ae18979cd36f2dac14357ae7dacd965043647a0e",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8205,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 202,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5470.0
+      },
+      "key": "slot:3155b28bebb401d4b865b2c88a20aca8e8bc4711687eb7a6fa5d333344cf8070",
+      "request_sha256": "7170a272fa07eb6f1ba12476bd7807bf520116434bc864552b026f607f7e7a80",
+      "reviewer": 1,
+      "slot_id": "v6-slot:c5aed9123d0390828de4da56ae18979cd36f2dac14357ae7dacd965043647a0e",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7977,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 194,
+        "max_output_tokens": 16384,
+        "target_fragments": 6,
+        "workload": 5318.0
+      },
+      "key": "slot:d4f051825776aac6a770704b323c0dd347af1689dee0baf0e50d62ca577769c0",
+      "request_sha256": "871c53391d28e6ecdc186e334342bce5877458636924b85778ab931c7a30d9c4",
+      "reviewer": 0,
+      "slot_id": "v6-slot:1e1e935a3d6e8a0d2ddaebd5abf6f68d5c5c4c75689fa1487d86ee864841a071",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 7977,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 194,
+        "max_output_tokens": 16384,
+        "target_fragments": 6,
+        "workload": 5318.0
+      },
+      "key": "slot:3048a1c5f551a08399c7698ad5359bda4cf2c30611c48e392f9c2da0f89021d0",
+      "request_sha256": "c5ae5f2e489a85b85056c2fe412d9aa022d1c5ef4572ed5fc59a7c71bbd16f5d",
+      "reviewer": 1,
+      "slot_id": "v6-slot:1e1e935a3d6e8a0d2ddaebd5abf6f68d5c5c4c75689fa1487d86ee864841a071",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 1,
+        "estimated_requirement": 7446,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 140,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4964.0
+      },
+      "key": "slot:6517e53f507a4b7a02c837fa98a3aceaaa5b4b45418d0381229ae145f3d5c3ba",
+      "request_sha256": "1f732ffc0f314e3c4e690fd283db1858ba7f01601ed2f46344c5b5d57165277d",
+      "reviewer": 0,
+      "slot_id": "v6-slot:cd18cfcf1d549ce0188d9e2920ceff74685aaecf941e15b4a8f1cdd22f994cf7",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 1,
+        "estimated_requirement": 7446,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 140,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4964.0
+      },
+      "key": "slot:47b784d10582b38918b2bd52b1daf3fcac7d6a8f383e731ef830a28f1479d6e9",
+      "request_sha256": "b0ac3bdf76f217c01ae6962fe57888611251f0d129e231bcce6e374deda42f1a",
+      "reviewer": 1,
+      "slot_id": "v6-slot:cd18cfcf1d549ce0188d9e2920ceff74685aaecf941e15b4a8f1cdd22f994cf7",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 11595,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 550,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 7730.0
+      },
+      "key": "slot:3c149d568adc2a2cc1af7114347ec3c83a45fbd7dcd5fcb4d02c957acb70cdda",
+      "request_sha256": "42c6d59a5b6d912e8a37f26b598593b09b0fded96f5edfee67d7a8c9fc3773d1",
+      "reviewer": 0,
+      "slot_id": "v6-slot:c8bff4621c9eabd29aec9ca983a23c9fea6c3f07940e94f8b867d943a7a9f96a",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 11595,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 550,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 7730.0
+      },
+      "key": "slot:7d2ac0c5df04e3838371965a767dce4bd50f1016348c48a072ef098bc9ebf391",
+      "request_sha256": "706cd39729c69e815c81ada70aa3b36c83811baf7665055e71e732a1bd5f8d4a",
+      "reviewer": 1,
+      "slot_id": "v6-slot:c8bff4621c9eabd29aec9ca983a23c9fea6c3f07940e94f8b867d943a7a9f96a",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 10,
+        "estimated_requirement": 17118,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1052,
+        "max_output_tokens": 32768,
+        "target_fragments": 45,
+        "workload": 11412.0
+      },
+      "key": "slot:bd30f1fc1d80647d02abf15ff85621950631024bbe072dc21eadf148cecb8234",
+      "request_sha256": "e994d228c1e2d70ba598056f98b779ac2cba5d73235fcd34aff1d5c6ebaaaff5",
+      "reviewer": 0,
+      "slot_id": "v6-slot:1fa98e254df23fb74da251a1013057e0a5bced020bbe7e2f081d6879c7c7747d",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 10,
+        "estimated_requirement": 17118,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1052,
+        "max_output_tokens": 32768,
+        "target_fragments": 45,
+        "workload": 11412.0
+      },
+      "key": "slot:302d5f2f1a4477316924fd733479fd587d67b87d8b8af73d8dc7c688ca4b4c2d",
+      "request_sha256": "47d36ddcff281a8e8062dab56423f9be759c9b05321a9b92b96296d1c9d8763f",
+      "reviewer": 1,
+      "slot_id": "v6-slot:1fa98e254df23fb74da251a1013057e0a5bced020bbe7e2f081d6879c7c7747d",
+      "slot_index": 5,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8411,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 205,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5607.333333333333
+      },
+      "key": "slot:6a64bd9a5ae9830cacac00f2ae890cb67b980b25adb949b46ade0e83b111dc59",
+      "request_sha256": "ed853321084e5e16fff9ec7895f1b2b96569b52aefbe5d84d2166856e43c25cc",
+      "reviewer": 0,
+      "slot_id": "v6-slot:3915e0406dd871b6871c17a2a68960b3028200f9b1fe92ad2718fb7ae4387cfe",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8411,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 205,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5607.333333333333
+      },
+      "key": "slot:22b2659e753b032165e2eb4ad81de14eb0eb057b0ea30480d63a4f2d40ff58e2",
+      "request_sha256": "a0b33528a1275620456d2b467caaaff7ddef2332e6ed8e6ae6194296665d115f",
+      "reviewer": 1,
+      "slot_id": "v6-slot:3915e0406dd871b6871c17a2a68960b3028200f9b1fe92ad2718fb7ae4387cfe",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8583,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 222,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5722.0
+      },
+      "key": "slot:1a0921ec7c947dec495868d8967f05efee14fe07fdbb48432b91a6f3e952a6b0",
+      "request_sha256": "1c94943dc03420e3557e4c35f27038d98ced0cf1804dbee6684083e054f29d1d",
+      "reviewer": 0,
+      "slot_id": "v6-slot:b0c3e4f86ff339b20374fd89a9057dad91cb13a9dd54779ba83e6f10f3afea4c",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8583,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 222,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5722.0
+      },
+      "key": "slot:ed0e789f3e9c2850c603101146877e5eaa47e1f59d688f6371f8cf2d6102a786",
+      "request_sha256": "b29bfaf26eb543e33ae8cb9805bc53d8d3a93ef96375d2625944eb3918f268cf",
+      "reviewer": 1,
+      "slot_id": "v6-slot:b0c3e4f86ff339b20374fd89a9057dad91cb13a9dd54779ba83e6f10f3afea4c",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8982,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 268,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5988.0
+      },
+      "key": "slot:ea2455688e7ed3e14a22932584e079fd1879f77300425545a3509e3ed380b0fb",
+      "request_sha256": "da6dd61be9654d9f3a7a62266d89c80c5b6163dc0055d3c050c0ae4a00e175f6",
+      "reviewer": 0,
+      "slot_id": "v6-slot:9d27d0a39900208f2ac91f6fb73f557625a1d0e97f6808d9341a652220504139",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 8982,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 268,
+        "max_output_tokens": 16384,
+        "target_fragments": 11,
+        "workload": 5988.0
+      },
+      "key": "slot:ef3624fe708aedf2e01742aff86501bdd043ece85dae99e1c70a7b63c8dd584d",
+      "request_sha256": "4c836dbd179fb347478a7f4cd690a419f3a47b72943d1b3b50f9bec425b0d8c5",
+      "reviewer": 1,
+      "slot_id": "v6-slot:9d27d0a39900208f2ac91f6fb73f557625a1d0e97f6808d9341a652220504139",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8510,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 227,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5673.333333333333
+      },
+      "key": "slot:35be0a662b6c32b9176f7d75bd100cf6d03c3d1afdd35e483b285994089f8ef0",
+      "request_sha256": "a279a484b724d1057bae8f0a80727e3b6efb36068af43d17bfd7b630169e69d3",
+      "reviewer": 0,
+      "slot_id": "v6-slot:2fc5305488901fef99feb4f57ae19c6f27540b92ffacf227c21ca65e382f5b43",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8510,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 227,
+        "max_output_tokens": 16384,
+        "target_fragments": 10,
+        "workload": 5673.333333333333
+      },
+      "key": "slot:3a156ba991acafb42ebc85fbe73dd2116bf90f7a388a92ef927ccdb44f33fea5",
+      "request_sha256": "f02e8b52b37b4d7b9616b41e6c1251a7e8e298a650e95637aed49bd5e60a94b9",
+      "reviewer": 1,
+      "slot_id": "v6-slot:2fc5305488901fef99feb4f57ae19c6f27540b92ffacf227c21ca65e382f5b43",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 4,
+        "estimated_requirement": 12251,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 653,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 8167.333333333333
+      },
+      "key": "slot:b4698ebfca119071e48791d03cc181ee60ba64cecd767c67ad49bb13e2d33bf1",
+      "request_sha256": "a9c90369cf3a681c6474cdbd2c506922e7a5d78c12cf43ff47ddc270fd6a5f82",
+      "reviewer": 0,
+      "slot_id": "v6-slot:7137e69e1de2508ebb81937238689664405b6bcb2a65e0b1e3319fce371a6ed8",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 4,
+        "estimated_requirement": 12251,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 653,
+        "max_output_tokens": 16384,
+        "target_fragments": 25,
+        "workload": 8167.333333333333
+      },
+      "key": "slot:2b88998cf772466d0a23a8651049a89e91f1255fa51cc6ab7e4d7b0d08ba25f1",
+      "request_sha256": "d48bf30a69eb7733c2c9949e26f2013ff9b17f35ffc1c432e912634e12f5250c",
+      "reviewer": 1,
+      "slot_id": "v6-slot:7137e69e1de2508ebb81937238689664405b6bcb2a65e0b1e3319fce371a6ed8",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 13361,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 793,
+        "max_output_tokens": 16384,
+        "target_fragments": 26,
+        "workload": 8907.333333333334
+      },
+      "key": "slot:704aad2948cd531579e28aae4dd781baacdbb2c3985a817b714ded093a6d3c61",
+      "request_sha256": "67161808c7dec3e066ec80003c24f2ee3fb908af1496faace51efea4fbea3ee2",
+      "reviewer": 0,
+      "slot_id": "v6-slot:ef71eee1710958fe76920846d3bf341e525369fdec78c669b6e5de56d3b4bc5a",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 6,
+        "estimated_requirement": 13361,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 793,
+        "max_output_tokens": 16384,
+        "target_fragments": 26,
+        "workload": 8907.333333333334
+      },
+      "key": "slot:a754ae08703e1862514c1057430391fd3bd3f490ce63ec67096c7defb099ac03",
+      "request_sha256": "4cad2f7968d6c3a11ba377d080c0233affc1fd07a97d2922594434abfeea63af",
+      "reviewer": 1,
+      "slot_id": "v6-slot:ef71eee1710958fe76920846d3bf341e525369fdec78c669b6e5de56d3b4bc5a",
+      "slot_index": 6,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 1,
+        "estimated_requirement": 7320,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 112,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4880.0
+      },
+      "key": "slot:1423ca44acc56ee9eb8a5ce071141f0efa8c9c0b1875afd6e7cf89fd42e47d53",
+      "request_sha256": "d19acd9441d1bd3884d3eaec0ab7f31ca7f19c4bfbbda394c502325725e8b510",
+      "reviewer": 0,
+      "slot_id": "v6-slot:0835c7b5d5d854199e885eced58974f8b71a28ada87192ce78fdb52c586eae2b",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 1,
+        "estimated_requirement": 7320,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 112,
+        "max_output_tokens": 16384,
+        "target_fragments": 5,
+        "workload": 4880.0
+      },
+      "key": "slot:a15a3e2b11a3ce882541bf63783121570ff55809b6bb2104c93bce890d619642",
+      "request_sha256": "904b0455ba20da771d1727149f77bd9f95c4e61ede781c74f52ea9493e066f1e",
+      "reviewer": 1,
+      "slot_id": "v6-slot:0835c7b5d5d854199e885eced58974f8b71a28ada87192ce78fdb52c586eae2b",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8232,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 208,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5488.0
+      },
+      "key": "slot:9082a6693692c5f749b6e627254f5cb1b5aa775bb353676eb0071c179603b0b3",
+      "request_sha256": "32feb5722fb706b087725c62da8ea8ed59f44ead0b244274bb29e292896c86e3",
+      "reviewer": 0,
+      "slot_id": "v6-slot:08ee0e4c881c516e379cb7930ca728f63b5da550e36d14acdc6e05d82fa0bd62",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8232,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 208,
+        "max_output_tokens": 16384,
+        "target_fragments": 8,
+        "workload": 5488.0
+      },
+      "key": "slot:144ea9311b97a609008e346b51cc011c33d0bf4418c1e04f4cf4f5ddc8965eef",
+      "request_sha256": "33d7ed314ecb3006133a8cf3f3e40581ae9139be7015d6df0b10ca044ac159e5",
+      "reviewer": 1,
+      "slot_id": "v6-slot:08ee0e4c881c516e379cb7930ca728f63b5da550e36d14acdc6e05d82fa0bd62",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8459,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 237,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5639.333333333333
+      },
+      "key": "slot:8197fa3841f4588f45d24f1a9d2df04f245bdec43e4f787791f730e47fa87f53",
+      "request_sha256": "30feddf8b65c1987711be5b65e233643b00c8aa023a774750581b2a7e61f8400",
+      "reviewer": 0,
+      "slot_id": "v6-slot:a50343d2e6c51815b688249671e71602d023e0976bc813c68606f5b1d85e992a",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8459,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 237,
+        "max_output_tokens": 16384,
+        "target_fragments": 9,
+        "workload": 5639.333333333333
+      },
+      "key": "slot:d4420d90a270888b81b69dab51973a69711db84626032050345631af56408296",
+      "request_sha256": "1a62ae68f9336a5274e6b0c5031048dcd696402cce354271bd438952471d6fff",
+      "reviewer": 1,
+      "slot_id": "v6-slot:a50343d2e6c51815b688249671e71602d023e0976bc813c68606f5b1d85e992a",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8087,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 197,
+        "max_output_tokens": 16384,
+        "target_fragments": 7,
+        "workload": 5391.333333333333
+      },
+      "key": "slot:0e09a428736d35edba27ea87b3c4f6aadd8b390e7b72d9bc2735c0a02656c56d",
+      "request_sha256": "3d58372dfd3bbddaefcb8a20e00ed2e5749d1042f1cf25065c3aaec0b8f1ed0c",
+      "reviewer": 0,
+      "slot_id": "v6-slot:999442673f4dfcde753135451ffe88b5c5bc030fbb0ba397c0fe5fe0e1003274",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 2,
+        "estimated_requirement": 8087,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 197,
+        "max_output_tokens": 16384,
+        "target_fragments": 7,
+        "workload": 5391.333333333333
+      },
+      "key": "slot:75b9d4e720986562f1f454e80120efb03a6556c4c322b860b4d4e003052c3df0",
+      "request_sha256": "02f92ead0a0d8c1b12a25e3b844b1240cb11ee5d52b4448ccf0445d2c2ddc822",
+      "reviewer": 1,
+      "slot_id": "v6-slot:999442673f4dfcde753135451ffe88b5c5bc030fbb0ba397c0fe5fe0e1003274",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 12092,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 703,
+        "max_output_tokens": 16384,
+        "target_fragments": 23,
+        "workload": 8061.333333333333
+      },
+      "key": "slot:f2514188a2318f04b9f82e9ab9830379c71a25b7db1514b51b7e7118480c5afe",
+      "request_sha256": "2debf3b0391f52a8c72a625ed2edf59333557cfff772d4bfb27cffa52729fa40",
+      "reviewer": 0,
+      "slot_id": "v6-slot:f57574ae38fd71a1fddd1b1e6797e60d152c554ab4041125fca2ac15c565da3c",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 3,
+        "estimated_requirement": 12092,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 703,
+        "max_output_tokens": 16384,
+        "target_fragments": 23,
+        "workload": 8061.333333333333
+      },
+      "key": "slot:37b2f78b27b6281be452a06ba3419ec1dd5ad03f9fb6dc5de034889d0826f65b",
+      "request_sha256": "85a0be6a6e88f809ad1dc5e6ee02fba8b51eeb8c8b8d928b4ef185169d0f6848",
+      "reviewer": 1,
+      "slot_id": "v6-slot:f57574ae38fd71a1fddd1b1e6797e60d152c554ab4041125fca2ac15c565da3c",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 8,
+        "estimated_requirement": 14877,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 874,
+        "max_output_tokens": 16384,
+        "target_fragments": 34,
+        "workload": 9918.0
+      },
+      "key": "slot:0d05752e9b3a1fc470e7009bcb0fc5ed575c5b0e3ef7accd49f524aba1a5547f",
+      "request_sha256": "e8fae0b54f32ae5458cc31ddcf8a2243e224a73827ef0b7f42959c33cc9b835e",
+      "reviewer": 0,
+      "slot_id": "v6-slot:8e0f5bbb956e50115ce54dc4369fe0496a70128f66b8636b14d3217fcc54c7e5",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 8,
+        "estimated_requirement": 14877,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 874,
+        "max_output_tokens": 16384,
+        "target_fragments": 34,
+        "workload": 9918.0
+      },
+      "key": "slot:3c60e43f0a4c5e158f747372c938c1f8fce1beead97e86e96a55df9e6080dba3",
+      "request_sha256": "71d9c743847491dc0770713af7f9f0963a7c33e90732e2ddd2fd3f0f7ac9f2b3",
+      "reviewer": 1,
+      "slot_id": "v6-slot:8e0f5bbb956e50115ce54dc4369fe0496a70128f66b8636b14d3217fcc54c7e5",
+      "slot_index": 7,
+      "stage": "slot",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 15,
+        "estimated_requirement": 13734,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1018,
+        "max_output_tokens": 16384,
+        "target_fragments": 43,
+        "workload": 9156.0
+      },
+      "key": "alignment:71bb7130fd6a4b1eb5bbf2b65a46ade9d97fb4724c07767c3e1162d05f721bfe",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 15,
+        "estimated_requirement": 13734,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1018,
+        "max_output_tokens": 16384,
+        "target_fragments": 43,
+        "workload": 9156.0
+      },
+      "key": "alignment:1ccdcfc78003616dfde8835005fc8445b5ba76bd54a17f3fd6c595610594b35f",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "STZ/2010/page_51.pdf-3"
+    },
+    {
+      "capacity": {
+        "actions": 18,
+        "estimated_requirement": 17193,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1667,
+        "max_output_tokens": 32768,
+        "target_fragments": 60,
+        "workload": 11462.0
+      },
+      "key": "alignment:b55d5f1b9085b3fea258712df4fc38583450606d9f149a29699f057930830c3a",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 18,
+        "estimated_requirement": 17193,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1667,
+        "max_output_tokens": 32768,
+        "target_fragments": 60,
+        "workload": 11462.0
+      },
+      "key": "alignment:1a05f23b1e5aedd2de956a621d24482e70f981dfeff4d7e19b69153b35ed9407",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "MAS/2017/page_37.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 18,
+        "estimated_requirement": 18699,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1977,
+        "max_output_tokens": 32768,
+        "target_fragments": 68,
+        "workload": 12466.0
+      },
+      "key": "alignment:6b04cdceacc4ada300b879246ddeda301bb7c17908b55041f8c714804d2b5a51",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 18,
+        "estimated_requirement": 18699,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 1977,
+        "max_output_tokens": 32768,
+        "target_fragments": 68,
+        "workload": 12466.0
+      },
+      "key": "alignment:e636aaf4c2596186832226746a2528f7d70486ac5099cdd94e13c73cbae83add",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "TFX/2015/page_42.pdf-1"
+    },
+    {
+      "capacity": {
+        "actions": 17,
+        "estimated_requirement": 21588,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 2228,
+        "max_output_tokens": 32768,
+        "target_fragments": 99,
+        "workload": 14392.0
+      },
+      "key": "alignment:0554d86dff7e74b53443c1872170b121cd83fe15223fa8965338dc0c997552a1",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 17,
+        "estimated_requirement": 21588,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 2228,
+        "max_output_tokens": 32768,
+        "target_fragments": 99,
+        "workload": 14392.0
+      },
+      "key": "alignment:2d653308e69255b935b14043a3123cc2302a18b0f3bbe103bfde0fb81ae59440",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "INTC/2018/page_105.pdf-2"
+    },
+    {
+      "capacity": {
+        "actions": 26,
+        "estimated_requirement": 30807,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 3717,
+        "max_output_tokens": 32768,
+        "target_fragments": 153,
+        "workload": 20538.0
+      },
+      "key": "alignment:7d3d39d69955a54064f6dd1492bba890d23560227e6764387afa79dd15c4541d",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 26,
+        "estimated_requirement": 30807,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 3717,
+        "max_output_tokens": 32768,
+        "target_fragments": 153,
+        "workload": 20538.0
+      },
+      "key": "alignment:2878e59f3ea80c19198a98bf1833697a91169b5ae453a59473c340af546019a0",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "AAPL/2013/page_78.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 54,
+        "estimated_requirement": 50928,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 6744,
+        "max_output_tokens": 65536,
+        "target_fragments": 269,
+        "workload": 33952.0
+      },
+      "key": "alignment:fda27d6e533ab07d24ccfccb05a63e335469f5e4a489d31535ec204267535237",
+      "reviewer": 0,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "IP/2013/page_101.pdf-4"
+    },
+    {
+      "capacity": {
+        "actions": 54,
+        "estimated_requirement": 50928,
+        "exact_API_token_forecast": false,
+        "generation_tokens": 6744,
+        "max_output_tokens": 65536,
+        "target_fragments": 269,
+        "workload": 33952.0
+      },
+      "key": "alignment:347459c203be091b27bdc9353c87d27c445e97a529667caf7cc15161aab2d7d7",
+      "reviewer": 1,
+      "slot_id": null,
+      "stage": "alignment",
+      "task_id": "IP/2013/page_101.pdf-4"
+    }
+  ],
+  "maximum_calls": 108,
+  "model": "deepseek-flash",
+  "negative_controls_id": "02ffa6ee32cb95e32d2dba6a3ce1cfd69e3610ddfc4bf1c459f52031e0535efd",
+  "no_format_percentage_gate": true,
+  "no_success_splicing": true,
+  "no_twelve_call_pilot": true,
+  "old_R6_result_unchanged": true,
+  "old_preselected_public_bank": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/review_revision_04",
+  "original_generation_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/experiment0_01",
+  "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3",
+  "pending_generation_allowed": true,
+  "retry_count": 0,
+  "review_policy": {
+    "id": "11a7333efd3d303871737b0bd6174a5a76329dd0c1d44a4b252ac75c08149e6f",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_policy_01/record.json",
+    "sha256": "93258fdd8b07d7aca16520d2fb6f64ec60fdb3cc85df88e3968b6f01f35e6f64"
+  },
+  "review_policy_id": "8bef26302b75eae1cf504df39de8a4da7a794503451edcd6a601805b0969dd99",
+  "runtime_binding": {
+    "__init__.py": "d80db2a7b1ee01c0bf3b222261b2e67d232839906cba1dcddbee0fb33885ef60",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+    "calibration_v2.py": "71b760ca3907de52c1744b8ace5faa030f6e496b8ec73d98692c0f7fb94e015a",
+    "catalog.py": "33ea37c6946dff2aae1471944fc0ee609123dfff7e53e067632ec6dcb316d23b",
+    "cli.py": "731dc6fe07c81af09e964c2d4b9263bbe0ed142f550feb2e9f9dcd83e384053e",
+    "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+    "datasets.py": "051e959b5360beb9bccf96b1b84966cf48e5ca02edce79634cca146d00828226",
+    "direct_harness.py": "883f9e9f2a7787738b31ba253b1051e6bf005a20ec13a86504340ba566889d5c",
+    "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+    "feedback.py": "832318845e8490328486c045b6af1d10015b06e8b42305f7abb16e813b2247ad",
+    "gate_diagnostics.py": "f5acb8133519dc5fe246e73b77bd2e1df1b9911f57a90578c7e276b59088a811",
+    "gpu_gate.py": "11aca784ab2b6cf6447f23d82b2e814f4317760efbc23791dbd3d8863bba8da8",
+    "gpu_gate_v2.py": "ef9428c502234b06e7714b2b950ca0222f8a2042b68ada150daf9f12cf0a2fa7",
+    "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+    "kernel.py": "8939c8a73afebf6fbc34f3eb7d29a058f6f7c9a2e53ecb5d495e895a6870e666",
+    "legacy_harness.py": "eeec581ef7e7913862c8ebc549ed6ffd5954d6274a90fff4f66c5ecbb7b46419",
+    "materials.py": "fa64180afb919bcbf487fa78b3329de10a06999021f3fdd51a0a62a37f0a4e2a",
+    "metric_vendor/__init__.py": "aedb95a28f644d53cb3d0e8fc9ac15fd84416fd21d647a77d3ac015d2a03f058",
+    "metric_vendor/finqa_evaluate.py": "b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2",
+    "metric_vendor/tatqa_metric.py": "b8286fb1799164781c209fa4c2509877ebe4d256e8e0fe74e75b4b73f77ab59f",
+    "metric_vendor/tatqa_utils.py": "a84bb2f960737cf0a53733637a674cc4b20ef030a2be6a4b21dc2c4356f415ec",
+    "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+    "planning.py": "ed219d2769f46647d0afa79b18cc35e4b41abc6c495ee7b2c21de355360370a6",
+    "probe_budget.py": "45d3b54cb33810b5da6e2f70b3fef4eb2533dd6a2cd93013f31b18b3c540b441",
+    "probe_collection.py": "a83964af61988d89787905545c4d264c10ad79260bc2ee5c73cda367e04c4461",
+    "probe_inventory.py": "71f3c8cb3b6d25a55771da1b14efdf4663d0ca0adc7b8e29a4d2f8b6b02e5086",
+    "probe_provider.py": "bbda8960149ddb65d4b49fcd2f80ebaf266f907329137a727d963b1e44001db1",
+    "probe_recovery.py": "46aa5be579789583ddb71883037c6e7abfca68b06fc6fda0b0926d2c59f24477",
+    "probe_scope.py": "d8d6d42db89b9c462101b70312a659720dd20a09053b96b4e11b15128d6c2b7c",
+    "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+    "providers.py": "d22c7836aab85a4ace9e98559e20d0d207cb79755ce90be9eae5f82b13c555d9",
+    "qualification.py": "9f0f55d4d9de67745f6428dff91bd6525ff1bb6669e661d03075805c0eaf2e48",
+    "qwen_protocol.py": "352f255a202e133b0bec46cf4e222c17ae6eb4e8cd8f9c767ec8cb2f84ea8bc5",
+    "retained/core/immutable_artifacts.py": "b34f3e04372409fa2ab1e393ba2eaa08088e5705a176736f121b3809908a4c39",
+    "retained/experiments/finance_qa_vnext_anchored_vtdo/distribution.py": "26e782cdbd081993294c4d1c2b96d5d80f3c240fbeb51018b1e89843d12175de",
+    "retained/experiments/finance_qa_vnext_anchored_vtdo/optimizer_pullback.py": "3cc151c79559e07048c7e0d476a2b26da96fc9454bf99807de02a0f723bca38b",
+    "retained/experiments/finance_qa_vnext_anchored_vtdo/protocol.py": "56ccfa43086ce89f1e23b669229186bdf52fba3fcdb1f4f8393674522ec36f79",
+    "retained/experiments/finance_qa_vnext_catalog_bridge/worker.py": "9ae752b64d329b434107b2a5b6efb807e1bb8fbfd61813e6396335c52d5907b1",
+    "retained/experiments/finance_qa_vnext_eval_readiness/training_runtime.py": "b601c1779d07d0229306621392cc7d43d102d3ef39cb125e8ea8c86f678316c4",
+    "retained/experiments/finance_qa_vnext_fixed_kernel_value/protocol.py": "0680f0cb742c75e2f7b4dc8e4641bc10d358977a52cfdbd90c32025736a4cdf3",
+    "retained/experiments/finance_qa_vnext_fixed_kernel_value/runtime.py": "1918f591b0419097ac21536a670adb749c7948241eab2600967365415f69be6a",
+    "retained/experiments/finance_qa_vnext_fixed_kernel_value/trajectory_consumer.py": "bb6f6c5abfeadff3fe4b9d0c8e162e50983aceaf4a83cc82a668197a15d26097",
+    "retained/experiments/finance_qa_vnext_pq_student/model.py": "63aa525071e5185fd5b4c8409f5312b4f312dfe4e9d6ec9c688ac0d476f1ea83",
+    "retained/experiments/finance_qa_vnext_pq_student/plan.py": "b0bce585080bc2ce95f7e36be2c174eedc41db266e257db89233a29f51ad1837",
+    "retained/scripts/fixed_kernel_anchored_segmented_replay_20260916.py": "e1a3386d199a7b3c000961aea42ed79d2669c1faef9bc195e2ca498db9548997",
+    "retained/scripts/fixed_kernel_anchored_sources_gpu_gate_20260916.py": "90576e06627b48370934fc3c45f041f28abad8db3ceacd4c02edd07357288019",
+    "semantic_review.py": "5f3a5f4e145923c4f1eade495241c465eee535a29ed45b02a9fc9c3e724d21c1",
+    "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+    "state_mapping.py": "e0c202806db2d983c8f3ba21541be8de2ae1d4f9345ec999a64e45539ac8029c",
+    "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+    "structured_probe_collection.py": "572fd8f3f54744e64db936d71452484f5dff1fcccb6b9fe6f104348c03054658",
+    "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+    "training_policy.py": "5e7d4362fbc1c37de8d555dd3e080dd93af3bfcd81c8b687de09ae076dbd1f17",
+    "v6_collection.py": "5e4b7cf90c86109dca062547a46574299eb46568226b79326a5b58e91365111d",
+    "v6_compact_review.py": "79ead92e53bd12c68499669dd8c03f8ba944735e9d122cbbc1fc1be789df3a36",
+    "v6_decomposed_review.py": "13d9d0ba84171f703ea7ee60ea67dd55dc606e5dc88dfc6a648fd637e77f5705",
+    "v6_distribution.py": "d292a7d4f83a6b264ad2091f083307d5abe50dc56501b23f3f9de1e82cea125d",
+    "v6_encoding.py": "858cc81b43262641b7f1d7740029e52bde5b76a6dbb96c3a83527c2916485412",
+    "v6_mechanism_diagnostics.py": "e326f549e7e2df438b30af24f5270a6623953a5d0248f9c5b3fac1bc9dece45e",
+    "v6_review_provider.py": "767b1e151adb9cf7079d34792225b191685a4fd1d856e70fdbf3d47dc6f5517c",
+    "v6_review_revision.py": "913d061433e6b9f9614f8b4a39f96c63ef995fb666d4508ff317982e55866f38",
+    "v6_slot_review.py": "2ea5a7a2915c3d1e8582d8025f8370689b93bf03fddb426259825d34bbeb8f57",
+    "v6_state_alignment.py": "632e55ffce443570e51cfcfd8b6f5f781f8ae342bc46fc48277e20e5fe444b89",
+    "v6_strict_review.py": "bf910610031a39d9fbbc05c305fb0cc77d68c0177823c44cbac65544dbfeb09f",
+    "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+    "v6_training_plan.py": "f1d1d95d64e02046d64908ebed0cc1b99b16ef6e99c490c53888a48f7a5ca101",
+    "v7_base_evaluation.py": "ab8c46b832168ae31c670b6f19a71ecca45086a6c237da91c2db60c6f188d9e5",
+    "v7_flat_alignment.py": "136d0fd40f3c200b8707a7a62979c6f58f7af113191eee3ee8d6c5658ddebcf7",
+    "v7_flat_review.py": "6d797542c8d7483c9de777a5214de3fc97234c438b414cc70b470d60b169eabb",
+    "v7_full_probe.py": "d8af4ac4f94b49ab10d775aceea8c3ed953991987bbd46b49615d262e3f3661c",
+    "v7_mask_review.py": "f95d03ed9d0ff614717c6a6d0da3a24362d1b2a5cdcbda7372783849ebd8fe91",
+    "v7_review_coherence.py": "f78902aaa65dbd08fd183e4de25c2bffc406c16a2d5318e0e6ae5c7335427603",
+    "v7_review_flat_trial.py": "b78d97b725f935fa890e683905e891e0ac68fe37cf2acde45e9581c3e9e8fea7",
+    "v7_review_full_trial.py": "faa269174e30ea3298d5375c9ecdf8a87a3b50cd0cc92dcebf187065b4a91683",
+    "v7_review_locator_trial.py": "24df46c00ea5d5a67f51eedfecf74f22d6cff52350cda7b9b72de64e59663fc7",
+    "v7_review_mask_trial.py": "e5d2526328d4863128c5e85abc6f3bdae71c611c60498f9a57fa6fdde197e597",
+    "v7_review_reanalysis.py": "37ac36a5955de64d6e94de8c8280b37bfcc72a2a521f51b08465e1fce2bf02db",
+    "v7_slot_review.py": "ea8fcf4d258fcda309ae4e4a0fdae2b3fd3872e6b63d3f90ed04e9d93ef9a9eb",
+    "v7_state_alignment.py": "41a0438ac53e33ba9f350db65e6356b9a3b0059c167ad181431de3d7df60a34e",
+    "v8_collection.py": "3a558655e5028682c4adc0178aed849de048078a0761ff378ef6df5cc3f82b70",
+    "v8_representation.py": "fb025a31c14db6f465c8268720ad98eb6022b61f5fb288a2fd84c9fadd20b6cd",
+    "v8_review_policy.py": "2ae582b70a8aa4588edf48600c40b0b98ced5c375a1ec96f2bdb660e04ad4b2d",
+    "v8_review_validation.py": "f13b199d3cf309f085b0a92657a5e10e1e1d603fea874a15843149018bc7d0c5",
+    "v8_single_target_review.py": "2f1245d60e128cfa4e6fd5c524ed5be2822243e3c868713f7cef7011076e87b4",
+    "v8_training_driver.py": "a0e006e516c867b61d64cde43d152e085421818ad627c709d49ffdc9642ce25b"
+  },
+  "schema": "v8_one_full_review_validation.v1",
+  "slot_denominator": 96,
+  "slot_inputs": {
+    "AAPL/2013/page_78.pdf-4": {
+      "id": "40ef1798c8f0ff05a0644331bd98e967f82bfae8172bceeaec52c0e2c30b287f",
+      "sha256": "c285df83cc7404c519235e1cdbae3dea01a975a4ac609ddd40412b1e9104d6a3"
+    },
+    "INTC/2018/page_105.pdf-2": {
+      "id": "e164a1d0b55b477864dcd02deee1482566e259697d767fdf6d7838b90a285ece",
+      "sha256": "c5f9eac93a063e103c8075a0e57b0f29335e2a3b86b4eb1d7d26d2539c742790"
+    },
+    "IP/2013/page_101.pdf-4": {
+      "id": "686836b1ca3656effe499889cdb45cbc64c32ae55226a7ebd51ac73ad6605999",
+      "sha256": "b5deb17d1f1700d420b0d3692cda362e57ca346ddcef7b914186088020a84134"
+    },
+    "MAS/2017/page_37.pdf-1": {
+      "id": "f62660b1e1aa1d9fa10f0ad14ca1657b14ad912143238a512995c87a6075df63",
+      "sha256": "22fff4326f990baed713997354566707064b0cac0ae03b7e41d3b0525327486c"
+    },
+    "STZ/2010/page_51.pdf-3": {
+      "id": "af8baa24415eceec83b75f4161b502bffb3d43fc9f5a3f9b047cb283991f7378",
+      "sha256": "49b7b022b6217b0232a0f13f2bdde6c6f958cae9c18ceb1298cdc3533471ee56"
+    },
+    "TFX/2015/page_42.pdf-1": {
+      "id": "3de875b1c3c06721ddf02a536a9330e3998130a50caa1100130853ab3a42f726",
+      "sha256": "3f0ed175bf5a3f09343506ed8db24697f7bb02c0d647072f8949502149d76a6f"
+    }
+  },
+  "source_commit": "ebd30cafc93580acf17bf6207b6af0a7f9929467",
+  "task_ids": [
+    "STZ/2010/page_51.pdf-3",
+    "MAS/2017/page_37.pdf-1",
+    "TFX/2015/page_42.pdf-1",
+    "INTC/2018/page_105.pdf-2",
+    "AAPL/2013/page_78.pdf-4",
+    "IP/2013/page_101.pdf-4"
+  ],
+  "technical_namespace": "v8review:"
+}

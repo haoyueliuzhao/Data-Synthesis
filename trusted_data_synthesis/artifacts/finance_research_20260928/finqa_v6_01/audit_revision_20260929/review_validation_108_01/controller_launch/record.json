@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-29T04:10:34.523051+00:00",
+  "automatic_next_trial": false,
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-m",
+    "trusted_synthesis.finance_research.v8_review_validation",
+    "run"
+  ],
+  "frozen_worktree": "/tmp/data-synthesis-finqa-v8-review-frozen-20260929",
+  "id": "79ba42aaa8ef1d7a25d88e39cb23161a82bc10d8e68d81e630f28eda616ecf32",
+  "maximum_calls": 108,
+  "pid": 1731461,
+  "process_start_time_ticks": "307942969",
+  "protocol_id": "a61f969b1ff1ba28193ae6359e9bc491c46efa5c36988b29dd893f6b766f8f4b",
+  "retries": 0,
+  "source_commit": "ebd30cafc93580acf17bf6207b6af0a7f9929467"
+}

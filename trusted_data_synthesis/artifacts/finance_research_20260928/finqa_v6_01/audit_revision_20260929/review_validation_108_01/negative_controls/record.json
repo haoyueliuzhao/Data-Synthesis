@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "error": "single authoritative targets missing or invented",
+      "false_pass": false,
+      "name": "missing_target"
+    },
+    {
+      "error": "valid trace retains an unresolved key claim",
+      "false_pass": false,
+      "name": "critical_unknown"
+    },
+    {
+      "error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+      "false_pass": false,
+      "name": "financial_nonassertive"
+    },
+    {
+      "error": "wrong original evidence kind",
+      "false_pass": false,
+      "name": "wrong_source"
+    },
+    {
+      "error": "duplicate JSON key",
+      "false_pass": false,
+      "name": "duplicate_json"
+    },
+    {
+      "false_pass": false,
+      "name": "action_does_not_approve_other_content"
+    }
+  ],
+  "financial_semantic_omniscience_claimed": false,
+  "id": "02ffa6ee32cb95e32d2dba6a3ce1cfd69e3610ddfc4bf1c459f52031e0535efd",
+  "model_calls": 0,
+  "passed": true,
+  "positive_control": true,
+  "schema": "v8_finite_negative_controls.v1",
+  "synthetic_only": true
+}

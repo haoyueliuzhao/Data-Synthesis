@@ -1,0 +1,169 @@
+{
+  "at": "2026-09-29T04:15:24.817453+00:00",
+  "audit_type": "read_only_statistics_of_completed_generation_and_existing_native_scores",
+  "automatic_third_batch": false,
+  "concurrent_fixed108_engineering_review_is_separate": true,
+  "conditional_task_reduction": false,
+  "exact_original_slot_order_preserved": true,
+  "generation": {
+    "actual_model_calls": 16286,
+    "all_provider_calls_settled_slots": 8000,
+    "calls_per_slot_histogram": {
+      "1": 410,
+      "13": 1,
+      "2": 7023,
+      "3": 485,
+      "4": 57,
+      "5": 16,
+      "6": 3,
+      "7": 4,
+      "8": 1
+    },
+    "completed_slots": 8000,
+    "dispatch_to_last_settlement_seconds": 1060.3711624145508,
+    "earliest_episode_completed_utc": "2026-09-29T03:51:57.599578+00:00",
+    "first_dispatch_utc": "2026-09-29T03:51:55.283868+00:00",
+    "last_settlement_utc": "2026-09-29T04:09:35.655030+00:00",
+    "latest_episode_completed_utc": "2026-09-29T04:09:35.698046+00:00",
+    "mean_calls_per_slot": 2.03575,
+    "native_final_status_at_utc": "2026-09-29T04:11:46.967808+00:00",
+    "slot_outcome_counts": {
+      "COMPLETE": 8000
+    },
+    "stop_reason_counts": {
+      "final_answer": 7957,
+      "no_tool_call": 43
+    }
+  },
+  "generation_only_ledger": {
+    "actual_usage_tokens": {
+      "completion_tokens": 1832057,
+      "prompt_cache_hit_tokens": 61928553,
+      "prompt_cache_miss_tokens": 6180302,
+      "prompt_tokens": 68108855,
+      "total_tokens": 69940912
+    },
+    "database_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/experiment0_01/budget.sqlite3",
+    "frozen_tariff_CNY_per_million": {
+      "cache_hit": "0.04",
+      "cache_miss": "2",
+      "output": "8"
+    },
+    "historical_or_review_charges_included": false,
+    "http_status_counts": {
+      "200": 16286
+    },
+    "monetary_semantics": "per-request upward-rounded frozen peak-tariff upper bound on actual usage; not provider invoice",
+    "parallel_wallet_difference_used": false,
+    "partition_consumed": 16286,
+    "partition_quota": 220000,
+    "per_request_peak_tariff_recomputed_matches_stored": true,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "request_states": {
+      "SETTLED": 16286
+    },
+    "response_classification_counts": {
+      "model_response": 16286
+    },
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "selection": "v8_request_allocations.category='generation' joined to requests by invocation_id; exact new8000 episode-ID set verified",
+    "settled_peak_tariff_upper_bound_CNY": "29.501104",
+    "settled_peak_tariff_upper_bound_microcny": 29501104,
+    "settled_requests": 16286,
+    "unique_invocations": 16286,
+    "unused_generation_subquota_reallocated": false
+  },
+  "generation_seal_declares_private_references_read": false,
+  "generation_seal_id": "91a640794bc63eff11b3c37d90e4562905d482c8593aa973e4c95420456af117",
+  "id": "39338267a58716fa13d8d97b4d5a7e5690b4d7b118306a0dcb4780222f171472",
+  "independent_private_IO_trace_claimed": false,
+  "launch_protocol_id": "0f8f261f7ac792d77c67abb58ae8e97125dc91c0e3368b7a49f364178541ae1a",
+  "native": {
+    "V_trace_status_counts": {
+      "not_assessed_native_ineligible": 2309,
+      "not_assessed_pending_review_readiness": 5691
+    },
+    "correct_slots_per_task_histogram": {
+      "0": 180,
+      "1": 27,
+      "2": 25,
+      "3": 24,
+      "4": 22,
+      "5": 33,
+      "6": 43,
+      "7": 137,
+      "8": 509
+    },
+    "execution_accuracy": 0.711375,
+    "execution_correct_slots": 5691,
+    "execution_incorrect_slots": 2309,
+    "execution_unknown_slots": 0,
+    "invalid_prediction_reason_counts": {
+      "missing_or_invalid_submission": 53,
+      "nonexecutable_submission": 4
+    },
+    "known_zero_native_support_tasks": 180,
+    "native_correctness_is_not_trace_or_training_admission": true,
+    "native_status_counts": {
+      "invalid_prediction": 57,
+      "scored": 7943
+    },
+    "phase": "KNOWN_ZERO_NATIVE_SUPPORT",
+    "program_accuracy": 0.59025,
+    "program_equivalent_slots": 4722,
+    "tasks_with_at_least_one_native_correct": 820,
+    "this_is_not_joint_valid_task_count": true,
+    "unresolved_native_tasks": 0
+  },
+  "native_scoring_bound_to_full8000_generation_seal": true,
+  "native_support_id": "5c4b1933fe451cd1f1e6b7b67a00faab60784aa50e92c81c6073b0213b14ea18",
+  "new_model_calls_in_this_audit": 0,
+  "new_scoring_or_reclassification": false,
+  "old_new_stock_splicing": false,
+  "original1000_training_necessary_native_support_established": false,
+  "original_material_legacy_integer_histogram_identity": {
+    "canonical_loaded_digest": "11f9bf4978b0a47f4bf405693b5e81680dea336251b729a2feb2c86a73ee431c",
+    "legacy_integer_histogram_reconstruction": true,
+    "original_bytes_and_id_not_rewritten": true,
+    "original_id": "ed78f27d36129f3668f40914824178ce5604b25c60ffc030b1fbb0b90703e1bb"
+  },
+  "original_material_protocol_id": "ed78f27d36129f3668f40914824178ce5604b25c60ffc030b1fbb0b90703e1bb",
+  "original_slot_denominator": 8000,
+  "original_task_denominator": 1000,
+  "private_reference_scoring_order": "implemented pipeline requires complete all8000 seal before opening private references; existing native result binds that seal",
+  "production_semantic_review_started_by_generation": false,
+  "raw_generation_text_included": false,
+  "schema": "v8_generation_native_audit_summary.v1",
+  "slots_per_task": 8,
+  "sources": {
+    "final_status": {
+      "file_sha256": "1d4fd7c7381ba1c2f9623772dfa9ea4844268a862dd6cdfa9d6c34a9b149bf5f",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/status.json",
+      "record_id": null
+    },
+    "generation_seal": {
+      "file_sha256": "cd7f0a1b1b5a00ebe5fadae54ae202e33a7681f8d3cbcb203e582278e676d5fd",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/generation_seal/record.json",
+      "record_id": "91a640794bc63eff11b3c37d90e4562905d482c8593aa973e4c95420456af117"
+    },
+    "launch": {
+      "file_sha256": "6bc5aaa82ae6933a5aa42e642e0d366ebe4dbbac41a41610d27eebc8b36c7daf",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/registration/protocol.json",
+      "record_id": "0f8f261f7ac792d77c67abb58ae8e97125dc91c0e3368b7a49f364178541ae1a"
+    },
+    "native_support": {
+      "file_sha256": "31f54e64c9621260f1efab045b69c580f354a982b6d356ddb291ee8ad66a5e15",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/native_support/record.json",
+      "record_id": "5c4b1933fe451cd1f1e6b7b67a00faab60784aa50e92c81c6073b0213b14ea18"
+    },
+    "original_material": {
+      "file_sha256": "eefd60c86cc940a949b9d2998371f34de9e5304cc1c13e35ff3b1181339696c6",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v7_01/registration/protocol.json",
+      "record_id": "ed78f27d36129f3668f40914824178ce5604b25c60ffc030b1fbb0b90703e1bb"
+    }
+  },
+  "stop_reason": "180 original tasks have all8 native-false slots; do not launch full production semantic review or original1000 training",
+  "training_admitted": false,
+  "training_started": false,
+  "unique_original_slots": 8000
+}
