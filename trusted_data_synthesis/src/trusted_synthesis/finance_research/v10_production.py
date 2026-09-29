@@ -81,10 +81,20 @@ def register_runtime(output, plan, ledger):
     if path.exists():
         prior = checked(path)
         require(
-            all(prior.get(k) == v for k, v in expected.items())
+            all(prior.get(k) == v for k, v in expected.items() if k != "source_bindings")
             and prior.get("annotation_requests_before_registration") == 0,
             "registered annotation runtime differs; never overwrite or silently change dispatch",
         )
+        if prior["source_bindings"] != expected["source_bindings"]:
+            from .v10_execution_revision import validate_source_transition
+
+            validate_source_transition(
+                output,
+                plan,
+                scope="annotation",
+                original=prior["source_bindings"],
+                current=expected["source_bindings"],
+            )
         return prior
     snapshot = ledger.snapshot()
     partition = snapshot.get("v10_partition", {})
@@ -147,9 +157,20 @@ def register_review_phase(output, plan):
     if target.exists():
         phase = checked(target)
         require(
-            phase["protocol_id"] == plan["id"] and phase["source_bindings"] == phase_sources(),
-            "registered production implementation changed",
+            phase["protocol_id"] == plan["id"],
+            "registered production protocol changed",
         )
+        current_sources = phase_sources()
+        if phase["source_bindings"] != current_sources:
+            from .v10_execution_revision import validate_source_transition
+
+            validate_source_transition(
+                output,
+                plan,
+                scope="annotation",
+                original=phase["source_bindings"],
+                current=current_sources,
+            )
         return phase
     generation = entry(output / "generation_seal/record.json")
     native = entry(output / "native_support/record.json")

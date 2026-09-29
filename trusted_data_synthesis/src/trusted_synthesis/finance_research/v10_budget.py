@@ -148,6 +148,14 @@ def partition_snapshot(connection, config):
     record = _record(connection, config)
     if record is None:
         return None
+    from .v10_funding import read_overlay
+
+    funding = read_overlay(connection, config)
+    effective_limits = {key: dict(value) for key, value in LIMITS.items()}
+    if funding is not None:
+        effective_limits["review_mapping"]["microcny"] = funding[
+            "effective_review_mapping_microcny"
+        ]
     quotas = {r["category"]: dict(r) for r in connection.execute("SELECT * FROM v10_quotas")}
     if set(quotas) != set(LIMITS):
         raise RequestPartitionError("V10 subquota rows missing")
@@ -160,7 +168,7 @@ def partition_snapshot(connection, config):
                 for k in ("requests", "dispatched", "spent", "held", "pending", "unknown")
             )
             or row["requests"] > row["request_cap"]
-            or row["spent"] + row["held"] > row["money_cap"]
+            or row["spent"] + row["held"] > effective_limits[key]["microcny"]
             or row["dispatched"] > row["requests"]
             or row["unknown"] + row["pending"] > row["requests"]
         ):
@@ -175,7 +183,7 @@ def partition_snapshot(connection, config):
     }
     if old != record["frozen_v8_consumed"]:
         raise RequestPartitionError("old generation/review dispatch quota changed after V10 freeze")
-    return {
+    result = {
         "id": record["id"],
         "batch_id": record["batch_id"],
         "limits": LIMITS,
@@ -191,6 +199,15 @@ def partition_snapshot(connection, config):
         "output_limits": record["output_limits"],
         "roster_sha256": record["roster_sha256"],
     }
+    if funding is not None:
+        result.update(
+            effective_limits=effective_limits,
+            original_unallocated_microcny=UNALLOCATED_MICROCNY,
+            unallocated_microcny=funding["effective_unallocated_microcny"],
+            funding_overlay_id=funding["id"],
+            generation_new_reservations_authorized=False,
+        )
+    return result
 
 
 def _eligible(connection, config, coordinates, output_limit):
@@ -215,10 +232,18 @@ def admit(connection, config, coordinates, output_limit, reservation):
     category = _eligible(connection, config, coordinates, output_limit)
     if category is None:
         return None
+    from .v10_funding import read_overlay
+
+    funding = read_overlay(connection, config)
+    if funding is not None and category == "generation":
+        raise BudgetUnavailable("V10 funding authorizes no new generation reservations")
     quota = connection.execute("SELECT * FROM v10_quotas WHERE category=?", (category,)).fetchone()
     if quota["requests"] >= quota["request_cap"]:
         raise BudgetUnavailable(f"V10 {category} request sublimit exhausted; no borrowing")
-    if quota["spent"] + quota["held"] + reservation > quota["money_cap"]:
+    money_cap = (
+        funding["effective_review_mapping_microcny"] if funding is not None else quota["money_cap"]
+    )
+    if quota["spent"] + quota["held"] + reservation > money_cap:
         raise BudgetUnavailable(
             f"V10 {category} settled+held money sublimit exhausted; no borrowing"
         )

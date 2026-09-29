@@ -220,10 +220,17 @@ def build_plan(*, batch_id=BATCH_ID, wallet=None):
 
 def checked_plan(output=OUTPUT):
     plan = checked(Path(output) / "registration/protocol.json")
-    require(
-        plan["protected_generation_sources"] == source_binding(),
-        "frozen generation/policy bytes changed",
-    )
+    current_sources = source_binding()
+    if plan["protected_generation_sources"] != current_sources:
+        from .v10_execution_revision import validate_source_transition
+
+        validate_source_transition(
+            output,
+            plan,
+            scope="generation",
+            original=plan["protected_generation_sources"],
+            current=current_sources,
+        )
     require(
         plan["original_protocol"]["sha256"] == sha(plan["original_protocol"]["path"]),
         "original contract changed",

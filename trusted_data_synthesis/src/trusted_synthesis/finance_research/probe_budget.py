@@ -583,6 +583,11 @@ def _budget_snapshot(connection, config):
     effective_cap = (
         monetary["effective_hard_cap_microcny"] if monetary else config["hard_cap_microcny"]
     )
+    from .v10_funding import read_overlay
+
+    funding = read_overlay(connection, config)
+    if funding is not None:
+        effective_cap = funding["effective_hard_cap_microcny"]
     result = {
         "run_id": config["run_id"],
         "purpose": config["purpose"],
@@ -624,6 +629,11 @@ def _budget_snapshot(connection, config):
             effective_hard_cap_microcny=effective_cap,
             original_remaining_exposure_microcny=config["hard_cap_microcny"] - spent - held,
             monetary_amendment=monetary,
+        )
+    if funding is not None:
+        result.update(
+            funding_overlay=funding,
+            previous_effective_hard_cap_microcny=funding["previous_effective_hard_cap_microcny"],
         )
     return result
 
