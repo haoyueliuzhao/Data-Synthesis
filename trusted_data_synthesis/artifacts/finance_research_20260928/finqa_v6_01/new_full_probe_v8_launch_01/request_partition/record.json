@@ -1,0 +1,40 @@
+{
+  "at_unix": 1790653906.6978335,
+  "buffer_requests": 950,
+  "buffer_spendable": false,
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "evidence": {
+    "fixed_review_policy_id": "11a7333efd3d303871737b0bd6174a5a76329dd0c1d44a4b252ac75c08149e6f",
+    "launch_protocol_id": "0f8f261f7ac792d77c67abb58ae8e97125dc91c0e3368b7a49f364178541ae1a",
+    "user_authorization": "用户授权参照20260929阶段审计修订并推进；生成与审阅准入分离"
+  },
+  "generation_episode_count": 8000,
+  "generation_episode_ids_sha256": "9aa15c1ab29935b20ac7607f215216979f9ca7e9a8a52556dab17b36eb36ef51",
+  "historical_request_records_sha256": "c25d89c682bcd1bd463a0817635aeeda1b3c76dca0e7203253a7fc877d700d99",
+  "historical_requests": 18942,
+  "id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+  "limits": {
+    "generation": 220000,
+    "production_review": 18000,
+    "technical_review": 108
+  },
+  "old_namespace_new_dispatch_allowed": false,
+  "old_unknowns_preserved": 1,
+  "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3",
+  "preserved_counters": {
+    "completion_tokens": 9381924,
+    "dispatched": 18942,
+    "held": 2228224,
+    "hit_tokens": 61545338,
+    "miss_tokens": 21258687,
+    "pending": 0,
+    "prompt_tokens": 82804025,
+    "requests": 18942,
+    "singleton": 1,
+    "spent": 120043464,
+    "unknown": 1
+  },
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v8_joint_request_partition.v1",
+  "wallet_config_unchanged": true
+}

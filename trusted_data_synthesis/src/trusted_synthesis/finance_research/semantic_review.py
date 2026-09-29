@@ -513,7 +513,13 @@ def _meaning_terms(review, docs):
     return meanings
 
 
-def _validate_slot(slot, docs, terms, *, allow_nonassertive_context=False):
+def _validate_slot(
+    slot, docs, terms, *, allow_nonassertive_context=False, nonassertive_policy=None
+):
+    if nonassertive_policy is not None:
+        from .v8_review_policy import NONASSERTIVE_POLICY, nonassertive_fragment_kind
+
+        _check(nonassertive_policy == NONASSERTIVE_POLICY, "unknown nonassertive policy")
     propositions = {p.proposition_id: p for p in slot.propositions}
     _check(len(propositions) == len(slot.propositions), "duplicate proposition aliases")
     for prop in slot.propositions:
@@ -594,7 +600,11 @@ def _validate_slot(slot, docs, terms, *, allow_nonassertive_context=False):
                 and doc["kind"] == "public_content"
                 and span.component in {"reason", "update"}
                 and span.proposition_ids == []
-                and is_nonassertive_context_fragment(span.quote),
+                and (
+                    nonassertive_fragment_kind(span.quote) is not None
+                    if nonassertive_policy is not None
+                    else is_nonassertive_context_fragment(span.quote)
+                ),
                 "nonassertive context requires explicit future opt-in "
                 "and an empty optional Q field",
             )

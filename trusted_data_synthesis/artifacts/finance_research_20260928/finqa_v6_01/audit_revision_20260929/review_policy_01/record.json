@@ -1,0 +1,138 @@
+{
+  "at": "2026-09-29T03:47:23.520066+00:00",
+  "definition": {
+    "alignment_wire": "v8_alignment_review.v1",
+    "budget": {
+      "original800CNY_and_UNKNOWN_hold_unchanged": true,
+      "production_namespace": "v8prod:",
+      "production_upper_bound": 18000,
+      "shared_review_partition_requests": 18108,
+      "technical_calls": 108,
+      "technical_namespace": "v8review:"
+    },
+    "freeze": {
+      "Base_development_results_used": false,
+      "before_new_generation": true,
+      "new_generation_results_used_for_policy_choice": false,
+      "old_R6_false_unchanged": true
+    },
+    "granularity": {
+      "action_arguments": "atomic only under the frozen exact tool-field contract",
+      "action_fields": {
+        "list_sources": [],
+        "read_source": [
+          "source_id"
+        ],
+        "run_program": [
+          "program"
+        ],
+        "submit_program": [
+          "program"
+        ]
+      },
+      "content_boundaries": "sentence whitespace, newline and semicolon; approximately200 characters",
+      "every_original_character_retained": true,
+      "original_coordinates": "Unicode codepoint [start,end), immutable original strings",
+      "original_history_not_rewritten": true,
+      "unregistered_extra_reason_or_rationale_fields": "never approved through an atomic action"
+    },
+    "id": "8bef26302b75eae1cf504df39de8a4da7a794503451edcd6a601805b0969dd99",
+    "labels": [
+      "approved",
+      "retracted",
+      "unknown",
+      "nonassertive_context"
+    ],
+    "mechanical_projection": {
+      "action_approval_approves_other_assistant_text": false,
+      "action_judgments_and_supervision_mask": "derived from the SAME target judgment, no second model copy",
+      "missing_targets_filled": false,
+      "model_label_or_evidence_repair": false,
+      "tool_success_automatically_approves": false
+    },
+    "model": "deepseek-flash",
+    "model_fallback": false,
+    "model_obligations": [
+      "critical propositions and their evidence",
+      "withdrawals and hypotheses",
+      "action grounding",
+      "consequential updates",
+      "semantic graph",
+      "target judgment"
+    ],
+    "nonassertive": {
+      "empty_optional_pattern": "(?:Q|U)\\s*:\\s*(?:None|N/A)\\s*[.;]?",
+      "excluded": "financial facts/amounts/periods/formulas/source judgments, verified/correctness claims, mixed ambiguity",
+      "full_fragment_match": true,
+      "model_must_choose_label": true,
+      "policy": "v8_model_labelled_empty_or_procedural_context.v1",
+      "procedural_intent_pattern": "(?:(?:R|U|Q)\\s*:\\s*)?(?:(?:I(?:'ll| will)|We(?:'ll| will)|Let(?:'s| us))\\s+)?(?:now\\s+)?(?:start\\s+by\\s+)?(?:read|reading|inspect|inspecting|open|opening|list|listing|submit|submitting|return|returning|execute|executing|run|running|calculate|calculating|compute|computing)\\s+(?:the\\s+|a\\s+)?(?:(?:original|public|relevant|predicted)\\s+)?(?:source|sources|table|tables|text|program|result|calculation)\\s*[.;]?",
+      "proposition_ids_must_be_empty": true,
+      "public_content_only": true,
+      "unrecognized_or_mixed": "unknown, not automatically approved or shortened",
+      "zero_target_loss": true
+    },
+    "policy_is_new_granularity_and_supervision_rule_not_just_field_rename": true,
+    "production_review_resource_policy": {
+      "after_all8000_generation_sealed": true,
+      "all8000_originals_retained": true,
+      "any_task_with_zero_native_support": "stop original1000 training and expensive full production review",
+      "every_native_correct_candidate_reviewed_without_selection": true,
+      "native_all_slots_before_semantic_review": true,
+      "native_false_or_unknown_trace_status": "not_assessed_native_ineligible"
+    },
+    "review_context": {
+      "alignment_only_own_eight_sealed_judgments": true,
+      "offline_reference_only": true,
+      "one_original_slot_plus_shared_sources": true,
+      "other_reviewer_visible": false,
+      "other_slot_reviews_visible": false,
+      "same_model_reviews_statistically_independent": false
+    },
+    "review_wire": "v8_single_target_review.v1",
+    "schema": "v8_single_target_policy.v1",
+    "single_authority": "one required keyed targets table; every original target exactly once",
+    "target_record_fields": [
+      "label",
+      "proposition_ids",
+      "evidence"
+    ],
+    "targets": "all public R/U/content fragments and each original action argument string",
+    "technical_validation": {
+      "alignment_calls": 12,
+      "at_least_one_real_complete_native_trace_pair_mapping_encoding_path": true,
+      "automatic_R8_R9": false,
+      "automatic_production_review_or_training": false,
+      "fresh_calls_only": true,
+      "malformed_returns": "retain unknown and continue fixed scope unless billing/resource safety stops",
+      "maximum_new_calls": 108,
+      "negative_controls_must_not_false_pass": true,
+      "no_real_complete_path": "not production ready",
+      "original_preselected_six": true,
+      "original_slots_per_task": 8,
+      "percentage_perfection_gate": false,
+      "reviewers": 2,
+      "slot_calls": 96,
+      "tasks": 6,
+      "twelve_call_pilot": false
+    },
+    "thinking": "disabled",
+    "unchanged_semantics": {
+      "all_jointly_qualified_packages_mapped_together": true,
+      "common_material": "Q_native true AND both effective finite V_trace valid",
+      "meaningful_chi": "actual linked action/observation and evidenced consequential later accepted judgment",
+      "native_correctness_not_trace_proof": true,
+      "no_forced_errors_or_verification": true,
+      "no_mask_intersection_or_hard_case_deletion": true,
+      "ordinary_submission_or_tool_count_not_chi": true
+    }
+  },
+  "generated_results_read": false,
+  "id": "11a7333efd3d303871737b0bd6174a5a76329dd0c1d44a4b252ac75c08149e6f",
+  "model_calls": 0,
+  "policy_source_path": "trusted_data_synthesis/src/trusted_synthesis/finance_research/v8_review_policy.py",
+  "policy_source_sha256": "2ae582b70a8aa4588edf48600c40b0b98ced5c375a1ec96f2bdb660e04ad4b2d",
+  "schema": "v8_review_policy_registration.v1",
+  "source_commit": "20df0e6aebc26252b393e685f44ab3f72c251bf4",
+  "validation_execution_not_claimed": true
+}
