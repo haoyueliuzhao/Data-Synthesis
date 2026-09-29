@@ -329,7 +329,11 @@ def _partition_snapshot(connection, config):
     ):
         raise RequestPartitionError("request subquota counters changed")
     requests = connection.execute("SELECT requests FROM counters WHERE singleton=1").fetchone()[0]
-    if requests != record["historical_requests"] + sum(row["consumed"] for row in counts.values()):
+    from .v10_budget import allocated_requests
+
+    if requests != record["historical_requests"] + sum(
+        row["consumed"] for row in counts.values()
+    ) + allocated_requests(connection):
         raise RequestPartitionError("partition and original request counters do not conserve")
     return dict(
         id=record["id"],
@@ -610,6 +614,11 @@ def _budget_snapshot(connection, config):
     partition = _partition_snapshot(connection, config)
     if partition is not None:
         result["request_partition"] = partition
+    from .v10_budget import partition_snapshot
+
+    v10 = partition_snapshot(connection, config)
+    if v10 is not None:
+        result["v10_partition"] = v10
     if monetary is not None:
         result.update(
             effective_hard_cap_microcny=effective_cap,
@@ -1209,7 +1218,7 @@ class ProbeBudget:
         if (
             request.get("model") != "deepseek-flash"
             or type(request.get("max_tokens")) is not int
-            or request["max_tokens"] not in self.allowed_output_limits
+            or not 0 < request["max_tokens"] <= self.price_sheet.official_max_output_tokens
             or request.get("thinking") != {"type": "disabled"}
         ):
             raise ValueError("request differs from the frozen Probe model/output/thinking contract")
@@ -1234,7 +1243,18 @@ class ProbeBudget:
                     "next full official-context reservation exceeds the authorized "
                     f"{effective_cap} micro-CNY cap"
                 )
-            category = _partition_admit(connection, self.config, coordinates)
+            from .v10_budget import admit as v10_admit
+
+            v10_category = v10_admit(
+                connection, self.config, coordinates, request["max_tokens"], reservation
+            )
+            if v10_category is None and request["max_tokens"] not in self.allowed_output_limits:
+                raise ValueError("request differs from the frozen Probe output contract")
+            category = (
+                None
+                if v10_category is not None
+                else _partition_admit(connection, self.config, coordinates)
+            )
             connection.execute(
                 """INSERT INTO requests
                 (invocation_id,coordinates_json,request_sha256,request_body,state,reserved_microcny,created_at)
@@ -1261,6 +1281,11 @@ class ProbeBudget:
                 )
                 connection.execute(
                     "UPDATE v8_request_quotas SET consumed=consumed+1 WHERE category=?", (category,)
+                )
+            if v10_category is not None:
+                connection.execute(
+                    "INSERT INTO v10_request_allocations VALUES (?,?,?)",
+                    (invocation_id, v10_category, coordinates["episode_id"]),
                 )
             self._event(
                 connection,
@@ -1365,7 +1390,9 @@ class ProbeBudget:
     ):
         import hashlib
 
-        counters = self.price_sheet.usage(usage, output_limit=self.max_output_tokens)
+        counters = self.price_sheet.usage(
+            usage, output_limit=self.price_sheet.official_max_output_tokens
+        )
         amount = self.price_sheet.cost_microcny(
             hit=counters["prompt_cache_hit_tokens"],
             miss=counters["prompt_cache_miss_tokens"],
