@@ -1,0 +1,37 @@
+{
+  "annotation_requests_before_registration": 0,
+  "at": "2026-09-29T13:31:11.637719+00:00",
+  "authorization": {
+    "date": "2026-09-29",
+    "question": "是否将尚未启动的审阅／任务映射并发从 8 提高到 16，并在派发前单独登记这项运行修订？样本、判定规则、零重试和费用硬上限均不变；遇到限流或异常仍保存并停止。",
+    "user_reply": "批准后续审阅／映射并发 16"
+  },
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "budget_run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "effective_concurrency": {
+    "generation": 8,
+    "mapping": 16,
+    "review": 16
+  },
+  "existing_bounded_connection_terminal_policy_unchanged": true,
+  "generation_unchanged": true,
+  "id": "36d05841992bab89a6a92779eee45a0fec3fd84e3fac4e3475f3672894fb220f",
+  "old_dispatched_configuration_rewritten": false,
+  "original_policy_concurrency": 8,
+  "original_policy_sha256": "4be590698dcb06ee9e3cfe4bf820bc763a8e1b70db7820118f3d47a7f62998f8",
+  "override_scope": "prospective review/mapping sending resources only",
+  "policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "samples_semantics_masks_model_budget_and_zero_retries_unchanged": true,
+  "schema": "v10_annotation_concurrency_runtime.v1",
+  "source_bindings": {
+    "probe_budget.py": "ecfda17d243471807a3b0285ff24db39e5c20f1c3e41076bd6dda6689c462687",
+    "v10_budget.py": "beb10c58061c7208befc27e530748df9cfa4d0aaca31ad00130b28fe16b450e9",
+    "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+    "v10_production.py": "cde979ff3b89c61cd990ad89b14ab05f503fbc0a8950550f41638afe1d7025e4",
+    "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+    "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+    "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "M": 5719,
+  "N": null,
+  "at": "2026-09-29T13:32:22.398456+00:00",
+  "budget": {
+    "effective_hard_cap_microcny": 1200000000,
+    "held_microcny": 178667520,
+    "remaining_exposure_microcny": 653066865,
+    "settled_tariff_microcny": 368265615
+  },
+  "completion_claim": "generation and native scoring only; review running; training not yet admitted",
+  "effective_concurrency": {
+    "generation": 8,
+    "mapping": 16,
+    "review": 16
+  },
+  "expected_reviews": 11438,
+  "generation_complete": 8000,
+  "generation_model_returned": 8000,
+  "generation_network_unknown": 0,
+  "generation_requests": 16312,
+  "generation_seal_id": "edd376fbb827ff487134a2ecd96102cf39777f0df683cee86ce9fe97a8ab591e",
+  "generation_settled_microcny": 23672874,
+  "id": "791c954137558d971f0b51a392289047c2af7ac4aeaa9fb51f72fbf2ff700e15",
+  "native_support_id": "a3cd721dc316eb520a793850ad243503ab85724d07803b5b04ba00e711049873",
+  "native_supported_tasks": 820,
+  "native_unsupported_tasks": 180,
+  "new_cohort_consumed": {
+    "generation": {
+      "dispatched": 16312,
+      "held": 0,
+      "pending": 0,
+      "requests": 16312,
+      "spent": 23672874,
+      "unknown": 0
+    },
+    "review_mapping": {
+      "dispatched": 156,
+      "held": 33832960,
+      "pending": 16,
+      "requests": 156,
+      "spent": 8328412,
+      "unknown": 0
+    }
+  },
+  "no_prefix_training": true,
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "review_registration_id": "02fc99f438fa39984cddee8343dbea42df2ea8d3b40dcae7a816ddab9e605c33",
+  "review_status": {
+    "active": 16,
+    "actual_returns": 140,
+    "at": "2026-09-29T13:32:21.328687+00:00",
+    "denominator": 11438,
+    "errors": [],
+    "network_unknowns": 0,
+    "phase": "V10_REVIEW_RUNNING",
+    "processed": 140
+  },
+  "runtime_revision_id": "36d05841992bab89a6a92779eee45a0fec3fd84e3fac4e3475f3672894fb220f",
+  "schema": "v10_progress_checkpoint.v1",
+  "training_started": false,
+  "workflow_alive_at_check": true,
+  "workflow_launch_id": "ccb9a02a95efade32ccb33ea9830d7b0449fcc6fd266e7a6e45344c88f4ee55a"
+}
