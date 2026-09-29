@@ -23,6 +23,7 @@ from .storage import read_json
 from .v6_collection import bound, persist, require, sha
 from .v6_review_revision import _key
 from .v10_budget import (
+    BATCH_ID,
     NETWORK_POLICY,
     acknowledge_connection_unknowns,
     map_episode_id,
@@ -38,6 +39,67 @@ from .v10_review_protocol import (
     review_record,
 )
 from .v10_review_provider import direct_client, request_body, request_review, restore_artifact
+
+RUNTIME_PATH = Path("runtime/concurrency_revision_01/record.json")
+CONCURRENCY_AUTHORIZATION = dict(
+    date="2026-09-29",
+    question=(
+        "是否将尚未启动的审阅／任务映射并发从 8 提高到 16，并在派发前单独登记这项运行修订？"
+        "样本、判定规则、零重试和费用硬上限均不变；遇到限流或异常仍保存并停止。"
+    ),
+    user_reply="批准后续审阅／映射并发 16",
+)
+
+
+def register_runtime(output, plan, ledger):
+    """One explicitly authorized sending-resource revision for this batch only."""
+    require(
+        plan["batch_id"] == BATCH_ID
+        and plan["concurrency"] == plan["policy"]["concurrency"] == 8
+        and plan["review_policy_id"] == plan["policy"]["id"],
+        "runtime authorization covers only this original batch and unchanged eight-worker policy",
+    )
+    expected = dict(
+        schema="v10_annotation_concurrency_runtime.v1",
+        protocol_id=plan["id"],
+        batch_id=BATCH_ID,
+        policy_id=plan["review_policy_id"],
+        original_policy_sha256=digest(plan["policy"]),
+        authorization=CONCURRENCY_AUTHORIZATION,
+        original_policy_concurrency=8,
+        effective_concurrency=dict(generation=8, review=16, mapping=16),
+        override_scope="prospective review/mapping sending resources only",
+        generation_unchanged=True,
+        samples_semantics_masks_model_budget_and_zero_retries_unchanged=True,
+        existing_bounded_connection_terminal_policy_unchanged=True,
+        old_dispatched_configuration_rewritten=False,
+        budget_run_id=ledger.run_id,
+        budget_config_sha256=digest(ledger.config),
+        source_bindings=phase_sources(),
+    )
+    path = Path(output) / RUNTIME_PATH
+    if path.exists():
+        prior = checked(path)
+        require(
+            all(prior.get(k) == v for k, v in expected.items())
+            and prior.get("annotation_requests_before_registration") == 0,
+            "registered annotation runtime differs; never overwrite or silently change dispatch",
+        )
+        return prior
+    snapshot = ledger.snapshot()
+    partition = snapshot.get("v10_partition", {})
+    quota = partition.get("consumed", {}).get("review_mapping", {})
+    require(
+        partition.get("batch_id") == BATCH_ID
+        and all(
+            quota.get(k) == 0
+            for k in ("requests", "dispatched", "spent", "held", "pending", "unknown")
+        ),
+        "runtime must be registered before the first annotation reservation or dispatch",
+    )
+    record = bound(dict(**expected, at=now(), annotation_requests_before_registration=0))
+    persist(path.parent, record)
+    return record
 
 
 def entry(path):
@@ -318,6 +380,8 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
     output = Path(output)
     stop_requested = stop_requested or asyncio.Event()
     stage = jobs[0]["kind"] if jobs else "review"
+    runtime = register_runtime(output, plan, ledger)
+    concurrency = runtime["effective_concurrency"][stage]
     key = _key(ENV_FILE)
     completed = recover_stage(output, plan, ledger, context, jobs)
     while len(completed) < len(jobs):
@@ -337,6 +401,9 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
                     protocol_id=plan["id"],
                     processed=len(completed),
                     denominator=len(jobs),
+                    runtime_revision_id=runtime["id"],
+                    registered_stage_concurrency=concurrency,
+                    effective_concurrency=runtime["effective_concurrency"],
                     actual_returns=sum(
                         r.get("actual_model_call_receipt_verified") is True
                         for r in completed.values()
@@ -444,7 +511,7 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
         watcher = asyncio.create_task(monitor())
         try:
             async with direct_client(timeout=1200) as client:
-                await asyncio.gather(*(worker(client) for _ in range(8)))
+                await asyncio.gather(*(worker(client) for _ in range(concurrency)))
         finally:
             done.set()
             await watcher
@@ -624,6 +691,7 @@ async def run(output=OUTPUT):
         for sig in (signal.SIGTERM, signal.SIGINT):
             loop.add_signal_handler(sig, stop.set)
         ledger = ledger_for(plan)
+        runtime = register_runtime(output, plan, ledger)
         phase = register_review_phase(output, plan)
         context = Context(output, plan, phase)
         completed = await execute_stage(
@@ -663,6 +731,8 @@ async def run(output=OUTPUT):
                 review_seal_id=review_seal["id"],
                 mapping_seal_id=mapping_seal["id"],
                 material=material,
+                runtime_revision_id=runtime["id"],
+                effective_concurrency=runtime["effective_concurrency"],
                 budget=ledger.snapshot(),
                 training_started=False,
             ),

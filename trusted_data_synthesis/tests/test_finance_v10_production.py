@@ -23,7 +23,7 @@ from test_finance_v10_process_review import fixture
 from trusted_synthesis.finance_research import v10_production as prod
 from trusted_synthesis.finance_research.contracts import digest
 from trusted_synthesis.finance_research.storage import read_json
-from trusted_synthesis.finance_research.v10_budget import generation_episode_id
+from trusted_synthesis.finance_research.v10_budget import generation_episode_id, review_episode_id
 from trusted_synthesis.finance_research.v10_review_protocol import review_policy_definition
 from trusted_synthesis.finance_research.v10_review_provider import request_body, request_review
 
@@ -74,6 +74,7 @@ def cohort(wallet, tmp_path, monkeypatch):  # noqa: F811
     plan = prod.bound(
         dict(
             batch_id=BATCH_ID,
+            concurrency=8,
             slots=slots,
             task_ids=list(dict.fromkeys(s["task_id"] for s in slots)),
             policy=policy,
@@ -115,6 +116,7 @@ def cohort(wallet, tmp_path, monkeypatch):  # noqa: F811
             ),
         )
     phase = prod.register_review_phase(output, plan)
+    prod.register_runtime(output, plan, wallet)
     context = prod.Context(output, plan, phase)
     requests = {j["episode_id"]: context.request(j) for j in phase["jobs"]}
     responses = {}
@@ -335,3 +337,96 @@ def test_local_error_does_not_gain_retry_from_another_inflight_network_unknown(c
     assert not (cohort.output / "review_seal").exists()
     errors = list(cohort.output.glob("reviews/*/*/controller_errors/*/record.json"))
     assert any(read_json(p)["network_only_continuation_candidate"] is False for p in errors)
+
+
+def test_runtime_16_is_prospective_same_policy_and_exact_resume(cohort):
+    path = cohort.output / prod.RUNTIME_PATH
+    original = path.read_bytes()
+    policy_before = copy.deepcopy(cohort.plan["policy"])
+    counters_before = table(cohort.ledger.path, "counters")
+    runtime = prod.register_runtime(cohort.output, cohort.plan, cohort.ledger)
+    assert runtime["effective_concurrency"] == {"generation": 8, "review": 16, "mapping": 16}
+    assert runtime["policy_id"] == cohort.plan["review_policy_id"]
+    assert runtime["authorization"]["user_reply"] == "批准后续审阅／映射并发 16"
+    assert runtime["authorization"]["date"] == "2026-09-29"
+    assert runtime["annotation_requests_before_registration"] == 0
+    assert runtime["samples_semantics_masks_model_budget_and_zero_retries_unchanged"]
+    assert cohort.plan["policy"] == policy_before and policy_before["concurrency"] == 8
+    assert table(cohort.ledger.path, "counters") == counters_before
+    assert len(run_reviews(cohort)) == 4
+    assert prod.register_runtime(cohort.output, cohort.plan, cohort.ledger) == runtime
+    assert path.read_bytes() == original
+    status = read_json(cohort.output / "status.json")
+    assert status["runtime_revision_id"] == runtime["id"]
+    assert status["registered_stage_concurrency"] == 16
+
+
+def test_runtime_refuses_retroactive_or_changed_configuration_and_other_batch(cohort):
+    runtime = prod.register_runtime(cohort.output, cohort.plan, cohort.ledger)
+    assert len(run_reviews(cohort)) == 4
+    missing = cohort.output / "missing-prior-runtime"
+    with pytest.raises(ValueError, match="before the first annotation"):
+        prod.register_runtime(missing, cohort.plan, cohort.ledger)
+    assert not missing.exists()
+    conflicting = cohort.output / "conflicting-runtime"
+    wrong = {k: v for k, v in runtime.items() if k != "id"}
+    wrong["effective_concurrency"] = {"generation": 8, "review": 8, "mapping": 8}
+    prod.publish((conflicting / prod.RUNTIME_PATH).parent, prod.bound(wrong))
+    original = (conflicting / prod.RUNTIME_PATH).read_bytes()
+    with pytest.raises(ValueError, match="runtime differs"):
+        prod.register_runtime(conflicting, cohort.plan, cohort.ledger)
+    assert (conflicting / prod.RUNTIME_PATH).read_bytes() == original
+    with pytest.raises(ValueError, match="only this original batch"):
+        prod.register_runtime(
+            cohort.output, {**cohort.plan, "batch_id": "future-not-authorized"}, cohort.ledger
+        )
+
+
+def test_runtime_controls_sixteen_simultaneous_workers_not_just_status_label(cohort, monkeypatch):
+    jobs = [
+        dict(
+            kind="review",
+            task_id=slot["task_id"],
+            slot_id=slot["slot_id"],
+            role=role,
+            episode_id=review_episode_id(BATCH_ID, slot["slot_id"], role),
+        )
+        for slot in cohort.slots[:9]
+        for role in ("A", "B")
+    ][:17]
+    context = SimpleNamespace(
+        request=lambda job: dict(
+            id=digest(job), episode_id=job["episode_id"], max_output_tokens=2048
+        )
+    )
+    active, maximum, calls = 0, 0, []
+
+    async def synthetic_request(**kwargs):
+        nonlocal active, maximum
+        active += 1
+        maximum = max(maximum, active)
+        calls.append(kwargs["request"]["episode_id"])
+        await asyncio.sleep(0.005)
+        active -= 1
+        return dict(synthetic_scheduling_only=True)
+
+    monkeypatch.setattr(prod, "request_review", synthetic_request)
+    monkeypatch.setattr(
+        prod,
+        "review_record",
+        lambda request, artifact, row: prod.bound(
+            dict(
+                schema="synthetic_scheduling_only",
+                request=request,
+                actual_model_call_receipt_verified=False,
+                synthetic_not_paid_evidence=True,
+            )
+        ),
+    )
+    before = table(cohort.ledger.path, "counters")
+    completed = asyncio.run(
+        prod.execute_stage(cohort.output, cohort.plan, cohort.ledger, context, jobs)
+    )
+    assert len(completed) == len(calls) == 17 and maximum == 16 and active == 0
+    assert table(cohort.ledger.path, "counters") == before
+    assert all(r["synthetic_not_paid_evidence"] for r in completed.values())
