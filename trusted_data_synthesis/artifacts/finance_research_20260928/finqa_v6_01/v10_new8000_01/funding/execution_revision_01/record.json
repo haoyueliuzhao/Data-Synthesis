@@ -1,0 +1,144 @@
+{
+  "additional_source_bindings": {
+    "v10_execution_revision.py": "00bff4c09bcdb25468be8f6960b5b8373e6bfd13e7d562cd72c67d2d8a95d351",
+    "v10_funding.py": "aea0071a4f2f33853dea6877e34893dc37ffa7c3f6243efa1c859448bfcfba45"
+  },
+  "at": "2026-09-29T13:55:16.508109+00:00",
+  "authorization": {
+    "at": "2026-09-29T13:55:07.769955+00:00",
+    "batch_id": "finqa-v10-20260929-new8000-01",
+    "effective_hard_cap_microcny": 2000000000,
+    "effective_review_mapping_microcny": 1300000000,
+    "id": "cd4d83bd2b6a079edada61ceb6b50dfec4055d10c6c452e69be2a03140d88a4a",
+    "no_new_cohort": true,
+    "no_prefix_training": true,
+    "no_resend": true,
+    "schema": "v10_funding_authorization.v1",
+    "source_migration_reply": "批准预算提升，减少冗余校验",
+    "user_reply": "总上限提高到 2000 元，审阅／映射子额 1300 元"
+  },
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "changed_files": {
+    "annotation": [
+      "probe_budget.py",
+      "v10_budget.py",
+      "v10_production.py"
+    ],
+    "generation": [
+      "probe_budget.py",
+      "v10_budget.py",
+      "v10_generation.py"
+    ]
+  },
+  "effective_after_requests": 59412,
+  "effective_concurrency": {
+    "generation": 8,
+    "mapping": 16,
+    "review": 16
+  },
+  "effective_sources": {
+    "annotation": {
+      "probe_budget.py": "e699f897a6c7890a53fd9a22ef4c79c6d6e708e2d08d032892ba555d6fe083c1",
+      "v10_budget.py": "9f352fa3ea58a22d25d219e0549388b982ff8ecafc02fd9c81a1f092048da17b",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_production.py": "b99b3885448fc4570b5d4864836e328ef4d605256799fa4b4d0de7cbb2a06fd6",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+    },
+    "generation": {
+      "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+      "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+      "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+      "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+      "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+      "probe_budget.py": "e699f897a6c7890a53fd9a22ef4c79c6d6e708e2d08d032892ba555d6fe083c1",
+      "probe_provider.py": "c612db61888a20501cf3d84e7b15ba0f17a4c8ed58788b0177b71dfcc6d7a5a4",
+      "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+      "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+      "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+      "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+      "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+      "v10_budget.py": "9f352fa3ea58a22d25d219e0549388b982ff8ecafc02fd9c81a1f092048da17b",
+      "v10_generation.py": "46e45d58df809bd9692edd6136fd9890df6beb3cc4577cfe738de17b801d7446",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_record_audit.py": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+      "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+      "v8_collection.py": "18e9e2c6d6d6466f90382aca865d84848219afcb1e492b1176b34a1e5bbe620f"
+    }
+  },
+  "funding_amendment_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+  "funding_receipt_sha256": "5a09ddf3c86b076a00aad36df68fa35696712567530e5da83b0269c6f8dd921d",
+  "generation_already_complete": true,
+  "historical_records": {
+    "generation_seal/record.json": {
+      "id": "edd376fbb827ff487134a2ecd96102cf39777f0df683cee86ce9fe97a8ab591e",
+      "sha256": "f7bef9c4fc7e4cd409ff8832dec43a42bafad8d1848194bc04b5b6dd830b4b6e"
+    },
+    "native_support/record.json": {
+      "id": "a3cd721dc316eb520a793850ad243503ab85724d07803b5b04ba00e711049873",
+      "sha256": "18e8c98cada29119ea4ba82f926dbb5942498be7fb9ab99e1746adea69e7330e"
+    },
+    "registration/protocol.json": {
+      "id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+      "sha256": "9c52ccb1fd5d804ec9de29fcc631c73ff51ec2479dcadcc98f0f102e50783ae5"
+    },
+    "review_registration/record.json": {
+      "id": "02fc99f438fa39984cddee8343dbea42df2ea8d3b40dcae7a816ddab9e605c33",
+      "sha256": "1320309df06a365152cf7f420a75f656299d8ad036713ecedacc15ed814f0700"
+    },
+    "runtime/concurrency_revision_01/record.json": {
+      "id": "36d05841992bab89a6a92779eee45a0fec3fd84e3fac4e3475f3672894fb220f",
+      "sha256": "29582d9b707010896eec7c7d23d5ba8d1065246ff4a9653b623837611ce889e1"
+    }
+  },
+  "id": "9156611ff4a06c74d6cbd76e0052823a46aca03ac926230ea791bdc55e7269b2",
+  "migration_authorization": {
+    "date": "2026-09-29",
+    "question": "是否批准为落实 2000 元总上限／1300 元审阅子额，进行一次受控预算实现迁移？安全审查要求明确授权：先停止新派发并等在途结算，备份原钱包；保留旧源码和原哈希记录，另登记预算模块及其版本校验接线的精确新旧哈希，仅接受该次指定迁移，再恢复原矩阵未发送项。不会关闭通用完整性校验、修改实验规则或重发已调用请求。",
+    "user_reply": "批准预算提升，减少冗余校验"
+  },
+  "old_paid_calls_resent": false,
+  "old_source_records_rewritten": false,
+  "original_sources": {
+    "annotation": {
+      "probe_budget.py": "ecfda17d243471807a3b0285ff24db39e5c20f1c3e41076bd6dda6689c462687",
+      "v10_budget.py": "beb10c58061c7208befc27e530748df9cfa4d0aaca31ad00130b28fe16b450e9",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_production.py": "cde979ff3b89c61cd990ad89b14ab05f503fbc0a8950550f41638afe1d7025e4",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+    },
+    "generation": {
+      "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+      "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+      "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+      "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+      "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+      "probe_budget.py": "ecfda17d243471807a3b0285ff24db39e5c20f1c3e41076bd6dda6689c462687",
+      "probe_provider.py": "c612db61888a20501cf3d84e7b15ba0f17a4c8ed58788b0177b71dfcc6d7a5a4",
+      "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+      "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+      "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+      "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+      "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+      "v10_budget.py": "beb10c58061c7208befc27e530748df9cfa4d0aaca31ad00130b28fe16b450e9",
+      "v10_generation.py": "3f56da2440fe49fcf95d28b21e4307bcbbb6e6f15bade25fe487983ea0436226",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_record_audit.py": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+      "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+      "v8_collection.py": "18e9e2c6d6d6466f90382aca865d84848219afcb1e492b1176b34a1e5bbe620f"
+    }
+  },
+  "policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "schema": "v10_funding_execution_revision.v1",
+  "semantics_model_prompts_outputs_roster_native_and_masks_unchanged": true
+}

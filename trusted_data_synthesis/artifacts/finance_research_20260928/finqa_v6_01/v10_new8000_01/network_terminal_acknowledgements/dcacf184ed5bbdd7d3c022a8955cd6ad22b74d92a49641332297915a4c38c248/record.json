@@ -1,0 +1,63 @@
+{
+  "automatic_resend": false,
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "cleared_exact_halt": {
+    "at_unix": 1790689910.0858264,
+    "evidence": {
+      "automatic_retry": false,
+      "billing_usage_known": false,
+      "budget_coordinates": {
+        "attempt_index": 1,
+        "episode_id": "v10review:689a196d84b61eadcfb607013a8ecfd72dfb01ebaaa972453d38f109126942c3",
+        "invocation_id": "invocation:90d0508e9d9354283eddc62b377a36ceeefc525ea54644fa6bf98dc1e617aa82",
+        "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+        "turn_index": 0
+      },
+      "budget_invocation_id": "invocation:90d0508e9d9354283eddc62b377a36ceeefc525ea54644fa6bf98dc1e617aa82",
+      "endpoint": "https://api.deepseek.com/beta/chat/completions",
+      "exception_type": "RemoteProtocolError",
+      "policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+      "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+      "production_request_id": "0334f5281436b0a895316586453625062c0de437cfd3f056424809d691d412e7",
+      "protocol_id": "finqa-v10-20260929-new8000-01",
+      "request_sha256": "c7e4f6005c5b932b399f5851bff208f6035706a2c5189d220730e934bff601e9",
+      "reservation_retained": true,
+      "role": "A",
+      "semantic_review_request_sha256": "cef3f5542dfcfeb63bf0767a5fe6aa39dfee7601045e84d582dc0c24d9692f41",
+      "service_response_received": false,
+      "wire_protocol": "v10_production_process_AB.v1"
+    },
+    "invocation_id": "invocation:90d0508e9d9354283eddc62b377a36ceeefc525ea54644fa6bf98dc1e617aa82",
+    "reason": "v10 transport response or usage unknown"
+  },
+  "expected_requests": {
+    "invocation:90d0508e9d9354283eddc62b377a36ceeefc525ea54644fa6bf98dc1e617aa82": "c7e4f6005c5b932b399f5851bff208f6035706a2c5189d220730e934bff601e9"
+  },
+  "id": "dcacf184ed5bbdd7d3c022a8955cd6ad22b74d92a49641332297915a4c38c248",
+  "new_acknowledgements": 1,
+  "original_rows_unchanged": true,
+  "partition_id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+  "permanent_holds_unchanged": true,
+  "records": [
+    {
+      "actual_charge_known": false,
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "expected_request_sha256": "c7e4f6005c5b932b399f5851bff208f6035706a2c5189d220730e934bff601e9",
+      "id": "4d8fe804c389afd05f34b277f0387ac9412949ea01010154bc1086fc1a682fee",
+      "invocation_id": "invocation:90d0508e9d9354283eddc62b377a36ceeefc525ea54644fa6bf98dc1e617aa82",
+      "material_eligible": false,
+      "model_response": null,
+      "model_result": null,
+      "model_usage": null,
+      "original_unknown_record_sha256": "04123e35ccd423935a6f6a6c943f612d88029ec8ff277a049d72dc10197696c1",
+      "partition_id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+      "permanent_reserved_microcny": 2113536,
+      "registered_at_unix": 1790690009.058374,
+      "reservation_released": false,
+      "retry_authorized": false,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v10_connection_unknown_acknowledgement.v1"
+    }
+  ],
+  "schema": "v10_connection_unknown_terminal_receipt.v1"
+}

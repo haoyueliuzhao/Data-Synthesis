@@ -1,0 +1,45 @@
+{
+  "UNKNOWN_reservation_released": false,
+  "actual_returns": 3023,
+  "at": "2026-09-29T13:53:29.084200+00:00",
+  "authentic_terminals": 3024,
+  "budget": {
+    "effective_hard_cap_microcny": 1200000000,
+    "halt": null,
+    "held_microcny": 146948096,
+    "pending_requests": 0,
+    "requests_dispatched": 59412,
+    "requests_reserved": 59412,
+    "settled_tariff_microcny": 541429680,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 66
+  },
+  "force_kill": false,
+  "id": "5e539a2dbff47d08e4c820b74cab4ebd5f48d30e09003a95e67141da66c3df9e",
+  "network_terminal_receipt_id": "dcacf184ed5bbdd7d3c022a8955cd6ad22b74d92a49641332297915a4c38c248",
+  "new_cohort_consumed": {
+    "generation": {
+      "dispatched": 16312,
+      "held": 0,
+      "pending": 0,
+      "requests": 16312,
+      "spent": 23672874,
+      "unknown": 0
+    },
+    "review_mapping": {
+      "dispatched": 3024,
+      "held": 2113536,
+      "pending": 0,
+      "requests": 3024,
+      "spent": 181492477,
+      "unknown": 1
+    }
+  },
+  "original_network_UNKNOWN_retained": true,
+  "original_review_alive": false,
+  "original_workflow_alive": false,
+  "pause_request_id": "f73db8cd1a31e1ce7c8799aa323c6b8148be80cafcad13581a763e91ce252658",
+  "retry": false,
+  "schema": "v10_funding_quiescent_pause.v1",
+  "source_and_wallet_change_not_yet_applied": true
+}

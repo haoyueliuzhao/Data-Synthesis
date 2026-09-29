@@ -1,0 +1,42 @@
+{
+  "at": "2026-09-29T13:55:17.196204+00:00",
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-m",
+    "trusted_synthesis.finance_research.v10_workflow",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01",
+    "--max-gpu-workers",
+    "3"
+  ],
+  "effective_concurrency": {
+    "generation": 8,
+    "mapping": 16,
+    "review": 16
+  },
+  "effective_hard_cap_microcny": 2000000000,
+  "effective_review_mapping_microcny": 1300000000,
+  "execution_revision_id": "9156611ff4a06c74d6cbd76e0052823a46aca03ac926230ea791bdc55e7269b2",
+  "funding_amendment_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+  "id": "b81ea165a0e9aa2e4c333f3a5d3f8bc036ccbdb24bb7894c9337d00e2fc44cfa",
+  "log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/workflow_controller_02.log",
+  "max_gpu_workers": 3,
+  "no_GPU_placeholder": true,
+  "no_new_cohort": true,
+  "no_paid_resend": true,
+  "no_prefix_training": true,
+  "pause_receipt_id": "5e539a2dbff47d08e4c820b74cab4ebd5f48d30e09003a95e67141da66c3df9e",
+  "pid": 3502543,
+  "policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+  "preserved_UNKNOWN_count": 66,
+  "preserved_UNKNOWN_hold_microcny": 146948096,
+  "preserved_request_count_before_resume": 59412,
+  "previous_workflow_launch_id": "ccb9a02a95efade32ccb33ea9830d7b0449fcc6fd266e7a6e45344c88f4ee55a",
+  "process_start_time_ticks": "311451237",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "schema": "v10_funded_same_matrix_workflow_launch.v1",
+  "source_commit": "15a6f46ae7a7367c4565a807eeefd45f710f5deb",
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v10-funded-frozen-20260929"
+}

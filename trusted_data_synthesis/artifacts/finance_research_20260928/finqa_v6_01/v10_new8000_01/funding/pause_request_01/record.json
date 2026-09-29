@@ -1,0 +1,15 @@
+{
+  "at": "2026-09-29T13:51:36.746529+00:00",
+  "force_kill": false,
+  "id": "f73db8cd1a31e1ce7c8799aa323c6b8148be80cafcad13581a763e91ce252658",
+  "reason": "explicitly approved 2000/1300 funding version transition; no research change",
+  "retry_or_resend": false,
+  "review_birth": "311306738",
+  "review_pid": 3467192,
+  "schema": "v10_funding_migration_pause_request.v1",
+  "signal": "SIGTERM to owned supervisor; existing handlers drain all paid requests",
+  "user_reply": "批准预算提升，减少冗余校验",
+  "workflow_birth": "311306681",
+  "workflow_launch_id": "ccb9a02a95efade32ccb33ea9830d7b0449fcc6fd266e7a6e45344c88f4ee55a",
+  "workflow_pid": 3467183
+}
