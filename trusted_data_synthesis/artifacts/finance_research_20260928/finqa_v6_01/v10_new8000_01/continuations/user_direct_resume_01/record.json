@@ -1,0 +1,41 @@
+{
+  "at": "2026-09-29T16:12:51.994455+00:00",
+  "hard_cap_microcny": 2000000000,
+  "id": "38a55fb2bd10992c221e62993242622f5d4a798da8348190ea302a6d24e947b8",
+  "network_retry_permit_id": "a1093ee37d3bed6ce9c726a3bffb8b5a63580c4951c26698ba5019b4c9848f54",
+  "new_paid_diagnostic_calls": 0,
+  "no_automatic_repeat_after_network_guard": true,
+  "no_completed_request_resend": true,
+  "old_UNKNOWN_and_full_holds_preserved": true,
+  "old_processes_exited": true,
+  "old_workflow_launch_id": "3abed5f112e1ba13e099dcdbe24c94a8b48224ea2588b2b1716f5ec77a8d3bb3",
+  "original_requests_before_resume": 67480,
+  "primary_UNKNOWN_before_resume": 59,
+  "primary_returns_before_resume": 11033,
+  "primary_terminals_before_resume": 11092,
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "remaining_primary_jobs": 346,
+  "review_mapping_microcny": 1300000000,
+  "schema": "v10_user_requested_direct_review_resume.v1",
+  "source_frozen_commit": "39363c52e93a573839a255fcf01a35b0158a23d9",
+  "source_or_experiment_rule_changes": false,
+  "transport": {
+    "OS_or_gateway_transparent_proxy_ruled_out": false,
+    "TLS_verification": true,
+    "ambient_proxy_configuration_changed": false,
+    "ambient_proxy_variable_names_present": [
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "http_proxy",
+      "https_proxy"
+    ],
+    "client_trust_env": false,
+    "explicit_proxy": null,
+    "mode": "application-layer direct",
+    "provider_source_path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v10-network-retry-frozen-20260929/trusted_data_synthesis/src/trusted_synthesis/finance_research/v10_review_provider.py",
+    "provider_source_sha256": "cab90d0ec2a71d1ff539ccb1ff27b5b0ae0b22fdcf28c4ab9dec496934d1df9b",
+    "transport_retries": 0,
+    "transport_trust_env": false
+  },
+  "user_request": "本次网络是直连还是全局代理？恢复审阅"
+}
