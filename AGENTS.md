@@ -6,6 +6,12 @@
 - 项目实验可按任务需要使用API和GPU，实验数据可发送至DeepSeek，无需逐次请求；API key来自`.env`，不要在日志或回复中输出密钥。
 - 优先实现新版设计，不为旧版兼容而偏离当前设计。
 
+# 本地测试临时文件
+
+- CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
+- 测试夹具、模拟账本与模拟训练结果不作为正式实验产物提交。需要保留时归档在 `trusted_data_synthesis/artifacts/local_test_archive_*` 下；正式实验和必要审计记录仍按原要求单独保留、提交。
+- 整理未跟踪目录前先核对其用途和是否仍被进程使用，优先采用可恢复归档，不覆盖或删除用户数据。
+
 # API 模型约束
 
 用户于 2026-09-27 明确要求：“本次实验继续，后续实验 api 调用模型固定为 deepseek-flash”。
