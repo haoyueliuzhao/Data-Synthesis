@@ -25,6 +25,8 @@ STRICT_WIRE_PROTOCOLS = frozenset(
         "v6_slot_review.v5",
         "v6_slot_review.v6",
         "v6_alignment_review.v3",
+        "v8_single_target_review.v1",
+        "v8_alignment_review.v1",
     }
 )
 STRICT_ENDPOINT = "https://api.deepseek.com/beta/chat/completions"

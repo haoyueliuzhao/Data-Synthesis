@@ -41,6 +41,8 @@ def test_only_explicit_registered_strict_wires_preserve_their_actual_identity(tm
         "v6_slot_review.v5",
         "v6_slot_review.v6",
         "v6_alignment_review.v3",
+        "v8_single_target_review.v1",
+        "v8_alignment_review.v1",
     }
     ledger, request = ledger_fixture(tmp_path), rewired_request(wire)
     client = Client(response_fixture(' {"raw":"unchanged"} '))

@@ -30,6 +30,8 @@ V6_REVIEW_AMENDMENT_PAUSE = "user_authorized_review_capacity_audit"
 V6_REVIEW_AMENDMENT_ACTION = "v6_review_capacity_amended"
 UNKNOWN_ABANDONMENT_PREFIX = "acknowledged_unknown:"
 UNKNOWN_ABANDONMENT_ACTION = "unknown_abandonment_acknowledged"
+V8_PARTITION_KEY = "v8_request_partition"
+V8_PARTITION_LIMITS = {"generation": 220000, "technical_review": 108, "production_review": 18000}
 
 
 def validated_budget_limits(
@@ -75,6 +77,223 @@ class BudgetAmendmentError(ValueError):
 
 class UnknownAbandonmentError(ValueError):
     """A particular unresolved paid request lacks auditable abandonment authority."""
+
+
+class RequestPartitionError(ValueError):
+    """The new dispatch partition cannot change historical charges or allocation."""
+
+
+def _partition_snapshot(connection, config):
+    stored = connection.execute(
+        "SELECT value FROM metadata WHERE key=?", (V8_PARTITION_KEY,)
+    ).fetchone()
+    if stored is None:
+        return None
+    record = json.loads(stored[0])
+    if (
+        record.get("id") != digest({k: v for k, v in record.items() if k != "id"})
+        or record.get("config_sha256") != digest(config)
+        or record.get("limits") != V8_PARTITION_LIMITS
+    ):
+        raise RequestPartitionError("registered request partition/config changed")
+    counts = {
+        row["category"]: dict(row) for row in connection.execute("SELECT * FROM v8_request_quotas")
+    }
+    if set(counts) != set(V8_PARTITION_LIMITS) or any(
+        row["quota"] != V8_PARTITION_LIMITS[key] or not 0 <= row["consumed"] <= row["quota"]
+        for key, row in counts.items()
+    ):
+        raise RequestPartitionError("request subquota counters changed")
+    requests = connection.execute("SELECT requests FROM counters WHERE singleton=1").fetchone()[0]
+    if requests != record["historical_requests"] + sum(row["consumed"] for row in counts.values()):
+        raise RequestPartitionError("partition and original request counters do not conserve")
+    return dict(
+        id=record["id"],
+        partition_id=record["partition_id"],
+        historical_requests=record["historical_requests"],
+        limits=record["limits"],
+        consumed={k: v["consumed"] for k, v in counts.items()},
+        buffer_requests=950,
+        buffer_spendable=False,
+        generation_episode_ids_sha256=record["generation_episode_ids_sha256"],
+    )
+
+
+def apply_v8_request_partition(
+    path, *, expected_run_id, expected_config_sha256, partition_id, generation_episode_ids, evidence
+):
+    """One auditable allocation of existing capacity; never create/reset a wallet.
+
+    Idempotent only for the identical authorized partition. Existing UNKNOWN rows,
+    their permanent holds and the original 800/700 CNY/258000 limits remain intact.
+    """
+    ids = sorted(generation_episode_ids)
+    if (
+        not isinstance(partition_id, str)
+        or not partition_id.strip()
+        or len(ids) != 8000
+        or len(set(ids)) != 8000
+        or any(not isinstance(sid, str) or not sid.startswith("v7-slot:") for sid in ids)
+        or not isinstance(evidence, dict)
+        or not evidence.get("user_authorization")
+    ):
+        raise RequestPartitionError(
+            "explicit authorization and exact original 8000 V7 slots required"
+        )
+    path = Path(path)
+    if not path.is_file():
+        raise RequestPartitionError("original paid ledger missing; partition cannot create it")
+    with closing(
+        sqlite3.connect(
+            path.resolve().as_uri() + "?mode=rw", uri=True, timeout=30, isolation_level=None
+        )
+    ) as connection:
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA synchronous=FULL")
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            config = json.loads(
+                connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()[0]
+            )
+            if (
+                config["run_id"] != expected_run_id
+                or digest(config) != expected_config_sha256
+                or config["purpose"] != V6_PURPOSE
+                or (config["hard_cap_microcny"], config["warning_microcny"], config["request_cap"])
+                != (800000000, 700000000, 258000)
+            ):
+                raise RequestPartitionError("partition must retain the exact original joint wallet")
+            signature = dict(
+                partition_id=partition_id,
+                run_id=expected_run_id,
+                config_sha256=expected_config_sha256,
+                generation_episode_ids_sha256=digest(ids),
+                evidence=evidence,
+            )
+            prior = connection.execute(
+                "SELECT value FROM metadata WHERE key=?", (V8_PARTITION_KEY,)
+            ).fetchone()
+            if prior:
+                record = json.loads(prior[0])
+                if any(record.get(k) != v for k, v in signature.items()):
+                    raise RequestPartitionError("existing partition cannot be replaced or expanded")
+                _partition_snapshot(connection, config)
+                connection.rollback()
+                return record
+            snapshot = _budget_snapshot(connection, config)
+            if (
+                snapshot["halt"]
+                or snapshot["pending_requests"]
+                or snapshot["unacknowledged_unknown_requests"]
+            ):
+                raise RequestPartitionError(
+                    "partition registration requires quiescent, unhalted accounted history"
+                )
+            counters = dict(
+                connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+            )
+            rows = connection.execute(
+                "SELECT invocation_id,coordinates_json,state,reserved_microcny,"
+                "settled_microcny,request_sha256,response_sha256 FROM requests "
+                "ORDER BY invocation_id"
+            ).fetchall()
+            if (
+                counters["requests"] != 18942
+                or len(rows) != 18942
+                or any(r["state"] not in {"SETTLED", "UNKNOWN"} for r in rows)
+                or sum(r["state"] == "UNKNOWN" for r in rows) != counters["unknown"]
+                or any(
+                    r["state"] == "SETTLED"
+                    and (type(r["settled_microcny"]) is not int or r["settled_microcny"] < 0)
+                    for r in rows
+                )
+                or counters["spent"] != sum(r["settled_microcny"] or 0 for r in rows)
+                or counters["held"]
+                != sum(r["reserved_microcny"] for r in rows if r["state"] == "UNKNOWN")
+                or counters["requests"] + sum(V8_PARTITION_LIMITS.values()) + 950 != 258000
+            ):
+                raise RequestPartitionError(
+                    "historical 18942 requests and all monetary holds must conserve"
+                )
+            allowed = set(ids)
+            if any(
+                json.loads(r["coordinates_json"])["episode_id"] in allowed
+                or json.loads(r["coordinates_json"])["episode_id"].startswith(
+                    ("v8review:", "v8prod:")
+                )
+                for r in rows
+            ):
+                raise RequestPartitionError(
+                    "new partition namespaces already contain paid attempts"
+                )
+            body = dict(
+                schema="v8_joint_request_partition.v1",
+                **signature,
+                at_unix=time.time(),
+                limits=V8_PARTITION_LIMITS,
+                historical_requests=18942,
+                buffer_requests=950,
+                buffer_spendable=False,
+                generation_episode_count=8000,
+                preserved_counters=counters,
+                historical_request_records_sha256=digest([dict(r) for r in rows]),
+                old_unknowns_preserved=snapshot["acknowledged_unknown_requests"],
+                wallet_config_unchanged=True,
+                old_namespace_new_dispatch_allowed=False,
+            )
+            record = {**body, "id": digest(body)}
+            connection.execute("CREATE TABLE v8_generation_slots (episode_id TEXT PRIMARY KEY)")
+            connection.execute(
+                "CREATE TABLE v8_request_quotas (category TEXT PRIMARY KEY, "
+                "quota INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0)"
+            )
+            connection.execute(
+                "CREATE TABLE v8_request_allocations (invocation_id TEXT PRIMARY KEY, "
+                "category TEXT NOT NULL, episode_id TEXT NOT NULL)"
+            )
+            connection.executemany(
+                "INSERT INTO v8_generation_slots VALUES (?)", [(sid,) for sid in ids]
+            )
+            connection.executemany(
+                "INSERT INTO v8_request_quotas(category,quota) VALUES (?,?)",
+                V8_PARTITION_LIMITS.items(),
+            )
+            connection.execute(
+                "INSERT INTO metadata VALUES (?,?)", (V8_PARTITION_KEY, _json(record))
+            )
+            connection.execute(
+                "INSERT INTO events(invocation_id,action,payload_json,at_unix) VALUES (?,?,?,?)",
+                (partition_id, "v8_request_partition_registered", _json(record), time.time()),
+            )
+            connection.commit()
+            return record
+        except BaseException:
+            connection.rollback()
+            raise
+
+
+def _partition_admit(connection, config, coordinates):
+    partition = _partition_snapshot(connection, config)
+    if partition is None:
+        return None
+    sid = coordinates["episode_id"]
+    if coordinates["attempt_index"] != 1:
+        raise BudgetUnavailable("partition never authorizes an episode retry")
+    if sid.startswith("v7-slot:"):
+        if not connection.execute(
+            "SELECT 1 FROM v8_generation_slots WHERE episode_id=?", (sid,)
+        ).fetchone():
+            raise BudgetUnavailable("generation slot is outside the exact original new batch")
+        category = "generation"
+    elif sid.startswith("v8review:") or sid.startswith("v8prod:"):
+        if coordinates["turn_index"] != 0:
+            raise BudgetUnavailable("each isolated review has one registered request only")
+        category = "technical_review" if sid.startswith("v8review:") else "production_review"
+    else:
+        raise BudgetUnavailable("old/unallocated namespace has no new request partition")
+    if partition["consumed"][category] >= partition["limits"][category]:
+        raise BudgetUnavailable(f"{category} request partition exhausted; buffer is not spendable")
+    return category
 
 
 def _request_record_digest(row):
@@ -132,7 +351,7 @@ def _budget_snapshot(connection, config):
             "acknowledged reservations are not conserved in original counters"
         )
     spent, held = row["spent"], row["held"]
-    return {
+    result = {
         "run_id": config["run_id"],
         "purpose": config["purpose"],
         "requests_reserved": row["requests"],
@@ -160,6 +379,10 @@ def _budget_snapshot(connection, config):
         "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; "
         "not a provider invoice",
     }
+    partition = _partition_snapshot(connection, config)
+    if partition is not None:
+        result["request_partition"] = partition
+    return result
 
 
 def read_budget_snapshot(path):
@@ -725,6 +948,9 @@ class ProbeBudget:
     def snapshot(self):
         connection = self._connect()
         try:
+            # Counters, holds and quota rows must describe one database instant
+            # while generation and the independent review controller settle.
+            connection.execute("BEGIN")
             return self._snapshot(connection)
         finally:
             connection.close()
@@ -773,6 +999,7 @@ class ProbeBudget:
                     "next full official-context reservation exceeds the frozen "
                     f"{self.hard_cap_microcny} micro-CNY cap"
                 )
+            category = _partition_admit(connection, self.config, coordinates)
             connection.execute(
                 """INSERT INTO requests
                 (invocation_id,coordinates_json,request_sha256,request_body,state,reserved_microcny,created_at)
@@ -792,6 +1019,14 @@ class ProbeBudget:
                 "WHERE singleton=1",
                 (reservation,),
             )
+            if category is not None:
+                connection.execute(
+                    "INSERT INTO v8_request_allocations VALUES (?,?,?)",
+                    (invocation_id, category, coordinates["episode_id"]),
+                )
+                connection.execute(
+                    "UPDATE v8_request_quotas SET consumed=consumed+1 WHERE category=?", (category,)
+                )
             self._event(
                 connection,
                 invocation_id,
