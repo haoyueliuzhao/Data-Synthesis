@@ -1,0 +1,24 @@
+{
+  "N": null,
+  "all_joint_originals_required": true,
+  "at": "2026-09-29T04:56:23.190770+00:00",
+  "audit": {
+    "path": "/home/zhuxinrui/.codex/attachments/3779ccde-f592-4535-b67e-8e7f27d27388/已粘贴的文本.txt",
+    "sha256": "6345f5f4c31f4ba09a87e07077f775850dcfc1fdbfe02f66942b5a560b3f32cc"
+  },
+  "conditional_population": "all tasks with at least one Q=true and two effective valid original packages",
+  "full_qualification_before_training": true,
+  "id": "fffbc76efc84cae60d3abc5ced5a67f0439349ae1e66b2734290d6dd73f0d948",
+  "monetary_cap_changed": false,
+  "mu": "1/N after one complete qualification pass",
+  "no_generation": true,
+  "no_new_technical_cohort": true,
+  "no_old_stock_splicing": true,
+  "original_population_remains_failed": true,
+  "original_slots": 8000,
+  "original_tasks": 1000,
+  "schema": "v9_conditional_scope_authorization.v1",
+  "semantics_policy_id": "8bef26302b75eae1cf504df39de8a4da7a794503451edcd6a601805b0969dd99",
+  "training_or_GPU_start_authorized_by_this_record_alone": false,
+  "user_reply": "确认采用条件性五臂修订"
+}

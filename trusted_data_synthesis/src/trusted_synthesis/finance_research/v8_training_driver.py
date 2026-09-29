@@ -785,6 +785,8 @@ class TrainingDriver:
         feedback_collector=None,
         cpu_control_schedule=None,
         adapter_scope=None,
+        execution_plan=None,
+        task_schedule=None,
     ):
         _require(arm in (*ARMS, "shared"), "unknown arm")
         _require(type(optimizer) is torch.optim.AdamW, "actual AdamW required")
@@ -795,11 +797,31 @@ class TrainingDriver:
         self.model, self.optimizer, self.pool = model, optimizer, pool
         self.root, self.seed, self.arm, self.device = Path(root), seed, arm, device
         self.tokenizer, self.collector = tokenizer, feedback_collector
-        self.schedule = (
-            build_task_schedule(pool.task_ids, seed)
-            if pool.production_verified
-            else copy.deepcopy(cpu_control_schedule)
-        )
+        self.execution_plan = copy.deepcopy(execution_plan)
+        if execution_plan is not None:
+            from .v9_conditional_training import validate_execution_schedule
+
+            validate_execution_schedule(execution_plan, task_schedule, pool.task_ids, seed)
+            _require(
+                not pool.production_verified
+                or (
+                    getattr(pool, "conditional_scope_verified", False)
+                    and execution_plan == pool.execution_plan
+                ),
+                "conditional execution requires the strict V9 parent/scope binding",
+            )
+            self.schedule = copy.deepcopy(task_schedule)
+        else:
+            _require(task_schedule is None, "custom production schedule needs a V9 scope binding")
+            self.schedule = (
+                build_task_schedule(pool.task_ids, seed)
+                if pool.production_verified
+                else copy.deepcopy(cpu_control_schedule)
+            )
+        self.shared_step = execution_plan["shared_step"] if execution_plan else 400
+        self.outer_steps = tuple(execution_plan["outer_steps"]) if execution_plan else OUTER_STEPS
+        self.final_step = execution_plan["final_step"] if execution_plan else 2000
+        self.sharing_split_step = execution_plan["sharing_split_step"] if execution_plan else 1200
         self.parameters = {n: p for n, p in model.named_parameters() if p.requires_grad}
         self.adapter_binding = None
         _require(self.parameters, "actual trainable parameter coordinates required")
@@ -843,7 +865,7 @@ class TrainingDriver:
         self.initialized = False
 
     def _payload(self):
-        return dict(
+        payload = dict(
             schema="v8_committed_training_state.v1",
             seed=self.seed,
             arm=self.arm,
@@ -861,6 +883,9 @@ class TrainingDriver:
             rng=_rng(),
             model_training=self.model.training,
         )
+        if self.execution_plan is not None:
+            payload["execution_plan"] = self.execution_plan
+        return payload
 
     def commit(self, phase="step", evidence=None):
         payload = self._payload()
@@ -896,6 +921,7 @@ class TrainingDriver:
             state["pool_id"] == self.pool.cache_id
             and state["seed"] == self.seed
             and state["schedule"] == self.schedule
+            and state.get("execution_plan") == self.execution_plan
             and state["frozen_base_digest"] == self.base_digest,
             "checkpoint/model/material/schedule binding mismatch",
         )
@@ -908,11 +934,11 @@ class TrainingDriver:
             or (
                 branch
                 and state["arm"] == "shared"
-                and state["step"] == 400
+                and state["step"] == self.shared_step
                 and self.arm in ARMS
                 and not state["outer_done"]
             ),
-            "branch only from the actual shared400 snapshot",
+            "branch only from the actual registered shared snapshot",
         )
         with torch.no_grad():
             for name, value in state["parameters"].items():
@@ -939,13 +965,18 @@ class TrainingDriver:
 
     def step(self):
         _require(not self.tainted, "failed uncommitted update: restore a committed checkpoint")
-        _require(self.step_index < (400 if self.arm == "shared" else 2000), "arm complete")
+        _require(
+            self.step_index < (self.shared_step if self.arm == "shared" else self.final_step),
+            "arm complete",
+        )
         _require(self.step_index < len(self.schedule["batches"]), "schedule exhausted")
         _require(
-            not self.pool.production_verified or self.arm == "shared" or self.step_index >= 400,
-            "production branches require the actual shared400 checkpoint",
+            not self.pool.production_verified
+            or self.arm == "shared"
+            or self.step_index >= self.shared_step,
+            "production branches require the actual registered shared checkpoint",
         )
-        if self.arm in ("C-only", "Full") and self.step_index in OUTER_STEPS:
+        if self.arm in ("C-only", "Full") and self.step_index in self.outer_steps:
             _require(
                 self.step_index in self.outer_done,
                 "real sealed outer update required before next batch",
@@ -958,8 +989,13 @@ class TrainingDriver:
             self.initialized = True
         entry = self.schedule["batches"][self.step_index]
         _require(
-            len(entry["task_ids"]) == len(set(entry["task_ids"])) == 5,
-            "every update requires five complete tasks",
+            len(entry["task_ids"]) == len(set(entry["task_ids"]))
+            and (
+                1 <= len(entry["task_ids"]) <= 5
+                if self.execution_plan is not None
+                else len(entry["task_ids"]) == 5
+            ),
+            "update must contain exactly the registered real complete-task batch",
         )
         batch = TaskBatch(
             task_ids=tuple(entry["task_ids"]),
@@ -1000,7 +1036,7 @@ class TrainingDriver:
         _require(
             not self.tainted
             and self.arm in ("C-only", "Full")
-            and self.step_index in OUTER_STEPS
+            and self.step_index in self.outer_steps
             and self.step_index not in self.outer_done,
             "outer update requires an actual scheduled committed point",
         )
@@ -1024,7 +1060,11 @@ class TrainingDriver:
                 pool=self.pool.cache_id,
                 seed=self.seed,
                 step=self.step_index,
-                sharing_domain=self.arm if self.step_index >= 1200 else "common_actual_point",
+                sharing_domain=(
+                    self.arm
+                    if self.step_index >= self.sharing_split_step
+                    else "common_actual_point"
+                ),
                 theta=parameter_digest(prepared["theta_bar"]),
                 frozen_base_digest=self.base_digest,
                 buffers=_tree_digest(dict(self.model.named_buffers())),
@@ -1083,7 +1123,7 @@ class TrainingDriver:
         outer runs before departing that coordinate, including a resumed run.
         This method never creates/models/collectors or grants material admission.
         """
-        limit = 400 if self.arm == "shared" else 2000
+        limit = self.shared_step if self.arm == "shared" else self.final_step
         _require(
             type(stop) is int and self.step_index <= stop <= limit,
             "requested interval is outside the fixed training schedule",
@@ -1091,7 +1131,7 @@ class TrainingDriver:
         while self.step_index < stop:
             if (
                 self.arm in ("C-only", "Full")
-                and self.step_index in OUTER_STEPS
+                and self.step_index in self.outer_steps
                 and self.step_index not in self.outer_done
             ):
                 self.outer_update()
@@ -1123,7 +1163,7 @@ def identical_committed_state(left, right):
     return state(left) == state(right)
 
 
-def conditional_sharing_proof(left, right):
+def conditional_sharing_proof(left, right, *, shared_step=400):
     """Sharing is optional and only proved from actual paired step400 outer commits."""
     records = [json.loads((Path(p) / "record.json").read_bytes()) for p in (left, right)]
     fields = (
@@ -1138,7 +1178,7 @@ def conditional_sharing_proof(left, right):
         identical_committed_state(left, right)
         and {r["arm"] for r in records} == {"C-only", "Full"}
         and all(
-            r["step"] == 400
+            r["step"] == shared_step
             and r["phase"] == "outer"
             and r["evidence"]["actual_feedback_denominator"] == 700
             for r in records
