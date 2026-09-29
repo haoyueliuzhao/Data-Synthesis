@@ -1,0 +1,29 @@
+{
+  "additional_authorized_microcny": 400000000,
+  "at": "2026-09-29T05:41:22.230135+00:00",
+  "audit_source": {
+    "path": "/home/zhuxinrui/.codex/attachments/72dcc627-ca88-40a9-909e-a5a7fa08512a/已粘贴的文本.txt",
+    "sha256": "c514295a49836796d251ed7a80371615f4733fe768707784a92a85c8677168e5"
+  },
+  "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "complete_scope_requests": 13022,
+  "explicit_user_authorization": true,
+  "hard_cap_microcny": 1200000000,
+  "history_and_UNKNOWN_reservations_preserved": true,
+  "id": "8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+  "new_wallet": false,
+  "no_automatic_new_technical_cohort": true,
+  "no_new_generation": true,
+  "no_prefix_training": true,
+  "original_cap_microcny": 800000000,
+  "output_limits_and_review_policy_unchanged": true,
+  "preflight_id": "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc",
+  "production_request_subcap": 18000,
+  "request_cap": 258000,
+  "risk_of_incomplete_cohort_accepted": true,
+  "schema": "v9_production_funding_decision.v1",
+  "scope_authorization_id": "caeae28e7005257809a02e263e1561f5722e3c5d49759f42a6b9a5c3010b6a58",
+  "strategy": "bounded_full_cohort_attempt",
+  "user_reply": "批准1200元总上限及上述风险",
+  "warning_microcny": 700000000
+}

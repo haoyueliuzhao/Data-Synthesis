@@ -32,6 +32,9 @@ UNKNOWN_ABANDONMENT_PREFIX = "acknowledged_unknown:"
 UNKNOWN_ABANDONMENT_ACTION = "unknown_abandonment_acknowledged"
 V8_PARTITION_KEY = "v8_request_partition"
 V8_PARTITION_LIMITS = {"generation": 220000, "technical_review": 108, "production_review": 18000}
+V9_MONETARY_AMENDMENT_KEY = "v9_prospective_monetary_amendment"
+V9_MONETARY_AMENDMENT_ACTION = "v9_prospective_monetary_limit_authorized"
+V9_AUTHORIZED_TOTAL_MICROCNY = 1_200_000_000
 
 
 def validated_budget_limits(
@@ -81,6 +84,212 @@ class UnknownAbandonmentError(ValueError):
 
 class RequestPartitionError(ValueError):
     """The new dispatch partition cannot change historical charges or allocation."""
+
+
+def _v9_authorization(value, *, config_sha256, hard_cap_microcny):
+    if (
+        not isinstance(value, dict)
+        or value.get("schema") != "v9_production_funding_decision.v1"
+        or value.get("id") != digest({k: v for k, v in value.items() if k != "id"})
+        or value.get("explicit_user_authorization") is not True
+        or value.get("user_reply") != "批准1200元总上限及上述风险"
+        or value.get("risk_of_incomplete_cohort_accepted") is not True
+        or value.get("strategy") != "bounded_full_cohort_attempt"
+        or value.get("no_prefix_training") is not True
+        or value.get("hard_cap_microcny") != hard_cap_microcny
+        or value.get("budget_config_sha256") != config_sha256
+        or value.get("preflight_id")
+        != "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc"
+    ):
+        raise BudgetAmendmentError("explicit bound V9 1200-CNY funding authorization required")
+
+
+def _v9_monetary_amendment(connection, config):
+    """Read/validate an append-only overlay; original config bytes never change."""
+    row = connection.execute(
+        "SELECT value FROM metadata WHERE key=?", (V9_MONETARY_AMENDMENT_KEY,)
+    ).fetchone()
+    if row is None:
+        return None
+    record = json.loads(row[0])
+    cap = record.get("effective_hard_cap_microcny")
+    if (
+        record.get("schema") != "v9_prospective_monetary_amendment.v1"
+        or record.get("id") != digest({k: v for k, v in record.items() if k != "id"})
+        or record.get("run_id") != config["run_id"]
+        or record.get("config_sha256") != digest(config)
+        or config["purpose"] != V6_PURPOSE
+        or record.get("original_hard_cap_microcny") != config["hard_cap_microcny"]
+        or config["hard_cap_microcny"] != HARD_CAP_MICROCNY
+        or type(cap) is not int
+        or cap != V9_AUTHORIZED_TOTAL_MICROCNY
+        or record.get("preserved_warning_microcny") != config["warning_microcny"]
+        or record.get("preserved_request_cap") != config["request_cap"]
+        or (config["warning_microcny"], config["request_cap"]) != (700000000, 258000)
+        or record.get("applied_after_requests") != 35336
+        or not connection.execute(
+            "SELECT 1 FROM events WHERE invocation_id=? AND action=? AND payload_json=?",
+            (record.get("amendment_id"), V9_MONETARY_AMENDMENT_ACTION, row[0]),
+        ).fetchone()
+    ):
+        raise BudgetAmendmentError("V9 prospective monetary authorization/config changed")
+    _v9_authorization(
+        record.get("authorization"), config_sha256=digest(config), hard_cap_microcny=cap
+    )
+    partition = _partition_snapshot(connection, config)
+    if partition is None or partition["id"] != record.get("request_partition_id"):
+        raise BudgetAmendmentError("V9 monetary overlay must preserve its V8 request partition")
+    return record
+
+
+def apply_v9_monetary_amendment(
+    path,
+    *,
+    expected_run_id,
+    expected_config_sha256,
+    amendment_id,
+    effective_hard_cap_microcny,
+    authorization,
+):
+    """Apply the user's explicit 800→1200-CNY authorization to the SAME wallet.
+
+    Only metadata plus its matching event are appended. Configuration, fees,
+    request rows, permanent UNKNOWN holds, warning and request partitions remain
+    unchanged. Repeating the identical authorization is read-only, including after
+    later requests. No broader API permission is treated as a budget authorization.
+    """
+    if (
+        type(effective_hard_cap_microcny) is not int
+        or effective_hard_cap_microcny != V9_AUTHORIZED_TOTAL_MICROCNY
+        or not isinstance(amendment_id, str)
+        or not amendment_id.strip()
+        or not isinstance(expected_run_id, str)
+        or not expected_run_id.strip()
+    ):
+        raise BudgetAmendmentError("only the explicit V9 1200-CNY total-cap amendment is supported")
+    _v9_authorization(
+        authorization,
+        config_sha256=expected_config_sha256,
+        hard_cap_microcny=effective_hard_cap_microcny,
+    )
+    path = Path(path)
+    if not path.is_file():
+        raise BudgetAmendmentError("original paid ledger missing; amendment cannot create it")
+    with closing(
+        sqlite3.connect(
+            path.resolve().as_uri() + "?mode=rw", uri=True, timeout=30, isolation_level=None
+        )
+    ) as connection:
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA synchronous=FULL")
+        connection.execute("BEGIN IMMEDIATE")
+        try:
+            stored = connection.execute("SELECT value FROM metadata WHERE key='config'").fetchone()
+            if stored is None:
+                raise BudgetAmendmentError("original paid configuration missing")
+            config = json.loads(stored[0])
+            if (
+                config.get("run_id") != expected_run_id
+                or digest(config) != expected_config_sha256
+                or config.get("purpose") != V6_PURPOSE
+                or (
+                    config.get("hard_cap_microcny"),
+                    config.get("warning_microcny"),
+                    config.get("request_cap"),
+                )
+                != (800000000, 700000000, 258000)
+            ):
+                raise BudgetAmendmentError("exact original 800/700/258000 joint wallet required")
+            signature = dict(
+                amendment_id=amendment_id,
+                run_id=expected_run_id,
+                config_sha256=expected_config_sha256,
+                effective_hard_cap_microcny=effective_hard_cap_microcny,
+                authorization=json.loads(_json(authorization)),
+            )
+            prior = _v9_monetary_amendment(connection, config)
+            if prior is not None:
+                if any(prior.get(k) != v for k, v in signature.items()):
+                    raise BudgetAmendmentError(
+                        "existing V9 monetary authorization cannot be replaced"
+                    )
+                connection.rollback()
+                return prior
+            snapshot = _budget_snapshot(connection, config)
+            partition = snapshot.get("request_partition")
+            if (
+                snapshot["pending_requests"]
+                or snapshot["unacknowledged_unknown_requests"]
+                or snapshot["halt"]
+                or snapshot["requests_reserved"] != 35336
+                or snapshot["exposure_microcny"] > HARD_CAP_MICROCNY
+                or partition is None
+                or partition["consumed"]
+                != dict(generation=16286, technical_review=108, production_review=0)
+            ):
+                raise BudgetAmendmentError(
+                    "V9 cap registration requires settled 35336-call preproduction history"
+                )
+            counters = dict(
+                connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+            )
+            totals = connection.execute(
+                "SELECT COUNT(*) AS requests, "
+                "SUM(CASE WHEN dispatched_at IS NOT NULL THEN 1 ELSE 0 END) AS dispatched, "
+                "SUM(CASE WHEN state='SETTLED' THEN settled_microcny ELSE 0 END) AS spent, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED','UNKNOWN') "
+                "THEN reserved_microcny ELSE 0 END) AS held, "
+                "SUM(CASE WHEN state='UNKNOWN' THEN 1 ELSE 0 END) AS unknown, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED') THEN 1 ELSE 0 END) AS pending "
+                "FROM requests"
+            ).fetchone()
+            if any(
+                counters[k] != totals[k]
+                for k in ("requests", "dispatched", "spent", "held", "unknown", "pending")
+            ):
+                raise BudgetAmendmentError(
+                    "original request/fee/reservation counters must conserve"
+                )
+            original_records = [
+                dict(r)
+                for r in connection.execute(
+                    "SELECT invocation_id,coordinates_json,state,"
+                    "reserved_microcny,settled_microcny,"
+                    "request_sha256,response_sha256,usage_json FROM requests ORDER BY invocation_id"
+                )
+            ]
+            body = dict(
+                schema="v9_prospective_monetary_amendment.v1",
+                **signature,
+                at_unix=time.time(),
+                original_hard_cap_microcny=config["hard_cap_microcny"],
+                preserved_warning_microcny=config["warning_microcny"],
+                preserved_request_cap=config["request_cap"],
+                request_partition_id=partition["id"],
+                applied_after_requests=35336,
+                preserved_counters=counters,
+                historical_request_records_sha256=digest(original_records),
+                acknowledged_unknowns_sha256=digest(_acknowledged_unknowns(connection, config)),
+                wallet_config_unchanged=True,
+                historical_rows_unchanged=True,
+                permanent_unknown_holds_unchanged=True,
+                request_partition_unchanged=True,
+                applies_to_future_reservations_only=True,
+                completion_guarantee=False,
+            )
+            record = {**body, "id": digest(body)}
+            connection.execute(
+                "INSERT INTO metadata VALUES (?,?)", (V9_MONETARY_AMENDMENT_KEY, _json(record))
+            )
+            connection.execute(
+                "INSERT INTO events(invocation_id,action,payload_json,at_unix) VALUES (?,?,?,?)",
+                (amendment_id, V9_MONETARY_AMENDMENT_ACTION, _json(record), record["at_unix"]),
+            )
+            connection.commit()
+            return record
+        except BaseException:
+            connection.rollback()
+            raise
 
 
 def _partition_snapshot(connection, config):
@@ -351,6 +560,10 @@ def _budget_snapshot(connection, config):
             "acknowledged reservations are not conserved in original counters"
         )
     spent, held = row["spent"], row["held"]
+    monetary = _v9_monetary_amendment(connection, config)
+    effective_cap = (
+        monetary["effective_hard_cap_microcny"] if monetary else config["hard_cap_microcny"]
+    )
     result = {
         "run_id": config["run_id"],
         "purpose": config["purpose"],
@@ -359,7 +572,7 @@ def _budget_snapshot(connection, config):
         "settled_tariff_microcny": spent,
         "held_microcny": held,
         "exposure_microcny": spent + held,
-        "remaining_exposure_microcny": config["hard_cap_microcny"] - spent - held,
+        "remaining_exposure_microcny": effective_cap - spent - held,
         "hard_cap_microcny": config["hard_cap_microcny"],
         "warning_microcny": config["warning_microcny"],
         "request_cap": config["request_cap"],
@@ -382,6 +595,12 @@ def _budget_snapshot(connection, config):
     partition = _partition_snapshot(connection, config)
     if partition is not None:
         result["request_partition"] = partition
+    if monetary is not None:
+        result.update(
+            effective_hard_cap_microcny=effective_cap,
+            original_remaining_exposure_microcny=config["hard_cap_microcny"] - spent - held,
+            monetary_amendment=monetary,
+        )
     return result
 
 
@@ -994,10 +1213,11 @@ class ProbeBudget:
                 raise BudgetUnavailable("unknown or halted Probe ledger forbids new requests")
             if state["requests_reserved"] >= self.request_cap:
                 raise BudgetUnavailable(f"{self.request_cap}-request Probe cap exhausted")
-            if state["exposure_microcny"] + reservation > self.hard_cap_microcny:
+            effective_cap = state.get("effective_hard_cap_microcny", self.hard_cap_microcny)
+            if state["exposure_microcny"] + reservation > effective_cap:
                 raise BudgetUnavailable(
-                    "next full official-context reservation exceeds the frozen "
-                    f"{self.hard_cap_microcny} micro-CNY cap"
+                    "next full official-context reservation exceeds the authorized "
+                    f"{effective_cap} micro-CNY cap"
                 )
             category = _partition_admit(connection, self.config, coordinates)
             connection.execute(
@@ -1329,6 +1549,10 @@ class ProbeBudget:
                 "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED') THEN 1 ELSE 0 END) AS pending "
                 "FROM requests"
             ).fetchone()
+            monetary = _v9_monetary_amendment(connection, self.config)
+            effective_cap = (
+                monetary["effective_hard_cap_microcny"] if monetary else self.hard_cap_microcny
+            )
             if (
                 counters is None
                 or any(
@@ -1336,7 +1560,7 @@ class ProbeBudget:
                     for k in ("requests", "dispatched", "spent", "held", "unknown", "pending")
                 )
                 or counters["pending"] != 0
-                or counters["spent"] + counters["held"] > self.hard_cap_microcny
+                or counters["spent"] + counters["held"] > effective_cap
             ):
                 raise UnknownAbandonmentError(
                     "quiescent original request/fee/reservation counters must conserve"
@@ -1355,7 +1579,7 @@ class ProbeBudget:
                 reservation_released=False,
                 retry_authorized=False,
                 replacement_call_authorized=False,
-                future_calls_within_original_cap_only=True,
+                future_calls_within_original_cap_only=monetary is None,
                 at_unix=time.time(),
             )
             record["id"] = digest(record)

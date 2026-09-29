@@ -21,7 +21,7 @@ from .contracts import Episode, digest
 from .probe_budget import read_budget_snapshot
 from .semantic_review import document_index
 from .storage import read_json, runtime_binding
-from .v6_collection import ENV_FILE, STUDY, bound, require, sha
+from .v6_collection import ENV_FILE, STUDY, bound, persist, require, sha
 from .v6_decomposed_review import bind_capacity, job_directory, job_key
 from .v6_review_provider import request_review
 from .v6_review_revision import _key, original_protocol
@@ -282,6 +282,16 @@ def register(output=OUTPUT, *, funding_path):
         no_generation=True,
         no_prefix_training=True,
         no_success_splicing=True,
+        recovery_policy=dict(
+            mode="explicit_resume_same_protocol_and_matrix_after_finite_recovery_audit",
+            returned_settled="reuse original only; no model replacement",
+            lost_local_artifact="reconstruct exact settled model bytes from original ledger",
+            missing_local_assessment="apply the same frozen checker to existing return",
+            confirmed_unsent="no original ledger row; may continue same registered job",
+            reserved_dispatched_unknown="manual audit blocker, never relabel unsent",
+            new_namespace_or_directory=False,
+            automatic_retry=False,
+        ),
         all_joint_packages_required=True,
         fixed_V8_semantics=True,
         automatic_training=False,
@@ -395,7 +405,7 @@ class ProductionContext:
                 alignment=True,
             )
             require(actual == cap, "no after-results output-cap change")
-            publish(
+            persist(
                 job_directory(self.output, job) / "request",
                 bound(
                     dict(
@@ -463,7 +473,7 @@ def complete_seal(output, plan):
             no_prefix_population=True,
         )
     )
-    publish(Path(output) / "production_completion_seal", seal)
+    persist(Path(output) / "production_completion_seal", seal)
     return seal
 
 
@@ -472,6 +482,13 @@ def freeze_material(output, plan, seal):
     from .v9_conditional_training import build_support_manifest
 
     output = Path(output)
+    if (output / "material_result/record.json").exists():
+        prior = checked(output / "material_result/record.json")
+        require(
+            prior["protocol_id"] == plan["id"] and prior["completion_seal_id"] == seal["id"],
+            "existing material result has different original cohort",
+        )
+        return prior
     context, tokenizer = ProductionContext(output, plan), None
     resolutions, encodings, paths, failures = {}, {}, {}, []
     for task_id in plan["original_task_ids"]:
@@ -494,7 +511,7 @@ def freeze_material(output, plan, seal):
         resolution = bound(
             resolution | dict(production_protocol_id=plan["id"], no_old_technical_packages=True)
         )
-        publish(output / "resolutions" / digest(task_id), resolution)
+        persist(output / "resolutions" / digest(task_id), resolution)
         resolutions[task_id] = resolution
         paths[task_id] = entry(output / "resolutions" / digest(task_id) / "record.json")
         # Do not drop a joint-valid package merely because the whole task is unmapped.
@@ -515,7 +532,7 @@ def freeze_material(output, plan, seal):
             require(sha(ep["path"]) == ep["sha256"], "original episode changed before encoding")
             episode = Episode.model_validate_json(Path(ep["path"]).read_bytes())
             encoding = encode_reviewed_probe_for_student(episode, mask, tokenizer)
-            publish(output / "encodings" / digest(sid), encoding)
+            persist(output / "encodings" / digest(sid), encoding)
             encodings[sid] = encoding
             if not encoding["encoding_admitted"]:
                 failures.append(
@@ -526,7 +543,7 @@ def freeze_material(output, plan, seal):
     if not failures:
         try:
             support = build_support_manifest(plan, seal, resolutions, encodings)
-            publish(output / "support_manifest", support)
+            persist(output / "support_manifest", support)
         except ValueError as failure:
             failures.append(dict(reason="support_freeze_refused", detail=str(failure)))
     binding = None
@@ -552,7 +569,7 @@ def freeze_material(output, plan, seal):
                 tokenizer_binding=list(next(iter(codec))),
             )
         )
-        publish(output / "training_binding", binding)
+        persist(output / "training_binding", binding)
     report = bound(
         dict(
             schema="v9_conditional_material_result.v1",
@@ -581,32 +598,56 @@ def freeze_material(output, plan, seal):
     return report
 
 
-async def run(output=OUTPUT, env_file=ENV_FILE):
+async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
     output = Path(output)
     plan = checked_plan(output)
-    require(
-        not (output / "started").exists(),
-        "started cohort requires explicit recovery audit, never implicit resend",
-    )
+    if not resume:
+        require(
+            not (output / "started").exists(),
+            "started cohort requires explicit recovery audit, never implicit resend",
+        )
+    else:
+        require((output / "started").exists(), "resume requires the same existing cohort")
     ledger, context = ledger_for(plan), ProductionContext(output, plan)
     before = ledger.snapshot()
     require(
         not before["halt"] and not before["unacknowledged_unknown_requests"],
         "original shared wallet safety stop",
     )
-    require(
-        before["request_partition"]["consumed"]["production_review"] == 0,
-        "new cohort cannot splice previous production attempts",
-    )
+    if not resume:
+        require(
+            before["request_partition"]["consumed"]["production_review"] == 0,
+            "new cohort cannot splice previous production attempts",
+        )
     completed, dispatched, errors, totals = (
         {},
         set(),
         [],
         dict(cost_microcny=0, prompt_tokens=0, completion_tokens=0),
     )
+    result_directory = output / "result"
+    if resume:
+        from .v9_review_recovery import inspect_recovery
+
+        report, completed, totals = inspect_recovery(
+            output, plan, ledger, context, repair_local=True
+        )
+        attempt = (
+            output
+            / "resume_attempts"
+            / f"attempt{len(list((output / 'resume_attempts').glob('attempt*'))) + 1:04d}"
+        )
+        publish(attempt / "recovery_audit", report)
+        require(
+            report["resume_admitted"],
+            "finite recovery blocked; no existing invocation may be resent",
+        )
+        dispatched = set(completed)
+        result_directory = attempt / "result"
+    else:
+        publish(output / "started", bound(dict(at=now(), protocol_id=plan["id"], budget=before)))
     stop = asyncio.Event()
     key = _key(env_file)
-    publish(output / "started", bound(dict(at=now(), protocol_id=plan["id"], budget=before)))
 
     def progress(phase):
         status(
@@ -624,6 +665,8 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
                 no_prefix_training=True,
                 training_started=False,
                 automatic_next_cohort=False,
+                explicit_resume=resume,
+                current_result_path=str(result_directory / "record.json"),
             ),
         )
 
@@ -639,7 +682,7 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
         async def stage_run(stage):
             queue = asyncio.Queue()
             for job in plan["jobs"]:
-                if job["stage"] == stage:
+                if job["stage"] == stage and job["key"] not in completed:
                     queue.put_nowait(job)
 
             async def worker():
@@ -659,10 +702,19 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
                         episode_id = "v8prod:" + digest(
                             dict(protocol_id=plan["id"], job_key=job["key"])
                         )
-                        publish(
-                            directory / "started",
-                            dict(at=now(), episode_id=episode_id, job_key=job["key"]),
-                        )
+                        if (directory / "started/record.json").exists():
+                            intent = read_json(directory / "started/record.json")
+                            require(
+                                resume
+                                and intent["episode_id"] == episode_id
+                                and intent["job_key"] == job["key"],
+                                "old intent may only be reused after confirmed-unsent recovery",
+                            )
+                        else:
+                            publish(
+                                directory / "started",
+                                dict(at=now(), episode_id=episode_id, job_key=job["key"]),
+                            )
                         dispatched.add(job["key"])
                         artifact = await request_review(
                             ledger=ledger,
@@ -691,7 +743,12 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
                             retry=False,
                             completed_model_return=(directory / "response").exists(),
                         )
-                        publish(directory / "blocked", issue)
+                        failure_directory = (
+                            result_directory.parent / "blocked" / digest(job["key"])
+                            if resume
+                            else directory / "blocked"
+                        )
+                        publish(failure_directory, issue)
                         errors.append(issue)
                         stop.set()
                     progress("PRODUCTION_" + stage.upper() + "_RUNNING")
@@ -699,10 +756,12 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
             await asyncio.gather(*(worker() for _ in range(plan["concurrency"])))
 
         await stage_run("slot")
-        if len(completed) == SLOT_CALLS and not errors:
+        if sum(v["stage"] == "slot" for v in completed.values()) == SLOT_CALLS and not errors:
             try:
-                for task in plan["native_supported_task_ids"]:
+                for index, task in enumerate(plan["native_supported_task_ids"]):
                     context.prepare_alignment(task)
+                    if index % 50 == 0:
+                        progress("PRODUCTION_ALIGNMENT_PREPARING")
             except Exception as failure:
                 errors.append(
                     dict(
@@ -760,16 +819,20 @@ async def run(output=OUTPUT, env_file=ENV_FILE):
             no_prefix_training=True,
             training_started=False,
             automatic_next_cohort=False,
+            explicit_resume=resume,
         )
     )
-    publish(output / "result", result)
+    publish(result_directory, result)
     progress("PRODUCTION_COMPLETE" if seal and not errors else "PRODUCTION_STOPPED_INCOMPLETE")
     return result
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("authorize-scope", "register", "run", "status"))
+    parser.add_argument(
+        "action",
+        choices=("authorize-scope", "register", "run", "resume", "audit-recovery", "status"),
+    )
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--funding", type=Path)
     parser.add_argument("--env-file", type=Path, default=ENV_FILE)
@@ -784,7 +847,16 @@ def main(argv=None):
     else:
         with (args.output / "controller.lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            print(asyncio.run(run(args.output, args.env_file)))
+            if args.action == "audit-recovery":
+                from .v9_review_recovery import inspect_recovery
+
+                plan = checked_plan(args.output)
+                report, _, _ = inspect_recovery(
+                    args.output, plan, ledger_for(plan), ProductionContext(args.output, plan)
+                )
+                print(report)
+            else:
+                print(asyncio.run(run(args.output, args.env_file, resume=args.action == "resume")))
 
 
 if __name__ == "__main__":
