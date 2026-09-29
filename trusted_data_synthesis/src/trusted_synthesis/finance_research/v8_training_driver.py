@@ -1026,17 +1026,32 @@ class TrainingDriver:
         )
         self.step_index += 1
         underlying_update_id = report.pop("id")
+        v10_material = getattr(self.pool, "material_schema", None) == "v10_material_binding.v1"
         report.update(
-            schema_version="v8_actual_task_batch_update.v1",
+            schema_version=(
+                "v10_actual_task_batch_update.v1"
+                if v10_material
+                else "v8_actual_task_batch_update.v1"
+            ),
             underlying_task_batch_update_id=underlying_update_id,
-            supervision_policy="v8_single_authoritative_targets.v1",
+            supervision_policy=(
+                "v10_single_authority_original_spans.v1"
+                if v10_material
+                else "v8_single_authoritative_targets.v1"
+            ),
             loss_domain="review-approved original token spans/actions/EOS; full-package L_P",
-            execution_design="original_unfused_response_rows_v8",
+            execution_design=(
+                "original_unfused_response_rows_v10"
+                if v10_material
+                else "original_unfused_response_rows_v8"
+            ),
             original_history_retained=True,
             actual_parameter_update=True,
             CPU_control_only=not self.pool.production_verified,
         )
-        report["id"] = "v8_task_batch_update:" + digest(report)
+        report["id"] = (
+            "v10_task_batch_update:" if v10_material else "v8_task_batch_update:"
+        ) + digest(report)
         self.commit("step", report)
         self.tainted = False
         return report

@@ -30,7 +30,8 @@ from .storage import runtime_binding
 from .v6_distribution import ARMS
 from .v7_base_evaluation import ORIGIN, evaluation_config, load_tokenizer
 from .v8_training_driver import LocalFeedbackCollector, _publish, validate_student_adapters
-from .v9_conditional_training import ConditionalTrainingDriver, load_training_pool
+from .v9_conditional_training import ConditionalTrainingDriver
+from .v10_training import load_training_pool
 
 SEEDS = (11, 29, 47)
 ARM_DIRECTORIES = dict(
