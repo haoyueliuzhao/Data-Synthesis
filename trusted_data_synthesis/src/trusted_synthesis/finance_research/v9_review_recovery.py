@@ -127,6 +127,7 @@ def restore_settled_artifact(ledger, iid, request):
 
 def inspect_recovery(output, plan, ledger, context, *, repair_local=False):
     """Called while holding the original controller lock, not concurrently with it."""
+    from .v9_network_terminal import TERMINAL_KIND, revision_for, validate_terminal
     from .v9_production_review import _assessment
 
     rows = production_rows(plan["budget_database"])
@@ -149,6 +150,31 @@ def inspect_recovery(output, plan, ledger, context, *, repair_local=False):
             else:
                 unsent.append(job["key"])
             continue
+        if row["state"] == "UNKNOWN" and response.exists():
+            artifact = read_json(response)
+            if artifact.get("terminal_kind") == TERMINAL_KIND:
+                revision = revision_for(output, plan)
+                require(revision is not None, "terminal recovery needs explicit revised closure")
+                validate_terminal(
+                    artifact,
+                    protocol_id=plan["id"],
+                    semantic_request_sha256=digest(context.request(job)),
+                    revision=revision,
+                )
+                require(
+                    row["request_sha256"] == artifact["request_sha256"]
+                    and row["dispatched_at"] is not None,
+                    "network terminal original request changed",
+                )
+                judged = read_json(assessment)
+                require(
+                    judged["validation"] is None and judged["interface_admitted"] is False,
+                    "missing model response is never positive",
+                )
+                completed[job["key"]] = dict(
+                    stage=job["stage"], interface=False, semantic=False, returned=False
+                )
+                continue
         if (
             row["state"] != "SETTLED"
             or row["dispatched_at"] is None
@@ -211,6 +237,7 @@ def inspect_recovery(output, plan, ledger, context, *, repair_local=False):
             )
         completed[job["key"]] = dict(
             stage=job["stage"],
+            returned=True,
             interface=judged["interface_admitted"],
             semantic=judged["semantic_consistent"],
         )
@@ -226,7 +253,10 @@ def inspect_recovery(output, plan, ledger, context, *, repair_local=False):
             at=now(),
             protocol_id=plan["id"],
             expected_jobs=len(expected),
-            reused_returned_jobs=list(completed),
+            reused_returned_jobs=[
+                key for key, value in completed.items() if value.get("returned", True)
+            ],
+            reused_terminal_jobs=list(completed),
             confirmed_unsent_jobs=unsent,
             blocker_records=issues,
             local_actions=actions,

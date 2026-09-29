@@ -887,7 +887,7 @@ class TrainingDriver:
             payload["execution_plan"] = self.execution_plan
         return payload
 
-    def commit(self, phase="step", evidence=None):
+    def commit(self, phase="step", evidence=None, *, outer_inputs=None):
         payload = self._payload()
         buffer = io.BytesIO()
         torch.save(payload, buffer)
@@ -905,9 +905,18 @@ class TrainingDriver:
             evidence=evidence,
             checkpoint_contains_actual_model_Adam_RNG_pi=True,
         )
-        write_immutable_artifact_directory(
-            directory, {"state.pt": raw, "record.json": _json(summary)}
-        )
+        files = {"state.pt": raw}
+        if outer_inputs is not None:
+            _require(phase == "outer", "real outer tensors belong only to an outer commit")
+            buffer = io.BytesIO()
+            torch.save(outer_inputs, buffer)
+            inputs_raw = buffer.getvalue()
+            files["outer_inputs.pt"] = inputs_raw
+            summary["outer_inputs_sha256"] = _sha(inputs_raw)
+            summary["outer_inputs_digest"] = _tree_digest(outer_inputs)
+            summary["outer_inputs_bytes"] = len(inputs_raw)
+        files["record.json"] = _json(summary)
+        write_immutable_artifact_directory(directory, files)
         return directory
 
     def restore(self, directory, *, branch=False):
@@ -1052,6 +1061,7 @@ class TrainingDriver:
                 and cpu_control_feedback is None,
                 "production cannot replace real collection/replay with test callbacks",
             )
+        pre_outer_state = self._payload()
         gradients = class_gradients(self.model, self.pool, device=self.device)
         mu = self.pool._manifest.registration.mu
         prepared = prepare_virtual_point(self.parameters, self.optimizer, gradients, self.pi, mu)
@@ -1112,7 +1122,26 @@ class TrainingDriver:
             actual_feedback_denominator=cohort.denominator,
             shared_with_other_arm=False,
         )
-        self.commit("outer", evidence)
+        # Retain actual inputs for same-point mechanisms; digests alone cannot
+        # execute the registered N-only intervention without new feedback.
+        outer_inputs = dict(
+            schema="v9_real_outer_inputs.v1",
+            pre_state=pre_outer_state,
+            point_id=point_id,
+            mu=copy.deepcopy(mu),
+            G={n: p.detach().cpu().clone() for n, p in prepared["G"].items()},
+            theta_bar={n: p.detach().cpu().clone() for n, p in prepared["theta_bar"].items()},
+            gJ={n: p.detach().cpu().clone() for n, p in gJ.items()},
+            pullback={n: p.detach().cpu().clone() for n, p in result["a"].items()},
+            C=copy.deepcopy(result["C"]),
+            q_next=copy.deepcopy(self.pi),
+            feedback_seal=cohort.model_dump(mode="json", exclude={"episodes"}),
+            rewards=list(rewards),
+            feedback_report=copy.deepcopy(report),
+            actual_tensors_saved=True,
+            new_feedback_for_mechanisms=False,
+        )
+        self.commit("outer", evidence, outer_inputs=outer_inputs)
         self.tainted = False
         return evidence
 

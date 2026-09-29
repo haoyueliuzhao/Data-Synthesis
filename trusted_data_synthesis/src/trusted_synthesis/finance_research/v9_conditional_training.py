@@ -151,19 +151,39 @@ def _protocol_roster(protocol):
 
 
 def _completion(protocol, completion):
-    _identity(completion, "v9_production_completion_seal.v1")
+    version2 = completion.get("schema") == "v9_production_completion_seal.v2"
+    _identity(
+        completion,
+        "v9_production_completion_seal.v2" if version2 else "v9_production_completion_seal.v1",
+    )
+    if version2:
+        from .v9_network_terminal import TERMINAL_KIND, validate_authorization
+
+        revision = completion["execution_revision"]
+        _identity(revision, "v9_same_matrix_network_terminal_revision.v1")
+        validate_authorization(revision["authorization_record"], protocol["id"])
+        unknowns = sum(j.get("terminal_kind") == TERMINAL_KIND for j in completion["jobs"])
+        _require(
+            revision["protocol_id"] == protocol["id"]
+            and revision["jobs_sha256"] == digest(protocol["jobs"])
+            and completion["processed_jobs"] == protocol["maximum_calls"]
+            and completion["network_unknown_jobs"] == unknowns
+            and completion["completed_requests"] + unknowns == completion["processed_jobs"]
+            and completion["all_registered_jobs_have_terminal_records"] is True
+            and completion["all_registered_returns_present"] is (unknowns == 0),
+            "explicit full-terminal closure required; actual returned count must stay truthful",
+        )
     parent = protocol["parent"]
     _require(
         completion["protocol_id"] == protocol["id"]
         and completion["parent_launch_id"] == parent["generation_protocol"]["id"]
         and completion["parent_generation_seal_id"] == parent["generation_seal"]["id"]
         and completion["native_support_id"] == parent["native_support"]["id"]
-        and completion["expected_requests"]
-        == completion["completed_requests"]
-        == protocol["maximum_calls"]
+        and completion["expected_requests"] == protocol["maximum_calls"]
+        and (version2 or completion["completed_requests"] == protocol["maximum_calls"])
         and completion["slot_review_denominator"] == protocol["slot_review_denominator"]
         and completion["alignment_denominator"] == protocol["alignment_denominator"]
-        and completion["all_registered_returns_present"] is True
+        and (version2 or completion["all_registered_returns_present"] is True)
         and completion["all_original_slots_retained"] is True,
         "all registered production returns must finish before support freeze",
     )
@@ -377,6 +397,25 @@ def _check_production_returns(protocol, completion, read):
             "actual production response is unbound",
         )
         validation = assessment.get("validation")
+        if artifact.get("terminal_kind") == "acknowledged_connection_unknown_no_model_response":
+            from .v9_network_terminal import validate_terminal
+
+            _require(
+                completion["schema"] == "v9_production_completion_seal.v2",
+                "old all-return completion cannot accept missing responses",
+            )
+            validate_terminal(
+                artifact,
+                protocol_id=protocol["id"],
+                semantic_request_sha256=job["request_sha256"],
+                revision=completion["execution_revision"],
+            )
+            _require(
+                validation is None
+                and assessment["interface_admitted"] is False
+                and assessment["semantic_consistent"] is False,
+                "unknown terminal cannot become a qualified original",
+            )
         if validation is not None:
             request_key = (
                 "review_request_sha256" if job["stage"] == "slot" else "alignment_request_sha256"
@@ -479,6 +518,20 @@ def load_training_pool(binding_path):
             "conditional parent changed",
         )
     joint_from_reviews = _check_production_returns(protocol, completion, read)
+    if completion["schema"] == "v9_production_completion_seal.v2":
+        from .v9_network_terminal import PROTECTED
+
+        revision = read(binding["production_execution_revision"])
+        _require(
+            revision == completion["execution_revision"]
+            and revision["original_runtime_binding_sha256"] == digest(protocol["runtime_binding"])
+            and all(
+                revision["protected_sources"][name] == protocol["runtime_binding"][name]
+                for name in PROTECTED
+            )
+            and read(revision["authorization"]) == revision["authorization_record"],
+            "actual explicit terminal revision/authority/protected semantics differ",
+        )
     _require(set(binding["resolutions"]) == set(tasks), "all 1000 resolutions required")
     resolutions = {task: read(entry) for task, entry in binding["resolutions"].items()}
     encodings = {sid: read(entry) for sid, entry in binding["encodings"].items()}

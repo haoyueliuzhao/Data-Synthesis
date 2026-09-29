@@ -307,7 +307,13 @@ def register(output=OUTPUT, *, funding_path):
 def checked_plan(output):
     plan = checked(Path(output) / "registration/protocol.json")
     fixed_scope(plan)
-    require(plan["runtime_binding"] == runtime_binding(), "frozen production source changed")
+    if plan["runtime_binding"] != runtime_binding():
+        from .v9_network_terminal import revision_for
+
+        require(
+            revision_for(output, plan) is not None,
+            "frozen source changed without explicit same-matrix revision",
+        )
     for name in ("authorization", "funding", "preflight"):
         read_entry(plan[name])
     require(
@@ -437,40 +443,77 @@ def _assessment(artifact, request, job):
 
 
 def complete_seal(output, plan):
-    """Whole-cohort barrier includes actual malformed/invalid returns, not missing calls."""
+    """No prefix closure; a separately authorized V2 can include real unknown terminals."""
+    from .v9_network_terminal import TERMINAL_KIND, revision_for, validate_terminal
+
+    revision = revision_for(output, plan)
     rows = []
+    unknown = 0
     for job in plan["jobs"]:
         directory = job_directory(output, job)
         response, assessment = (
             directory / "response/record.json",
             directory / "assessment/record.json",
         )
-        require(response.is_file() and assessment.is_file(), "all13022 returned originals required")
+        require(
+            response.is_file() and assessment.is_file(),
+            "all13022 original terminal records required",
+        )
         artifact = read_json(response)
+        network = artifact.get("terminal_kind") == TERMINAL_KIND
+        if network:
+            require(
+                revision is not None, "old all-returns gate cannot silently admit missing responses"
+            )
+            validate_terminal(
+                artifact,
+                protocol_id=plan["id"],
+                semantic_request_sha256=artifact["semantic_review_request_sha256"],
+                revision=revision,
+            )
+            judged = read_json(assessment)
+            require(
+                judged.get("validation") is None and judged["interface_admitted"] is False,
+                "network unknown is never positive",
+            )
+            unknown += 1
         rows.append(
             {k: job.get(k) for k in ("key", "stage", "task_id", "slot_id", "reviewer")}
             | dict(
                 request_sha256=artifact["semantic_review_request_sha256"],
                 response=dict(path=str(response), sha256=sha(response)),
                 assessment=dict(path=str(assessment), sha256=sha(assessment)),
+                terminal_kind=TERMINAL_KIND if network else "model_response",
             )
         )
     seal = bound(
         dict(
-            schema="v9_production_completion_seal.v1",
+            schema="v9_production_completion_seal.v2"
+            if revision
+            else "v9_production_completion_seal.v1",
             protocol_id=plan["id"],
             parent_launch_id=plan["parent_launch_id"],
             parent_generation_seal_id=plan["parent"]["generation_seal"]["id"],
             native_support_id=plan["parent"]["native_support"]["id"],
             expected_requests=MAXIMUM_CALLS,
-            completed_requests=len(rows),
+            completed_requests=len(rows) - unknown,
             slot_review_denominator=SLOT_CALLS,
             alignment_denominator=ALIGNMENT_CALLS,
-            all_registered_returns_present=True,
+            all_registered_returns_present=unknown == 0,
             all_original_slots_retained=True,
             jobs=rows,
             semantic_failures_retained=True,
             no_prefix_population=True,
+            **(
+                dict(
+                    processed_jobs=len(rows),
+                    network_unknown_jobs=unknown,
+                    all_registered_jobs_have_terminal_records=True,
+                    execution_revision=revision,
+                )
+                if revision
+                else {}
+            ),
         )
     )
     persist(Path(output) / "production_completion_seal", seal)
@@ -548,6 +591,9 @@ def freeze_material(output, plan, seal):
             failures.append(dict(reason="support_freeze_refused", detail=str(failure)))
     binding = None
     if support is not None and support["N"] > 0:
+        from .v9_network_terminal import revision_for
+
+        revision = revision_for(output, plan)
         codec = {(e["tokenizer_digest"], e["chat_template_digest"]) for e in encodings.values()}
         require(len(codec) == 1, "same actual tokenizer/template required")
         binding = bound(
@@ -567,6 +613,15 @@ def freeze_material(output, plan, seal):
                     for sid in encodings
                 },
                 tokenizer_binding=list(next(iter(codec))),
+                **(
+                    dict(
+                        production_execution_revision=entry(
+                            output / "network_terminal_revision_01/record.json"
+                        )
+                    )
+                    if revision
+                    else {}
+                ),
             )
         )
         persist(output / "training_binding", binding)
@@ -656,7 +711,11 @@ async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
                 at=now(),
                 protocol_id=plan["id"],
                 phase=phase,
-                returned=len(completed),
+                returned=sum(v.get("returned", True) for v in completed.values()),
+                processed=len(completed),
+                network_unknown_terminals=sum(
+                    not v.get("returned", True) for v in completed.values()
+                ),
                 dispatched=len(dispatched),
                 dispatched_counter_means_provider_invocations_not_http_confirmation=True,
                 denominator=MAXIMUM_CALLS,
@@ -729,6 +788,7 @@ async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
                         publish(directory / "assessment", assessment)
                         completed[job["key"]] = dict(
                             stage=stage,
+                            returned=True,
                             interface=assessment["interface_admitted"],
                             semantic=assessment["semantic_consistent"],
                         )
@@ -778,7 +838,7 @@ async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
     if len(completed) == MAXIMUM_CALLS and not errors:
         try:
             seal = complete_seal(output, plan)
-            progress("ALL_REVIEWS_RETURNED_FREEZING_MATERIAL")
+            progress("ALL_JOBS_TERMINAL_FREEZING_MATERIAL")
             material = freeze_material(output, plan, seal)
         except Exception as failure:
             errors.append(
@@ -794,13 +854,18 @@ async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
             schema="v9_conditional_production_result.v1",
             at=now(),
             protocol_id=plan["id"],
-            returned=len(completed),
+            returned=sum(v.get("returned", True) for v in completed.values()),
+            processed=len(completed),
+            network_unknown_terminals=sum(not v.get("returned", True) for v in completed.values()),
             dispatched=len(dispatched),
             dispatched_counter_means_provider_invocations_not_http_confirmation=True,
             denominator=MAXIMUM_CALLS,
             stages={
                 stage: dict(
-                    returned=sum(v["stage"] == stage for v in completed.values()),
+                    returned=sum(
+                        v["stage"] == stage and v.get("returned", True) for v in completed.values()
+                    ),
+                    processed=sum(v["stage"] == stage for v in completed.values()),
                     interface_passed=sum(
                         v["stage"] == stage and v["interface"] for v in completed.values()
                     ),
@@ -831,7 +896,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "action",
-        choices=("authorize-scope", "register", "run", "resume", "audit-recovery", "status"),
+        choices=(
+            "authorize-scope",
+            "register",
+            "register-network-revision",
+            "run",
+            "resume",
+            "audit-recovery",
+            "status",
+        ),
     )
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--funding", type=Path)
@@ -844,6 +917,10 @@ def main(argv=None):
         print(register(args.output, funding_path=args.funding)["id"])
     elif args.action == "status":
         print(read_json(args.output / "status.json"))
+    elif args.action == "register-network-revision":
+        from .v9_network_terminal import register_revision
+
+        print(register_revision(args.output)["id"])
     else:
         with (args.output / "controller.lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -856,7 +933,15 @@ def main(argv=None):
                 )
                 print(report)
             else:
-                print(asyncio.run(run(args.output, args.env_file, resume=args.action == "resume")))
+                from .v9_network_terminal import revision_for, run_with_network_terminals
+
+                plan = checked_plan(args.output)
+                executor = run_with_network_terminals if revision_for(args.output, plan) else run
+                print(
+                    asyncio.run(
+                        executor(args.output, args.env_file, resume=args.action == "resume")
+                    )
+                )
 
 
 if __name__ == "__main__":

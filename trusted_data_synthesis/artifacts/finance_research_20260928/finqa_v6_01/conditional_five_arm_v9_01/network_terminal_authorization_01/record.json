@@ -1,0 +1,31 @@
+{
+  "at": "2026-09-29T06:00:51.029668+00:00",
+  "automatic_new_generation": false,
+  "first_affected_invocation_id": "invocation:7541eb493b26bbd8daf8345bf4ec4a51a8a7fbfcd29c6a709a49ec10c8afc075",
+  "first_full_reservation_microcny": 2228224,
+  "hard_cap_microcny": 1200000000,
+  "id": "d8e44ec7270dd1764a78e408ee90bb9777d43abd01d7726158d6fb5d966f1300",
+  "model_and_V8_review_policy_unchanged": true,
+  "no_prefix_training": true,
+  "no_resend": true,
+  "original_92_responses_unchanged": true,
+  "permanent_full_hold": true,
+  "permitted_exception_types": [
+    "RemoteProtocolError",
+    "ReadError",
+    "WriteError",
+    "ConnectError",
+    "ReadTimeout",
+    "WriteTimeout",
+    "ConnectTimeout"
+  ],
+  "protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "requires_no_complete_response_or_usage": true,
+  "risk_acknowledged": true,
+  "same_matrix_and_namespace": true,
+  "schema": "v9_network_unknown_terminal_authorization.v1",
+  "scope_all_same_matrix_connection_interruptions": true,
+  "terminal_completion_semantics": "all registered jobs have authentic terminal records; actual returned responses counted separately",
+  "unknown_never_positive": true,
+  "user_reply": "允许上述有限修订并继续同一矩阵"
+}

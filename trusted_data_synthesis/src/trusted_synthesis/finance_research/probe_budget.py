@@ -35,6 +35,21 @@ V8_PARTITION_LIMITS = {"generation": 220000, "technical_review": 108, "productio
 V9_MONETARY_AMENDMENT_KEY = "v9_prospective_monetary_amendment"
 V9_MONETARY_AMENDMENT_ACTION = "v9_prospective_monetary_limit_authorized"
 V9_AUTHORIZED_TOTAL_MICROCNY = 1_200_000_000
+V9_NETWORK_PROTOCOL_ID = "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f"
+V9_NETWORK_UNKNOWN_REASON = "review transport response or usage unknown"
+V9_NETWORK_EXCEPTIONS = frozenset(
+    {
+        "RemoteProtocolError",
+        "ReadError",
+        "WriteError",
+        "ConnectError",
+        "ReadTimeout",
+        "WriteTimeout",
+        "ConnectTimeout",
+    }
+)
+V9_NETWORK_BATCH_PREFIX = "v9_network_unknown_batch:"
+V9_NETWORK_BATCH_ACTION = "v9_network_unknown_batch_acknowledged"
 
 
 def validated_budget_limits(
@@ -1594,6 +1609,334 @@ class ProbeBudget:
             if deleted.rowcount != 1:
                 raise UnknownAbandonmentError("exact target halt changed during acknowledgement")
             return record
+
+    def acknowledge_v9_connection_unknowns(
+        self,
+        *,
+        protocol_id,
+        authorization,
+        expected_requests,
+    ):
+        """Conservatively terminalize one approved matrix's connection UNKNOWNs.
+
+        ``expected_requests`` maps each original invocation to its externally
+        reconstructed ``job_key`` and HTTP-body ``request_sha256``. All currently
+        unacknowledged UNKNOWNs must be covered in one quiescent transaction.
+        Original rows, counters and maximum reservations NEVER change. Each row
+        gets the existing strict acknowledgement/event binding; no usage, result,
+        model judgment, release, retry, substitute call or training material is
+        manufactured. Only this fully verified batch's exact current halt clears.
+
+        Repeating the identical saved batch is audit lookup only and does not
+        clear/acknowledge later work. The same prospective authorization can cover
+        a later complete set of eligible connection failures in the SAME matrix.
+        """
+        if (
+            self.purpose != V6_PURPOSE
+            or protocol_id != V9_NETWORK_PROTOCOL_ID
+            or not isinstance(authorization, dict)
+            or authorization.get("id")
+            != digest({k: v for k, v in authorization.items() if k != "id"})
+            or authorization.get("schema") != "v9_network_unknown_terminal_authorization.v1"
+            or authorization.get("user_reply") != "允许上述有限修订并继续同一矩阵"
+            or authorization.get("protocol_id") != protocol_id
+            or any(
+                authorization.get(k) is not True
+                for k in (
+                    "risk_acknowledged",
+                    "no_resend",
+                    "permanent_full_hold",
+                    "scope_all_same_matrix_connection_interruptions",
+                    "unknown_never_positive",
+                )
+            )
+            or authorization.get("hard_cap_microcny") != V9_AUTHORIZED_TOTAL_MICROCNY
+            or authorization.get("terminal_completion_semantics")
+            != (
+                "all registered jobs have authentic terminal records; "
+                "actual returned responses counted separately"
+            )
+            or not isinstance(expected_requests, dict)
+            or not expected_requests
+            or any(
+                not isinstance(iid, str)
+                or not isinstance(item, dict)
+                or set(item) != {"job_key", "request_sha256"}
+                or not isinstance(item["job_key"], str)
+                or not item["job_key"]
+                or not isinstance(item["request_sha256"], str)
+                or len(item["request_sha256"]) != 64
+                for iid, item in expected_requests.items()
+            )
+        ):
+            raise UnknownAbandonmentError(
+                "explicit same-matrix connection terminal authority and bindings required"
+            )
+        signature = dict(
+            protocol_id=protocol_id,
+            authorization_id=authorization["id"],
+            expected_requests=json.loads(_json(expected_requests)),
+        )
+        batch_key = V9_NETWORK_BATCH_PREFIX + digest(signature)
+        with self._transaction() as connection:
+            acknowledged = {
+                r["invocation_id"]: r for r in _acknowledged_unknowns(connection, self.config)
+            }
+            prior = connection.execute(
+                "SELECT value FROM metadata WHERE key=?", (batch_key,)
+            ).fetchone()
+            if prior is not None:
+                record = json.loads(prior[0])
+                if (
+                    record.get("id") != digest({k: v for k, v in record.items() if k != "id"})
+                    or any(record.get(k) != v for k, v in signature.items())
+                    or any(acknowledged.get(r["invocation_id"]) != r for r in record["records"])
+                    or not connection.execute(
+                        "SELECT 1 FROM events WHERE invocation_id=? "
+                        "AND action=? AND payload_json=?",
+                        (batch_key, V9_NETWORK_BATCH_ACTION, prior[0]),
+                    ).fetchone()
+                ):
+                    raise UnknownAbandonmentError("saved connection terminal receipt changed")
+                return record  # Never clear an unrelated or later halt on idempotent lookup.
+            snapshot = self._snapshot(connection)
+            monetary = snapshot.get("monetary_amendment")
+            rows = {
+                r["invocation_id"]: r
+                for r in connection.execute(
+                    "SELECT * FROM requests WHERE state='UNKNOWN' ORDER BY invocation_id"
+                )
+            }
+            unacknowledged = set(rows) - set(acknowledged)
+            if (
+                snapshot["pending_requests"] != 0
+                or monetary is None
+                or snapshot.get("effective_hard_cap_microcny") != V9_AUTHORIZED_TOTAL_MICROCNY
+                or set(expected_requests) - set(rows)
+                or unacknowledged != set(expected_requests) - set(acknowledged)
+            ):
+                raise UnknownAbandonmentError(
+                    "quiescent complete set of original connection UNKNOWNs required"
+                )
+            checked_rows, evidence_by_id = {}, {}
+            for iid, expected in expected_requests.items():
+                row = rows[iid]
+                episode_id = "v8prod:" + digest(
+                    dict(protocol_id=protocol_id, job_key=expected["job_key"])
+                )
+                coordinates = invocation_identity(
+                    dict(run_id=self.run_id, episode_id=episode_id, attempt_index=1), turn_index=0
+                )
+                request = json.loads(row["request_body"])
+                evidence = json.loads(row["evidence_json"] or "{}")
+                event = connection.execute(
+                    "SELECT payload_json FROM events WHERE action='unknown' AND invocation_id=? "
+                    "ORDER BY sequence DESC LIMIT 1",
+                    (iid,),
+                ).fetchone()
+                unknown = json.loads(event[0]) if event else {}
+                if (
+                    coordinates["invocation_id"] != iid
+                    or json.loads(row["coordinates_json"]) != coordinates
+                    or row["dispatched_at"] is None
+                    or row["usage_json"] is not None
+                    or row["settled_microcny"] is not None
+                    or row["settled_at"] is not None
+                    or row["http_status"] is not None
+                    or row["response_body"] is not None
+                    or row["response_sha256"] is not None
+                    or row["response_classification"] != "unknown"
+                    or row["request_sha256"] != expected["request_sha256"]
+                    or digest(request) != expected["request_sha256"]
+                    or request.get("model") != "deepseek-flash"
+                    or request.get("max_tokens") not in self.allowed_output_limits
+                    or row["reserved_microcny"]
+                    != self.price_sheet.cost_microcny(
+                        hit=0,
+                        miss=self.price_sheet.context_input_token_ceiling,
+                        output=request["max_tokens"],
+                    )
+                    or evidence.get("exception_type") not in V9_NETWORK_EXCEPTIONS
+                    or evidence.get("service_response_received") is not False
+                    or evidence.get("budget_invocation_id") != iid
+                    or evidence.get("budget_coordinates") != coordinates
+                    or evidence.get("request_sha256") != expected["request_sha256"]
+                    or evidence.get("wire_protocol")
+                    not in {
+                        "v8_single_target_review.v1",
+                        "v8_alignment_review.v1",
+                    }
+                    or unknown
+                    != dict(
+                        reason=V9_NETWORK_UNKNOWN_REASON,
+                        http_status=None,
+                        response_classification="unknown",
+                    )
+                ):
+                    raise UnknownAbandonmentError(
+                        "UNKNOWN is not the exact approved no-response connection attempt"
+                    )
+                if iid in acknowledged:
+                    old = acknowledged[iid]
+                    if (
+                        old.get("protocol_id") != protocol_id
+                        or old.get("user_authorization_id") != authorization["id"]
+                        or old.get("job_key") != expected["job_key"]
+                    ):
+                        raise UnknownAbandonmentError(
+                            "existing UNKNOWN acknowledgement has different authority"
+                        )
+                checked_rows[iid], evidence_by_id[iid] = row, evidence
+            if not unacknowledged:
+                # Pure reassembly can combine earlier batches without creating
+                # new acknowledgement events, charges, or a halt-clear action.
+                body = dict(
+                    schema="v9_connection_unknown_batch_acknowledgement.v1",
+                    **signature,
+                    run_id=self.run_id,
+                    config_sha256=digest(self.config),
+                    records=[acknowledged[iid] for iid in sorted(expected_requests)],
+                    new_acknowledgements=0,
+                    original_request_rows_unchanged=True,
+                    actual_billing_claimed=False,
+                    retry_authorized=False,
+                    lookup_only=True,
+                    cleared_exact_halt=None,
+                )
+                return {**body, "id": digest(body)}
+            halt_row = connection.execute("SELECT value FROM metadata WHERE key='halt'").fetchone()
+            halt = json.loads(halt_row[0]) if halt_row else {}
+            active_event = connection.execute(
+                "SELECT sequence FROM events WHERE action='halt' AND payload_json=? "
+                "ORDER BY sequence DESC LIMIT 1",
+                (halt_row[0] if halt_row else "",),
+            ).fetchone()
+            if (
+                halt.get("invocation_id") not in unacknowledged
+                or halt.get("reason") != V9_NETWORK_UNKNOWN_REASON
+                or active_event is None
+                or halt.get("evidence") != evidence_by_id.get(halt.get("invocation_id"))
+            ):
+                raise UnknownAbandonmentError(
+                    "current halt is absent or not this exact connection batch"
+                )
+            for event in connection.execute(
+                "SELECT payload_json FROM events WHERE action='halt' AND sequence>=?",
+                (active_event[0],),
+            ):
+                item = json.loads(event[0])
+                if (
+                    item.get("invocation_id") not in unacknowledged
+                    or item.get("reason") != V9_NETWORK_UNKNOWN_REASON
+                    or item.get("evidence") != evidence_by_id.get(item.get("invocation_id"))
+                ):
+                    raise UnknownAbandonmentError("an unrelated later halt must not be hidden")
+            counters = dict(
+                connection.execute("SELECT * FROM counters WHERE singleton=1").fetchone()
+            )
+            totals = connection.execute(
+                "SELECT COUNT(*) AS requests, "
+                "SUM(CASE WHEN dispatched_at IS NOT NULL THEN 1 ELSE 0 END) AS dispatched, "
+                "SUM(CASE WHEN state='SETTLED' THEN settled_microcny ELSE 0 END) AS spent, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED','UNKNOWN') "
+                "THEN reserved_microcny ELSE 0 END) AS held, "
+                "SUM(CASE WHEN state='UNKNOWN' THEN 1 ELSE 0 END) AS unknown, "
+                "SUM(CASE WHEN state IN ('RESERVED','DISPATCHED') THEN 1 ELSE 0 END) AS pending "
+                "FROM requests"
+            ).fetchone()
+            if (
+                any(
+                    counters[k] != totals[k]
+                    for k in (
+                        "requests",
+                        "dispatched",
+                        "spent",
+                        "held",
+                        "unknown",
+                        "pending",
+                    )
+                )
+                or counters["spent"] + counters["held"] > V9_AUTHORIZED_TOTAL_MICROCNY
+            ):
+                raise UnknownAbandonmentError(
+                    "connection terminal accounting must preserve all full holds"
+                )
+            records = []
+            for iid in sorted(expected_requests):
+                if iid in acknowledged:
+                    records.append(acknowledged[iid])
+                    continue
+                row, expected = checked_rows[iid], expected_requests[iid]
+                body = dict(
+                    schema="v9_connection_unknown_abandonment.v1",
+                    run_id=self.run_id,
+                    invocation_id=iid,
+                    protocol_id=protocol_id,
+                    job_key=expected["job_key"],
+                    authorization_id="v9-connection:"
+                    + digest(
+                        dict(
+                            authorization_id=authorization["id"],
+                            invocation_id=iid,
+                        )
+                    ),
+                    user_authorization_id=authorization["id"],
+                    network_terminal_authorization_id=authorization["id"],
+                    authorization_evidence=authorization,
+                    expected_request_sha256=expected["request_sha256"],
+                    expected_halt_reason=V9_NETWORK_UNKNOWN_REASON,
+                    config_sha256=digest(self.config),
+                    original_unknown_record_sha256=_request_record_digest(row),
+                    permanent_reserved_microcny=row["reserved_microcny"],
+                    original_halt=halt,
+                    preserved_counters=counters,
+                    original_unknown_state_preserved=True,
+                    actual_usage_known=False,
+                    actual_charge_known=False,
+                    reservation_released=False,
+                    retry_authorized=False,
+                    replacement_call_authorized=False,
+                    unknown_never_positive=True,
+                    connection_exception_type=evidence_by_id[iid]["exception_type"],
+                    original_network_evidence_sha256=digest(evidence_by_id[iid]),
+                    monetary_amendment_id=monetary["id"],
+                    future_calls_within_original_cap_only=False,
+                    effective_hard_cap_microcny=V9_AUTHORIZED_TOTAL_MICROCNY,
+                    at_unix=time.time(),
+                )
+                record = {**body, "id": digest(body)}
+                connection.execute(
+                    "INSERT INTO metadata VALUES (?,?)",
+                    (UNKNOWN_ABANDONMENT_PREFIX + iid, _json(record)),
+                )
+                self._event(connection, iid, UNKNOWN_ABANDONMENT_ACTION, record)
+                records.append(record)
+            deleted = connection.execute(
+                "DELETE FROM metadata WHERE key='halt' AND value=?", (halt_row[0],)
+            )
+            if deleted.rowcount != 1:
+                raise UnknownAbandonmentError(
+                    "exact connection halt changed during acknowledgement"
+                )
+            body = dict(
+                schema="v9_connection_unknown_batch_acknowledgement.v1",
+                **signature,
+                run_id=self.run_id,
+                config_sha256=digest(self.config),
+                records=records,
+                new_acknowledgements=len(unacknowledged),
+                preserved_counters=counters,
+                permanent_unknown_hold_microcny=counters["held"],
+                cleared_exact_halt=halt,
+                original_request_rows_unchanged=True,
+                actual_billing_claimed=False,
+                retry_authorized=False,
+                at_unix=time.time(),
+            )
+            receipt = {**body, "id": digest(body)}
+            connection.execute("INSERT INTO metadata VALUES (?,?)", (batch_key, _json(receipt)))
+            self._event(connection, batch_key, V9_NETWORK_BATCH_ACTION, receipt)
+            return receipt
 
     def blocking_unsettled(self):
         """Unacknowledged work only; unsettled() still truthfully lists abandoned UNKNOWNs."""

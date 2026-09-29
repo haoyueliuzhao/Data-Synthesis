@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-29T05:52:57.007029+00:00",
+  "authorized_total_cap_microcny": 1200000000,
+  "automatic_retries": false,
+  "automatic_training": false,
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-m",
+    "trusted_synthesis.finance_research.v9_production_review",
+    "run"
+  ],
+  "concurrency": 32,
+  "frozen_worktree": "/tmp/data-synthesis-finqa-v9-production-frozen-20260929",
+  "id": "01f15e93983d79d7667a1bb5dcba76e27dfbad0d3e71bb793cc8ec916180911a",
+  "maximum_calls": 13022,
+  "pid": 1867933,
+  "process_start_time_ticks": "308557218",
+  "protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "source_commit": "fd6184b15cd075865cdcfd543c4ca352516f8ae6"
+}
