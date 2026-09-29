@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-29T16:45:49.529083+00:00",
+  "baseline_primary_returns": 11033,
+  "baseline_primary_unknowns": 75,
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "budget_remaining_snapshot": null,
+  "child_alive": true,
+  "id": "28547369a5d248b3ee9ad128a6f030a71074f75492c69b024277e954ae23449f",
+  "launch_id": "80674275c70686ccab9723d6988afd599b3e2fe37a0b7eee9ab2c1cd93d5cc8c",
+  "new_normal_returns_since_proxy_launch": 4,
+  "normal_returns": 11037,
+  "observation_is_real_settlement_not_startup": true,
+  "pending": 16,
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "proxy_execution_revision_id": "cb7bcf04d8b64466f2df9be0187a6fe75e403da0ded801ef931ddf3aee0fb5f4",
+  "review_attempts": 11128,
+  "schema": "v10_proxy_first_production_progress.v1",
+  "source_commit": "f9cc6909293b0c5fd117ecb7324f86f009cc3b36",
+  "unknown": 75
+}
