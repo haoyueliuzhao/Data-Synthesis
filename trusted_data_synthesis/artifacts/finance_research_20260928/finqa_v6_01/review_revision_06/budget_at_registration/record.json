@@ -1,0 +1,142 @@
+{
+  "acknowledged_unknowns": [
+    {
+      "actual_charge_known": false,
+      "actual_usage_known": false,
+      "at_unix": 1790613135.1152422,
+      "authorization_evidence": {
+        "actual_usage_known": false,
+        "authorization_record_id": "b5c667232186bad33049f5c6ad241fd52f25bdcd9495aea0e0c7343f99fab2e3",
+        "original_800_CNY_cap_unchanged": true,
+        "user_response": "预算充足，整体仍有七百左右的预算"
+      },
+      "authorization_id": "b5c667232186bad33049f5c6ad241fd52f25bdcd9495aea0e0c7343f99fab2e3",
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "expected_halt_reason": "review transport response or usage unknown",
+      "expected_request_sha256": "d8d1b10f146eb9d1e66339cb57a20c74412dc21fb274f8824c7d1ad989c7f58a",
+      "future_calls_within_original_cap_only": true,
+      "id": "4846587e20af9546f899cc4c06e2d8a9ff863801d9236195e636085bbc61de3d",
+      "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+      "original_halt": {
+        "at_unix": 1790611893.7751684,
+        "evidence": {
+          "automatic_retry": false,
+          "billing_usage_known": false,
+          "budget_coordinates": {
+            "attempt_index": 1,
+            "episode_id": "v6d3-slot:655de443c02fcf2b43ba1dc6a51fe40d86ee4714d3213c32bbcb8e0456dd6cd7",
+            "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+            "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+            "turn_index": 0
+          },
+          "budget_invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+          "endpoint": "https://api.deepseek.com/beta/chat/completions",
+          "exception_type": "RemoteProtocolError",
+          "request_sha256": "d8d1b10f146eb9d1e66339cb57a20c74412dc21fb274f8824c7d1ad989c7f58a",
+          "reservation_retained": true,
+          "review_request_metadata_sha256": "ee99b40ae437f5dafa245c0f4a6db08ac2d3bd0812a7d43e0644798c2759963c",
+          "reviewer": 1,
+          "rubric_sha256": "ad1d81fe9fe8c66a89daab73beb7ec6b911a05a08edabb4fe5379d5f8b4fe2a8",
+          "semantic_review_request_sha256": "ee99b40ae437f5dafa245c0f4a6db08ac2d3bd0812a7d43e0644798c2759963c",
+          "service_response_received": false,
+          "strict_tool_sha256": "6ae682e4d63f3cd67494348c0a080d5ad7acfe185cb82d6ea1835d8ba64db2b6",
+          "task_bundle_sha256": "2f384cc1fcfe615edc369aef42176747ecfee555a091b8d86efb3fc470ca95e2",
+          "wire_protocol": "v6_slot_review.v4"
+        },
+        "invocation_id": "invocation:67da3c349d8d04eb0631947aa74f7381c8c8225797b2577266e782075f9de282",
+        "reason": "review transport response or usage unknown"
+      },
+      "original_unknown_record_sha256": "bd775b3e046835b19ceb938d2243b145614c8a1f080907a052a5db408dfd6f13",
+      "original_unknown_state_preserved": true,
+      "permanent_reserved_microcny": 2228224,
+      "preserved_counters": {
+        "completion_tokens": 9327386,
+        "dispatched": 18918,
+        "held": 2228224,
+        "hit_tokens": 61501562,
+        "miss_tokens": 20971341,
+        "pending": 0,
+        "prompt_tokens": 82472903,
+        "requests": 18918,
+        "singleton": 1,
+        "spent": 119030706,
+        "unknown": 1
+      },
+      "reason": "user authorized continuation; exact unbilled call permanently abandoned with full hold",
+      "replacement_call_authorized": false,
+      "reservation_released": false,
+      "retry_authorized": false,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v6_unknown_abandonment.v1"
+    }
+  ],
+  "config": {
+    "allowed_output_limits": [
+      2048,
+      16384,
+      32768,
+      65536,
+      131072
+    ],
+    "amendment_id": "9c44809540e6d559c651e5322a0ac4c30d3c048b50a98c291d1c5b5348a1d2b5",
+    "currency_scale": "1 CNY = 1000000 micro-CNY",
+    "hard_cap_microcny": 800000000,
+    "joint_generation_and_review_cap": true,
+    "max_output_tokens": 131072,
+    "price_sheet": {
+      "checked_at_utc": "2026-09-28T12:44:39.955212+00:00",
+      "context_input_token_ceiling": 1048576,
+      "currency": "CNY",
+      "input_hit_cny_per_million": "0.04",
+      "input_miss_cny_per_million": "2",
+      "model": "deepseek-flash",
+      "official_max_output_tokens": 393216,
+      "output_cny_per_million": "8",
+      "pricing_policy": "conservative_peak_upper_bound_all_hours",
+      "source_sha256": "7ecbec2f65374cd27cf4f96fb6f9e9e683f0b94e13f62cf249afe12d4eea5fbe",
+      "source_url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+    },
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "request_cap": 258000,
+    "reservation_input_policy": "official_entire_context_at_cache_miss_price",
+    "reservation_microcny_per_request": 3145728,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "schema": "probe_budget.v2",
+    "variable_reservation_bound_to_each_actual_request": true,
+    "warning_microcny": 700000000
+  },
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "read_only": true,
+  "request_counts_by_state": {
+    "SETTLED": 18929,
+    "UNKNOWN": 1
+  },
+  "snapshot": {
+    "acknowledged_unknown_held_microcny": 2228224,
+    "acknowledged_unknown_requests": 1,
+    "actual_cache_hit_tokens_settled": 61520506,
+    "actual_cache_miss_tokens_settled": 21123395,
+    "actual_completion_tokens_settled": 9357324,
+    "actual_prompt_tokens_settled": 82643901,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "exposure_microcny": 121803302,
+    "exposure_warning_reached": false,
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 2228224,
+    "pending_requests": 0,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 678196698,
+    "request_cap": 258000,
+    "requests_dispatched": 18930,
+    "requests_reserved": 18930,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 119575078,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 1,
+    "warning_microcny": 700000000,
+    "warning_reached": false
+  }
+}

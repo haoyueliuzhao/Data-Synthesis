@@ -1,0 +1,96 @@
+{
+  "GPU_holders_retained": false,
+  "R6_gate_admitted": false,
+  "R6_protocol_id": "e993b3797cf0b4f75c4ec107640c9c1dc34bda5867e509a9773a1640c0ff43eb",
+  "R6_result_id": "f071e618bc98cc489fb43880d970c571e38951cf1f942c91e81059612d244e73",
+  "allowed_actions_while_waiting": [
+    "read_only_audit",
+    "reporting",
+    "explicitly_authorized_git_publication"
+  ],
+  "at": "2026-09-29T02:49:22.033081+00:00",
+  "base_protocol_id": "64ebaffc77904b667c5cfa44a48ab262ab2e2505c152ae93ccfad085ae1e65ad",
+  "base_result_id": "a777398d33b3fdd60013d3a46b71a90d7bbb5c5181eff7b6f21c7a86525ec36c",
+  "budget": {
+    "acknowledged_unknown_held_microcny": 2228224,
+    "acknowledged_unknown_requests": 1,
+    "actual_cache_hit_tokens_settled": 61545338,
+    "actual_cache_miss_tokens_settled": 21258687,
+    "actual_completion_tokens_settled": 9381924,
+    "actual_prompt_tokens_settled": 82804025,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "exposure_microcny": 122271688,
+    "exposure_warning_reached": false,
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 2228224,
+    "pending_requests": 0,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 677728312,
+    "request_cap": 258000,
+    "requests_dispatched": 18942,
+    "requests_reserved": 18942,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 120043464,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 1,
+    "warning_microcny": 700000000,
+    "warning_reached": false
+  },
+  "deferred_actions": [
+    "API_or_local_model_generation",
+    "new_review_trials",
+    "new_8000_collection",
+    "GPU_reservation",
+    "training",
+    "experimental_rule_or_scope_changes"
+  ],
+  "enforcement_description": "No owned controller remains active; prior failed admission gates remain unchanged. This is an explicit audit handoff record, not a rewritten historical budget halt.",
+  "full_108_review_registered": false,
+  "generation_review_gate_decoupling": "proposed only; no authorization to execute; deferred to audit",
+  "historical_results_modified": false,
+  "id": "a383f31ffdaa1874ba834ac0661c857167060a52ab712cee32b9ba52a4a1441b",
+  "ledger_halt_modified": false,
+  "new_batch_protocol_id": "ed78f27d36129f3668f40914824178ce5604b25c60ffc030b1fbb0b90703e1bb",
+  "new_batch_started": false,
+  "new_experiment_authorized": false,
+  "other_projects_not_interrupted": true,
+  "process_checks": [
+    {
+      "current_identity": null,
+      "owned_process_alive": false,
+      "pid": 4066698,
+      "registered_identity": "303928397"
+    },
+    {
+      "current_identity": null,
+      "owned_process_alive": false,
+      "pid": 4066895,
+      "registered_identity": "303928435"
+    },
+    {
+      "current_identity": null,
+      "owned_process_alive": false,
+      "pid": 4066896,
+      "registered_identity": "303928436"
+    },
+    {
+      "current_identity": null,
+      "owned_process_alive": false,
+      "pid": 2237152,
+      "registered_identity": "306347650"
+    }
+  ],
+  "publication_scope": {
+    "Base_raw_episodes_published": false,
+    "Base_selected_final_evidence_files": 7,
+    "R6_selected_audit_files": 40,
+    "credentials_or_budget_SQLite_published": false
+  },
+  "raw_publication_authorized": true,
+  "schema": "finqa_v6_audit_handoff.v1",
+  "status": "WAITING_FOR_AUDIT",
+  "training_started": false,
+  "user_instruction": "确认推送，生成本轮实验详细报告，实验主线进度及阻塞原因，后续开展等待审计"
+}

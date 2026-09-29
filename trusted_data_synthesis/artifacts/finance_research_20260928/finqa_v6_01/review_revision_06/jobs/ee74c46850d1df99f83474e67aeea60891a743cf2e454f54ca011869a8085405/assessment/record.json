@@ -1,0 +1,2925 @@
+{
+  "error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+  "error_kind": "semantic_inconsistency",
+  "interface_admitted": true,
+  "semantic_consistent": false,
+  "validation": {
+    "catalog_sha256": "370f5161b07692d0670abbc1f1040e38f4a8a37c372bbef72afc749aaf03ad96",
+    "coherence_policy": "existing_substantive_update_cross_field_coherence.v1",
+    "compact_catalog_sha256": "f4dfbe935f8f0961cdb245c0efe6b1bfbdcb950382cf5d9fbb0ba3eb1ffa8647",
+    "derived": null,
+    "document_index": {
+      "shared/source:0000:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:0",
+        "text": "at december 31 , 2013 , total future minimum commitments under existing non-cancelable operating leases and purchase obligations were as follows: .",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "in millions",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2015",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2016",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2017",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2018",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0000:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "thereafter",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "lease obligations",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 171",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 133",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 97",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 74",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 59",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0001:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 162",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "purchase obligations ( a )",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "3170",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "770",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "642",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "529",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "453",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0002:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2404",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "total",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 3341",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 903",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 739",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 603",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 512",
+        "turn_index": null
+      },
+      "shared/source:0001:row:0003:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 2566",
+        "turn_index": null
+      },
+      "shared/source:0002:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:0",
+        "text": "( a ) includes $ 3.3 billion relating to fiber supply agreements entered into at the time of the company 2019s 2006 transformation plan forestland sales and in conjunction with the 2008 acquisition of weyerhaeuser company 2019s containerboard , packaging and recycling business .",
+        "turn_index": null
+      },
+      "shared/source:0003:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:1",
+        "text": "rent expense was $ 215 million , $ 231 million and $ 205 million for 2013 , 2012 and 2011 , respectively .",
+        "turn_index": null
+      },
+      "shared/source:0004:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:2",
+        "text": "guarantees in connection with sales of businesses , property , equipment , forestlands and other assets , international paper commonly makes representations and warranties relating to such businesses or assets , and may agree to indemnify buyers with respect to tax and environmental liabilities , breaches of representations and warranties , and other matters .",
+        "turn_index": null
+      },
+      "shared/source:0005:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:3",
+        "text": "where liabilities for such matters are determined to be probable and subject to reasonable estimation , accrued liabilities are recorded at the time of sale as a cost of the transaction .",
+        "turn_index": null
+      },
+      "shared/source:0006:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:4",
+        "text": "environmental proceedings international paper has been named as a potentially responsible party in environmental remediation actions under various federal and state laws , including the comprehensive environmental response , compensation and liability act ( cercla ) .",
+        "turn_index": null
+      },
+      "shared/source:0007:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:5",
+        "text": "many of these proceedings involve the cleanup of hazardous substances at large commercial landfills that received waste from many different sources .",
+        "turn_index": null
+      },
+      "shared/source:0008:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:6",
+        "text": "while joint and several liability is authorized under cercla and equivalent state laws , as a practical matter , liability for cercla cleanups is typically allocated among the many potential responsible parties .",
+        "turn_index": null
+      },
+      "shared/source:0009:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:7",
+        "text": "remedial costs are recorded in the consolidated financial statements when they become probable and reasonably estimable .",
+        "turn_index": null
+      },
+      "shared/source:0010:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:8",
+        "text": "international paper has estimated the probable liability associated with these matters to be approximately $ 94 million in the aggregate at december 31 , 2013 .",
+        "turn_index": null
+      },
+      "shared/source:0011:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:9",
+        "text": "cass lake : one of the matters referenced above is a closed wood treating facility located in cass lake , minnesota .",
+        "turn_index": null
+      },
+      "shared/source:0012:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:10",
+        "text": "during 2009 , in connection with an environmental site remediation action under cercla , international paper submitted to the epa a site remediation feasibility study .",
+        "turn_index": null
+      },
+      "shared/source:0013:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:11",
+        "text": "in june 2011 , the epa selected and published a proposed soil remedy at the site with an estimated cost of $ 46 million .",
+        "turn_index": null
+      },
+      "shared/source:0014:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:12",
+        "text": "the overall remediation reserve for the site is currently $ 51 million to address this selection of an alternative for the soil remediation component of the overall site remedy .",
+        "turn_index": null
+      },
+      "shared/source:0015:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:13",
+        "text": "in october 2011 , the epa released a public statement indicating that the final soil remedy decision would be delayed .",
+        "turn_index": null
+      },
+      "shared/source:0016:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:14",
+        "text": "in the unlikely event that the epa changes its proposed soil remedy and approves instead a more expensive clean-up alternative , the remediation costs could be material , and significantly higher than amounts currently recorded .",
+        "turn_index": null
+      },
+      "shared/source:0017:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:15",
+        "text": "in october 2012 , the natural resource trustees for this site provided notice to international paper and other potentially responsible parties of their intent to perform a natural resource damage assessment .",
+        "turn_index": null
+      },
+      "shared/source:0018:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:16",
+        "text": "it is premature to predict the outcome of the assessment or to estimate a loss or range of loss , if any , which may be incurred .",
+        "turn_index": null
+      },
+      "shared/source:0019:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:17",
+        "text": "other : in addition to the above matters , other remediation costs typically associated with the cleanup of hazardous substances at the company 2019s current , closed or formerly-owned facilities , and recorded as liabilities in the balance sheet , totaled approximately $ 42 million at december 31 , 2013 .",
+        "turn_index": null
+      },
+      "shared/source:0020:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:18",
+        "text": "other than as described above , completion of required remedial actions is not expected to have a material effect on our consolidated financial statements .",
+        "turn_index": null
+      },
+      "shared/source:0021:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:19",
+        "text": "kalamazoo river : the company is a potentially responsible party with respect to the allied paper , inc./ portage creek/kalamazoo river superfund site ( kalamazoo river superfund site ) in michigan .",
+        "turn_index": null
+      },
+      "shared/source:0022:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:20",
+        "text": "the epa asserts that the site is contaminated primarily by pcbs as a result of discharges from various paper mills located along the kalamazoo river , including a paper mill formerly owned by st .",
+        "turn_index": null
+      },
+      "shared/source:0023:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:21",
+        "text": "regis paper company ( st .",
+        "turn_index": null
+      },
+      "shared/source:0024:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:22",
+        "text": "regis ) .",
+        "turn_index": null
+      },
+      "shared/source:0025:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:23",
+        "text": "the company is a successor in interest to st .",
+        "turn_index": null
+      },
+      "shared/source:0026:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:24",
+        "text": "regis .",
+        "turn_index": null
+      },
+      "shared/source:0027:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:25",
+        "text": "the company has not received any orders from the epa with respect to the site and continues to collect information from the epa and other parties relative to the site to evaluate the extent of its liability , if any , with respect to the site .",
+        "turn_index": null
+      },
+      "shared/source:0028:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:26",
+        "text": "accordingly , it is premature to estimate a loss or range of loss with respect to this site .",
+        "turn_index": null
+      },
+      "shared/source:0029:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:27",
+        "text": "also in connection with the kalamazoo river superfund site , the company was named as a defendant by georgia-pacific consumer products lp , fort james corporation and georgia pacific llc in a contribution and cost recovery action for alleged pollution at the site .",
+        "turn_index": null
+      },
+      "shared/source:0030:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:28",
+        "text": "the suit seeks contribution under cercla for $ 79 million in costs purportedly expended by plaintiffs as of the filing of the complaint and for future remediation costs .",
+        "turn_index": null
+      },
+      "shared/source:0031:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:29",
+        "text": "the suit alleges that a mill , during the time it was allegedly owned and operated by st .",
+        "turn_index": null
+      },
+      "shared/source:0032:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:30",
+        "text": "regis , discharged pcb contaminated solids and paper residuals resulting from paper de-inking and recycling .",
+        "turn_index": null
+      },
+      "shared/source:0033:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:31",
+        "text": "also named as defendants in the suit are ncr corporation and weyerhaeuser company .",
+        "turn_index": null
+      },
+      "shared/source:0034:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:32",
+        "text": "in mid-2011 , the suit was transferred from the district court for the eastern district of wisconsin to the district court for the western .",
+        "turn_index": null
+      },
+      "shared/task:question": {
+        "event_index": null,
+        "kind": "question",
+        "slot_id": null,
+        "source_id": null,
+        "text": "what was the ratio of the lease obligations to purchase obligations",
+        "turn_index": null
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": 0,
+        "is_error": true,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": 1,
+        "is_error": true,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": 2,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+        "turn_index": 2,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": 3,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000:arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+        "turn_index": 3,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments": {
+        "action_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": false,
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "R: The question asks for the ratio of lease obligations to purchase obligations. The table has two rows: \"lease obligations\" and \"purchase obligations ( a )\". I'll compute the ratio of their table sums.  \nU: Using table_sum for each row, then divide lease total by purchase total.  \nQ: The row label for purchase obligations includes \"( a )\", so I must use the exact public label.",
+        "turn_index": 0,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments": {
+        "action_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": false,
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "R: The program errored, likely because of the spaces in the row label or parenthetical label parsing. The label contains \"( a )\".  \nU: I'll remove spaces around parentheses by using the exact label format from the table, but the parser may reject commas within labels; however there are no commas here. Let me try again with the same labels exactly as displayed.  \nQ: If it still fails, I may need to compute using numeric literals instead.",
+        "turn_index": 1,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments": {
+        "action_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\"}",
+        "turn_index": 2,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "R: Same syntax error. Possibly the exact label in the table is \"purchase obligations ( a )\" but the parser requires labels without spaces or with a specific escaping.  \nU: Since run_program rejects the table_sum calls with these labels, I'll compute totals manually from the table values and submit a purely arithmetic program.\n\nR: Lease obligations: 171+133+97+74+59+162 = 696. Purchase obligations: 3170+770+642+529+453+2404 = 7968. Ratio = 696/7968.",
+        "turn_index": 2,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000:arguments": {
+        "action_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000",
+        "action_name": "submit_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000:arguments",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "{\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\"}",
+        "turn_index": 3,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      },
+      "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content": {
+        "episode_sha256": "2730b91567ba3ccb514ef690ccf0f39e63bcf74aa5aa90dedff0259903b65217",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "source_id": null,
+        "text": "R: The arithmetic totals give 696 / 7968 = 0.08735, matching the table_sum intent.  \nU: The explicit-step program executed successfully and yields the ratio.  \nQ: None; submitting the predicted program.",
+        "turn_index": 3,
+        "view_id": "public_trajectory:5ea56680cb1caadc01f7d096b1b051b24709ff1ab5fe6d544d3b39eceb0d5411",
+        "view_slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7"
+      }
+    },
+    "encoding_manifest": null,
+    "expanded_review_sha256": "2e69bb08715fab81d77aa278cde8c9d1ec87b33bdd55d86281a5a1d6310545a3",
+    "flat_baseline_request_sha256": "2ae0bbcb9393ff840c715820372da197b54d373ad484046ccb1206f64aa20e0e",
+    "flat_mapped_review_sha256": "c45cde400d6cced43b0eb6f448c654cd78e619f6334f21e76a72c8f69dcb2973",
+    "flat_request_sha256": "635a4b9d6cf43257467ad761678f8c93c493223424cde35052876b0063c284eb",
+    "host_mask_repair": false,
+    "host_semantic_repair": false,
+    "human_reviewed": false,
+    "interface_admitted": true,
+    "keyed_array_mapping_is_another_model_response": false,
+    "locator_mapped_review_sha256": "317a43d1aff8aee31aed254f53ad97c23a54fe45e8e57baa2de7c813c13d4d72",
+    "mask_amendment": "explicit_empty_Q_nonassertive_zero_loss.v1",
+    "mask_complete": false,
+    "mathematical_proof": false,
+    "original_document_index_sha256": "f00e3dcf1f544f5605bcf5fd9a55fb9bd770255bb6a2448e62a4992861edd3ef",
+    "original_review_reclassified": false,
+    "parsed": {
+      "slot": {
+        "actions": [
+          {
+            "action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0001",
+                "end": 5,
+                "quote": "$ 171",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0002",
+                "end": 5,
+                "quote": "$ 133",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0003",
+                "end": 4,
+                "quote": "$ 97",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0004",
+                "end": 4,
+                "quote": "$ 74",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0005",
+                "end": 4,
+                "quote": "$ 59",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0006",
+                "end": 5,
+                "quote": "$ 162",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0001",
+                "end": 4,
+                "quote": "3170",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0002",
+                "end": 3,
+                "quote": "770",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0003",
+                "end": 3,
+                "quote": "642",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0004",
+                "end": 3,
+                "quote": "529",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0005",
+                "end": 3,
+                "quote": "453",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0006",
+                "end": 4,
+                "quote": "2404",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "label": "unknown",
+            "proposition_ids": [
+              "p1"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "label": "unknown",
+            "proposition_ids": [
+              "p2"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0001",
+                "end": 5,
+                "quote": "$ 171",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0002",
+                "end": 5,
+                "quote": "$ 133",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0003",
+                "end": 4,
+                "quote": "$ 97",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0004",
+                "end": 4,
+                "quote": "$ 74",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0005",
+                "end": 4,
+                "quote": "$ 59",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0006",
+                "end": 5,
+                "quote": "$ 162",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0001",
+                "end": 4,
+                "quote": "3170",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0002",
+                "end": 3,
+                "quote": "770",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0003",
+                "end": 3,
+                "quote": "642",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0004",
+                "end": 3,
+                "quote": "529",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0005",
+                "end": 3,
+                "quote": "453",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0006",
+                "end": 4,
+                "quote": "2404",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 327,
+                "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p3",
+              "p4",
+              "p5"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 240,
+                "quote": "true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p6"
+            ]
+          }
+        ],
+        "coverage_complete": true,
+        "mask": [
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments",
+            "end": 110,
+            "label": "unknown",
+            "proposition_ids": [
+              "p1"
+            ],
+            "quote": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+            "start": 0
+          },
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments",
+            "end": 110,
+            "label": "unknown",
+            "proposition_ids": [
+              "p2"
+            ],
+            "quote": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+            "start": 0
+          },
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments",
+            "end": 170,
+            "label": "approved",
+            "proposition_ids": [
+              "p3",
+              "p4",
+              "p5"
+            ],
+            "quote": "{\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\"}",
+            "start": 0
+          },
+          {
+            "component": "final",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:action:0000:arguments",
+            "end": 170,
+            "label": "approved",
+            "proposition_ids": [
+              "p6"
+            ],
+            "quote": "{\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\"}",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+            "end": 81,
+            "label": "approved",
+            "proposition_ids": [
+              "p7"
+            ],
+            "quote": "R: The question asks for the ratio of lease obligations to purchase obligations. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+            "end": 159,
+            "label": "approved",
+            "proposition_ids": [
+              "p8"
+            ],
+            "quote": "The table has two rows: \"lease obligations\" and \"purchase obligations ( a )\". ",
+            "start": 81
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+            "end": 205,
+            "label": "approved",
+            "proposition_ids": [
+              "p9"
+            ],
+            "quote": "I'll compute the ratio of their table sums.  \n",
+            "start": 159
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+            "end": 283,
+            "label": "approved",
+            "proposition_ids": [
+              "p10"
+            ],
+            "quote": "U: Using table_sum for each row, then divide lease total by purchase total.  \n",
+            "start": 205
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+            "end": 380,
+            "label": "approved",
+            "proposition_ids": [
+              "p11"
+            ],
+            "quote": "Q: The row label for purchase obligations includes \"( a )\", so I must use the exact public label.",
+            "start": 283
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+            "end": 102,
+            "label": "unknown",
+            "proposition_ids": [
+              "p12"
+            ],
+            "quote": "R: The program errored, likely because of the spaces in the row label or parenthetical label parsing. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+            "end": 132,
+            "label": "approved",
+            "proposition_ids": [
+              "p13"
+            ],
+            "quote": "The label contains \"( a )\".  \n",
+            "start": 102
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+            "end": 303,
+            "label": "unknown",
+            "proposition_ids": [
+              "p14"
+            ],
+            "quote": "U: I'll remove spaces around parentheses by using the exact label format from the table, but the parser may reject commas within labels; however there are no commas here. ",
+            "start": 132
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+            "end": 365,
+            "label": "unknown",
+            "proposition_ids": [
+              "p15"
+            ],
+            "quote": "Let me try again with the same labels exactly as displayed.  \n",
+            "start": 303
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+            "end": 440,
+            "label": "unknown",
+            "proposition_ids": [
+              "p16"
+            ],
+            "quote": "Q: If it still fails, I may need to compute using numeric literals instead.",
+            "start": 365
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 22,
+            "label": "unknown",
+            "proposition_ids": [
+              "p17"
+            ],
+            "quote": "R: Same syntax error. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 169,
+            "label": "unknown",
+            "proposition_ids": [
+              "p18"
+            ],
+            "quote": "Possibly the exact label in the table is \"purchase obligations ( a )\" but the parser requires labels without spaces or with a specific escaping.  \n",
+            "start": 22
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 329,
+            "label": "approved",
+            "proposition_ids": [
+              "p19"
+            ],
+            "quote": "U: Since run_program rejects the table_sum calls with these labels, I'll compute totals manually from the table values and submit a purely arithmetic program.\n\n",
+            "start": 169
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 379,
+            "label": "approved",
+            "proposition_ids": [
+              "p20"
+            ],
+            "quote": "R: Lease obligations: 171+133+97+74+59+162 = 696. ",
+            "start": 329
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 435,
+            "label": "approved",
+            "proposition_ids": [
+              "p21"
+            ],
+            "quote": "Purchase obligations: 3170+770+642+529+453+2404 = 7968. ",
+            "start": 379
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+            "end": 452,
+            "label": "approved",
+            "proposition_ids": [
+              "p22"
+            ],
+            "quote": "Ratio = 696/7968.",
+            "start": 435
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+            "end": 85,
+            "label": "approved",
+            "proposition_ids": [
+              "p23"
+            ],
+            "quote": "R: The arithmetic totals give 696 / 7968 = 0.08735, matching the table_sum intent.  \n",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+            "end": 160,
+            "label": "approved",
+            "proposition_ids": [
+              "p24"
+            ],
+            "quote": "U: The explicit-step program executed successfully and yields the ratio.  \n",
+            "start": 85
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+            "end": 202,
+            "label": "nonassertive_context",
+            "proposition_ids": [],
+            "quote": "Q: None; submitting the predicted program.",
+            "start": 160
+          }
+        ],
+        "propositions": [
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p1",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:action:0000:arguments",
+                "end": 110,
+                "quote": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p2",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:action:0000:arguments",
+                "end": 110,
+                "quote": "{\"program\": \"table_sum(lease obligations, none), table_sum(purchase obligations ( a ), none), divide(#0, #1)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p3",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 329,
+                "quote": "U: Since run_program rejects the table_sum calls with these labels, I'll compute totals manually from the table values and submit a purely arithmetic program.\n\n",
+                "start": 169
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p4",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0001",
+                "end": 5,
+                "quote": "$ 171",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0002",
+                "end": 5,
+                "quote": "$ 133",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0003",
+                "end": 4,
+                "quote": "$ 97",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0004",
+                "end": 4,
+                "quote": "$ 74",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0005",
+                "end": 4,
+                "quote": "$ 59",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0006",
+                "end": 5,
+                "quote": "$ 162",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 379,
+                "quote": "R: Lease obligations: 171+133+97+74+59+162 = 696. ",
+                "start": 329
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p5",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0001",
+                "end": 4,
+                "quote": "3170",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0002",
+                "end": 3,
+                "quote": "770",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0003",
+                "end": 3,
+                "quote": "642",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0004",
+                "end": 3,
+                "quote": "529",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0005",
+                "end": 3,
+                "quote": "453",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0006",
+                "end": 4,
+                "quote": "2404",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 435,
+                "quote": "Purchase obligations: 3170+770+642+529+453+2404 = 7968. ",
+                "start": 379
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p6",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 240,
+                "quote": "true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+                "end": 160,
+                "quote": "U: The explicit-step program executed successfully and yields the ratio.  \n",
+                "start": 85
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p7",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/task:question",
+                "end": 67,
+                "quote": "what was the ratio of the lease obligations to purchase obligations",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+                "end": 81,
+                "quote": "R: The question asks for the ratio of lease obligations to purchase obligations. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p8",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+                "end": 159,
+                "quote": "The table has two rows: \"lease obligations\" and \"purchase obligations ( a )\". ",
+                "start": 81
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p9",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+                "end": 205,
+                "quote": "I'll compute the ratio of their table sums.  \n",
+                "start": 159
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p10",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0000",
+                "end": 17,
+                "quote": "lease obligations",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+                "end": 283,
+                "quote": "U: Using table_sum for each row, then divide lease total by purchase total.  \n",
+                "start": 205
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p11",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0000:content",
+                "end": 380,
+                "quote": "Q: The row label for purchase obligations includes \"( a )\", so I must use the exact public label.",
+                "start": 283
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p12",
+            "retraction": [],
+            "status": "hypothesis",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+                "end": 102,
+                "quote": "R: The program errored, likely because of the spaces in the row label or parenthetical label parsing. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": false,
+            "judgment": "supported",
+            "proposition_id": "p13",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0000",
+                "end": 26,
+                "quote": "purchase obligations ( a )",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+                "end": 132,
+                "quote": "The label contains \"( a )\".  \n",
+                "start": 102
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p14",
+            "retraction": [],
+            "status": "hypothesis",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+                "end": 303,
+                "quote": "U: I'll remove spaces around parentheses by using the exact label format from the table, but the parser may reject commas within labels; however there are no commas here. ",
+                "start": 132
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p15",
+            "retraction": [],
+            "status": "hypothesis",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+                "end": 365,
+                "quote": "Let me try again with the same labels exactly as displayed.  \n",
+                "start": 303
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p16",
+            "retraction": [],
+            "status": "hypothesis",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0001:content",
+                "end": 440,
+                "quote": "Q: If it still fails, I may need to compute using numeric literals instead.",
+                "start": 365
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p17",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 22,
+                "quote": "R: Same syntax error. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": false,
+            "critical": false,
+            "judgment": "unknown",
+            "proposition_id": "p18",
+            "retraction": [],
+            "status": "hypothesis",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 169,
+                "quote": "Possibly the exact label in the table is \"purchase obligations ( a )\" but the parser requires labels without spaces or with a specific escaping.  \n",
+                "start": 22
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p19",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 329,
+                "quote": "U: Since run_program rejects the table_sum calls with these labels, I'll compute totals manually from the table values and submit a purely arithmetic program.\n\n",
+                "start": 169
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p20",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0001",
+                "end": 5,
+                "quote": "$ 171",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0002",
+                "end": 5,
+                "quote": "$ 133",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0003",
+                "end": 4,
+                "quote": "$ 97",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0004",
+                "end": 4,
+                "quote": "$ 74",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0005",
+                "end": 4,
+                "quote": "$ 59",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0006",
+                "end": 5,
+                "quote": "$ 162",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 379,
+                "quote": "R: Lease obligations: 171+133+97+74+59+162 = 696. ",
+                "start": 329
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p21",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0001",
+                "end": 4,
+                "quote": "3170",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0002",
+                "end": 3,
+                "quote": "770",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0003",
+                "end": 3,
+                "quote": "642",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0004",
+                "end": 3,
+                "quote": "529",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0005",
+                "end": 3,
+                "quote": "453",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0006",
+                "end": 4,
+                "quote": "2404",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 435,
+                "quote": "Purchase obligations: 3170+770+642+529+453+2404 = 7968. ",
+                "start": 379
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p22",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0001",
+                "end": 5,
+                "quote": "$ 171",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0002",
+                "end": 5,
+                "quote": "$ 133",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0003",
+                "end": 4,
+                "quote": "$ 97",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0004",
+                "end": 4,
+                "quote": "$ 74",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0005",
+                "end": 4,
+                "quote": "$ 59",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0001:cell:0006",
+                "end": 5,
+                "quote": "$ 162",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0001",
+                "end": 4,
+                "quote": "3170",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0002",
+                "end": 3,
+                "quote": "770",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0003",
+                "end": 3,
+                "quote": "642",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0004",
+                "end": 3,
+                "quote": "529",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0005",
+                "end": 3,
+                "quote": "453",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0001:row:0002:cell:0006",
+                "end": 4,
+                "quote": "2404",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 452,
+                "quote": "Ratio = 696/7968.",
+                "start": 435
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p23",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 327,
+                "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+                "end": 85,
+                "quote": "R: The arithmetic totals give 696 / 7968 = 0.08735, matching the table_sum intent.  \n",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p24",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                "end": 240,
+                "quote": "true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0003:content",
+                "end": 160,
+                "quote": "U: The explicit-step program executed successfully and yields the ratio.  \n",
+                "start": 85
+              }
+            ]
+          }
+        ],
+        "reason_codes": [
+          "table_sum_label_parse_failure",
+          "manual_arithmetic_fallback",
+          "ratio_derivation_supported",
+          "submission_verified",
+          "no_substantive_semantic_revision"
+        ],
+        "semantic_graph": {
+          "edges": [
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0001",
+                  "end": 5,
+                  "quote": "$ 171",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0002",
+                  "end": 5,
+                  "quote": "$ 133",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0003",
+                  "end": 4,
+                  "quote": "$ 97",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0004",
+                  "end": 4,
+                  "quote": "$ 74",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0005",
+                  "end": 4,
+                  "quote": "$ 59",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0006",
+                  "end": 5,
+                  "quote": "$ 162",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_lease_sum",
+              "relation": "derives",
+              "to_node": "n_ratio"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0001",
+                  "end": 4,
+                  "quote": "3170",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0002",
+                  "end": 3,
+                  "quote": "770",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0003",
+                  "end": 3,
+                  "quote": "642",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0004",
+                  "end": 3,
+                  "quote": "529",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0005",
+                  "end": 3,
+                  "quote": "453",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0006",
+                  "end": 4,
+                  "quote": "2404",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_purchase_sum",
+              "relation": "derives",
+              "to_node": "n_ratio"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 195,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 327,
+                  "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                  "start": 195
+                }
+              ],
+              "from_node": "n_ratio",
+              "relation": "checks",
+              "to_node": "n_verify"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                  "end": 195,
+                  "quote": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                  "end": 240,
+                  "quote": "true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+                  "start": 195
+                }
+              ],
+              "from_node": "n_verify",
+              "relation": "accepts",
+              "to_node": "n_submit"
+            }
+          ],
+          "nodes": [
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0001",
+                  "end": 5,
+                  "quote": "$ 171",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0002",
+                  "end": 5,
+                  "quote": "$ 133",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0003",
+                  "end": 4,
+                  "quote": "$ 97",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0004",
+                  "end": 4,
+                  "quote": "$ 74",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0005",
+                  "end": 4,
+                  "quote": "$ 59",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0006",
+                  "end": 5,
+                  "quote": "$ 162",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_lease_sum",
+              "operation": "table_sum",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p20"
+              ],
+              "source_doc_ids": [
+                "shared/source:0001:row:0001:cell:0001",
+                "shared/source:0001:row:0001:cell:0002",
+                "shared/source:0001:row:0001:cell:0003",
+                "shared/source:0001:row:0001:cell:0004",
+                "shared/source:0001:row:0001:cell:0005",
+                "shared/source:0001:row:0001:cell:0006"
+              ],
+              "term_ids": [
+                "t_lease_2014",
+                "t_lease_2015",
+                "t_lease_2016",
+                "t_lease_2017",
+                "t_lease_2018",
+                "t_lease_thereafter",
+                "t_lease_total"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0001",
+                  "end": 4,
+                  "quote": "3170",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0002",
+                  "end": 3,
+                  "quote": "770",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0003",
+                  "end": 3,
+                  "quote": "642",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0004",
+                  "end": 3,
+                  "quote": "529",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0005",
+                  "end": 3,
+                  "quote": "453",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0006",
+                  "end": 4,
+                  "quote": "2404",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_purchase_sum",
+              "operation": "table_sum",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p21"
+              ],
+              "source_doc_ids": [
+                "shared/source:0001:row:0002:cell:0001",
+                "shared/source:0001:row:0002:cell:0002",
+                "shared/source:0001:row:0002:cell:0003",
+                "shared/source:0001:row:0002:cell:0004",
+                "shared/source:0001:row:0002:cell:0005",
+                "shared/source:0001:row:0002:cell:0006"
+              ],
+              "term_ids": [
+                "t_purchase_2014",
+                "t_purchase_2015",
+                "t_purchase_2016",
+                "t_purchase_2017",
+                "t_purchase_2018",
+                "t_purchase_thereafter",
+                "t_purchase_total"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0001",
+                  "end": 5,
+                  "quote": "$ 171",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0002",
+                  "end": 5,
+                  "quote": "$ 133",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0003",
+                  "end": 4,
+                  "quote": "$ 97",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0004",
+                  "end": 4,
+                  "quote": "$ 74",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0005",
+                  "end": 4,
+                  "quote": "$ 59",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0001:cell:0006",
+                  "end": 5,
+                  "quote": "$ 162",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0001",
+                  "end": 4,
+                  "quote": "3170",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0002",
+                  "end": 3,
+                  "quote": "770",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0003",
+                  "end": 3,
+                  "quote": "642",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0004",
+                  "end": 3,
+                  "quote": "529",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0005",
+                  "end": 3,
+                  "quote": "453",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0001:row:0002:cell:0006",
+                  "end": 4,
+                  "quote": "2404",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 195,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 327,
+                  "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                  "start": 195
+                }
+              ],
+              "node_id": "n_ratio",
+              "operation": "divide",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p22"
+              ],
+              "source_doc_ids": [
+                "shared/source:0001:row:0001:cell:0001",
+                "shared/source:0001:row:0001:cell:0002",
+                "shared/source:0001:row:0001:cell:0003",
+                "shared/source:0001:row:0001:cell:0004",
+                "shared/source:0001:row:0001:cell:0005",
+                "shared/source:0001:row:0001:cell:0006",
+                "shared/source:0001:row:0002:cell:0001",
+                "shared/source:0001:row:0002:cell:0002",
+                "shared/source:0001:row:0002:cell:0003",
+                "shared/source:0001:row:0002:cell:0004",
+                "shared/source:0001:row:0002:cell:0005",
+                "shared/source:0001:row:0002:cell:0006"
+              ],
+              "term_ids": [
+                "t_lease_total",
+                "t_purchase_total",
+                "t_ratio"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 195,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                  "end": 327,
+                  "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                  "start": 195
+                }
+              ],
+              "node_id": "n_verify",
+              "operation": "none",
+              "predicate": "verification",
+              "proposition_ids": [
+                "p23"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_ratio"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                  "end": 195,
+                  "quote": "{\"output\": {\"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"submitted\": ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0003:observation",
+                  "end": 240,
+                  "quote": "true}, \"result_handle\": \"r4\", \"status\": \"ok\"}",
+                  "start": 195
+                }
+              ],
+              "node_id": "n_submit",
+              "operation": "none",
+              "predicate": "answer",
+              "proposition_ids": [
+                "p24"
+              ],
+              "source_doc_ids": [],
+              "term_ids": [
+                "t_ratio"
+              ]
+            }
+          ]
+        },
+        "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+        "updates": [
+          {
+            "action_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:action:0000:arguments",
+            "decision_change": "program_change",
+            "evidence": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 327,
+                "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                "start": 195
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/turn:0002:content",
+                "end": 329,
+                "quote": "U: Since run_program rejects the table_sum calls with these labels, I'll compute totals manually from the table values and submit a purely arithmetic program.\n\n",
+                "start": 169
+              }
+            ],
+            "kind": "semantic_revision",
+            "nonredundancy_evidence": [
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0000:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r1\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0001:observation",
+                "end": 131,
+                "quote": "{\"output\": {\"error\": \"ToolInputError\", \"message\": \"invalid linear FinQA program syntax\"}, \"result_handle\": \"r2\", \"status\": \"error\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 195,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(171, 133), add(#0, 97), add(#1, 74), add(#2, 59), add(#3, 162), add(3170, 770), ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+                "end": 327,
+                "quote": "add(#5, 642), add(#6, 529), add(#7, 453), add(#8, 2404), divide(#4, #9)\", \"result\": 0.08735}, \"result_handle\": \"r3\", \"status\": \"ok\"}",
+                "start": 195
+              }
+            ],
+            "observation_doc_id": "slot/v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7/event:0002:observation",
+            "posterior_proposition": "p19",
+            "prior_proposition": "p1",
+            "substantive": true
+          }
+        ],
+        "v_trace": "valid"
+      },
+      "terms": [
+        {
+          "attribute": "lease obligations",
+          "period": "2014",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0001"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_2014",
+          "unit": "USD millions",
+          "value": "171"
+        },
+        {
+          "attribute": "lease obligations",
+          "period": "2015",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0002"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_2015",
+          "unit": "USD millions",
+          "value": "133"
+        },
+        {
+          "attribute": "lease obligations",
+          "period": "2016",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0003"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_2016",
+          "unit": "USD millions",
+          "value": "97"
+        },
+        {
+          "attribute": "lease obligations",
+          "period": "2017",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0004"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_2017",
+          "unit": "USD millions",
+          "value": "74"
+        },
+        {
+          "attribute": "lease obligations",
+          "period": "2018",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0005"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_2018",
+          "unit": "USD millions",
+          "value": "59"
+        },
+        {
+          "attribute": "lease obligations",
+          "period": "thereafter",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0006"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_thereafter",
+          "unit": "USD millions",
+          "value": "162"
+        },
+        {
+          "attribute": "lease obligations total",
+          "period": "2014-2018+thereafter",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0001",
+            "shared/source:0001:row:0001:cell:0002",
+            "shared/source:0001:row:0001:cell:0003",
+            "shared/source:0001:row:0001:cell:0004",
+            "shared/source:0001:row:0001:cell:0005",
+            "shared/source:0001:row:0001:cell:0006"
+          ],
+          "subject": "international paper",
+          "term_id": "t_lease_total",
+          "unit": "USD millions",
+          "value": "696"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "2014",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0001"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_2014",
+          "unit": "USD millions",
+          "value": "3170"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "2015",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0002"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_2015",
+          "unit": "USD millions",
+          "value": "770"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "2016",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0003"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_2016",
+          "unit": "USD millions",
+          "value": "642"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "2017",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0004"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_2017",
+          "unit": "USD millions",
+          "value": "529"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "2018",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0005"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_2018",
+          "unit": "USD millions",
+          "value": "453"
+        },
+        {
+          "attribute": "purchase obligations",
+          "period": "thereafter",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0006"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_thereafter",
+          "unit": "USD millions",
+          "value": "2404"
+        },
+        {
+          "attribute": "purchase obligations total",
+          "period": "2014-2018+thereafter",
+          "source_doc_ids": [
+            "shared/source:0001:row:0002:cell:0001",
+            "shared/source:0001:row:0002:cell:0002",
+            "shared/source:0001:row:0002:cell:0003",
+            "shared/source:0001:row:0002:cell:0004",
+            "shared/source:0001:row:0002:cell:0005",
+            "shared/source:0001:row:0002:cell:0006"
+          ],
+          "subject": "international paper",
+          "term_id": "t_purchase_total",
+          "unit": "USD millions",
+          "value": "7968"
+        },
+        {
+          "attribute": "ratio of lease obligations to purchase obligations",
+          "period": "2014-2018+thereafter",
+          "source_doc_ids": [
+            "shared/source:0001:row:0001:cell:0001",
+            "shared/source:0001:row:0001:cell:0002",
+            "shared/source:0001:row:0001:cell:0003",
+            "shared/source:0001:row:0001:cell:0004",
+            "shared/source:0001:row:0001:cell:0005",
+            "shared/source:0001:row:0001:cell:0006",
+            "shared/source:0001:row:0002:cell:0001",
+            "shared/source:0001:row:0002:cell:0002",
+            "shared/source:0001:row:0002:cell:0003",
+            "shared/source:0001:row:0002:cell:0004",
+            "shared/source:0001:row:0002:cell:0005",
+            "shared/source:0001:row:0002:cell:0006"
+          ],
+          "subject": "international paper",
+          "term_id": "t_ratio",
+          "unit": "ratio",
+          "value": "0.08735"
+        }
+      ]
+    },
+    "positive_target_mask": null,
+    "raw_review_sha256": "ab8edfd00952df36f1fd003be0976ab09608bd4b0f398f28f71df927bb9b1055",
+    "reported_v_trace": "valid",
+    "requires_second_review_and_task_alignment": true,
+    "reviewer": 1,
+    "schema": "v6_slot_review.v6",
+    "semantic_baseline_wire_protocol": "v6_slot_review.v5",
+    "semantic_consistent": false,
+    "semantic_repair_performed": false,
+    "semantic_validation_error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+    "slot_id": "v6-slot:0193625eebb819a28f930ea3646241176140f979f07197e6e57c3339e99026b7",
+    "strict_format_is_semantic_correctness": false,
+    "strict_tool_sha256": "9b1b62a22eb8bb2e37a04fab7b75e200f364b7d3d5c279c0cad70753f79f197e",
+    "task_bundle_sha256": "766f30e94c9df7fd4d3ee4e419a60a9b5f3d7f66294bf54317c8210e625cf3d4",
+    "task_id": "IP/2013/page_101.pdf-4",
+    "terms": {
+      "t_lease_2014": {
+        "attribute": "lease obligations",
+        "period": "2014",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0001"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "171"
+      },
+      "t_lease_2015": {
+        "attribute": "lease obligations",
+        "period": "2015",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0002"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "133"
+      },
+      "t_lease_2016": {
+        "attribute": "lease obligations",
+        "period": "2016",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0003"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "97"
+      },
+      "t_lease_2017": {
+        "attribute": "lease obligations",
+        "period": "2017",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0004"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "74"
+      },
+      "t_lease_2018": {
+        "attribute": "lease obligations",
+        "period": "2018",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0005"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "59"
+      },
+      "t_lease_thereafter": {
+        "attribute": "lease obligations",
+        "period": "thereafter",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0006"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "162"
+      },
+      "t_lease_total": {
+        "attribute": "lease obligations total",
+        "period": "2014-2018+thereafter",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0001",
+          "shared/source:0001:row:0001:cell:0002",
+          "shared/source:0001:row:0001:cell:0003",
+          "shared/source:0001:row:0001:cell:0004",
+          "shared/source:0001:row:0001:cell:0005",
+          "shared/source:0001:row:0001:cell:0006"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "696"
+      },
+      "t_purchase_2014": {
+        "attribute": "purchase obligations",
+        "period": "2014",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0001"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "3170"
+      },
+      "t_purchase_2015": {
+        "attribute": "purchase obligations",
+        "period": "2015",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0002"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "770"
+      },
+      "t_purchase_2016": {
+        "attribute": "purchase obligations",
+        "period": "2016",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0003"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "642"
+      },
+      "t_purchase_2017": {
+        "attribute": "purchase obligations",
+        "period": "2017",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0004"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "529"
+      },
+      "t_purchase_2018": {
+        "attribute": "purchase obligations",
+        "period": "2018",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0005"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "453"
+      },
+      "t_purchase_thereafter": {
+        "attribute": "purchase obligations",
+        "period": "thereafter",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0006"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "2404"
+      },
+      "t_purchase_total": {
+        "attribute": "purchase obligations total",
+        "period": "2014-2018+thereafter",
+        "source_doc_ids": [
+          "shared/source:0001:row:0002:cell:0001",
+          "shared/source:0001:row:0002:cell:0002",
+          "shared/source:0001:row:0002:cell:0003",
+          "shared/source:0001:row:0002:cell:0004",
+          "shared/source:0001:row:0002:cell:0005",
+          "shared/source:0001:row:0002:cell:0006"
+        ],
+        "subject": "international paper",
+        "unit": "USD millions",
+        "value": "7968"
+      },
+      "t_ratio": {
+        "attribute": "ratio of lease obligations to purchase obligations",
+        "period": "2014-2018+thereafter",
+        "source_doc_ids": [
+          "shared/source:0001:row:0001:cell:0001",
+          "shared/source:0001:row:0001:cell:0002",
+          "shared/source:0001:row:0001:cell:0003",
+          "shared/source:0001:row:0001:cell:0004",
+          "shared/source:0001:row:0001:cell:0005",
+          "shared/source:0001:row:0001:cell:0006",
+          "shared/source:0001:row:0002:cell:0001",
+          "shared/source:0001:row:0002:cell:0002",
+          "shared/source:0001:row:0002:cell:0003",
+          "shared/source:0001:row:0002:cell:0004",
+          "shared/source:0001:row:0002:cell:0005",
+          "shared/source:0001:row:0002:cell:0006"
+        ],
+        "subject": "international paper",
+        "unit": "ratio",
+        "value": "0.08735"
+      }
+    },
+    "v_trace": "unknown",
+    "wire_protocol": "v6_slot_review.v6"
+  },
+  "wire_protocol": "v6_slot_review.v6"
+}

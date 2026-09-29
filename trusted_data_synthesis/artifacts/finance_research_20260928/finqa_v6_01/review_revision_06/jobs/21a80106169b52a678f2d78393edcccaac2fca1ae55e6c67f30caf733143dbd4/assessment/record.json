@@ -1,0 +1,1274 @@
+{
+  "error": null,
+  "error_kind": null,
+  "interface_admitted": true,
+  "semantic_consistent": true,
+  "validation": {
+    "catalog_sha256": "309b387fc7b4914cf203f7c9828a46086142ac2e6890e1dd5f03d6e36c67192d",
+    "coherence_policy": "existing_substantive_update_cross_field_coherence.v1",
+    "compact_catalog_sha256": "24c7d595d79cc1c39ecfc42c0abce972363aa6e602a54d70da4aa34eb6dc7191",
+    "derived": {
+      "chi": 0,
+      "chi_evidence": [],
+      "graph": {
+        "edges": [
+          [
+            "00567853e9c6e20b7fa2628269f84c748ad4752e56f547cf0794354306b1fcb7",
+            "supports",
+            "d28422a2d51d75523db0929c981edaffe007fbd201c4ead47777bcb0b2433c21"
+          ],
+          [
+            "00567853e9c6e20b7fa2628269f84c748ad4752e56f547cf0794354306b1fcb7",
+            "supports",
+            "e77ae19486e2eb133550b291076ffb0c1d15b5211d014b45f6b1846535096b26"
+          ],
+          [
+            "046d3eb37f417939e8d68c5e561a2bfd384c070eadeb775581d7fb95a2dd69d1",
+            "accepts",
+            "75731fb4b7bd0f605f708f728cee530e442d463c15f15cdd0822bd5edf478459"
+          ],
+          [
+            "d28422a2d51d75523db0929c981edaffe007fbd201c4ead47777bcb0b2433c21",
+            "derives",
+            "046d3eb37f417939e8d68c5e561a2bfd384c070eadeb775581d7fb95a2dd69d1"
+          ]
+        ],
+        "nodes": [
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0003:row:0001:cell:0000",
+              "shared/source:0003:row:0001:cell:0001",
+              "shared/source:0003:row:0001:cell:0006"
+            ],
+            "terms": [
+              {
+                "attribute": "cumulative_return_index",
+                "period": "2010",
+                "source_doc_ids": [
+                  "shared/source:0003:row:0001:cell:0001"
+                ],
+                "subject": "Teleflex Incorporated",
+                "unit": "index",
+                "value": "100"
+              },
+              {
+                "attribute": "cumulative_return_index",
+                "period": "2015",
+                "source_doc_ids": [
+                  "shared/source:0003:row:0001:cell:0006"
+                ],
+                "subject": "Teleflex Incorporated",
+                "unit": "index",
+                "value": "266"
+              }
+            ]
+          },
+          {
+            "operation": "multiply",
+            "predicate": "derivation",
+            "sources": [
+              "shared/source:0003:row:0001:cell:0001",
+              "shared/source:0003:row:0001:cell:0006"
+            ],
+            "terms": [
+              {
+                "attribute": "investment_principal",
+                "period": "2010",
+                "source_doc_ids": [
+                  "shared/task:question"
+                ],
+                "subject": "investment in Teleflex Incorporated",
+                "unit": "USD",
+                "value": "1000000"
+              },
+              {
+                "attribute": "cumulative_return_index",
+                "period": "2015",
+                "source_doc_ids": [
+                  "shared/source:0003:row:0001:cell:0006"
+                ],
+                "subject": "Teleflex Incorporated",
+                "unit": "index",
+                "value": "266"
+              },
+              {
+                "attribute": "total_return",
+                "period": "2010-2015",
+                "source_doc_ids": [
+                  "shared/source:0003:row:0001:cell:0001",
+                  "shared/source:0003:row:0001:cell:0006"
+                ],
+                "subject": "investment in Teleflex Incorporated",
+                "unit": "USD",
+                "value": "1660000"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "answer",
+            "sources": [
+              "shared/source:0003:row:0001:cell:0001",
+              "shared/source:0003:row:0001:cell:0006"
+            ],
+            "terms": [
+              {
+                "attribute": "total_return",
+                "period": "2010-2015",
+                "source_doc_ids": [
+                  "shared/source:0003:row:0001:cell:0001",
+                  "shared/source:0003:row:0001:cell:0006"
+                ],
+                "subject": "investment in Teleflex Incorporated",
+                "unit": "USD",
+                "value": "1660000"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/task:question"
+            ],
+            "terms": [
+              {
+                "attribute": "investment_principal",
+                "period": "2010",
+                "source_doc_ids": [
+                  "shared/task:question"
+                ],
+                "subject": "investment in Teleflex Incorporated",
+                "unit": "USD",
+                "value": "1000000"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "decision",
+            "sources": [
+              "shared/task:question"
+            ],
+            "terms": [
+              {
+                "attribute": "investment_principal",
+                "period": "2010",
+                "source_doc_ids": [
+                  "shared/task:question"
+                ],
+                "subject": "investment in Teleflex Incorporated",
+                "unit": "USD",
+                "value": "1000000"
+              }
+            ]
+          }
+        ]
+      },
+      "mapping_established": false,
+      "mask": [
+        {
+          "component": "action",
+          "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+          "end": 77,
+          "label": "approved",
+          "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+          "end": 207,
+          "label": "approved",
+          "quote": "R: The table gives cumulative returns per $100 invested: Teleflex 2010 = 100, 2015 = 266. For a $1,000,000 investment, the value in 2015 is 1,000,000 × 266/100, and the total return is value minus principal.",
+          "start": 0
+        },
+        {
+          "component": "final",
+          "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+          "end": 77,
+          "label": "approved",
+          "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+          "end": 187,
+          "label": "approved",
+          "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\nU: The computed program is ready as the prediction.\n\n",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+          "end": 195,
+          "label": "nonassertive_context",
+          "quote": "Q: None.",
+          "start": 187
+        }
+      ],
+      "mask_complete": true
+    },
+    "document_index": {
+      "shared/source:0000:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:0",
+        "text": "stock performance graph the following graph provides a comparison of five year cumulative total stockholder returns of teleflex common stock , the standard & poor 2019s ( s&p ) 500 stock index and the s&p 500 healthcare equipment & supply index .",
+        "turn_index": null
+      },
+      "shared/source:0001:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:1",
+        "text": "the annual changes for the five-year period shown on the graph are based on the assumption that $ 100 had been invested in teleflex common stock and each index on december 31 , 2010 and that all dividends were reinvested .",
+        "turn_index": null
+      },
+      "shared/source:0002:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:2",
+        "text": "market performance .",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "company / index",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2010",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2011",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2012",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2013",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2014",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0000:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "2015",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "teleflex incorporated",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "100",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "117",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "138",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "185",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "229",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0001:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "266",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "s&p 500 index",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "100",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "102",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "118",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "157",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "178",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0002:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "181",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "s&p 500 healthcare equipment & supply index",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "100",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0002": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "99",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0003": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "116",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0004": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "148",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0005": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "187",
+        "turn_index": null
+      },
+      "shared/source:0003:row:0003:cell:0006": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "199",
+        "turn_index": null
+      },
+      "shared/source:0004:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:0",
+        "text": "s&p 500 healthcare equipment & supply index 100 99 116 148 187 199 .",
+        "turn_index": null
+      },
+      "shared/task:question": {
+        "event_index": null,
+        "kind": "question",
+        "slot_id": null,
+        "source_id": null,
+        "text": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+        "turn_index": null
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation": {
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": 0,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"result\": 1660000.0}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation": {
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": 1,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "{\"output\": {\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments": {
+        "action_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content": {
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "R: The table gives cumulative returns per $100 invested: Teleflex 2010 = 100, 2015 = 266. For a $1,000,000 investment, the value in 2015 is 1,000,000 × 266/100, and the total return is value minus principal.",
+        "turn_index": 0,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments": {
+        "action_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000",
+        "action_name": "submit_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      },
+      "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content": {
+        "episode_sha256": "d3b16b8c510a3b1f35797405e6030b7b2438dade60756241c759e0eb01db584b",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "source_id": null,
+        "text": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\nU: The computed program is ready as the prediction.\n\nQ: None.",
+        "turn_index": 1,
+        "view_id": "public_trajectory:6dd683429edd0e1f078420058476d2b61e21b54f43f56c9ac2b2695d6e0e5751",
+        "view_slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6"
+      }
+    },
+    "encoding_manifest": null,
+    "expanded_review_sha256": "ab1c4c7b72048e40389b82b13a48fa5e6fbd4049df73863795cc5436a55c86f4",
+    "flat_baseline_request_sha256": "89ed2901fe711ac48f7c4cd1e72b611994366ab92da604ba299fc357674a5929",
+    "flat_mapped_review_sha256": "1430a3132e9721922453f742fc77d004466b48b79f544e676093c35a9c1fbabc",
+    "flat_request_sha256": "04a7525cfbb845369522c6c8de406857d3c4b3e8c9beda8bc4744e7825249df2",
+    "host_mask_repair": false,
+    "host_semantic_repair": false,
+    "human_reviewed": false,
+    "interface_admitted": true,
+    "keyed_array_mapping_is_another_model_response": false,
+    "locator_mapped_review_sha256": "5e5b4197b51ac1694432c346f6a70458f316b9c4dc475623fcd0c374a32dd826",
+    "mask_amendment": "explicit_empty_Q_nonassertive_zero_loss.v1",
+    "mask_complete": true,
+    "mathematical_proof": false,
+    "original_document_index_sha256": "b740ce3dd0827bfe54524f893b562a6a85ce2d2060f4f7c680dba0dc4f0b2f2b",
+    "original_review_reclassified": false,
+    "parsed": {
+      "slot": {
+        "actions": [
+          {
+            "action_doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0000",
+                "end": 21,
+                "quote": "teleflex incorporated",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0001",
+                "end": 3,
+                "quote": "100",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0006",
+                "end": 3,
+                "quote": "266",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/task:question",
+                "end": 105,
+                "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                "end": 198,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"result\": 1660000.0}, ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                "end": 236,
+                "quote": "\"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 198
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0000",
+                "end": 21,
+                "quote": "teleflex incorporated",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0001",
+                "end": 3,
+                "quote": "100",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0006",
+                "end": 3,
+                "quote": "266",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/task:question",
+                "end": 105,
+                "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation",
+                "end": 147,
+                "quote": "{\"output\": {\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+                "end": 134,
+                "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\n",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ]
+          }
+        ],
+        "coverage_complete": true,
+        "mask": [
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+            "end": 90,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2"
+            ],
+            "quote": "R: The table gives cumulative returns per $100 invested: Teleflex 2010 = 100, 2015 = 266. ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+            "end": 207,
+            "label": "approved",
+            "proposition_ids": [
+              "p2",
+              "p3"
+            ],
+            "quote": "For a $1,000,000 investment, the value in 2015 is 1,000,000 × 266/100, and the total return is value minus principal.",
+            "start": 90
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+            "end": 134,
+            "label": "approved",
+            "proposition_ids": [
+              "p3"
+            ],
+            "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\n",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+            "end": 187,
+            "label": "approved",
+            "proposition_ids": [
+              "p3"
+            ],
+            "quote": "U: The computed program is ready as the prediction.\n\n",
+            "start": 134
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+            "end": 195,
+            "label": "nonassertive_context",
+            "proposition_ids": [],
+            "quote": "Q: None.",
+            "start": 187
+          },
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+            "end": 77,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ],
+            "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+            "start": 0
+          },
+          {
+            "component": "final",
+            "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+            "end": 77,
+            "label": "approved",
+            "proposition_ids": [
+              "p1",
+              "p2",
+              "p3"
+            ],
+            "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+            "start": 0
+          }
+        ],
+        "propositions": [
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p1",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0000",
+                "end": 21,
+                "quote": "teleflex incorporated",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0001",
+                "end": 3,
+                "quote": "100",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0006",
+                "end": 3,
+                "quote": "266",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+                "end": 90,
+                "quote": "R: The table gives cumulative returns per $100 invested: Teleflex 2010 = 100, 2015 = 266. ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p2",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0001:text",
+                "end": 195,
+                "quote": "the annual changes for the five-year period shown on the graph are based on the assumption that $ 100 had been invested in teleflex common stock and each index on december 31 , 2010 and that all ",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/task:question",
+                "end": 105,
+                "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+                "end": 207,
+                "quote": "For a $1,000,000 investment, the value in 2015 is 1,000,000 × 266/100, and the total return is value minus principal.",
+                "start": 90
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p3",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0001",
+                "end": 3,
+                "quote": "100",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0003:row:0001:cell:0006",
+                "end": 3,
+                "quote": "266",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                "end": 198,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"result\": 1660000.0}, ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                "end": 236,
+                "quote": "\"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 198
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation",
+                "end": 147,
+                "quote": "{\"output\": {\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+                "end": 134,
+                "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+                "end": 187,
+                "quote": "U: The computed program is ready as the prediction.\n\n",
+                "start": 134
+              }
+            ]
+          }
+        ],
+        "reason_codes": [
+          "no_substantive_verification_or_revision",
+          "routine_calculation_and_submission",
+          "all_critical_claims_supported_by_public_sources",
+          "no_retractions_present"
+        ],
+        "semantic_graph": {
+          "edges": [
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0000",
+                  "end": 21,
+                  "quote": "teleflex incorporated",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0001",
+                  "end": 3,
+                  "quote": "100",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0006",
+                  "end": 3,
+                  "quote": "266",
+                  "start": 0
+                }
+              ],
+              "from_node": "n1",
+              "relation": "supports",
+              "to_node": "n2"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/task:question",
+                  "end": 105,
+                  "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                  "start": 0
+                }
+              ],
+              "from_node": "n1",
+              "relation": "supports",
+              "to_node": "n3"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                  "end": 198,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"result\": 1660000.0}, ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                  "end": 236,
+                  "quote": "\"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 198
+                }
+              ],
+              "from_node": "n2",
+              "relation": "derives",
+              "to_node": "n4"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation",
+                  "end": 147,
+                  "quote": "{\"output\": {\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+                  "end": 134,
+                  "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\n",
+                  "start": 0
+                }
+              ],
+              "from_node": "n4",
+              "relation": "accepts",
+              "to_node": "n5"
+            }
+          ],
+          "nodes": [
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0000",
+                  "end": 21,
+                  "quote": "teleflex incorporated",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0001",
+                  "end": 3,
+                  "quote": "100",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0003:row:0001:cell:0006",
+                  "end": 3,
+                  "quote": "266",
+                  "start": 0
+                }
+              ],
+              "node_id": "n1",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p1"
+              ],
+              "source_doc_ids": [
+                "shared/source:0003:row:0001:cell:0000",
+                "shared/source:0003:row:0001:cell:0001",
+                "shared/source:0003:row:0001:cell:0006"
+              ],
+              "term_ids": [
+                "t1",
+                "t2"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/task:question",
+                  "end": 105,
+                  "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                  "start": 0
+                }
+              ],
+              "node_id": "n2",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p2"
+              ],
+              "source_doc_ids": [
+                "shared/task:question"
+              ],
+              "term_ids": [
+                "t3"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/task:question",
+                  "end": 105,
+                  "quote": "what is the total return of an investment of $ 1000000 in teleflex incorporated in 2010 and sold in 2015?",
+                  "start": 0
+                }
+              ],
+              "node_id": "n3",
+              "operation": "none",
+              "predicate": "decision",
+              "proposition_ids": [
+                "p2"
+              ],
+              "source_doc_ids": [
+                "shared/task:question"
+              ],
+              "term_ids": [
+                "t3"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                  "end": 198,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"result\": 1660000.0}, ",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0000:observation",
+                  "end": 236,
+                  "quote": "\"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 198
+                }
+              ],
+              "node_id": "n4",
+              "operation": "multiply",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p3"
+              ],
+              "source_doc_ids": [
+                "shared/source:0003:row:0001:cell:0001",
+                "shared/source:0003:row:0001:cell:0006"
+              ],
+              "term_ids": [
+                "t3",
+                "t2",
+                "t4"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/event:0001:observation",
+                  "end": 147,
+                  "quote": "{\"output\": {\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+                  "end": 134,
+                  "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\n",
+                  "start": 0
+                }
+              ],
+              "node_id": "n5",
+              "operation": "none",
+              "predicate": "answer",
+              "proposition_ids": [
+                "p3"
+              ],
+              "source_doc_ids": [
+                "shared/source:0003:row:0001:cell:0001",
+                "shared/source:0003:row:0001:cell:0006"
+              ],
+              "term_ids": [
+                "t4"
+              ]
+            }
+          ]
+        },
+        "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+        "updates": [],
+        "v_trace": "valid"
+      },
+      "terms": [
+        {
+          "attribute": "cumulative_return_index",
+          "period": "2010",
+          "source_doc_ids": [
+            "shared/source:0003:row:0001:cell:0001"
+          ],
+          "subject": "Teleflex Incorporated",
+          "term_id": "t1",
+          "unit": "index",
+          "value": "100"
+        },
+        {
+          "attribute": "cumulative_return_index",
+          "period": "2015",
+          "source_doc_ids": [
+            "shared/source:0003:row:0001:cell:0006"
+          ],
+          "subject": "Teleflex Incorporated",
+          "term_id": "t2",
+          "unit": "index",
+          "value": "266"
+        },
+        {
+          "attribute": "investment_principal",
+          "period": "2010",
+          "source_doc_ids": [
+            "shared/task:question"
+          ],
+          "subject": "investment in Teleflex Incorporated",
+          "term_id": "t3",
+          "unit": "USD",
+          "value": "1000000"
+        },
+        {
+          "attribute": "total_return",
+          "period": "2010-2015",
+          "source_doc_ids": [
+            "shared/source:0003:row:0001:cell:0001",
+            "shared/source:0003:row:0001:cell:0006"
+          ],
+          "subject": "investment in Teleflex Incorporated",
+          "term_id": "t4",
+          "unit": "USD",
+          "value": "1660000"
+        }
+      ]
+    },
+    "positive_target_mask": [
+      {
+        "component": "action",
+        "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:action:0000:arguments",
+        "end": 77,
+        "label": "approved",
+        "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0000:content",
+        "end": 207,
+        "label": "approved",
+        "quote": "R: The table gives cumulative returns per $100 invested: Teleflex 2010 = 100, 2015 = 266. For a $1,000,000 investment, the value in 2015 is 1,000,000 × 266/100, and the total return is value minus principal.",
+        "start": 0
+      },
+      {
+        "component": "final",
+        "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:action:0000:arguments",
+        "end": 77,
+        "label": "approved",
+        "quote": "{\"program\": \"multiply(1000000, 266), divide(#0, 100), subtract(#1, 1000000)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+        "end": 187,
+        "label": "approved",
+        "quote": "R: Execution confirms 1,000,000 × 266 = 266,000,000; divided by 100 = 2,660,000; minus principal 1,000,000 = 1,660,000 total return.\n\nU: The computed program is ready as the prediction.\n\n",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6/turn:0001:content",
+        "end": 195,
+        "label": "nonassertive_context",
+        "quote": "Q: None.",
+        "start": 187
+      }
+    ],
+    "raw_review_sha256": "d77d14d3cdfbe17919e6b3e8f439f7c0a32751a6ff1e7f617424222ef503defc",
+    "reported_v_trace": "valid",
+    "requires_second_review_and_task_alignment": true,
+    "reviewer": 1,
+    "schema": "v6_slot_review.v6",
+    "semantic_baseline_wire_protocol": "v6_slot_review.v5",
+    "semantic_consistent": true,
+    "semantic_repair_performed": false,
+    "semantic_validation_error": null,
+    "slot_id": "v6-slot:2c29ce0b736c8f0d81104f22557f08fead352b6e6dd689a80c1c28d402b898c6",
+    "strict_format_is_semantic_correctness": false,
+    "strict_tool_sha256": "0014b21fd15940d1d5234517ff8de7314df76544c57b21f9b2119780a23476f2",
+    "task_bundle_sha256": "934b2bd3ea960b785833e0a14c78afcfc2a49ae5d95bcb3e24b9e015e354597d",
+    "task_id": "TFX/2015/page_42.pdf-1",
+    "terms": {
+      "t1": {
+        "attribute": "cumulative_return_index",
+        "period": "2010",
+        "source_doc_ids": [
+          "shared/source:0003:row:0001:cell:0001"
+        ],
+        "subject": "Teleflex Incorporated",
+        "unit": "index",
+        "value": "100"
+      },
+      "t2": {
+        "attribute": "cumulative_return_index",
+        "period": "2015",
+        "source_doc_ids": [
+          "shared/source:0003:row:0001:cell:0006"
+        ],
+        "subject": "Teleflex Incorporated",
+        "unit": "index",
+        "value": "266"
+      },
+      "t3": {
+        "attribute": "investment_principal",
+        "period": "2010",
+        "source_doc_ids": [
+          "shared/task:question"
+        ],
+        "subject": "investment in Teleflex Incorporated",
+        "unit": "USD",
+        "value": "1000000"
+      },
+      "t4": {
+        "attribute": "total_return",
+        "period": "2010-2015",
+        "source_doc_ids": [
+          "shared/source:0003:row:0001:cell:0001",
+          "shared/source:0003:row:0001:cell:0006"
+        ],
+        "subject": "investment in Teleflex Incorporated",
+        "unit": "USD",
+        "value": "1660000"
+      }
+    },
+    "v_trace": "valid",
+    "wire_protocol": "v6_slot_review.v6"
+  },
+  "wire_protocol": "v6_slot_review.v6"
+}

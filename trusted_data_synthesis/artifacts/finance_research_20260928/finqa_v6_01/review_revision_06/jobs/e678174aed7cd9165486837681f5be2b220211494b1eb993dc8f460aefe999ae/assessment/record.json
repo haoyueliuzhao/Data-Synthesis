@@ -1,0 +1,1357 @@
+{
+  "error": null,
+  "error_kind": null,
+  "interface_admitted": true,
+  "semantic_consistent": true,
+  "validation": {
+    "catalog_sha256": "4df1154e47a65c84c233925fafbc3de5a11e10b7420abf421e666d6a365574a0",
+    "coherence_policy": "existing_substantive_update_cross_field_coherence.v1",
+    "compact_catalog_sha256": "0c1d440703506201eeb6bdfa317e732d2a9b994c3490d27304b177e6d5f559ab",
+    "derived": {
+      "chi": 0,
+      "chi_evidence": [],
+      "graph": {
+        "edges": [
+          [
+            "25aaf6b373587045ced16f6690535f3a71a66950a3284f1fe43f76be073cf7c6",
+            "accepts",
+            "735810bcb3ca90962e5982439ca696d0f70db9aa2921da5b2966f28b9b10e878"
+          ],
+          [
+            "49f573dc694e4fa6d616e436809b4d49529c1ce2e9bb5e8077e1211bc0ad9e77",
+            "supports",
+            "7681841aee77025e0b1992c7a4e660200692fb7d643e6aab0a5e3f55e4310dc3"
+          ],
+          [
+            "737375ae9b8053df6a540d137d84b87f3e3abdc18b472dd629aa3ac92a7fcc5a",
+            "supports",
+            "7681841aee77025e0b1992c7a4e660200692fb7d643e6aab0a5e3f55e4310dc3"
+          ],
+          [
+            "7681841aee77025e0b1992c7a4e660200692fb7d643e6aab0a5e3f55e4310dc3",
+            "derives",
+            "25aaf6b373587045ced16f6690535f3a71a66950a3284f1fe43f76be073cf7c6"
+          ]
+        ],
+        "nodes": [
+          {
+            "operation": "none",
+            "predicate": "answer",
+            "sources": [
+              "shared/source:0012:text",
+              "shared/source:0028:text"
+            ],
+            "terms": [
+              {
+                "attribute": "comparison result (BWE > Svedka)",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0012:text",
+                  "shared/source:0028:text"
+                ],
+                "subject": "greater(877.3, 385.8)",
+                "unit": "boolean",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0012:text"
+            ],
+            "terms": [
+              {
+                "attribute": "total consideration paid in cash",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0012:text"
+                ],
+                "subject": "BWE acquisition",
+                "unit": "USD millions",
+                "value": "877.3"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "decision",
+            "sources": [
+              "shared/source:0012:text",
+              "shared/source:0028:text"
+            ],
+            "terms": [
+              {
+                "attribute": "comparison result (BWE > Svedka)",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0012:text",
+                  "shared/source:0028:text"
+                ],
+                "subject": "greater(877.3, 385.8)",
+                "unit": "boolean",
+                "value": "yes"
+              }
+            ]
+          },
+          {
+            "operation": "none",
+            "predicate": "fact",
+            "sources": [
+              "shared/source:0028:text"
+            ],
+            "terms": [
+              {
+                "attribute": "total consideration paid in cash",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0028:text"
+                ],
+                "subject": "Svedka acquisition",
+                "unit": "USD millions",
+                "value": "385.8"
+              }
+            ]
+          },
+          {
+            "operation": "greater",
+            "predicate": "derivation",
+            "sources": [
+              "shared/source:0012:text",
+              "shared/source:0028:text"
+            ],
+            "terms": [
+              {
+                "attribute": "total consideration paid in cash",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0012:text"
+                ],
+                "subject": "BWE acquisition",
+                "unit": "USD millions",
+                "value": "877.3"
+              },
+              {
+                "attribute": "total consideration paid in cash",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0028:text"
+                ],
+                "subject": "Svedka acquisition",
+                "unit": "USD millions",
+                "value": "385.8"
+              },
+              {
+                "attribute": "comparison result (BWE > Svedka)",
+                "period": "2007",
+                "source_doc_ids": [
+                  "shared/source:0012:text",
+                  "shared/source:0028:text"
+                ],
+                "subject": "greater(877.3, 385.8)",
+                "unit": "boolean",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      },
+      "mapping_established": false,
+      "mask": [
+        {
+          "component": "action",
+          "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+          "end": 36,
+          "label": "approved",
+          "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+          "end": 197,
+          "label": "approved",
+          "quote": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). I'll compute the comparison with a greater step after retrieving both figures.",
+          "start": 0
+        },
+        {
+          "component": "final",
+          "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+          "end": 36,
+          "label": "approved",
+          "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+          "end": 183,
+          "label": "approved",
+          "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\nU: The result confirms the answer; no further computation needed.\n\n",
+          "start": 0
+        },
+        {
+          "component": "reason",
+          "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+          "end": 191,
+          "label": "nonassertive_context",
+          "quote": "Q: None.",
+          "start": 183
+        }
+      ],
+      "mask_complete": true
+    },
+    "document_index": {
+      "shared/source:0000:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:0",
+        "text": "492010 annual report consolidation 2013 effective february 28 , 2010 , the company adopted the fasb amended guidance for con- solidation .",
+        "turn_index": null
+      },
+      "shared/source:0001:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:1",
+        "text": "this guidance clarifies that the scope of the decrease in ownership provisions applies to the follow- ing : ( i ) a subsidiary or group of assets that is a business or nonprofit activity ; ( ii ) a subsidiary that is a business or nonprofit activity that is transferred to an equity method investee or joint venture ; and ( iii ) an exchange of a group of assets that constitutes a business or nonprofit activ- ity for a noncontrolling interest in an entity ( including an equity method investee or joint venture ) .",
+        "turn_index": null
+      },
+      "shared/source:0002:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:2",
+        "text": "this guidance also expands the disclosures about the deconsolidation of a subsidiary or derecognition of a group of assets within the scope of the guidance .",
+        "turn_index": null
+      },
+      "shared/source:0003:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:3",
+        "text": "the adoption of this guidance did not have a material impact on the company 2019s consolidated financial statements .",
+        "turn_index": null
+      },
+      "shared/source:0004:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:4",
+        "text": "3 . acquisitions : acquisition of bwe 2013 on december 17 , 2007 , the company acquired all of the issued and outstanding capital stock of beam wine estates , inc .",
+        "turn_index": null
+      },
+      "shared/source:0005:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:5",
+        "text": "( 201cbwe 201d ) , an indirect wholly-owned subsidiary of fortune brands , inc. , together with bwe 2019s subsidiaries : atlas peak vineyards , inc. , buena vista winery , inc. , clos du bois , inc. , gary farrell wines , inc .",
+        "turn_index": null
+      },
+      "shared/source:0006:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:6",
+        "text": "and peak wines international , inc .",
+        "turn_index": null
+      },
+      "shared/source:0007:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:7",
+        "text": "( the 201cbwe acquisition 201d ) .",
+        "turn_index": null
+      },
+      "shared/source:0008:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:8",
+        "text": "as a result of the bwe acquisition , the company acquired the u.s .",
+        "turn_index": null
+      },
+      "shared/source:0009:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:9",
+        "text": "wine portfolio of fortune brands , inc. , including certain wineries , vineyards or inter- ests therein in the state of california , as well as various super-premium and fine california wine brands including clos du bois and wild horse .",
+        "turn_index": null
+      },
+      "shared/source:0010:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:10",
+        "text": "the bwe acquisition sup- ports the company 2019s strategy of strengthening its portfolio with fast-growing super-premium and above wines .",
+        "turn_index": null
+      },
+      "shared/source:0011:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:11",
+        "text": "the bwe acquisition strengthens the company 2019s position as the leading wine company in the world and the leading premium wine company in the u.s .",
+        "turn_index": null
+      },
+      "shared/source:0012:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:12",
+        "text": "total consideration paid in cash was $ 877.3 million .",
+        "turn_index": null
+      },
+      "shared/source:0013:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:13",
+        "text": "in addition , the company incurred direct acquisition costs of $ 1.4 million .",
+        "turn_index": null
+      },
+      "shared/source:0014:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:14",
+        "text": "the purchase price was financed with the net proceeds from the company 2019s december 2007 senior notes ( as defined in note 11 ) and revolver borrowings under the company 2019s june 2006 credit agreement , as amended in february 2007 and november 2007 ( as defined in note 11 ) .",
+        "turn_index": null
+      },
+      "shared/source:0015:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:15",
+        "text": "in accordance with the purchase method of accounting , the acquired net assets are recorded at fair value at the date of acquisition .",
+        "turn_index": null
+      },
+      "shared/source:0016:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:16",
+        "text": "the purchase price was based primarily on the estimated future operating results of the bwe business , including the factors described above .",
+        "turn_index": null
+      },
+      "shared/source:0017:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:17",
+        "text": "in june 2008 , the company sold certain businesses consisting of several of the california wineries and wine brands acquired in the bwe acquisition , as well as certain wineries and wine brands from the states of washington and idaho ( collectively , the 201cpacific northwest business 201d ) ( see note 7 ) .",
+        "turn_index": null
+      },
+      "shared/source:0018:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:18",
+        "text": "the results of operations of the bwe business are reported in the constellation wines segment and are included in the consolidated results of operations of the company from the date of acquisition .",
+        "turn_index": null
+      },
+      "shared/source:0019:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:19",
+        "text": "the following table summarizes the fair values of the assets acquired and liabilities assumed in the bwe acquisition at the date of acquisition .",
+        "turn_index": null
+      },
+      "shared/source:0020:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "pre_text:20",
+        "text": "( in millions ) current assets $ 288.4 property , plant and equipment 232.8 .",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0000:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "current assets",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0000:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 288.4",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0001:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "property plant and equipment",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0001:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "232.8",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0002:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "goodwill",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0002:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "334.6",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0003:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "trademarks",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0003:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "97.9",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0004:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "other assets",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0004:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "30.2",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0005:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "total assets acquired",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0005:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "983.9",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0006:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "current liabilities",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0006:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "103.9",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0007:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "long-term liabilities",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0007:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "1.3",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0008:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "total liabilities assumed",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0008:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "105.2",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0009:cell:0000": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "net assets acquired",
+        "turn_index": null
+      },
+      "shared/source:0021:row:0009:cell:0001": {
+        "event_index": null,
+        "kind": "source_table_cell",
+        "slot_id": null,
+        "source_id": "table:0",
+        "text": "$ 878.7",
+        "turn_index": null
+      },
+      "shared/source:0022:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:0",
+        "text": "other assets 30.2 total assets acquired 983.9 current liabilities 103.9 long-term liabilities 1.3 total liabilities assumed 105.2 net assets acquired $ 878.7 the trademarks are not subject to amortization .",
+        "turn_index": null
+      },
+      "shared/source:0023:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:1",
+        "text": "all of the goodwill is expected to be deductible for tax purposes .",
+        "turn_index": null
+      },
+      "shared/source:0024:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:2",
+        "text": "acquisition of svedka 2013 on march 19 , 2007 , the company acquired the svedka vodka brand ( 201csvedka 201d ) in connection with the acquisition of spirits marque one llc and related business ( the 201csvedka acquisition 201d ) .",
+        "turn_index": null
+      },
+      "shared/source:0025:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:3",
+        "text": "svedka is a premium swedish vodka .",
+        "turn_index": null
+      },
+      "shared/source:0026:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:4",
+        "text": "at the time of the acquisition , the svedka acquisition supported the company 2019s strategy of expanding the company 2019s premium spirits business and provided a foundation from which the company looked to leverage its existing and future premium spirits portfolio for growth .",
+        "turn_index": null
+      },
+      "shared/source:0027:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:5",
+        "text": "in addition , svedka complemented the company 2019s then existing portfolio of super-premium and value vodka brands by adding a premium vodka brand .",
+        "turn_index": null
+      },
+      "shared/source:0028:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:6",
+        "text": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+        "turn_index": null
+      },
+      "shared/source:0029:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:7",
+        "text": "in addition , the company incurred direct acquisition costs of $ 1.3 million .",
+        "turn_index": null
+      },
+      "shared/source:0030:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:8",
+        "text": "the pur- chase price was financed with revolver borrowings under the company 2019s june 2006 credit agreement , as amended in february 2007 .",
+        "turn_index": null
+      },
+      "shared/source:0031:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:9",
+        "text": "in accordance with the purchase method of accounting , the acquired net assets are recorded at fair value at the date of acquisition .",
+        "turn_index": null
+      },
+      "shared/source:0032:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:10",
+        "text": "the purchase price was based primarily on the estimated future operating results of the svedka business , including the factors described above .",
+        "turn_index": null
+      },
+      "shared/source:0033:text": {
+        "event_index": null,
+        "kind": "source_text",
+        "slot_id": null,
+        "source_id": "post_text:11",
+        "text": "the results of operations of the svedka business are reported in the constellation wines segment and are included in the consolidated results of operations of the company from the date of acquisition. .",
+        "turn_index": null
+      },
+      "shared/task:question": {
+        "event_index": null,
+        "kind": "question",
+        "slot_id": null,
+        "source_id": null,
+        "text": "did the bwe acquisition cost more than the svedka acquisition?",
+        "turn_index": null
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation": {
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": 0,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0001:observation": {
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": 1,
+        "is_error": false,
+        "kind": "tool_observation",
+        "observes_action_doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0001:observation",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "{\"output\": {\"program\": \"greater(877.3, 385.8)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments": {
+        "action_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000",
+        "action_name": "run_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "{\"program\": \"greater(877.3, 385.8)\"}",
+        "turn_index": 0,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content": {
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). I'll compute the comparison with a greater step after retrieving both figures.",
+        "turn_index": 0,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments": {
+        "action_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000",
+        "action_name": "submit_program",
+        "actual_event_present": true,
+        "actual_event_success": true,
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": null,
+        "kind": "action_arguments",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "{\"program\": \"greater(877.3, 385.8)\"}",
+        "turn_index": 1,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      },
+      "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content": {
+        "episode_sha256": "24accc0654dc1dfc6a14e05548263d2c518c857580c5a231f0660d16fcbd874b",
+        "event_index": null,
+        "kind": "public_content",
+        "original_segment_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "source_id": null,
+        "text": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\nU: The result confirms the answer; no further computation needed.\n\nQ: None.",
+        "turn_index": 1,
+        "view_id": "public_trajectory:4328abc34707cfd6d7d5e114cb4526ad8b97ede20e7cd58d4808b18036bca734",
+        "view_slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee"
+      }
+    },
+    "encoding_manifest": null,
+    "expanded_review_sha256": "c3af3cd252f3bfdb8bd55d6a2b0d2347162921cbfe87e58c3ef36bf8e24c0406",
+    "flat_baseline_request_sha256": "040dc614f435b53a990238d3c821b0012c418a4f96c733c6e2bc54c5503a2c53",
+    "flat_mapped_review_sha256": "8d9f29f0d7d1d5acab51ae6708155839de34d77c3a90a6182a3bed9dbfbde10d",
+    "flat_request_sha256": "0a7cf4d3bf0a71e973be1a7bc8877eb2a01e42020238b8543f1a7809097ac210",
+    "host_mask_repair": false,
+    "host_semantic_repair": false,
+    "human_reviewed": false,
+    "interface_admitted": true,
+    "keyed_array_mapping_is_another_model_response": false,
+    "locator_mapped_review_sha256": "19819c9d0852fe72fe2cfd9d252c7ec3a005e9f0d7acf989ff92e50f3ea0edd1",
+    "mask_amendment": "explicit_empty_Q_nonassertive_zero_loss.v1",
+    "mask_complete": true,
+    "mathematical_proof": false,
+    "original_document_index_sha256": "ff3043f3fb1a81ebf679c043a59c775fd23e50f91edc4c5eafa8fd510628c98a",
+    "original_review_reclassified": false,
+    "parsed": {
+      "slot": {
+        "actions": [
+          {
+            "action_doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0012:text",
+                "end": 54,
+                "quote": "total consideration paid in cash was $ 877.3 million .",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0028:text",
+                "end": 81,
+                "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p_bwe_cash",
+              "p_svedka_cash",
+              "p_greater"
+            ]
+          },
+          {
+            "action_doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+            "evidence": [
+              {
+                "doc_id": "shared/source:0012:text",
+                "end": 54,
+                "quote": "total consideration paid in cash was $ 877.3 million .",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0028:text",
+                "end": 81,
+                "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                "end": 191,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "label": "approved",
+            "proposition_ids": [
+              "p_greater",
+              "p_answer"
+            ]
+          }
+        ],
+        "coverage_complete": true,
+        "mask": [
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+            "end": 119,
+            "label": "approved",
+            "proposition_ids": [
+              "p_bwe_cash",
+              "p_svedka_cash"
+            ],
+            "quote": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). ",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+            "end": 197,
+            "label": "approved",
+            "proposition_ids": [
+              "p_greater"
+            ],
+            "quote": "I'll compute the comparison with a greater step after retrieving both figures.",
+            "start": 119
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+            "end": 116,
+            "label": "approved",
+            "proposition_ids": [
+              "p_greater",
+              "p_answer"
+            ],
+            "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\n",
+            "start": 0
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+            "end": 183,
+            "label": "approved",
+            "proposition_ids": [
+              "p_answer"
+            ],
+            "quote": "U: The result confirms the answer; no further computation needed.\n\n",
+            "start": 116
+          },
+          {
+            "component": "reason",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+            "end": 191,
+            "label": "nonassertive_context",
+            "proposition_ids": [],
+            "quote": "Q: None.",
+            "start": 183
+          },
+          {
+            "component": "action",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+            "end": 36,
+            "label": "approved",
+            "proposition_ids": [
+              "p_greater"
+            ],
+            "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+            "start": 0
+          },
+          {
+            "component": "final",
+            "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+            "end": 36,
+            "label": "approved",
+            "proposition_ids": [
+              "p_greater",
+              "p_answer"
+            ],
+            "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+            "start": 0
+          }
+        ],
+        "propositions": [
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_bwe_cash",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0012:text",
+                "end": 54,
+                "quote": "total consideration paid in cash was $ 877.3 million .",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+                "end": 119,
+                "quote": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_svedka_cash",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0028:text",
+                "end": 81,
+                "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+                "end": 119,
+                "quote": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). ",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_greater",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "shared/source:0012:text",
+                "end": 54,
+                "quote": "total consideration paid in cash was $ 877.3 million .",
+                "start": 0
+              },
+              {
+                "doc_id": "shared/source:0028:text",
+                "end": 81,
+                "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                "end": 191,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+                "end": 197,
+                "quote": "I'll compute the comparison with a greater step after retrieving both figures.",
+                "start": 119
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+                "end": 36,
+                "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+                "end": 36,
+                "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "accepted": true,
+            "critical": true,
+            "judgment": "supported",
+            "proposition_id": "p_answer",
+            "retraction": [],
+            "status": "assertion",
+            "support": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                "end": 191,
+                "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0001:observation",
+                "end": 106,
+                "quote": "{\"output\": {\"program\": \"greater(877.3, 385.8)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                "start": 0
+              }
+            ],
+            "text": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                "end": 116,
+                "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\n",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                "end": 183,
+                "quote": "U: The result confirms the answer; no further computation needed.\n\n",
+                "start": 116
+              }
+            ]
+          }
+        ],
+        "reason_codes": [
+          "all_critical_claims_supported",
+          "no_retraction_needed",
+          "no_substantive_verification_or_revision",
+          "routine_calculation_and_submission"
+        ],
+        "semantic_graph": {
+          "edges": [
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0012:text",
+                  "end": 54,
+                  "quote": "total consideration paid in cash was $ 877.3 million .",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0028:text",
+                  "end": 81,
+                  "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_bwe_cash",
+              "relation": "supports",
+              "to_node": "n_greater"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0012:text",
+                  "end": 54,
+                  "quote": "total consideration paid in cash was $ 877.3 million .",
+                  "start": 0
+                },
+                {
+                  "doc_id": "shared/source:0028:text",
+                  "end": 81,
+                  "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_svedka_cash",
+              "relation": "supports",
+              "to_node": "n_greater"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                  "end": 191,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_greater",
+              "relation": "derives",
+              "to_node": "n_answer"
+            },
+            {
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                  "end": 191,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                  "end": 116,
+                  "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\n",
+                  "start": 0
+                }
+              ],
+              "from_node": "n_answer",
+              "relation": "accepts",
+              "to_node": "n_submit"
+            }
+          ],
+          "nodes": [
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0012:text",
+                  "end": 54,
+                  "quote": "total consideration paid in cash was $ 877.3 million .",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_bwe_cash",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p_bwe_cash"
+              ],
+              "source_doc_ids": [
+                "shared/source:0012:text"
+              ],
+              "term_ids": [
+                "t_bwe_cash"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "shared/source:0028:text",
+                  "end": 81,
+                  "quote": "total consideration paid in cash for the svedka acquisition was $ 385.8 million .",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_svedka_cash",
+              "operation": "none",
+              "predicate": "fact",
+              "proposition_ids": [
+                "p_svedka_cash"
+              ],
+              "source_doc_ids": [
+                "shared/source:0028:text"
+              ],
+              "term_ids": [
+                "t_svedka_cash"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                  "end": 191,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_greater",
+              "operation": "greater",
+              "predicate": "derivation",
+              "proposition_ids": [
+                "p_greater"
+              ],
+              "source_doc_ids": [
+                "shared/source:0012:text",
+                "shared/source:0028:text"
+              ],
+              "term_ids": [
+                "t_bwe_cash",
+                "t_svedka_cash",
+                "t_greater"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0000:observation",
+                  "end": 191,
+                  "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"greater(877.3, 385.8)\", \"result\": \"yes\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                  "end": 116,
+                  "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\n",
+                  "start": 0
+                }
+              ],
+              "node_id": "n_answer",
+              "operation": "none",
+              "predicate": "answer",
+              "proposition_ids": [
+                "p_answer"
+              ],
+              "source_doc_ids": [
+                "shared/source:0012:text",
+                "shared/source:0028:text"
+              ],
+              "term_ids": [
+                "t_greater"
+              ]
+            },
+            {
+              "accepted": true,
+              "evidence": [
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/event:0001:observation",
+                  "end": 106,
+                  "quote": "{\"output\": {\"program\": \"greater(877.3, 385.8)\", \"submitted\": true}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+                  "start": 0
+                },
+                {
+                  "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                  "end": 183,
+                  "quote": "U: The result confirms the answer; no further computation needed.\n\n",
+                  "start": 116
+                }
+              ],
+              "node_id": "n_submit",
+              "operation": "none",
+              "predicate": "decision",
+              "proposition_ids": [
+                "p_answer"
+              ],
+              "source_doc_ids": [
+                "shared/source:0012:text",
+                "shared/source:0028:text"
+              ],
+              "term_ids": [
+                "t_greater"
+              ]
+            }
+          ]
+        },
+        "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+        "updates": [],
+        "v_trace": "valid"
+      },
+      "terms": [
+        {
+          "attribute": "total consideration paid in cash",
+          "period": "2007",
+          "source_doc_ids": [
+            "shared/source:0012:text"
+          ],
+          "subject": "BWE acquisition",
+          "term_id": "t_bwe_cash",
+          "unit": "USD millions",
+          "value": "877.3"
+        },
+        {
+          "attribute": "total consideration paid in cash",
+          "period": "2007",
+          "source_doc_ids": [
+            "shared/source:0028:text"
+          ],
+          "subject": "Svedka acquisition",
+          "term_id": "t_svedka_cash",
+          "unit": "USD millions",
+          "value": "385.8"
+        },
+        {
+          "attribute": "comparison result (BWE > Svedka)",
+          "period": "2007",
+          "source_doc_ids": [
+            "shared/source:0012:text",
+            "shared/source:0028:text"
+          ],
+          "subject": "greater(877.3, 385.8)",
+          "term_id": "t_greater",
+          "unit": "boolean",
+          "value": "yes"
+        }
+      ]
+    },
+    "positive_target_mask": [
+      {
+        "component": "action",
+        "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:action:0000:arguments",
+        "end": 36,
+        "label": "approved",
+        "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+        "end": 197,
+        "label": "approved",
+        "quote": "R: The question compares two acquisition cash consideration amounts: BWE ($877.3 million) and Svedka ($385.8 million). I'll compute the comparison with a greater step after retrieving both figures.",
+        "start": 0
+      },
+      {
+        "component": "final",
+        "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:action:0000:arguments",
+        "end": 36,
+        "label": "approved",
+        "quote": "{\"program\": \"greater(877.3, 385.8)\"}",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+        "end": 183,
+        "label": "approved",
+        "quote": "R: The executed comparison returns \"yes\": BWE's $877.3 million cash consideration exceeds Svedka's $385.8 million.\n\nU: The result confirms the answer; no further computation needed.\n\n",
+        "start": 0
+      },
+      {
+        "component": "reason",
+        "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+        "end": 191,
+        "label": "nonassertive_context",
+        "quote": "Q: None.",
+        "start": 183
+      }
+    ],
+    "raw_review_sha256": "82276062306930716371b754c5229e161f63b8623c4656c5d7b0d729f58a683e",
+    "reported_v_trace": "valid",
+    "requires_second_review_and_task_alignment": true,
+    "reviewer": 0,
+    "schema": "v6_slot_review.v6",
+    "semantic_baseline_wire_protocol": "v6_slot_review.v5",
+    "semantic_consistent": true,
+    "semantic_repair_performed": false,
+    "semantic_validation_error": null,
+    "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+    "strict_format_is_semantic_correctness": false,
+    "strict_tool_sha256": "64f8424ac9a81fe093fe8c71d9502839afd1f85f31f16d94896ca075b7cb452d",
+    "task_bundle_sha256": "3f49fe36c051ee3aa6375902a0eca60f41e38a3d0a4670c50e1233bb2dbdc869",
+    "task_id": "STZ/2010/page_51.pdf-3",
+    "terms": {
+      "t_bwe_cash": {
+        "attribute": "total consideration paid in cash",
+        "period": "2007",
+        "source_doc_ids": [
+          "shared/source:0012:text"
+        ],
+        "subject": "BWE acquisition",
+        "unit": "USD millions",
+        "value": "877.3"
+      },
+      "t_greater": {
+        "attribute": "comparison result (BWE > Svedka)",
+        "period": "2007",
+        "source_doc_ids": [
+          "shared/source:0012:text",
+          "shared/source:0028:text"
+        ],
+        "subject": "greater(877.3, 385.8)",
+        "unit": "boolean",
+        "value": "yes"
+      },
+      "t_svedka_cash": {
+        "attribute": "total consideration paid in cash",
+        "period": "2007",
+        "source_doc_ids": [
+          "shared/source:0028:text"
+        ],
+        "subject": "Svedka acquisition",
+        "unit": "USD millions",
+        "value": "385.8"
+      }
+    },
+    "v_trace": "valid",
+    "wire_protocol": "v6_slot_review.v6"
+  },
+  "wire_protocol": "v6_slot_review.v6"
+}

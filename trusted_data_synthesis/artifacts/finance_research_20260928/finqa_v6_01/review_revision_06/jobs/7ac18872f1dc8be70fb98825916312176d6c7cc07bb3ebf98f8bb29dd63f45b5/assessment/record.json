@@ -1,0 +1,10 @@
+{
+  "derived": null,
+  "error": "flat interface JSONDecodeError: Expecting ',' delimiter: line 1 column 258 (char 257)",
+  "error_kind": "mechanical_interface",
+  "interface_admitted": false,
+  "semantic_consistent": false,
+  "v_trace": "unknown",
+  "validation": null,
+  "wire_protocol": "v6_slot_review.v6"
+}

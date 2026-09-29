@@ -1,0 +1,10 @@
+{
+  "API_calls": 0,
+  "at": "2026-09-28T20:50:15.650532+00:00",
+  "denominator": 883,
+  "phase": "COMPLETE",
+  "protocol_id": "64ebaffc77904b667c5cfa44a48ab262ab2e2505c152ae93ccfad085ae1e65ad",
+  "scores_id": "a777398d33b3fdd60013d3a46b71a90d7bbb5c5181eff7b6f21c7a86525ec36c",
+  "training_started": false,
+  "workers_exited": true
+}
