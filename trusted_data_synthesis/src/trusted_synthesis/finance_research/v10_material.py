@@ -424,6 +424,181 @@ def _final_retry_binding(output, plan, reviews, reader, ledger):
     return resolution
 
 
+def _network_retry_binding(output, plan, reviews, reader, ledger):
+    """Bind the all-and-only frozen original network group and every unique attempt2."""
+    from .v10_network_retry import (
+        read_network_retry_activation_from_connection,
+        read_network_retry_permit_from_connection,
+        supplement_directory,
+    )
+
+    permit = read_network_retry_permit_from_connection(ledger.connection, ledger.config)
+    if permit is None:
+        require(reviews.get("network_retry_resolution") is None, "unregistered group supplement")
+        return None
+    directory = supplement_directory(output)
+    require(
+        reviews.get("network_retry_resolution") is not None
+        and reviews.get("final_retry_resolution") is None,
+        "registered group supersedes the single future attempt and cannot be skipped",
+    )
+    resolution = checked(
+        reader.read(reviews["network_retry_resolution"], directory / "resolution/record.json"),
+        "v10_network_retry_resolution.v1",
+    )
+    activation = read_network_retry_activation_from_connection(ledger.connection, ledger.config)
+    require(
+        activation is not None
+        and reader.read(resolution["authorization"], directory / "authorization/record.json")
+        == permit
+        and reader.read(resolution["activation"], directory / "activation/record.json")
+        == activation
+        and activation["permit_id"] == permit["id"]
+        and activation["primary_completion"] == resolution["primary_matrix"]
+        and resolution["superseded_single_permit_id"] == activation["superseded_single_permit_id"],
+        "group authority/activation must match the same immutable wallet records",
+    )
+    barrier = checked(
+        reader.read(
+            resolution["primary_matrix"], directory / "complete_primary_matrix/record.json"
+        ),
+        "v10_primary_review_matrix_complete_before_network_retry.v1",
+    )
+    phase = checked(
+        reader.read(
+            activation["primary_registration"], Path(output) / "review_registration/record.json"
+        )
+    )
+    require(
+        barrier["protocol_id"] == resolution["protocol_id"] == phase["protocol_id"] == plan["id"]
+        and barrier["phase_id"] == phase["id"]
+        and resolution["batch_id"] == plan["batch_id"]
+        and barrier["authorization"] == resolution["authorization"]
+        and barrier["all_registered_jobs_terminal"] is True
+        and activation["all_primary_attempt1_terminal"] is True
+        and barrier["expected_reviews"]
+        == activation["expected_reviews"]
+        == resolution["fixed_logical_review_denominator"]
+        == reviews["expected_reviews"]
+        == len(phase["jobs"])
+        and [t["episode_id"] for t in barrier["terminals"]]
+        == [j["episode_id"] for j in phase["jobs"]]
+        == [t["episode_id"] for t in reviews["terminals"]],
+        "one complete original matrix must precede the once-frozen supplementary manifest",
+    )
+    targets = {t["episode_id"]: t for t in activation["targets"]}
+    replacements = {r["episode_id"]: r for r in resolution["replacements"]}
+    require(
+        list(targets)
+        == list(replacements)
+        == [j["episode_id"] for j in activation["jobs"]]
+        == [
+            t["episode_id"]
+            for t in barrier["terminals"]
+            if t["terminal_kind"] == "acknowledged_connection_unknown"
+        ]
+        and len(targets)
+        == len(activation["targets"])
+        == len(resolution["replacements"])
+        == activation["target_count"]
+        == resolution["supplementary_attempts"]
+        and resolution["only_supplementary_result_decides_final_sides"] is True
+        and resolution["favorable_result_selection"] is False
+        and resolution["original_unknowns_overwritten"] is False
+        and resolution["attempt3_authorized"] is False,
+        "no primary network item may be omitted, duplicated, selected by outcome, "
+        "or retried a third time",
+    )
+    original_hold, retry_unknown_hold, retry_returns, primary_returns = 0, 0, 0, 0
+    for old, final in zip(barrier["terminals"], reviews["terminals"], strict=True):
+        eid = final["episode_id"]
+        primary_dir = Path(output) / "reviews" / final["slot_id"].split(":", 1)[1] / final["role"]
+        original = checked(reader.read(old["record"], primary_dir / "record/record.json"))
+        if eid not in targets:
+            require(
+                old["record"] == final["record"]
+                and old["terminal_kind"] == final["terminal_kind"] == "paid_model_return"
+                and final.get("physical_attempt_index", 1) == 1,
+                "a returned primary, mapping, or non-target cannot be replaced by network recovery",
+            )
+            primary_returns += 1
+            continue
+        target, replacement = targets[eid], replacements[eid]
+        slot_dir = directory / "slots" / eid.split(":", 1)[1]
+        request = checked(reader.read(entry(primary_dir / "request/record.json")))
+        require(
+            all(target[k] == request[k] for k in ("episode_id", "slot_id", "task_id", "role"))
+            and original["schema"] == "v10_network_unknown_review.v1"
+            and original["invocation_id"]
+            == replacement["origin_invocation_id"]
+            == target["origin_invocation_id"]
+            and replacement["slot_id"] == final["slot_id"] == target["slot_id"]
+            and replacement["role"] == final["role"] == target["role"]
+            and old["record"] == replacement["original_terminal"] == final["original_terminal"]
+            and final["record"] == replacement["final_terminal"]
+            and final["physical_attempt_index"] == 2
+            and final["authorization"] == resolution["authorization"]
+            and final["network_retry_resolution"] == reviews["network_retry_resolution"]
+            and reader.read(entry(slot_dir / "request/record.json")) == request,
+            "every replacement must retain the same original request and actual primary UNKNOWN",
+        )
+        _network_terminal(original, request, ledger)
+        row = ledger.row(target["retry_invocation_id"])
+        origin = ledger.row(target["origin_invocation_id"])
+        coordinates = invocation_identity(
+            dict(run_id=ledger.run_id, episode_id=eid, attempt_index=2), turn_index=0
+        )
+        evidence = json.loads(row["evidence_json"] or "{}")
+        record = checked(reader.read(final["record"], slot_dir / "record/record.json"))
+        returned = record.get("actual_model_call_receipt_verified") is True
+        iid = record["artifact"]["budget_invocation_id"] if returned else record["invocation_id"]
+        require(
+            coordinates["invocation_id"]
+            == iid
+            == replacement["retry_invocation_id"]
+            == target["retry_invocation_id"]
+            and json.loads(row["coordinates_json"]) == coordinates
+            and row["state"] == ("SETTLED" if returned else "UNKNOWN")
+            and row["request_body"] == origin["request_body"]
+            and row["request_sha256"]
+            == origin["request_sha256"]
+            == target["original_request_sha256"]
+            and evidence.get("network_retry_permit") == permit
+            and evidence.get("network_retry_activation") == activation
+            and evidence.get("network_retry_target") == target
+            and replacement["original_reserved_microcny"]
+            == target["origin_reserved_microcny"]
+            == original["permanent_reserved_microcny"]
+            == origin["reserved_microcny"],
+            "real unique attempt2, exact HTTP bytes, wallet group witnesses "
+            "and original hold required",
+        )
+        original_hold += origin["reserved_microcny"]
+        retry_returns += int(returned)
+        if not returned:
+            _network_terminal(record, request, ledger, attempt_index=2)
+            retry_unknown_hold += row["reserved_microcny"]
+    statistics = dict(
+        primary_first_pass_returns=primary_returns,
+        primary_first_pass_network_unknowns=len(targets),
+        retry_returns=retry_returns,
+        retry_network_unknowns=len(targets) - retry_returns,
+        physical_attempts=reviews["expected_reviews"] + len(targets),
+        supplementary_attempts=len(targets),
+        retained_original_unknown_reserved_microcny=original_hold,
+        retry_unknown_reserved_microcny=retry_unknown_hold,
+    )
+    require(
+        all(resolution[k] == reviews[k] == value for k, value in statistics.items())
+        and reviews["retained_original_unknown_attempts"] == len(targets)
+        and reviews["returned"] == primary_returns + retry_returns
+        and reviews["network_unknowns"] == len(targets) - retry_returns,
+        "first-pass/retry responses, logical denominator "
+        "and physical retained holds must be separate",
+    )
+    return replacements
+
+
 def _episode(outcome, plan, reader):
     path = Path(outcome["episode_path"])
     raw = path.read_bytes()
@@ -626,7 +801,12 @@ def _collect(output, plan, reader, *, produce_encodings):
     originals, integrity, sides = {}, {}, {}
     ledger = LedgerReader(plan)
     try:
-        final_retry = _final_retry_binding(output, plan, reviews, reader, ledger)
+        network_retries = _network_retry_binding(output, plan, reviews, reader, ledger)
+        final_retry = (
+            _final_retry_binding(output, plan, reviews, reader, ledger)
+            if network_retries is None
+            else None
+        )
         for outcome in generation["slots"]:
             if outcome["status"] != "NETWORK_UNKNOWN_TERMINAL":
                 continue
@@ -676,10 +856,17 @@ def _collect(output, plan, reader, *, produce_encodings):
             saved_request = checked(reader.read(entry(directory / "request/record.json")))
             request = _same_request_contract(saved_request, request)
             retried = (
-                final_retry is not None and terminal["episode_id"] == final_retry["episode_id"]
+                terminal["episode_id"] in (network_retries or {})
+                or final_retry is not None
+                and terminal["episode_id"] == final_retry["episode_id"]
             )
             record_path = (
-                output / "final_retry_01/record/record.json"
+                output
+                / "network_retry_01/slots"
+                / terminal["episode_id"].split(":", 1)[1]
+                / "record/record.json"
+                if terminal["episode_id"] in (network_retries or {})
+                else output / "final_retry_01/record/record.json"
                 if retried
                 else directory / "record/record.json"
             )

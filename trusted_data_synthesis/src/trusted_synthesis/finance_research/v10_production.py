@@ -52,7 +52,11 @@ CONCURRENCY_AUTHORIZATION = dict(
 
 
 def _validate_annotation_sources(output, plan, original, current):
-    if (Path(output) / "final_retry_01/execution_revision/record.json").exists():
+    if (Path(output) / "network_retry_01/execution_revision/record.json").exists():
+        from .v10_network_retry_execution import validate_network_retry_source_transition
+
+        validator = validate_network_retry_source_transition
+    elif (Path(output) / "final_retry_01/execution_revision/record.json").exists():
         from .v10_retry_execution import validate_retry_source_transition
 
         validator = validate_retry_source_transition
@@ -131,7 +135,27 @@ def read_entry(item):
     return value
 
 
+def _is_network_retry(job):
+    if not job.get("network_retry", False):
+        return False
+    suffix = job["episode_id"].removeprefix("v10review:")
+    require(
+        not job.get("final_retry", False)
+        and job["kind"] == "review"
+        and job["role"] in {"A", "B"}
+        and job["episode_id"] == "v10review:" + suffix
+        and len(suffix) == 64
+        and all(c in "0123456789abcdef" for c in suffix)
+        and isinstance(job.get("origin_invocation_id"), str)
+        and job.get("attempt_index", 2) == 2,
+        "registered network supplement only, never mapping or attempt3",
+    )
+    return True
+
+
 def _is_final_retry(job):
+    if _is_network_retry(job):
+        return False
     if not job.get("final_retry", False):
         require(job.get("attempt_index", 1) == 1, "unregistered supplementary attempt")
         return False
@@ -150,6 +174,8 @@ def _is_final_retry(job):
 
 
 def job_directory(output, job):
+    if _is_network_retry(job):
+        return Path(output) / "network_retry_01/slots" / job["episode_id"].split(":", 1)[1]
     if _is_final_retry(job):
         from .v10_final_retry import supplement_directory
 
@@ -255,14 +281,19 @@ class Context:
     def request(self, job):
         directory = job_directory(self.output, job)
         path = directory / "request/record.json"
-        if _is_final_retry(job):
-            primary = {k: v for k, v in job.items() if k not in {"final_retry", "attempt_index"}}
+        if _is_final_retry(job) or _is_network_retry(job):
+            primary = {
+                k: v
+                for k, v in job.items()
+                if k
+                not in {"final_retry", "network_retry", "attempt_index", "origin_invocation_id"}
+            }
             original = checked(job_directory(self.output, primary) / "request/record.json")
             require(
                 original["episode_id"] == job["episode_id"]
                 and original["protocol_id"] == self.plan["batch_id"]
                 and original["policy_id"] == self.plan["review_policy_id"],
-                "single final attempt must use the unchanged original saved request",
+                "supplementary attempt must use the unchanged original saved request",
             )
             persist(path.parent, original)
             return original
@@ -317,7 +348,7 @@ def iid_for(ledger, job):
         dict(
             run_id=ledger.run_id,
             episode_id=job["episode_id"],
-            attempt_index=2 if _is_final_retry(job) else 1,
+            attempt_index=2 if _is_final_retry(job) or _is_network_retry(job) else 1,
         ),
         turn_index=0,
     )["invocation_id"]
@@ -433,13 +464,17 @@ def recover_stage(output, plan, ledger, context, jobs):
     return gather_terminals(output, jobs)
 
 
-def register_network_guard(output, plan):
+def register_network_guard(output, plan, *, network_retry=False):
     record = bound(
         dict(
-            schema="v10_primary_review_network_wave_guard.v1",
+            schema="v10_network_retry_wave_guard.v1"
+            if network_retry
+            else "v10_primary_review_network_wave_guard.v1",
             protocol_id=plan["id"],
             batch_id=plan["batch_id"],
-            scope="primary review only; not mapping or the one authorized final attempt",
+            scope="registered network retry wave; no resend of any dispatched attempt2"
+            if network_retry
+            else "primary review only; not mapping or the one authorized final attempt",
             same_wave_connection_unknown_threshold=3,
             drain_and_acknowledge_real_terminals_before_stopping=True,
             automatic_next_wave_after_threshold=False,
@@ -448,7 +483,11 @@ def register_network_guard(output, plan):
             additional_model_calls_authorized=0,
         )
     )
-    persist(Path(output) / "runtime/network_guard_01", record)
+    persist(
+        Path(output)
+        / ("network_retry_01/network_guard" if network_retry else "runtime/network_guard_01"),
+        record,
+    )
     return record
 
 
@@ -457,12 +496,21 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
     stop_requested = stop_requested or asyncio.Event()
     stage = jobs[0]["kind"] if jobs else "review"
     final_retry = bool(jobs and _is_final_retry(jobs[0]))
+    network_retry = bool(jobs and _is_network_retry(jobs[0]))
+    require(
+        all(_is_network_retry(j) == network_retry for j in jobs),
+        "primary and supplementary jobs cannot be mixed in a dispatch wave",
+    )
     require(not final_retry or len(jobs) == 1, "single final retry cannot expand its roster")
     runtime = register_runtime(output, plan, ledger)
     concurrency = 1 if final_retry else runtime["effective_concurrency"][stage]
-    stage_label = "FINAL_RETRY" if final_retry else stage.upper()
+    stage_label = (
+        "NETWORK_RETRY" if network_retry else "FINAL_RETRY" if final_retry else stage.upper()
+    )
     network_guard = (
-        register_network_guard(output, plan) if stage == "review" and not final_retry else None
+        register_network_guard(output, plan, network_retry=network_retry)
+        if stage == "review" and not final_retry
+        else None
     )
     key = _key(ENV_FILE)
     completed = recover_stage(output, plan, ledger, context, jobs)
@@ -486,10 +534,10 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
                     **(
                         dict(
                             primary_review_denominator=len(context.phase["jobs"]),
-                            supplementary_attempt_denominator=1,
+                            supplementary_attempt_denominator=len(jobs),
                             supplementary_attempt_index=2,
                         )
-                        if final_retry
+                        if final_retry or network_retry
                         else {}
                     ),
                     runtime_revision_id=runtime["id"],
@@ -564,7 +612,11 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
                         client=client,
                         timeout=max(180, math.ceil(90 + request["max_output_tokens"] / 128)),
                         resume_reserved=row is not None,
-                        **({"attempt_index": 2} if _is_final_retry(job) else {}),
+                        **(
+                            {"attempt_index": 2}
+                            if _is_final_retry(job) or _is_network_retry(job)
+                            else {}
+                        ),
                     )
                     publish(directory / "artifact", artifact)
                     row = ledger.request_record(iid_for(ledger, job))
@@ -616,7 +668,12 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
             return None
         if network_guard and len(errors) >= network_guard["same_wave_connection_unknown_threshold"]:
             completed = recover_stage(output, plan, ledger, context, jobs)
-            progress("V10_REVIEW_NETWORK_SAFETY_SAVED", completed=completed)
+            progress(
+                "V10_NETWORK_RETRY_SAFETY_SAVED"
+                if network_retry
+                else "V10_REVIEW_NETWORK_SAFETY_SAVED",
+                completed=completed,
+            )
             return None
         if stop_requested.is_set():
             return None
@@ -755,7 +812,175 @@ async def apply_final_retry(
     return {**completed, EPISODE_ID: record}, resolution
 
 
-def complete_review_seal(output, plan, phase, completed, *, retry_resolution=None):
+async def apply_network_retries(
+    output, plan, ledger, context, phase, completed, *, stop_requested=None
+):
+    """Freeze all primary network UNKNOWNs once, then finish each unique attempt2."""
+    from .v10_network_retry import (
+        activate_network_retries,
+        read_network_retry_permit,
+        supplement_directory,
+    )
+
+    output = Path(output)
+    directory = supplement_directory(output)
+    permit = read_network_retry_permit(ledger)
+    require(permit is not None, "group network retry must have its prospective wallet permit")
+    authorization = entry(directory / "authorization/record.json")
+    require(read_entry(authorization) == permit, "network-retry wallet/disk permit differs")
+    require(
+        len(phase["jobs"]) == 2 * phase["M"]
+        and set(completed) == {j["episode_id"] for j in phase["jobs"]}
+        and completed == gather_terminals(output, phase["jobs"]),
+        "all original fixed 2M jobs must really terminate before freezing network retries",
+    )
+    require(
+        not (output / "final_retry_01/resolution/record.json").exists(),
+        "old single attempt must be included, not executed before the group",
+    )
+    barrier_path = directory / "complete_primary_matrix/record.json"
+    if not barrier_path.exists():
+        require(
+            not any(
+                (output / relative).exists()
+                for relative in ("review_seal", "joint", "mapping_registration", "mapping")
+            ),
+            "network retries precede final qualification/joints/mapping",
+        )
+    barrier = bound(
+        dict(
+            schema="v10_primary_review_matrix_complete_before_network_retry.v1",
+            protocol_id=plan["id"],
+            phase_id=phase["id"],
+            expected_reviews=len(phase["jobs"]),
+            terminals=[
+                dict(
+                    episode_id=j["episode_id"],
+                    terminal_kind="paid_model_return"
+                    if completed[j["episode_id"]].get("actual_model_call_receipt_verified")
+                    else "acknowledged_connection_unknown",
+                    record=entry(job_directory(output, j) / "record/record.json"),
+                )
+                for j in phase["jobs"]
+            ],
+            authorization=authorization,
+            all_registered_jobs_terminal=True,
+            primary_records_overwritten=False,
+        )
+    )
+    persist(barrier_path.parent, barrier)
+    activation = activate_network_retries(ledger, barrier_path=barrier_path)
+    persist(directory / "activation", activation)
+    jobs, targets = activation["jobs"], activation["targets"]
+    expected_unknowns = [
+        j["episode_id"]
+        for j in phase["jobs"]
+        if completed[j["episode_id"]].get("terminal_kind") == "acknowledged_connection_unknown"
+    ]
+    require(
+        [j["episode_id"] for j in jobs] == [t["episode_id"] for t in targets] == expected_unknowns
+        and len(jobs) == activation["target_count"]
+        and all(_is_network_retry(j) for j in jobs),
+        "frozen retry manifest must contain every and only primary network UNKNOWN",
+    )
+    if stop_requested is not None and stop_requested.is_set():
+        return None
+    retried = (
+        await execute_stage(output, plan, ledger, context, jobs, stop_requested=stop_requested)
+        if jobs
+        else {}
+    )
+    if retried is None:
+        return None
+    require(set(retried) == set(expected_unknowns), "all frozen supplementary jobs must terminate")
+    primary_jobs = {j["episode_id"]: j for j in phase["jobs"]}
+    replacements = []
+    for job, target in zip(jobs, targets, strict=True):
+        eid = job["episode_id"]
+        original = completed[eid]
+        final_ref = entry(job_directory(output, job) / "record/record.json")
+        require(
+            original["schema"] == "v10_network_unknown_review.v1"
+            and original["invocation_id"] == target["origin_invocation_id"]
+            and original["permanent_reserved_microcny"] == target["origin_reserved_microcny"]
+            and read_entry(final_ref) == retried[eid]
+            and iid_for(ledger, job) == target["retry_invocation_id"],
+            "each frozen original UNKNOWN and its sole returned/unknown retry must stay bound",
+        )
+        replacements.append(
+            dict(
+                episode_id=eid,
+                slot_id=job["slot_id"],
+                role=job["role"],
+                origin_invocation_id=target["origin_invocation_id"],
+                retry_invocation_id=target["retry_invocation_id"],
+                original_terminal=entry(
+                    job_directory(output, primary_jobs[eid]) / "record/record.json"
+                ),
+                final_terminal=final_ref,
+                original_reserved_microcny=target["origin_reserved_microcny"],
+            )
+        )
+    primary_returns = sum(
+        r.get("actual_model_call_receipt_verified") is True for r in completed.values()
+    )
+    retry_returns = sum(
+        r.get("actual_model_call_receipt_verified") is True for r in retried.values()
+    )
+    resolution = bound(
+        dict(
+            schema="v10_network_retry_resolution.v1",
+            protocol_id=plan["id"],
+            batch_id=plan["batch_id"],
+            authorization=authorization,
+            activation=entry(directory / "activation/record.json"),
+            primary_matrix=entry(barrier_path),
+            superseded_single_permit_id=activation["superseded_single_permit_id"],
+            replacements=replacements,
+            fixed_logical_review_denominator=len(phase["jobs"]),
+            physical_attempts=len(phase["jobs"]) + len(jobs),
+            primary_first_pass_returns=primary_returns,
+            primary_first_pass_network_unknowns=len(expected_unknowns),
+            retry_returns=retry_returns,
+            retry_network_unknowns=len(jobs) - retry_returns,
+            supplementary_attempts=len(jobs),
+            retained_original_unknown_reserved_microcny=sum(
+                t["origin_reserved_microcny"] for t in targets
+            ),
+            retry_unknown_reserved_microcny=sum(
+                r["permanent_reserved_microcny"]
+                for r in retried.values()
+                if r.get("terminal_kind") == "acknowledged_connection_unknown"
+            ),
+            only_supplementary_result_decides_final_sides=True,
+            favorable_result_selection=False,
+            original_unknowns_overwritten=False,
+            attempt3_authorized=False,
+        )
+    )
+    persist(directory / "resolution", resolution)
+    return {**completed, **retried}, resolution
+
+
+async def apply_registered_retries(
+    output, plan, ledger, context, phase, completed, *, stop_requested=None
+):
+    """Group authority supersedes, rather than adds to, the prior single permission."""
+    from .v10_network_retry import read_network_retry_permit
+
+    group = read_network_retry_permit(ledger) is not None
+    effective = await (apply_network_retries if group else apply_final_retry)(
+        output, plan, ledger, context, phase, completed, stop_requested=stop_requested
+    )
+    if effective is None:
+        return None
+    records, resolution = effective
+    return records, {"network_retry_resolution" if group else "retry_resolution": resolution}
+
+
+def complete_review_seal(
+    output, plan, phase, completed, *, retry_resolution=None, network_retry_resolution=None
+):
     output = Path(output)
     expected = {
         review_episode_id(plan["batch_id"], s["slot_id"], role)
@@ -773,6 +998,10 @@ def complete_review_seal(output, plan, phase, completed, *, retry_resolution=Non
         "all 2M jobs must have real terminals; no prefix",
     )
     retry_entry = None
+    require(
+        retry_resolution is None or network_retry_resolution is None,
+        "group and original single retry cannot both replace the same logical side",
+    )
     if retry_resolution is not None:
         retry_entry = entry(output / "final_retry_01/resolution/record.json")
         require(
@@ -782,6 +1011,24 @@ def complete_review_seal(output, plan, phase, completed, *, retry_resolution=Non
             and read_entry(retry_resolution["final_terminal"])
             == completed[retry_resolution["episode_id"]],
             "final-side substitution needs the bound unique supplementary result",
+        )
+    group_entry, group_replacements = None, {}
+    if network_retry_resolution is not None:
+        group_entry = entry(output / "network_retry_01/resolution/record.json")
+        require(
+            read_entry(group_entry) == network_retry_resolution
+            and network_retry_resolution["protocol_id"] == plan["id"]
+            and network_retry_resolution["fixed_logical_review_denominator"] == len(phase["jobs"]),
+            "group final-side resolution must bind this full original matrix",
+        )
+        group_replacements = {r["episode_id"]: r for r in network_retry_resolution["replacements"]}
+        require(
+            len(group_replacements) == network_retry_resolution["supplementary_attempts"]
+            and all(
+                read_entry(r["final_terminal"]) == completed[eid]
+                for eid, r in group_replacements.items()
+            ),
+            "all group final sides must use their unique actual supplementary outcome",
         )
     joint_refs, joint_by_task, joint_slots = {}, {}, []
     for slot in phase["eligible_slots"]:
@@ -815,6 +1062,7 @@ def complete_review_seal(output, plan, phase, completed, *, retry_resolution=Non
     terminal = []
     for job in phase["jobs"]:
         r = completed[job["episode_id"]]
+        group_replacement = group_replacements.get(job["episode_id"])
         terminal.append(
             dict(
                 slot_id=job["slot_id"],
@@ -823,12 +1071,23 @@ def complete_review_seal(output, plan, phase, completed, *, retry_resolution=Non
                 terminal_kind="paid_model_return"
                 if r.get("actual_model_call_receipt_verified") is True
                 else "acknowledged_connection_unknown",
-                record=retry_resolution["final_terminal"]
-                if retry_resolution is not None
-                and job["episode_id"] == retry_resolution["episode_id"]
-                else entry(job_directory(output, job) / "record/record.json"),
+                record=(
+                    group_replacement["final_terminal"]
+                    if group_replacement
+                    else retry_resolution["final_terminal"]
+                    if retry_resolution is not None
+                    and job["episode_id"] == retry_resolution["episode_id"]
+                    else entry(job_directory(output, job) / "record/record.json")
+                ),
                 **(
                     dict(
+                        physical_attempt_index=2,
+                        network_retry_resolution=group_entry,
+                        authorization=network_retry_resolution["authorization"],
+                        original_terminal=group_replacement["original_terminal"],
+                    )
+                    if group_replacement
+                    else dict(
                         physical_attempt_index=2,
                         final_retry_resolution=retry_entry,
                         authorization=retry_resolution["authorization"],
@@ -861,6 +1120,29 @@ def complete_review_seal(output, plan, phase, completed, *, retry_resolution=Non
             N=len(joint_by_task),
             mapping_expected_tasks=[t for t in plan["task_ids"] if t in joint_by_task],
             no_prefix_training=True,
+            **(
+                dict(
+                    network_retry_resolution=group_entry,
+                    **{
+                        k: network_retry_resolution[k]
+                        for k in (
+                            "physical_attempts",
+                            "supplementary_attempts",
+                            "primary_first_pass_returns",
+                            "primary_first_pass_network_unknowns",
+                            "retry_returns",
+                            "retry_network_unknowns",
+                            "retained_original_unknown_reserved_microcny",
+                            "retry_unknown_reserved_microcny",
+                        )
+                    },
+                    retained_original_unknown_attempts=network_retry_resolution[
+                        "supplementary_attempts"
+                    ],
+                )
+                if network_retry_resolution is not None
+                else {}
+            ),
             **(
                 dict(
                     final_retry_resolution=retry_entry,
@@ -956,14 +1238,18 @@ async def run(output=OUTPUT):
         )
         if completed is None:
             return None
-        effective = await apply_final_retry(
+        effective = await apply_registered_retries(
             output, plan, ledger, context, phase, completed, stop_requested=stop
         )
         if effective is None:
             return None
         completed, retry_resolution = effective
         review_seal = complete_review_seal(
-            output, plan, phase, completed, retry_resolution=retry_resolution
+            output,
+            plan,
+            phase,
+            completed,
+            **retry_resolution,
         )
         jobs = mapping_jobs(plan, review_seal)
         persist(

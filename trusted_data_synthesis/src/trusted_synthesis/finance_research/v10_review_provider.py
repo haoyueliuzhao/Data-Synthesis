@@ -141,7 +141,7 @@ def restore_artifact(ledger_row, request):
     coords = json.loads(row["coordinates_json"])
     attempt_index = coords.get("attempt_index")
     if attempt_index != 1:
-        from .v10_final_retry import validate_retry_row_evidence
+        from .v10_network_retry import validate_retry_row_evidence
 
         validate_retry_row_evidence(row, _json(body).encode())
     expected = invocation_identity(
@@ -257,7 +257,7 @@ async def request_review(
     local = {**_binding(request), "price_sheet_id": ledger.price_sheet.id}
     if attempt_index != 1:
         require(type(attempt_index) is int and attempt_index == 2, "no automatic or third attempt")
-        from .v10_final_retry import provider_retry_binding
+        from .v10_network_retry import provider_retry_binding
 
         local.update(provider_retry_binding(ledger, request, wire))
     if resume_reserved:

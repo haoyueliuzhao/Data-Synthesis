@@ -220,7 +220,7 @@ def _eligible(connection, config, coordinates, output_limit):
     if row is None:
         raise BudgetUnavailable("old/unallocated namespace or episode has no V10 capacity")
     if coordinates["attempt_index"] != 1:
-        from .v10_final_retry import check_retry_admission
+        from .v10_network_retry import check_retry_admission
 
         check_retry_admission(connection, config, coordinates)
     if row["kind"] != "generation" and coordinates["turn_index"] != 0:
@@ -235,7 +235,7 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     if category is None:
         return None
     if coordinates["attempt_index"] != 1:
-        from .v10_final_retry import check_retry_admission
+        from .v10_network_retry import check_retry_admission
 
         if request_body is None:
             raise BudgetUnavailable("one-off attempt2 requires exact original HTTP bytes")
