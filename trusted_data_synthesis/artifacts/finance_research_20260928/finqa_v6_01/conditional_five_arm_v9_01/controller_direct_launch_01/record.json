@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-29T08:15:20.977709+00:00",
+  "automatic_training": false,
+  "cap_microcny": 1200000000,
+  "child_NO_PROXY": "api.deepseek.com",
+  "child_no_proxy": "api.deepseek.com",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-m",
+    "trusted_synthesis.finance_research.v9_production_review",
+    "resume"
+  ],
+  "concurrency": 32,
+  "execution_revision_id": "2b61523a8a51b5cff00df781cb7d9ba341ed0ee36c2d0ed0276a5c9ea8699f50",
+  "frozen_worktree": "/tmp/data-synthesis-finqa-v9-terminal-frozen-20260929",
+  "id": "6cc762acd7f8361ad3d7953b531eef9d3bb12e20db554ac9294788ef23c22f05",
+  "log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/controller_direct_01.log",
+  "maximum_jobs": 13022,
+  "model": "deepseek-flash",
+  "old_pid_exited": true,
+  "other_proxy_variables_preserved": true,
+  "pending_at_stop": 0,
+  "pid": 2901919,
+  "process_start_time_ticks": "309411615",
+  "protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "schema": "v9_deepseek_direct_controller_launch.v1",
+  "source_commit": "e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6",
+  "transport_transition_id": "59cb40799c8d4fde77a09d16a318a8301e7202975d22a75b39a8e7594c54c947",
+  "wallet_unchanged_through_stop": true
+}

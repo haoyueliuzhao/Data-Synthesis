@@ -1,0 +1,194 @@
+{
+  "at": "2026-09-29T08:15:18.842970+00:00",
+  "automatic_training": false,
+  "child_environment_change": {
+    "NO_PROXY": "api.deepseek.com",
+    "no_proxy": "api.deepseek.com"
+  },
+  "execution_revision_id": "2b61523a8a51b5cff00df781cb7d9ba341ed0ee36c2d0ed0276a5c9ea8699f50",
+  "frozen_worktree": "/tmp/data-synthesis-finqa-v9-terminal-frozen-20260929",
+  "global_proxy_and_env_file_unchanged": true,
+  "id": "59cb40799c8d4fde77a09d16a318a8301e7202975d22a75b39a8e7594c54c947",
+  "no_job_resent_by_transition": true,
+  "old_pid": 1905550,
+  "old_process_start_time_ticks": "308726710",
+  "original_source_unchanged": true,
+  "other_proxy_variables_preserved": true,
+  "pending_requests_at_suspended_stop": 0,
+  "permanent_unknown_reservations_preserved": true,
+  "protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "route_selection": {
+    "https://api.deepseek.com/beta/chat/completions": {
+      "pool": "AsyncConnectionPool",
+      "uses_proxy": false
+    },
+    "https://api.deepseek.com/chat/completions": {
+      "pool": "AsyncConnectionPool",
+      "uses_proxy": false
+    },
+    "https://api.deepseek.com/models": {
+      "pool": "AsyncConnectionPool",
+      "uses_proxy": false
+    },
+    "https://example.com/": {
+      "pool": "AsyncHTTPProxy",
+      "uses_proxy": true
+    }
+  },
+  "same_matrix": true,
+  "schema": "v9_deepseek_direct_transport_transition.v1",
+  "source_commit": "e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6",
+  "source_runtime_and_semantics_revision_unchanged": true,
+  "unauthenticated_direct_connectivity_probe": {
+    "at_utc": "2026-09-29T08:00:18Z",
+    "authentication_sent": false,
+    "duration_seconds": 0.094475,
+    "http_connect_status": "000",
+    "http_status": 401,
+    "model_inference": false,
+    "remote_ip": "36.150.72.122",
+    "requests": 1,
+    "ssl_verify_result": 0,
+    "url": "https://api.deepseek.com/models"
+  },
+  "user_request": "设置网络代理，deepseek api调用进行直连，绕开我设置的反向代理",
+  "wallet_snapshot": {
+    "acknowledged_unknown_held_microcny": 135921664,
+    "acknowledged_unknown_requests": 61,
+    "actual_cache_hit_tokens_settled": 146110691,
+    "actual_cache_miss_tokens_settled": 80027189,
+    "actual_completion_tokens_settled": 20429954,
+    "actual_prompt_tokens_settled": 226137880,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "effective_hard_cap_microcny": 1200000000,
+    "exposure_microcny": 467505759,
+    "exposure_warning_reached": false,
+    "halt": {
+      "at_unix": 1790669676.411649,
+      "evidence": {
+        "automatic_retry": false,
+        "billing_usage_known": false,
+        "budget_coordinates": {
+          "attempt_index": 1,
+          "episode_id": "v8prod:dbda9c22d31ddddb45b51859af073c2b553d81697803009b9d4328d31555ef50",
+          "invocation_id": "invocation:e45c825ef0c51bd654b826bf903d0618071f993d9393332d56e93956c2abd8eb",
+          "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+          "turn_index": 0
+        },
+        "budget_invocation_id": "invocation:e45c825ef0c51bd654b826bf903d0618071f993d9393332d56e93956c2abd8eb",
+        "endpoint": "https://api.deepseek.com/beta/chat/completions",
+        "exception_type": "RemoteProtocolError",
+        "request_sha256": "63e98ae64f7b8be622f85a50329b8f59936ebaf63b4ac10ea42261088151e1bd",
+        "reservation_retained": true,
+        "review_request_metadata_sha256": "ba45f09e380cb87121d55e37fbe58f3105f5d27b42251abb1a9971e496806255",
+        "reviewer": 0,
+        "rubric_sha256": "0d00a1b4e8ebf48a27539215c97b3d2ce875fb074b6a3598b11f435afad730ef",
+        "semantic_review_request_sha256": "ba45f09e380cb87121d55e37fbe58f3105f5d27b42251abb1a9971e496806255",
+        "service_response_received": false,
+        "strict_tool_sha256": "c50317dbf988555e55ea6e1950e4f1bb0e64731a4a8a45a5c0e235a29c6fba6c",
+        "task_bundle_sha256": "61c78fe17bae1ff501229dc27d7e684c0a58c3ed5e61d3ddfbc689e47d50f416",
+        "wire_protocol": "v8_single_target_review.v1"
+      },
+      "invocation_id": "invocation:e45c825ef0c51bd654b826bf903d0618071f993d9393332d56e93956c2abd8eb",
+      "reason": "review transport response or usage unknown"
+    },
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 138149888,
+    "monetary_amendment": {
+      "acknowledged_unknowns_sha256": "12e8f6570d7cff53dabb0ebc5fa70a823727e4db043d1968997cfb341342d5ec",
+      "amendment_id": "v9-money:8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+      "applied_after_requests": 35336,
+      "applies_to_future_reservations_only": true,
+      "at_unix": 1790661076.7432575,
+      "authorization": {
+        "additional_authorized_microcny": 400000000,
+        "at": "2026-09-29T05:41:22.230135+00:00",
+        "audit_source": {
+          "path": "/home/zhuxinrui/.codex/attachments/72dcc627-ca88-40a9-909e-a5a7fa08512a/已粘贴的文本.txt",
+          "sha256": "c514295a49836796d251ed7a80371615f4733fe768707784a92a85c8677168e5"
+        },
+        "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+        "complete_scope_requests": 13022,
+        "explicit_user_authorization": true,
+        "hard_cap_microcny": 1200000000,
+        "history_and_UNKNOWN_reservations_preserved": true,
+        "id": "8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+        "new_wallet": false,
+        "no_automatic_new_technical_cohort": true,
+        "no_new_generation": true,
+        "no_prefix_training": true,
+        "original_cap_microcny": 800000000,
+        "output_limits_and_review_policy_unchanged": true,
+        "preflight_id": "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc",
+        "production_request_subcap": 18000,
+        "request_cap": 258000,
+        "risk_of_incomplete_cohort_accepted": true,
+        "schema": "v9_production_funding_decision.v1",
+        "scope_authorization_id": "caeae28e7005257809a02e263e1561f5722e3c5d49759f42a6b9a5c3010b6a58",
+        "strategy": "bounded_full_cohort_attempt",
+        "user_reply": "批准1200元总上限及上述风险",
+        "warning_microcny": 700000000
+      },
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "effective_hard_cap_microcny": 1200000000,
+      "historical_request_records_sha256": "cc496aa47a33c54593fb392f1685fc3fb00cfe7ee5d07b8c72c08447ac6caf98",
+      "historical_rows_unchanged": true,
+      "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+      "original_hard_cap_microcny": 800000000,
+      "permanent_unknown_holds_unchanged": true,
+      "preserved_counters": {
+        "completion_tokens": 11523354,
+        "dispatched": 35336,
+        "held": 2228224,
+        "hit_tokens": 124083171,
+        "miss_tokens": 29685208,
+        "pending": 0,
+        "prompt_tokens": 153768379,
+        "requests": 35336,
+        "singleton": 1,
+        "spent": 156536406,
+        "unknown": 1
+      },
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "request_partition_id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "request_partition_unchanged": true,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v9_prospective_monetary_amendment.v1",
+      "wallet_config_unchanged": true
+    },
+    "original_remaining_exposure_microcny": 332494241,
+    "pending_requests": 0,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 732494241,
+    "request_cap": 258000,
+    "request_partition": {
+      "buffer_requests": 950,
+      "buffer_spendable": false,
+      "consumed": {
+        "generation": 16286,
+        "production_review": 4548,
+        "technical_review": 108
+      },
+      "generation_episode_ids_sha256": "9aa15c1ab29935b20ac7607f215216979f9ca7e9a8a52556dab17b36eb36ef51",
+      "historical_requests": 18942,
+      "id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "limits": {
+        "generation": 220000,
+        "production_review": 18000,
+        "technical_review": 108
+      },
+      "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3"
+    },
+    "requests_dispatched": 39884,
+    "requests_reserved": 39884,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 329355871,
+    "unacknowledged_unknown_requests": 1,
+    "unknown_requests": 62,
+    "warning_microcny": 700000000,
+    "warning_reached": false
+  }
+}
