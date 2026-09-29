@@ -1,0 +1,48 @@
+{
+  "at_unix": 1790693975.5839238,
+  "authorization": {
+    "batch_id": "finqa-v10-20260929-new8000-01",
+    "freeze_all_eligible_before_supplement_results": true,
+    "hard_cap_microcny": 2000000000,
+    "id": "22d4ea06603a1b66709baa40c6a8a2499c2db5db8e4d9df8389172a454f30656",
+    "identical_original_HTTP_bytes": true,
+    "initial_request": "补发网络异常造成的审阅",
+    "max_supplements_per_eligible_job": 1,
+    "no_attempt3": true,
+    "no_old_batch_or_mapping_or_normal_return": true,
+    "origin_kind": "acknowledged_no_response_no_usage_connection_UNKNOWN",
+    "original_attempt_index": 1,
+    "original_full_holds_preserved": true,
+    "primary_expected_reviews": 11438,
+    "question": "请确认撤销此前‘仅指定1项’的未来补发限制：对本批原11438项A/B中所有已确认网络UNKNOWN（含当前24及原矩阵结束前新增），原矩阵全部终态后各仅1次attempt2；原1并入不重复，正常返回/旧批/映射不补发，原UNKNOWN/预留保留，补发结果按原规则使用，无3，总2000/子1300不变，是否批准？",
+    "review_mapping_microcny": 1300000000,
+    "roles": [
+      "A",
+      "B"
+    ],
+    "schedule_after_complete_original_matrix": true,
+    "schema": "v10_network_retry_authorization.v1",
+    "supersede_only_unactivated_single_future_scheduling": true,
+    "supplementary_attempt_index": 2,
+    "supplementary_result_decides_qualification_without_best_of": true,
+    "turn_index": 0,
+    "unchanged_model_prompt_policy_native_rules_budget_and_request_caps": true,
+    "user_reply": "批准上述本批全部网络 UNKNOWN 补发范围"
+  },
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "id": "a1093ee37d3bed6ce9c726a3bffb8b5a63580c4951c26698ba5019b4c9848f54",
+  "old_single_metadata_and_original_requests_unchanged": true,
+  "primary_expected_reviews": 11438,
+  "primary_job_ids_sha256": "da619fdaf886b99ace990a56f00859a224a745c312ca59dea256495810640e4d",
+  "primary_registration": {
+    "id": "02fc99f438fa39984cddee8343dbea42df2ea8d3b40dcae7a816ddab9e605c33",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/review_registration/record.json",
+    "sha256": "1320309df06a365152cf7f420a75f656299d8ad036713ecedacc15ed814f0700"
+  },
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v10_network_retry_permit.v1",
+  "superseded_single_permit_id": "4454c623f305ef9e265d9e9cafd62e4c054edc71809b8949245774527d064c9b",
+  "supersedes_only_unsent_future_single_scheduling": true
+}

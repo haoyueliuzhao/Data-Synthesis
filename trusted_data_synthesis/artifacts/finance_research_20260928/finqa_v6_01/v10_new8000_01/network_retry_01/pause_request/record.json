@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-29T14:57:27.249498+00:00",
+  "force_kill": false,
+  "id": "c30360be8991ffad17cfccb44ab325386717e9e9bba09e85be8de8d70a43c000",
+  "reason": "drain once before exact authorized group-retry implementation transition",
+  "review_birth": "311624120",
+  "review_pid": 3586389,
+  "schema": "v10_network_retry_scope_pause.v1",
+  "user_reply": "批准上述本批全部网络 UNKNOWN 补发范围",
+  "workflow_birth": "311624058",
+  "workflow_launch_id": "01c59eda385877b30e82004312c8cdef1b4552b144569739645e220ef415aecc",
+  "workflow_pid": 3586376
+}
