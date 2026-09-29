@@ -38,7 +38,8 @@ from .v10_review_protocol import (
     review_policy_definition,
     review_record,
 )
-from .v10_review_provider import direct_client, request_body, request_review, restore_artifact
+from .v10_review_provider import annotation_client, request_body, request_review, restore_artifact
+from .v10_transport import checked_proxy
 
 RUNTIME_PATH = Path("runtime/concurrency_revision_01/record.json")
 CONCURRENCY_AUTHORIZATION = dict(
@@ -52,7 +53,11 @@ CONCURRENCY_AUTHORIZATION = dict(
 
 
 def _validate_annotation_sources(output, plan, original, current):
-    if (Path(output) / "network_retry_01/execution_revision/record.json").exists():
+    if (Path(output) / "transport_proxy_01/execution_revision/record.json").exists():
+        from .v10_proxy_execution import validate_proxy_source_transition
+
+        validator = validate_proxy_source_transition
+    elif (Path(output) / "network_retry_01/execution_revision/record.json").exists():
         from .v10_network_retry_execution import validate_network_retry_source_transition
 
         validator = validate_network_retry_source_transition
@@ -656,7 +661,7 @@ async def execute_stage(output, plan, ledger, context, jobs, *, stop_requested=N
 
         watcher = asyncio.create_task(monitor())
         try:
-            async with direct_client(timeout=1200) as client:
+            async with annotation_client(timeout=1200, proxy=checked_proxy(output, plan)) as client:
                 await asyncio.gather(*(worker(client) for _ in range(concurrency)))
         finally:
             done.set()

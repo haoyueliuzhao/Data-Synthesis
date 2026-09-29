@@ -1,4 +1,4 @@
-"""One budgeted V10 annotation call, direct verified TLS and exact settled replay.
+"""One budgeted V10 annotation call, verified TLS and exact settled replay.
 
 The transport has no financial rubric, no gold flag and no 16384-token minimum.
 Ordinary invalid annotation strings remain exact settled originals, never repaired.
@@ -27,15 +27,19 @@ NETWORK_REASON = "v10 transport response or usage unknown"
 _DIRECT_CLIENTS = weakref.WeakSet()
 
 
-def direct_client(*, timeout=120.0):
+def annotation_client(*, timeout=120.0, proxy=None):
     client = httpx.AsyncClient(
         timeout=timeout,
         trust_env=False,
         verify=True,
-        transport=httpx.AsyncHTTPTransport(retries=0, trust_env=False, verify=True),
+        transport=httpx.AsyncHTTPTransport(retries=0, trust_env=False, verify=True, proxy=proxy),
     )
     _DIRECT_CLIENTS.add(client)
     return client
+
+
+def direct_client(*, timeout=120.0):
+    return annotation_client(timeout=timeout, proxy=None)
 
 
 def request_body(request):
@@ -236,7 +240,7 @@ async def request_review(
         ledger.snapshot().get("v10_partition", {}).get("batch_id") == request["protocol_id"],
         "V10 production requires this batch's existing-wallet purpose registration",
     )
-    # Real shared clients must be constructed by the fixed direct/TLS factory.
+    # Real shared clients must be constructed by the registered TLS transport factory.
     # Non-httpx injected clients are only CPU mock transports used by unit tests.
     require(
         not isinstance(client, httpx.AsyncClient) or client in _DIRECT_CLIENTS,

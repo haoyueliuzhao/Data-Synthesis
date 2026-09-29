@@ -129,7 +129,7 @@ def cohort(wallet, tmp_path, monkeypatch):  # noqa: F811
         responses[digest(request_body(request))] = text
     transport = MockTransport(responses)
     monkeypatch.setattr(prod, "_key", lambda path: KEY)
-    monkeypatch.setattr(prod, "direct_client", lambda **kw: transport)
+    monkeypatch.setattr(prod, "annotation_client", lambda **kw: transport)
     return SimpleNamespace(
         ledger=wallet,
         plan=plan,

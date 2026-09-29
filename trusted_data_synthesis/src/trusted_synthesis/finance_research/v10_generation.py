@@ -225,7 +225,11 @@ def checked_plan(output=OUTPUT):
         from .v10_network_retry_execution import REVISION_PATH as NETWORK_RETRY_REVISION_PATH
         from .v10_retry_execution import REVISION_PATH as RETRY_REVISION_PATH
 
-        if (Path(output) / NETWORK_RETRY_REVISION_PATH).exists():
+        if (Path(output) / "transport_proxy_01/execution_revision/record.json").exists():
+            from .v10_proxy_execution import (
+                validate_proxy_source_transition as validate_source_transition,
+            )
+        elif (Path(output) / NETWORK_RETRY_REVISION_PATH).exists():
             from .v10_network_retry_execution import (
                 validate_network_retry_source_transition as validate_source_transition,
             )
