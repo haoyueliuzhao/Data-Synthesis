@@ -1,0 +1,264 @@
+{
+  "at": "2026-09-29T15:43:00.055753+00:00",
+  "automatic_repeat_after_new_network_guard": false,
+  "budget_requests_before_resume": 67411,
+  "diagnostic_observation": {
+    "current_resource_exhaustion_evidence": false,
+    "duration_seconds": 1.113,
+    "http_status": 401,
+    "nonbillable_request": "HEAD https://api.deepseek.com without Authorization; direct TLS; retries=0",
+    "observed_at_CST": "2026-09-29 23:39:43",
+    "proves_only": "TCP/TLS/HTTP reachability at that moment, not sustained paid API health"
+  },
+  "finite_operator_resume_count": 1,
+  "id": "62d6bd448b0575d0f952c64a348ed3556e61d1eb7071449328245f38a29c45bc",
+  "money_and_request_caps_unchanged": true,
+  "network_retry_permit_id": "a1093ee37d3bed6ce9c726a3bffb8b5a63580c4951c26698ba5019b4c9848f54",
+  "new_API_pilot_calls": 0,
+  "old_UNKNOWN_and_holds_preserved": true,
+  "old_attempt": "attempt004",
+  "old_processes_exited": true,
+  "old_workflow_launch_id": "dfadc6006efc2408b6f307df4510d9bbfc1795ae7220ec118213bc3a5c164538",
+  "original_guard_state": {
+    "active": 0,
+    "actual_returns": 10982,
+    "at": "2026-09-29T15:41:52.411855+00:00",
+    "errors": [
+      {
+        "at": "2026-09-29T15:34:06.876712+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:cfb7836b4073cea18a2de537a67671a40d9727b250b81e43a1fd541bba9ec19d",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:a6b8f0229b7e0811e83fa3e258d399cd7648af72c50923f9cf4856c24f51c7c9",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.884403+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:d92c561be8ffc5676473a9e9a04c3f1b94d5b086d5084cc9dba03e7cd64bef11",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:197c8c7d4a8375badff433fb233116a33e1a4176afbba83986aa0b0376fec7f1",
+          "task_id": "IP/2005/page_32.pdf-3"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.889960+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:0cae485031c8c78fcf63d94df3d42edcef97e5850d94061e0094b52d266cc981",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:a6b8f0229b7e0811e83fa3e258d399cd7648af72c50923f9cf4856c24f51c7c9",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.896004+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:70853d4a8f973e0403df179b04f6a0636a8b5ce3216fd8f791f13f524a86bfaa",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:20797d2d1918ac29e5adb8b4889915fbf52aae7d24742d0e72a6c18165f91bd3",
+          "task_id": "IP/2005/page_32.pdf-3"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.900242+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:9c48a1c820a152bf1971ac9c9a83ea0b0893b1a282c15e679c5b3000a0108561",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:20797d2d1918ac29e5adb8b4889915fbf52aae7d24742d0e72a6c18165f91bd3",
+          "task_id": "IP/2005/page_32.pdf-3"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.905359+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:b65fd7c0f34fd5d724c5ae16c5e07b73fea2d2b1966244e0f1d8c319751161ea",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:e032c1f4063b98f92ec3e332d39f58af479b2a80f751864200682a94b6710ce7",
+          "task_id": "IP/2005/page_32.pdf-3"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.910947+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:3eacd1236872fd06e3055158e8688e59e5a4c54bf0f2c05b400202332c8b3fea",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:4a38196ca420c13cbd95416196b15abeabe3a1bcb6004e652f069a100d3e2976",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.917973+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:5a06c5a859985a146bfbde031ada03db686917b03731b3007499c881725879ed",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:e032c1f4063b98f92ec3e332d39f58af479b2a80f751864200682a94b6710ce7",
+          "task_id": "IP/2005/page_32.pdf-3"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.923877+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:97e946df051310240d945684ef65db8ed697482d811c5d4b1dfc5881cf663acc",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:4a38196ca420c13cbd95416196b15abeabe3a1bcb6004e652f069a100d3e2976",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.930609+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:794d5e4917807711e9aca125fc34968bcd5ae354d41b78bc1083302db0b89b6e",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:20a533f538c72de4ba74d9e4317d9fc9d5d9c2e0d548e2a413a20eb3a0179f67",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.935786+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:2aa876a7acda9a0a2d25bb1b6d9b81cc574ca8cfdfa5b08c228437f14d4add0f",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:20a533f538c72de4ba74d9e4317d9fc9d5d9c2e0d548e2a413a20eb3a0179f67",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.942428+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:9b7617b32ce6f07c6a1fa522ea634aebca01796dec8d53fa1788de35c6713034",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:0f4e48a07dbc632a0abf8b03660192ce2f85dfe64b61c114d16cfa72934888dd",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.948126+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:f4a3235ab4a8b7848feaab42032ae4cb680a715dd58e3496c15e3409d1ed0a08",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:37f3669fe2e0bb42598fc6e707e44a351c6fd42b092ae173a0a2d934f491ceef",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.953390+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:58f42a9681e085cf91d9f264531c458dd9ce823873bf95e7032fab487ad9cac2",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:fca2203749bc152305bbdb58dfd45466b352159ac4d31ae0199dc78e1c744f86",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.958490+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:7a8808b6a4a6260b3b31b7a74063286d49d64fee61f164deda4c2dc7e1177888",
+          "kind": "review",
+          "role": "A",
+          "slot_id": "v10gen:0f4e48a07dbc632a0abf8b03660192ce2f85dfe64b61c114d16cfa72934888dd",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      },
+      {
+        "at": "2026-09-29T15:34:06.962761+00:00",
+        "error": "v10 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "episode_id": "v10review:345c6ccbf7b76523c852915f420807d75b9abaf0d9a8ac53ee489bd35a469a32",
+          "kind": "review",
+          "role": "B",
+          "slot_id": "v10gen:fca2203749bc152305bbdb58dfd45466b352159ac4d31ae0199dc78e1c744f86",
+          "task_id": "BDX/2017/page_28.pdf-2"
+        },
+        "network_only_continuation_candidate": true,
+        "retry": false
+      }
+    ],
+    "network_unknowns": 41,
+    "phase": "V10_REVIEW_NETWORK_SAFETY_SAVED",
+    "processed": 11023
+  },
+  "primary_UNKNOWN_before_resume": 41,
+  "primary_requests_before_resume": 11023,
+  "primary_returns_before_resume": 10982,
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "remaining_primary_jobs": 415,
+  "schema": "v10_one_controlled_network_resume.v1",
+  "source_changes": false,
+  "user_request": "当前审阅是否已经结束，能否推动后续实验"
+}
