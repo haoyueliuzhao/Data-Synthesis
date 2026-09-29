@@ -1,0 +1,44 @@
+{
+  "at": "2026-09-29T17:07:17.040758+00:00",
+  "automatic_resume_authorized": false,
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "budget": {
+    "held_microcny": 303366144,
+    "remaining_exposure_microcny": 655765295,
+    "settled_tariff_microcny": 1040868561
+  },
+  "existing_local_material_verification_may_finish_and_save": true,
+  "id": "1f8cd55e8a23f35aed248e00e7577b6e9cb0a78e5c6cd29a50c307451e4d33db",
+  "material_result_exists": false,
+  "no_new_API_or_mapping_resend": true,
+  "no_training_launch": true,
+  "pending_requests": 0,
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "requested_actions": [
+    {
+      "birth": "312428824",
+      "forced_kill": false,
+      "original_process_alive": true,
+      "pid": 664845,
+      "signal": "SIGTERM"
+    },
+    {
+      "birth": "312428886",
+      "forced_kill": false,
+      "original_process_alive": true,
+      "pid": 664877,
+      "signal": "SIGTERM"
+    }
+  ],
+  "review_mapping": {
+    "dispatched": 11557,
+    "held": 158531584,
+    "pending": 0,
+    "requests": 11557,
+    "spent": 680931358,
+    "unknown": 75
+  },
+  "schema": "v10_user_audit_hold_request.v1",
+  "signal_request_is_not_exit_confirmation": true,
+  "user_reply": "仅完成报告，等待审计"
+}
