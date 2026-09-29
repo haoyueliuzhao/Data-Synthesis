@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-29T16:37:27.001932+00:00",
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "forced_kill": false,
+  "id": "b823ab8c3dac73648375110020b44a4de8eeca984bd171c5047bb5796af425f9",
+  "old_processes_exited": true,
+  "pending_requests": 0,
+  "primary": {
+    "dispatched": 11108,
+    "held": 158531584,
+    "pending": 0,
+    "requests": 11108,
+    "spent": 653305333,
+    "unknown": 75
+  },
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "proxy_execution_revision_id": "cb7bcf04d8b64466f2df9be0187a6fe75e403da0ded801ef931ddf3aee0fb5f4",
+  "schema": "v10_direct_dns_stop_completion.v1",
+  "stop_request_id": "3404e44c0470a52fc8e6e8d315d6fbaa073c408ee2f8c9c026778185ea821c63"
+}

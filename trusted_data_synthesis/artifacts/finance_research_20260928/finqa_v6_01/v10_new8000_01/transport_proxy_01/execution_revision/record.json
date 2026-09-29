@@ -1,0 +1,136 @@
+{
+  "additional_source_bindings": {
+    "v10_proxy_execution.py": "83ddacb71a793bd88a61decd3ccf6cb181459c2b825c69bfbdf317ce996735b6",
+    "v10_transport.py": "65d127598048940f52c82b5f88dc056974d33fb1bb4c58803ad6de1731e3d4d4"
+  },
+  "at": "2026-09-29T16:37:26.068879+00:00",
+  "authorization": {
+    "date": "2026-09-30",
+    "question": "已确认当前直连的 api.deepseek.com DNS 连续失败，恢复尝试又产生一波网络 UNKNOWN。是否允许仅将本批 DeepSeek 调用改用你现有的代理：先做不带密钥、无计费的连通性验证，验证通过后按原矩阵恢复；不改全局网络配置、模型、预算或审阅规则？",
+    "user_reply": "授权现有代理验证并恢复"
+  },
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "changed_files": {
+    "annotation": [
+      "v10_production.py",
+      "v10_review_provider.py"
+    ],
+    "generation": [
+      "v10_generation.py",
+      "v10_review_provider.py"
+    ]
+  },
+  "effective_sources": {
+    "annotation": {
+      "probe_budget.py": "0fce087f0758eec00071cc445d008858ec631f13da7b26567a735279ff143602",
+      "v10_budget.py": "f470692b4a331b0eff2adcb06f2d2a867d704d723d878574b5885c94e81f5cbe",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_production.py": "ad0f0a588d448ed2f12ecae93285141228bfaab1fcc26f00797aaf46b0b8b664",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "57a9e992a4f7ff3823276788001527270b3e1f1e392b6fa1c1aaa6162dbedebc",
+      "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+    },
+    "generation": {
+      "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+      "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+      "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+      "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+      "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+      "probe_budget.py": "0fce087f0758eec00071cc445d008858ec631f13da7b26567a735279ff143602",
+      "probe_provider.py": "c612db61888a20501cf3d84e7b15ba0f17a4c8ed58788b0177b71dfcc6d7a5a4",
+      "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+      "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+      "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+      "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+      "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+      "v10_budget.py": "f470692b4a331b0eff2adcb06f2d2a867d704d723d878574b5885c94e81f5cbe",
+      "v10_generation.py": "6d193b85f7959f8b5338847d63ac980bcecc0607297e9f9a3999c6dd0d691f29",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_record_audit.py": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "57a9e992a4f7ff3823276788001527270b3e1f1e392b6fa1c1aaa6162dbedebc",
+      "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+      "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+      "v8_collection.py": "18e9e2c6d6d6466f90382aca865d84848219afcb1e492b1176b34a1e5bbe620f"
+    }
+  },
+  "id": "cb7bcf04d8b64466f2df9be0187a6fe75e403da0ded801ef931ddf3aee0fb5f4",
+  "initial_sources": {
+    "annotation": {
+      "probe_budget.py": "ecfda17d243471807a3b0285ff24db39e5c20f1c3e41076bd6dda6689c462687",
+      "v10_budget.py": "beb10c58061c7208befc27e530748df9cfa4d0aaca31ad00130b28fe16b450e9",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_production.py": "cde979ff3b89c61cd990ad89b14ab05f503fbc0a8950550f41638afe1d7025e4",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+    },
+    "generation": {
+      "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+      "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+      "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+      "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+      "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+      "probe_budget.py": "ecfda17d243471807a3b0285ff24db39e5c20f1c3e41076bd6dda6689c462687",
+      "probe_provider.py": "c612db61888a20501cf3d84e7b15ba0f17a4c8ed58788b0177b71dfcc6d7a5a4",
+      "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+      "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+      "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+      "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+      "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+      "v10_budget.py": "beb10c58061c7208befc27e530748df9cfa4d0aaca31ad00130b28fe16b450e9",
+      "v10_generation.py": "3f56da2440fe49fcf95d28b21e4307bcbbb6e6f15bade25fe487983ea0436226",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_record_audit.py": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "a4e30a29062003a37342424927c397c9f2a7140841c593b1392c97d1bd5c669a",
+      "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+      "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+      "v8_collection.py": "18e9e2c6d6d6466f90382aca865d84848219afcb1e492b1176b34a1e5bbe620f"
+    }
+  },
+  "no_wallet_mutation": true,
+  "original_matrix_denominator": 11438,
+  "policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+  "preserved_requests_before_resume": 67496,
+  "previous_effective_sources": {
+    "annotation": {
+      "probe_budget.py": "0fce087f0758eec00071cc445d008858ec631f13da7b26567a735279ff143602",
+      "v10_budget.py": "f470692b4a331b0eff2adcb06f2d2a867d704d723d878574b5885c94e81f5cbe",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_production.py": "92506f9fd88ad63ce351b75e63b4e5b1d8394d029a80941b892019f9f4b18da6",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "cab90d0ec2a71d1ff539ccb1ff27b5b0ae0b22fdcf28c4ab9dec496934d1df9b",
+      "v10_student_encoding.py": "0bff1ac54a00c33b86d9e5fba1be983e66fc7a0eb7625b55c3df93108648debf"
+    },
+    "generation": {
+      "calibration.py": "90026680f32a22e727460afa925a0b242acc2f7d49488e99044626d7ccc5e139",
+      "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+      "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+      "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+      "native_metrics.py": "2081acdd5a31a7b03688062d4f250aa51a970c1fbf4a8cd2a2943c58f74404ab",
+      "probe_budget.py": "0fce087f0758eec00071cc445d008858ec631f13da7b26567a735279ff143602",
+      "probe_provider.py": "c612db61888a20501cf3d84e7b15ba0f17a4c8ed58788b0177b71dfcc6d7a5a4",
+      "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+      "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+      "settlement.py": "de4f255c3ae80cfb40a99846b27eed3bb1394cdaad2150a32590550cabf470aa",
+      "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+      "tools.py": "574d9c6a8a2459b4f98ff9cee2a89c7cf346a2e4bce109c42766c7991258b33e",
+      "v10_budget.py": "f470692b4a331b0eff2adcb06f2d2a867d704d723d878574b5885c94e81f5cbe",
+      "v10_generation.py": "8091d985070e10c58abada7072cbf374aa5518750b714cafd34110b86dab3970",
+      "v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "v10_record_audit.py": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+      "v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "v10_review_provider.py": "cab90d0ec2a71d1ff539ccb1ff27b5b0ae0b22fdcf28c4ab9dec496934d1df9b",
+      "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+      "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278",
+      "v8_collection.py": "18e9e2c6d6d6466f90382aca865d84848219afcb1e492b1176b34a1e5bbe620f"
+    }
+  },
+  "previous_execution_revision_id": "466d07ee54b3b57e10fc72a1b479802a14afc703b4bd87f696485e94c0b2af26",
+  "previous_execution_revision_sha256": "11b34589509241307a1cf3922f7c4b5e6eae80fa9c274abad7a0601c6da40258",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "schema": "v10_proxy_execution_revision.v1",
+  "transport_authorization_id": "941005d74e595b7fd691c3741a8be125845a3a7b27dac917948847bf05f24933",
+  "transport_authorization_sha256": "0ae52fdeebdd36361f4938733e9d5704506f553db2c18a2ca6f12500e642e9ad"
+}
