@@ -1,0 +1,31 @@
+{
+  "DeepSeek_direct": true,
+  "at": "2026-09-29T12:51:27.264073+00:00",
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-m",
+    "trusted_synthesis.finance_research.v10_generation",
+    "run",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01"
+  ],
+  "concurrency": 8,
+  "generation_money_cap_microcny": 100000000,
+  "id": "21a3cfe15896ef17daaabe97be34c56ec56e083466ff004d005e056b12dfba4d",
+  "log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01/generation_controller_01.log",
+  "model": "deepseek-flash",
+  "old_unknown_reservations_preserved": true,
+  "pid": 3396194,
+  "process_start_time_ticks": "311068244",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "review_mapping_money_cap_microcny": 550000000,
+  "review_policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+  "schema": "v10_new8000_generation_launch.v1",
+  "source_code_frozen": true,
+  "source_commit": "9431c0bb896aa8589fbe3b9c165991c60e0525e5",
+  "total_wallet_cap_microcny": 1200000000,
+  "training_started": false,
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v10-generation-frozen-20260929"
+}

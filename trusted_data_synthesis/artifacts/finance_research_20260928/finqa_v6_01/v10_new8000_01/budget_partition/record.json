@@ -1,0 +1,98 @@
+{
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "evidence": {
+    "audit_source": {
+      "path": "/home/zhuxinrui/.codex/attachments/8cd620af-ed38-4f60-a0bc-af495a58a462/已粘贴的文本.txt",
+      "sha256": "2f7b1a721fba265d5536cc4ce871481ef1fcd8995020954cb73e93ac5f09e06a"
+    },
+    "no_completion_guarantee": true,
+    "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+    "review_policy_id": "1a2112caa6ccd2ca01301800be4837ff2e0780f04af2055f750d4d671bc0e45f",
+    "user_authorization": "参照审计修订并开展后续实验"
+  },
+  "frozen_v8_consumed": {
+    "generation": 16286,
+    "production_review": 4740,
+    "technical_review": 108
+  },
+  "historical": {
+    "held": 144834560,
+    "requests": 40076,
+    "spent": 336264329,
+    "unknown": 65
+  },
+  "historical_acknowledgements_sha256": "f6d846329168c7633a25fc52e0a119189f481a8c36ec36ef6a944a27adaf9910",
+  "historical_counters": {
+    "completion_tokens": 20798384,
+    "dispatched": 40076,
+    "held": 144834560,
+    "hit_tokens": 147188067,
+    "miss_tokens": 81986115,
+    "pending": 0,
+    "prompt_tokens": 229174182,
+    "requests": 40076,
+    "singleton": 1,
+    "spent": 336264329,
+    "unknown": 65
+  },
+  "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+  "limits": {
+    "generation": {
+      "microcny": 100000000,
+      "requests": 199000
+    },
+    "review_mapping": {
+      "microcny": 550000000,
+      "requests": 17000
+    }
+  },
+  "network_policy": {
+    "clear_only_exact_covered_halt": true,
+    "exception_types": [
+      "ConnectError",
+      "ConnectTimeout",
+      "ReadError",
+      "ReadTimeout",
+      "RemoteProtocolError",
+      "WriteError",
+      "WriteTimeout"
+    ],
+    "no_resend": true,
+    "no_response_and_no_usage_only": true,
+    "pending_zero_required": true,
+    "permanent_full_hold": true,
+    "schema": "v10_connection_unknown_policy.v1",
+    "unknown_never_positive": true
+  },
+  "old_namespaces_admitted": false,
+  "original_950_buffer_spendable": false,
+  "output_limits": {
+    "generation": [
+      2048,
+      16384
+    ],
+    "mapping": [
+      2048,
+      4096,
+      8192,
+      16384,
+      32768,
+      65536
+    ],
+    "review": [
+      2048,
+      4096,
+      8192,
+      16384,
+      32768,
+      65536
+    ]
+  },
+  "registered_at_unix": 1790686287.052775,
+  "roster_sha256": "2b56d09e331c3ad1188da730a829a3e1dc974362f28e8f51ad42f7806aed8bdb",
+  "schema": "v10_dual_purpose_partition.v1",
+  "unallocated_microcny": 68901111,
+  "unallocated_requests": 1924,
+  "unallocated_spendable": false
+}
