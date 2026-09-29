@@ -1,0 +1,16 @@
+{
+  "batch_id": "finqa-v12-20260930-rereview-01",
+  "completion_guaranteed": false,
+  "effective_hard_cap_microcny": 2000000000,
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "effective_review_mapping_microcny": 1300000000,
+  "id": "1dbdcd1b0d1a885e73318d93abf4e391faa0a5968b21ef1178e05bb2c1a0c9c2",
+  "mapping_authorized": false,
+  "original_holds_preserved": true,
+  "plan_id": "ca67d9da2e5cf5161fb73bdfdca5cf844bb73f2d9d9e8b2022bd9489f357d50e",
+  "schema": "v12_review_request_transfer_authorization.v1",
+  "user_reply": "批准调拨，按现费用上限尝试"
+}

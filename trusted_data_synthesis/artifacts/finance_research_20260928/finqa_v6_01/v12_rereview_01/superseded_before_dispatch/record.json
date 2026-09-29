@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-29T19:09:29.394036+00:00",
+  "id": "960e82d8a1a47b7d89cb7fd87270e80f072d35d49d101b9d0439daba2140f20a",
+  "old_matrix_model_calls": 0,
+  "old_matrix_wallet_registrations": 0,
+  "old_preparation_id": "f6e6c30a9f2040bb4ba096f6a29a1b45f28a4645f8104da8e6426dfd4b6f100d",
+  "original_preparation_preserved": true,
+  "reason": "Fix missing auxiliary-supervision process coupling before any production registration or paid call",
+  "replacement_plan_id": "ca67d9da2e5cf5161fb73bdfdca5cf844bb73f2d9d9e8b2022bd9489f357d50e",
+  "replacement_preparation_id": "27c2f99e052cb30fe49185c883abec7f75252e80fcfcece9d99d0487904e9aad",
+  "schema": "v12_offline_preparation_superseded.v1"
+}

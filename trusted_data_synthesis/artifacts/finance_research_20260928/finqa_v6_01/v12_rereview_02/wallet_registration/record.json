@@ -1,0 +1,107 @@
+{
+  "applied_after_requests": 67945,
+  "authorization": {
+    "batch_id": "finqa-v12-20260930-rereview-01",
+    "completion_guaranteed": false,
+    "effective_hard_cap_microcny": 2000000000,
+    "effective_request_limits": {
+      "generation": 191000,
+      "review_mapping": 25000
+    },
+    "effective_review_mapping_microcny": 1300000000,
+    "id": "1dbdcd1b0d1a885e73318d93abf4e391faa0a5968b21ef1178e05bb2c1a0c9c2",
+    "mapping_authorized": false,
+    "original_holds_preserved": true,
+    "plan_id": "ca67d9da2e5cf5161fb73bdfdca5cf844bb73f2d9d9e8b2022bd9489f357d50e",
+    "schema": "v12_review_request_transfer_authorization.v1",
+    "user_reply": "批准调拨，按现费用上限尝试"
+  },
+  "backup": {
+    "bytes": 2239475712,
+    "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/wallet_before_v12_request_transfer.sqlite3",
+    "sha256": "e3182fe52532eadf58840c1c9bb4bf1a982052a1c4252986ab3da0323907f276"
+  },
+  "batch_id": "finqa-v12-20260930-rereview-01",
+  "concurrency": {
+    "max": 64,
+    "ramp": [
+      {
+        "settled_at_least": 0,
+        "workers": 16
+      },
+      {
+        "settled_at_least": 16,
+        "workers": 32
+      },
+      {
+        "settled_at_least": 64,
+        "workers": 64
+      }
+    ]
+  },
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+  "id": "0ed3020c10e99336ef5b48fe856ef2f317caf0323641a8dbd21fd54a607fe7b6",
+  "job_count": 11438,
+  "mapping_authorized": false,
+  "money_limits_unchanged": true,
+  "no_retry": true,
+  "old_new_reservations_authorized": false,
+  "original_partition_id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+  "original_request_limits": {
+    "generation": 199000,
+    "review_mapping": 17000
+  },
+  "plan_id": "ca67d9da2e5cf5161fb73bdfdca5cf844bb73f2d9d9e8b2022bd9489f357d50e",
+  "preserved_counters": {
+    "completion_tokens": 43441590,
+    "dispatched": 67945,
+    "held": 303366144,
+    "hit_tokens": 222371675,
+    "miss_tokens": 342207232,
+    "pending": 0,
+    "prompt_tokens": 564578907,
+    "requests": 67945,
+    "singleton": 1,
+    "spent": 1040868561,
+    "unknown": 140
+  },
+  "preserved_quota_rows": [
+    {
+      "category": "generation",
+      "dispatched": 16312,
+      "held": 0,
+      "money_cap": 100000000,
+      "pending": 0,
+      "request_cap": 199000,
+      "requests": 16312,
+      "spent": 23672874,
+      "unknown": 0
+    },
+    {
+      "category": "review_mapping",
+      "dispatched": 11557,
+      "held": 158531584,
+      "money_cap": 550000000,
+      "pending": 0,
+      "request_cap": 17000,
+      "requests": 11557,
+      "spent": 680931358,
+      "unknown": 75
+    }
+  ],
+  "protocol_id": "812aefc77597292d5ea80c257890222d5816bc834ec450ff36e8499cdcad0d00",
+  "registered_at_unix": 1790708968.9688854,
+  "roster_sha256": "1e88d179c5f5ab6d78a801b64516b28e50bfcc54e103a5e4de6089c0b2f34838",
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v12_review_matrix_permit.v1",
+  "source_batch_id": "finqa-v10-20260929-new8000-01",
+  "source_protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "source_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_new8000_01",
+  "transferred_unused_generation_requests": 8000
+}
