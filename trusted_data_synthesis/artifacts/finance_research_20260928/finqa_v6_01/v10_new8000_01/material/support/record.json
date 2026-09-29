@@ -1,0 +1,2031 @@
+{
+  "N": 44,
+  "all_originals_retained": true,
+  "capability_profile": {
+    "D_pi": null,
+    "M_flex": "0",
+    "N": 44,
+    "approved_public_content_characters": 30620,
+    "blockers": [
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:02f4037f455c679828705fea9c0e6f08c67b687c8adc272fe3137d7d9c3ccbfe"
+        ],
+        "task_id": "AMAT/2012/page_37.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:0505f6cc76481189b5e466597a2d82d506d9060a405afb3a042ea752c463c45e"
+        ],
+        "task_id": "KMI/2010/page_164.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:e4dabcc12f86a3ee876ca8bc4ded1abe7875b04df4af9b2ccd440084f6eea1a6"
+        ],
+        "task_id": "KIM/2006/page_67.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:2cf49e07d3040c54c7d7b4b5bb6bf770444b32b6889890532bf535f6c426eeba"
+        ],
+        "task_id": "LMT/2014/page_47.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:c10927f0b01ffd22452563085380e10a6bc97e3b032fbe74879c1bb456da2876"
+        ],
+        "task_id": "IP/2013/page_62.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:41e66d94bd4fb94a4e0d59258a30621b5fac0f41763ba177db94c7abc06b5fca"
+        ],
+        "task_id": "MRO/2008/page_44.pdf-4"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:3d3a7ba60e656a112a52fa5bbed62dd7dcef074b0ed38c7b19efe94324b22ee8"
+        ],
+        "task_id": "HFC/2011/page_92.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:68431e696daa05616e5e63f1c9a2d29f370a59964773b35ff685c51199709165"
+        ],
+        "task_id": "AMT/2004/page_46.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:ded2b64ddde4874a958255d9ee9df155f299bd4bd78423432e6940e76f698c6e"
+        ],
+        "task_id": "KMI/2010/page_2.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:e45b0a238e2d091effab0621cd738b553b69a04801b2e4cfc15049123ac40fc1"
+        ],
+        "task_id": "AAPL/2013/page_41.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:0262f9d4817ad71d07e9db2e2cf8c171d4ab357fdb0675cbabd0e5e99e534e0a"
+        ],
+        "task_id": "JPM/2017/page_69.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:badeb248d5a4533d2568260a01f4393c745ef8abde12cd32fee16332043077f5"
+        ],
+        "task_id": "DISCA/2017/page_41.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:bdbe08d05adb1af8eb00456126f9db1a7ee04ad48f5e59cd40dd44a995ef0215"
+        ],
+        "task_id": "DISCA/2017/page_41.pdf-3"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:5fcdb4a19294a87256344d3cbfc19b9ebf0730d4645d21133dcf28825d90ba25"
+        ],
+        "task_id": "PNC/2018/page_45.pdf-5"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:b2a5fe700a1be9aeb102323ade4f1cdc63caf3493aaddd836e519359c51d6be4"
+        ],
+        "task_id": "CDW/2015/page_53.pdf-3"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:3327a2cd6ac2be81df9109a66a703ea52b546ec11d95629c1fae83aca69a9745"
+        ],
+        "task_id": "IP/2018/page_50.pdf-1"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:baf020924b9c3f14e813b922564205e4d5da2273c3823738cb8fc458bf21b3cb"
+        ],
+        "task_id": "LMT/2014/page_45.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:21b6ea13f3ddba1c6e0db0e0999b9ead0afb656783ec5426decaefdda4a6976b"
+        ],
+        "task_id": "IP/2013/page_61.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:a4799e3bbb61624fc461b49be4d53a14d842e39f294587fb388745356c76e2db"
+        ],
+        "task_id": "BLK/2009/page_98.pdf-4"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:5f0b3c2f97a6976a0ab8ca21dfe9635ba281d706e7560f5b4185780c4ab0e393"
+        ],
+        "task_id": "IP/2013/page_64.pdf-3"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:394589a79c3a32feae63596e21dfa6c65d109962962c073180dc055df37b9834"
+        ],
+        "task_id": "TFX/2006/page_50.pdf-2"
+      },
+      {
+        "reason": "joint_originals_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:92929c03b65d5fdba2906b1d811f788df7e3df137648f653af4bcc91678a9fed"
+        ],
+        "task_id": "BDX/2009/page_80.pdf-4"
+      }
+    ],
+    "chi_flexible_mass": "0",
+    "chi_flexible_tasks": null,
+    "five_arm_algebraic_distinguishability_possible": false,
+    "id": "966eae9da1a5b8e60e8f48cdf2c2439c2af52199e4230215ac8cbb387683e128",
+    "manual_intervention_dose": null,
+    "material_complete": false,
+    "maximum_sequence_tokens": 6242,
+    "multi_state_tasks": null,
+    "no_arbitrary_minimum_N": true,
+    "nontrivial_manual": false,
+    "nontrivial_pi": false,
+    "one_state_tasks": null,
+    "package_count": 54,
+    "package_reason_coverage": {
+      "v10gen:0262f9d4817ad71d07e9db2e2cf8c171d4ab357fdb0675cbabd0e5e99e534e0a": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 150,
+        "positive_tokens": 46,
+        "raw_characters": 150
+      },
+      "v10gen:02f4037f455c679828705fea9c0e6f08c67b687c8adc272fe3137d7d9c3ccbfe": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 741,
+        "positive_tokens": 230,
+        "raw_characters": 741
+      },
+      "v10gen:0505f6cc76481189b5e466597a2d82d506d9060a405afb3a042ea752c463c45e": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 757,
+        "positive_tokens": 219,
+        "raw_characters": 757
+      },
+      "v10gen:088cc94aa08dcd8e569d37eff94ed00f25e2bf5b0db6b521a7f80efbf388d5dc": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 1483,
+        "positive_tokens": 374,
+        "raw_characters": 1483
+      },
+      "v10gen:197c8c7d4a8375badff433fb233116a33e1a4176afbba83986aa0b0376fec7f1": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 69,
+        "positive_tokens": 12,
+        "raw_characters": 69
+      },
+      "v10gen:1ab1ec9aaf95fcbf55a739992f9a4ed81bae56d6e7ea35ab7316318f869f133d": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 775,
+        "positive_tokens": 205,
+        "raw_characters": 775
+      },
+      "v10gen:1d7a06e692ded67e2bd821dc9f9990b179e1a7e410e069df4babfde93dd8ae8f": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 510,
+        "positive_tokens": 176,
+        "raw_characters": 510
+      },
+      "v10gen:21b6ea13f3ddba1c6e0db0e0999b9ead0afb656783ec5426decaefdda4a6976b": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 741,
+        "positive_tokens": 236,
+        "raw_characters": 741
+      },
+      "v10gen:2245d33bc0f244f6fd9ebd12aaad1941eac304e58534ae10b6ff06e02a68f13a": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 253,
+        "positive_tokens": 91,
+        "raw_characters": 253
+      },
+      "v10gen:2cf49e07d3040c54c7d7b4b5bb6bf770444b32b6889890532bf535f6c426eeba": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 570,
+        "positive_tokens": 229,
+        "raw_characters": 570
+      },
+      "v10gen:32f324e5ef3847658c71a049138266b56e5d1c9e742b9003f8a1dc121f370f33": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 519,
+        "positive_tokens": 138,
+        "raw_characters": 519
+      },
+      "v10gen:3327a2cd6ac2be81df9109a66a703ea52b546ec11d95629c1fae83aca69a9745": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 719,
+        "positive_tokens": 178,
+        "raw_characters": 719
+      },
+      "v10gen:394589a79c3a32feae63596e21dfa6c65d109962962c073180dc055df37b9834": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 455,
+        "positive_tokens": 146,
+        "raw_characters": 455
+      },
+      "v10gen:3a779a9a4c3a32b8bcedc8821dd3aaee6c525e2566914ee8d578bc80677d5f1c": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 465,
+        "positive_tokens": 116,
+        "raw_characters": 465
+      },
+      "v10gen:3d3a7ba60e656a112a52fa5bbed62dd7dcef074b0ed38c7b19efe94324b22ee8": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 714,
+        "positive_tokens": 175,
+        "raw_characters": 714
+      },
+      "v10gen:41e66d94bd4fb94a4e0d59258a30621b5fac0f41763ba177db94c7abc06b5fca": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 496,
+        "positive_tokens": 168,
+        "raw_characters": 496
+      },
+      "v10gen:42f7e47c580323bcb6110f37e464fb05ff2258dd7200e5146ce0461ed37a55af": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 621,
+        "positive_tokens": 160,
+        "raw_characters": 621
+      },
+      "v10gen:4d0db8427477ab413ca03a5368334644236ac2ba72be7d9547a0d66715bc7b13": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 409,
+        "positive_tokens": 140,
+        "raw_characters": 409
+      },
+      "v10gen:531851ea4daa4f3875bbc2d568f788a65fab991a31c06196ebc004ba3282db19": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 231,
+        "positive_tokens": 82,
+        "raw_characters": 231
+      },
+      "v10gen:5be70b79f62afdb6c53eaed07b72f46d068343c8af5d2c2eb30eb80f7b18f2d7": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 630,
+        "positive_tokens": 155,
+        "raw_characters": 630
+      },
+      "v10gen:5cab93d0cf65ca875d7de77dc4d6b49ad4f39a5b533e052f9fa6cf7ab9eb7c64": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 550,
+        "positive_tokens": 185,
+        "raw_characters": 550
+      },
+      "v10gen:5f0b3c2f97a6976a0ab8ca21dfe9635ba281d706e7560f5b4185780c4ab0e393": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 788,
+        "positive_tokens": 216,
+        "raw_characters": 788
+      },
+      "v10gen:5f56912ea20ab8313debc1406103800e34642c8c55a27537afefce100c7597d3": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 785,
+        "positive_tokens": 223,
+        "raw_characters": 785
+      },
+      "v10gen:5fcdb4a19294a87256344d3cbfc19b9ebf0730d4645d21133dcf28825d90ba25": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 485,
+        "positive_tokens": 150,
+        "raw_characters": 536
+      },
+      "v10gen:68431e696daa05616e5e63f1c9a2d29f370a59964773b35ff685c51199709165": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 552,
+        "positive_tokens": 183,
+        "raw_characters": 552
+      },
+      "v10gen:6a83a3a377c60454f1d62c6d1b3ebaf814e38df83269dbd81b34a2497469e1c3": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 568,
+        "positive_tokens": 136,
+        "raw_characters": 568
+      },
+      "v10gen:6e6b7c2d9aa3062fb22b2ec6232d8341f4d14ece754639954729bc9b1724e9ca": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 524,
+        "positive_tokens": 134,
+        "raw_characters": 524
+      },
+      "v10gen:6ecf42a82cc91c9b9f36be040eda116f574a35553dded9325ddb955b1e3f493e": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 280,
+        "positive_tokens": 84,
+        "raw_characters": 873
+      },
+      "v10gen:81c66163cd0b37a5c03e3a8169d1321ef1523efd5cf34ea563e2474c812e7f1c": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 760,
+        "positive_tokens": 201,
+        "raw_characters": 760
+      },
+      "v10gen:86353cc02c1620865acae765c816101789d737ea5506dac218451c1b1458f2cf": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 255,
+        "positive_tokens": 99,
+        "raw_characters": 255
+      },
+      "v10gen:92929c03b65d5fdba2906b1d811f788df7e3df137648f653af4bcc91678a9fed": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 334,
+        "positive_tokens": 105,
+        "raw_characters": 334
+      },
+      "v10gen:99b095dd864e7f8cb234f6835d3f2b866c9664b388c9f50181fd5c0c3117dc9b": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 760,
+        "positive_tokens": 197,
+        "raw_characters": 760
+      },
+      "v10gen:9cf1bf3a828eb293121c0f2e3b10815a2dc72794b2ebdd30160d754525e1a668": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 696,
+        "positive_tokens": 205,
+        "raw_characters": 696
+      },
+      "v10gen:a4799e3bbb61624fc461b49be4d53a14d842e39f294587fb388745356c76e2db": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 197,
+        "positive_tokens": 51,
+        "raw_characters": 197
+      },
+      "v10gen:a5f14446f2ec4b12a161b3ca91767712c0f7e80c0c3c165109dfb2ad95a5a934": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 222,
+        "positive_tokens": 49,
+        "raw_characters": 222
+      },
+      "v10gen:a87f07d2500532e523d789b36e468cce8efa07e29a31c064b82b06092a3d7b3b": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 350,
+        "positive_tokens": 98,
+        "raw_characters": 350
+      },
+      "v10gen:b2a5fe700a1be9aeb102323ade4f1cdc63caf3493aaddd836e519359c51d6be4": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 774,
+        "positive_tokens": 230,
+        "raw_characters": 774
+      },
+      "v10gen:b3d6492e42a508193037db8e62ac07ec037143bf069977807b41c2bd4b59a781": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 676,
+        "positive_tokens": 149,
+        "raw_characters": 676
+      },
+      "v10gen:b9055ff03fb511c5a72bce79e1705b8decd3277ec41971d81dc43798f32962f5": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 572,
+        "positive_tokens": 177,
+        "raw_characters": 572
+      },
+      "v10gen:badeb248d5a4533d2568260a01f4393c745ef8abde12cd32fee16332043077f5": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 812,
+        "positive_tokens": 225,
+        "raw_characters": 812
+      },
+      "v10gen:baf020924b9c3f14e813b922564205e4d5da2273c3823738cb8fc458bf21b3cb": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 583,
+        "positive_tokens": 166,
+        "raw_characters": 583
+      },
+      "v10gen:bb827917cd717ae792bc03c5d091767d69b1dba3a15d9d8ab68442c7bd73d630": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 699,
+        "positive_tokens": 198,
+        "raw_characters": 699
+      },
+      "v10gen:bdbe08d05adb1af8eb00456126f9db1a7ee04ad48f5e59cd40dd44a995ef0215": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 752,
+        "positive_tokens": 224,
+        "raw_characters": 752
+      },
+      "v10gen:c10927f0b01ffd22452563085380e10a6bc97e3b032fbe74879c1bb456da2876": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 878,
+        "positive_tokens": 242,
+        "raw_characters": 878
+      },
+      "v10gen:c78c9dafc71f24aabae8ca011932083f3be59e7d788537c8fc5611992138c6f5": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 353,
+        "positive_tokens": 101,
+        "raw_characters": 353
+      },
+      "v10gen:db95648511ddab8a39d36d3871790b14ff64c0be0969b6625f72b9c2a4465407": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 708,
+        "positive_tokens": 205,
+        "raw_characters": 708
+      },
+      "v10gen:dc953928c08ddf43bd8539f674d7c218b199338ad17e7c917d856d8fd635b37c": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 877,
+        "positive_tokens": 264,
+        "raw_characters": 877
+      },
+      "v10gen:ded2b64ddde4874a958255d9ee9df155f299bd4bd78423432e6940e76f698c6e": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 744,
+        "positive_tokens": 245,
+        "raw_characters": 744
+      },
+      "v10gen:e2e222ac60d703e610ab228d52c5a961c340754b848d8ec8b27c9d2a1ac00719": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 255,
+        "positive_tokens": 85,
+        "raw_characters": 255
+      },
+      "v10gen:e45b0a238e2d091effab0621cd738b553b69a04801b2e4cfc15049123ac40fc1": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 321,
+        "positive_tokens": 72,
+        "raw_characters": 321
+      },
+      "v10gen:e4dabcc12f86a3ee876ca8bc4ded1abe7875b04df4af9b2ccd440084f6eea1a6": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 495,
+        "positive_tokens": 181,
+        "raw_characters": 557
+      },
+      "v10gen:e65cac91475d3242e90e4398ac248f3538dc64180bb23e4dde603c820770ddc4": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 681,
+        "positive_tokens": 193,
+        "raw_characters": 681
+      },
+      "v10gen:e84f2267289a2f1504f4a4dd1d8cfe22a09fe1eac2425a2274a94bd50fd50a27": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 312,
+        "positive_tokens": 106,
+        "raw_characters": 312
+      },
+      "v10gen:f7883ed509150e184b54afd3f5c83cb955dc8c89e0087e81f48269104df93dde": {
+        "all_reason_tokens_masked": false,
+        "approved_characters": 714,
+        "positive_tokens": 198,
+        "raw_characters": 714
+      }
+    },
+    "power_established": false,
+    "public_content_all_masked_packages": [],
+    "raw_public_content_characters": 31326,
+    "reason_coverage_is_not_substantive_reasoning_quality": true,
+    "schema": "v10_conditional_capability_profile.v1",
+    "separate_R_U_token_counts_available": false,
+    "singleton_package_tasks": 35,
+    "source_groups": {
+      "finqa:report:AAPL/2013": 1,
+      "finqa:report:AES/2001": 2,
+      "finqa:report:AMAT/2012": 1,
+      "finqa:report:AMT/2004": 1,
+      "finqa:report:BDX/2009": 1,
+      "finqa:report:BLK/2009": 1,
+      "finqa:report:BLK/2017": 1,
+      "finqa:report:C/2015": 2,
+      "finqa:report:CDW/2015": 2,
+      "finqa:report:DG/2008": 1,
+      "finqa:report:DISCA/2017": 2,
+      "finqa:report:DRE/2016": 1,
+      "finqa:report:GPN/2016": 1,
+      "finqa:report:HFC/2011": 2,
+      "finqa:report:IP/2005": 1,
+      "finqa:report:IP/2013": 3,
+      "finqa:report:IP/2018": 1,
+      "finqa:report:JPM/2017": 2,
+      "finqa:report:KIM/2006": 1,
+      "finqa:report:KMI/2010": 2,
+      "finqa:report:LMT/2013": 1,
+      "finqa:report:LMT/2014": 2,
+      "finqa:report:MRO/2008": 3,
+      "finqa:report:MRO/2012": 1,
+      "finqa:report:MSI/2005": 1,
+      "finqa:report:PNC/2018": 1,
+      "finqa:report:RSG/2013": 1,
+      "finqa:report:SNA/2013": 1,
+      "finqa:report:STT/2007": 1,
+      "finqa:report:TFX/2006": 1,
+      "finqa:report:TSCO/2017": 1,
+      "finqa:report:VTR/2007": 1
+    },
+    "state_count": null,
+    "state_package_histogram": {
+      "1": 13,
+      "2": 8,
+      "3": 1
+    },
+    "student_results_used": false,
+    "supervised_token_layers": {
+      "final": "F",
+      "reason": "R+U",
+      "tool": "A"
+    },
+    "supervised_tokens": {
+      "final": 2024,
+      "reason": 8853,
+      "tool": 2115
+    },
+    "total_sequence_tokens": 561894
+  },
+  "execution_plan": {
+    "N": 44,
+    "bitwise_equivalent_to_original_1000_schedule": false,
+    "core_physical_steps": 1134,
+    "epochs": 10,
+    "feedback_denominator": 700,
+    "final_step": 90,
+    "id": "ddb626d7dfd44c17f84ce7406e03bb478cb05c604dd7ee98ce38eacf039cf81f",
+    "loss_coefficient": "pi(z|x)/(actual_B_j*n_xz*L_P)",
+    "maximum_batch_size": 5,
+    "mechanism_steps": {
+      "C_direction": 27,
+      "N_local": 45
+    },
+    "model_history_steps": 1350,
+    "mu": "1/44",
+    "outer_steps": [
+      18,
+      36,
+      54,
+      72
+    ],
+    "reverse_mechanism_extra_steps": 27,
+    "schema": "v9_conditional_execution_plan.v1",
+    "shared_step": 18,
+    "sharing_split_step": 54,
+    "steps_per_epoch": 9,
+    "tail_batch_size": 4,
+    "tail_padding": false,
+    "task_deletion": false,
+    "verified_shared_core_steps": 1080
+  },
+  "exploratory_training_admitted": false,
+  "id": "fcfd35b304ad3a6b2413acbe7b1eb4bfbb52f66cc7219a067351392a29b602ce",
+  "joint_valid_slot_ids": [
+    "v10gen:6a83a3a377c60454f1d62c6d1b3ebaf814e38df83269dbd81b34a2497469e1c3",
+    "v10gen:a87f07d2500532e523d789b36e468cce8efa07e29a31c064b82b06092a3d7b3b",
+    "v10gen:2245d33bc0f244f6fd9ebd12aaad1941eac304e58534ae10b6ff06e02a68f13a",
+    "v10gen:088cc94aa08dcd8e569d37eff94ed00f25e2bf5b0db6b521a7f80efbf388d5dc",
+    "v10gen:db95648511ddab8a39d36d3871790b14ff64c0be0969b6625f72b9c2a4465407",
+    "v10gen:99b095dd864e7f8cb234f6835d3f2b866c9664b388c9f50181fd5c0c3117dc9b",
+    "v10gen:02f4037f455c679828705fea9c0e6f08c67b687c8adc272fe3137d7d9c3ccbfe",
+    "v10gen:b9055ff03fb511c5a72bce79e1705b8decd3277ec41971d81dc43798f32962f5",
+    "v10gen:a5f14446f2ec4b12a161b3ca91767712c0f7e80c0c3c165109dfb2ad95a5a934",
+    "v10gen:b3d6492e42a508193037db8e62ac07ec037143bf069977807b41c2bd4b59a781",
+    "v10gen:0505f6cc76481189b5e466597a2d82d506d9060a405afb3a042ea752c463c45e",
+    "v10gen:e4dabcc12f86a3ee876ca8bc4ded1abe7875b04df4af9b2ccd440084f6eea1a6",
+    "v10gen:4d0db8427477ab413ca03a5368334644236ac2ba72be7d9547a0d66715bc7b13",
+    "v10gen:6e6b7c2d9aa3062fb22b2ec6232d8341f4d14ece754639954729bc9b1724e9ca",
+    "v10gen:1ab1ec9aaf95fcbf55a739992f9a4ed81bae56d6e7ea35ab7316318f869f133d",
+    "v10gen:5be70b79f62afdb6c53eaed07b72f46d068343c8af5d2c2eb30eb80f7b18f2d7",
+    "v10gen:c78c9dafc71f24aabae8ca011932083f3be59e7d788537c8fc5611992138c6f5",
+    "v10gen:81c66163cd0b37a5c03e3a8169d1321ef1523efd5cf34ea563e2474c812e7f1c",
+    "v10gen:2cf49e07d3040c54c7d7b4b5bb6bf770444b32b6889890532bf535f6c426eeba",
+    "v10gen:9cf1bf3a828eb293121c0f2e3b10815a2dc72794b2ebdd30160d754525e1a668",
+    "v10gen:e65cac91475d3242e90e4398ac248f3538dc64180bb23e4dde603c820770ddc4",
+    "v10gen:1d7a06e692ded67e2bd821dc9f9990b179e1a7e410e069df4babfde93dd8ae8f",
+    "v10gen:c10927f0b01ffd22452563085380e10a6bc97e3b032fbe74879c1bb456da2876",
+    "v10gen:f7883ed509150e184b54afd3f5c83cb955dc8c89e0087e81f48269104df93dde",
+    "v10gen:bb827917cd717ae792bc03c5d091767d69b1dba3a15d9d8ab68442c7bd73d630",
+    "v10gen:41e66d94bd4fb94a4e0d59258a30621b5fac0f41763ba177db94c7abc06b5fca",
+    "v10gen:3d3a7ba60e656a112a52fa5bbed62dd7dcef074b0ed38c7b19efe94324b22ee8",
+    "v10gen:68431e696daa05616e5e63f1c9a2d29f370a59964773b35ff685c51199709165",
+    "v10gen:ded2b64ddde4874a958255d9ee9df155f299bd4bd78423432e6940e76f698c6e",
+    "v10gen:e45b0a238e2d091effab0621cd738b553b69a04801b2e4cfc15049123ac40fc1",
+    "v10gen:5f56912ea20ab8313debc1406103800e34642c8c55a27537afefce100c7597d3",
+    "v10gen:0262f9d4817ad71d07e9db2e2cf8c171d4ab357fdb0675cbabd0e5e99e534e0a",
+    "v10gen:3a779a9a4c3a32b8bcedc8821dd3aaee6c525e2566914ee8d578bc80677d5f1c",
+    "v10gen:42f7e47c580323bcb6110f37e464fb05ff2258dd7200e5146ce0461ed37a55af",
+    "v10gen:badeb248d5a4533d2568260a01f4393c745ef8abde12cd32fee16332043077f5",
+    "v10gen:bdbe08d05adb1af8eb00456126f9db1a7ee04ad48f5e59cd40dd44a995ef0215",
+    "v10gen:e84f2267289a2f1504f4a4dd1d8cfe22a09fe1eac2425a2274a94bd50fd50a27",
+    "v10gen:e2e222ac60d703e610ab228d52c5a961c340754b848d8ec8b27c9d2a1ac00719",
+    "v10gen:5fcdb4a19294a87256344d3cbfc19b9ebf0730d4645d21133dcf28825d90ba25",
+    "v10gen:6ecf42a82cc91c9b9f36be040eda116f574a35553dded9325ddb955b1e3f493e",
+    "v10gen:b2a5fe700a1be9aeb102323ade4f1cdc63caf3493aaddd836e519359c51d6be4",
+    "v10gen:3327a2cd6ac2be81df9109a66a703ea52b546ec11d95629c1fae83aca69a9745",
+    "v10gen:32f324e5ef3847658c71a049138266b56e5d1c9e742b9003f8a1dc121f370f33",
+    "v10gen:baf020924b9c3f14e813b922564205e4d5da2273c3823738cb8fc458bf21b3cb",
+    "v10gen:531851ea4daa4f3875bbc2d568f788a65fab991a31c06196ebc004ba3282db19",
+    "v10gen:86353cc02c1620865acae765c816101789d737ea5506dac218451c1b1458f2cf",
+    "v10gen:21b6ea13f3ddba1c6e0db0e0999b9ead0afb656783ec5426decaefdda4a6976b",
+    "v10gen:5cab93d0cf65ca875d7de77dc4d6b49ad4f39a5b533e052f9fa6cf7ab9eb7c64",
+    "v10gen:dc953928c08ddf43bd8539f674d7c218b199338ad17e7c917d856d8fd635b37c",
+    "v10gen:a4799e3bbb61624fc461b49be4d53a14d842e39f294587fb388745356c76e2db",
+    "v10gen:5f0b3c2f97a6976a0ab8ca21dfe9635ba281d706e7560f5b4185780c4ab0e393",
+    "v10gen:394589a79c3a32feae63596e21dfa6c65d109962962c073180dc055df37b9834",
+    "v10gen:197c8c7d4a8375badff433fb233116a33e1a4176afbba83986aa0b0376fec7f1",
+    "v10gen:92929c03b65d5fdba2906b1d811f788df7e3df137648f653af4bcc91678a9fed"
+  ],
+  "material_complete": false,
+  "mu": {
+    "AAPL/2013/page_41.pdf-1": "1/44",
+    "AES/2001/page_45.pdf-2": "1/44",
+    "AES/2001/page_51.pdf-1": "1/44",
+    "AMAT/2012/page_37.pdf-2": "1/44",
+    "AMT/2004/page_46.pdf-1": "1/44",
+    "BDX/2009/page_80.pdf-4": "1/44",
+    "BLK/2009/page_98.pdf-4": "1/44",
+    "BLK/2017/page_35.pdf-2": "1/44",
+    "C/2015/page_73.pdf-1": "1/44",
+    "C/2015/page_73.pdf-2": "1/44",
+    "CDW/2015/page_34.pdf-1": "1/44",
+    "CDW/2015/page_53.pdf-3": "1/44",
+    "DG/2008/page_73.pdf-1": "1/44",
+    "DISCA/2017/page_41.pdf-2": "1/44",
+    "DISCA/2017/page_41.pdf-3": "1/44",
+    "DRE/2016/page_59.pdf-2": "1/44",
+    "GPN/2016/page_84.pdf-4": "1/44",
+    "HFC/2011/page_92.pdf-1": "1/44",
+    "HFC/2011/page_92.pdf-2": "1/44",
+    "IP/2005/page_32.pdf-3": "1/44",
+    "IP/2013/page_61.pdf-2": "1/44",
+    "IP/2013/page_62.pdf-1": "1/44",
+    "IP/2013/page_64.pdf-3": "1/44",
+    "IP/2018/page_50.pdf-1": "1/44",
+    "JPM/2017/page_104.pdf-2": "1/44",
+    "JPM/2017/page_69.pdf-1": "1/44",
+    "KIM/2006/page_67.pdf-2": "1/44",
+    "KMI/2010/page_164.pdf-2": "1/44",
+    "KMI/2010/page_2.pdf-1": "1/44",
+    "LMT/2013/page_87.pdf-1": "1/44",
+    "LMT/2014/page_45.pdf-2": "1/44",
+    "LMT/2014/page_47.pdf-2": "1/44",
+    "MRO/2008/page_145.pdf-1": "1/44",
+    "MRO/2008/page_146.pdf-3": "1/44",
+    "MRO/2008/page_44.pdf-4": "1/44",
+    "MRO/2012/page_18.pdf-2": "1/44",
+    "MSI/2005/page_64.pdf-6": "1/44",
+    "PNC/2018/page_45.pdf-5": "1/44",
+    "RSG/2013/page_137.pdf-1": "1/44",
+    "SNA/2013/page_93.pdf-3": "1/44",
+    "STT/2007/page_65.pdf-3": "1/44",
+    "TFX/2006/page_50.pdf-2": "1/44",
+    "TSCO/2017/page_28.pdf-1": "1/44",
+    "VTR/2007/page_97.pdf-2": "1/44"
+  },
+  "no_valid_package_or_task_dropped": true,
+  "original1000_protocol_admitted": false,
+  "original_slot_denominator": 8000,
+  "original_task_denominator": 1000,
+  "original_task_ids": [
+    "GIS/2008/page_83.pdf-1",
+    "MAS/2017/page_37.pdf-1",
+    "TSCO/2017/page_68.pdf-3",
+    "DRE/2016/page_64.pdf-4",
+    "WELL/2017/page_116.pdf-3",
+    "LMT/2013/page_89.pdf-1",
+    "AAP/2006/page_85.pdf-2",
+    "AAPL/2013/page_27.pdf-2",
+    "DRE/2008/page_29.pdf-3",
+    "FRT/2009/page_124.pdf-1",
+    "APD/2019/page_53.pdf-2",
+    "HWM/2016/page_52.pdf-2",
+    "STT/2007/page_95.pdf-1",
+    "INTC/2018/page_50.pdf-1",
+    "CDW/2015/page_54.pdf-4",
+    "CDNS/2012/page_31.pdf-2",
+    "GPN/2007/page_97.pdf-2",
+    "RSG/2013/page_137.pdf-2",
+    "AES/2017/page_168.pdf-3",
+    "STT/2013/page_71.pdf-1",
+    "IPG/2018/page_26.pdf-4",
+    "HUM/2016/page_133.pdf-2",
+    "C/2009/page_195.pdf-1",
+    "SNA/2013/page_33.pdf-1",
+    "HIG/2012/page_132.pdf-2",
+    "HWM/2016/page_53.pdf-1",
+    "WELL/2016/page_61.pdf-4",
+    "DVN/2004/page_50.pdf-2",
+    "STT/2013/page_175.pdf-3",
+    "LMT/2013/page_46.pdf-1",
+    "BLK/2015/page_35.pdf-2",
+    "GPN/2016/page_83.pdf-1",
+    "C/2009/page_141.pdf-3",
+    "GPN/2016/page_67.pdf-2",
+    "MRO/2012/page_39.pdf-3",
+    "EOG/2017/page_78.pdf-1",
+    "MAR/2018/page_42.pdf-2",
+    "WELL/2017/page_48.pdf-1",
+    "APD/2019/page_108.pdf-2",
+    "MRO/2012/page_41.pdf-3",
+    "MS/2012/page_150.pdf-1",
+    "C/2015/page_314.pdf-2",
+    "APD/2019/page_39.pdf-2",
+    "GPN/2008/page_92.pdf-2",
+    "STT/2007/page_65.pdf-2",
+    "GPN/2018/page_74.pdf-3",
+    "RE/2013/page_40.pdf-2",
+    "VTR/2007/page_97.pdf-1",
+    "C/2009/page_162.pdf-1",
+    "BLK/2014/page_33.pdf-2",
+    "NKE/2014/page_36.pdf-2",
+    "LMT/2015/page_52.pdf-2",
+    "AON/2015/page_45.pdf-1",
+    "GPN/2007/page_39.pdf-1",
+    "AES/2001/page_86.pdf-1",
+    "VNO/2011/page_187.pdf-1",
+    "VLO/2012/page_27.pdf-1",
+    "RSG/2013/page_16.pdf-2",
+    "PNC/2016/page_155.pdf-1",
+    "MS/2015/page_200.pdf-1",
+    "HUM/2012/page_109.pdf-1",
+    "C/2015/page_73.pdf-1",
+    "AON/2015/page_77.pdf-3",
+    "AAL/2016/page_37.pdf-2",
+    "RSG/2016/page_69.pdf-2",
+    "LMT/2015/page_106.pdf-3",
+    "BLK/2015/page_35.pdf-1",
+    "RCL/2009/page_90.pdf-1",
+    "C/2015/page_73.pdf-3",
+    "SNA/2013/page_111.pdf-4",
+    "AAPL/2010/page_42.pdf-1",
+    "JPM/2017/page_144.pdf-4",
+    "MRO/2008/page_135.pdf-2",
+    "MAS/2010/page_29.pdf-1",
+    "GPN/2008/page_99.pdf-2",
+    "MRO/2012/page_39.pdf-1",
+    "IPG/2018/page_52.pdf-1",
+    "DRE/2008/page_49.pdf-1",
+    "NWS/2016/page_148.pdf-2",
+    "HUM/2016/page_133.pdf-3",
+    "BLK/2009/page_98.pdf-2",
+    "LMT/2014/page_46.pdf-1",
+    "IPG/2018/page_104.pdf-2",
+    "TROW/2011/page_13.pdf-1",
+    "DRE/2008/page_49.pdf-3",
+    "INTC/2015/page_122.pdf-4",
+    "MRO/2008/page_135.pdf-3",
+    "C/2015/page_314.pdf-3",
+    "IPG/2018/page_100.pdf-4",
+    "DISCA/2017/page_22.pdf-1",
+    "MRO/2008/page_99.pdf-4",
+    "LMT/2014/page_45.pdf-4",
+    "GPN/2008/page_88.pdf-1",
+    "APD/2019/page_100.pdf-1",
+    "JPM/2017/page_83.pdf-1",
+    "NKE/2014/page_36.pdf-3",
+    "AES/2001/page_78.pdf-2",
+    "LMT/2015/page_55.pdf-4",
+    "AMT/2004/page_46.pdf-3",
+    "AON/2015/page_77.pdf-4",
+    "AES/2017/page_168.pdf-2",
+    "SNA/2013/page_111.pdf-1",
+    "MSI/2005/page_43.pdf-2",
+    "JPM/2017/page_69.pdf-2",
+    "NTAP/2014/page_33.pdf-2",
+    "ABMD/2006/page_65.pdf-2",
+    "RE/2016/page_141.pdf-1",
+    "CDW/2015/page_53.pdf-1",
+    "DG/2008/page_73.pdf-1",
+    "GPN/2008/page_92.pdf-1",
+    "RSG/2016/page_50.pdf-1",
+    "C/2009/page_200.pdf-2",
+    "HOLX/2009/page_133.pdf-2",
+    "IP/2013/page_61.pdf-1",
+    "HFC/2011/page_92.pdf-6",
+    "MA/2008/page_116.pdf-2",
+    "MSI/2005/page_64.pdf-6",
+    "LMT/2013/page_89.pdf-4",
+    "MRO/2008/page_146.pdf-2",
+    "JKHY/2011/page_55.pdf-2",
+    "MA/2008/page_70.pdf-2",
+    "MRO/2008/page_119.pdf-3",
+    "NKE/2014/page_36.pdf-1",
+    "JPM/2017/page_69.pdf-3",
+    "AMT/2004/page_28.pdf-2",
+    "RSG/2016/page_69.pdf-1",
+    "LKQ/2016/page_48.pdf-2",
+    "MRO/2008/page_146.pdf-1",
+    "PNC/2018/page_45.pdf-3",
+    "AAPL/2010/page_42.pdf-3",
+    "AAPL/2013/page_27.pdf-4",
+    "TSCO/2017/page_28.pdf-1",
+    "AMAT/2012/page_37.pdf-2",
+    "LMT/2013/page_49.pdf-1",
+    "LMT/2013/page_26.pdf-2",
+    "AWK/2013/page_123.pdf-3",
+    "DRE/2016/page_59.pdf-1",
+    "HFC/2011/page_92.pdf-5",
+    "HWM/2016/page_79.pdf-2",
+    "C/2015/page_314.pdf-4",
+    "MRO/2008/page_44.pdf-3",
+    "JPM/2017/page_104.pdf-2",
+    "AES/2001/page_45.pdf-1",
+    "BLK/2014/page_33.pdf-1",
+    "PPG/2015/page_40.pdf-1",
+    "AAL/2016/page_37.pdf-1",
+    "HFC/2011/page_88.pdf-4",
+    "WELL/2017/page_116.pdf-1",
+    "MSI/2005/page_64.pdf-4",
+    "MSI/2005/page_43.pdf-3",
+    "VNO/2011/page_85.pdf-2",
+    "DISH/2011/page_130.pdf-2",
+    "MSI/2013/page_87.pdf-2",
+    "DG/2008/page_73.pdf-4",
+    "SNA/2013/page_59.pdf-4",
+    "LMT/2013/page_26.pdf-1",
+    "DRE/2008/page_49.pdf-2",
+    "CDNS/2012/page_31.pdf-1",
+    "IP/2006/page_19.pdf-1",
+    "KMI/2014/page_114.pdf-1",
+    "GPN/2018/page_85.pdf-1",
+    "WELL/2017/page_48.pdf-3",
+    "BLK/2017/page_81.pdf-2",
+    "HFC/2018/page_43.pdf-4",
+    "EOG/2017/page_85.pdf-1",
+    "LMT/2015/page_52.pdf-1",
+    "AAPL/2013/page_41.pdf-2",
+    "LMT/2015/page_52.pdf-4",
+    "FRT/2006/page_133.pdf-2",
+    "HUM/2005/page_80.pdf-1",
+    "KIM/2014/page_59.pdf-1",
+    "JPM/2017/page_104.pdf-1",
+    "AMT/2004/page_28.pdf-1",
+    "FRT/2006/page_133.pdf-1",
+    "IQV/2016/page_57.pdf-2",
+    "VTR/2003/page_39.pdf-1",
+    "V/2009/page_88.pdf-1",
+    "AAPL/2013/page_27.pdf-3",
+    "DISCA/2017/page_41.pdf-4",
+    "IP/2005/page_31.pdf-1",
+    "MRO/2008/page_145.pdf-1",
+    "WELL/2017/page_48.pdf-4",
+    "LMT/2013/page_46.pdf-3",
+    "RL/2012/page_13.pdf-1",
+    "KMI/2010/page_164.pdf-2",
+    "LMT/2013/page_81.pdf-3",
+    "CDNS/2007/page_30.pdf-3",
+    "AMT/2004/page_102.pdf-3",
+    "VTR/2007/page_97.pdf-4",
+    "MRO/2008/page_42.pdf-3",
+    "C/2009/page_162.pdf-2",
+    "GPN/2018/page_79.pdf-1",
+    "UPS/2016/page_34.pdf-4",
+    "PNC/2016/page_44.pdf-2",
+    "WELL/2016/page_61.pdf-2",
+    "IPG/2018/page_100.pdf-3",
+    "KIM/2006/page_67.pdf-2",
+    "NKE/2014/page_36.pdf-4",
+    "C/2009/page_141.pdf-1",
+    "ABMD/2008/page_87.pdf-1",
+    "VTR/2003/page_39.pdf-4",
+    "GPN/2007/page_18.pdf-1",
+    "HIG/2013/page_235.pdf-2",
+    "MRO/2008/page_41.pdf-4",
+    "KMI/2010/page_164.pdf-1",
+    "SNA/2013/page_111.pdf-2",
+    "AON/2015/page_72.pdf-1",
+    "HUM/2005/page_18.pdf-4",
+    "LMT/2013/page_49.pdf-2",
+    "CAG/2008/page_47.pdf-2",
+    "HOLX/2009/page_141.pdf-1",
+    "IPG/2018/page_52.pdf-2",
+    "FRT/2007/page_137.pdf-2",
+    "ORLY/2015/page_28.pdf-4",
+    "HFC/2011/page_92.pdf-4",
+    "IP/2005/page_31.pdf-2",
+    "C/2009/page_248.pdf-3",
+    "AAPL/2010/page_73.pdf-1",
+    "MRO/2008/page_70.pdf-3",
+    "TROW/2011/page_13.pdf-2",
+    "C/2009/page_41.pdf-1",
+    "C/2009/page_53.pdf-2",
+    "LMT/2015/page_86.pdf-1",
+    "SLG/2012/page_87.pdf-2",
+    "LMT/2013/page_47.pdf-4",
+    "DG/2008/page_73.pdf-3",
+    "RSG/2013/page_137.pdf-1",
+    "DISCA/2017/page_22.pdf-2",
+    "UPS/2013/page_56.pdf-3",
+    "GPN/2016/page_69.pdf-2",
+    "AAPL/2014/page_67.pdf-3",
+    "C/2009/page_38.pdf-2",
+    "STT/2013/page_107.pdf-3",
+    "DISCA/2011/page_35.pdf-4",
+    "LMT/2007/page_39.pdf-2",
+    "MSI/2005/page_43.pdf-1",
+    "AAPL/2013/page_72.pdf-1",
+    "DRE/2016/page_59.pdf-2",
+    "RSG/2016/page_17.pdf-1",
+    "APD/2019/page_39.pdf-1",
+    "KMI/2014/page_18.pdf-1",
+    "VTR/2007/page_48.pdf-2",
+    "RCL/2009/page_13.pdf-1",
+    "HWM/2016/page_53.pdf-2",
+    "AES/2001/page_48.pdf-1",
+    "C/2009/page_194.pdf-3",
+    "LMT/2013/page_44.pdf-2",
+    "UPS/2013/page_34.pdf-2",
+    "HFC/2018/page_43.pdf-2",
+    "RCL/2009/page_90.pdf-4",
+    "LMT/2013/page_45.pdf-1",
+    "DG/2008/page_86.pdf-2",
+    "IPG/2018/page_39.pdf-2",
+    "CDNS/2012/page_41.pdf-2",
+    "AAPL/2014/page_26.pdf-2",
+    "C/2009/page_141.pdf-2",
+    "MRO/2008/page_119.pdf-4",
+    "CAG/2008/page_35.pdf-2",
+    "INTC/2018/page_48.pdf-1",
+    "LMT/2015/page_53.pdf-1",
+    "LMT/2015/page_86.pdf-4",
+    "C/2015/page_73.pdf-2",
+    "HUM/2005/page_80.pdf-4",
+    "CDW/2015/page_54.pdf-2",
+    "RSG/2013/page_16.pdf-1",
+    "SLG/2018/page_45.pdf-1",
+    "STT/2007/page_95.pdf-2",
+    "C/2015/page_46.pdf-1",
+    "MRO/2012/page_41.pdf-4",
+    "MAS/2010/page_29.pdf-2",
+    "BLK/2017/page_35.pdf-2",
+    "MRO/2008/page_142.pdf-2",
+    "CDNS/2007/page_30.pdf-2",
+    "AON/2015/page_43.pdf-1",
+    "CDW/2015/page_54.pdf-1",
+    "SLG/2012/page_61.pdf-1",
+    "STT/2007/page_65.pdf-1",
+    "IP/2005/page_27.pdf-1",
+    "AES/2017/page_168.pdf-1",
+    "TROW/2011/page_13.pdf-3",
+    "STZ/2010/page_51.pdf-2",
+    "LMT/2014/page_85.pdf-3",
+    "MRO/2012/page_40.pdf-2",
+    "KHC/2018/page_27.pdf-3",
+    "RE/2013/page_109.pdf-3",
+    "IP/2018/page_50.pdf-2",
+    "MA/2008/page_116.pdf-3",
+    "INTC/2015/page_122.pdf-3",
+    "LMT/2014/page_47.pdf-2",
+    "STT/2013/page_54.pdf-2",
+    "VTR/2007/page_97.pdf-3",
+    "PNC/2018/page_45.pdf-4",
+    "LMT/2015/page_86.pdf-2",
+    "AMAT/2012/page_35.pdf-2",
+    "PNC/2018/page_81.pdf-4",
+    "MRO/2008/page_41.pdf-1",
+    "TSCO/2017/page_73.pdf-1",
+    "IQV/2016/page_79.pdf-1",
+    "AMT/2004/page_91.pdf-3",
+    "FRT/2007/page_137.pdf-1",
+    "JPM/2017/page_145.pdf-1",
+    "STT/2013/page_107.pdf-2",
+    "KHC/2018/page_27.pdf-1",
+    "IP/2006/page_84.pdf-1",
+    "AMAT/2012/page_35.pdf-1",
+    "HFC/2011/page_92.pdf-2",
+    "AMT/2004/page_76.pdf-1",
+    "AES/2001/page_43.pdf-1",
+    "GPN/2016/page_84.pdf-3",
+    "MAS/2010/page_86.pdf-2",
+    "RCL/2009/page_90.pdf-3",
+    "VNO/2011/page_187.pdf-2",
+    "AMAT/2016/page_32.pdf-1",
+    "SNA/2013/page_93.pdf-2",
+    "GPN/2018/page_74.pdf-2",
+    "TSCO/2017/page_28.pdf-2",
+    "CDW/2015/page_35.pdf-1",
+    "LMT/2014/page_93.pdf-1",
+    "DVN/2004/page_50.pdf-3",
+    "INTC/2018/page_48.pdf-4",
+    "HWM/2016/page_95.pdf-2",
+    "BDX/2017/page_32.pdf-2",
+    "INTC/2015/page_122.pdf-2",
+    "RCL/2009/page_90.pdf-2",
+    "IP/2018/page_83.pdf-2",
+    "EOG/2017/page_102.pdf-1",
+    "STT/2013/page_71.pdf-3",
+    "DRE/2016/page_64.pdf-2",
+    "MA/2008/page_125.pdf-4",
+    "LMT/2013/page_26.pdf-3",
+    "AAPL/2013/page_41.pdf-3",
+    "C/2009/page_48.pdf-1",
+    "LMT/2007/page_39.pdf-1",
+    "AES/2001/page_48.pdf-3",
+    "INTC/2018/page_50.pdf-4",
+    "MAS/2010/page_29.pdf-4",
+    "LMT/2007/page_37.pdf-1",
+    "WELL/2016/page_61.pdf-1",
+    "AON/2015/page_43.pdf-2",
+    "AON/2015/page_29.pdf-1",
+    "RE/2013/page_40.pdf-3",
+    "LMT/2013/page_89.pdf-3",
+    "HOLX/2009/page_133.pdf-1",
+    "STT/2013/page_71.pdf-2",
+    "AES/2017/page_110.pdf-4",
+    "GPN/2007/page_97.pdf-1",
+    "MSI/2005/page_64.pdf-5",
+    "EOG/2017/page_78.pdf-2",
+    "MRO/2008/page_130.pdf-2",
+    "AMT/2004/page_90.pdf-2",
+    "GPN/2016/page_83.pdf-3",
+    "LMT/2007/page_39.pdf-3",
+    "KIM/2014/page_131.pdf-2",
+    "CDNS/2012/page_41.pdf-1",
+    "AES/2017/page_110.pdf-2",
+    "MA/2008/page_113.pdf-4",
+    "SLG/2012/page_61.pdf-2",
+    "LMT/2007/page_55.pdf-4",
+    "IQV/2016/page_79.pdf-3",
+    "MA/2008/page_70.pdf-1",
+    "LMT/2013/page_45.pdf-2",
+    "STT/2007/page_65.pdf-3",
+    "IP/2005/page_28.pdf-2",
+    "HUM/2005/page_80.pdf-3",
+    "C/2009/page_255.pdf-2",
+    "LMT/2013/page_46.pdf-2",
+    "INTC/2018/page_50.pdf-3",
+    "BDX/2009/page_80.pdf-1",
+    "RCL/2017/page_38.pdf-2",
+    "KHC/2018/page_27.pdf-2",
+    "LMT/2013/page_81.pdf-2",
+    "IP/2013/page_62.pdf-1",
+    "ABMD/2006/page_65.pdf-1",
+    "UPS/2013/page_34.pdf-3",
+    "BDX/2017/page_32.pdf-1",
+    "MRO/2008/page_42.pdf-2",
+    "BLK/2017/page_87.pdf-1",
+    "JPM/2017/page_144.pdf-2",
+    "IP/2006/page_19.pdf-2",
+    "C/2009/page_194.pdf-2",
+    "AMT/2004/page_90.pdf-1",
+    "L/2010/page_41.pdf-2",
+    "STT/2013/page_54.pdf-4",
+    "ANSS/2016/page_82.pdf-2",
+    "CAG/2008/page_35.pdf-1",
+    "HIG/2013/page_124.pdf-3",
+    "BLK/2015/page_123.pdf-2",
+    "ADI/2012/page_65.pdf-1",
+    "C/2009/page_279.pdf-2",
+    "SNA/2013/page_93.pdf-3",
+    "ILMN/2017/page_23.pdf-2",
+    "AMAT/2016/page_30.pdf-3",
+    "MSI/2005/page_64.pdf-2",
+    "AAPL/2014/page_67.pdf-1",
+    "LMT/2014/page_46.pdf-2",
+    "AON/2015/page_45.pdf-4",
+    "MRO/2008/page_99.pdf-1",
+    "GPN/2016/page_67.pdf-1",
+    "APD/2019/page_53.pdf-1",
+    "IP/2006/page_34.pdf-1",
+    "HFC/2011/page_92.pdf-3",
+    "VNO/2011/page_85.pdf-1",
+    "MAS/2017/page_37.pdf-4",
+    "ORLY/2016/page_29.pdf-3",
+    "LMT/2014/page_49.pdf-2",
+    "MA/2008/page_113.pdf-2",
+    "AES/2001/page_43.pdf-2",
+    "VTR/2007/page_48.pdf-4",
+    "AWK/2013/page_123.pdf-1",
+    "MRO/2008/page_70.pdf-1",
+    "HUM/2012/page_109.pdf-2",
+    "CDNS/2007/page_93.pdf-4",
+    "LMT/2007/page_55.pdf-2",
+    "DRE/2016/page_64.pdf-1",
+    "IQV/2016/page_79.pdf-2",
+    "UPS/2013/page_56.pdf-1",
+    "AAPL/2014/page_78.pdf-1",
+    "LMT/2013/page_87.pdf-3",
+    "IPG/2018/page_104.pdf-3",
+    "IPG/2018/page_26.pdf-1",
+    "MRO/2008/page_44.pdf-4",
+    "LMT/2013/page_44.pdf-4",
+    "TFX/2015/page_42.pdf-1",
+    "AAPL/2010/page_42.pdf-2",
+    "TSCO/2017/page_73.pdf-2",
+    "RCL/2017/page_38.pdf-1",
+    "BLK/2017/page_35.pdf-1",
+    "APD/2019/page_100.pdf-2",
+    "AON/2015/page_29.pdf-2",
+    "TSCO/2017/page_73.pdf-3",
+    "AAPL/2010/page_43.pdf-1",
+    "AAPL/2013/page_39.pdf-1",
+    "MRO/2012/page_22.pdf-3",
+    "AMAT/2016/page_30.pdf-2",
+    "HFC/2011/page_92.pdf-1",
+    "RE/2016/page_40.pdf-4",
+    "RSG/2013/page_92.pdf-1",
+    "AES/2017/page_85.pdf-2",
+    "HFC/2018/page_43.pdf-3",
+    "GIS/2008/page_83.pdf-2",
+    "KHC/2018/page_27.pdf-4",
+    "AMAT/2016/page_32.pdf-2",
+    "ORLY/2016/page_29.pdf-2",
+    "IPG/2018/page_78.pdf-1",
+    "LMT/2014/page_49.pdf-4",
+    "UA/2009/page_63.pdf-1",
+    "RE/2016/page_40.pdf-3",
+    "AON/2015/page_43.pdf-4",
+    "HUM/2005/page_18.pdf-2",
+    "MRO/2008/page_157.pdf-1",
+    "HUM/2005/page_80.pdf-2",
+    "GRMN/2004/page_91.pdf-1",
+    "LMT/2015/page_55.pdf-3",
+    "PNC/2018/page_45.pdf-2",
+    "IP/2006/page_84.pdf-2",
+    "RE/2016/page_40.pdf-2",
+    "UPS/2016/page_34.pdf-2",
+    "MRO/2012/page_40.pdf-1",
+    "LMT/2007/page_55.pdf-3",
+    "AAPL/2013/page_78.pdf-4",
+    "C/2009/page_248.pdf-4",
+    "IPG/2018/page_26.pdf-2",
+    "RE/2016/page_40.pdf-1",
+    "AMAT/2012/page_37.pdf-1",
+    "MA/2008/page_116.pdf-1",
+    "LMT/2014/page_31.pdf-1",
+    "LMT/2013/page_45.pdf-3",
+    "LMT/2014/page_49.pdf-1",
+    "WELL/2017/page_116.pdf-4",
+    "C/2009/page_41.pdf-2",
+    "PPG/2015/page_40.pdf-2",
+    "EOG/2017/page_93.pdf-2",
+    "GPN/2008/page_99.pdf-3",
+    "MRO/2008/page_41.pdf-2",
+    "TROW/2011/page_13.pdf-4",
+    "EOG/2017/page_103.pdf-2",
+    "PM/2014/page_112.pdf-2",
+    "RSG/2016/page_50.pdf-2",
+    "WELL/2017/page_48.pdf-2",
+    "GPN/2008/page_88.pdf-2",
+    "TSCO/2017/page_73.pdf-4",
+    "LMT/2015/page_52.pdf-3",
+    "IPG/2018/page_39.pdf-3",
+    "HIG/2013/page_212.pdf-1",
+    "MA/2008/page_125.pdf-2",
+    "HOLX/2009/page_141.pdf-2",
+    "UPS/2016/page_34.pdf-3",
+    "IPG/2018/page_39.pdf-1",
+    "SNA/2013/page_59.pdf-1",
+    "AON/2015/page_45.pdf-3",
+    "LMT/2014/page_45.pdf-3",
+    "AMT/2004/page_76.pdf-2",
+    "IP/2013/page_64.pdf-2",
+    "MRO/2012/page_18.pdf-1",
+    "LMT/2013/page_49.pdf-3",
+    "AAPL/2013/page_39.pdf-2",
+    "C/2009/page_248.pdf-1",
+    "GPN/2008/page_95.pdf-3",
+    "DRE/2008/page_29.pdf-1",
+    "MRO/2008/page_142.pdf-1",
+    "FRT/2009/page_124.pdf-2",
+    "MSI/2005/page_64.pdf-1",
+    "VTR/2007/page_48.pdf-1",
+    "KIM/2006/page_67.pdf-1",
+    "HFC/2018/page_43.pdf-1",
+    "AMAT/2012/page_37.pdf-3",
+    "AON/2015/page_50.pdf-1",
+    "PNC/2018/page_45.pdf-1",
+    "STZ/2010/page_51.pdf-1",
+    "AMT/2004/page_76.pdf-4",
+    "PNC/2016/page_73.pdf-2",
+    "ORLY/2016/page_29.pdf-1",
+    "MRO/2012/page_22.pdf-1",
+    "PM/2014/page_112.pdf-3",
+    "IQV/2016/page_57.pdf-1",
+    "PNC/2016/page_44.pdf-1",
+    "RL/2012/page_13.pdf-2",
+    "HWM/2016/page_50.pdf-1",
+    "CDW/2015/page_35.pdf-2",
+    "RSG/2013/page_69.pdf-1",
+    "IQV/2016/page_57.pdf-3",
+    "ABMD/2006/page_62.pdf-1",
+    "HIG/2013/page_124.pdf-2",
+    "MRO/2008/page_42.pdf-4",
+    "AMT/2004/page_46.pdf-1",
+    "MRO/2008/page_70.pdf-2",
+    "SNA/2013/page_59.pdf-3",
+    "C/2009/page_38.pdf-1",
+    "STT/2007/page_65.pdf-4",
+    "C/2009/page_194.pdf-1",
+    "ANSS/2016/page_82.pdf-1",
+    "INTC/2018/page_48.pdf-3",
+    "MRO/2008/page_99.pdf-3",
+    "IP/2005/page_32.pdf-2",
+    "SNA/2013/page_56.pdf-1",
+    "UPS/2013/page_56.pdf-4",
+    "LMT/2013/page_87.pdf-2",
+    "PNC/2016/page_155.pdf-2",
+    "CDW/2015/page_53.pdf-4",
+    "LMT/2013/page_89.pdf-2",
+    "SLG/2012/page_87.pdf-1",
+    "PNC/2018/page_81.pdf-2",
+    "ABMD/2006/page_62.pdf-2",
+    "MA/2008/page_113.pdf-1",
+    "PNC/2016/page_73.pdf-1",
+    "MRO/2012/page_41.pdf-2",
+    "ALLE/2015/page_81.pdf-1",
+    "STZ/2010/page_51.pdf-3",
+    "MS/2015/page_200.pdf-2",
+    "AAPL/2014/page_26.pdf-1",
+    "IP/2013/page_64.pdf-1",
+    "HFC/2011/page_88.pdf-2",
+    "MRO/2008/page_44.pdf-1",
+    "AMT/2004/page_28.pdf-3",
+    "MRO/2008/page_130.pdf-3",
+    "CDNS/2007/page_30.pdf-1",
+    "AAPL/2010/page_43.pdf-3",
+    "MA/2008/page_125.pdf-3",
+    "RSG/2016/page_98.pdf-1",
+    "CDNS/2007/page_93.pdf-1",
+    "HFC/2011/page_88.pdf-3",
+    "JKHY/2011/page_34.pdf-3",
+    "GPN/2008/page_99.pdf-1",
+    "VTR/2003/page_39.pdf-2",
+    "ALLE/2015/page_81.pdf-2",
+    "TSCO/2017/page_68.pdf-2",
+    "HOLX/2009/page_153.pdf-1",
+    "GPN/2008/page_95.pdf-4",
+    "HOLX/2009/page_153.pdf-2",
+    "LMT/2014/page_85.pdf-2",
+    "INTC/2018/page_105.pdf-1",
+    "HFC/2011/page_88.pdf-1",
+    "GPN/2016/page_83.pdf-4",
+    "GPN/2007/page_39.pdf-3",
+    "C/2009/page_200.pdf-3",
+    "AAPL/2014/page_78.pdf-4",
+    "MA/2008/page_116.pdf-4",
+    "CDNS/2007/page_93.pdf-2",
+    "AAPL/2014/page_67.pdf-4",
+    "C/2009/page_279.pdf-4",
+    "AMT/2004/page_46.pdf-4",
+    "EOG/2017/page_103.pdf-1",
+    "V/2009/page_89.pdf-2",
+    "AON/2015/page_50.pdf-3",
+    "JKHY/2011/page_34.pdf-2",
+    "C/2009/page_42.pdf-2",
+    "ABMD/2008/page_52.pdf-1",
+    "HUM/2005/page_18.pdf-1",
+    "VNO/2005/page_69.pdf-1",
+    "HWM/2017/page_75.pdf-2",
+    "AES/2001/page_51.pdf-2",
+    "GPN/2008/page_39.pdf-3",
+    "MA/2008/page_113.pdf-3",
+    "SNA/2013/page_56.pdf-2",
+    "HIG/2012/page_132.pdf-1",
+    "AWK/2013/page_123.pdf-4",
+    "AON/2015/page_77.pdf-1",
+    "UPS/2010/page_33.pdf-3",
+    "KMI/2010/page_2.pdf-1",
+    "HIG/2013/page_124.pdf-1",
+    "VTR/2003/page_39.pdf-3",
+    "DRE/2008/page_29.pdf-2",
+    "LMT/2013/page_87.pdf-4",
+    "IPG/2018/page_26.pdf-3",
+    "AON/2015/page_62.pdf-3",
+    "GPN/2007/page_39.pdf-4",
+    "AAPL/2013/page_41.pdf-1",
+    "PNC/2018/page_81.pdf-3",
+    "AWK/2013/page_12.pdf-1",
+    "LMT/2007/page_37.pdf-2",
+    "LMT/2013/page_47.pdf-2",
+    "AON/2015/page_62.pdf-2",
+    "LMT/2014/page_93.pdf-2",
+    "C/2009/page_255.pdf-4",
+    "HWM/2016/page_119.pdf-1",
+    "KMI/2014/page_114.pdf-2",
+    "AES/2001/page_51.pdf-1",
+    "DISH/2011/page_130.pdf-1",
+    "ORLY/2015/page_28.pdf-1",
+    "JKHY/2018/page_16.pdf-2",
+    "LMT/2013/page_45.pdf-4",
+    "IP/2005/page_27.pdf-2",
+    "LMT/2014/page_47.pdf-1",
+    "VTR/2007/page_106.pdf-2",
+    "GPN/2016/page_84.pdf-1",
+    "DRE/2016/page_64.pdf-3",
+    "AON/2015/page_77.pdf-2",
+    "AAPL/2013/page_78.pdf-2",
+    "DISCA/2011/page_35.pdf-3",
+    "MRO/2008/page_145.pdf-2",
+    "RE/2013/page_40.pdf-1",
+    "JPM/2017/page_69.pdf-1",
+    "GPN/2007/page_39.pdf-2",
+    "C/2009/page_279.pdf-3",
+    "MAR/2018/page_42.pdf-1",
+    "MRO/2008/page_135.pdf-1",
+    "IQV/2016/page_65.pdf-3",
+    "GPN/2016/page_84.pdf-4",
+    "BDX/2009/page_80.pdf-2",
+    "JKHY/2018/page_16.pdf-3",
+    "IP/2013/page_101.pdf-1",
+    "PNC/2018/page_81.pdf-1",
+    "RSG/2016/page_98.pdf-2",
+    "SNA/2013/page_33.pdf-2",
+    "AMT/2004/page_76.pdf-3",
+    "DISCA/2017/page_41.pdf-2",
+    "APTV/2014/page_46.pdf-2",
+    "UPS/2016/page_34.pdf-1",
+    "PNC/2018/page_81.pdf-5",
+    "UPS/2013/page_34.pdf-1",
+    "AON/2015/page_72.pdf-2",
+    "C/2009/page_48.pdf-2",
+    "MRO/2008/page_146.pdf-4",
+    "LMT/2007/page_55.pdf-1",
+    "UPS/2013/page_56.pdf-2",
+    "DISCA/2011/page_35.pdf-1",
+    "AES/2017/page_85.pdf-1",
+    "INTC/2018/page_50.pdf-2",
+    "GPN/2018/page_79.pdf-2",
+    "BDX/2009/page_81.pdf-2",
+    "AAPL/2014/page_78.pdf-3",
+    "STT/2013/page_175.pdf-1",
+    "IP/2013/page_62.pdf-2",
+    "AES/2017/page_110.pdf-3",
+    "HWM/2016/page_95.pdf-1",
+    "IPG/2018/page_100.pdf-1",
+    "MA/2008/page_125.pdf-1",
+    "GRMN/2004/page_91.pdf-2",
+    "AON/2015/page_62.pdf-4",
+    "ABMD/2008/page_87.pdf-2",
+    "IP/2006/page_34.pdf-2",
+    "EOG/2017/page_93.pdf-1",
+    "INTC/2018/page_48.pdf-2",
+    "STT/2013/page_71.pdf-4",
+    "KIM/2014/page_108.pdf-1",
+    "VTR/2007/page_48.pdf-3",
+    "EOG/2017/page_102.pdf-2",
+    "C/2009/page_195.pdf-2",
+    "IPG/2018/page_100.pdf-2",
+    "DG/2008/page_86.pdf-1",
+    "MAS/2010/page_89.pdf-1",
+    "AMT/2004/page_91.pdf-4",
+    "CDNS/2012/page_58.pdf-2",
+    "MRO/2008/page_42.pdf-1",
+    "DISCA/2017/page_41.pdf-3",
+    "MAS/2010/page_86.pdf-1",
+    "GPN/2018/page_85.pdf-3",
+    "C/2009/page_141.pdf-4",
+    "C/2009/page_200.pdf-1",
+    "LMT/2014/page_47.pdf-3",
+    "UA/2009/page_63.pdf-2",
+    "SNA/2013/page_93.pdf-1",
+    "LKQ/2016/page_48.pdf-1",
+    "MRO/2008/page_146.pdf-3",
+    "STT/2013/page_107.pdf-1",
+    "JPM/2017/page_144.pdf-1",
+    "MRO/2008/page_130.pdf-1",
+    "DISH/2008/page_120.pdf-1",
+    "AAPL/2010/page_73.pdf-2",
+    "HWM/2016/page_50.pdf-2",
+    "AMT/2004/page_102.pdf-4",
+    "EOG/2017/page_85.pdf-2",
+    "INTC/2015/page_122.pdf-1",
+    "MRO/2012/page_41.pdf-1",
+    "DG/2008/page_73.pdf-2",
+    "ORLY/2015/page_28.pdf-3",
+    "GPN/2018/page_85.pdf-2",
+    "RE/2013/page_109.pdf-2",
+    "ORLY/2015/page_28.pdf-2",
+    "NCLH/2016/page_84.pdf-1",
+    "AMT/2004/page_102.pdf-2",
+    "RE/2013/page_109.pdf-1",
+    "ADI/2012/page_65.pdf-2",
+    "IP/2005/page_28.pdf-1",
+    "GPN/2008/page_39.pdf-2",
+    "IP/2005/page_29.pdf-2",
+    "AAPL/2013/page_78.pdf-3",
+    "NWS/2016/page_148.pdf-1",
+    "MAS/2010/page_89.pdf-2",
+    "IP/2018/page_83.pdf-1",
+    "VTR/2007/page_106.pdf-1",
+    "LMT/2013/page_81.pdf-1",
+    "HWM/2016/page_118.pdf-2",
+    "AAP/2006/page_85.pdf-1",
+    "GIS/2008/page_83.pdf-3",
+    "HIG/2013/page_235.pdf-1",
+    "C/2009/page_38.pdf-4",
+    "C/2015/page_46.pdf-2",
+    "PNC/2018/page_45.pdf-5",
+    "IQV/2016/page_65.pdf-2",
+    "LMT/2014/page_45.pdf-1",
+    "IPG/2018/page_104.pdf-1",
+    "VLO/2013/page_24.pdf-1",
+    "LMT/2013/page_44.pdf-1",
+    "LMT/2014/page_85.pdf-1",
+    "JPM/2017/page_83.pdf-3",
+    "HWM/2016/page_119.pdf-2",
+    "UPS/2010/page_33.pdf-1",
+    "STZ/2010/page_51.pdf-4",
+    "MAS/2017/page_37.pdf-3",
+    "IP/2013/page_70.pdf-1",
+    "AES/2001/page_45.pdf-2",
+    "C/2009/page_279.pdf-1",
+    "CDW/2015/page_53.pdf-3",
+    "IPG/2018/page_78.pdf-3",
+    "MSI/2013/page_87.pdf-1",
+    "WELL/2017/page_116.pdf-2",
+    "LMT/2015/page_55.pdf-2",
+    "ABMD/2008/page_52.pdf-2",
+    "AON/2015/page_62.pdf-1",
+    "CDNS/2012/page_58.pdf-1",
+    "AES/2001/page_42.pdf-2",
+    "DG/2008/page_86.pdf-3",
+    "BDX/2009/page_81.pdf-1",
+    "MSI/2005/page_64.pdf-3",
+    "C/2009/page_255.pdf-3",
+    "RSG/2013/page_92.pdf-2",
+    "AES/2001/page_77.pdf-2",
+    "IPG/2018/page_78.pdf-2",
+    "GPN/2016/page_83.pdf-2",
+    "LMT/2007/page_37.pdf-3",
+    "GPN/2007/page_18.pdf-2",
+    "MAS/2010/page_29.pdf-3",
+    "MAS/2017/page_37.pdf-2",
+    "STT/2013/page_54.pdf-1",
+    "BLK/2015/page_123.pdf-1",
+    "GPN/2008/page_39.pdf-1",
+    "GPN/2008/page_95.pdf-1",
+    "IP/2005/page_32.pdf-1",
+    "AMT/2004/page_91.pdf-1",
+    "MAS/2010/page_89.pdf-3",
+    "C/2009/page_38.pdf-3",
+    "LMT/2015/page_86.pdf-3",
+    "C/2009/page_255.pdf-1",
+    "GPN/2018/page_74.pdf-4",
+    "IQV/2016/page_65.pdf-1",
+    "MRO/2012/page_39.pdf-2",
+    "V/2009/page_23.pdf-2",
+    "LMT/2013/page_47.pdf-3",
+    "JKHY/2011/page_55.pdf-1",
+    "PM/2014/page_112.pdf-4",
+    "KMI/2010/page_164.pdf-4",
+    "AMT/2004/page_102.pdf-1",
+    "AMT/2004/page_46.pdf-2",
+    "CDW/2015/page_34.pdf-2",
+    "IP/2018/page_50.pdf-1",
+    "AAPL/2013/page_27.pdf-1",
+    "UPS/2010/page_33.pdf-2",
+    "AAPL/2013/page_72.pdf-2",
+    "AAPL/2010/page_42.pdf-4",
+    "LMT/2007/page_37.pdf-4",
+    "DVN/2004/page_50.pdf-1",
+    "AMT/2004/page_91.pdf-2",
+    "HUM/2016/page_133.pdf-1",
+    "AON/2015/page_43.pdf-3",
+    "AWK/2013/page_123.pdf-2",
+    "APTV/2014/page_46.pdf-1",
+    "WELL/2016/page_61.pdf-3",
+    "JPM/2017/page_145.pdf-3",
+    "SNA/2013/page_111.pdf-3",
+    "ANSS/2016/page_85.pdf-1",
+    "STT/2013/page_54.pdf-3",
+    "GPN/2016/page_84.pdf-2",
+    "LMT/2015/page_53.pdf-2",
+    "GPN/2016/page_69.pdf-1",
+    "TSCO/2017/page_68.pdf-1",
+    "V/2009/page_89.pdf-1",
+    "MRO/2012/page_18.pdf-2",
+    "AAPL/2014/page_26.pdf-3",
+    "GPN/2008/page_99.pdf-4",
+    "CDNS/2007/page_93.pdf-3",
+    "CDW/2015/page_54.pdf-3",
+    "AON/2015/page_50.pdf-2",
+    "STT/2013/page_175.pdf-2",
+    "MRO/2008/page_119.pdf-2",
+    "C/2009/page_248.pdf-2",
+    "LMT/2014/page_31.pdf-2",
+    "KMI/2014/page_18.pdf-2",
+    "HIG/2012/page_132.pdf-3",
+    "LMT/2015/page_106.pdf-1",
+    "MRO/2008/page_99.pdf-2",
+    "AAPL/2010/page_43.pdf-2",
+    "DISCA/2017/page_41.pdf-1",
+    "AES/2001/page_86.pdf-2",
+    "MRO/2012/page_22.pdf-2",
+    "AAPL/2013/page_78.pdf-1",
+    "RE/2013/page_109.pdf-4",
+    "RSG/2016/page_17.pdf-2",
+    "NCLH/2016/page_84.pdf-2",
+    "MRO/2008/page_70.pdf-4",
+    "LMT/2014/page_45.pdf-2",
+    "AES/2001/page_77.pdf-1",
+    "C/2015/page_314.pdf-1",
+    "LMT/2013/page_44.pdf-3",
+    "LMT/2014/page_46.pdf-3",
+    "NTAP/2014/page_33.pdf-1",
+    "LMT/2013/page_47.pdf-1",
+    "JKHY/2018/page_16.pdf-1",
+    "INTC/2018/page_105.pdf-2",
+    "PM/2014/page_112.pdf-1",
+    "IP/2013/page_101.pdf-2",
+    "IP/2005/page_29.pdf-1",
+    "VTR/2007/page_97.pdf-2",
+    "AON/2015/page_45.pdf-2",
+    "IP/2013/page_70.pdf-2",
+    "MRO/2008/page_44.pdf-2",
+    "CDNS/2007/page_30.pdf-4",
+    "DISCA/2011/page_35.pdf-2",
+    "HFC/2018/page_43.pdf-5",
+    "JPM/2017/page_144.pdf-3",
+    "MRO/2008/page_119.pdf-1",
+    "CAG/2008/page_47.pdf-1",
+    "HWM/2016/page_52.pdf-1",
+    "UPS/2010/page_33.pdf-4",
+    "KIM/2014/page_131.pdf-1",
+    "C/2009/page_53.pdf-1",
+    "RSG/2013/page_69.pdf-2",
+    "MRO/2008/page_41.pdf-3",
+    "LMT/2014/page_49.pdf-3",
+    "HFC/2011/page_85.pdf-1",
+    "C/2009/page_42.pdf-1",
+    "JPM/2017/page_119.pdf-2",
+    "BLK/2009/page_98.pdf-1",
+    "JPM/2017/page_119.pdf-1",
+    "STT/2013/page_107.pdf-4",
+    "AWK/2013/page_12.pdf-2",
+    "BLK/2017/page_87.pdf-2",
+    "AMAT/2016/page_30.pdf-1",
+    "CDW/2015/page_34.pdf-1",
+    "LMT/2015/page_53.pdf-3",
+    "HIG/2013/page_212.pdf-2",
+    "HUM/2005/page_18.pdf-3",
+    "JPM/2017/page_145.pdf-2",
+    "CDW/2015/page_53.pdf-2",
+    "KIM/2014/page_130.pdf-1",
+    "LMT/2015/page_106.pdf-2",
+    "VNO/2011/page_177.pdf-1",
+    "HWM/2016/page_118.pdf-1",
+    "IP/2013/page_61.pdf-2",
+    "AES/2017/page_168.pdf-4",
+    "GPN/2018/page_74.pdf-1",
+    "HWM/2017/page_77.pdf-2",
+    "TFX/2015/page_42.pdf-2",
+    "JPM/2017/page_83.pdf-2",
+    "GPN/2008/page_95.pdf-2",
+    "AAPL/2014/page_78.pdf-2",
+    "LMT/2013/page_87.pdf-1",
+    "SNA/2013/page_59.pdf-2",
+    "RCL/2017/page_38.pdf-3",
+    "BLK/2017/page_81.pdf-1",
+    "AES/2001/page_42.pdf-3",
+    "AAPL/2014/page_67.pdf-2",
+    "GPN/2016/page_29.pdf-2",
+    "LMT/2015/page_55.pdf-1",
+    "ILMN/2017/page_23.pdf-1",
+    "KMI/2010/page_164.pdf-3",
+    "AES/2017/page_110.pdf-1",
+    "JKHY/2011/page_34.pdf-1",
+    "HWM/2016/page_79.pdf-1",
+    "L/2010/page_41.pdf-1",
+    "VNO/2005/page_69.pdf-2",
+    "SNA/2013/page_93.pdf-4",
+    "BLK/2009/page_98.pdf-3",
+    "BLK/2017/page_77.pdf-1",
+    "VLO/2012/page_27.pdf-2",
+    "ANSS/2016/page_85.pdf-2",
+    "IP/2006/page_84.pdf-3",
+    "ABMD/2008/page_52.pdf-3",
+    "IP/2018/page_83.pdf-3",
+    "BLK/2009/page_98.pdf-4",
+    "BLK/2017/page_87.pdf-3",
+    "IP/2013/page_70.pdf-3",
+    "HOLX/2009/page_153.pdf-3",
+    "APTV/2014/page_46.pdf-3",
+    "IP/2013/page_65.pdf-2",
+    "ANSS/2016/page_82.pdf-3",
+    "BLK/2015/page_35.pdf-3",
+    "IP/2005/page_31.pdf-3",
+    "NCLH/2016/page_84.pdf-3",
+    "BDX/2017/page_32.pdf-3",
+    "IP/2005/page_29.pdf-3",
+    "IP/2006/page_34.pdf-3",
+    "IP/2013/page_64.pdf-3",
+    "BDX/2009/page_81.pdf-3",
+    "BLK/2015/page_123.pdf-3",
+    "IP/2005/page_28.pdf-3",
+    "BDX/2009/page_80.pdf-3",
+    "IP/2013/page_61.pdf-3",
+    "ADI/2012/page_65.pdf-3",
+    "VLO/2013/page_24.pdf-2",
+    "IP/2013/page_105.pdf-1",
+    "BLK/2015/page_123.pdf-4",
+    "KIM/2014/page_112.pdf-2",
+    "KIM/2014/page_131.pdf-3",
+    "IP/2018/page_50.pdf-3",
+    "BDX/2017/page_28.pdf-1",
+    "BLK/2017/page_81.pdf-3",
+    "BLK/2014/page_33.pdf-3",
+    "IP/2005/page_27.pdf-3",
+    "SNPS/2003/page_39.pdf-2",
+    "APTV/2014/page_46.pdf-4",
+    "HOLX/2009/page_153.pdf-4",
+    "PPG/2015/page_40.pdf-3",
+    "IP/2013/page_64.pdf-4",
+    "IP/2013/page_62.pdf-3",
+    "VLO/2012/page_27.pdf-3",
+    "BDX/2017/page_32.pdf-4",
+    "ANSS/2016/page_85.pdf-3",
+    "IP/2018/page_83.pdf-4",
+    "IP/2013/page_62.pdf-4",
+    "KIM/2014/page_130.pdf-2",
+    "PPG/2015/page_40.pdf-4",
+    "IP/2018/page_45.pdf-1",
+    "TFX/2006/page_50.pdf-1",
+    "TFX/2006/page_50.pdf-2",
+    "IP/2005/page_28.pdf-4",
+    "SNPS/2003/page_39.pdf-1",
+    "TFX/2015/page_42.pdf-3",
+    "IP/2005/page_27.pdf-4",
+    "IP/2018/page_50.pdf-4",
+    "IP/2005/page_83.pdf-1",
+    "IP/2005/page_32.pdf-3",
+    "BDX/2017/page_28.pdf-2",
+    "BLK/2015/page_35.pdf-4",
+    "BLK/2014/page_68.pdf-2",
+    "BDX/2009/page_80.pdf-4",
+    "ABMD/2006/page_62.pdf-3",
+    "BLK/2017/page_35.pdf-3",
+    "NCLH/2016/page_84.pdf-4",
+    "IP/2005/page_29.pdf-4",
+    "IP/2013/page_101.pdf-3",
+    "IP/2013/page_61.pdf-4",
+    "BLK/2017/page_87.pdf-4",
+    "VLO/2012/page_130.pdf-1",
+    "BLK/2014/page_33.pdf-4",
+    "LKQ/2016/page_48.pdf-3",
+    "IP/2013/page_65.pdf-1",
+    "KIM/2014/page_59.pdf-2",
+    "ABMD/2006/page_62.pdf-4",
+    "BLK/2017/page_77.pdf-2",
+    "IP/2006/page_19.pdf-3",
+    "BLK/2017/page_35.pdf-4",
+    "IP/2006/page_34.pdf-4",
+    "AAP/2006/page_85.pdf-3",
+    "BLK/2014/page_68.pdf-1",
+    "ABMD/2008/page_52.pdf-4",
+    "KIM/2014/page_108.pdf-2",
+    "KIM/2006/page_67.pdf-3",
+    "BLK/2017/page_81.pdf-4",
+    "IP/2005/page_32.pdf-4",
+    "IP/2018/page_45.pdf-2",
+    "VLO/2012/page_129.pdf-1",
+    "LKQ/2016/page_48.pdf-4",
+    "KIM/2014/page_131.pdf-4",
+    "ABMD/2008/page_87.pdf-3",
+    "KIM/2006/page_67.pdf-4",
+    "BDX/2009/page_81.pdf-4",
+    "IP/2013/page_101.pdf-4",
+    "AAP/2006/page_85.pdf-4",
+    "IP/2006/page_19.pdf-4"
+  ],
+  "schema": "v10_conditional_support_manifest.v1",
+  "semantic_truth_proved": false,
+  "task_support": {
+    "AES/2001/page_45.pdf-2": {
+      "chi": {
+        "state-1": 1
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:6ecf42a82cc91c9b9f36be040eda116f574a35553dded9325ddb955b1e3f493e"
+      ],
+      "n_x": 1,
+      "states": {
+        "state-1": 1
+      }
+    },
+    "AES/2001/page_51.pdf-1": {
+      "chi": {
+        "state_1": 1
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:5f56912ea20ab8313debc1406103800e34642c8c55a27537afefce100c7597d3"
+      ],
+      "n_x": 1,
+      "states": {
+        "state_1": 1
+      }
+    },
+    "BLK/2017/page_35.pdf-2": {
+      "chi": {
+        "s1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:81c66163cd0b37a5c03e3a8169d1321ef1523efd5cf34ea563e2474c812e7f1c"
+      ],
+      "n_x": 1,
+      "states": {
+        "s1": 1
+      }
+    },
+    "C/2015/page_73.pdf-1": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:6a83a3a377c60454f1d62c6d1b3ebaf814e38df83269dbd81b34a2497469e1c3"
+      ],
+      "n_x": 1,
+      "states": {
+        "state_1": 1
+      }
+    },
+    "C/2015/page_73.pdf-2": {
+      "chi": {
+        "s1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:5be70b79f62afdb6c53eaed07b72f46d068343c8af5d2c2eb30eb80f7b18f2d7",
+        "v10gen:c78c9dafc71f24aabae8ca011932083f3be59e7d788537c8fc5611992138c6f5"
+      ],
+      "n_x": 2,
+      "states": {
+        "s1": 2
+      }
+    },
+    "CDW/2015/page_34.pdf-1": {
+      "chi": {
+        "s1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:86353cc02c1620865acae765c816101789d737ea5506dac218451c1b1458f2cf"
+      ],
+      "n_x": 1,
+      "states": {
+        "s1": 1
+      }
+    },
+    "DG/2008/page_73.pdf-1": {
+      "chi": {
+        "s1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:a87f07d2500532e523d789b36e468cce8efa07e29a31c064b82b06092a3d7b3b"
+      ],
+      "n_x": 1,
+      "states": {
+        "s1": 1
+      }
+    },
+    "DRE/2016/page_59.pdf-2": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:6e6b7c2d9aa3062fb22b2ec6232d8341f4d14ece754639954729bc9b1724e9ca",
+        "v10gen:1ab1ec9aaf95fcbf55a739992f9a4ed81bae56d6e7ea35ab7316318f869f133d"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "GPN/2016/page_84.pdf-4": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:3a779a9a4c3a32b8bcedc8821dd3aaee6c525e2566914ee8d578bc80677d5f1c",
+        "v10gen:42f7e47c580323bcb6110f37e464fb05ff2258dd7200e5146ce0461ed37a55af"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "HFC/2011/page_92.pdf-2": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:9cf1bf3a828eb293121c0f2e3b10815a2dc72794b2ebdd30160d754525e1a668",
+        "v10gen:e65cac91475d3242e90e4398ac248f3538dc64180bb23e4dde603c820770ddc4"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "IP/2005/page_32.pdf-3": {
+      "chi": {
+        "s1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:197c8c7d4a8375badff433fb233116a33e1a4176afbba83986aa0b0376fec7f1"
+      ],
+      "n_x": 1,
+      "states": {
+        "s1": 1
+      }
+    },
+    "JPM/2017/page_104.pdf-2": {
+      "chi": {
+        "state-1": 1
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:b9055ff03fb511c5a72bce79e1705b8decd3277ec41971d81dc43798f32962f5"
+      ],
+      "n_x": 1,
+      "states": {
+        "state-1": 1
+      }
+    },
+    "LMT/2013/page_87.pdf-1": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:5cab93d0cf65ca875d7de77dc4d6b49ad4f39a5b533e052f9fa6cf7ab9eb7c64",
+        "v10gen:dc953928c08ddf43bd8539f674d7c218b199338ad17e7c917d856d8fd635b37c"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "MRO/2008/page_145.pdf-1": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:a5f14446f2ec4b12a161b3ca91767712c0f7e80c0c3c165109dfb2ad95a5a934",
+        "v10gen:b3d6492e42a508193037db8e62ac07ec037143bf069977807b41c2bd4b59a781"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "MRO/2008/page_146.pdf-3": {
+      "chi": {
+        "state-1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:e84f2267289a2f1504f4a4dd1d8cfe22a09fe1eac2425a2274a94bd50fd50a27",
+        "v10gen:e2e222ac60d703e610ab228d52c5a961c340754b848d8ec8b27c9d2a1ac00719"
+      ],
+      "n_x": 2,
+      "states": {
+        "state-1": 2
+      }
+    },
+    "MRO/2012/page_18.pdf-2": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:32f324e5ef3847658c71a049138266b56e5d1c9e742b9003f8a1dc121f370f33"
+      ],
+      "n_x": 1,
+      "states": {
+        "state_1": 1
+      }
+    },
+    "MSI/2005/page_64.pdf-6": {
+      "chi": {
+        "state-1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:2245d33bc0f244f6fd9ebd12aaad1941eac304e58534ae10b6ff06e02a68f13a"
+      ],
+      "n_x": 1,
+      "states": {
+        "state-1": 1
+      }
+    },
+    "RSG/2013/page_137.pdf-1": {
+      "chi": {
+        "state-1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:4d0db8427477ab413ca03a5368334644236ac2ba72be7d9547a0d66715bc7b13"
+      ],
+      "n_x": 1,
+      "states": {
+        "state-1": 1
+      }
+    },
+    "SNA/2013/page_93.pdf-3": {
+      "chi": {
+        "state_1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:f7883ed509150e184b54afd3f5c83cb955dc8c89e0087e81f48269104df93dde",
+        "v10gen:bb827917cd717ae792bc03c5d091767d69b1dba3a15d9d8ab68442c7bd73d630"
+      ],
+      "n_x": 2,
+      "states": {
+        "state_1": 2
+      }
+    },
+    "STT/2007/page_65.pdf-3": {
+      "chi": {
+        "state_1": 1
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:1d7a06e692ded67e2bd821dc9f9990b179e1a7e410e069df4babfde93dd8ae8f"
+      ],
+      "n_x": 1,
+      "states": {
+        "state_1": 1
+      }
+    },
+    "TSCO/2017/page_28.pdf-1": {
+      "chi": {
+        "S1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:088cc94aa08dcd8e569d37eff94ed00f25e2bf5b0db6b521a7f80efbf388d5dc",
+        "v10gen:db95648511ddab8a39d36d3871790b14ff64c0be0969b6625f72b9c2a4465407",
+        "v10gen:99b095dd864e7f8cb234f6835d3f2b866c9664b388c9f50181fd5c0c3117dc9b"
+      ],
+      "n_x": 3,
+      "states": {
+        "S1": 3
+      }
+    },
+    "VTR/2007/page_97.pdf-2": {
+      "chi": {
+        "state-1": 0
+      },
+      "joint_valid_slot_ids": [
+        "v10gen:531851ea4daa4f3875bbc2d568f788a65fab991a31c06196ebc004ba3282db19"
+      ],
+      "n_x": 1,
+      "states": {
+        "state-1": 1
+      }
+    }
+  },
+  "training_task_ids": [
+    "C/2015/page_73.pdf-1",
+    "DG/2008/page_73.pdf-1",
+    "MSI/2005/page_64.pdf-6",
+    "TSCO/2017/page_28.pdf-1",
+    "AMAT/2012/page_37.pdf-2",
+    "JPM/2017/page_104.pdf-2",
+    "MRO/2008/page_145.pdf-1",
+    "KMI/2010/page_164.pdf-2",
+    "KIM/2006/page_67.pdf-2",
+    "RSG/2013/page_137.pdf-1",
+    "DRE/2016/page_59.pdf-2",
+    "C/2015/page_73.pdf-2",
+    "BLK/2017/page_35.pdf-2",
+    "LMT/2014/page_47.pdf-2",
+    "HFC/2011/page_92.pdf-2",
+    "STT/2007/page_65.pdf-3",
+    "IP/2013/page_62.pdf-1",
+    "SNA/2013/page_93.pdf-3",
+    "MRO/2008/page_44.pdf-4",
+    "HFC/2011/page_92.pdf-1",
+    "AMT/2004/page_46.pdf-1",
+    "KMI/2010/page_2.pdf-1",
+    "AAPL/2013/page_41.pdf-1",
+    "AES/2001/page_51.pdf-1",
+    "JPM/2017/page_69.pdf-1",
+    "GPN/2016/page_84.pdf-4",
+    "DISCA/2017/page_41.pdf-2",
+    "DISCA/2017/page_41.pdf-3",
+    "MRO/2008/page_146.pdf-3",
+    "PNC/2018/page_45.pdf-5",
+    "AES/2001/page_45.pdf-2",
+    "CDW/2015/page_53.pdf-3",
+    "IP/2018/page_50.pdf-1",
+    "MRO/2012/page_18.pdf-2",
+    "LMT/2014/page_45.pdf-2",
+    "VTR/2007/page_97.pdf-2",
+    "CDW/2015/page_34.pdf-1",
+    "IP/2013/page_61.pdf-2",
+    "LMT/2013/page_87.pdf-1",
+    "BLK/2009/page_98.pdf-4",
+    "IP/2013/page_64.pdf-3",
+    "TFX/2006/page_50.pdf-2",
+    "IP/2005/page_32.pdf-3",
+    "BDX/2009/page_80.pdf-4"
+  ]
+}

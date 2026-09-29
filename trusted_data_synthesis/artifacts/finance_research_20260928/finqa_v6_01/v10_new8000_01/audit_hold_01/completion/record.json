@@ -1,0 +1,17 @@
+{
+  "at": "2026-09-29T17:09:08.252893+00:00",
+  "automatic_resume_authorized": false,
+  "forced_kill": false,
+  "id": "7bd762b27353855b0419844580d81d1a33838614c5be47f4a8fd73015fc481dc",
+  "material_phase": "BLOCKED_REPRESENTATION_OR_MAPPING",
+  "material_result_id": "c6b15da768f695096f8f04caeed12f6ceafcd46f47f322a88899b2d3831baa6e",
+  "no_new_API_since_hold": true,
+  "no_training_binding": true,
+  "pending_requests": 0,
+  "request_id": "1f8cd55e8a23f35aed248e00e7577b6e9cb0a78e5c6cd29a50c307451e4d33db",
+  "review_mapping_requests": 11557,
+  "schema": "v10_user_audit_hold_completion.v1",
+  "supervisor_and_worker_exited": true,
+  "training_admitted": false,
+  "user_reply": "仅完成报告，等待审计"
+}
