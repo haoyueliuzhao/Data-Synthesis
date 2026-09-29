@@ -152,6 +152,12 @@ def partition_snapshot(connection, config):
 
     funding = read_overlay(connection, config)
     effective_limits = {key: dict(value) for key, value in LIMITS.items()}
+    from .v12_budget import effective_request_limits
+
+    transferred_requests = effective_request_limits(connection, config)
+    if transferred_requests is not None:
+        for key, cap in transferred_requests.items():
+            effective_limits[key]["requests"] = cap
     if funding is not None:
         effective_limits["review_mapping"]["microcny"] = funding[
             "effective_review_mapping_microcny"
@@ -167,7 +173,7 @@ def partition_snapshot(connection, config):
                 type(row[k]) is not int or row[k] < 0
                 for k in ("requests", "dispatched", "spent", "held", "pending", "unknown")
             )
-            or row["requests"] > row["request_cap"]
+            or row["requests"] > effective_limits[key]["requests"]
             or row["spent"] + row["held"] > effective_limits[key]["microcny"]
             or row["dispatched"] > row["requests"]
             or row["unknown"] + row["pending"] > row["requests"]
@@ -211,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v12"):
+        from .v12_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     record = _record(connection, config)
     if record is None:
         return None
@@ -231,6 +241,13 @@ def _eligible(connection, config, coordinates, output_limit):
 
 
 def admit(connection, config, coordinates, output_limit, reservation, *, request_body=None):
+    from .v12_budget import eligible, read_matrix_permit
+
+    matrix = read_matrix_permit(connection, config)
+    if matrix is not None:
+        if not coordinates["episode_id"].startswith("v12review:") or request_body is None:
+            raise BudgetUnavailable("V12 registration forbids old/unrelated reservations")
+        eligible(connection, config, coordinates, output_limit, request_body=request_body)
     category = _eligible(connection, config, coordinates, output_limit)
     if category is None:
         return None
@@ -246,7 +263,8 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     if funding is not None and category == "generation":
         raise BudgetUnavailable("V10 funding authorizes no new generation reservations")
     quota = connection.execute("SELECT * FROM v10_quotas WHERE category=?", (category,)).fetchone()
-    if quota["requests"] >= quota["request_cap"]:
+    request_cap = matrix["effective_request_limits"][category] if matrix else quota["request_cap"]
+    if quota["requests"] >= request_cap:
         raise BudgetUnavailable(f"V10 {category} request sublimit exhausted; no borrowing")
     money_cap = (
         funding["effective_review_mapping_microcny"] if funding is not None else quota["money_cap"]
