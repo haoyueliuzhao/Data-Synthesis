@@ -553,7 +553,7 @@ async def collect(output, plan, ledger, key, *, client=None, _validated_complete
             async with httpx.AsyncClient(
                 timeout=120,
                 follow_redirects=False,
-                trust_env=True,
+                trust_env=False,
                 limits=httpx.Limits(max_connections=16, max_keepalive_connections=16),
             ) as transport:
                 await dispatch(transport)

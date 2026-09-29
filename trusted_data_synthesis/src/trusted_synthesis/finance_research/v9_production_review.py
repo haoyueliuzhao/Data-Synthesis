@@ -731,6 +731,7 @@ async def run(output=OUTPUT, env_file=ENV_FILE, *, resume=False):
 
     progress("PRODUCTION_REVIEW_RUNNING")
     async with httpx.AsyncClient(
+        trust_env=False,
         follow_redirects=False,
         timeout=1200,
         limits=httpx.Limits(

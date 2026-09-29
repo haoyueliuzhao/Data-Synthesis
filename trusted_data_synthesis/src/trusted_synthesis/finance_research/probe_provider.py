@@ -147,7 +147,9 @@ class BudgetedDeepSeekFlashProvider:
                 import httpx
 
                 async with httpx.AsyncClient(
-                    timeout=self.timeout, transport=httpx.AsyncHTTPTransport(retries=0)
+                    timeout=self.timeout,
+                    trust_env=False,
+                    transport=httpx.AsyncHTTPTransport(retries=0, trust_env=False),
                 ) as client:
                     self.actual_model_calls += 1
                     response = await client.post(ENDPOINT, content=request_body, headers=headers)

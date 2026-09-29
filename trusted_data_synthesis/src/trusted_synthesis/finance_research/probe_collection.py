@@ -504,7 +504,7 @@ async def collect(output, env_file=ENV_FILE):
 
     async with httpx.AsyncClient(
         timeout=120,
-        trust_env=True,
+        trust_env=False,
         follow_redirects=False,
         limits=httpx.Limits(max_connections=16, max_keepalive_connections=16),
     ) as client:

@@ -594,6 +594,7 @@ async def collect(output, plan, ledger, key):
 
     async with httpx.AsyncClient(
         timeout=120,
+        trust_env=False,
         follow_redirects=False,
         limits=httpx.Limits(max_connections=16, max_keepalive_connections=16),
     ) as client:
@@ -827,6 +828,7 @@ async def review_all(output, plan, ledger, key):
                 queue.put_nowait((task_id, reviewer))
     async with httpx.AsyncClient(
         timeout=240,
+        trust_env=False,
         follow_redirects=False,
         limits=httpx.Limits(max_connections=8, max_keepalive_connections=8),
     ) as client:

@@ -604,7 +604,7 @@ class DeepSeekFlashProvider:
             if self._client is None:
                 import httpx
 
-                async with httpx.AsyncClient(timeout=self.timeout) as client:
+                async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
                     self.actual_model_calls += 1
                     response = await client.post(
                         "https://api.deepseek.com/chat/completions", json=body, headers=headers

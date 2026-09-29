@@ -734,6 +734,7 @@ async def run_batch(output, plan, ledger, key, completed, jobs, phase):
 
     async with httpx.AsyncClient(
         timeout=300,
+        trust_env=False,
         follow_redirects=False,
         limits=httpx.Limits(max_connections=8, max_keepalive_connections=8),
     ) as client:

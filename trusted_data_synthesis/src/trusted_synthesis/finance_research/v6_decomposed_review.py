@@ -623,6 +623,7 @@ async def run_batch(context, ledger, key, completed, jobs, phase, concurrency):
         save_stop("recovered preceding failure window")
         return [dict(reason="existing failure window prevents further dispatch")]
     async with httpx.AsyncClient(
+        trust_env=False,
         timeout=1200,
         follow_redirects=False,
         limits=httpx.Limits(max_connections=concurrency, max_keepalive_connections=concurrency),

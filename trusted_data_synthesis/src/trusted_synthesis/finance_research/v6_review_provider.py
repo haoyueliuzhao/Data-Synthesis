@@ -243,7 +243,9 @@ async def request_review(*, ledger, api_key, episode_id, request, client=None, t
             import httpx
 
             async with httpx.AsyncClient(
-                timeout=timeout, transport=httpx.AsyncHTTPTransport(retries=0)
+                timeout=timeout,
+                trust_env=False,
+                transport=httpx.AsyncHTTPTransport(retries=0, trust_env=False),
             ) as actual:
                 actual_calls += 1
                 response = await actual.post(endpoint, content=wire, headers=headers)
