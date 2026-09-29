@@ -1,0 +1,13 @@
+{
+  "additional_model_calls_authorized": 0,
+  "automatic_next_wave_after_threshold": false,
+  "batch_id": "finqa-v10-20260929-new8000-01",
+  "drain_and_acknowledge_real_terminals_before_stopping": true,
+  "id": "b67c8d5de0157056476a83ff2a71d76584d7143883aaa008524a215c56d5cb2d",
+  "protocol_id": "a692b4bf7bbdbe81aa6882400d436d19fda33ea1dbb3f502796b58959302f080",
+  "requests_samples_capacity_concurrency_and_fixed_matrix_unchanged": true,
+  "same_wave_connection_unknown_threshold": 3,
+  "schema": "v10_primary_review_network_wave_guard.v1",
+  "scope": "primary review only; not mapping or the one authorized final attempt",
+  "single_unknown_continuation_unchanged": true
+}

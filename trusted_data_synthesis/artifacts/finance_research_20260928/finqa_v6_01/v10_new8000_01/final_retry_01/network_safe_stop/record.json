@@ -1,0 +1,21 @@
+{
+  "at": "2026-09-29T14:07:42.034650+00:00",
+  "force_kill": false,
+  "id": "cbe6f96271201070ba07c2c0a1a7e2a18c7481c7b7206f0cf10f142c6f93e76f",
+  "reason": "sustained connection-UNKNOWN escalation while preparing approved final single retry; preserve budget and original matrix",
+  "review_birth": "311451299",
+  "review_pid": 3502558,
+  "schema": "v10_network_risk_safe_stop.v1",
+  "scope_final_retry_unchanged": true,
+  "snapshot": {
+    "active": 0,
+    "actual_returns": 3085,
+    "at": "2026-09-29T14:05:52.409994+00:00",
+    "network_unknowns": 21,
+    "phase": "V10_REVIEW_SAVED",
+    "processed": 3106
+  },
+  "workflow_birth": "311451237",
+  "workflow_launch_id": "b81ea165a0e9aa2e4c333f3a5d3f8bc036ccbdb24bb7894c9337d00e2fc44cfa",
+  "workflow_pid": 3502543
+}
