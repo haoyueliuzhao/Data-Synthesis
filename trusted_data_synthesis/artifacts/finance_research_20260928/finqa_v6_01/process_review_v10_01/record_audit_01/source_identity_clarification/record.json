@@ -1,0 +1,13 @@
+{
+  "executed_audit_source_sha256": "d16208d8092f2c755d0cce484f4328fb3818d833f0deebf9cb70c2797dcaa7a3",
+  "executed_source_copy": "publication_failure/audit_source.py",
+  "execution_worktree": "/tmp/data-synthesis-finqa-process-review-20260929",
+  "first_scan_summary_unavailable": true,
+  "id": "4afacd63c1914875a2f268a51a6ce269d100a47ad9fae1f3e4646b60e5b90a12",
+  "original_field_meaning": "canonical checkout HEAD; not the worktree execution source",
+  "original_registration_preserved": true,
+  "original_source_commit_field": "860109eebd5928e78840353b90c69e4f92d90c81",
+  "registration_id": "e0c9d2d1ce51a4fdaf85a744667f6798d316deddf88d70e261bef95d579fe241",
+  "schema": "v10_first_audit_source_identity_clarification.v1",
+  "worktree_base_commit": "860109eebd5928e78840353b90c69e4f92d90c81"
+}

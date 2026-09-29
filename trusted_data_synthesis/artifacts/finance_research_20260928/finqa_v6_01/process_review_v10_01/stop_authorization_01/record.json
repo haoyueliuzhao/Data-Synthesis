@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-29T08:31:31.361794+00:00",
+  "id": "851e33ab1590ddad31414191ae156ca0c425ac3dfe86c2859320e68357542b90",
+  "original_protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+  "pid": 2901919,
+  "process_start_time_ticks": "309411615",
+  "schema": "v10_old_production_stop_authorization.v1",
+  "scope": "stop only current old-rule production after all in-flight calls settle; preserve originals, responses, UNKNOWNs and reservations; no new paid review",
+  "source_commit": "e6da9a422dd1726ef2a2f42e6aa2fb27a31468c6",
+  "user_reply": "先安全停止旧审阅，保留全部记录（建议）"
+}

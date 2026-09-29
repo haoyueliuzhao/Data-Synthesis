@@ -1,0 +1,26 @@
+{
+  "all_selected_case_artifacts_published": true,
+  "cases": {
+    "original_0000": {
+      "id": "4a38fcbec55b55f7a79b1212e6c203a51c79b791ad6f416f211eb601c5a103e3",
+      "path": "cases/original_0000/record.json"
+    },
+    "original_0008": {
+      "id": "826d72413b9500777b433213f735c5d51e2d5e2f4d6e9b325a9055ff91ab6e8e",
+      "path": "cases/original_0008/record.json"
+    },
+    "original_0019": {
+      "id": "038f0b6f0e84b9d86060db6b6a0c25213b23c9f0e184f81d9a5df3216c5817e8",
+      "path": "cases/original_0019/record.json"
+    },
+    "original_0024": {
+      "id": "abfcd7e7f5c21a8c671d11249e15e5519838b70643fe950fea92522a7a1f04ad",
+      "path": "cases/original_0024/record.json"
+    }
+  },
+  "executed_audit_source_sha256": "82c257a14b0474d800ea020bfff254a366a916ade477b7067317c065da71015d",
+  "id": "984dd1236f2fcac7765e3d252b1fa45de648b5e628334b57f471af36a59ebc66",
+  "report_id": "7b2569744e85358acf10212bc015d92067fbf07ec1c5a5ef009c4fce01dba3e5",
+  "row_count": 8000,
+  "schema": "v10_record_audit_complete.v1"
+}

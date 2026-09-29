@@ -1,0 +1,23 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "cause": "nested cases/... payload names rejected before results directory creation",
+  "error": "immutable artifact filenames must be non-empty local names",
+  "error_type": "ValueError",
+  "fixed_selected_case_ordinals_from_stdout": {
+    "direct_submission": 24,
+    "error_then_changed_action_candidate": 19,
+    "execute_then_submit": 0,
+    "normal_model_failure": 8
+  },
+  "id": "79b0dfe77748c99670460258119eb6142ae4f437b7b0c5e6f2107747906c23e1",
+  "mechanical_pass_rate_claimed": false,
+  "observed_processed_stdout": 8000,
+  "observed_scan_elapsed_seconds": 74.29,
+  "original_files_modified": false,
+  "per_record_check_results_lost_with_process": true,
+  "registration_id": "e0c9d2d1ce51a4fdaf85a744667f6798d316deddf88d70e261bef95d579fe241",
+  "results_written": false,
+  "schema": "v10_record_audit_publication_failure.v1",
+  "wallet_opened": false
+}

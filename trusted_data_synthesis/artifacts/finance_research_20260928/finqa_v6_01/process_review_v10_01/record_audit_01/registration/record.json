@@ -1,0 +1,56 @@
+{
+  "GPU_used": false,
+  "at": "2026-09-29T08:38:46.860380+00:00",
+  "audit_attachment_sha256": "0746ce7f1dca235a4594e85147d19b7fb3cdad3040b4058aee48d52db839e0ef",
+  "case_order": "first matching protocol.slots ordinal; no success/richness preference",
+  "case_rules": {
+    "direct_submission": "only one actual successful submit_program event",
+    "error_then_changed_action_candidate": "error followed by different name/raw_arguments; NOT semantic revision",
+    "execute_then_submit": "run_program before successful submit_program",
+    "normal_model_failure": "complete settled episode; reused Q_native=False"
+  },
+  "cases_may_overlap": true,
+  "full_population_scope": "original records, request chain, view, Student text",
+  "id": "e0c9d2d1ce51a4fdaf85a744667f6798d316deddf88d70e261bef95d579fe241",
+  "label_or_length_not_semantic_proxy": true,
+  "maximum_distinct_cases": 4,
+  "models_called": 0,
+  "native_rescored": false,
+  "original_files_modified": false,
+  "original_slots": 8000,
+  "original_tasks": 1000,
+  "parent_generation_seal": {
+    "id": "91a640794bc63eff11b3c37d90e4562905d482c8593aa973e4c95420456af117",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/generation_seal/record.json",
+    "sha256": "cd7f0a1b1b5a00ebe5fadae54ae202e33a7681f8d3cbcb203e582278e676d5fd"
+  },
+  "parent_protocol": {
+    "id": "0f8f261f7ac792d77c67abb58ae8e97125dc91c0e3368b7a49f364178541ae1a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/registration/protocol.json",
+    "sha256": "6bc5aaa82ae6933a5aa42e642e0d366ebe4dbbac41a41610d27eebc8b36c7daf"
+  },
+  "reused_native_record": {
+    "id": "5c4b1933fe451cd1f1e6b7b67a00faab60784aa50e92c81c6073b0213b14ea18",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/new_full_probe_v8_launch_01/native_support/record.json",
+    "sha256": "31f54e64c9621260f1efab045b69c580f354a982b6d356ddb291ee8ad66a5e15"
+  },
+  "schema": "v10_record_audit_registration.v1",
+  "selected_cases_only": "durable event file sequence and real Student token roundtrip",
+  "semantic_substance_not_measured": true,
+  "slot_order_sha256": "9822ebce66373e4020f19d90446617f8fdc024e3c0b04332b5993446d598f74c",
+  "source_bindings": {
+    "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+    "encoding.py": "72495838b4e0da0da07d4024f1c288aa450abe9b6cfc09aac6a77627c6e91c08",
+    "harness.py": "fb38990c727c4ed9058c93582e1ed279beca032972f779a21d72a5947f9bc629",
+    "profiles.py": "a8a260aa1687035a97bed31d4d5428438665adb44434b9628d63d6795fe4c3f5",
+    "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+    "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+    "v10_record_audit.py": "d16208d8092f2c755d0cce484f4328fb3818d833f0deebf9cb70c2797dcaa7a3",
+    "v6_encoding.py": "858cc81b43262641b7f1d7740029e52bde5b76a6dbb96c3a83527c2916485412",
+    "v6_task.py": "2c238311bb661fcf0e760d52c963d1678020e9d131178f6720d41551b20ab278"
+  },
+  "source_commit": "860109eebd5928e78840353b90c69e4f92d90c81",
+  "tools_reexecuted": false,
+  "wallet_opened": false,
+  "workers": 8
+}

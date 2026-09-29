@@ -1,0 +1,1015 @@
+{
+  "batches": {
+    "production_snapshot": {
+      "GPU_used": false,
+      "actual_trace_financial_error_rate": null,
+      "annotation_failure_families": {
+        "action_annotation_binding": 36,
+        "approved_fragment_missing_proposition_link": 12,
+        "graph_or_node_annotation_binding": 765,
+        "nonassertive_surface_rule_rejection": 895,
+        "other_annotation_internal_inconsistency": 83,
+        "reported_valid_vs_claim_annotation_inconsistency": 6,
+        "retraction_annotation_consistency": 5,
+        "target_coverage_or_mask_annotation": 336,
+        "term_or_proposition_annotation_binding": 18
+      },
+      "categories": {
+        "annotation_internal_inconsistency": 2156,
+        "consistent_reviewer_invalid_claim": 1,
+        "consistent_reviewer_valid_label": 2418,
+        "network_unknown_no_model_response": 64,
+        "no_response_in_snapshot": 8282,
+        "structure_or_return_format_failure": 101
+      },
+      "consistent_invalid_annotation_content": {
+        "without_annotated_critical_nonsupported_proposition": 1
+      },
+      "consistent_invalid_reviewer_reason_codes": {
+        "no_substantive_verification_or_revision": 1,
+        "period_misread_dec292018_vs_dec302017": 1,
+        "question_asks_as_of_dec302017_but_model_used_dec292018": 1,
+        "routine_submission_not_chi": 1
+      },
+      "exact_annotation_errors": {
+        "accepted graph node lacks accepted proposition": 3,
+        "action judgment lacks proposition/evidence binding": 8,
+        "approved span needs reviewed proposition": 12,
+        "format/count/repetition alone cannot establish substantive chi": 4,
+        "nonassertive context requires explicit future opt-in and an empty optional Q field": 895,
+        "proposition needs original model text": 18,
+        "retracted/unknown/error claim cannot become a positive target": 9,
+        "retraction must be explicit, not host repair": 4,
+        "retraction must follow the claim": 1,
+        "strict_finish_not_tool_calls": 3,
+        "substantive change must follow actual observation": 12,
+        "substantive update missing in accepted semantic graph": 179,
+        "unbound semantic node": 583,
+        "unbound semantic relation": 67,
+        "unknown mask proposition": 327,
+        "v8 interface JSONDecodeError: Expecting ',' delimiter: line 1 column 168 (char 167)": 1,
+        "v8 interface JSONDecodeError: Expecting ',' delimiter: line 1 column 292 (char 291)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 201 (char 200)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 222 (char 221)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 350 (char 349)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 3989 (char 3988)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4129 (char 4128)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4218 (char 4217)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4255 (char 4254)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4326 (char 4325)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4328 (char 4327)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4790 (char 4789)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4813 (char 4812)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4835 (char 4834)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4860 (char 4859)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4976 (char 4975)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4978 (char 4977)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5094 (char 5093)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5167 (char 5166)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5219 (char 5218)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5314 (char 5313)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5403 (char 5402)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5436 (char 5435)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5440 (char 5439)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5465 (char 5464)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 6040 (char 6039)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 6255 (char 6254)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 6435 (char 6434)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 6643 (char 6642)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 7098 (char 7097)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 7149 (char 7148)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 3590 (char 3589)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 3798 (char 3797)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 4168 (char 4167)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 4195 (char 4194)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 4784 (char 4783)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 5036 (char 5035)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 6140 (char 6139)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 6677 (char 6676)": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ncoverage_complete_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ncoverage_complete_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='All 61 source fragments,...ext fragments reviewed.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ncoverage_complete_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='all 13 targets reviewed', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ncoverage_complete_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='all 61 src fragments, 2 ...text fragments reviewed', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ncoverage_complete_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='all public fragments and both actions reviewed', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\nnodes.3.predicate\n  Input should be 'fact', 'derivation', 'decision', 'answer', 'source_selection', 'verification' or 'semantic_revision' [type=literal_error, input_value='none', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\nnodes.5.node_id_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='submission', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\noperation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='add', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\noperation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='none', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 4,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\noperation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='submit_review', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.3.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti...2', 'src_44', 'src_45']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.3.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti...: ['action_1', 'obs_1']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.3.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti..._38', 'obs_0', 'obs_2']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.4.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti...: ['action_1', 'obs_1']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.5.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti...: ['action_1', 'obs_2']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\ntargets.text_0.proposition_ids_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 10 validation errors for SingleTargetOutput\nedges.0.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_common'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.to_node\n  Input should be a valid string [type=string_type, input_value=['n_deriv_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.1.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_total'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.1.to_node\n  Input should be a valid string [type=string_type, input_value=['n_deriv_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.2.from_node\n  Input should be a valid string [type=string_type, input_value=['n_deriv_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.2.to_node\n  Input should be a valid string [type=string_type, input_value=['n_ver_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.3.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ver_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.3.to_node\n  Input should be a valid string [type=string_type, input_value=['n_ans_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.4.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ans_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.4.to_node\n  Input should be a valid string [type=string_type, input_value=['n_submit'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type": 1,
+        "v8 interface ValidationError: 13 validation errors for SingleTargetOutput\nnodes.0.node_id\n  Input should be a valid string [type=string_type, input_value=['n_fact_mexico'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.1.node_id\n  Input should be a valid string [type=string_type, input_value=['n_fact_total'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.2.node_id\n  Input should be a valid string [type=string_type, input_value=['n_deriv_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.3.node_id\n  Input should be a valid string [type=string_type, input_value=['n_ver_result'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.4.node_id\n  Input should be a valid string [type=string_type, input_value=['n_ans_pct'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.5.node_id\n  Input should be a valid string [type=string_type, input_value=['n_dec_unit'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nnodes.6.node_id\n  Input should be a valid string [type=string_type, input_value=['n_submit'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_mexico'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.1.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_total'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.2.from_node\n  Input should be a valid string [type=string_type, input_value=['n_deriv_ratio'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.3.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ver_result'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.4.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ans_pct'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.5.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ans_pct'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\nnodes.4.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...': ['src_17', 'src_18']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.5.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...': ['src_17', 'src_18']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\nnodes.4.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...1', 'src_36', 'src_37']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.5.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...1', 'src_36', 'src_37']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\noperation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='divide', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\npredicate\n  Extra inputs are not permitted [type=extra_forbidden, input_value='derivation', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\noperation\n  Extra inputs are not permitted [type=extra_forbidden, input_value='none', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\npredicate\n  Extra inputs are not permitted [type=extra_forbidden, input_value='fact', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\npropositions.1.proposition_id\n  Field required [type=missing, input_value={'accepted': True, 'criti...': ['src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\npropositions.1.proposition_ids\n  Extra inputs are not permitted [type=extra_forbidden, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 2 validation errors for SingleTargetOutput\npropositions.1.proposition_id\n  Field required [type=missing, input_value={'accepted': True, 'criti...0', 'src_33', 'src_36']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\npropositions.1.proposition_ids\n  Extra inputs are not permitted [type=extra_forbidden, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden": 1,
+        "v8 interface ValidationError: 3 validation errors for SingleTargetOutput\nedges.0.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_ms'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.to_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_ms'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.relation\n  Input should be 'supports', 'derives', 'selects', 'checks', 'revises' or 'accepts' [type=literal_error, input_value=['supports'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error": 1,
+        "v8 interface ValidationError: 3 validation errors for SingleTargetOutput\nnodes.4.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...': ['src_16', 'src_17']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.5.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...': ['src_16', 'src_17']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.6.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...': ['src_16', 'src_17']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 4 validation errors for SingleTargetOutput\nedges.0.from_node\n  Input should be a valid string [type=string_type, input_value=['n_fact_cash'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.1.from_node\n  Input should be a valid string [type=string_type, input_value=['n_deriv_wc'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.2.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ans_wc'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.3.from_node\n  Input should be a valid string [type=string_type, input_value=['n_ver_wc'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type": 1,
+        "v8 interface ValidationError: 5 validation errors for SingleTargetOutput\nnodes.0.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...3', 'src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.1.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...3', 'src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.2.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...3', 'src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.3.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...3', 'src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes.4.term_ids\n  Field required [type=missing, input_value={'accepted': True, 'evide...3', 'src_54', 'src_55']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "v8 interface ValidationError: 7 validation errors for SingleTargetOutput\nedges.0.from_node\n  Input should be a valid string [type=string_type, input_value=['n_quest'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.to_node\n  Input should be a valid string [type=string_type, input_value=['n_sum'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_type\nedges.0.relation\n  Input should be 'supports', 'derives', 'selects', 'checks', 'revises' or 'accepts' [type=literal_error, input_value=['supports'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error\ntargets.action_0\n  Input should be a valid dictionary or instance of TargetJudgment [type=model_type, input_value=['approved', ['p_program'...c_6', 'src_9', 'obs_0']], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type\ntargets.text_0\n  Input should be a valid dictionary or instance of TargetJudgment [type=model_type, input_value=['approved', ['p_quest', ...c_6', 'src_7', 'src_9']], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type\ntargets.text_1\n  Input should be a valid dictionary or instance of TargetJudgment [type=model_type, input_value=['approved', ['p_quest', ...c_6', 'src_7', 'src_9']], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type\ntargets.text_2\n  Input should be a valid dictionary or instance of TargetJudgment [type=model_type, input_value=['approved', ['p_sum', 'p...m'], ['src_6', 'src_9']], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type": 1,
+        "v8 interface ValidationError: 7 validation errors for SingleTargetOutput\nterms\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nnodes\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nv_trace\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreason_codes\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\npropositions\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nupdates\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ntargets\n  Field required [type=missing, input_value={'coverage_complete': Tru...'to_node': 'n_submit'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "valid trace retains an unresolved key claim": 6,
+        "wrong original evidence kind": 26,
+        "zero-mask retraction lacks original evidence": 28
+      },
+      "examples": {
+        "annotation_internal_inconsistency": [
+          {
+            "actual_return_excerpt": {
+              "end": 2709,
+              "exact_text": "\"reason_codes\": [\"source_grounded_net_assets\", \"program_matches_gold\", \"action_observation_linked\", \"routine_submission_not_chi\", \"no_retraction\", \"no_critical_contradiction\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_change\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_change\"]}, \"text_0\": {\"evidence\": [\"text_0\"], \"label\": \"nonassertive_context\", \"proposition_ids\": []}, \"text_1\": {\"evidence\": [\"src_43\", \"text_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_netassets\"]}, \"text_2\": {\"evidence\": [\"src_43\", \"obs_0\", \"text_2\"], \"label\": \"approved\", \"proposition_ids\": [\"p_change\"]}, \"text_3\": {\"evidence\": [\"obs_1\", \"text_3\"], \"label\": \"approved\", \"proposition_ids\": [\"p_change\"]}, \"t",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 1909
+            },
+            "assessment": {
+              "bytes": 50093,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_0cf155907522c2e642d003dd3259a81eaeeb2e0a05e4e8452153e470b58979ea/assessment/record.json",
+              "sha256": "612fbbc6a89f07d82613d9dda9915ba5c888ecbd8ff84ba95fde30636fa3eb40"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+              "annotation_family": "nonassertive_surface_rule_rejection",
+              "category": "annotation_internal_inconsistency",
+              "effective_v_trace": "unknown",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "valid",
+              "reviewer_reason_codes": [
+                "source_grounded_net_assets",
+                "program_matches_gold",
+                "action_observation_linked",
+                "routine_submission_not_chi",
+                "no_retraction",
+                "no_critical_contradiction"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [
+              {
+                "doc_id": "slot/v7-slot:ec150e8eb2e3315ddaea46924b00dfdaf1dfd8ff8525bc9d6bd87f80290c362b/turn:0000:content",
+                "end": 69,
+                "label": "nonassertive_context",
+                "quote": "R: The question asks for the change in net assets from 2007 to 2008. ",
+                "start": 0
+              },
+              {
+                "doc_id": "slot/v7-slot:ec150e8eb2e3315ddaea46924b00dfdaf1dfd8ff8525bc9d6bd87f80290c362b/turn:0001:content",
+                "end": 140,
+                "label": "nonassertive_context",
+                "quote": "This is a complete allowed operation matching the question's request.",
+                "start": 71
+              }
+            ],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:0cf155907522c2e642d003dd3259a81eaeeb2e0a05e4e8452153e470b58979ea",
+            "protocol_job_index": 1,
+            "response": {
+              "bytes": 110995,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_0cf155907522c2e642d003dd3259a81eaeeb2e0a05e4e8452153e470b58979ea/response/record.json",
+              "sha256": "91220129e278ba10e40c00446a2ca14a7fd4555495c7aa978643deb972e6aed2"
+            },
+            "review_format_error": null,
+            "reviewer": 1,
+            "slot_id": "v7-slot:ec150e8eb2e3315ddaea46924b00dfdaf1dfd8ff8525bc9d6bd87f80290c362b",
+            "stage": "slot",
+            "task_id": "GIS/2008/page_83.pdf-1"
+          },
+          {
+            "actual_return_excerpt": {
+              "end": 6138,
+              "exact_text": "\"reason_codes\": [\"all_critical_claims_supported\", \"no_retractions\", \"no_substantive_update\", \"routine_execution_then_submission\", \"native_answer_13_million_matches\"], \"targets\": {\"action_0\": {\"evidence\": [\"src_15\", \"src_16\", \"src_19\", \"src_20\", \"src_23\", \"src_24\", \"obs_0\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_prog\"]}, \"action_1\": {\"evidence\": [\"obs_2\", \"text_5\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submit\"]}, \"text_0\": {\"evidence\": [\"src_49\"], \"label\": \"approved\", \"proposition_ids\": [\"p_q\"]}, \"text_1\": {\"evidence\": [\"src_15\", \"src_16\", \"src_19\", \"src_20\", \"src_23\", \"src_24\"], \"label\": \"approved\", \"proposition_ids\": [\"p_table\"]}, \"text_2\": {\"evidence\": [\"src_15\", \"src_16\", \"src_19\", \"src_20\", \"src_23\", \"src_24\"], \"label\": \"approved\", \"proposition_ids\": [\"p_lost_def\"",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 5338
+            },
+            "assessment": {
+              "bytes": 77160,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_b97f478e6a49e7d9eb9d519a58edf7e0292441211fe68115ecd0214ce86548ed/assessment/record.json",
+              "sha256": "867b6f958f4e8f100f97506cdb36f75afff36825bffdef03483d03c6a8333e97"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "unbound semantic node",
+              "annotation_family": "graph_or_node_annotation_binding",
+              "category": "annotation_internal_inconsistency",
+              "effective_v_trace": "unknown",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "valid",
+              "reviewer_reason_codes": [
+                "all_critical_claims_supported",
+                "no_retractions",
+                "no_substantive_update",
+                "routine_execution_then_submission",
+                "native_answer_13_million_matches"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:b97f478e6a49e7d9eb9d519a58edf7e0292441211fe68115ecd0214ce86548ed",
+            "protocol_job_index": 2,
+            "response": {
+              "bytes": 126732,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_b97f478e6a49e7d9eb9d519a58edf7e0292441211fe68115ecd0214ce86548ed/response/record.json",
+              "sha256": "e09f97c3b1b6dd8928b84505509eda16550691f898080554f1a8a59dcd3c9d18"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v7-slot:b97d53a4ac717136fa85b58e9684c35b077280a17cc145231ed366abbe21cef2",
+            "stage": "slot",
+            "task_id": "TSCO/2017/page_68.pdf-3"
+          }
+        ],
+        "consistent_reviewer_invalid_claim": [
+          {
+            "actual_return_excerpt": {
+              "end": 3607,
+              "exact_text": "\"reason_codes\": [\"period_misread_dec292018_vs_dec302017\", \"question_asks_as_of_dec302017_but_model_used_dec292018\", \"no_substantive_verification_or_revision\", \"routine_submission_not_chi\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_prog\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submit\"]}, \"text_0\": {\"evidence\": [\"src_22\"], \"label\": \"approved\", \"proposition_ids\": [\"p_fact\"]}, \"text_1\": {\"evidence\": [\"src_2\", \"src_6\", \"src_10\"], \"label\": \"approved\", \"proposition_ids\": [\"p_fact\"]}, \"text_2\": {\"evidence\": [\"src_6\", \"src_10\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_ratio\"]}, \"text_3\": {\"evidence\": [\"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_ratio\"]}, \"text",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 2807
+            },
+            "assessment": {
+              "bytes": 48977,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_92b62ea8d30c250cea6f0b697d3eec7fa90fe1351abd708a17ea82f28b9d2676/assessment/record.json",
+              "sha256": "796c31a037ee7385cd9a1983ea367c630d297d169640dcf56e5f95a4910433c6"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": null,
+              "annotation_family": null,
+              "category": "consistent_reviewer_invalid_claim",
+              "effective_v_trace": "invalid",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "invalid",
+              "reviewer_reason_codes": [
+                "period_misread_dec292018_vs_dec302017",
+                "question_asks_as_of_dec302017_but_model_used_dec292018",
+                "no_substantive_verification_or_revision",
+                "routine_submission_not_chi"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:92b62ea8d30c250cea6f0b697d3eec7fa90fe1351abd708a17ea82f28b9d2676",
+            "protocol_job_index": 4647,
+            "response": {
+              "bytes": 80318,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_92b62ea8d30c250cea6f0b697d3eec7fa90fe1351abd708a17ea82f28b9d2676/response/record.json",
+              "sha256": "9ed5aafbf972b6d60ad235a97cf3aba54a8aa6935168e8e7356399e8985b8448"
+            },
+            "review_format_error": null,
+            "reviewer": 1,
+            "slot_id": "v7-slot:62a9feaf8c7d2f775ba09d64fe1a43087a214b165086bb33f7018c1cd8151ddc",
+            "stage": "slot",
+            "task_id": "INTC/2018/page_48.pdf-1"
+          }
+        ],
+        "network_unknown_no_model_response": [
+          {
+            "actual_return_excerpt": null,
+            "assessment": {
+              "bytes": 328,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_b78fdd7babf88ddab1fabf6e09c86c94edc6ad82413ba4e83669d088e9802b90/assessment/record.json",
+              "sha256": "9acd1b9a61b2b69051d424be81d1b5e9f48b6bba8c89d301795bee6c793387f5"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": false,
+              "category": "network_unknown_no_model_response",
+              "effective_v_trace": "unknown",
+              "process_error_established": false,
+              "reported_v_trace": null
+            },
+            "finish_reason": null,
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:b78fdd7babf88ddab1fabf6e09c86c94edc6ad82413ba4e83669d088e9802b90",
+            "protocol_job_index": 29,
+            "response": {
+              "bytes": 8756,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_b78fdd7babf88ddab1fabf6e09c86c94edc6ad82413ba4e83669d088e9802b90/response/record.json",
+              "sha256": "dd4e0e8468f5475a0e20aba647f9279b3dff5c330bc7d3d447ca67debf812a16"
+            },
+            "review_format_error": "no_complete_response_connection_unknown",
+            "reviewer": 1,
+            "slot_id": "v7-slot:5f30c4749dc0782b7d0bd4a6e14c03dae41ced86de0ffdce28cf2cb7b1add052",
+            "stage": "slot",
+            "task_id": "AES/2017/page_168.pdf-3"
+          },
+          {
+            "actual_return_excerpt": null,
+            "assessment": {
+              "bytes": 328,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_9a9bad94189379ab79acd85d89fd67dccca82c44b0c9cbdacd4d7dad8a7d66cc/assessment/record.json",
+              "sha256": "10828aeb5086778ec2b4597a7b6c8fcfa4302d47100588e6a604590f679a450c"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": false,
+              "category": "network_unknown_no_model_response",
+              "effective_v_trace": "unknown",
+              "process_error_established": false,
+              "reported_v_trace": null
+            },
+            "finish_reason": null,
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:9a9bad94189379ab79acd85d89fd67dccca82c44b0c9cbdacd4d7dad8a7d66cc",
+            "protocol_job_index": 103,
+            "response": {
+              "bytes": 8756,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_9a9bad94189379ab79acd85d89fd67dccca82c44b0c9cbdacd4d7dad8a7d66cc/response/record.json",
+              "sha256": "0a3513ab5e2a99fa1331ee330c125d5d0f1f56f1f2a2f4f2e39d52ccc79db15c"
+            },
+            "review_format_error": "no_complete_response_connection_unknown",
+            "reviewer": 1,
+            "slot_id": "v7-slot:20887048799ad61ccce6728bdcf6d505773c8dbf41d94ed3e00f404bf6389790",
+            "stage": "slot",
+            "task_id": "JPM/2017/page_144.pdf-4"
+          }
+        ],
+        "structure_or_return_format_failure": [
+          {
+            "actual_return_excerpt": {
+              "end": 4097,
+              "exact_text": "\"reason_codes\": [\"all_critical_claims_supported_by_table_row\", \"ratio_0.37447_matches_divide(1050,2804)\", \"no_retractions_present\", \"action_0_run_program_and_action_1_submit_program_both_succeeded_and_grounded\", \"update_nonsubstantive_recomputation_of_same_program\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_ratio\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_answer\"]}, \"text_0\": {\"evidence\": [\"src_51\", \"src_52\", \"src_53\", \"src_54\", \"src_55\", \"src_56\", \"src_57\", \"src_58\"], \"label\": \"approved\", \"proposition_ids\": [\"p_row\"]}, \"text_1\": {\"evidence\": [\"src_58\"], \"label\": \"approved\", \"proposition_ids\": [\"p_row\"]}, \"text_2\": {\"evidence\": [\"src_57\", \"src_58\"], \"label\": \"approved\", \"prop",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 3297
+            },
+            "assessment": {
+              "bytes": 263,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_66757b15b187f7cfbca2e6d02444213473327a437d9a21870104d67d5d9ef5da/assessment/record.json",
+              "sha256": "d6b293d9c22f3cae9a1e79f026b24a1ad4e9668cb3192235834d4ac69e44ad29"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "v8 interface JSONDecodeError: Extra data: line 1 column 6677 (char 6676)",
+              "annotation_family": null,
+              "category": "structure_or_return_format_failure",
+              "effective_v_trace": null,
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": null,
+              "reviewer_reason_codes": []
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:66757b15b187f7cfbca2e6d02444213473327a437d9a21870104d67d5d9ef5da",
+            "protocol_job_index": 74,
+            "response": {
+              "bytes": 195461,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_66757b15b187f7cfbca2e6d02444213473327a437d9a21870104d67d5d9ef5da/response/record.json",
+              "sha256": "01432fcef71eaa638b298d1c5bd3a56cc1d986944b5a1bf4248f9bbbf0c7de02"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v7-slot:46218ae7fcb18b60280b4fc8537d4ea0a07f6c904322a97cb253f76ce28abba9",
+            "stage": "slot",
+            "task_id": "NKE/2014/page_36.pdf-2"
+          },
+          {
+            "actual_return_excerpt": {
+              "end": 4707,
+              "exact_text": "\"reason_codes\": [\"action_0_run_program_add(17,15)_succeeded_obs_0_result_32\", \"action_1_submit_program_add(17,15)_succeeded_obs_1_submitted_true\", \"text_1_values_17_and_15_grounded_in_src_31_src_33_src_34_src_36\", \"text_2_top2_pay_claim_supported_by_table_values\", \"text_3_sum_instruction_supported\", \"text_4_answer_32_supported_by_obs_0_and_table\", \"text_5_program_claim_supported_by_action_0_obs_0\", \"text_6_empty_Q_None_nonassertive_context\", \"update_u1_substantive_verification_run_program_obs_0_confirms_32_then_submitted\", \"no_retractions_present\", \"no_critical_contradiction\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_run\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submit\"]}, ",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 3907
+            },
+            "assessment": {
+              "bytes": 268,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_1bb7b5ecd5e8601fd0f726a432370c7b4836ee8a52e96740748bc3a2bc0b4d9b/assessment/record.json",
+              "sha256": "58726c5b15547cc0c8a8cd2bfa8372b8aa72a6d9ae5c7836c45fc071139bb377"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "v8 interface JSONDecodeError: Expecting value: line 1 column 6435 (char 6434)",
+              "annotation_family": null,
+              "category": "structure_or_return_format_failure",
+              "effective_v_trace": null,
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": null,
+              "reviewer_reason_codes": []
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:1bb7b5ecd5e8601fd0f726a432370c7b4836ee8a52e96740748bc3a2bc0b4d9b",
+            "protocol_job_index": 130,
+            "response": {
+              "bytes": 197205,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/jobs/slot_1bb7b5ecd5e8601fd0f726a432370c7b4836ee8a52e96740748bc3a2bc0b4d9b/response/record.json",
+              "sha256": "b890fd5802e5885edd40dc752d670dcd5e09c3d393a267120ccba7a36e58ed47"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v7-slot:e4c61e20e9e2f598a10e418c2d5c6f3bda43d30460c05754c6f15d7d13f2391a",
+            "stage": "slot",
+            "task_id": "DISCA/2017/page_22.pdf-1"
+          }
+        ]
+      },
+      "finish_reason_counts": {
+        "None": 64,
+        "length": 3,
+        "tool_calls": 4673
+      },
+      "finished_at": "2026-09-29T08:36:42.200424+00:00",
+      "global_atomic_snapshot_claimed": false,
+      "id": "0b576fe9afb526060f905f715cb9b77b36246b40228e6d25de5866158781850f",
+      "interpretation": "Structure failures and annotation inconsistencies concern the review interface. Consistent invalid labels/reason codes are reviewer allegations, not independently confirmed financial errors. Current partial production observations cannot estimate all8000 trace quality.",
+      "member_file_count": 9480,
+      "membership_scan_finished_at": "2026-09-29T08:36:36.664083+00:00",
+      "membership_scan_started_at": "2026-09-29T08:36:36.069821+00:00",
+      "model_calls": 0,
+      "observed_actual_model_responses": 4676,
+      "observed_network_unknown_terminals": 64,
+      "old_unknown_reclassified": false,
+      "original_job_denominator": 13022,
+      "original_stage_denominators": {
+        "alignment": 1640,
+        "slot": 11382
+      },
+      "original_trace_semantic_quality_measured": false,
+      "process_control": false,
+      "schema": "v10_existing_review_failure_attribution.v1",
+      "selection_bias_magnitude_measured": false,
+      "slot_reported_v_trace": {
+        "None": 101,
+        "invalid": 10,
+        "unknown": 3,
+        "valid": 4562
+      },
+      "slot_stored_effective_v_trace": {
+        "None": 101,
+        "invalid": 1,
+        "unknown": 2156,
+        "valid": 2418
+      },
+      "snapshot_file_bindings_sha256": "b98cfcb71c83be290c6a66edbd9abaeddd513eb0983bc552075b52778bf9e79c",
+      "snapshot_policy": "registered jobs only; response/assessment membership enumerated once; later files excluded",
+      "source_job_results_changed": false,
+      "source_protocol": {
+        "bytes": 11491952,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/registration/protocol.json",
+        "sha256": "32a50293c2d0af25dc049a62ae76c2cb8a7c5a4eebc06fdcdc65621a2bffb3a9"
+      },
+      "source_protocol_id": "5ed407ae0906a38698c13729e213cfb6178c0494bd26b54e864bd0e715f0361f",
+      "source_protocol_schema": "v9_conditional_production_protocol.v1",
+      "stage_categories": {
+        "alignment": {
+          "no_response_in_snapshot": 1640
+        },
+        "slot": {
+          "annotation_internal_inconsistency": 2156,
+          "consistent_reviewer_invalid_claim": 1,
+          "consistent_reviewer_valid_label": 2418,
+          "network_unknown_no_model_response": 64,
+          "no_response_in_snapshot": 6642,
+          "structure_or_return_format_failure": 101
+        }
+      },
+      "stage_interface_admitted": {
+        "slot": 4575
+      },
+      "stage_semantically_consistent": {
+        "slot": 2419
+      },
+      "started_at": "2026-09-29T08:36:35.915350+00:00",
+      "status_at_read": {
+        "at": "2026-09-29T08:30:09.975840+00:00",
+        "dispatched": 4740,
+        "network_unknown_terminals": 63,
+        "phase": "PRODUCTION_STOPPED_INCOMPLETE",
+        "processed": 4739,
+        "returned": 4676
+      },
+      "status_reference": {
+        "bytes": 7793,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/conditional_five_arm_v9_01/status.json",
+        "sha256": "46e96a33d1fdff23b385c7b6d3aa09acefa7cb5fbfffcfc12cceae49d9198656"
+      },
+      "validator_rerun": false,
+      "wallet_access": false
+    },
+    "technical108": {
+      "GPU_used": false,
+      "actual_trace_financial_error_rate": null,
+      "annotation_failure_families": {
+        "action_annotation_binding": 6,
+        "approved_fragment_missing_proposition_link": 12,
+        "graph_or_node_annotation_binding": 10,
+        "nonassertive_surface_rule_rejection": 25,
+        "reported_valid_vs_claim_annotation_inconsistency": 1,
+        "target_coverage_or_mask_annotation": 9,
+        "term_or_proposition_annotation_binding": 7
+      },
+      "categories": {
+        "annotation_internal_inconsistency": 70,
+        "consistent_alignment_annotation": 12,
+        "consistent_reviewer_invalid_claim": 5,
+        "consistent_reviewer_valid_label": 10,
+        "structure_or_return_format_failure": 11
+      },
+      "consistent_invalid_annotation_content": {
+        "without_annotated_critical_nonsupported_proposition": 5
+      },
+      "consistent_invalid_reviewer_reason_codes": {
+        "action_0_approved_grounded": 1,
+        "action_0_approved_grounded_program": 1,
+        "action_1_approved_grounded": 1,
+        "action_1_approved_submission": 1,
+        "critical_claim_unsupported_by_public_sources": 1,
+        "critical_claim_unsupported_total_return_interpretation": 1,
+        "critical_contradiction_unretracted": 3,
+        "hypothesis_not_resolved_before_submission": 1,
+        "native_answer_mismatch": 2,
+        "native_answer_mismatch_1660000_vs_2660000": 3,
+        "no_retraction_of_incorrect_total_return_interpretation": 1,
+        "no_substantive_update": 1,
+        "no_substantive_verification_or_revision": 1,
+        "no_substantive_verification_update": 1,
+        "routine_submission_not_substantive_verification": 1,
+        "routine_verification_nonsubstantive": 1,
+        "submitted_ending_value_not_gain": 1,
+        "text_6_nonassertive_empty_Q": 1,
+        "unsupported_key_claim": 1,
+        "v_trace_invalid": 1
+      },
+      "exact_annotation_errors": {
+        "approved span needs reviewed proposition": 12,
+        "nonassertive context requires explicit future opt-in and an empty optional Q field": 25,
+        "proposition needs original model text": 7,
+        "retracted/unknown/error claim cannot become a positive target": 5,
+        "strict_finish_not_tool_calls": 2,
+        "unbound semantic node": 10,
+        "unknown mask proposition": 4,
+        "unknown original evidence ID": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 4725 (char 4724)": 1,
+        "v8 interface JSONDecodeError: Expecting value: line 1 column 5267 (char 5266)": 1,
+        "v8 interface JSONDecodeError: Extra data: line 1 column 5178 (char 5177)": 1,
+        "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.3.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti..._46', 'obs_0', 'obs_1']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing": 1,
+        "valid trace retains an unresolved key claim": 1,
+        "wrong original evidence kind": 4,
+        "zero-mask retraction lacks original evidence": 6
+      },
+      "examples": {
+        "annotation_internal_inconsistency": [
+          {
+            "actual_return_excerpt": {
+              "end": 3818,
+              "exact_text": "\"reason_codes\": [\"supported_key_facts\", \"action_grounded_derivation\", \"no_retraction\", \"no_critical_contradiction\", \"routine_submission_not_chi\"], \"targets\": {\"action_0\": {\"evidence\": [\"src_20\", \"src_60\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_compare\"]}, \"action_1\": {\"evidence\": [\"action_0\", \"obs_0\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_answer\"]}, \"text_0\": {\"evidence\": [\"src_20\", \"src_60\"], \"label\": \"approved\", \"proposition_ids\": [\"p_bwe_consideration\", \"p_svedka_consideration\", \"p_compare\"]}, \"text_1\": {\"evidence\": [\"src_20\", \"src_60\"], \"label\": \"approved\", \"proposition_ids\": [\"p_compare\"]}, \"text_2\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_result\", \"p_answer\"]}, \"text_3\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\"",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 3018
+            },
+            "assessment": {
+              "bytes": 52917,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_af5c1580df3f52b17644d2620b5d075242037a10f4cd2dc7faa1db51443a05eb/assessment/record.json",
+              "sha256": "96e31eed5cc67e6ac73f5b6279c097e9c56a2f1abab8e040b5cf82da7c62f8df"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+              "annotation_family": "nonassertive_surface_rule_rejection",
+              "category": "annotation_internal_inconsistency",
+              "effective_v_trace": "unknown",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "valid",
+              "reviewer_reason_codes": [
+                "supported_key_facts",
+                "action_grounded_derivation",
+                "no_retraction",
+                "no_critical_contradiction",
+                "routine_submission_not_chi"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                "end": 183,
+                "label": "nonassertive_context",
+                "quote": "no further computation needed.\n\n",
+                "start": 151
+              }
+            ],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:af5c1580df3f52b17644d2620b5d075242037a10f4cd2dc7faa1db51443a05eb",
+            "protocol_job_index": 0,
+            "response": {
+              "bytes": 121893,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_af5c1580df3f52b17644d2620b5d075242037a10f4cd2dc7faa1db51443a05eb/response/record.json",
+              "sha256": "d6ad4b924fe32406a3d89cb1642f7dc9374ebd7843e3163f3ad28a75ff219c91"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+            "stage": "slot",
+            "task_id": "STZ/2010/page_51.pdf-3"
+          },
+          {
+            "actual_return_excerpt": {
+              "end": 4460,
+              "exact_text": "\"reason_codes\": [\"supported_critical_claims\", \"action_grounded\", \"consequential_verification\", \"no_retractions\", \"no_critical_contradiction\"], \"targets\": {\"action_0\": {\"evidence\": [\"src_20\", \"src_60\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_compare\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submission\"]}, \"text_0\": {\"evidence\": [\"src_20\", \"src_60\"], \"label\": \"approved\", \"proposition_ids\": [\"p_bwe_consideration\", \"p_svedka_consideration\"]}, \"text_1\": {\"evidence\": [\"action_0\"], \"label\": \"nonassertive_context\", \"proposition_ids\": []}, \"text_2\": {\"evidence\": [\"src_20\", \"src_60\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_compare\", \"p_verification\", \"p_answer\"]}, \"text_3\": {\"evidence\": [\"obs_0\"], \"label\": \"approved\", ",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 3660
+            },
+            "assessment": {
+              "bytes": 57113,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_d9acbe0f18c6f421f91ba29455e5b619e705b5a1e89478d88d55dabd4f3d7715/assessment/record.json",
+              "sha256": "ff079d56e4169f0821ecfa1fec39b6a53ee8ff54ff4e3b4c26c98874f6727c7e"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "nonassertive context requires explicit future opt-in and an empty optional Q field",
+              "annotation_family": "nonassertive_surface_rule_rejection",
+              "category": "annotation_internal_inconsistency",
+              "effective_v_trace": "unknown",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "valid",
+              "reviewer_reason_codes": [
+                "supported_critical_claims",
+                "action_grounded",
+                "consequential_verification",
+                "no_retractions",
+                "no_critical_contradiction"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0000:content",
+                "end": 197,
+                "label": "nonassertive_context",
+                "quote": "I'll compute the comparison with a greater step after retrieving both figures.",
+                "start": 119
+              },
+              {
+                "doc_id": "slot/v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee/turn:0001:content",
+                "end": 183,
+                "label": "nonassertive_context",
+                "quote": "no further computation needed.\n\n",
+                "start": 151
+              }
+            ],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:d9acbe0f18c6f421f91ba29455e5b619e705b5a1e89478d88d55dabd4f3d7715",
+            "protocol_job_index": 1,
+            "response": {
+              "bytes": 124268,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_d9acbe0f18c6f421f91ba29455e5b619e705b5a1e89478d88d55dabd4f3d7715/response/record.json",
+              "sha256": "8a242a4d7c4a0421e3d29957a80d704428b417800bcbf854485222fc8795152f"
+            },
+            "review_format_error": null,
+            "reviewer": 1,
+            "slot_id": "v6-slot:edf84b54521c30f0d99c1d779636039eb5bf4606b538fd84605a43cb1a62ecee",
+            "stage": "slot",
+            "task_id": "STZ/2010/page_51.pdf-3"
+          }
+        ],
+        "consistent_reviewer_invalid_claim": [
+          {
+            "actual_return_excerpt": {
+              "end": 7244,
+              "exact_text": "\"reason_codes\": [\"critical_contradiction_unretracted\",\"unsupported_key_claim\",\"v_trace_invalid\",\"native_answer_mismatch\",\"routine_verification_nonsubstantive\"], \"targets\": {\"action_0\":{\"evidence\":[\"action_0\",\"obs_0\",\"obs_7\",\"obs_8\"],\"label\":\"approved\",\"proposition_ids\":[\"p_read_table\"]},\"action_1\":{\"evidence\":[\"action_1\",\"obs_9\",\"text_5\",\"text_6\",\"text_7\"],\"label\":\"approved\",\"proposition_ids\":[\"p_submit\"]},\"text_0\":{\"evidence\":[\"src_103\"],\"label\":\"approved\",\"proposition_ids\":[\"p_read_table\"]},\"text_1\":{\"evidence\":[\"src_96\",\"src_97\",\"src_98\",\"src_99\",\"src_100\",\"src_101\",\"obs_7\"],\"label\":\"approved\",\"proposition_ids\":[\"p_tbl_2018\",\"p_oci2018_row\"]},\"text_2\":{\"evidence\":[\"action_0\",\"obs_0\",\"obs_7\",\"obs_8\"],\"label\":\"approved\",\"proposition_ids\":[\"p_verify\"]},\"text_3\":{\"evidence\":[\"src_96\",\"src_9",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 6444
+            },
+            "assessment": {
+              "bytes": 151406,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_e1917f797e95aba06f09eff4f66035f9d40fbbb2646082c85cc2f7d40e25a5e8/assessment/record.json",
+              "sha256": "7b57c6ec41aa98dab0d7f4b101dc017cee3a2280cb2e5d598e8a6d07869d1673"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": null,
+              "annotation_family": null,
+              "category": "consistent_reviewer_invalid_claim",
+              "effective_v_trace": "invalid",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "invalid",
+              "reviewer_reason_codes": [
+                "critical_contradiction_unretracted",
+                "unsupported_key_claim",
+                "v_trace_invalid",
+                "native_answer_mismatch",
+                "routine_verification_nonsubstantive"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:e1917f797e95aba06f09eff4f66035f9d40fbbb2646082c85cc2f7d40e25a5e8",
+            "protocol_job_index": 6,
+            "response": {
+              "bytes": 194612,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_e1917f797e95aba06f09eff4f66035f9d40fbbb2646082c85cc2f7d40e25a5e8/response/record.json",
+              "sha256": "e7997846667d395bf44187e7bb96c089480306e1147c90cb9beaff702bcf917e"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v6-slot:0a77276c1bae463d5033f06dbcec67a21841f29955699a8a4712440ffdda09de",
+            "stage": "slot",
+            "task_id": "INTC/2018/page_105.pdf-2"
+          },
+          {
+            "actual_return_excerpt": {
+              "end": 4385,
+              "exact_text": "\"reason_codes\": [\"native_answer_mismatch_1660000_vs_2660000\", \"critical_claim_unsupported_by_public_sources\", \"no_retraction_of_incorrect_total_return_interpretation\", \"routine_submission_not_substantive_verification\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_run\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_2\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submit\"]}, \"text_0\": {\"evidence\": [\"src_34\"], \"label\": \"approved\", \"proposition_ids\": [\"p_ratio\"]}, \"text_1\": {\"evidence\": [\"src_12\", \"src_13\", \"src_18\", \"src_2\", \"src_3\"], \"label\": \"approved\", \"proposition_ids\": [\"p_index\"]}, \"text_2\": {\"evidence\": [\"src_13\", \"src_18\", \"src_34\"], \"label\": \"approved\", \"proposition_ids\": [\"p_ratio\"]}, \"text_3\": {\"evidence\": [\"src_13\", \"src_1",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 3585
+            },
+            "assessment": {
+              "bytes": 62972,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_2b60f0c13d2236ea90943641508d1effcf0b872f80a2648817cad3b89dd16926/assessment/record.json",
+              "sha256": "7d0480233d0d069125d767f331816dfd17d51fb0a393f44a00b8b9cf1d170016"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": null,
+              "annotation_family": null,
+              "category": "consistent_reviewer_invalid_claim",
+              "effective_v_trace": "invalid",
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": "invalid",
+              "reviewer_reason_codes": [
+                "native_answer_mismatch_1660000_vs_2660000",
+                "critical_claim_unsupported_by_public_sources",
+                "no_retraction_of_incorrect_total_return_interpretation",
+                "routine_submission_not_substantive_verification"
+              ]
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:2b60f0c13d2236ea90943641508d1effcf0b872f80a2648817cad3b89dd16926",
+            "protocol_job_index": 29,
+            "response": {
+              "bytes": 105277,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_2b60f0c13d2236ea90943641508d1effcf0b872f80a2648817cad3b89dd16926/response/record.json",
+              "sha256": "530dec09173b2350dbe53feee3d9077593649710458bce1454928059f0df5e4e"
+            },
+            "review_format_error": null,
+            "reviewer": 1,
+            "slot_id": "v6-slot:96eaa739f3d071762787bbbd6d7f07eb846e77fb3e7785367e46473806d2ba68",
+            "stage": "slot",
+            "task_id": "TFX/2015/page_42.pdf-1"
+          }
+        ],
+        "structure_or_return_format_failure": [
+          {
+            "actual_return_excerpt": {
+              "end": 3542,
+              "exact_text": "\"reason_codes\": [\"action_0_run_program_succeeded_obs_0_result_1.6\", \"action_1_submit_program_succeeded_obs_1_submitted_true\", \"text_5_verification_bound_to_action_0_obs_0_and_later_submission\", \"text_6_empty_Q_None_nonassertive\", \"no_retraction_or_contradiction_present\", \"native_answer_1.6_percent_matches_obs_0_result\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\", \"src_45\", \"src_46\"], \"label\": \"approved\", \"proposition_ids\": [\"p_diff\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\", \"text_4\"], \"label\": \"approved\", \"proposition_ids\": [\"p_submit\"]}, \"text_0\": {\"evidence\": [\"src_65\"], \"label\": \"approved\", \"proposition_ids\": [\"p_margins\"]}, \"text_1\": {\"evidence\": [\"src_43\", \"src_45\", \"src_46\"], \"label\": \"approved\", \"proposition_ids\": [\"p_margins\"]}, \"text_2\": {\"evidence\": [\"src_",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 2742
+            },
+            "assessment": {
+              "bytes": 268,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_f647571fa96a1137834313f07964df8ba14c8c8bf3267dc8b598867e06b70dfc/assessment/record.json",
+              "sha256": "bda2cd5c41513d9bb450d180ede061c72d6647260360dfe0545813efe9e15859"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "v8 interface JSONDecodeError: Expecting value: line 1 column 5267 (char 5266)",
+              "annotation_family": null,
+              "category": "structure_or_return_format_failure",
+              "effective_v_trace": null,
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": null,
+              "reviewer_reason_codes": []
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:f647571fa96a1137834313f07964df8ba14c8c8bf3267dc8b598867e06b70dfc",
+            "protocol_job_index": 3,
+            "response": {
+              "bytes": 125337,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_f647571fa96a1137834313f07964df8ba14c8c8bf3267dc8b598867e06b70dfc/response/record.json",
+              "sha256": "eb273009d78d4e51d3ccac9641d2398c7eee3441d3674df0b0a047b09434e72b"
+            },
+            "review_format_error": null,
+            "reviewer": 1,
+            "slot_id": "v6-slot:a533130e56cb2cf33091f3fc2bdcdbb8fb743eb8e7a46b27ff90c502be03f1c5",
+            "stage": "slot",
+            "task_id": "MAS/2017/page_37.pdf-1"
+          },
+          {
+            "actual_return_excerpt": {
+              "end": 3196,
+              "exact_text": "\"reason_codes\": [\"no_substantive_update\", \"routine_submission_only\", \"all_critical_claims_supported\"], \"targets\": {\"action_0\": {\"evidence\": [\"action_0\", \"obs_0\"], \"label\": \"approved\", \"proposition_ids\": [\"p_run\"]}, \"action_1\": {\"evidence\": [\"action_1\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_answer\"]}, \"text_0\": {\"evidence\": [\"src_65\"], \"label\": \"nonassertive_context\", \"proposition_ids\": []}, \"text_1\": {\"evidence\": [\"src_45\", \"src_46\"], \"label\": \"approved\", \"proposition_ids\": [\"p_margins\", \"p_diff\"]}, \"text_2\": {\"evidence\": [\"src_45\", \"src_46\", \"obs_0\", \"obs_1\"], \"label\": \"approved\", \"proposition_ids\": [\"p_answer\"]}}, \"terms\": [{\"attribute\": \"operating profit margins as adjusted\", \"period\": \"2016\", \"public_source_anchor_ids\": [\"src_45\"], \"subject\": \"company\", \"term_id\": \"t_ma",
+              "field": "review_text",
+              "selection": "first reason_codes field, else first v_trace, else start; <=800 characters",
+              "start": 2396
+            },
+            "assessment": {
+              "bytes": 481,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_f8e986eea30e4d02a7b523575f94884de89c4e77b609d0aab9e3d40a6c72e474/assessment/record.json",
+              "sha256": "c022f2ef6328d5d1b5bbb0fcc57f6008b5e7525a1c5bda5e98d06a8132693329"
+            },
+            "case_selection": "first jobs in unchanged protocol.jobs order within each category",
+            "classification": {
+              "actual_model_response": true,
+              "annotated_unretracted_critical_nonsupported_propositions": 0,
+              "annotation_error": "v8 interface ValidationError: 1 validation error for SingleTargetOutput\npropositions.3.judgment\n  Field required [type=missing, input_value={'accepted': True, 'criti..._46', 'obs_0', 'obs_1']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+              "annotation_family": null,
+              "category": "structure_or_return_format_failure",
+              "effective_v_trace": null,
+              "native_financial_error_frequency_measured": false,
+              "process_error_established": false,
+              "reported_v_trace": null,
+              "reviewer_reason_codes": []
+            },
+            "finish_reason": "tool_calls",
+            "first_model_labelled_fragments_outside_original_surface_rule": [],
+            "fragments_are_reviewer_quotes_not_reaudited_against_Episode": true,
+            "is_independent_financial_reassessment": false,
+            "job_key": "slot:f8e986eea30e4d02a7b523575f94884de89c4e77b609d0aab9e3d40a6c72e474",
+            "protocol_job_index": 26,
+            "response": {
+              "bytes": 102436,
+              "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/jobs/slot_f8e986eea30e4d02a7b523575f94884de89c4e77b609d0aab9e3d40a6c72e474/response/record.json",
+              "sha256": "408dac6a8cd54268e6ac97b5c267374191173bb4bb0fd1874ece3188e4ea90e4"
+            },
+            "review_format_error": null,
+            "reviewer": 0,
+            "slot_id": "v6-slot:2473546913f859b54b135c6a9bf2ecd406cdd68563444857c2b860a11a886164",
+            "stage": "slot",
+            "task_id": "MAS/2017/page_37.pdf-1"
+          }
+        ]
+      },
+      "finish_reason_counts": {
+        "length": 2,
+        "tool_calls": 106
+      },
+      "finished_at": "2026-09-29T08:36:35.912916+00:00",
+      "global_atomic_snapshot_claimed": false,
+      "id": "08f3ce091ac8a20f3941ed3795c24f91c8743b5e496cd4205b4adc6c938d199d",
+      "interpretation": "Structure failures and annotation inconsistencies concern the review interface. Consistent invalid labels/reason codes are reviewer allegations, not independently confirmed financial errors. Current partial production observations cannot estimate all8000 trace quality.",
+      "member_file_count": 216,
+      "membership_scan_finished_at": "2026-09-29T08:36:35.735434+00:00",
+      "membership_scan_started_at": "2026-09-29T08:36:35.720678+00:00",
+      "model_calls": 0,
+      "observed_actual_model_responses": 108,
+      "observed_network_unknown_terminals": 0,
+      "old_unknown_reclassified": false,
+      "original_job_denominator": 108,
+      "original_stage_denominators": {
+        "alignment": 12,
+        "slot": 96
+      },
+      "original_trace_semantic_quality_measured": false,
+      "process_control": false,
+      "schema": "v10_existing_review_failure_attribution.v1",
+      "selection_bias_magnitude_measured": false,
+      "slot_reported_v_trace": {
+        "None": 11,
+        "invalid": 43,
+        "unknown": 5,
+        "valid": 37
+      },
+      "slot_stored_effective_v_trace": {
+        "None": 11,
+        "invalid": 5,
+        "unknown": 70,
+        "valid": 10
+      },
+      "snapshot_file_bindings_sha256": "44b0a503e82efa6efc50a950a1dfd854d0c5eb4c811838a1031e229f3073be76",
+      "snapshot_policy": "registered jobs only; response/assessment membership enumerated once; later files excluded",
+      "source_job_results_changed": false,
+      "source_protocol": {
+        "bytes": 82875,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/registration/protocol.json",
+        "sha256": "8b8708034d08285af2c85998a246713f3625c63867e3dc8cd86234bbb875a7c6"
+      },
+      "source_protocol_id": "a61f969b1ff1ba28193ae6359e9bc491c46efa5c36988b29dd893f6b766f8f4b",
+      "source_protocol_schema": "v8_one_full_review_validation.v1",
+      "stage_categories": {
+        "alignment": {
+          "consistent_alignment_annotation": 12
+        },
+        "slot": {
+          "annotation_internal_inconsistency": 70,
+          "consistent_reviewer_invalid_claim": 5,
+          "consistent_reviewer_valid_label": 10,
+          "structure_or_return_format_failure": 11
+        }
+      },
+      "stage_interface_admitted": {
+        "alignment": 12,
+        "slot": 85
+      },
+      "stage_semantically_consistent": {
+        "alignment": 12,
+        "slot": 15
+      },
+      "started_at": "2026-09-29T08:36:35.719390+00:00",
+      "status_at_read": {
+        "at": "2026-09-29T04:14:43.593700+00:00",
+        "dispatched": 108,
+        "network_unknown_terminals": null,
+        "phase": "V8_VALIDATION_COMPLETE",
+        "processed": null,
+        "returned": 108
+      },
+      "status_reference": {
+        "bytes": 2182,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/audit_revision_20260929/review_validation_108_01/status.json",
+        "sha256": "8bd6875f6679da1d318d90f27eadbd5085e2afc9552510493b44f2165ca85a35"
+      },
+      "validator_rerun": false,
+      "wallet_access": false
+    }
+  },
+  "created_at": "2026-09-29T08:36:42.357694+00:00",
+  "frozen_regex_source_sha256": "2ae582b70a8aa4588edf48600c40b0b98ced5c375a1ec96f2bdb660e04ad4b2d",
+  "id": "c0c3e165a84bbf40d01f9dbf5c32120de3a80af63ee4b9e0da424b3f6065b843",
+  "no_material_qualification_granted": true,
+  "no_new_API_or_GPU": true,
+  "no_old_labels_changed": true,
+  "schema": "v10_review_failure_audit_bundle.v1",
+  "source_policies_unchanged": true,
+  "synthetic_regex_examples": [
+    {
+      "classification": "ordinary_procedural_intent",
+      "original_model_output": false,
+      "rule_was_modified": false,
+      "synthetic_example": true,
+      "text": "I will inspect the public table."
+    },
+    {
+      "classification": null,
+      "original_model_output": false,
+      "rule_was_modified": false,
+      "synthetic_example": true,
+      "text": "Let me inspect the public table."
+    },
+    {
+      "classification": null,
+      "original_model_output": false,
+      "rule_was_modified": false,
+      "synthetic_example": true,
+      "text": "I will inspect the public table first."
+    }
+  ]
+}

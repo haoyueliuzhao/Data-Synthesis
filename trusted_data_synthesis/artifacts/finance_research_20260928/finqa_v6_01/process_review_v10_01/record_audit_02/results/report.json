@@ -1,0 +1,152 @@
+{
+  "GPU_used": false,
+  "actual_sampling_tokens_or_hidden_reasoning_claimed": false,
+  "at": "2026-09-29T08:46:38.140104+00:00",
+  "candidate_pattern_counts": {
+    "direct_submission": 374,
+    "error_then_changed_action_candidate": 85,
+    "execute_then_submit": 7521,
+    "normal_model_failure": 2309
+  },
+  "case_artifact_paths_relative_to_audit_root": true,
+  "cases": {
+    "direct_submission": {
+      "artifact": "cases/original_0024/record.json",
+      "status": "selected"
+    },
+    "error_then_changed_action_candidate": {
+      "artifact": "cases/original_0019/record.json",
+      "status": "selected"
+    },
+    "execute_then_submit": {
+      "artifact": "cases/original_0000/record.json",
+      "status": "selected"
+    },
+    "normal_model_failure": {
+      "artifact": "cases/original_0008/record.json",
+      "status": "selected"
+    }
+  },
+  "check_totals": {
+    "API_parsed_tool_calls_exact": {
+      "passed": 8000
+    },
+    "API_public_content_exact": {
+      "passed": 8000
+    },
+    "Student_history_contents_present": {
+      "passed": 8000
+    },
+    "Student_public_body_preserved": {
+      "passed": 8000
+    },
+    "Student_text_rendering_checked": {
+      "passed": 8000
+    },
+    "actual_API_turn_count": {
+      "passed": 8000
+    },
+    "canonical_episode_binding": {
+      "passed": 8000
+    },
+    "complete_settled_episode": {
+      "passed": 8000
+    },
+    "final_program_matches_actual_submit": {
+      "passed": 8000
+    },
+    "initial_public_input_exact": {
+      "passed": 8000
+    },
+    "original_episode_byte_binding": {
+      "passed": 8000
+    },
+    "public_view_exact": {
+      "passed": 8000
+    },
+    "registered_episode_config": {
+      "passed": 8000
+    },
+    "registered_slot_task": {
+      "passed": 8000
+    },
+    "request_history_chain_exact": {
+      "passed": 8000
+    },
+    "saved_action_event_links_exact": {
+      "passed": 8000
+    }
+  },
+  "denominator": 8000,
+  "distinct_cases": 4,
+  "elapsed_seconds": 82.74,
+  "episodes_with_later_observation_input": 7590,
+  "episodes_with_mechanical_issues": 0,
+  "episodes_with_nonempty_public_content": 8000,
+  "episodes_with_saved_tool_error": 85,
+  "existing_native_counts": {
+    "False": 2309,
+    "True": 5691
+  },
+  "financial_process_correctness": "not_measured",
+  "full_archive_durable_event_scan_performed": false,
+  "full_population_token_roundtrip_performed": false,
+  "id": "7b2569744e85358acf10212bc015d92067fbf07ec1c5a5ef009c4fce01dba3e5",
+  "issue_counts": {},
+  "material_admission": false,
+  "models_called": 0,
+  "native_rescored": false,
+  "original_files_read_once_in_this_scan": true,
+  "original_tasks": 1000,
+  "positive_supervision_masks_generated": false,
+  "prior_publication_failure": {
+    "id": "79b0dfe77748c99670460258119eb6142ae4f437b7b0c5e6f2107747906c23e1",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/process_review_v10_01/record_audit_01/publication_failure/record.json",
+    "sha256": "f6bbcb821b814f53f047cd1dceb530d83c467d4a64186f30a0ae51adc1bf30c7"
+  },
+  "processed_originals": 8000,
+  "registration_id": "daad6ae0a554d779e695e4fd5c8e93f7b99e332c04326065f091dc78d7d69928",
+  "scan_attempt_index": 2,
+  "schema": "v10_original8000_record_audit.v1",
+  "selected_case_durable_event_checks": 4,
+  "semantic_error_revision": "not_measured",
+  "semantic_observation_updates": "not_measured",
+  "stop_reason_counts": {
+    "final_answer": 7957,
+    "no_tool_call": 43
+  },
+  "task_relevant_substantive_reasoning": "not_measured",
+  "tokenizer": {
+    "available": true,
+    "chat_template_digest": "2e2d2512cfe46af53dc1eed45368ecaab26ac4461c480e6b69fe571cf0ceaa75",
+    "local_files_only": true,
+    "model_weights_loaded": false,
+    "tokenizer_digest": "f9be72de469e1dcb00337706a315ef1d4f2d80d33922a73eac5e75741c30fa79"
+  },
+  "tools_reexecuted": false,
+  "totals": {
+    "Student_rendered_original_body_characters": 3872586,
+    "Student_rendered_parsed_tool_arguments": 16243,
+    "Student_text_rendered_turns": 16286,
+    "Student_unparsed_API_calls_not_in_structured_response": 0,
+    "actual_request_objects_present": 16286,
+    "nonempty_separate_reasoning_content": 0,
+    "observations_with_next_model_request": 8286,
+    "parsed_tool_calls": 16243,
+    "public_content_characters": 3872586,
+    "public_content_nonempty_turns": 16286,
+    "raw_API_response_strings_present": 16286,
+    "raw_API_tool_call_entries": 16243,
+    "saved_tool_errors": 127,
+    "saved_tool_events": 16243,
+    "terminal_observations_without_next_request": 7957,
+    "turns": 16286,
+    "turns_with_unparsed_API_tool_calls": 0,
+    "unparsed_API_call_entries": 0,
+    "view_action_argument_segments": 16243,
+    "view_observation_segments": 16243,
+    "view_public_content_segments": 16286,
+    "view_unparsed_call_segments": 0
+  },
+  "wallet_opened": false
+}
