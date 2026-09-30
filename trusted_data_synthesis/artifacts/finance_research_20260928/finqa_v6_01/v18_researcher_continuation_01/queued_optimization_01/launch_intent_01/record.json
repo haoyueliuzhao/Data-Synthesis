@@ -1,0 +1,47 @@
+{
+  "at": "2026-09-30T18:00:06.279601+00:00",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v19-queued-optimization-20261001/trusted_data_synthesis/scripts/finqa_v19_queued_scheduler.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queued_optimization_01"
+  ],
+  "execution_profile_id": "7cee422a26730584c2992a8ab79c7e6c9470a5fbacec39ad0c1f9ae7a58dc02b",
+  "id": "d66537af74e54a134ccbc1b3678e7a88e0533eb57339a9b714ca8ab8dfc7ac5e",
+  "no_Student_checkpoint_modified": true,
+  "no_Student_signal": true,
+  "protected_workers": [
+    {
+      "birth": "318187132",
+      "gpu": 1,
+      "identity_before": "318187132",
+      "key": "arm-11-c_only",
+      "pid": 2777056
+    },
+    {
+      "birth": "318187132",
+      "gpu": 2,
+      "identity_before": "318187132",
+      "key": "arm-29-c_only",
+      "pid": 2777057
+    },
+    {
+      "birth": "318187133",
+      "gpu": 3,
+      "identity_before": "318187133",
+      "key": "arm-47-c_only",
+      "pid": 2777058
+    },
+    {
+      "birth": "318187133",
+      "gpu": 6,
+      "identity_before": "318187133",
+      "key": "arm-11-full",
+      "pid": 2777059
+    }
+  ],
+  "schema": "v19_queued_optimization_launch_intent.v1",
+  "settings_id": "89f1f2ecdddce76a49d51706d047e8139c0d511d881f362fbf2f9b46d41d914d"
+}

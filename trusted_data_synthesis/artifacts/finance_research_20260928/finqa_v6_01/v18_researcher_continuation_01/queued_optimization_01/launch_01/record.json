@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-30T18:00:06.284520+00:00",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v19-queued-optimization-20261001/trusted_data_synthesis/scripts/finqa_v19_queued_scheduler.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queued_optimization_01"
+  ],
+  "execution_profile_id": "7cee422a26730584c2992a8ab79c7e6c9470a5fbacec39ad0c1f9ae7a58dc02b",
+  "id": "628ec164e304f3c28ac2a33dc72ccc79ede303e1beb7ed331bd70ccce2d3f14b",
+  "intent_id": "d66537af74e54a134ccbc1b3678e7a88e0533eb57339a9b714ca8ab8dfc7ac5e",
+  "log": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queued_optimization_01/logs_01/controller.log",
+  "new_Student_process_launched_by_bootstrap": false,
+  "original_Student_processes_not_signaled": true,
+  "original_runtime_worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "pid": 2927149,
+  "process_start_time_ticks": "321560146",
+  "schema": "v19_queued_optimization_launch_receipt.v1",
+  "script_commit": "305dfcd5589328713c3418b75050b3432b3d91cf",
+  "script_worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v19-queued-optimization-20261001",
+  "settings_id": "89f1f2ecdddce76a49d51706d047e8139c0d511d881f362fbf2f9b46d41d914d"
+}
