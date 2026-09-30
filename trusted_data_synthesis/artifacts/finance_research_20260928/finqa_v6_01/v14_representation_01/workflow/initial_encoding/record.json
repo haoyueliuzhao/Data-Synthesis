@@ -1,0 +1,20 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "at": "2026-09-30T03:40:12.361638+00:00",
+  "cache_run": {
+    "id": "c9ed720f5fecf47982d8cbc2e0893b53409734471275ffed8a8eae0d10e80da8",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/encoding_cache/runs/ebb7e65629445389ef5e20f1b70b4470b2fadc716faa1c3f00be79134800f6c9/record.json",
+    "sha256": "d577265895ca9810230f4e85dc267b90bad8e692cf53fb44b347e9f788998819"
+  },
+  "id": "d101391f3d1e3f7858e681fd8d40dfaf395805a3737f2b553760024ce52b7cb8",
+  "known_authority_count": 2465,
+  "pending_authority_slot_ids": [
+    "v10gen:fd29cfaf3d840815b4b3a8aa819289768cb8d5a9c6b1affec5b4f66ae5c2cd65",
+    "v10gen:cb1b88156914318c22d113e0bc529f0356d59b100f05386aecd43cbf7c38d971",
+    "v10gen:ab721168cf1b1fa3a90e7e2ff84ecec9ac780d6ca1e3311dfad72b29a8b56443"
+  ],
+  "schema": "v14_initial_encoding_job.v1",
+  "state_independent": true,
+  "training_authorized": false
+}

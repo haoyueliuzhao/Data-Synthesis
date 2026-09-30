@@ -1,0 +1,60 @@
+{
+  "Experiment5": false,
+  "GPU_allocation_before_complete_material": false,
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "annotation_concurrency_maximum": 16,
+  "at": "2026-09-30T03:50:12.181335+00:00",
+  "cache_registration_id": "d552c743283279f758a2390cb0c8bbd7d3bf809ed82e3fc7c2c2013b7db6987c",
+  "dev_tasks": 883,
+  "downstream_source_bindings": {
+    "v10_training.py": "bbf5c448293a6f81f6ae0229f599a3b03929614b4b670d2a518800b43f9f3714",
+    "v10_workflow.py": "c1261530c642f0668098da6b3d5323947b9cc87e6fbbf898c341833431d45133",
+    "v13_material.py": "673b6ba63a01ebcd3702ab695924b1edf38d039b600f952a92e148e28c77a216",
+    "v14_encoding_cache.py": "af3ac182c842e7732277fdffe9c7b8557002b20eb0ce961d0ad7876591d6c324",
+    "v14_material.py": "0198582ee4941726253cecb64a1712ae4eba5e712befcea00e227fcc3ad624a5",
+    "v14_student_encoding.py": "5133f2ef1108edbcca05be158c257dabd6f03061a170acd094010fba94b18228",
+    "v14_training.py": "24c3c0eef8d8c61a435e7aa9c919a4f3f403d66aaafab1ee72842a32df501187",
+    "v14_workflow.py": "5da04ea92e03904c6a874058d48bec983707caeffc8fab935ab9ca28ecedea3f",
+    "v6_distribution.py": "c08e13b3135bbcafe7d1fff75829e753ca6a37cdec5907c7e762df3f683bef77",
+    "v8_training_driver.py": "0d7c6d5aded1c21579d996ae701b2b24aac5f4522048d85d770ba6233857214c",
+    "v9_conditional_training.py": "0eed331179c15a2cf27642264964876afec5dffa2e6bc653d1104a7bfd7404e6",
+    "v9_final_evaluation.py": "51942ef21f3bfc75f3c519eae04b629a3ea9d2ae47a45b71ceba1393113fc8b0",
+    "v9_mechanism_execution.py": "fd050f5ce6d6287133b4dc712fb124f02a94c253ab622975242492a98114198a",
+    "v9_training_launcher.py": "0e17ca3f1e3fcba5d8ec0fa953363f931eda169266e15acf9cedfa70610d7b34"
+  },
+  "feedback": 700,
+  "feedback_tasks": 350,
+  "id": "0516a47c0c7a24526e5213d314e5ba6c5b20aba65abfcd1449f8a914a14ce8a6",
+  "max_gpu_workers": 3,
+  "minimum_free_mib": 24576,
+  "no_GPU_placeholder": true,
+  "no_automatic_retry": true,
+  "no_partial_training": true,
+  "parallel_initial_encoding_and_annotations": true,
+  "protocol_id": "17d360e436eb6267221fa2d4fc5e4fe4d9efa2226fe35b378aa1ae0a37100091",
+  "registration_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+  "rerun_Base": false,
+  "schema": "v14_fixed_material_workflow.v1",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "test1147_opened": false,
+  "unchanged_arms": [
+    "Static",
+    "Manual+",
+    "Manual-",
+    "C-only",
+    "Full"
+  ]
+}

@@ -217,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v14"):
+        from .v14_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     if coordinates["episode_id"].startswith("v13"):
         from .v13_budget import eligible
 
@@ -248,10 +252,20 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     from .v12_budget import eligible, read_matrix_permit
     from .v13_budget import eligible as v13_eligible
     from .v13_budget import read_matrix_permit as read_v13_permit
+    from .v14_budget import eligible as v14_eligible
+    from .v14_budget import read_matrix_permit as read_v14_permit
 
     matrix = read_matrix_permit(connection, config)
     material = read_v13_permit(connection, config)
-    if material is not None:
+    residual = read_v14_permit(connection, config)
+    if residual is not None:
+        if (
+            not coordinates["episode_id"].startswith(("v14projection:", "v14mapping:"))
+            or request_body is None
+        ):
+            raise BudgetUnavailable("V14 permits only its exact new residual material purposes")
+        v14_eligible(connection, config, coordinates, output_limit, request_body=request_body)
+    elif material is not None:
         if (
             not coordinates["episode_id"].startswith(("v13projection:", "v13mapping:"))
             or request_body is None

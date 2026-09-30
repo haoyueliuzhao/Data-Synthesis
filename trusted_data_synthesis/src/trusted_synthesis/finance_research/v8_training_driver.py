@@ -1032,10 +1032,12 @@ class TrainingDriver:
         self.step_index += 1
         underlying_update_id = report.pop("id")
         material_version = {
+            "v14_material_binding.v1": "v14",
             "v13_material_binding.v1": "v13",
             "v10_material_binding.v1": "v10",
         }.get(getattr(self.pool, "material_schema", None), "v8")
         supervision_policy = {
+            "v14": "v14_state_independent_original_span_union.v1",
             "v13": "v13_fixed_authority_original_spans.v1",
             "v10": "v10_single_authority_original_spans.v1",
             "v8": "v8_single_authoritative_targets.v1",
