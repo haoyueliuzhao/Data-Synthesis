@@ -1,0 +1,127 @@
+{
+  "API_calls": 0,
+  "assets_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/experiment0_01/protocol.json",
+    "sha256": "ebc9aa1d6c283884d00d68ec48179004e0432fd7ca644d4ab3b681d31cf13b26"
+  },
+  "assets_protocol_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "at": "2026-09-30T05:11:39.396698+00:00",
+  "branch_permission": false,
+  "dev_calls": 0,
+  "device_policy": {
+    "allowed_gpu_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "free_memory_is_heuristic_not_cuda_acceptance": true,
+    "minimum_free_mib": 24576,
+    "no_placeholder": true,
+    "no_waiting_with_loaded_model": true
+  },
+  "execution_order_id": "0ce2382b3a219d476aced5f8931e71a1d627544a39728f6437bb3b433f7a638b",
+  "execution_plan": {
+    "N": 744,
+    "bitwise_equivalent_to_original_1000_schedule": false,
+    "core_physical_steps": 18774,
+    "epochs": 10,
+    "feedback_denominator": 700,
+    "final_step": 1490,
+    "id": "c5eea14fd3eabfcb6bbd45493b7b9968242c43f758883571b1959f2e5416b381",
+    "loss_coefficient": "pi(z|x)/(actual_B_j*n_xz*L_P)",
+    "maximum_batch_size": 5,
+    "mechanism_steps": {
+      "C_direction": 447,
+      "N_local": 745
+    },
+    "model_history_steps": 22350,
+    "mu": "1/744",
+    "outer_steps": [
+      298,
+      596,
+      894,
+      1192
+    ],
+    "reverse_mechanism_extra_steps": 447,
+    "schema": "v9_conditional_execution_plan.v1",
+    "shared_step": 298,
+    "sharing_split_step": 894,
+    "steps_per_epoch": 149,
+    "tail_batch_size": 4,
+    "tail_padding": false,
+    "task_deletion": false,
+    "verified_shared_core_steps": 17880
+  },
+  "explicit_resume_required": true,
+  "feedback_calls": 0,
+  "first_registered_update_is_formal_step1": true,
+  "first_step_restore_check": true,
+  "full_five_arm_admission": false,
+  "id": "d6841ca11342a991a02ac6f12b70c934cbc5702b05d34e1e4799f93a5ba5cc0c",
+  "loss_coefficient": "1/(actual_B_j*n_x*whole_package_L_P)",
+  "material_order_id": "ad3c7301edbf3e1f1b590a86b87a12c8a84587bf438ff069d5309aa662508f82",
+  "numerical_runtime": {
+    "tokenizers": "0.22.2",
+    "torch": "2.7.1+cu128",
+    "transformers": "5.14.1"
+  },
+  "optimizer": {
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "foreach": false,
+    "fused": false,
+    "lr": 0.0001,
+    "name": "AdamW",
+    "weight_decay": 0
+  },
+  "prefix_binding": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/prefix_material/binding/record.json",
+    "sha256": "4d7144e6e116cdf1d5d93e3117a72bbc18d2418052eba0d25c9be96bea236b6e"
+  },
+  "prefix_pool_id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+  "schema": "v15_state_free_prior_prefix_launcher.v1",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "source_bindings": {
+    "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+    "fixed_kernel/protocol.py": "0680f0cb742c75e2f7b4dc8e4641bc10d358977a52cfdbd90c32025736a4cdf3",
+    "pq_student/model.py": "63aa525071e5185fd5b4c8409f5312b4f312dfe4e9d6ec9c688ac0d476f1ea83",
+    "pq_student/plan.py": "b0bce585080bc2ce95f7e36be2c174eedc41db266e257db89233a29f51ad1837",
+    "providers.py": "add33ed7e4229b87ed5e0766d73b4f14e2c5f6a3ec69a92475f77d51715f1f01",
+    "trajectory_consumer.py": "bb6f6c5abfeadff3fe4b9d0c8e162e50983aceaf4a83cc82a668197a15d26097",
+    "v15_prefix_material.py": "1dd13f84917851d29c9d4d4547fbc6d2090e16bcd20962d2996fb1d910600407",
+    "v15_prefix_training.py": "da655481299f1ac275ffeab713fa9a35e174e5b5aa717792b7ef5e34df9dece6",
+    "v7_base_evaluation.py": "ab8c46b832168ae31c670b6f19a71ecca45086a6c237da91c2db60c6f188d9e5",
+    "v8_training_driver.py": "a0ed57f18024d0ba675266d5f8050bcc7ef7fab0f32f832bb84d18ee80dd9f24",
+    "v9_conditional_training.py": "0eed331179c15a2cf27642264964876afec5dffa2e6bc653d1104a7bfd7404e6",
+    "v9_training_launcher.py": "83b6e3f1c982f83913580b8276c0d81a4765a432bed3bedf279c26a959bc822e"
+  },
+  "state_or_pi_required": false,
+  "stop_step": 298,
+  "student": {
+    "adapter": "repository.LowRankLinear",
+    "adapter_dtype": "float32",
+    "alpha": 16,
+    "base_dtype": "bfloat16",
+    "base_frozen": true,
+    "dropout": 0.05,
+    "model": "Qwen2.5-7B-Instruct",
+    "old_adapter_loaded": false,
+    "rank": 8,
+    "targets": [
+      "q_proj",
+      "v_proj"
+    ]
+  }
+}

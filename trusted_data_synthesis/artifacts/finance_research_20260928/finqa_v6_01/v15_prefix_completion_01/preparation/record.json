@@ -1,0 +1,1386 @@
+{
+  "all_requests_prepared_before_prefix_required": true,
+  "at": "2026-09-30T05:02:14.362508+00:00",
+  "complete": true,
+  "definition_id": "7ca1100e2c0f98715f9bd38e8cbe0df4faec72f12a149412624ad402589f1f93",
+  "dispatch_order": "original_fixed_task_order_residual_only",
+  "error_count": 0,
+  "errors": [],
+  "id": "c617c93fae8bc8c76585556dff8ebbcac3140753252b7a96a2d3d060bdf280f2",
+  "jobs": [
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 29992,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "d3112af952728fb93f45c5ae5192b791cf1c8673ec9b6ac2ed20ec0ca7795242",
+        "scenario_utf8_bytes": 22969,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:28bc0f54f5074adf68db0b41cdbe7bd0aa261ab3c24841357297173898de462d",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "235269971683b1cdf24f3174926e045bb84a7c352a0dfc7c5957b9f156a7c94c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/28bc0f54f5074adf68db0b41cdbe7bd0aa261ab3c24841357297173898de462d/record.json",
+        "sha256": "0833f91e09dac35b4a946d2507c0fd5e61c3b7bf6318dcb8ca1a0c7015fea752"
+      },
+      "request_body_sha256": "d6a148759ae3af6060fc3c9107ea6b2c02af9f762e6e7a90647d9f8e8b0da88c",
+      "request_file_sha256": "0833f91e09dac35b4a946d2507c0fd5e61c3b7bf6318dcb8ca1a0c7015fea752",
+      "request_id": "235269971683b1cdf24f3174926e045bb84a7c352a0dfc7c5957b9f156a7c94c",
+      "request_sha256": "d6a148759ae3af6060fc3c9107ea6b2c02af9f762e6e7a90647d9f8e8b0da88c",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:d072b3bcefd40bd1e9b0aeac2118b0b1b9732eb07b93cb9daef7b1b67ab09b7b",
+        "v10gen:69803735b6ae14e029b96883d5a1c57bcc148fec8e576cfa90d472605d340262",
+        "v10gen:df1bc40568c8274a399710952fe63d0e7d247e6993b8e023cbf13fc75822eb8e",
+        "v10gen:444dfce41c682dc8a000b9b947ff77307e85a5adaaf5a005c715a4cc9f8dbcda"
+      ],
+      "task_id": "AAPL/2013/page_41.pdf-2",
+      "wire_bytes": 106150
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 31012,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "d9bdf4667451ab55961ef6e7521dfb98c3b857fbbf0d28007559074ec2f9936d",
+        "scenario_utf8_bytes": 23785,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:436db77b93ddb8aa5bf69b7d84edbf10439702c50b0eebc9f35129975a498c96",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "822209352e636741a563980f4163adebdeebcedaac98d70ce0382546965abfa8",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/436db77b93ddb8aa5bf69b7d84edbf10439702c50b0eebc9f35129975a498c96/record.json",
+        "sha256": "aceeb7312d6442d6ebf351cd0ecca04cf9b05d8bd950cffe9bea29d61d08f0db"
+      },
+      "request_body_sha256": "f119ac1c344d961edaba6af324f605b708098b980d1d30868f071b10c0095ab2",
+      "request_file_sha256": "aceeb7312d6442d6ebf351cd0ecca04cf9b05d8bd950cffe9bea29d61d08f0db",
+      "request_id": "822209352e636741a563980f4163adebdeebcedaac98d70ce0382546965abfa8",
+      "request_sha256": "f119ac1c344d961edaba6af324f605b708098b980d1d30868f071b10c0095ab2",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+        "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+        "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+        "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+      ],
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "wire_bytes": 113267
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 45802,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "d0d87b5a690b07bd21bebb2ddc0d160ffe8b0a482cf517d0ad9fa805f3179f02",
+        "scenario_utf8_bytes": 35617,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4e92ddd33811a391140be17d378e1d89871771c567329adca9fd10a3c4c28e81",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "1814b3ce4906687e90d0047536e72610f85b925f9aae8feaaf884b540c5c5350",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4e92ddd33811a391140be17d378e1d89871771c567329adca9fd10a3c4c28e81/record.json",
+        "sha256": "f3848abe7a0975dc176ebdea76a01d798f4ef432f350514085ae6159c16f4ffe"
+      },
+      "request_body_sha256": "3374cfb6c712fe09a49d4b97901e58fc209ca4138e7980fc5008b3dfe2ede3a8",
+      "request_file_sha256": "f3848abe7a0975dc176ebdea76a01d798f4ef432f350514085ae6159c16f4ffe",
+      "request_id": "1814b3ce4906687e90d0047536e72610f85b925f9aae8feaaf884b540c5c5350",
+      "request_sha256": "3374cfb6c712fe09a49d4b97901e58fc209ca4138e7980fc5008b3dfe2ede3a8",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:86edfe5a0113361c4e2cbe0b60b00023f3fdec36c674c3f38c24fb5585c0f7c3",
+        "v10gen:76d4a30c17015e47db510a4519c5d26dd3593b43cc4c86cea6fb69d541a63a51",
+        "v10gen:306bb3378e41d68b23ac3d7570668b1f7c1b0b3be9d5605cfd090035e71d8321",
+        "v10gen:bc31dadb4722ee20a939166b49f61bb312664634719db42a198cecdad90cfa47",
+        "v10gen:a08069f5edf6db070bbf270c32747308c72b0e3e82b5fc307de5ea23630c9e68",
+        "v10gen:67ace83452d554bea35a4418d5dcd448588bf67ff1b506383c152697330f8e8b"
+      ],
+      "task_id": "ADI/2012/page_65.pdf-2",
+      "wire_bytes": 168444
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 30087,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "be0aa737709fb7b376507d86eda82ddc662a19270ab3cf9512dd2efcf868d410",
+        "scenario_utf8_bytes": 23045,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:03e61c74038adb01da249a685d28793ab14a6bd97adb610f10558dfcb877f377",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "937f6f125b30a0066f3e01939dfe529d2c884f2c980377ea839f8bebe4cd5d00",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/03e61c74038adb01da249a685d28793ab14a6bd97adb610f10558dfcb877f377/record.json",
+        "sha256": "32eb1d2a995afa3f9615aed69f69e53116a182e3f55248f72765aa7c851b69d7"
+      },
+      "request_body_sha256": "73a52bb58d2cae3a2ea502ef87fa10d7159a97c124abf4f16428db7bd3ea1754",
+      "request_file_sha256": "32eb1d2a995afa3f9615aed69f69e53116a182e3f55248f72765aa7c851b69d7",
+      "request_id": "937f6f125b30a0066f3e01939dfe529d2c884f2c980377ea839f8bebe4cd5d00",
+      "request_sha256": "73a52bb58d2cae3a2ea502ef87fa10d7159a97c124abf4f16428db7bd3ea1754",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:161331636e3bb6e7d8cf0dde25034fbd3af76bc59e42837d6c65eaf38371803e",
+        "v10gen:575308a28c732e6d6c79845528c1e54493028a574269a8488b07b66d571f7ad6",
+        "v10gen:5237383eb4b615a4d488e7e19a538f911d3af60571f3fe226b716a2075d8609e",
+        "v10gen:563ec5db7d9d7ccd1e4ddbdf6b71c525a805d67b4d71e310642a50e92220443d"
+      ],
+      "task_id": "AES/2017/page_168.pdf-3",
+      "wire_bytes": 124267
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 24367,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "697781a7d5ace8e550f421c3f0a21f6b2ac7238ea42ac4557e6a7135212cf8f0",
+        "scenario_utf8_bytes": 18469,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:2b28476e9d60378e9f089c51f5037a1154e507e28d83f96eb9b30c2693e56e13",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "cb9d8b982c3820d7bfbb1a92ff665fb7a0f5b391958c010c8088f274cbdaf25e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/2b28476e9d60378e9f089c51f5037a1154e507e28d83f96eb9b30c2693e56e13/record.json",
+        "sha256": "3e342aef8b1b26a625f1dacc25370ff9e917e93f4e2d2944fb86592c32dbf770"
+      },
+      "request_body_sha256": "c190947c61c5ec42a6c730a3f608cf2346e9d0527ea22147bd08fbce36d7a29d",
+      "request_file_sha256": "3e342aef8b1b26a625f1dacc25370ff9e917e93f4e2d2944fb86592c32dbf770",
+      "request_id": "cb9d8b982c3820d7bfbb1a92ff665fb7a0f5b391958c010c8088f274cbdaf25e",
+      "request_sha256": "c190947c61c5ec42a6c730a3f608cf2346e9d0527ea22147bd08fbce36d7a29d",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:ca0a6a56ca5f9fa2c672d8f7ac8661fa2b7127bf7b67a70da1bcc9d2c6dbbb5c",
+        "v10gen:d9745a94c56f6c66e660cbf0c168be14849d8452486eb9c203a070291ffeca79",
+        "v10gen:90d0cf354694e5a37bc7c97d518fd3f1ebcc14405b0ef6942f6471b5decf072e"
+      ],
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "wire_bytes": 72124
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 28358,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "42920b69e9e076e436871785bc9b1b6439c4e44c9fd818ab60138e8028c742d4",
+        "scenario_utf8_bytes": 21662,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:5e6ae9e246b68def56f0f25858b19d33a0ee47944ffad977fe375fe811fec44e",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "aaad254144a15571570d6c00b3988dcf61f58d1c6fb0b900e04eae21ad0245fd",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/5e6ae9e246b68def56f0f25858b19d33a0ee47944ffad977fe375fe811fec44e/record.json",
+        "sha256": "0ce19216f3a558a1adf702ed8fdef82e9870379836b5cca09ccaa47b8c64c4dc"
+      },
+      "request_body_sha256": "4942677c37c69a363df8557e41ad9e17d33dd314d28d5a2698dfd89963e095f7",
+      "request_file_sha256": "0ce19216f3a558a1adf702ed8fdef82e9870379836b5cca09ccaa47b8c64c4dc",
+      "request_id": "aaad254144a15571570d6c00b3988dcf61f58d1c6fb0b900e04eae21ad0245fd",
+      "request_sha256": "4942677c37c69a363df8557e41ad9e17d33dd314d28d5a2698dfd89963e095f7",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:feda9708ae3e021a46c0e0a0bfbf162e0710732bbf050fee106f28e05f3138f3",
+        "v10gen:765fe44b1b84a02c5a47fff49115d1effb483b93767148d7edcc5f8b88954ee1",
+        "v10gen:6f6e9a20c65eb34998ce560be0094fb66658f748cf23e8f6c5f363e12a06e6ad",
+        "v10gen:4c17c046c87f24a2538753e06725a8ca19a09bbb6d2db36551ea00040ae47cde"
+      ],
+      "task_id": "AON/2015/page_77.pdf-4",
+      "wire_bytes": 120497
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 38200,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "e0632f9d4ca49b0fff3f1a9589fdcfcfa500bdd25673c84548eada7634b85fdb",
+        "scenario_utf8_bytes": 29536,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:b920cd316625f0000d240a7462951b66659316ba8be949f63406a96efd56c46f",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "b63dfc7e9d46f3395266649ea66fb741b3dbb951925322974530f7c3655aadce",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/b920cd316625f0000d240a7462951b66659316ba8be949f63406a96efd56c46f/record.json",
+        "sha256": "b03e4dfe5423f44912cb70422ae4d58d7c47fa86457e798d4ef27a2c93ee706e"
+      },
+      "request_body_sha256": "809baa9fe3d6d3117bb42aad69169f8889521c272fddaa4a48c98076967bd96e",
+      "request_file_sha256": "b03e4dfe5423f44912cb70422ae4d58d7c47fa86457e798d4ef27a2c93ee706e",
+      "request_id": "b63dfc7e9d46f3395266649ea66fb741b3dbb951925322974530f7c3655aadce",
+      "request_sha256": "809baa9fe3d6d3117bb42aad69169f8889521c272fddaa4a48c98076967bd96e",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:a24692a3ef94e696e26969501912515b38d61838812102b36996e58e6d404389",
+        "v10gen:9641479ebe102a62d2b87b306770f1dce6f3d7ba6362b3be5c1f5c913b49a8a4",
+        "v10gen:1919218459c3ed7e654142298dd2892a9bd880a333e54389b3db478a66ff1da6",
+        "v10gen:07f647342b8edc21f92554168cebe0b338b7da8cce3b317c3497bfe0f7188e42",
+        "v10gen:5552e593bc26212d18ff8892c8bbf8dd8d7e5a3130a0e8893b11f239715d0ac2"
+      ],
+      "task_id": "C/2009/page_141.pdf-1",
+      "wire_bytes": 149354
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 43537,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "b3ffae9811c260b1dddd22b218ee2672ee5748c557a47fd01f2452e3251d87ab",
+        "scenario_utf8_bytes": 33805,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:66f0961cfe96f6784518a60aefb23cbaf59653cf820aed69c69b13a2e83e80a5",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "23630d62fc4a1d7c61d688f21ffdac97a7f2d4dc7eb33086ab939d090c21b875",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/66f0961cfe96f6784518a60aefb23cbaf59653cf820aed69c69b13a2e83e80a5/record.json",
+        "sha256": "c1bd0558469b62c95ba943c9114adc1b62283bb89fc82f3440e987251623691c"
+      },
+      "request_body_sha256": "a6454c00a44822b060be7d2a90bfeb7e5fed06536ed30ecaf12746f9baef0f05",
+      "request_file_sha256": "c1bd0558469b62c95ba943c9114adc1b62283bb89fc82f3440e987251623691c",
+      "request_id": "23630d62fc4a1d7c61d688f21ffdac97a7f2d4dc7eb33086ab939d090c21b875",
+      "request_sha256": "a6454c00a44822b060be7d2a90bfeb7e5fed06536ed30ecaf12746f9baef0f05",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:4280e24c2494a334b53f8669265c8ef14fe7eb9da6e2bd1fce604d0bbfc0eef0",
+        "v10gen:03029f08e5b603c155859e9572b477ff987125813b85ad64e8a2f6c1e7db2dd7",
+        "v10gen:20f3edefa0b6fcb5214b76e609a0bde653f19163a5912c1db2d0fb4916890957",
+        "v10gen:c4c7e4e985f4ccc1d030e7ca7cfeef16d810773b5be57514f8702c2083adffe7",
+        "v10gen:d4876964304e769e3531f0f450193cb58b3bc44018569adbc4d3062f04212084",
+        "v10gen:0a237657ee69f5b85dc73380cec087b849b1446e1384bdfcf5d2975f4ab3e096"
+      ],
+      "task_id": "C/2009/page_38.pdf-3",
+      "wire_bytes": 155836
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 35204,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "941d837274de303daad121a6dfa12bef0b3fda8cfd0eb930f13b85261c029cba",
+        "scenario_utf8_bytes": 27139,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:0016b80119664ed42264180f9807cafed88c6cc954afdbcc64a2663632b8ce21",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "99148acf03bb191e91d1cc784cbbeeb93454c6cdfa88f4b49eca8581aba3f4b0",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/0016b80119664ed42264180f9807cafed88c6cc954afdbcc64a2663632b8ce21/record.json",
+        "sha256": "03ef2f779a9018f09b2c656574c39a3b03f475cd37e071652501ad3e47caffd5"
+      },
+      "request_body_sha256": "42ecea66542dc8458c4d8836dc19f62089be9dea202f30a12ca7a156d5450e10",
+      "request_file_sha256": "03ef2f779a9018f09b2c656574c39a3b03f475cd37e071652501ad3e47caffd5",
+      "request_id": "99148acf03bb191e91d1cc784cbbeeb93454c6cdfa88f4b49eca8581aba3f4b0",
+      "request_sha256": "42ecea66542dc8458c4d8836dc19f62089be9dea202f30a12ca7a156d5450e10",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:48c3cd084dd1a0d9f26e5cde19edc9dba8c664bd729b2b2ea506a9e3d26abe14",
+        "v10gen:38a3695c9d0900b6a07104679999bffa86578b24c91347f6f0a2e5c4c9789118",
+        "v10gen:0bcb620c6fc79b24b7138287a0f2153eb382a2addabd2911d09949043de5d30c",
+        "v10gen:42b79b474a55515d19314eb34863a44d034f7ab728852ed2629a017856c053d2",
+        "v10gen:fcd5898e8c45c79bca574237ca6f84412f58b301f26bb672910a326f28b9af48"
+      ],
+      "task_id": "DISH/2011/page_130.pdf-1",
+      "wire_bytes": 121071
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 20722,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "81127160e84b5e6556033c957a875cdf0e790280eed6add67f5c5e39fc033982",
+        "scenario_utf8_bytes": 15553,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:20201e2390f91ece0b8075e8a9f06341b2e424a35c50a33b74513af780a60373",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "097be7d5c4888eeff96c313d8ecab58db79356adf3c6e082ceae4abb258ed2d3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/20201e2390f91ece0b8075e8a9f06341b2e424a35c50a33b74513af780a60373/record.json",
+        "sha256": "820f21ee9fd5802e20c1c7390e104b2a4918fea2408f04d73f75843750fbe909"
+      },
+      "request_body_sha256": "83e84ea62ad21eaea6407786003db741afc499ddee17ee9f90cd36724db9b670",
+      "request_file_sha256": "820f21ee9fd5802e20c1c7390e104b2a4918fea2408f04d73f75843750fbe909",
+      "request_id": "097be7d5c4888eeff96c313d8ecab58db79356adf3c6e082ceae4abb258ed2d3",
+      "request_sha256": "83e84ea62ad21eaea6407786003db741afc499ddee17ee9f90cd36724db9b670",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:fa54825b9a0a79912ed0a63a643ea89ed7847d4dbdeea985f54a18abcfa32755",
+        "v10gen:e72f4db38e2a19700963558a31b5df0cda375ac70a6a4e82d6718127e2f05331",
+        "v10gen:c0b7ab9a7c55232bf1d58fb144592fa5bd9dcef820d6fae0d1a2a6dc4b09ad48"
+      ],
+      "task_id": "DRE/2008/page_29.pdf-1",
+      "wire_bytes": 63977
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 20055,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "bc7059017b09de9bebae43565cdfed12f1394a2d3d2dabb86879230557ac0391",
+        "scenario_utf8_bytes": 15020,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:9acdbab660e12a84b885fc388ba630b8023674feb5fde2dccca9eb3cd4194c44",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "33fa80b863e9d9c1b3d4e5b6276d57bdab0c52b1f8ebb88a4d6c7fa48ed32d21",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/9acdbab660e12a84b885fc388ba630b8023674feb5fde2dccca9eb3cd4194c44/record.json",
+        "sha256": "e39b3aee58a72d824150c4f6c63e08b39ece6476af7dc01e0c6d8fc15032834d"
+      },
+      "request_body_sha256": "cfa610c4f661b0be9870a9d87f069329f88b92cc5884d14f555e9b8c3b554219",
+      "request_file_sha256": "e39b3aee58a72d824150c4f6c63e08b39ece6476af7dc01e0c6d8fc15032834d",
+      "request_id": "33fa80b863e9d9c1b3d4e5b6276d57bdab0c52b1f8ebb88a4d6c7fa48ed32d21",
+      "request_sha256": "cfa610c4f661b0be9870a9d87f069329f88b92cc5884d14f555e9b8c3b554219",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:274b15143f6ee75e2fa6775a6f073cde5e1047d3a552bae8aee9f71c4f9d5e7a",
+        "v10gen:f28e244327298ec3e2f3d7e05a8ef5d12f2c53e3f4710be5ec852b35b203251a",
+        "v10gen:d28c9a4b1ee24a898c1ce92638f1a226f4dfa7d95c6088ac0011294812814bf0"
+      ],
+      "task_id": "GPN/2008/page_92.pdf-2",
+      "wire_bytes": 57224
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 15324,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "8500942b4c24e45c6c13e2a2d54d36401c8efd9ed9bac228892726f8bd5e316c",
+        "scenario_utf8_bytes": 11235,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:32d231cef1f594575fc6159c363bfa9acf3c15af5c4fd88627f0d7b5b90b9160",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "f109c358be30948f12aabe2bed77d8d8cbac0f9880b8cdf8faa026e5f27fc188",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/32d231cef1f594575fc6159c363bfa9acf3c15af5c4fd88627f0d7b5b90b9160/record.json",
+        "sha256": "e0b045f9fa62ddead1f43b7421e01e916c81eb031cd854c4ed56040128ebe6cb"
+      },
+      "request_body_sha256": "8480e726fbfeddadeaa1abd7c1e643a8e1b8c16854b6eb821c93d6ba986fb876",
+      "request_file_sha256": "e0b045f9fa62ddead1f43b7421e01e916c81eb031cd854c4ed56040128ebe6cb",
+      "request_id": "f109c358be30948f12aabe2bed77d8d8cbac0f9880b8cdf8faa026e5f27fc188",
+      "request_sha256": "8480e726fbfeddadeaa1abd7c1e643a8e1b8c16854b6eb821c93d6ba986fb876",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:7a9ce5f0a1ae189909ac498f8c6220b91f5a6e5b78a00f6f87eda47e667ce314",
+        "v10gen:520190cbf3cfe63e8f8c8f56e7a1a99fb18dc73e11ec630de00f18878e97971a"
+      ],
+      "task_id": "HFC/2011/page_88.pdf-2",
+      "wire_bytes": 43867
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 15057,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "8e3dcc4329064bbf46ec15cce599ed521d163432d964667387dc06a5f161a46f",
+        "scenario_utf8_bytes": 11021,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:ec006376d7ab99ad32abf28153afca22dcc7a8562dbde525830b962e64b262ba",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "897d4fc46e910aa8454cebb796e1c0c9e0119c4d8c1c8b7f42a1831ee4f6aad1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/ec006376d7ab99ad32abf28153afca22dcc7a8562dbde525830b962e64b262ba/record.json",
+        "sha256": "9ac6a6295b88a1e572e94b0743c84ac4fcaf524af96c07240601046f4876b38f"
+      },
+      "request_body_sha256": "6f1da905a691c3f32ceea950358c445267ec5886a8b9ac9c9dc19d3adb4b21ba",
+      "request_file_sha256": "9ac6a6295b88a1e572e94b0743c84ac4fcaf524af96c07240601046f4876b38f",
+      "request_id": "897d4fc46e910aa8454cebb796e1c0c9e0119c4d8c1c8b7f42a1831ee4f6aad1",
+      "request_sha256": "6f1da905a691c3f32ceea950358c445267ec5886a8b9ac9c9dc19d3adb4b21ba",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:4190b6562357c9340307d4404fa71faffc8f61e34350fa4da6318926f2db7047",
+        "v10gen:12815175209e0564b1a9c6ca8177aa2811deab525813cb054753e65042a0efd7"
+      ],
+      "task_id": "HFC/2011/page_92.pdf-5",
+      "wire_bytes": 46698
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 16354,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "89066b9b05d9bf10c2a1b4f0002d398617af32772c83685a0e8756fd189a8a95",
+        "scenario_utf8_bytes": 12059,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:10c46588a3199ec38c96ea0c46184e871ec8629fba22418734550febfe88a692",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "6765aea4abff5e8dcdb2b0f14815611d1cb32a3eb67767dff5d7fef78681ce12",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/10c46588a3199ec38c96ea0c46184e871ec8629fba22418734550febfe88a692/record.json",
+        "sha256": "296c6861b77633a56c055d3ecefb8665da826acd22e747a4118caa5686a7e0ee"
+      },
+      "request_body_sha256": "d2b91e008d4c6469a3adb079789322347668fc7cfc7592352f578ff72e4382cf",
+      "request_file_sha256": "296c6861b77633a56c055d3ecefb8665da826acd22e747a4118caa5686a7e0ee",
+      "request_id": "6765aea4abff5e8dcdb2b0f14815611d1cb32a3eb67767dff5d7fef78681ce12",
+      "request_sha256": "d2b91e008d4c6469a3adb079789322347668fc7cfc7592352f578ff72e4382cf",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:b46f84e4c93f9274a3abf40f96a58522cab773cb9e05554d9bc4c0a7f995c416",
+        "v10gen:447fe86d31c4e3d0e6575854c767c4b2e861849406d75a8573b7e9a5f9bf8dc8"
+      ],
+      "task_id": "HUM/2016/page_133.pdf-3",
+      "wire_bytes": 41456
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 28465,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "57757478e766bae85914cffe70e42fe9d227414d3a6ee79c6283a939735d27ff",
+        "scenario_utf8_bytes": 21748,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:d0f5db4d2112bdbffbd6df7154d74171872cfc7661b5eb1c1a20e2a9bb1486c2",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "efeafd4048b5ced28a254a6f841d37e66f8ec206b2a1540738bb36eb56d62bbb",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/d0f5db4d2112bdbffbd6df7154d74171872cfc7661b5eb1c1a20e2a9bb1486c2/record.json",
+        "sha256": "9df9059bf33a4f133fbe438d9b9a2947875ec2d8c21590c31c81160c49aae164"
+      },
+      "request_body_sha256": "fded32e9135af8c4b3eaf3d7e5bbd31911ec88f03353207cc49a3ad4f441fd4d",
+      "request_file_sha256": "9df9059bf33a4f133fbe438d9b9a2947875ec2d8c21590c31c81160c49aae164",
+      "request_id": "efeafd4048b5ced28a254a6f841d37e66f8ec206b2a1540738bb36eb56d62bbb",
+      "request_sha256": "fded32e9135af8c4b3eaf3d7e5bbd31911ec88f03353207cc49a3ad4f441fd4d",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:eb006e4ccd798be9fafe03b57340776bf7015ea12d71b1144cb3823c6107f7a1",
+        "v10gen:248c0f51381cfa59b7c6be3fe1dff97ba986e8d6960ae4365c12115bed49f1f9",
+        "v10gen:f21c0b867e5834e0d3ba111f6ee98bb767176af4d00f714ade99ad6ec6110ada",
+        "v10gen:411605876025e5fe00621f4591acab5c534a208854baf1847deb0293c0638891"
+      ],
+      "task_id": "IP/2005/page_28.pdf-1",
+      "wire_bytes": 106533
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 43523,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "6a0744f4f982243294ab9ac676e7f522dc44110221893b4bc1a466f83cefc36f",
+        "scenario_utf8_bytes": 33794,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:804d39ffff6e04c9aec5766e33792c5862aebedd5541c32237c893684c9183cb",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "f909a50fe5b38a3cc076e8952c64e3eb74c315692639edac44b97ed5dd71382f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/804d39ffff6e04c9aec5766e33792c5862aebedd5541c32237c893684c9183cb/record.json",
+        "sha256": "19dd83a2ca9079f2af8f62cbc18f8dffee31a82e71d6554f545a6419f0e0b567"
+      },
+      "request_body_sha256": "b5664e35d372ac2530c6471c79ee86e3407639efd047d451ad3d03d9968bd7d3",
+      "request_file_sha256": "19dd83a2ca9079f2af8f62cbc18f8dffee31a82e71d6554f545a6419f0e0b567",
+      "request_id": "f909a50fe5b38a3cc076e8952c64e3eb74c315692639edac44b97ed5dd71382f",
+      "request_sha256": "b5664e35d372ac2530c6471c79ee86e3407639efd047d451ad3d03d9968bd7d3",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:7cb3553cbf9bfa6e9f294355b47b59c5917dc9b027237ec5a3c743be4a271eb0",
+        "v10gen:a83a532e0a85bfd6e2d49d11ce856fa34143c87c01bb7f8b2bd6f088aa270d90",
+        "v10gen:0d61f4d204410386a343d8387767323c7b90220af74fbe397cb5310e9a77462f",
+        "v10gen:a7e494daa84bf994452bb62f53d4aa4ae8211e1353c5ad5d81163cd8818f85d7",
+        "v10gen:221db767224b08035aecc49cc905a1de9c1e1bb56a96e0dfbe323f2a4a17f697",
+        "v10gen:f2f956b74b9ec68113b56709009efb48c25b84f8ed7d6ca2199208c5f71a8973"
+      ],
+      "task_id": "IP/2013/page_101.pdf-3",
+      "wire_bytes": 185316
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 15002,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "cc69edf3268e92bab2aaeba6f70740f421a6e706988bacfda3a827c99ab4d913",
+        "scenario_utf8_bytes": 10977,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4478ee320bdc7db6aa0c238ec63cb16eae69f20f9cdd8fc4d3838c1a9c933371",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "7bdab47757b07f528135ca9f8b25b714bb235f9fee6d008e065425c0a69962d7",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4478ee320bdc7db6aa0c238ec63cb16eae69f20f9cdd8fc4d3838c1a9c933371/record.json",
+        "sha256": "fa9dd9c2a74241dc0ca94ec82337ebd3031d95fb331090597bc03c0df6936dd5"
+      },
+      "request_body_sha256": "a749eb852dea0387145e80607dc971050e40aa550ee085bab62880e8350e95f6",
+      "request_file_sha256": "fa9dd9c2a74241dc0ca94ec82337ebd3031d95fb331090597bc03c0df6936dd5",
+      "request_id": "7bdab47757b07f528135ca9f8b25b714bb235f9fee6d008e065425c0a69962d7",
+      "request_sha256": "a749eb852dea0387145e80607dc971050e40aa550ee085bab62880e8350e95f6",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:76a8795abea5a3e5afbabc1be3566d9ff2f6035cacfbbe3bd3aa54486d12b517",
+        "v10gen:59906a4807ba608c57a1e6e1bf37dc8bf73aefbe07f2ee6872b0154bb0c516f2"
+      ],
+      "task_id": "IP/2018/page_83.pdf-3",
+      "wire_bytes": 61914
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 36150,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "390d55e66fdfd42020055b1e78f3ed7348933225d4f8dd2fd2c96b1ab8bb4d28",
+        "scenario_utf8_bytes": 27896,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:35b5bb77ec8fd82220b6de32bb47dbbeda018bc671ccdb1323dd7d848bd8e856",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "3765e8f80b02b6be4f2577b098e99ec01162106d4e147a232f37069bc6aec73f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/35b5bb77ec8fd82220b6de32bb47dbbeda018bc671ccdb1323dd7d848bd8e856/record.json",
+        "sha256": "2a32720d9e3434528dcc42de75ef0636509e1d5ed1d8752d8b3f670cadd2b6a0"
+      },
+      "request_body_sha256": "26e697c0e930181103b33b9dbe94bae1a005f6b0eebd8cc7f98a85f857252ead",
+      "request_file_sha256": "2a32720d9e3434528dcc42de75ef0636509e1d5ed1d8752d8b3f670cadd2b6a0",
+      "request_id": "3765e8f80b02b6be4f2577b098e99ec01162106d4e147a232f37069bc6aec73f",
+      "request_sha256": "26e697c0e930181103b33b9dbe94bae1a005f6b0eebd8cc7f98a85f857252ead",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:e375b69885479f8b7aea4d95717e5e0cbbb261edff7fe42d15ffafd62234407b",
+        "v10gen:96b1b2911d7ecc8343e48d37c67d64ad65ffd714d40a1198e0eadcf9d6cd0363",
+        "v10gen:44dc97d612b870456eae50965df21c7406df13df2b3449ac6e79a34f6a99ae97",
+        "v10gen:1f47e32ab5f9f6a96525e077d44acbe55d57bb7546d873f98bf79efb1fd9610b"
+      ],
+      "task_id": "IPG/2018/page_39.pdf-2",
+      "wire_bytes": 114246
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 15797,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "ef412bbc5129360ddc4e091fdb08ec597f36bac73f46cc32a34fc733472e2df0",
+        "scenario_utf8_bytes": 11613,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:bc7175ad8bae47984a6e7fb39bc840795d2be1b697d9840dab19e19ef1b848ac",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "f13f9e3959d70f3a271f27c5b57764debbfb38310d0aac029a09fac5467146df",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/bc7175ad8bae47984a6e7fb39bc840795d2be1b697d9840dab19e19ef1b848ac/record.json",
+        "sha256": "1fa6d97c92a5c124c97259a930c0bbad88f1d7ec6347a7c52913a5951633bd17"
+      },
+      "request_body_sha256": "50216e3229291b089a7fa8df745d1bda1fd38f6293d1e296abda68dd8744a830",
+      "request_file_sha256": "1fa6d97c92a5c124c97259a930c0bbad88f1d7ec6347a7c52913a5951633bd17",
+      "request_id": "f13f9e3959d70f3a271f27c5b57764debbfb38310d0aac029a09fac5467146df",
+      "request_sha256": "50216e3229291b089a7fa8df745d1bda1fd38f6293d1e296abda68dd8744a830",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:5de9c69591888ca9bb67b7685f0303a15e64e012a40b189165d38e9b6446bdde",
+        "v10gen:d1c6f50a9f133079416d1210a5c38634fdabded65af8f4d4599be207da1d5f95"
+      ],
+      "task_id": "JPM/2017/page_144.pdf-4",
+      "wire_bytes": 65356
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 35823,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "2b239d4eca69fc42ebcbf1fdc27b4503a6ddcad139d7db90220ee52f2e580377",
+        "scenario_utf8_bytes": 27634,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:b9c5cadace72322c60cf64e3b1e57be97154b17194899ea40de9afa44cc19c5d",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "82481a903d26dd1de92e6450a08ae80d6a363165b5074c9f9eeb0b1625cc3dee",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/b9c5cadace72322c60cf64e3b1e57be97154b17194899ea40de9afa44cc19c5d/record.json",
+        "sha256": "e79a7f628994246b7532583eea50f55fdbf877932dbe7a77ea95476522c94bdd"
+      },
+      "request_body_sha256": "ccd33d826dba73dc9f176a1fd7015c4112ac98830f22a35c7c928ee67c3a1280",
+      "request_file_sha256": "e79a7f628994246b7532583eea50f55fdbf877932dbe7a77ea95476522c94bdd",
+      "request_id": "82481a903d26dd1de92e6450a08ae80d6a363165b5074c9f9eeb0b1625cc3dee",
+      "request_sha256": "ccd33d826dba73dc9f176a1fd7015c4112ac98830f22a35c7c928ee67c3a1280",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:95775cf8cd69753d8333b9e9155848280bc30c8ad1146df3d69c4c93b7f4437b",
+        "v10gen:ea9327c8c9e10cfa2fdcb10894904f8f57523bb997c4973fe3b46283c74593bf",
+        "v10gen:d40c5737e9bdc43469cd52d3e63cdb74cc31cfbc6886d09b1d24bee0fad6874c",
+        "v10gen:3b0358576e1f3f32d7cf21a2db19915f12b1891c35a30d22f88dbad573ba0faa",
+        "v10gen:eb14e9b46954e9841b33b11055786008f57e3ee2e7c334ac2f19472089c58dac"
+      ],
+      "task_id": "KHC/2018/page_27.pdf-1",
+      "wire_bytes": 135145
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 25012,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "61ff032adb844db3ec5294de9c064083d173424be1514011858b69a560d15e47",
+        "scenario_utf8_bytes": 18985,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4b506c84e6675e460773ce3fcb0243d197aebaea410f30d545b7a7e30e4961a0",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "fe8c900171166b232febf1ba252aae758eb66811f069f4b7cdb60304c86e4935",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4b506c84e6675e460773ce3fcb0243d197aebaea410f30d545b7a7e30e4961a0/record.json",
+        "sha256": "ea14fc99095d0728511a7d08dcf67acbce2f9f7752f1dae93abcd4ad951a16f9"
+      },
+      "request_body_sha256": "ddd38993d841020b1bb7ce88b65ce7e2ed26cc4e1729d876341a5b4efe3e5feb",
+      "request_file_sha256": "ea14fc99095d0728511a7d08dcf67acbce2f9f7752f1dae93abcd4ad951a16f9",
+      "request_id": "fe8c900171166b232febf1ba252aae758eb66811f069f4b7cdb60304c86e4935",
+      "request_sha256": "ddd38993d841020b1bb7ce88b65ce7e2ed26cc4e1729d876341a5b4efe3e5feb",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:333103e0ff0107b07a4995934cc13becb172914b172fc610b42f6065f7dd70d1",
+        "v10gen:71054d2562de722bcad911e7a473e5284b7140d1d2fbce774cbfc8f8e65e31af",
+        "v10gen:f199013cf64ca911e31bb4e416f683cfd9e14e3de0a822eeeffe0570cbf8f02b"
+      ],
+      "task_id": "L/2010/page_41.pdf-1",
+      "wire_bytes": 111221
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 32102,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "252c6aafb8a687892cf4fdaadf59a3b8c02b668fb75a8d9e0c84401a78489eca",
+        "scenario_utf8_bytes": 24657,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:7dc2e10243f2693e060c2269832fbc634061afffa1621ecc9ca566d7ef307f51",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "01deb2aab7717db78a47b80214175a77c149f36f79192118f58c3df6a5093ebf",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/7dc2e10243f2693e060c2269832fbc634061afffa1621ecc9ca566d7ef307f51/record.json",
+        "sha256": "d1f821ada479ee450d76578510f7aba3cdfd42706f90d7e5950defa8eb49421a"
+      },
+      "request_body_sha256": "8c2a0ec0e2e9ba1c4000fc75b2b983f12d19219dbe0adda2cdc0636a4c566efd",
+      "request_file_sha256": "d1f821ada479ee450d76578510f7aba3cdfd42706f90d7e5950defa8eb49421a",
+      "request_id": "01deb2aab7717db78a47b80214175a77c149f36f79192118f58c3df6a5093ebf",
+      "request_sha256": "8c2a0ec0e2e9ba1c4000fc75b2b983f12d19219dbe0adda2cdc0636a4c566efd",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:64d81f6eeb6c31910f0438f3e189b8b6053bdbb4f7a6992181457e7c8743f4b8",
+        "v10gen:bd29f072bc3998cdc9c4a28bc406c0aee5267e912c4aebe41d9bd37df6e05141",
+        "v10gen:1f75156f5929fba3cd401118c4bdf00e54b414f7a9c5504b33372bb1f9556793",
+        "v10gen:12fb27c6406222b88a191f18816cb37d86f2b2699da887cadf861bcf7ced7da9"
+      ],
+      "task_id": "LMT/2014/page_46.pdf-2",
+      "wire_bytes": 89941
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 38114,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "364d31a3535e4d26d54c09e57a1f773c2051bc060bb37d23c6fae639b2d82136",
+        "scenario_utf8_bytes": 29467,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:65d863fa49fae5d1cf39afb78ae27f41904f384f5096842464af2f8f6386abe4",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "8e70d352e782ebe10f53b66e2f2aaccbf3ff20a225063223a95c9a1bda964130",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/65d863fa49fae5d1cf39afb78ae27f41904f384f5096842464af2f8f6386abe4/record.json",
+        "sha256": "8325ba881828879bb44d3adf6950e62557f39f8a10bc0544b8b0fe9ed7808654"
+      },
+      "request_body_sha256": "fc99f71f41effdecb8e855504a477097858afb3c730cfe8f15f2df2e2043653e",
+      "request_file_sha256": "8325ba881828879bb44d3adf6950e62557f39f8a10bc0544b8b0fe9ed7808654",
+      "request_id": "8e70d352e782ebe10f53b66e2f2aaccbf3ff20a225063223a95c9a1bda964130",
+      "request_sha256": "fc99f71f41effdecb8e855504a477097858afb3c730cfe8f15f2df2e2043653e",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:7ee4e6f50a2fd23ca6f22e77f421e3fc27ac9d52e94730ae06b23625810318e3",
+        "v10gen:22ffacf22b2eda41cfc32fb6dfe568e3178551613f16136baa6506251fe7ae88",
+        "v10gen:948c80bf3d314cf4a94e04ab4dcb29e6775203564f225f3e9348c9e8c3101fb9",
+        "v10gen:0848be4ade3c2afa9754338e3e8efd4659de9229be831f8fb66080a9b2d1c6ca",
+        "v10gen:ee1f27f29acf9f2066bcf6ee3dd2e79437994d1937c0851cc5a93d66533794cc"
+      ],
+      "task_id": "LMT/2015/page_55.pdf-3",
+      "wire_bytes": 116107
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 35189,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "112ac2b985af48c2322cc74b98ab5b38fd55cd5650fa9231e274f0988c9e6825",
+        "scenario_utf8_bytes": 27127,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:2a9a5e73fad4385a09b4d4848891dc19472525fb02f5d81a975757b52b29e94f",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "305d64b17f57f9ee8e25bd4813318aaa90a41b37a4b00dcab4107e0b1b57514c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/2a9a5e73fad4385a09b4d4848891dc19472525fb02f5d81a975757b52b29e94f/record.json",
+        "sha256": "aaf45433d89a5345799947e26ae72bd98669febc8c27afee66cc29fd7b33e3a0"
+      },
+      "request_body_sha256": "a5364fbc968551627892c62e98541251dd6b1158b14a7146fed990a533f7a59b",
+      "request_file_sha256": "aaf45433d89a5345799947e26ae72bd98669febc8c27afee66cc29fd7b33e3a0",
+      "request_id": "305d64b17f57f9ee8e25bd4813318aaa90a41b37a4b00dcab4107e0b1b57514c",
+      "request_sha256": "a5364fbc968551627892c62e98541251dd6b1158b14a7146fed990a533f7a59b",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:563e5a90659bda2692b5ca720b6165347070b7b940fc49c5edb17d88d049a4fc",
+        "v10gen:76712e4ae9c14f1f64a07a4bcd656522a16aeef18080b882b53241cf2234a408",
+        "v10gen:ea3475c56040dfd1fb80ee0137b0bcc97c8c2d9d85118a3512217115648cbae0",
+        "v10gen:95bfa1c9ebd50041c5dbc018c2dbf26ea8aef1de430b12e65159de35cc7877d2",
+        "v10gen:a1c8f45400f3a57c5240d254bd879afa4cbecc233d690325da7ec4cbaf3dc16b"
+      ],
+      "task_id": "MA/2008/page_70.pdf-2",
+      "wire_bytes": 114042
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 21824,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "37d0f45132d2ca6526b0879df49f9fb78e83ad7e8d346928000bdc5573007676",
+        "scenario_utf8_bytes": 16435,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4b656f552442df793a590bcb5ac33edf78bec95b1678fbdde96a6e989e39769c",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "9731fe329a8f26c9a9b6dc1d0758c9d48132ca04c214baf5a1aba5e8c0dea615",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4b656f552442df793a590bcb5ac33edf78bec95b1678fbdde96a6e989e39769c/record.json",
+        "sha256": "ef8e8bdabef708c63b5a952cd001b8c344a7edfef2c546d24684995421068a6a"
+      },
+      "request_body_sha256": "57d2cb05e618c24ae202f4766bf86ecb7a5033d4d35ded65e76819652d4049dd",
+      "request_file_sha256": "ef8e8bdabef708c63b5a952cd001b8c344a7edfef2c546d24684995421068a6a",
+      "request_id": "9731fe329a8f26c9a9b6dc1d0758c9d48132ca04c214baf5a1aba5e8c0dea615",
+      "request_sha256": "57d2cb05e618c24ae202f4766bf86ecb7a5033d4d35ded65e76819652d4049dd",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:d53daf36ffae70fd76ee88df32526413bee1232c32c0c87e940db32f3f668f89",
+        "v10gen:2f422ba494bd8d03c502dd6af6dca8aba00f8ed655c6cb05a34dda80020be440",
+        "v10gen:352f7bd86c15c430a66aa5c5a1db35b7f956a2019d13e5e08c03f59afad71bc2"
+      ],
+      "task_id": "MRO/2012/page_18.pdf-2",
+      "wire_bytes": 101324
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 26698,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "6b4c0d07522a3f10cd581d9eb2ad4b36b2384b79844abe4532a2a73c94121f35",
+        "scenario_utf8_bytes": 20334,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:2bf99589d0d20df7734f6d939c90a353c5cd9ee026310e103d5a498fb5c68191",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "9821464faed215271bd454b8ec0f4253f1b3a25955fd9cd9de788ebcebe6b9bc",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/2bf99589d0d20df7734f6d939c90a353c5cd9ee026310e103d5a498fb5c68191/record.json",
+        "sha256": "c7f3952852f076427cb9434ada2284115592db9d523372aa9fe66bf348ee1249"
+      },
+      "request_body_sha256": "ca11a7fbef377dce92e0eadfcd39a51ca25b4c71c18105a62cf096bd7e0ec6de",
+      "request_file_sha256": "c7f3952852f076427cb9434ada2284115592db9d523372aa9fe66bf348ee1249",
+      "request_id": "9821464faed215271bd454b8ec0f4253f1b3a25955fd9cd9de788ebcebe6b9bc",
+      "request_sha256": "ca11a7fbef377dce92e0eadfcd39a51ca25b4c71c18105a62cf096bd7e0ec6de",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e",
+        "v10gen:fa35a6316a8f66725432dbff1194ade102efb023913c639d9e5cc37301370235",
+        "v10gen:b3e3276f9476e07bd09127242606ab5238ab63cbe338af4767a82ce5ca29bf59",
+        "v10gen:205399842f5d4ff9a44d90a0def42d9e377228439d3f1a55de45f5eaae45b323"
+      ],
+      "task_id": "MRO/2012/page_22.pdf-2",
+      "wire_bytes": 107251
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 21517,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "1c03b5fb6445005cd5042d086f95513ab871bb7ec0f696a8e9dd000c1bf2a06b",
+        "scenario_utf8_bytes": 16189,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4d9d604815453f95587265b7d2efb9fa83a81481221a1759756624fe1657cee3",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "8bb83d7351f0fe0a134648171ebeb5727308c4289798ab9c334574ebc1654219",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4d9d604815453f95587265b7d2efb9fa83a81481221a1759756624fe1657cee3/record.json",
+        "sha256": "a1a92b590a33a8ea7d7ef85625d5e3dbb4902724621e788f372b76268b1afc69"
+      },
+      "request_body_sha256": "26944402fe43eedb888992e92f9ba23fdab7194370891a41032d9e662b695261",
+      "request_file_sha256": "a1a92b590a33a8ea7d7ef85625d5e3dbb4902724621e788f372b76268b1afc69",
+      "request_id": "8bb83d7351f0fe0a134648171ebeb5727308c4289798ab9c334574ebc1654219",
+      "request_sha256": "26944402fe43eedb888992e92f9ba23fdab7194370891a41032d9e662b695261",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:ba6e56a56d151d80c9abe88145ed2847a3601a423f3d80f782aa98cbab78b913",
+        "v10gen:80b2a1884f4438dda00b98552d6bd541c9fee3a6f226b47c4a2c3309a9c4511d",
+        "v10gen:ab587f77ac8261e7516298c19a7a3565c8a214c63a6cd9588245ede692bb166e"
+      ],
+      "task_id": "MRO/2012/page_39.pdf-3",
+      "wire_bytes": 86370
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 22882,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "f96ad14e3992ee69635e6f7ff362bf0372666288294e1f162e83dc0650af75ab",
+        "scenario_utf8_bytes": 17281,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:2a6527cf7c4b0245ea2547f87da2c6837863396d5ce8a21622d109722552455b",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "807cffe1940ac670711952f6d07e28094d3ddf2d77b0d72dd89c4999ee1a8662",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/2a6527cf7c4b0245ea2547f87da2c6837863396d5ce8a21622d109722552455b/record.json",
+        "sha256": "747dbc5e3f8ab831ac79b49a34e7c89abd2fb34ee4fe08b94afbca639faa3844"
+      },
+      "request_body_sha256": "4477c28069c526e64cae9cd14cf56dbe7ccef27ac2b7a5fd5df0ef19101c933f",
+      "request_file_sha256": "747dbc5e3f8ab831ac79b49a34e7c89abd2fb34ee4fe08b94afbca639faa3844",
+      "request_id": "807cffe1940ac670711952f6d07e28094d3ddf2d77b0d72dd89c4999ee1a8662",
+      "request_sha256": "4477c28069c526e64cae9cd14cf56dbe7ccef27ac2b7a5fd5df0ef19101c933f",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:ae14cc7b0028dc650ab6b40584fb9f71990afe0da3bce348c47ad26d363a6da0",
+        "v10gen:d1460a9433c01cfcf1348ecc0f04379f510729b47dc1ccbca16f5a842c055c91",
+        "v10gen:a857305d2be3fcc1bba73f1ce902e22be286021477ac5f11bbce4249619ebfb7"
+      ],
+      "task_id": "MSI/2005/page_64.pdf-4",
+      "wire_bytes": 98861
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 31727,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "03672e3abc3b506d29c67083617951903e2b0d32392f724f914fa37efcaa724e",
+        "scenario_utf8_bytes": 24357,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:e1bc395f6fea7c0093cb4ae4487559f29d3fb8e65fa154ebb1e59dc3093ed21d",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "9fe00410bed78abf464497440de53b23b5059a0555d75360f8fe66894bb36640",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/e1bc395f6fea7c0093cb4ae4487559f29d3fb8e65fa154ebb1e59dc3093ed21d/record.json",
+        "sha256": "af9ddfabb4c1cf037c0ec322ba12a14b64d98bb9be71299f53880c3872ca89dc"
+      },
+      "request_body_sha256": "bd005f669694a93a2d43642dc281d16a7cdcaa78545141705034639e06579788",
+      "request_file_sha256": "af9ddfabb4c1cf037c0ec322ba12a14b64d98bb9be71299f53880c3872ca89dc",
+      "request_id": "9fe00410bed78abf464497440de53b23b5059a0555d75360f8fe66894bb36640",
+      "request_sha256": "bd005f669694a93a2d43642dc281d16a7cdcaa78545141705034639e06579788",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:6ae35f029c670227d51aa14df6a61de643698aaeda306bfb7136357c8535a120",
+        "v10gen:358811bf5547be8e152b10e910fbc4b0a844e77b47fb4a647b7baa7669fcc365",
+        "v10gen:a55e2a5ab45b6aad6735cd2933fd4d3f03c29fa7233550085bd67c5472f8d1d9",
+        "v10gen:a1128ee34a539043ad834e926de6e7956b0516b7291b49f0d33fa9b4c2794220"
+      ],
+      "task_id": "PNC/2016/page_73.pdf-1",
+      "wire_bytes": 128355
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 40579,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "8b0392a8b49eecb66273bfe5c3642927e7da3f7d467d259a4c343a60ad911468",
+        "scenario_utf8_bytes": 31439,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:8aa4f4ca8413961372bece3b7216fa785e9bb324b71da4c7498dce7a1ec7a88b",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "96fde5497f028ae679c43f2af2d069acfc4ddbeaee328a37cc454bee6aaa3cfc",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/8aa4f4ca8413961372bece3b7216fa785e9bb324b71da4c7498dce7a1ec7a88b/record.json",
+        "sha256": "8fb6d2343ab8bcf1963417275b1e705b6a4d7435f6fe6a4e12539b3c5f9cf0b3"
+      },
+      "request_body_sha256": "5e29fa0db6a16f7ce169c9c4e927eec006f16aa86ae1e097570c616fa7cef473",
+      "request_file_sha256": "8fb6d2343ab8bcf1963417275b1e705b6a4d7435f6fe6a4e12539b3c5f9cf0b3",
+      "request_id": "96fde5497f028ae679c43f2af2d069acfc4ddbeaee328a37cc454bee6aaa3cfc",
+      "request_sha256": "5e29fa0db6a16f7ce169c9c4e927eec006f16aa86ae1e097570c616fa7cef473",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:a902bb95d16f62237a644d1f8f38a66c7c8216185897b018298cf4837bbb3b9e",
+        "v10gen:bf222e4683c4e61ee99f3da3ac06f318cab4ac4811990bd20fcb0e8a09f555c3",
+        "v10gen:a754a66eac8228cddea3894feb3591f72fa385e09b2e2b4c31c2238a6b070d74",
+        "v10gen:08cebf913d40798a164887340a7c0880c9ab3535900fd1189dd0e1eb2818d96d",
+        "v10gen:265a24f95d210ad070bf071c262d2ce56eb040631ef2408a7dfa08f1841be24a"
+      ],
+      "task_id": "SNA/2013/page_56.pdf-2",
+      "wire_bytes": 146973
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 22690,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "51c5595accc737599f4002df98748905e875d3f47f73ab6ae7d124ea5dc8c70b",
+        "scenario_utf8_bytes": 17128,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:423e83a17f3dbf2c8244569ae72465dbab540c339c453ceb820efaff6923b751",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "8a2916d69eaae9516ace9ec321452618f00c4ee5409bab52d7c4145ce7d8556b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/423e83a17f3dbf2c8244569ae72465dbab540c339c453ceb820efaff6923b751/record.json",
+        "sha256": "e1430d17ad246070f9001158647878586f9519ee26e252697a6fb1dcad2bb6dc"
+      },
+      "request_body_sha256": "c85344c17838d5938d67a6337b24dea436510255a6aa2a05fa8219d9053ef027",
+      "request_file_sha256": "e1430d17ad246070f9001158647878586f9519ee26e252697a6fb1dcad2bb6dc",
+      "request_id": "8a2916d69eaae9516ace9ec321452618f00c4ee5409bab52d7c4145ce7d8556b",
+      "request_sha256": "c85344c17838d5938d67a6337b24dea436510255a6aa2a05fa8219d9053ef027",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:7e153c8270616368581926eda0233d24122c628553c7c9b48216b4a216dff5c3",
+        "v10gen:7a9ab4cfb988c0ac5a0030201d36b7de6e0e02a07ce9ec12bd1b713c042acdb3",
+        "v10gen:432a4ca866ee83579268a70c7f7f53e0b14e95badec87110e0d79723cc0a63d5"
+      ],
+      "task_id": "SNPS/2003/page_39.pdf-2",
+      "wire_bytes": 67503
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 35512,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "c5f1fb692110449f6509c6f1335d93361a808078eb077264ef001cc62dd60cf0",
+        "scenario_utf8_bytes": 27385,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4dbe39e3b8898641962342216b3090d6d99cb01364720e83f7ef8a5da98ab7d0",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "e93816f12704ddba0466a8bcaffc53531de8ad18eedd4c8e6ecf90969eccf4b4",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4dbe39e3b8898641962342216b3090d6d99cb01364720e83f7ef8a5da98ab7d0/record.json",
+        "sha256": "0975e108ffeedb85bc5aa75e61718d308a33bb7e0d547d50ce6a01fd7f37010d"
+      },
+      "request_body_sha256": "4e4cdec94cfb25d92541f7a9755274b5c663a29943574b63feabaa57222227dd",
+      "request_file_sha256": "0975e108ffeedb85bc5aa75e61718d308a33bb7e0d547d50ce6a01fd7f37010d",
+      "request_id": "e93816f12704ddba0466a8bcaffc53531de8ad18eedd4c8e6ecf90969eccf4b4",
+      "request_sha256": "4e4cdec94cfb25d92541f7a9755274b5c663a29943574b63feabaa57222227dd",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:6980154633758aa86f10d8e6ef1c4603d2b750c7fbc8dae56b2bf67f5ed0c122",
+        "v10gen:2ac5f73e784a6ea5b9c6058fda5014e2586d9f9395f9dc6eaf447156f87f2ccc",
+        "v10gen:0c07c64fc96cc489cf8d807e2e92ce6794b53e2716e410d8a0d4bb41fa036c9e",
+        "v10gen:1917939ffeeff45f45cdd280b16f9a170277940ff47e1ed07f26bbe2051a83db",
+        "v10gen:50541b804c9f2912660dda980218b6589a1591d6988a48857966336f307639b8"
+      ],
+      "task_id": "STT/2013/page_175.pdf-1",
+      "wire_bytes": 108304
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 36462,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 65536,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "437f0e4a7f440f4b829c30f85c657cf7867ed344a3b86f524c7c2e6577edf1b3",
+        "scenario_utf8_bytes": 28145,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:4ae24b747fb9daf08a87cc412bbeed174f841e7d995d0aaf8f8c63f9613fdf57",
+      "kind": "mapping",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "request": {
+        "id": "8088cac39941518eba475ac0466f2defcef55b4487bdabfa5ccf0aa729433ca8",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/4ae24b747fb9daf08a87cc412bbeed174f841e7d995d0aaf8f8c63f9613fdf57/record.json",
+        "sha256": "71a1c583b1033e4df39d3f490722458c0e8da5870ac5f68f731fe9540261cb42"
+      },
+      "request_body_sha256": "f40a579027b8e1a685501d7969b2b1676535ec68e291e3b3fc8966791a137fd4",
+      "request_file_sha256": "71a1c583b1033e4df39d3f490722458c0e8da5870ac5f68f731fe9540261cb42",
+      "request_id": "8088cac39941518eba475ac0466f2defcef55b4487bdabfa5ccf0aa729433ca8",
+      "request_sha256": "f40a579027b8e1a685501d7969b2b1676535ec68e291e3b3fc8966791a137fd4",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:4d97eaef839158a0329e3be053f140792c456e460ac277660d32534c7fb0f747",
+        "v10gen:9dddd7fe67e12b4f675f5a40ab4313f9a428af4796e34b5846868e20f734468e",
+        "v10gen:668b6e1f45f6ab8b26885ec2a14518c46f2faa6e7ce0af4139638fb30bfdb9a6",
+        "v10gen:d95a3ee7ba2b3bca5f84f662ac014db5633fefe963554bf0609dc60562c27428",
+        "v10gen:a6d8b7faafe47512a4ffe5b60dea4e6cf7ab5476fd7f401de486e446062d43c2"
+      ],
+      "task_id": "STT/2013/page_71.pdf-2",
+      "wire_bytes": 118266
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 14834,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 16384,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "39ddac06df9516fb823ce5d2c0a84ddbad882b81847285a99bb873929a44ddf4",
+        "scenario_utf8_bytes": 10843,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:5556e9743017d29d49fe8bc76c4af404918424047f7414871bfaaf4ee2d52774",
+      "kind": "mapping",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "request": {
+        "id": "6e3dfa2c1d7a8bdae5d118eb383c65e74841e8b60125523f8e676cd8ce7f1b56",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/5556e9743017d29d49fe8bc76c4af404918424047f7414871bfaaf4ee2d52774/record.json",
+        "sha256": "0dab0daf5164bfc5ab788ad00b37e9cf434519e750999d22e94c3835f36c02ab"
+      },
+      "request_body_sha256": "d1e2e4fa15e4f1d80d4509bc4f8e37cea170054182fc8a8773ac4c44573f315f",
+      "request_file_sha256": "0dab0daf5164bfc5ab788ad00b37e9cf434519e750999d22e94c3835f36c02ab",
+      "request_id": "6e3dfa2c1d7a8bdae5d118eb383c65e74841e8b60125523f8e676cd8ce7f1b56",
+      "request_sha256": "d1e2e4fa15e4f1d80d4509bc4f8e37cea170054182fc8a8773ac4c44573f315f",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:e90d9861e422ae633ea2193c0221144f948a95a7875e6fa7bb00e65751459209",
+        "v10gen:fdd243849cb7944e00a16801aaf6701129a1ba7ee39f19e2627431595af8d639"
+      ],
+      "task_id": "TFX/2015/page_42.pdf-1",
+      "wire_bytes": 38147
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 23599,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "2a464c82b5753ba441469916c1a3e923860eeff739c52c6ac2bbc8e58c2d7364",
+        "scenario_utf8_bytes": 17855,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:503d9cd9f1491be9f0cb0d1a3c2a0c85da97e5dda9d9dbcebc2b0ae05c0ccd73",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "78b538bbe59a048f30f5dc997136b6541c98ae01d8701031e110283ee4501060",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/503d9cd9f1491be9f0cb0d1a3c2a0c85da97e5dda9d9dbcebc2b0ae05c0ccd73/record.json",
+        "sha256": "963291a22f7d800ce354896298e475e26c5c52e9d58994de1ce201da05e34aff"
+      },
+      "request_body_sha256": "14001d2454e97f920a85f76b70106d2083a8be2d58bf61b4cc4da57c2edc7999",
+      "request_file_sha256": "963291a22f7d800ce354896298e475e26c5c52e9d58994de1ce201da05e34aff",
+      "request_id": "78b538bbe59a048f30f5dc997136b6541c98ae01d8701031e110283ee4501060",
+      "request_sha256": "14001d2454e97f920a85f76b70106d2083a8be2d58bf61b4cc4da57c2edc7999",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:4608a41a4a56b675a931defa7920d83565eaa852a665c1dc557b0909c2c80840",
+        "v10gen:e19a8b1877fe06efd2301055a671fb87bc914c4fc166641c735663b3b752c238",
+        "v10gen:de967bdabb0655f79b9b29f3a7cd4f0399efec9fcf7ca462491e353edb7a011f"
+      ],
+      "task_id": "TSCO/2017/page_68.pdf-2",
+      "wire_bytes": 80465
+    },
+    {
+      "authority_reason": "mapping_completion",
+      "capacity": {
+        "estimated_output_requirement": 24778,
+        "exact_token_forecast": false,
+        "hard_output_size_guarantee": false,
+        "max_output_tokens": 32768,
+        "new_semantic_size_limits": false,
+        "safety_multiplier": "5/4",
+        "scenario_sha256": "79366487d8a7afbd5b992475fd744327513879e56a8c325429328b485aa1747a",
+        "scenario_utf8_bytes": 18798,
+        "schema": "v15_serialized_mapping_capacity.v1",
+        "tool_envelope_utf8_bytes": 1024
+      },
+      "episode_id": "v15mapping:9b4ade8e61676c604136065a83342ca0ba0342b66bb01314642dc3a31bc2d2d0",
+      "kind": "mapping",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "request": {
+        "id": "7d2a886aa7453ea168e56d02f8ae426e86733f7b0e6e620a5e570ff58f5b76cd",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/requests/9b4ade8e61676c604136065a83342ca0ba0342b66bb01314642dc3a31bc2d2d0/record.json",
+        "sha256": "ac73b567f8f7443de71fe77c3d5bf340977731e2179af48461cbe79ae04107f6"
+      },
+      "request_body_sha256": "61d7ed8c5ddff19742e6a38036b9d841eff2dfd26c3174cdb3c725f55ea35783",
+      "request_file_sha256": "ac73b567f8f7443de71fe77c3d5bf340977731e2179af48461cbe79ae04107f6",
+      "request_id": "7d2a886aa7453ea168e56d02f8ae426e86733f7b0e6e620a5e570ff58f5b76cd",
+      "request_sha256": "61d7ed8c5ddff19742e6a38036b9d841eff2dfd26c3174cdb3c725f55ea35783",
+      "role": "mapping",
+      "slot_id": null,
+      "slot_ids": [
+        "v10gen:0cfa318c6be0cd20a2ac62fc65793866d9bcd4c6461c004447b03f8a11dd2458",
+        "v10gen:8db6d098d4d67cef598112d08579a90aaedb8cdbd4745d5043fca54e5807b0b2",
+        "v10gen:d86cc9708121b694646163aa744424a1fcd625be4c9187b623fbf3530d17f1fc"
+      ],
+      "task_id": "VLO/2012/page_27.pdf-3",
+      "wire_bytes": 72773
+    }
+  ],
+  "max_wire_bytes": 185316,
+  "no_Student_observations_consumed": true,
+  "no_input_truncation": true,
+  "no_model_call": true,
+  "no_wallet_registration": true,
+  "output_cap_counts": {
+    "16384": 6,
+    "32768": 18,
+    "65536": 12
+  },
+  "protocol_identity": "7ca1100e2c0f98715f9bd38e8cbe0df4faec72f12a149412624ad402589f1f93",
+  "schema": "v15_mapping_preparation.v1",
+  "source_drift": false,
+  "total_wire_bytes": 3638645
+}

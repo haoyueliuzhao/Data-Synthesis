@@ -217,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v15"):
+        from .v15_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     if coordinates["episode_id"].startswith("v14"):
         from .v14_budget import eligible
 
@@ -254,11 +258,18 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     from .v13_budget import read_matrix_permit as read_v13_permit
     from .v14_budget import eligible as v14_eligible
     from .v14_budget import read_matrix_permit as read_v14_permit
+    from .v15_budget import eligible as v15_eligible
+    from .v15_budget import read_matrix_permit as read_v15_permit
 
     matrix = read_matrix_permit(connection, config)
     material = read_v13_permit(connection, config)
     residual = read_v14_permit(connection, config)
-    if residual is not None:
+    mapping = read_v15_permit(connection, config)
+    if mapping is not None:
+        if not coordinates["episode_id"].startswith("v15mapping:") or request_body is None:
+            raise BudgetUnavailable("V15 permits only its frozen residual mapping tasks")
+        v15_eligible(connection, config, coordinates, output_limit, request_body=request_body)
+    elif residual is not None:
         if (
             not coordinates["episode_id"].startswith(("v14projection:", "v14mapping:"))
             or request_body is None

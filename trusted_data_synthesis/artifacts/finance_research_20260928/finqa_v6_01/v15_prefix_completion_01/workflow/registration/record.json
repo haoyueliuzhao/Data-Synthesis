@@ -1,0 +1,56 @@
+{
+  "all744_tasks_all2468_packages": true,
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "at": "2026-09-30T05:11:53.808879+00:00",
+  "common_prefix_steps_per_seed": 298,
+  "continuation_intent_id": "cd508f367ef232ca18931181793ff675e3b28c4a1c4485fac6b3d061e6805b9e",
+  "full_branches_require_complete_mapping_and_actual_prefix": true,
+  "id": "c91e2562b380fddc28a998cd75865852dcdc7a6ea78ed58cf958c1b1716e35d1",
+  "mapping_inputs_frozen_before_prefix": true,
+  "mapping_plan": {
+    "id": "92e12ababef3143bf94a5e1e80ef9259909f7488bafb3630c9d64a6fcffcab8c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/registration/record.json",
+    "sha256": "9326b7df92d3aa56fa49d87a57dc5bf3afa1065ad5a31d07383658ecc91d740a"
+  },
+  "max_gpu_workers": 3,
+  "minimum_free_mib": 24576,
+  "no_GPU_placeholder": true,
+  "no_Student_data_in_mapping": true,
+  "no_automatic_mapping_retry": true,
+  "no_feedback_or_dev_before_full_binding": true,
+  "no_prefix_retraining": true,
+  "no_temporary_states": true,
+  "prefix_does_not_wait_for_mapping_completion": true,
+  "prefix_launcher": {
+    "id": "d6841ca11342a991a02ac6f12b70c934cbc5702b05d34e1e4799f93a5ba5cc0c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/prefix_training/registration/record.json",
+    "sha256": "f8892c09b73b7c64f731095e9a42b7cff7ff0437bcba10abe5736e7ffca9fe87"
+  },
+  "prefix_physical_updates": 894,
+  "registration_id": "92e12ababef3143bf94a5e1e80ef9259909f7488bafb3630c9d64a6fcffcab8c",
+  "schema": "v15_parallel_prefix_mapping_workflow.v1",
+  "source_bindings": {
+    "v10_training.py": "8b8fce0b5f68491130baf14bbb87147cb95ba36f17a65bf6f53ca34d33c57102",
+    "v10_workflow.py": "c1261530c642f0668098da6b3d5323947b9cc87e6fbbf898c341833431d45133",
+    "v15_continuation.py": "8ae383d83370b86a3bf27d67262b2dc6ad77a5b7b3ebb6f0288ed42327790923",
+    "v15_material.py": "3ac52ff6193066b2df83be19ac0ac5bca7133eee2fa8f1c15f1c155683413f7e",
+    "v15_prefix_material.py": "1dd13f84917851d29c9d4d4547fbc6d2090e16bcd20962d2996fb1d910600407",
+    "v15_prefix_training.py": "da655481299f1ac275ffeab713fa9a35e174e5b5aa717792b7ef5e34df9dece6",
+    "v15_workflow.py": "63adb6ebb99841a5b7c5a4686003d4639a20cf98ee00b43a2cca149fd0d8c34d",
+    "v6_distribution.py": "c08e13b3135bbcafe7d1fff75829e753ca6a37cdec5907c7e762df3f683bef77",
+    "v8_training_driver.py": "a0ed57f18024d0ba675266d5f8050bcc7ef7fab0f32f832bb84d18ee80dd9f24",
+    "v9_conditional_training.py": "0eed331179c15a2cf27642264964876afec5dffa2e6bc653d1104a7bfd7404e6",
+    "v9_final_evaluation.py": "51942ef21f3bfc75f3c519eae04b629a3ea9d2ae47a45b71ceba1393113fc8b0",
+    "v9_mechanism_execution.py": "fd050f5ce6d6287133b4dc712fb124f02a94c253ab622975242492a98114198a",
+    "v9_training_launcher.py": "83b6e3f1c982f83913580b8276c0d81a4765a432bed3bedf279c26a959bc822e"
+  }
+}

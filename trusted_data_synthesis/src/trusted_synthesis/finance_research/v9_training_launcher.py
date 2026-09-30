@@ -170,8 +170,13 @@ def register(
     pool = load_training_pool(material_binding)
     identity = material_identity(pool)
     scale = read_bound(scale_record)
+    if scale.get("schema") == "v15_prospective_condition_realization.v1":
+        from .v15_continuation import validate_condition_realization
+
+        validate_condition_realization(scale, material_binding, identity)
     require(
-        scale["schema"] == "v9_pre_student_scale_decision.v1"
+        scale["schema"]
+        in {"v9_pre_student_scale_decision.v1", "v15_prospective_condition_realization.v1"}
         and scale["material_identity"] == identity
         and scale["material_binding"] == file_binding(material_binding)
         and scale["decision"] == "proceed_exploratory"
@@ -273,6 +278,12 @@ def checked_launch(output):
         "frozen X* or all-package kernel changed",
     )
     scale = read_bound(plan["scale_decision"]["path"])
+    if scale.get("schema") == "v15_prospective_condition_realization.v1":
+        from .v15_continuation import validate_condition_realization
+
+        validate_condition_realization(
+            scale, plan["material_binding"]["path"], plan["material_identity"]
+        )
     require(
         scale["id"] == plan["scale_decision_id"] and scale["decision"] == "proceed_exploratory",
         "prospective scale decision changed",
