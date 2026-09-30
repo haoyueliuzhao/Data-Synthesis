@@ -1,0 +1,21 @@
+{
+  "Codex_research_judgment_participated": true,
+  "actual_model_calls": 0,
+  "at": "2026-09-30T08:31:30.628697+00:00",
+  "authority": {
+    "id": "ade00a3ee84b33cfcd477c36603603f574072d854738375221f8770a4fd9acbb",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/researcher_authority/record.json",
+    "sha256": "069e75e2e4e26fdfdddbd47838b49a382aaa790e5672e69c59f7999df3c91236"
+  },
+  "call_count_scope": "external_paid_API_requests_only",
+  "expected_model_calls": 0,
+  "human_judgment": false,
+  "id": "82695dd858ef1ba7826b44081f8f0fc2339d547152a8dff1a038b73bb51feb78",
+  "judgment_source_kind": "codex_source_grounded_research_adjudication",
+  "not_a_paid_model_return": true,
+  "old_V17_hold_and_binding_preserved": true,
+  "paid_API_receipt": null,
+  "protocol_id": "2a7131f87a22bb86f2c1dba856c12dcc6e1633e4109eac270e453386c0f9010a",
+  "registration_id": "5ecd737d512f48661dc634e7ccc47a49e060dc0f259ef60ebc79a037e2d8753e",
+  "schema": "v18_researcher_adjudication_seal.v1"
+}

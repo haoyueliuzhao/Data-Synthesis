@@ -1,0 +1,241 @@
+{
+  "schema": "v18_abmd_source_grounded_research_judgment_proposal.v1",
+  "task_id": "ABMD/2008/page_87.pdf-1",
+  "artifact_status": "proposal_only_not_material_binding",
+  "adjudicator": {
+    "name": "Codex collaboration agent /root/v18_abmd_research_judgment",
+    "identity": "AI collaboration agent; not a human researcher",
+    "judgment_type": "source-grounded semantic research judgment, not a mechanical label repair",
+    "independent_financial_truth_certification": false,
+    "new_external_api_calls": 0,
+    "provider_receipt": null,
+    "student_artifacts_read": false,
+    "training_progress_artifacts_read": false,
+    "prior_mapping_payloads_read": false,
+    "disclosure": "Read the complete user audit attachment, which states the disputed historical mapping, its counterexample and reported training context. Did not inspect record.messages, record.latest_record, historical model-label payloads, Student loss, checkpoints, gradients, feedback, dev, prefix training artifacts or live progress. All four packages were assessed together from their public originals."
+  },
+  "provenance": {
+    "record_path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v17_three_task_continuation_01/requests/cf5eef9e41c1315d2b969a699861d4dc981290f6522e238500615d9eafbae23b/record.json",
+    "record_file_sha256": "a6f9346722adbc77999cccf1610e9a686f43bff516ff8f7f7d830d935f924a65",
+    "semantic_input_fields": ["views", "aliases", "temporal_pairs"],
+    "domains_usage": "Only object shape inspected; no labels used.",
+    "json_hash_encoding": "UTF-8 json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':')) for canonical view and contract hashes.",
+    "episode_hash_scope": "episode_sha256 is the original value carried by each public view; the separate original episode file was not opened. Canonical view hashes were independently computed from the exact supplied view objects.",
+    "shared_source_texts_hash_encoding": "UTF-8 compact JSON array, in segment order, of [kind, text] for question/source_text/source_table_cell segments. All four arrays were checked equal, and their complete text was read once.",
+    "shared_source_texts_sha256": "e9295066a2739fcb6020415f4ef6839eb73e0a47f57780276db0ee8df16ce7f0",
+    "shared_public_contract_canonical_sha256": "58ebc1343970de56734dd3222ee37f03319ac7c0bf7dd912cede3977330a9c26",
+    "audit_attachment": {
+      "path": "/home/zhuxinrui/.codex/attachments/28b7ebbf-7c7d-4b59-81e6-d70595ee367b/已粘贴的文本.txt",
+      "sha256": "faf5cc2c1f40b1a232f74404cf22d78bdfa9d1f4014746e183cef8b266256c8b",
+      "read_scope": "complete, 531 lines"
+    },
+    "definitions": [
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/finance_research/v10_review_protocol.py",
+        "sha256": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+        "read_scope": "semantic schema/policy, mapping_rubric lines 204-227, exact-locator intervention checks lines 580-632",
+        "rule": "Partition all originals by evidence selection, derivation, observation understanding, and consequential verification/revision. Ordinary execution alone is insufficient. Every chi=1 member needs an original action, actual observation and later model consequence affecting acceptance/judgment."
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/finance_research/v10_process_review.py",
+        "sha256": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+        "read_scope": "Locator and adjacent schema definitions, lines 30-85",
+        "rule": "Exact source locators contain segment_id, start, end and quote."
+      },
+      {
+        "path": "trusted_data_synthesis/src/trusted_synthesis/finance_research/v6_distribution.py",
+        "sha256": "c08e13b3135bbcafe7d1fff75829e753ca6a37cdec5907c7e762df3f683bef77",
+        "read_scope": "manual_distribution lines 89-129",
+        "rule": "Manual distributions use the supplied binary chi and r*2**(+/-chi), confirming that state and chi are distribution-defining metadata. No distribution or training outcome was inspected."
+      }
+    ],
+    "originals": [
+      {
+        "alias": "p0",
+        "slot_id": "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+        "episode_sha256": "a6cf51bb7182a5385d03212d77926aa9690901d63f064d6775de3d5e4f31052a",
+        "view_id": "public_trajectory:bd212c18935a81c47c14031d273dd52c5a639a3aed48a5417ee46ee9424fa71f",
+        "view_canonical_sha256": "ad5fd19e8fd620451a17ba8632305e2c853c00ca918cffa72a6cffab3c606082"
+      },
+      {
+        "alias": "p1",
+        "slot_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+        "episode_sha256": "be757d810dbda47551bdcd2a0a75e76d8c4c8464b82908c8fcc0c819a3379ba6",
+        "view_id": "public_trajectory:24d71924371eec8f116b4cdd9a7a4f8490911f17046b1a2858ed4cb22e3c94a3",
+        "view_canonical_sha256": "5c2e6b9019de65d3890e0be7b68e4417c249f267a83e052bf96d6fb8144f5b22"
+      },
+      {
+        "alias": "p2",
+        "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+        "episode_sha256": "651d733fa74a714a9f3b49d1a461d8a10197a1369398c862f43f609b073dce80",
+        "view_id": "public_trajectory:fde54db963af961b1fdba7d77ae1bdba6046e7235aaa32583a711f1af3aa7a14",
+        "view_canonical_sha256": "7bdcb8ae1bee130b30603aa89edcdd76a616c2422f2bec570b2db3405af76d79"
+      },
+      {
+        "alias": "p3",
+        "slot_id": "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32",
+        "episode_sha256": "010c693a5b22113babdb92db77e2edb45f578ebae389c677c73451393b74df96",
+        "view_id": "public_trajectory:5d4613ff2e06eef2066e0eb26a590bbc02773e46a49061535a89007a89ef8c7a",
+        "view_canonical_sha256": "60cb132bb60b1806c271c3bb7fa54e441a027f7eb4a553f7be3e609ff02621e7"
+      }
+    ]
+  },
+  "facts_by_package": [
+    {
+      "alias": "p0",
+      "evidence_and_derivation": "Select fiscal 2008/2007/2006 rents 2.2, 1.6, 1.3 million and the table's stated total 7754 thousand; sum rents, convert numerator to thousands, divide by 7754.",
+      "action_results": ["turn0 run_program: 0.65773", "turn1 submit_program: same program"],
+      "final_program": "add(2.2, 1.6), add(#0, 1.3), multiply(#1, const_1000), divide(#2, 7754)",
+      "last_run_and_submit_argument_utf8_equal": true,
+      "observation_and_acceptance": "Final public content reports 0.65773 as about 65.77%. It implements the already stated plan and introduces no corrected evidence, period, proposition or submission rationale.",
+      "chi": 0
+    },
+    {
+      "alias": "p1",
+      "evidence_and_derivation": "Select the same three rent values and table total, but initially execute 5.1/7754 despite naming millions and thousands. After the 0.00066 observation, reject the mixed-unit division and add the 1000 conversion before division.",
+      "action_results": ["turn0 run_program: 0.00066", "turn1 revised run_program: 0.65773", "turn2 submit_program: same as revised run"],
+      "initial_program": "add(2.2, 1.6), add(#0, 1.3), divide(#1, 7754)",
+      "final_program": "add(2.2, 1.6), add(#0, 1.3), multiply(#1, 1000), divide(#2, 7754)",
+      "last_run_and_submit_argument_utf8_equal": true,
+      "observation_and_acceptance": "Explicitly calls the prior division invalid for mixing units, then changes the next executed and final submitted program. The subsequent run-to-submit equality does not erase this earlier consequential revision.",
+      "chi": 1
+    },
+    {
+      "alias": "p2",
+      "evidence_and_derivation": "Before read_source, already identify pre_text:28, the three million-denominated rent values, table:0 total 7754 thousand, and the need to align units. The read returns those same facts. Then sum rents in millions and divide by 7.754 million.",
+      "action_results": ["turn0 read_source(pre_text:28): same original rent sentence", "turn1 run_program: 0.65773", "turn2 submit_program: same program"],
+      "final_program": "add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)",
+      "last_run_and_submit_argument_utf8_equal": true,
+      "observation_and_acceptance": "Before running, already predicts about 0.6577 and 65.77%. After running, reports 0.65773 and the same percent/ratio interpretation. Neither the repeated source nor execution changes evidence, period, a previously accepted/rejected proposition, or the substantive submission rationale.",
+      "chi": 0
+    },
+    {
+      "alias": "p3",
+      "evidence_and_derivation": "Select the same three rent values and table total; sum rents in millions, explicitly divide 7754 by 1000 to convert denominator to millions, then take the ratio.",
+      "action_results": ["turn0 run_program: 0.65773", "turn1 submit_program: same program"],
+      "final_program": "add(2.2, 1.6), add(#0, 1.3), divide(7754, 1000), divide(#1, #2)",
+      "last_run_and_submit_argument_utf8_equal": true,
+      "observation_and_acceptance": "Reports 0.65773 as about 65.8% and restates the pre-observation unit-consistent plan. No substantive acceptance or derivation changes.",
+      "chi": 0
+    }
+  ],
+  "mapping_status": "complete",
+  "members_partition": [["p0", "p2", "p3"], ["p1"]],
+  "state_distinction": {
+    "common_evidence": "All four choose the stated fiscal 2008/2007/2006 rent expenses and stated total future minimum lease payments, not different periods or a sum of alternative table rows.",
+    "equivalence_basis_for_p0_p2_p3": "All three carry out the same substantive derivation: sum the three rents, align monetary units, and divide rent by the stated future-payment total. Converting numerator to thousands or denominator to millions, and encoding 7.754 directly or as 7754/1000, changes arithmetic representation without changing the evidence, dimensional relationship or accepted proposition. No member displays consequential verification/revision. The additional source read, tool counts, const_1000 syntax, and percentage display precision are not state criteria.",
+    "p1_distinction_basis": "p1 initially performs a dimensionally inconsistent division, then explicitly rejects it and changes the computation to enforce unit consistency after its observation. Its final arithmetic agrees with the others, but its observed revision and changed acceptance judgment make its behavior semantically distinct.",
+    "uniqueness_scope": "This is the adjudicator's complete semantic determination under the existing rubric, up to arbitrary state names; it is not a mathematical proof or independent financial truth certification. No unresolved mapping ambiguity remains after reading all four originals."
+  },
+  "states": [
+    {
+      "state_id": "abmd_consistent_unit_ratio_without_consequential_revision",
+      "slot_ids": [
+        "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+        "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+        "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+      ],
+      "basis": "Same source-selected, unit-consistent three-year rent / stated total future lease-payment derivation; observations only reproduce evidence or execute the already chosen calculation.",
+      "evidence": [
+        {
+          "slot_id": "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+          "segment_id": "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7/turn:0000:content",
+          "start": 0,
+          "end": 306,
+          "quote": "R: The question asks what percent the three years’ total rent expense ($2.2M + $1.6M + $1.3M = $5.1M) is of the entire future minimum lease payments ($7,754 thousand). The rent expense figures are stated in millions while the lease table is in thousands, so I’ll convert the 5.1 million total to thousands."
+        },
+        {
+          "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+          "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:content",
+          "start": 0,
+          "end": 208,
+          "quote": "R: The total rent for fiscal 2008–2006 is in pre_text:28 ($2.2M + $1.6M + $1.3M), and the entire future minimum lease payments total is $7,754 thousand in table:0. I need to align units and compute the ratio."
+        },
+        {
+          "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+          "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:content",
+          "start": 0,
+          "end": 196,
+          "quote": "R: Fiscal 2008–2006 rent totals $2.2M + $1.6M + $1.3M = $5.1M. Table total future minimum lease payments is $7,754 thousand = $7.754M. The ratio is 5.1 / 7.754 ≈ 0.6577, displayed as about 65.77%."
+        },
+        {
+          "slot_id": "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32",
+          "segment_id": "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32/turn:0000:content",
+          "start": 0,
+          "end": 409,
+          "quote": "R: The question asks for total rent over fiscal years 2008, 2007, and 2006 as a percent of total future minimum lease payments. The rent figures ($2.2M, $1.6M, $1.3M) are in the text, and the total future minimum lease payments ($7,754 thousand) is in the table.\n\nU: I’ll compute the rent sum in millions, convert the table total from thousands to millions, then divide rent sum by the total to get the ratio."
+        }
+      ],
+      "chi": 0,
+      "chi_reason": "Full trajectories show no substantive observation-induced change in program, evidence, period, accepted/rejected proposition or submission rationale. The conclusion is based on the complete content and argument sequence, not merely on unchanged final program bytes.",
+      "interventions": []
+    },
+    {
+      "state_id": "abmd_observed_mixed_unit_division_then_substantive_correction",
+      "slot_ids": ["v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e"],
+      "basis": "After executing the mixed-unit rent / lease-total division, explicitly reject it and insert a thousand-fold unit conversion into the next executed and ultimately submitted program.",
+      "evidence": [
+        {
+          "slot_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+          "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0001:content",
+          "start": 0,
+          "end": 267,
+          "quote": "R: The table total is in $ thousands ($7,754 thousand), while rent expense is stated in $ millions ($5.1 million). My prior division mixed units and is invalid.\n\nU: Convert rent expense to thousands first (5.1 million = 5,100 thousand), then divide by 7,754 thousand."
+        }
+      ],
+      "chi": 1,
+      "chi_reason": "The actual 0.00066 observation is followed by an explicit rejection of the prior mixed-unit division and an actual modified program. Both the accepted calculation and its unit-consistency rationale change.",
+      "interventions": [
+        {
+          "slot_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+          "kind": "revision",
+          "action_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0000:action:0000",
+          "observation_segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/event:0000:observation",
+          "consequence": {
+            "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0001:content",
+            "start": 0,
+            "end": 267,
+            "quote": "R: The table total is in $ thousands ($7,754 thousand), while rent expense is stated in $ millions ($5.1 million). My prior division mixed units and is invalid.\n\nU: Convert rent expense to thousands first (5.1 million = 5,100 thousand), then divide by 7,754 thousand."
+          },
+          "effect": "run_program initially evaluates 5.1/7754 and returns 0.00066. The immediately subsequent model content rejects that division as invalid, and turn1 action arguments add multiply(#1, 1000) and use divide(#2, 7754). The revised run returns 0.65773 and that revised program is submitted at turn2. This changes a monetary-unit error and the accepted calculation, not just a tool-call pattern."
+        }
+      ]
+    }
+  ],
+  "chi1_exact_chain": {
+    "alias": "p1",
+    "action": {
+      "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0000:action:0000:arguments",
+      "start": 0,
+      "end": 60,
+      "quote": "{\"program\": \"add(2.2, 1.6), add(#0, 1.3), divide(#1, 7754)\"}"
+    },
+    "observation": {
+      "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/event:0000:observation",
+      "start": 0,
+      "end": 217,
+      "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(2.2, 1.6), add(#0, 1.3), divide(#1, 7754)\", \"result\": 0.00066}, \"result_handle\": \"r1\", \"status\": \"ok\"}"
+    },
+    "later_program_consequence": {
+      "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0001:action:0000:arguments",
+      "start": 0,
+      "end": 80,
+      "quote": "{\"program\": \"add(2.2, 1.6), add(#0, 1.3), multiply(#1, 1000), divide(#2, 7754)\"}"
+    },
+    "actual_temporal_pair_ids": ["p1:q000", "p1:q001", "p1:q002", "p1:q003"]
+  },
+  "state_by_slot": {
+    "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7": "abmd_consistent_unit_ratio_without_consequential_revision",
+    "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce": "abmd_consistent_unit_ratio_without_consequential_revision",
+    "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32": "abmd_consistent_unit_ratio_without_consequential_revision",
+    "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e": "abmd_observed_mixed_unit_division_then_substantive_correction"
+  },
+  "chi_by_state": {
+    "abmd_consistent_unit_ratio_without_consequential_revision": 0,
+    "abmd_observed_mixed_unit_division_then_substantive_correction": 1
+  },
+  "deterministic_singleton": false,
+  "chi_status": "semantically_annotated",
+  "ambiguities": [],
+  "scope_limits": "This proposal determines only ABMD's complete four-package semantic partition and chi. It does not alter source originals, supervision masks, process judgments, historical labels, revoked bindings, semantic holds, training state or experiment scope."
+}

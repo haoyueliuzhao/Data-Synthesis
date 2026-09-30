@@ -1,0 +1,268 @@
+{
+  "schema": "v18_mapper_semantic_negative_control.v1",
+  "case_id": "ABMD_p2_temporally_eligible_without_consequential_change",
+  "task_id": "ABMD/2008/page_87.pdf-1",
+  "package_alias": "p2",
+  "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+  "purpose": "Fixed source-grounded Mapper negative control requested in audit section 10: an eligible action-observation-later-model sequence alone does not establish consequential verification or revision.",
+  "actor": {
+    "name": "Codex collaboration agent /root/v18_abmd_research_judgment",
+    "human": false,
+    "independent_financial_truth_certification": false,
+    "API_calls": 0,
+    "Student_information_used": false,
+    "new_semantic_adjudication": false,
+    "scope": "Archive the already approved proposal's p2 finding as a fixed case; do not create a new mapping or modify the complete four-package partition."
+  },
+  "source_request_ref": {
+    "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v17_three_task_continuation_01/requests/cf5eef9e41c1315d2b969a699861d4dc981290f6522e238500615d9eafbae23b/record.json",
+    "id": "6c8370603dbdd18e7e48408a0107092e94764a2cb2eef83e81ba333587d01b71",
+    "sha256": "a6f9346722adbc77999cccf1610e9a686f43bff516ff8f7f7d830d935f924a65"
+  },
+  "source_view_ref": {
+    "view_index": 2,
+    "view_id": "public_trajectory:fde54db963af961b1fdba7d77ae1bdba6046e7235aaa32583a711f1af3aa7a14",
+    "episode_sha256_as_declared_in_view": "651d733fa74a714a9f3b49d1a461d8a10197a1369398c862f43f609b073dce80",
+    "view_canonical_sha256": "7bdcb8ae1bee130b30603aa89edcdd76a616c2422f2bec570b2db3405af76d79",
+    "hash_encoding": "UTF-8 json.dumps(view, ensure_ascii=False, sort_keys=True, separators=(',', ':')); identical to repository digest(view)."
+  },
+  "existing_judgment_ref": {
+    "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/research_judgment_draft/proposal.json",
+    "sha256": "9ee3236481ef464bd278f29941037ed2d3863fb0a2e2a6a7c36cf13188cc4857",
+    "state_id": "abmd_consistent_unit_ratio_without_consequential_revision",
+    "full_members_partition": [
+      [
+        "p0",
+        "p2",
+        "p3"
+      ],
+      [
+        "p1"
+      ]
+    ],
+    "chi_by_partition": [
+      0,
+      1
+    ],
+    "expected_p2_chi": 0,
+    "ambiguities": []
+  },
+  "facts": {
+    "first_run_program_turn": 1,
+    "first_run_program": "add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)",
+    "actual_first_run_result": 0.65773,
+    "run_status": "ok",
+    "submit_turn": 2,
+    "submitted_program": "add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)",
+    "run_submit_argument_utf8_bytes_equal": true,
+    "run_submit_program_utf8_bytes_equal": true,
+    "shared_argument_utf8_length": 61,
+    "shared_argument_utf8_sha256": "640f225bb5754b9405307d069d640a1b33bb97c819d5b7bee162faace90ccb56",
+    "shared_program_utf8_length": 46,
+    "shared_program_utf8_sha256": "363d0a3ee9da23b09ab670a8728a99a64f19bc0fda024c046f6719d457f96021",
+    "no_0_00066_observation_in_p2": true,
+    "read_source_turn": 0,
+    "read_source_id": "pre_text:28"
+  },
+  "temporal_candidates": [
+    {
+      "original_pair": {
+        "action": "p2:a0",
+        "action_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:action:0000",
+        "action_turn": 0,
+        "consequence": "p2:u00052",
+        "consequence_kind": "public_content",
+        "consequence_turn": 1,
+        "observation_segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0000:observation",
+        "observation_units": [
+          "p2:u00051"
+        ],
+        "package": "p2",
+        "pair_id": "p2:q000",
+        "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce"
+      },
+      "original_tool_name": "read_source",
+      "action_arguments_unit": "p2:u00050",
+      "temporal_eligibility": true,
+      "consequence_exists_as_later_original_model_behavior": true,
+      "consequential_change_demonstrated": false,
+      "inherited_judgment_reason": "Before rereading, p2:u00049 already identifies the same rent evidence, years, all three values, their million denomination, the table total in thousands and the need to align units. The returned source repeats these facts. Subsequent ordinary derivation and submission do not revise the evidence or previously accepted proposition."
+    },
+    {
+      "original_pair": {
+        "action": "p2:a0",
+        "action_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:action:0000",
+        "action_turn": 0,
+        "consequence": "p2:u00056",
+        "consequence_kind": "action_arguments",
+        "consequence_turn": 2,
+        "observation_segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0000:observation",
+        "observation_units": [
+          "p2:u00051"
+        ],
+        "package": "p2",
+        "pair_id": "p2:q003",
+        "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce"
+      },
+      "original_tool_name": "read_source",
+      "action_arguments_unit": "p2:u00050",
+      "temporal_eligibility": true,
+      "consequence_exists_as_later_original_model_behavior": true,
+      "consequential_change_demonstrated": false,
+      "inherited_judgment_reason": "Before rereading, p2:u00049 already identifies the same rent evidence, years, all three values, their million denomination, the table total in thousands and the need to align units. The returned source repeats these facts. Subsequent ordinary derivation and submission do not revise the evidence or previously accepted proposition."
+    },
+    {
+      "original_pair": {
+        "action": "p2:a1",
+        "action_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:action:0000",
+        "action_turn": 1,
+        "consequence": "p2:u00055",
+        "consequence_kind": "public_content",
+        "consequence_turn": 2,
+        "observation_segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0001:observation",
+        "observation_units": [
+          "p2:u00054"
+        ],
+        "package": "p2",
+        "pair_id": "p2:q004",
+        "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce"
+      },
+      "original_tool_name": "run_program",
+      "action_arguments_unit": "p2:u00053",
+      "temporal_eligibility": true,
+      "consequence_exists_as_later_original_model_behavior": true,
+      "consequential_change_demonstrated": false,
+      "inherited_judgment_reason": "Before running, p2:u00052 already gives 5.1/7.754, approximately 0.6577 and about 65.77%. The real result is 0.65773. Later content retains that interpretation, and the submission uses identical arguments. No substantive observation-driven change in calculation or acceptance is shown."
+    },
+    {
+      "original_pair": {
+        "action": "p2:a1",
+        "action_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:action:0000",
+        "action_turn": 1,
+        "consequence": "p2:u00056",
+        "consequence_kind": "action_arguments",
+        "consequence_turn": 2,
+        "observation_segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0001:observation",
+        "observation_units": [
+          "p2:u00054"
+        ],
+        "package": "p2",
+        "pair_id": "p2:q005",
+        "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce"
+      },
+      "original_tool_name": "run_program",
+      "action_arguments_unit": "p2:u00053",
+      "temporal_eligibility": true,
+      "consequence_exists_as_later_original_model_behavior": true,
+      "consequential_change_demonstrated": false,
+      "inherited_judgment_reason": "Before running, p2:u00052 already gives 5.1/7.754, approximately 0.6577 and about 65.77%. The real result is 0.65773. Later content retains that interpretation, and the submission uses identical arguments. No substantive observation-driven change in calculation or acceptance is shown."
+    }
+  ],
+  "evidence": {
+    "p2:u00049": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:content",
+      "start": 0,
+      "end": 208,
+      "quote": "R: The total rent for fiscal 2008–2006 is in pre_text:28 ($2.2M + $1.6M + $1.3M), and the entire future minimum lease payments total is $7,754 thousand in table:0. I need to align units and compute the ratio.",
+      "kind": "public_content"
+    },
+    "p2:u00050": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:action:0000:arguments",
+      "start": 0,
+      "end": 28,
+      "quote": "{\"source_id\": \"pre_text:28\"}",
+      "kind": "action_arguments"
+    },
+    "p2:u00051": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0000:observation",
+      "start": 0,
+      "end": 382,
+      "quote": "{\"output\": {\"content\": \"total rent expense under these leases , included in the accompanying consolidated statements of operations approximated $ 2.2 million , $ 1.6 million , and $ 1.3 million for the fiscal years ended march 31 , 2008 , 2007 and 2006 , respectively .\", \"kind\": \"text\", \"locator\": \"pre_text[28]\", \"source_id\": \"pre_text:28\"}, \"result_handle\": \"r1\", \"status\": \"ok\"}",
+      "kind": "tool_observation"
+    },
+    "p2:u00052": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:content",
+      "start": 0,
+      "end": 196,
+      "quote": "R: Fiscal 2008–2006 rent totals $2.2M + $1.6M + $1.3M = $5.1M. Table total future minimum lease payments is $7,754 thousand = $7.754M. The ratio is 5.1 / 7.754 ≈ 0.6577, displayed as about 65.77%.",
+      "kind": "public_content"
+    },
+    "p2:u00053": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:action:0000:arguments",
+      "start": 0,
+      "end": 61,
+      "quote": "{\"program\": \"add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)\"}",
+      "kind": "action_arguments"
+    },
+    "p2:u00054": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/event:0001:observation",
+      "start": 0,
+      "end": 218,
+      "quote": "{\"output\": {\"executor_sha256\": \"b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2\", \"program\": \"add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)\", \"result\": 0.65773}, \"result_handle\": \"r2\", \"status\": \"ok\"}",
+      "kind": "tool_observation"
+    },
+    "p2:u00055": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0002:content",
+      "start": 0,
+      "end": 250,
+      "quote": "R: The program computes total rent of 5.1 (million) divided by total future minimum lease payments of 7.754 (million), yielding 0.65773, i.e., about 65.77%. This ratio form is appropriate since the question asks what percent one amount is of another.",
+      "kind": "public_content"
+    },
+    "p2:u00056": {
+      "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0002:action:0000:arguments",
+      "start": 0,
+      "end": 61,
+      "quote": "{\"program\": \"add(2.2, 1.6), add(#0, 1.3), divide(#1, 7.754)\"}",
+      "kind": "action_arguments"
+    }
+  },
+  "unchanged_semantic_basis": [
+    {
+      "aspect": "Evidence and fiscal periods",
+      "before": "p2:u00049",
+      "observation": "p2:u00051",
+      "later": [
+        "p2:u00052",
+        "p2:u00055"
+      ],
+      "finding": "Fiscal 2008–2006 and the rent values 2.2M, 1.6M and 1.3M are already selected before the reread; the same values and periods remain selected afterward."
+    },
+    {
+      "aspect": "Unit understanding",
+      "before": "p2:u00049",
+      "observation": "p2:u00051",
+      "later": [
+        "p2:u00052",
+        "p2:u00053"
+      ],
+      "finding": "The pre-read model content already identifies million-denominated rent, a 7754-thousand table total, and the need to align units. The later 7.754-million representation carries out that plan; it does not reverse a prior unit interpretation."
+    },
+    {
+      "aspect": "Ratio proposition and submission rationale",
+      "before": "p2:u00052",
+      "observation": "p2:u00054",
+      "later": [
+        "p2:u00055",
+        "p2:u00056"
+      ],
+      "finding": "Before execution, the ratio and its percentage display are already stated. After 0.65773, the model restates the same ratio and submits the same program. The later phrase that ratio form is appropriate explains the existing interpretation, without changing an accepted or rejected proposition."
+    }
+  ],
+  "expected_mapper_behavior": {
+    "expected_chi": 0,
+    "expected_state_id": "abmd_consistent_unit_ratio_without_consequential_revision",
+    "chi_source": "Inherited from the referenced complete four-package research judgment; not supplied by the byte-equality check.",
+    "reject_unsupported_claims": [
+      "The p2 run returned 0.00066.",
+      "p2 inserted a new unit-conversion step after that supposed 0.00066 observation.",
+      "Any temporally eligible pair, successful run, source reread, or unchanged-program submission establishes chi=1."
+    ],
+    "do_not_generalize": "Unchanged program bytes alone do not imply chi=0. An observation may substantively change evidence or period selection, acceptance/rejection of a proposition, or the final submission rationale while leaving the program unchanged. This case is negative only because its full original content shows no such consequential change.",
+    "no_new_mapping_or_supervision": true,
+    "no_automatic_label_repair": true,
+    "ambiguity_policy": "If another case's originals do not settle the substantive effect or coherent state membership, preserve unresolved/unknown rather than defaulting chi to zero."
+  },
+  "candidate_numbering_note": "In this source request p2:q005 is run_program (p2:a1) -> event:0001 observation -> final submit arguments (p2:u00056). The read_source action is p2:a0, with candidates p2:q000–q003; q000 and q003 are retained here. Do not relabel q005 as a read_source candidate.",
+  "artifact_scope": "Audit regression/negative-control record only. No production authority, historical raw/labels/hold, fixed proposal, source code or Student artifacts were modified.",
+  "id": "08e4d84ebbd785696aa7b74878a69355428482f014af3dba484c953e33b6a5fb"
+}

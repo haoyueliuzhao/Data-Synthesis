@@ -1,0 +1,60 @@
+{
+  "API_calls": 0,
+  "API_count_scope": "external_paid_API_requests; Codex research judgment has participated",
+  "Codex_research_judgment_participated": true,
+  "actual_judgment_source": "Codex source-grounded research adjudication; not human and not a paid API return",
+  "api_model_policy": "deepseek-flash",
+  "at": "2026-09-30T08:31:30.628697+00:00",
+  "authorized_API_calls": 0,
+  "batch_id": "finqa-v18-20260930-researcher-continuation-01",
+  "definition": {
+    "id": "2a7131f87a22bb86f2c1dba856c12dcc6e1633e4109eac270e453386c0f9010a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/definition/record.json",
+    "sha256": "57f0037990d7d65994de26c2330f85be7ccc7f986f5daf26b82776f64649f013"
+  },
+  "id": "5ecd737d512f48661dc634e7ccc47a49e060dc0f259ef60ebc79a037e2d8753e",
+  "judgment_source_kind": "codex_source_grounded_research_adjudication",
+  "no_automatic_retry": true,
+  "old_V17_hold_and_binding_preserved": true,
+  "original_743_authorities_unchanged": true,
+  "protocol_identity": "2a7131f87a22bb86f2c1dba856c12dcc6e1633e4109eac270e453386c0f9010a",
+  "researcher_authority": {
+    "id": "ade00a3ee84b33cfcd477c36603603f574072d854738375221f8770a4fd9acbb",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/researcher_authority/record.json",
+    "sha256": "069e75e2e4e26fdfdddbd47838b49a382aaa790e5672e69c59f7999df3c91236"
+  },
+  "schema": "v18_researcher_continuation_plan.v1",
+  "source_bindings": {
+    "contracts.py": "3906aec79cddd5fdf37ca0e3d6aceeebd16429d2d9e9b4bb65aaab10ebb1b11a",
+    "storage.py": "a3adcd2f32fe4b420c32943d48cf09649b3906c0722d32fb7beb2de4783045c9",
+    "v10_training.py": "963a46bf8e26664306a883000c1c619aba44ae9c91fe14c394a7c51c5b1d8d57",
+    "v14_encoding_cache.py": "af3ac182c842e7732277fdffe9c7b8557002b20eb0ce961d0ad7876591d6c324",
+    "v14_material.py": "0198582ee4941726253cecb64a1712ae4eba5e712befcea00e227fcc3ad624a5",
+    "v14_student_encoding.py": "5133f2ef1108edbcca05be158c257dabd6f03061a170acd094010fba94b18228",
+    "v15_material.py": "3ac52ff6193066b2df83be19ac0ac5bca7133eee2fa8f1c15f1c155683413f7e",
+    "v15_prefix_material.py": "1dd13f84917851d29c9d4d4547fbc6d2090e16bcd20962d2996fb1d910600407",
+    "v16_arm_training.py": "4fc19b1f6a241a45e9e3377a41a69631f37e31c28fb452542e5a435a5a6e3086",
+    "v16_continuation.py": "317ff2d53976af07855c5b268a9b9a4ae7171e85d57fcd798197241b0de4a377",
+    "v16_material.py": "095bf4520a5b58a618e35fd9da8bd1dc71f239619f1008ce79a8ca1948654fc4",
+    "v16_workflow.py": "9888e990a2d4b6c2ee85e9b7cfdb405f22db485777fd81e41b6460182d06ab55",
+    "v17_material.py": "3b6bd91174145d2ed182083313c08e483daff13c4132e866b26f60d4694e8920",
+    "v18_continuation.py": "ea9887732e9a7d9b6ebb68e4180f9d83bb823aa3cb7d6a8b3418f8471db0742e",
+    "v18_material.py": "a590116a7068b292853fed3c168166bd85cb7b583d72c76d7206bc11312fd45c",
+    "v18_registration.py": "c4f8afbdbe5c66d0c373a0c3dc3ea46e4c2685f32805f1db3db4cd0fa0d55a12",
+    "v18_researcher_authority.py": "0d57f756b03429861de16f89080cd14da98bc1df2d0d305eea12b06075a62ff3",
+    "v18_workflow.py": "24d0e1d183e6397e32f23d1df41d718918924abd9a0c0a243eb34133fd4e54ab",
+    "v6_collection.py": "eed713c8254acb75cc23bad2750e05a0e25190d96f76c7a0317a02f6cc8d17ec",
+    "v8_training_driver.py": "cc5d18faa9af8121926e684d5d8f6a0e6eecacb3b4e725441487f73230c87b4d",
+    "v9_conditional_training.py": "0eed331179c15a2cf27642264964876afec5dffa2e6bc653d1104a7bfd7404e6",
+    "v9_final_evaluation.py": "51942ef21f3bfc75f3c519eae04b629a3ea9d2ae47a45b71ceba1393113fc8b0",
+    "v9_mechanism_execution.py": "fd050f5ce6d6287133b4dc712fb124f02a94c253ab622975242492a98114198a",
+    "v9_training_launcher.py": "06f2a5d11b9d422103a89398af0de9ff8a38e4978e8281f93a89b9763f217dea"
+  },
+  "source_registration": {
+    "id": "92e12ababef3143bf94a5e1e80ef9259909f7488bafb3630c9d64a6fcffcab8c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/registration/record.json",
+    "sha256": "9326b7df92d3aa56fa49d87a57dc5bf3afa1065ad5a31d07383658ecc91d740a"
+  },
+  "source_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01",
+  "student_results_used": false
+}

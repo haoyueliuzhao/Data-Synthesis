@@ -1,0 +1,170 @@
+{
+  "API_calls": 0,
+  "at": "2026-09-30T08:23:30.616021+00:00",
+  "authority_scope": "complete_ABMD_partition_and_chi",
+  "human_judgment": false,
+  "id": "ade00a3ee84b33cfcd477c36603603f574072d854738375221f8770a4fd9acbb",
+  "inspection": {
+    "Student_information_used": false,
+    "actual_model_call_receipt_verified": false,
+    "ambiguities": [],
+    "chi_by_state": {
+      "abmd_consistent_unit_ratio_without_consequential_revision": 0,
+      "abmd_observed_mixed_unit_division_then_substantive_correction": 1
+    },
+    "chi_status": "semantically_annotated",
+    "deterministic_singleton": false,
+    "human_judgment": false,
+    "id": "680dffc5072c595b4bf322d2048090a873df943f6f6bc93a553e853b8d730fdb",
+    "judgment_source_kind": "codex_source_grounded_research_adjudication",
+    "mapping_admitted": true,
+    "mapping_status": "complete",
+    "not_purely_mechanical": true,
+    "production_admitted": false,
+    "schema": "v18_researcher_mapping_inspection.v1",
+    "semantic_truth_proved": false,
+    "slot_ids": [
+      "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+      "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+      "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+      "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+    ],
+    "state_by_slot": {
+      "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce": "abmd_consistent_unit_ratio_without_consequential_revision",
+      "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32": "abmd_consistent_unit_ratio_without_consequential_revision",
+      "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e": "abmd_observed_mixed_unit_division_then_substantive_correction",
+      "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7": "abmd_consistent_unit_ratio_without_consequential_revision"
+    },
+    "states": [
+      {
+        "basis": "Same source-selected, unit-consistent three-year rent / stated total future lease-payment derivation; observations only reproduce evidence or execute the already chosen calculation.",
+        "chi": 0,
+        "chi_reason": "Full trajectories show no substantive observation-induced change in program, evidence, period, accepted/rejected proposition or submission rationale. The conclusion is based on the complete content and argument sequence, not merely on unchanged final program bytes.",
+        "evidence": [
+          {
+            "end": 306,
+            "quote": "R: The question asks what percent the three years’ total rent expense ($2.2M + $1.6M + $1.3M = $5.1M) is of the entire future minimum lease payments ($7,754 thousand). The rent expense figures are stated in millions while the lease table is in thousands, so I’ll convert the 5.1 million total to thousands.",
+            "segment_id": "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7/turn:0000:content",
+            "slot_id": "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+            "start": 0
+          },
+          {
+            "end": 208,
+            "quote": "R: The total rent for fiscal 2008–2006 is in pre_text:28 ($2.2M + $1.6M + $1.3M), and the entire future minimum lease payments total is $7,754 thousand in table:0. I need to align units and compute the ratio.",
+            "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0000:content",
+            "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+            "start": 0
+          },
+          {
+            "end": 196,
+            "quote": "R: Fiscal 2008–2006 rent totals $2.2M + $1.6M + $1.3M = $5.1M. Table total future minimum lease payments is $7,754 thousand = $7.754M. The ratio is 5.1 / 7.754 ≈ 0.6577, displayed as about 65.77%.",
+            "segment_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce/turn:0001:content",
+            "slot_id": "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+            "start": 0
+          },
+          {
+            "end": 409,
+            "quote": "R: The question asks for total rent over fiscal years 2008, 2007, and 2006 as a percent of total future minimum lease payments. The rent figures ($2.2M, $1.6M, $1.3M) are in the text, and the total future minimum lease payments ($7,754 thousand) is in the table.\n\nU: I’ll compute the rent sum in millions, convert the table total from thousands to millions, then divide rent sum by the total to get the ratio.",
+            "segment_id": "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32/turn:0000:content",
+            "slot_id": "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32",
+            "start": 0
+          }
+        ],
+        "interventions": [],
+        "slot_ids": [
+          "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+          "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+          "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+        ],
+        "state_id": "abmd_consistent_unit_ratio_without_consequential_revision"
+      },
+      {
+        "basis": "After executing the mixed-unit rent / lease-total division, explicitly reject it and insert a thousand-fold unit conversion into the next executed and ultimately submitted program.",
+        "chi": 1,
+        "chi_reason": "The actual 0.00066 observation is followed by an explicit rejection of the prior mixed-unit division and an actual modified program. Both the accepted calculation and its unit-consistency rationale change.",
+        "evidence": [
+          {
+            "end": 267,
+            "quote": "R: The table total is in $ thousands ($7,754 thousand), while rent expense is stated in $ millions ($5.1 million). My prior division mixed units and is invalid.\n\nU: Convert rent expense to thousands first (5.1 million = 5,100 thousand), then divide by 7,754 thousand.",
+            "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0001:content",
+            "slot_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+            "start": 0
+          }
+        ],
+        "interventions": [
+          {
+            "action_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0000:action:0000",
+            "consequence": {
+              "end": 267,
+              "quote": "R: The table total is in $ thousands ($7,754 thousand), while rent expense is stated in $ millions ($5.1 million). My prior division mixed units and is invalid.\n\nU: Convert rent expense to thousands first (5.1 million = 5,100 thousand), then divide by 7,754 thousand.",
+              "segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/turn:0001:content",
+              "start": 0
+            },
+            "effect": "run_program initially evaluates 5.1/7754 and returns 0.00066. The immediately subsequent model content rejects that division as invalid, and turn1 action arguments add multiply(#1, 1000) and use divide(#2, 7754). The revised run returns 0.65773 and that revised program is submitted at turn2. This changes a monetary-unit error and the accepted calculation, not just a tool-call pattern.",
+            "kind": "revision",
+            "observation_segment_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e/event:0000:observation",
+            "slot_id": "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e"
+          }
+        ],
+        "slot_ids": [
+          "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e"
+        ],
+        "state_id": "abmd_observed_mixed_unit_division_then_substantive_correction"
+      }
+    ],
+    "task_id": "ABMD/2008/page_87.pdf-1"
+  },
+  "judgment_source_kind": "codex_source_grounded_research_adjudication",
+  "main_analyst_approval": {
+    "Student_results_used": false,
+    "actor": "Codex main research assistant",
+    "complete_four_originals_read": true,
+    "complete_partition_and_chi_approved": true
+  },
+  "no_Student_information_used": true,
+  "not_purely_mechanical": true,
+  "old_binding_or_hold_modified": false,
+  "original_inputs": {
+    "original_view_hashes": {
+      "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce": "7bdcb8ae1bee130b30603aa89edcdd76a616c2422f2bec570b2db3405af76d79",
+      "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32": "60cb132bb60b1806c271c3bb7fa54e441a027f7eb4a553f7be3e609ff02621e7",
+      "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e": "5c2e6b9019de65d3890e0be7b68e4417c249f267a83e052bf96d6fb8144f5b22",
+      "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7": "ad5fd19e8fd620451a17ba8632305e2c853c00ca918cffa72a6cffab3c606082"
+    },
+    "original_view_ids": {
+      "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce": "public_trajectory:fde54db963af961b1fdba7d77ae1bdba6046e7235aaa32583a711f1af3aa7a14",
+      "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32": "public_trajectory:5d4613ff2e06eef2066e0eb26a590bbc02773e46a49061535a89007a89ef8c7a",
+      "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e": "public_trajectory:24d71924371eec8f116b4cdd9a7a4f8490911f17046b1a2858ed4cb22e3c94a3",
+      "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7": "public_trajectory:bd212c18935a81c47c14031d273dd52c5a639a3aed48a5417ee46ee9424fa71f"
+    },
+    "policy_source_hashes": {
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/src/trusted_synthesis/finance_research/v10_process_review.py": "940705d2ac3b8257b20fb49d0310e2c255f37029e0baafbc2155c88b2c321d90",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/src/trusted_synthesis/finance_research/v10_review_protocol.py": "3243ec53f70301bbad39ae6b6f5ab5da5ffb39de75d758aba6d39df5190e42b5",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/src/trusted_synthesis/finance_research/v6_distribution.py": "c08e13b3135bbcafe7d1fff75829e753ca6a37cdec5907c7e762df3f683bef77"
+    },
+    "source_request_ref": {
+      "id": "6c8370603dbdd18e7e48408a0107092e94764a2cb2eef83e81ba333587d01b71",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v17_three_task_continuation_01/requests/cf5eef9e41c1315d2b969a699861d4dc981290f6522e238500615d9eafbae23b/record.json",
+      "sha256": "a6f9346722adbc77999cccf1610e9a686f43bff516ff8f7f7d830d935f924a65"
+    }
+  },
+  "researcher_identity": {
+    "actor": "Codex",
+    "agent": "v18_abmd_research_judgment",
+    "human": false,
+    "independent_financial_truth_certification": false
+  },
+  "schema": "v18_researcher_mapping_authority.v1",
+  "slot_ids": [
+    "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+    "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+    "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+    "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+  ],
+  "source_judgment_draft": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/research_judgment_draft/proposal.json",
+    "sha256": "9ee3236481ef464bd278f29941037ed2d3863fb0a2e2a6a7c36cf13188cc4857"
+  },
+  "summary_or_supervision_generated": false,
+  "task_id": "ABMD/2008/page_87.pdf-1"
+}
