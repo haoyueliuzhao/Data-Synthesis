@@ -1,0 +1,597 @@
+{
+  "AB_process_cross_table": [
+    {
+      "A": "valid",
+      "B": "valid",
+      "count": 2468
+    },
+    {
+      "A": "valid",
+      "B": "invalid",
+      "count": 40
+    },
+    {
+      "A": "valid",
+      "B": "unknown",
+      "count": 70
+    },
+    {
+      "A": "invalid",
+      "B": "valid",
+      "count": 21
+    },
+    {
+      "A": "invalid",
+      "B": "invalid",
+      "count": 91
+    },
+    {
+      "A": "invalid",
+      "B": "unknown",
+      "count": 4
+    },
+    {
+      "A": "unknown",
+      "B": "valid",
+      "count": 2778
+    },
+    {
+      "A": "unknown",
+      "B": "invalid",
+      "count": 63
+    },
+    {
+      "A": "unknown",
+      "B": "unknown",
+      "count": 184
+    }
+  ],
+  "definitions": {
+    "binding": "original record SHA and seal counter/set reconciliation; not a repeat of original full receipt/source audit",
+    "examples": "first lexicographic record per error category, exact bounded raw excerpt; not prevalence-weighted",
+    "failure_counts": "record labels are non-mutually-exclusive; event labels count repeated failure events separately",
+    "inner_errors": "first saved failure for a layer may hide additional failures; frequency is not causal attribution",
+    "parse": "saved raw_JSON_error; no partial JSON recovery or relabeling",
+    "process": "original stored effective process outcome, not a new financial or semantic truth judgment",
+    "projection": "A only; B None is not a failure; parse/envelope and auxiliary failures may overlap",
+    "quantiles": "nearest rank ceil(p*n), across all returned reviews on that side",
+    "raw": "raw_wire_statuses from original parsed wire; materialized_declared_outcome from saved deterministic V11 inspection, not repaired model JSON"
+  },
+  "examples": [
+    {
+      "category": "projection:only_public_content_for_content_projection",
+      "raw_excerpt": {
+        "end_character": 1503,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1659,
+        "repaired": false,
+        "start_character": 1183,
+        "text": "\", \"summary\": \"No revision or correction occurred; the same program was run and then submitted.\"}}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:b69fd31c0f96090fd0cbd27a1dad68e67dc23842e2e18edd5a688dd102ef05a8/turn:0000:action:0000\", \"v10gen:b69fd31c0f96090fd0cbd27a1dad68e67dc23842e2e18e"
+      },
+      "raw_review_sha256": "0ecf72f4276b4067bfaa6eb33f2191248dc7d577fe9154e30e0cb8f3c41d3125",
+      "record_id": "1a609bb7a321216ae95846a9010715307f920b340fa8a24d4fc90c9c14c28cbd",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/00036d53809d50012ec089a7258b3f07a4967d767be7811d62d4beb7ba6ab2e8/record/record.json",
+      "record_sha256": "dca42071ee23f608fec13c20437d275be624e86ff28ab396412cb08e02724f0b",
+      "role": "A",
+      "saved_error": "only_public_content_for_content_projection",
+      "slot_id": "v10gen:b69fd31c0f96090fd0cbd27a1dad68e67dc23842e2e18edd5a688dd102ef05a8"
+    },
+    {
+      "category": "parse:JSONDecodeError: Extra data",
+      "raw_excerpt": {
+        "end_character": 1919,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1919,
+        "repaired": false,
+        "start_character": 1818,
+        "text": "ositive_units\": [\"u00042\", \"u00044\", \"u00046\", \"u00049\", \"u00051\", \"u00053\"], \"status\": \"complete\"}}}"
+      },
+      "raw_review_sha256": "b399903e2fb0e0260d258ad0502e2cc63bb3ef7d9870fdbad753499b3776a0b6",
+      "record_id": "b3a11b3ccb078fb8cbc019633d8d730ac101713ab2a16ca1d2ed814d735c679d",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/001db8b6a9bae562eea035ac389c16f6620bcdb2ecbab88ca5385f9d852bbcf8/record/record.json",
+      "record_sha256": "7c8781bc10281dc6276521036af75548a59b6ce6e9a7a8289eb1b2ab688fe9e2",
+      "role": "A",
+      "saved_error": "JSONDecodeError: Extra data: line 1 column 1919 (char 1918)",
+      "slot_id": "v10gen:e54a56decbe8f49a34f41fe31cd5f52840c964d571a436c863db62b8c503526b"
+    },
+    {
+      "category": "projection:pydantic:model_type",
+      "raw_excerpt": {
+        "end_character": 1772,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1919,
+        "repaired": false,
+        "start_character": 1452,
+        "text": "tted unchanged in turn 1 (u00054), and the reasoning in u00044/u00051 is consistent throughout.\"}}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:e54a56decbe8f49a34f41fe31cd5f52840c964d571a436c863db62b8c503526b/turn:0000:action:0000\", \"v10gen:e54a56decbe8f49a34f41fe31cd5f52840c964d571a436"
+      },
+      "raw_review_sha256": "b399903e2fb0e0260d258ad0502e2cc63bb3ef7d9870fdbad753499b3776a0b6",
+      "record_id": "b3a11b3ccb078fb8cbc019633d8d730ac101713ab2a16ca1d2ed814d735c679d",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/001db8b6a9bae562eea035ac389c16f6620bcdb2ecbab88ca5385f9d852bbcf8/record/record.json",
+      "record_sha256": "7c8781bc10281dc6276521036af75548a59b6ce6e9a7a8289eb1b2ab688fe9e2",
+      "role": "A",
+      "saved_error": "1 validation error for Supervision\n  Input should be a valid dictionary or instance of Supervision [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type",
+      "slot_id": "v10gen:e54a56decbe8f49a34f41fe31cd5f52840c964d571a436c863db62b8c503526b"
+    },
+    {
+      "category": "process:pydantic:model_type",
+      "raw_excerpt": {
+        "end_character": 1464,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1919,
+        "repaired": false,
+        "start_character": 1144,
+        "text": " u00046 and resolved in favor of the dollar gain, with no later withdrawal or conflicting claim.\"}, \"actual_revisions\": {\"evidence_ids\": [\"u00044\", \"u00047\", \"u00054\"], \"partial_evidence\": [], \"status\": \"supported\", \"summary\": \"No substantive revision occurred: the program run in turn 0 (u00047) was resubmitted unchang"
+      },
+      "raw_review_sha256": "b399903e2fb0e0260d258ad0502e2cc63bb3ef7d9870fdbad753499b3776a0b6",
+      "record_id": "b3a11b3ccb078fb8cbc019633d8d730ac101713ab2a16ca1d2ed814d735c679d",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/001db8b6a9bae562eea035ac389c16f6620bcdb2ecbab88ca5385f9d852bbcf8/record/record.json",
+      "record_sha256": "7c8781bc10281dc6276521036af75548a59b6ce6e9a7a8289eb1b2ab688fe9e2",
+      "role": "A",
+      "saved_error": "1 validation error for Assessment\n  Input should be a valid dictionary or instance of Assessment [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type",
+      "slot_id": "v10gen:e54a56decbe8f49a34f41fe31cd5f52840c964d571a436c863db62b8c503526b"
+    },
+    {
+      "category": "parse:JSONDecodeError: Expecting ':' delimiter",
+      "raw_excerpt": {
+        "end_character": 1322,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1322,
+        "repaired": false,
+        "start_character": 1221,
+        "text": "urred; the agent's single computation was carried through unchanged to submission.\"}}, \"supervision\"}"
+      },
+      "raw_review_sha256": "30da214c004feb9d315c026ddab7787ed1dd4636800a9a0eda645c20915a8f7c",
+      "record_id": "b2bb25fc9f9c6643445b26f07587cbcc1d7950a7ee660f4f653dfea14f828f23",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/0051098a108efdfa7b5395477441353533bbd333da33bcc8d7fd186e9a07368e/record/record.json",
+      "record_sha256": "5eb554fff5e3ff46a8943b9779c3ea60660a2a4603366d90402db79d21a5e730",
+      "role": "A",
+      "saved_error": "JSONDecodeError: Expecting ':' delimiter: line 1 column 1322 (char 1321)",
+      "slot_id": "v10gen:0a47796f7bb8443d36cf7994367f204b1ee8a4bd2251419a83f463d41cf2e54e"
+    },
+    {
+      "category": "process:empty_reference_not_evidence_or_target",
+      "raw_excerpt": {
+        "end_character": 320,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1805,
+        "repaired": false,
+        "start_character": 0,
+        "text": "{\"process\": {\"evidence_and_operations\": {\"evidence_ids\": [\"u00031\", \"u00032\", \"u00033\", \"u00034\", \"u00035\", \"u00036\", \"u00037\", \"u00038\", \"u00039\", \"u00040\", \"u00041\", \"u00042\", \"u00046\", \"u00049\"], \"partial_evidence\": [], \"status\": \"supported\", \"summary\": \"The table units u00031-u00042 supply the 2015 weighted average"
+      },
+      "raw_review_sha256": "c918bdeb395fc7bc985839d4c7d32cae7625991f7e0266992c7b3eb5e09426d9",
+      "record_id": "63e8711529e2144dd0cc11f387fac9d5463b2523f33b0ba15ac47891fd9dc2a2",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/006b124721c7e7cf11ce78e0c0ae606bb5749ffd089fb4a4edc75c318fea7224/record/record.json",
+      "record_sha256": "62023302886545ded956a0fa518e170b258dddf78744ee50af55523d39846903",
+      "role": "A",
+      "saved_error": "empty_reference_not_evidence_or_target",
+      "slot_id": "v10gen:b1d52990a3ad8913d27991ab23efa77d1a0bd34175e6e4357c359fd7779ea841"
+    },
+    {
+      "category": "process:critical_dimension_cannot_be_NA",
+      "raw_excerpt": {
+        "end_character": 1058,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1321,
+        "repaired": false,
+        "start_character": 738,
+        "text": "average of 565.1, 881.8, and 512.8 (u00054), then treated it as answering the question (u00056).\"}, \"unwithdrawn_critical_contradictions\": {\"evidence_ids\": [], \"partial_evidence\": [], \"status\": \"not_applicable\", \"summary\": \"No critical contradiction appears in the history; the row label, values, and computed average ar"
+      },
+      "raw_review_sha256": "5161ad4f2bc0a990311d29f6baf3aae779fa1098043a0b0a8d7b024f0cafdca0",
+      "record_id": "73cbf5f928ebef52c5fe7d507e25e494a6fa71b42fac2538a23247ed8464d810",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/00997efe5a0b3eeb529b640143888598a338ac03d10f49b6a2863a9d90383dcf/record/record.json",
+      "record_sha256": "586ec7d181b06a035b31ebd3e978372c6069184a8e7ee54f142c5d534eb88748",
+      "role": "B",
+      "saved_error": "critical_dimension_cannot_be_NA",
+      "slot_id": "v10gen:b5475370ba006cab304809503d8fccd52692517ad6f42264ad91b267bcaa3f95"
+    },
+    {
+      "category": "projection:empty_reference_not_evidence_or_target",
+      "raw_excerpt": {
+        "end_character": 2208,
+        "excerpt_is_exact": true,
+        "full_text_characters": 2774,
+        "repaired": false,
+        "start_character": 1888,
+        "text": "e agent repeated the same subtract(879, 7) program in both turns without changing its approach.\"}}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:bbd41ee4b1f8b7b77e5b5ba76f8cd1277ed241d86564533fa4f30bbb2aa682e6/turn:0000:action:0000\", \"v10gen:bbd41ee4b1f8b7b77e5b5ba76f8cd1277ed241d8656453"
+      },
+      "raw_review_sha256": "37e06334bb81f95e9fa5bc07a78a7ac4cadf07f80b60505a2a055d4f74b100d9",
+      "record_id": "8a65680ab3c3ff2b9f339832c07641c5876e0fef9bd943c108ce614ec161b7fb",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/04020f37a2995486be46810920c9e72946f5b9dc2c2d0b12c78828753f9e0b74/record/record.json",
+      "record_sha256": "2b7ea20b3e1660c34d1cabec2d58a82822f56e0c2bddc8053bb98ff03a8e6cdc",
+      "role": "A",
+      "saved_error": "empty_reference_not_evidence_or_target",
+      "slot_id": "v10gen:bbd41ee4b1f8b7b77e5b5ba76f8cd1277ed241d86564533fa4f30bbb2aa682e6"
+    },
+    {
+      "category": "wire:process:missing_or_extra_wire_fields",
+      "raw_excerpt": {
+        "end_character": 1454,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1571,
+        "repaired": false,
+        "start_character": 1134,
+        "text": "d; the agent ran the program once and submitted the identical program without changing approach.\"}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc09b6f7276d010bf3b1/turn:0000:action:0000\", \"v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc"
+      },
+      "raw_review_sha256": "84e1e309d2e07d13d23f4582d14c37514255ed3c2a78a0b079c847a9f232de26",
+      "record_id": "ca474f083440dd437db55b1d3abe04e072fccfcbd33e90ed26525da91e6caca3",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/05cd93de1229f2ee37635b3c4973b4e59f59b4d5d325e269f17338c050b6415b/record/record.json",
+      "record_sha256": "cbc20ceaf5090b2e405ddbc3d70dd0b9c6aa701d4b8119ce44e52db39e25611f",
+      "role": "A",
+      "saved_error": {
+        "path": "process",
+        "reason": "missing_or_extra_wire_fields",
+        "scope": "process"
+      },
+      "slot_id": "v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc09b6f7276d010bf3b1"
+    },
+    {
+      "category": "projection:pydantic:list_type",
+      "raw_excerpt": {
+        "end_character": 1454,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1571,
+        "repaired": false,
+        "start_character": 1134,
+        "text": "d; the agent ran the program once and submitted the identical program without changing approach.\"}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc09b6f7276d010bf3b1/turn:0000:action:0000\", \"v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc"
+      },
+      "raw_review_sha256": "84e1e309d2e07d13d23f4582d14c37514255ed3c2a78a0b079c847a9f232de26",
+      "record_id": "ca474f083440dd437db55b1d3abe04e072fccfcbd33e90ed26525da91e6caca3",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/05cd93de1229f2ee37635b3c4973b4e59f59b4d5d325e269f17338c050b6415b/record/record.json",
+      "record_sha256": "cbc20ceaf5090b2e405ddbc3d70dd0b9c6aa701d4b8119ce44e52db39e25611f",
+      "role": "A",
+      "saved_error": "2 validation errors for Supervision\nstatus\n  Input should be 'complete' or 'unknown' [type=literal_error, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error\npositive_actions\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type",
+      "slot_id": "v10gen:b1a97ddd861b07197c05bba7ecdf40e4e3e880c3bf55dc09b6f7276d010bf3b1"
+    },
+    {
+      "category": "projection:actual_action_id_absent",
+      "raw_excerpt": {
+        "end_character": 1605,
+        "excerpt_is_exact": true,
+        "full_text_characters": 1716,
+        "repaired": false,
+        "start_character": 1285,
+        "text": "no revision, retraction, or corrected prior claim; the same program was run and then submitted.\"}}, \"supervision\": {\"partial_positive_content\": [], \"positive_actions\": [\"v10gen:8c1a9e3c118152665a83e316d1ef870078de8272472fa96934bc292d7dba9a0a/turn:0000:action:0000\", \"v10gen:8c1a9e3c118152665a83e316d1ef8700782472fa96934b"
+      },
+      "raw_review_sha256": "11237311d276b1fa7e9d914b01cbfa38a878160c2df69a0782ffbf4a955f33e0",
+      "record_id": "33932357a321b34fcdb08996b685a46fe3ae5027db0f551d67df13a18e0fdb20",
+      "record_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/reviews/beab1ec9fa39122c1c38a31355e4555127020d3969c3482bef7e598ecf3cbca1/record/record.json",
+      "record_sha256": "07d5ab35180202736cf167c1d23e5cee08c0e8801adac9a64399176ea63f63c1",
+      "role": "A",
+      "saved_error": "actual_action_id_absent",
+      "slot_id": "v10gen:8c1a9e3c118152665a83e316d1ef870078de8272472fa96934bc292d7dba9a0a"
+    }
+  ],
+  "id": "ef115f3a8238b24bb77daf39273757677a7103919d0268a22302385736bac716",
+  "joint_candidate_raw_public_characters": 1088636,
+  "joint_process_candidates": 2468,
+  "joint_projection_blocked": 671,
+  "joint_projection_usable": 1797,
+  "pair_denominator": 5719,
+  "production_admitted": false,
+  "schema": "finqa_v12_review_side_report_audit.v1",
+  "scope": "saved-record aggregation only; no judge rerun, no JSON repair, no API/wallet access",
+  "seal_alignment_passed": true,
+  "sides": {
+    "A": {
+      "JSON_parse_error_categories": {
+        "JSONDecodeError: Expecting ':' delimiter": 227,
+        "JSONDecodeError: Extra data": 2599
+      },
+      "JSON_parse_failures": 2826,
+      "cap_statistics": {
+        "max": 32768,
+        "min": 16384,
+        "n": 5719,
+        "p50": 16384,
+        "p95": 16384,
+        "p99": 16384,
+        "total": 94519296
+      },
+      "completion_equal_cap": 0,
+      "completion_exceeds_cap": 0,
+      "declaration_to_effective_process": {
+        "None -> unknown": 2826,
+        "invalid -> invalid": 116,
+        "invalid -> unknown": 7,
+        "unknown -> unknown": 1,
+        "valid -> unknown": 191,
+        "valid -> valid": 2578
+      },
+      "denominator": 5719,
+      "evidence_bound_process_outcome": {
+        "invalid": 116,
+        "unknown": 3000,
+        "valid": 2603
+      },
+      "finish_reasons": {
+        "tool_calls": 5719
+      },
+      "http_status": {
+        "200": 5719
+      },
+      "layered_failure_counts": {
+        "LOCATOR_OR_CRITICAL_SCHEMA_UNRESOLVED": 2999,
+        "RAW_JSON_PARSE_FAILED": 2826,
+        "SUPERVISION_REPRESENTATION_FAILED": 3681,
+        "WIRE_SCHEMA_FAILED": 26
+      },
+      "materialized_declared_outcome": {
+        "None": 2826,
+        "invalid": 123,
+        "unknown": 1,
+        "valid": 2769
+      },
+      "max_output_token_caps": {
+        "16384": 5669,
+        "32768": 50
+      },
+      "process_binding_failure_record_labels": {
+        "empty_reference_not_evidence_or_target": 173,
+        "pydantic:model_type": 2826
+      },
+      "process_validity": {
+        "invalid": 116,
+        "unknown": 3025,
+        "valid": 2578
+      },
+      "projection_failed_but_process_valid": 703,
+      "projection_failure_labels": {
+        "inner:actual_action_id_absent": 1,
+        "inner:empty_reference_not_evidence_or_target": 15,
+        "inner:only_public_content_for_content_projection": 813,
+        "inner:pydantic:list_type": 26,
+        "inner:pydantic:literal_error": 26,
+        "inner:pydantic:model_type": 2826,
+        "inner_status:failed": 3681,
+        "raw_JSON_parse_failed": 2826,
+        "wire:ID_array_required": 26,
+        "wire:missing_or_extra_wire_fields": 26,
+        "wire:partial_array_required": 26
+      },
+      "projection_usable": {
+        "False": 3681,
+        "True": 2038
+      },
+      "raw_wire_statuses": {
+        "actual_revisions": {
+          "None": 2826,
+          "critical_error": 3,
+          "not_applicable": 2558,
+          "supported": 332
+        },
+        "evidence_and_operations": {
+          "None": 2826,
+          "critical_error": 2,
+          "supported": 2891
+        },
+        "observation_interpretation": {
+          "None": 2826,
+          "critical_error": 81,
+          "supported": 2812
+        },
+        "unwithdrawn_critical_contradictions": {
+          "None": 2826,
+          "critical_error": 122,
+          "supported": 2770,
+          "unknown": 1
+        }
+      },
+      "response_models": {
+        "deepseek-flash": 5719
+      },
+      "token_statistics": {
+        "completion_tokens": {
+          "max": 1204,
+          "min": 306,
+          "n": 5719,
+          "p50": 533,
+          "p95": 682,
+          "p99": 783,
+          "total": 3125793
+        },
+        "prompt_cache_hit_tokens": {
+          "max": 1408,
+          "min": 0,
+          "n": 5719,
+          "p50": 1408,
+          "p95": 1408,
+          "p99": 1408,
+          "total": 8041088
+        },
+        "prompt_cache_miss_tokens": {
+          "max": 12102,
+          "min": 1533,
+          "n": 5719,
+          "p50": 3769,
+          "p95": 5444,
+          "p99": 7088,
+          "total": 22303580
+        },
+        "prompt_tokens": {
+          "max": 13510,
+          "min": 2941,
+          "n": 5719,
+          "p50": 5177,
+          "p95": 6840,
+          "p99": 8496,
+          "total": 30344668
+        },
+        "total_tokens": {
+          "max": 14029,
+          "min": 3355,
+          "n": 5719,
+          "p50": 5731,
+          "p95": 7381,
+          "p99": 9065,
+          "total": 33470461
+        }
+      },
+      "wire_failed_records": 26,
+      "wire_failure_event_labels": {
+        "process:missing_or_extra_wire_fields": 26,
+        "projection:ID_array_required": 26,
+        "projection:missing_or_extra_wire_fields": 26,
+        "projection:partial_array_required": 26
+      },
+      "wire_failure_record_labels": {
+        "process:missing_or_extra_wire_fields": 26,
+        "projection:ID_array_required": 26,
+        "projection:missing_or_extra_wire_fields": 26,
+        "projection:partial_array_required": 26
+      }
+    },
+    "B": {
+      "JSON_parse_error_categories": {
+        "JSONDecodeError: Extra data": 3
+      },
+      "JSON_parse_failures": 3,
+      "cap_statistics": {
+        "max": 32768,
+        "min": 16384,
+        "n": 5719,
+        "p50": 16384,
+        "p95": 16384,
+        "p99": 16384,
+        "total": 94027776
+      },
+      "completion_equal_cap": 0,
+      "completion_exceeds_cap": 0,
+      "declaration_to_effective_process": {
+        "None -> unknown": 81,
+        "invalid -> invalid": 194,
+        "invalid -> unknown": 8,
+        "valid -> unknown": 169,
+        "valid -> valid": 5267
+      },
+      "denominator": 5719,
+      "evidence_bound_process_outcome": {
+        "invalid": 194,
+        "unknown": 258,
+        "valid": 5267
+      },
+      "finish_reasons": {
+        "tool_calls": 5719
+      },
+      "http_status": {
+        "200": 5719
+      },
+      "layered_failure_counts": {
+        "LOCATOR_OR_CRITICAL_SCHEMA_UNRESOLVED": 258,
+        "RAW_JSON_PARSE_FAILED": 3
+      },
+      "materialized_declared_outcome": {
+        "None": 81,
+        "invalid": 202,
+        "valid": 5436
+      },
+      "max_output_token_caps": {
+        "16384": 5699,
+        "32768": 20
+      },
+      "process_binding_failure_record_labels": {
+        "critical_dimension_cannot_be_NA": 78,
+        "empty_reference_not_evidence_or_target": 179,
+        "pydantic:model_type": 3
+      },
+      "process_validity": {
+        "invalid": 194,
+        "unknown": 258,
+        "valid": 5267
+      },
+      "projection_failed_but_process_valid": 0,
+      "projection_failure_labels": {},
+      "projection_usable": {
+        "None": 5719
+      },
+      "raw_wire_statuses": {
+        "actual_revisions": {
+          "None": 3,
+          "critical_error": 10,
+          "not_applicable": 4601,
+          "supported": 1105
+        },
+        "evidence_and_operations": {
+          "None": 3,
+          "critical_error": 7,
+          "supported": 5709
+        },
+        "observation_interpretation": {
+          "None": 3,
+          "critical_error": 166,
+          "supported": 5550
+        },
+        "unwithdrawn_critical_contradictions": {
+          "None": 3,
+          "critical_error": 189,
+          "not_applicable": 78,
+          "supported": 5449
+        }
+      },
+      "response_models": {
+        "deepseek-flash": 5719
+      },
+      "token_statistics": {
+        "completion_tokens": {
+          "max": 950,
+          "min": 278,
+          "n": 5719,
+          "p50": 426,
+          "p95": 568,
+          "p99": 657,
+          "total": 2500407
+        },
+        "prompt_cache_hit_tokens": {
+          "max": 1152,
+          "min": 0,
+          "n": 5719,
+          "p50": 1152,
+          "p95": 1152,
+          "p99": 1152,
+          "total": 6579072
+        },
+        "prompt_cache_miss_tokens": {
+          "max": 12086,
+          "min": 1517,
+          "n": 5719,
+          "p50": 3753,
+          "p95": 5417,
+          "p99": 7072,
+          "total": 22210028
+        },
+        "prompt_tokens": {
+          "max": 13238,
+          "min": 2669,
+          "n": 5719,
+          "p50": 4905,
+          "p95": 6568,
+          "p99": 8224,
+          "total": 28789100
+        },
+        "total_tokens": {
+          "max": 13583,
+          "min": 3089,
+          "n": 5719,
+          "p50": 5344,
+          "p95": 7006,
+          "p99": 8666,
+          "total": 31289507
+        }
+      },
+      "wire_failed_records": 0,
+      "wire_failure_event_labels": {},
+      "wire_failure_record_labels": {}
+    }
+  },
+  "sides_jsonl_sha256": "00efdeeaba3e8c09a549c609138e65256068b8fb0c49da216dcc24cc84dff806",
+  "source_bindings": {
+    "audit_script_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v12_review_side_audit.py",
+    "audit_script_sha256": "bf89ac2cf99ce67dfe26768a7c8334ec5f4feef50923332b22568dfd6b8d9653",
+    "experiment": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02",
+    "records_count": 11438,
+    "records_identity_sha256": "c361f29f0f76726d5048ab55431c22f47624fccbb1882282c72b38f537c5d721",
+    "seal_id": "2562d617f4741a14f1fd635ab557ff1ce58a6c71dff7b95a014949a6d5f0a3a5",
+    "seal_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/review_seal/record.json",
+    "seal_sha256": "24f07c062b5176c7b104aacd5c30e508ba9c4b12178f9fc75f25886007bbd40e"
+  },
+  "training_started": false
+}
