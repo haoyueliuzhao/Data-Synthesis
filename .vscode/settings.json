@@ -1,0 +1,12 @@
+{
+  "files.watcherExclude": {
+    "**/.codex-worktrees/**": true,
+    "**/raw_financial_data_lake/data/**": true,
+    "**/trusted_data_synthesis/artifacts/**": true,
+    "**/.venv/**": true,
+    "**/__pycache__/**": true,
+    "**/.pytest_cache/**": true,
+    "**/.mypy_cache/**": true,
+    "**/.ruff_cache/**": true
+  }
+}
