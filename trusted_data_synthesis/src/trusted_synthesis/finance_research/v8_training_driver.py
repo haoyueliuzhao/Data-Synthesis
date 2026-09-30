@@ -924,7 +924,9 @@ class TrainingDriver:
         summary = json.loads((directory / "record.json").read_bytes())
         raw = (directory / "state.pt").read_bytes()
         _require(_sha(raw) == summary["state_sha256"], "committed checkpoint bytes changed")
-        state = torch.load(io.BytesIO(raw), map_location=self.device, weights_only=False)
+        # Non-capturable Adam step tensors and RNG receipts must stay on CPU.
+        # load_state_dict moves parameter moments to the actual parameter device.
+        state = torch.load(io.BytesIO(raw), map_location="cpu", weights_only=False)
         _require(_tree_digest(state) == summary["actual_state_digest"], "state digest mismatch")
         _require(
             state["pool_id"] == self.pool.cache_id

@@ -217,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v16"):
+        from .v16_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     if coordinates["episode_id"].startswith("v15"):
         from .v15_budget import eligible
 
@@ -260,12 +264,19 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     from .v14_budget import read_matrix_permit as read_v14_permit
     from .v15_budget import eligible as v15_eligible
     from .v15_budget import read_matrix_permit as read_v15_permit
+    from .v16_budget import eligible as v16_eligible
+    from .v16_budget import read_matrix_permit as read_v16_permit
 
     matrix = read_matrix_permit(connection, config)
     material = read_v13_permit(connection, config)
     residual = read_v14_permit(connection, config)
     mapping = read_v15_permit(connection, config)
-    if mapping is not None:
+    adjudication = read_v16_permit(connection, config)
+    if adjudication is not None:
+        if not coordinates["episode_id"].startswith("v16mapping:") or request_body is None:
+            raise BudgetUnavailable("V16 permits only its six fixed once-only adjudications")
+        v16_eligible(connection, config, coordinates, output_limit, request_body=request_body)
+    elif mapping is not None:
         if not coordinates["episode_id"].startswith("v15mapping:") or request_body is None:
             raise BudgetUnavailable("V15 permits only its frozen residual mapping tasks")
         v15_eligible(connection, config, coordinates, output_limit, request_body=request_body)
