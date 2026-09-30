@@ -1,0 +1,101 @@
+{
+  "at": "2026-09-30T01:48:18.680147+00:00",
+  "id": "81fbd3f71ed1d507ec05bee4eaa9dfb9b2439c030b4cad37473af86667de0524",
+  "model_calls": 0,
+  "query": "SELECT v.episode_id,a.invocation_id,r.state,r.request_sha256,r.reserved_microcny,r.evidence_json FROM v13_review_roster v JOIN v10_request_allocations a ON a.episode_id=v.episode_id JOIN requests r ON r.invocation_id=a.invocation_id WHERE r.state='UNKNOWN' ORDER BY v.episode_id",
+  "query_only": true,
+  "rows": [
+    {
+      "episode_id": "v13mapping:0b44d20923b218415a2d9bb2546619245cfa7c5395c76a3375d001916c2f3218",
+      "evidence_sha256": "e1a1cc10075be35773268b7b9ab74aca01b45610cc8ca0bab30343b97e6675fc",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:8b533f9315364e3b9b430687e96c165993ecd1dc60d242787bba72ce96950bc5",
+      "purpose": "mapping",
+      "request_sha256": "4f8e5cbed77d1b4c6ddda48a00aaa559fb1a7b5ecbda7fb4d09e7fc429e03c17",
+      "reserved_microcny": 2228224,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:4c29174bd0547eea3f09e35242c7e5788d6d9e96e41cc1d10a1b15acaab1bc5d",
+      "evidence_sha256": "706a9a728556123790a7f7bca8c02706ef79e155272d6ab0cb358a29853579d3",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:f6e54fae08570655a239ae39d85ab38c4b0d013e7c8dcacba0aa7f12f148cafc",
+      "purpose": "mapping",
+      "request_sha256": "8ea74a1d069392ed1d8a1585eac05ca8851b03f942ca912b08fb608f2532f1e5",
+      "reserved_microcny": 2359296,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:70859c4f01651e2fd4854495df62571d70d832b21cd8a1951657659e8d157de6",
+      "evidence_sha256": "b126324b8491f7c4c5a86257ac90698f48a8d1802c975c1d193062be22ade3cf",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:d16cb2ad28228ee6a0be00f5306b2d92e02ba74ab29bc703ccbc4112c9f66668",
+      "purpose": "mapping",
+      "request_sha256": "b135ee6ca54be066dca95e14c8c8310268fdf2e96520b42ab904021b27552d9e",
+      "reserved_microcny": 2359296,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:746b1e840e7b11047b5c569aeb7fb0502ac624beba7d3506595781482482d88e",
+      "evidence_sha256": "0e6eea7a3e88b9944c2330b643c9656468fe5b605d77053710059dac45130d30",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:bf2e1d650a68c6ce1c6ddf8276d0acc723fff2faf30de576b7143a088a638b47",
+      "purpose": "mapping",
+      "request_sha256": "a9edd5e9abaa5d565d1a478bbc50e891e8251c33ac17392ddc4600fffd84c623",
+      "reserved_microcny": 2359296,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:7ac4bdbb46c92baa7158ded50c32582ca1f5d8c17cd9e7faa79fd4e86376ae87",
+      "evidence_sha256": "d56ab816d8ccf3442f249f575e6e829c6ac376e9b97ad5b71eec4e0654e0fd82",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:dd7f37766ed70d68bb34994b3be2522e5b86d66b5095db2139d46bc9385c074b",
+      "purpose": "mapping",
+      "request_sha256": "198cc1d598222b422e8246506416382906ce66579927cd35726010e8e36edbf2",
+      "reserved_microcny": 2228224,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:e3eb2975fb103a75de5f570fa7ca135d71ecff15670231a94567c14a62caa274",
+      "evidence_sha256": "527e067e27f7dc81f94535066f9f72dbc1bfffd9dfd618c578fb38fd3fba9285",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:aac4b20a90d089a3e855888effd07102abb0f518a663fa2f3d0e03f9b299b913",
+      "purpose": "mapping",
+      "request_sha256": "2636acadcb1a351c7f3d8a9c410b60927ba8f304b6ec023d55314cce4673ecec",
+      "reserved_microcny": 2621440,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:f9dff7f3aa44c20933d66c48aa10fd47760aa0250600bed489d2300340010c9f",
+      "evidence_sha256": "e8e5b43c35e090ec9d2309200235451096729e97f300ec501d762304b4ee0a6c",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:d635b2f00073d0491cf7c805254461be115542d9909f4ae4a74224322a69550e",
+      "purpose": "mapping",
+      "request_sha256": "05815e59834ed9cce8e8b5ea3888d43ca4f8fbe71ab566e77e6a92a873b24895",
+      "reserved_microcny": 2621440,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    },
+    {
+      "episode_id": "v13mapping:fa987725c3b3eeba10c35ffa0b0bc988829030a9084aaff9f40af200e863066f",
+      "evidence_sha256": "b8c4ee615b3725c32b4716df0732d5629346ef81d31f871ed45e3b5f33a141e3",
+      "exception_type": "RemoteProtocolError",
+      "invocation_id": "invocation:d73cd0849afcd9c6f8bfb6a381966542330629df8ab36dc6e52bc8de9084ae94",
+      "purpose": "mapping",
+      "request_sha256": "7e317c2354fbd0c7cf6a57b1bfdb6303e5d2f0431b55f5d7a6eef5cd7497d697",
+      "reserved_microcny": 2621440,
+      "service_response_received": false,
+      "state": "UNKNOWN"
+    }
+  ],
+  "schema": "v13_stopped_network_wallet_excerpt.v1",
+  "source_plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "wallet_database": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/experiment0_01/budget.sqlite3",
+  "wallet_mutations": 0
+}

@@ -1,0 +1,121 @@
+{
+  "applied_after_requests": 79383,
+  "authorization": {
+    "batch_id": "finqa-v13-20260930-material-01",
+    "completion_guaranteed": false,
+    "effective_hard_cap_microcny": 2000000000,
+    "effective_request_limits": {
+      "generation": 191000,
+      "review_mapping": 25000
+    },
+    "effective_review_mapping_microcny": 1300000000,
+    "id": "67216ab1aa1f89047fa0a15fe7fb5975af0bac846c74e64ff3debbcc494ba1df",
+    "old_retries_authorized": false,
+    "original_holds_preserved": true,
+    "plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+    "purpose_counts": {
+      "mapping": 645,
+      "projection": 671
+    },
+    "quotas_increased": false,
+    "schema": "v13_fixed_material_authorization.v1",
+    "source_review_seal_id": "2562d617f4741a14f1fd635ab557ff1ce58a6c71dff7b95a014949a6d5f0a3a5",
+    "training_authorized_by_this_permit": false,
+    "user_reply": "参照审计修订并开展后续实验"
+  },
+  "backup": {
+    "bytes": 2576396288,
+    "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/wallet_before_v13_material_purposes.sqlite3",
+    "sha256": "97c01d2d78f941b803afe516eb4ef68ff5239be120c33ee8690717eaa325692f"
+  },
+  "batch_id": "finqa-v13-20260930-material-01",
+  "concurrency": {
+    "max": 64,
+    "ramp": [
+      {
+        "settled_at_least": 0,
+        "workers": 16
+      },
+      {
+        "settled_at_least": 16,
+        "workers": 32
+      },
+      {
+        "settled_at_least": 64,
+        "workers": 64
+      }
+    ]
+  },
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+  "id": "4f3b6b04dde03a0f8c0cd57c5ba8451ffa0f49fba788bdbf619dc4d8965352bc",
+  "job_count": 1316,
+  "money_limits_unchanged": true,
+  "no_retry": true,
+  "old_new_reservations_authorized": false,
+  "original_partition_id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+  "original_request_limits": {
+    "generation": 199000,
+    "review_mapping": 17000
+  },
+  "parent_v12_permit_id": "0ed3020c10e99336ef5b48fe856ef2f317caf0323641a8dbd21fd54a607fe7b6",
+  "plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "preserved_counters": {
+    "completion_tokens": 49067790,
+    "dispatched": 79383,
+    "held": 303366144,
+    "hit_tokens": 236991835,
+    "miss_tokens": 386720840,
+    "pending": 0,
+    "prompt_tokens": 623712675,
+    "requests": 79383,
+    "singleton": 1,
+    "spent": 1175499321,
+    "unknown": 140
+  },
+  "preserved_quota_rows": [
+    {
+      "category": "generation",
+      "dispatched": 16312,
+      "held": 0,
+      "money_cap": 100000000,
+      "pending": 0,
+      "request_cap": 199000,
+      "requests": 16312,
+      "spent": 23672874,
+      "unknown": 0
+    },
+    {
+      "category": "review_mapping",
+      "dispatched": 22995,
+      "held": 158531584,
+      "money_cap": 550000000,
+      "pending": 0,
+      "request_cap": 17000,
+      "requests": 22995,
+      "spent": 815562118,
+      "unknown": 75
+    }
+  ],
+  "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+  "purpose_counts": {
+    "mapping": 645,
+    "projection": 671
+  },
+  "registered_at_unix": 1790732119.0831847,
+  "request_limits_unchanged": true,
+  "roster_sha256": "54cb79cc0cc324979772d9feaa5a7dedfaf06e3bc1f8a44a030270a7b635ee37",
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v13_material_matrix_permit.v1",
+  "source_batch_id": "finqa-v12-20260930-rereview-01",
+  "source_protocol_id": "ca67d9da2e5cf5161fb73bdfdca5cf844bb73f2d9d9e8b2022bd9489f357d50e",
+  "source_review_seal_id": "2562d617f4741a14f1fd635ab557ff1ce58a6c71dff7b95a014949a6d5f0a3a5",
+  "source_review_seal_sha256": "24f07c062b5176c7b104aacd5c30e508ba9c4b12178f9fc75f25886007bbd40e",
+  "source_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02",
+  "transferred_unused_generation_requests": 0
+}

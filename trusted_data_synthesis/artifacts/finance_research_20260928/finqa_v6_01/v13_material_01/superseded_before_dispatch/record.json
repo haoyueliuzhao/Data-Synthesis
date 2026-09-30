@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-30T01:35:19.148184+00:00",
+  "id": "5a81c14fd16a74fb255c527741e8a55679a0739c6f08b53901b4a187ba8fad96",
+  "old_matrix_model_calls": 0,
+  "old_matrix_wallet_registrations": 0,
+  "old_preparation_id": "539b44b296d3a56cdd9f076ce020c3e57551c7d72c7507277c48859a3262e077",
+  "original_preparation_preserved": true,
+  "reason": "Missing-tool raw argument None must remain an unusable real response; bind strict JSON decoder source before all new dispatch.",
+  "replacement_plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "replacement_preparation_id": "da9af8ed61d3812b9a46a061785e305e398e07794831b317eab5a736392e12e1",
+  "schema": "v13_offline_preparation_superseded.v1"
+}

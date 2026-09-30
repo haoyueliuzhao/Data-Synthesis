@@ -1,0 +1,86 @@
+{
+  "budget": {
+    "halt": null,
+    "held_microcny": 322764800,
+    "pending_requests": 0,
+    "requests_dispatched": 79799,
+    "requests_reserved": 79799,
+    "settled_tariff_microcny": 1194514780,
+    "unknown_requests": 148
+  },
+  "captured_at": "2026-09-30T02:00:48.920658+00:00",
+  "id": "c6131e0bbe9071346d97c46164a50d99b2896448913b30e14bcc5194e16dc7dd",
+  "new_calls_after_resume": 128,
+  "old_unknowns_not_resent": true,
+  "original_matrix_denominator": 1316,
+  "progress": {
+    "active": 16,
+    "actual_returns": 408,
+    "at": "2026-09-30T02:00:46.329875+00:00",
+    "current_wave_limit": 16,
+    "denominator": 1316,
+    "effective_max_concurrency": 16,
+    "last_wave_errors": [],
+    "network_unknowns": 8,
+    "no_automatic_retry": true,
+    "old_V12_process_judgments_unchanged": true,
+    "original_registered_concurrency": {
+      "max": 64,
+      "ramp": [
+        {
+          "settled_at_least": 0,
+          "workers": 16
+        },
+        {
+          "settled_at_least": 16,
+          "workers": 32
+        },
+        {
+          "settled_at_least": 64,
+          "workers": 64
+        }
+      ]
+    },
+    "phase": "REVIEW_RUNNING",
+    "processed": 416,
+    "projection_and_mapping_independent": true,
+    "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+    "recovery_denominator": 1316,
+    "recovery_scanned": 1316,
+    "registered_concurrency_ceiling": 16,
+    "registration_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+    "runtime_registration_id": "ba9299e0d73e8daaa1a18eb95e06ccf407a0dee3a84d9e15522a6694dc5f71d0",
+    "schema": "v13_material_controller_status.v1",
+    "successful_transport_settlements": 408,
+    "training_started": false
+  },
+  "remaining_review_exposure_microcny": 287492183,
+  "runtime_id": "ba9299e0d73e8daaa1a18eb95e06ccf407a0dee3a84d9e15522a6694dc5f71d0",
+  "runtime_launch_id": "e24729891b73caa1cd92ff537ce1af6192299297bdf14a6d8f77fda542511ff9",
+  "same_workflow_alive": true,
+  "schema": "v13_c16_resume_observation.v1",
+  "status_at": "2026-09-30T02:00:46.329875+00:00",
+  "status_sha256": "c15bc50d8d6ba8cb21c7e6651a218a2d699381da053d9b50cc46823d78d1cc18",
+  "total_attempted": 416,
+  "total_v13_settled_microcny": 19015459,
+  "training_not_started": true,
+  "workflow": {
+    "active_children": [
+      {
+        "attempt": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/workflow/jobs/fixed-material-measurements/attempt002",
+        "birth": "315793926",
+        "gpu": null,
+        "job_key": "fixed-material-measurements",
+        "pid": 2631800,
+        "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/completion_seal/record.json"
+      }
+    ],
+    "at": "2026-09-30T02:00:44.103992+00:00",
+    "batch_id": "finqa-v13-20260930-material-01",
+    "max_gpu_workers": 3,
+    "no_GPU_placeholder": true,
+    "no_resampling": true,
+    "phase": "PROJECTION_AND_MAPPING_RUNNING",
+    "protocol_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b"
+  }
+}

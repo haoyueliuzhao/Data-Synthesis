@@ -1,0 +1,57 @@
+{
+  "Experiment5": false,
+  "GPU_allocation_before_material_admission": false,
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "dev_tasks": 883,
+  "downstream_source_bindings": {
+    "v10_student_encoding.py": "899f7a002423fe3834a4b25bd4cbbbfd6494233f5a2aeaa9f51ab3d6aefac63f",
+    "v10_training.py": "23c3a531f499fd272c3ed238e40f80a53a801b9dbacf9f74086b30e104ffaf2d",
+    "v10_workflow.py": "c1261530c642f0668098da6b3d5323947b9cc87e6fbbf898c341833431d45133",
+    "v13_material.py": "673b6ba63a01ebcd3702ab695924b1edf38d039b600f952a92e148e28c77a216",
+    "v13_student_encoding.py": "e1921381ff08047d0289f03d40cced5646467dce6e2dceec1607ef2c6376ef13",
+    "v13_training.py": "6a58ec9cb7d4885a9db3e231d5a66ccf3be9a4044c0ced6c9bea1bde33487541",
+    "v13_workflow.py": "cc180d25925c5f851665b4889df6734f1b1818f4c24ed7019b210d6aa0de7892",
+    "v6_distribution.py": "c08e13b3135bbcafe7d1fff75829e753ca6a37cdec5907c7e762df3f683bef77",
+    "v8_training_driver.py": "39f753d0af703b19d7b0ac0a5572d02783556203213f82aa5cc679219299dd8e",
+    "v9_conditional_training.py": "0eed331179c15a2cf27642264964876afec5dffa2e6bc653d1104a7bfd7404e6",
+    "v9_final_evaluation.py": "51942ef21f3bfc75f3c519eae04b629a3ea9d2ae47a45b71ceba1393113fc8b0",
+    "v9_mechanism_execution.py": "fd050f5ce6d6287133b4dc712fb124f02a94c253ab622975242492a98114198a",
+    "v9_training_launcher.py": "0e17ca3f1e3fcba5d8ec0fa953363f931eda169266e15acf9cedfa70610d7b34"
+  },
+  "feedback": 700,
+  "feedback_tasks": 350,
+  "id": "b377e487c1e88bd23f46a3ca7dea55f40cedb3203c3b21fdcc2a575831f19908",
+  "max_gpu_workers": 3,
+  "minimum_free_mib": 24576,
+  "no_GPU_placeholder": true,
+  "no_automatic_retry": true,
+  "no_partial_training": true,
+  "prerequisites": "all1316 terminal, all2468 field authorities/mapping/encoding, nontrivial support",
+  "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+  "registration_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "rerun_Base": false,
+  "schema": "v13_fixed_material_workflow.v1",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "skip_new_AB_and_generation": true,
+  "test1147_opened": false,
+  "unchanged_arms": [
+    "Static",
+    "Manual+",
+    "Manual-",
+    "C-only",
+    "Full"
+  ]
+}

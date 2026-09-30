@@ -1,0 +1,228 @@
+{
+  "budget": {
+    "effective_hard_cap_microcny": 2000000000,
+    "halt": {
+      "at_unix": 1790732303.5044405,
+      "evidence": {
+        "automatic_retry": false,
+        "billing_usage_known": false,
+        "budget_coordinates": {
+          "attempt_index": 1,
+          "episode_id": "v13mapping:e3eb2975fb103a75de5f570fa7ca135d71ecff15670231a94567c14a62caa274",
+          "invocation_id": "invocation:aac4b20a90d089a3e855888effd07102abb0f518a663fa2f3d0e03f9b299b913",
+          "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+          "turn_index": 0
+        },
+        "budget_invocation_id": "invocation:aac4b20a90d089a3e855888effd07102abb0f518a663fa2f3d0e03f9b299b913",
+        "endpoint": "https://api.deepseek.com/beta/chat/completions",
+        "exception_type": "RemoteProtocolError",
+        "policy_id": "5a2ddb8b1a9dca40f5c67fb5cea6d2eb4326ebf45494e47a5b5005be3efceb28",
+        "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+        "production_request_id": "1a3d6af76b9a5ba70758a786dbb5a64b0c7093cb0fd38a74307619ce58bff4b2",
+        "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+        "purpose": "mapping",
+        "request_sha256": "2636acadcb1a351c7f3d8a9c410b60927ba8f304b6ec023d55314cce4673ecec",
+        "reservation_retained": true,
+        "role": "mapping",
+        "semantic_review_request_sha256": "a476b3256ab3a49909080377e380c8333143476431977532d0d5245b8055fb97",
+        "service_response_received": false,
+        "wire_protocol": "v13_typed_material_completion.v1"
+      },
+      "invocation_id": "invocation:aac4b20a90d089a3e855888effd07102abb0f518a663fa2f3d0e03f9b299b913",
+      "reason": "v13 transport response or usage unknown"
+    },
+    "held_microcny": 322764800,
+    "pending_requests": 1,
+    "remaining_exposure_microcny": 488860448,
+    "requests_dispatched": 79671,
+    "requests_reserved": 79671,
+    "settled_tariff_microcny": 1188374752,
+    "unknown_requests": 147
+  },
+  "captured_at": "2026-09-30T01:38:47.602771+00:00",
+  "id": "34269f16332c41aaca8dd467b2f8c94a73f238f4e1ba4f72f9206af290daa734",
+  "new_requests": 288,
+  "new_settled_microcny": 12875431,
+  "no_retry_performed": true,
+  "progress": {
+    "active": 64,
+    "actual_returns": 219,
+    "at": "2026-09-30T01:38:43.545861+00:00",
+    "current_wave_limit": 64,
+    "denominator": 1316,
+    "last_wave_errors": [
+      {
+        "error": "v13 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "capacity": {
+            "estimated_output_requirement": 23609,
+            "exact_token_forecast": false,
+            "hard_output_size_guarantee": false,
+            "input_or_output_clipping": false,
+            "max_output_tokens": 32768,
+            "new_semantic_size_limits": false,
+            "planning_scenario_is_not_annotation": true,
+            "purpose": "mapping",
+            "safety_multiplier": "5/4",
+            "scenario_sha256": "8c4853e2433454436e7a8612c4e0fb3a19a1c60803132fbd4542a6308995b168",
+            "scenario_utf8_bytes": 17863,
+            "schema": "v13_serialized_response_capacity.v1",
+            "tool_envelope_utf8_bytes": 1024
+          },
+          "episode_id": "v13mapping:746b1e840e7b11047b5c569aeb7fb0502ac624beba7d3506595781482482d88e",
+          "kind": "mapping",
+          "max_output_tokens": 32768,
+          "purpose": "mapping",
+          "request": {
+            "id": "ded3df4904c914cf66459f4746dcefa4f851f207b1575e2d9f5fdd586fc67162",
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/requests/746b1e840e7b11047b5c569aeb7fb0502ac624beba7d3506595781482482d88e/record.json",
+            "sha256": "7bd24e8a770f1409dbb88ed1e4587af1bc1b357381ffa4510fde4b9cb2ea54d2"
+          },
+          "request_body_sha256": "a9edd5e9abaa5d565d1a478bbc50e891e8251c33ac17392ddc4600fffd84c623",
+          "request_file_sha256": "7bd24e8a770f1409dbb88ed1e4587af1bc1b357381ffa4510fde4b9cb2ea54d2",
+          "request_id": "ded3df4904c914cf66459f4746dcefa4f851f207b1575e2d9f5fdd586fc67162",
+          "request_sha256": "a9edd5e9abaa5d565d1a478bbc50e891e8251c33ac17392ddc4600fffd84c623",
+          "role": "mapping",
+          "slot_id": null,
+          "slot_ids": [
+            "v10gen:fd29cfaf3d840815b4b3a8aa819289768cb8d5a9c6b1affec5b4f66ae5c2cd65",
+            "v10gen:4a5ad0813a0e94d32857c710e72314347f6610ee3e0e4597b6b4ea584b448468",
+            "v10gen:c555a668aebfbbb059b8d38cf53658f9b51d8dfe58774f90f2bd13fef406857e"
+          ],
+          "task_id": "DRE/2008/page_49.pdf-2",
+          "wire_bytes": 74196
+        },
+        "kind": "network"
+      },
+      {
+        "error": "v13 transport response or usage unknown",
+        "error_type": "ProviderCallError",
+        "job": {
+          "capacity": {
+            "estimated_output_requirement": 34902,
+            "exact_token_forecast": false,
+            "hard_output_size_guarantee": false,
+            "input_or_output_clipping": false,
+            "max_output_tokens": 65536,
+            "new_semantic_size_limits": false,
+            "planning_scenario_is_not_annotation": true,
+            "purpose": "mapping",
+            "safety_multiplier": "5/4",
+            "scenario_sha256": "1fc8bbfddfcbcc785705ea593b894a545b170e601cf866764e45aaa397d36835",
+            "scenario_utf8_bytes": 26897,
+            "schema": "v13_serialized_response_capacity.v1",
+            "tool_envelope_utf8_bytes": 1024
+          },
+          "episode_id": "v13mapping:f9dff7f3aa44c20933d66c48aa10fd47760aa0250600bed489d2300340010c9f",
+          "kind": "mapping",
+          "max_output_tokens": 65536,
+          "purpose": "mapping",
+          "request": {
+            "id": "4912076af8a0671a5f8f87d806c238e889fd0f2a078f04862ae6f20dd00388a1",
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/requests/f9dff7f3aa44c20933d66c48aa10fd47760aa0250600bed489d2300340010c9f/record.json",
+            "sha256": "45fb4773ba513f510416433b34b8eb2246ce37fc4fffbe13baf320185a2fe5e9"
+          },
+          "request_body_sha256": "05815e59834ed9cce8e8b5ea3888d43ca4f8fbe71ab566e77e6a92a873b24895",
+          "request_file_sha256": "45fb4773ba513f510416433b34b8eb2246ce37fc4fffbe13baf320185a2fe5e9",
+          "request_id": "4912076af8a0671a5f8f87d806c238e889fd0f2a078f04862ae6f20dd00388a1",
+          "request_sha256": "05815e59834ed9cce8e8b5ea3888d43ca4f8fbe71ab566e77e6a92a873b24895",
+          "role": "mapping",
+          "slot_id": null,
+          "slot_ids": [
+            "v10gen:ebe825cbdb771773d4e4c6e3e256310d7326394756b9a9c60681e58ac26f2906",
+            "v10gen:2b6960c8529c3a754902e23e46182fd5df6564602808ece2b969d318f94c8569",
+            "v10gen:c05c7af1fed213287ac9efbe80e732ba902588f33317b3a62de912004e90722b",
+            "v10gen:b6a4c90428be7cc7a37870bf492a12d8f73d6d9772e0b0b0e8a21249a6f71822"
+          ],
+          "task_id": "LMT/2015/page_52.pdf-4",
+          "wire_bytes": 92614
+        },
+        "kind": "network"
+      }
+    ],
+    "network_unknowns": 5,
+    "no_automatic_retry": true,
+    "old_V12_process_judgments_unchanged": true,
+    "phase": "DRAINING",
+    "processed": 224,
+    "projection_and_mapping_independent": true,
+    "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+    "recovery_denominator": 2,
+    "recovery_scanned": 2,
+    "registered_concurrency_ceiling": 64,
+    "registration_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+    "schema": "v13_material_controller_status.v1",
+    "stop_reason": "network",
+    "successful_transport_settlements": 219,
+    "training_started": false
+  },
+  "recorded_network_terminals": [
+    {
+      "episode_id": "v13mapping:70859c4f01651e2fd4854495df62571d70d832b21cd8a1951657659e8d157de6",
+      "invocation_id": "invocation:d16cb2ad28228ee6a0be00f5306b2d92e02ba74ab29bc703ccbc4112c9f66668",
+      "permanent_reserved_microcny": 2359296,
+      "purpose": "mapping",
+      "slot_id": null,
+      "task_id": "GIS/2008/page_83.pdf-1"
+    },
+    {
+      "episode_id": "v13mapping:4c29174bd0547eea3f09e35242c7e5788d6d9e96e41cc1d10a1b15acaab1bc5d",
+      "invocation_id": "invocation:f6e54fae08570655a239ae39d85ab38c4b0d013e7c8dcacba0aa7f12f148cafc",
+      "permanent_reserved_microcny": 2359296,
+      "purpose": "mapping",
+      "slot_id": null,
+      "task_id": "DISCA/2017/page_22.pdf-1"
+    },
+    {
+      "episode_id": "v13mapping:0b44d20923b218415a2d9bb2546619245cfa7c5395c76a3375d001916c2f3218",
+      "invocation_id": "invocation:8b533f9315364e3b9b430687e96c165993ecd1dc60d242787bba72ce96950bc5",
+      "permanent_reserved_microcny": 2228224,
+      "purpose": "mapping",
+      "slot_id": null,
+      "task_id": "MA/2008/page_116.pdf-2"
+    },
+    {
+      "episode_id": "v13mapping:746b1e840e7b11047b5c569aeb7fb0502ac624beba7d3506595781482482d88e",
+      "invocation_id": "invocation:bf2e1d650a68c6ce1c6ddf8276d0acc723fff2faf30de576b7143a088a638b47",
+      "permanent_reserved_microcny": 2359296,
+      "purpose": "mapping",
+      "slot_id": null,
+      "task_id": "DRE/2008/page_49.pdf-2"
+    },
+    {
+      "episode_id": "v13mapping:f9dff7f3aa44c20933d66c48aa10fd47760aa0250600bed489d2300340010c9f",
+      "invocation_id": "invocation:d635b2f00073d0491cf7c805254461be115542d9909f4ae4a74224322a69550e",
+      "permanent_reserved_microcny": 2621440,
+      "purpose": "mapping",
+      "slot_id": null,
+      "task_id": "LMT/2015/page_52.pdf-4"
+    }
+  ],
+  "review_remaining_exposure_microcny": 293632211,
+  "same_workflow_alive": true,
+  "schema": "v13_startup_observation.v1",
+  "source_status_sha256": "8ddf3f143e9821fd74d6c3b44bc26cb253baa4c5617b20b0fc12eaad69dd08bb",
+  "status_at": "2026-09-30T01:38:43.545861+00:00",
+  "training_admission_not_implied": true,
+  "workflow": {
+    "active_children": [
+      {
+        "attempt": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/workflow/jobs/fixed-material-measurements/attempt001",
+        "birth": "315657134",
+        "gpu": null,
+        "job_key": "fixed-material-measurements",
+        "pid": 2605449,
+        "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/completion_seal/record.json"
+      }
+    ],
+    "at": "2026-09-30T01:38:46.187280+00:00",
+    "batch_id": "finqa-v13-20260930-material-01",
+    "max_gpu_workers": 3,
+    "no_GPU_placeholder": true,
+    "no_resampling": true,
+    "phase": "PROJECTION_AND_MAPPING_RUNNING",
+    "protocol_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b"
+  },
+  "workflow_launch_id": "36895233665c77a63a6ea5cd3ff3cf801fd45dcad04f5917085d22345409420f"
+}

@@ -1,0 +1,42 @@
+{
+  "after": {
+    "effective_hard_cap_microcny": 2000000000,
+    "halt": null,
+    "held_microcny": 303366144,
+    "pending_requests": 0,
+    "remaining_exposure_microcny": 521134535,
+    "request_cap": 258000,
+    "requests_dispatched": 79383,
+    "requests_reserved": 79383,
+    "settled_tariff_microcny": 1175499321,
+    "unknown_requests": 140
+  },
+  "at": "2026-09-30T01:35:19.144236+00:00",
+  "backup": {
+    "bytes": 2576396288,
+    "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/wallet_before_v13_material_purposes.sqlite3",
+    "sha256": "97c01d2d78f941b803afe516eb4ef68ff5239be120c33ee8690717eaa325692f"
+  },
+  "before": {
+    "effective_hard_cap_microcny": 2000000000,
+    "halt": null,
+    "held_microcny": 303366144,
+    "pending_requests": 0,
+    "remaining_exposure_microcny": 521134535,
+    "request_cap": 258000,
+    "requests_dispatched": 79383,
+    "requests_reserved": 79383,
+    "settled_tariff_microcny": 1175499321,
+    "unknown_requests": 140
+  },
+  "historical_counters_unchanged": true,
+  "id": "34a66893981defb324106ee4bdddd2717a5350af6dc39c27db2a6ca40156d34f",
+  "limits_increased": false,
+  "paid_calls_at_registration": 0,
+  "permit_id": "4f3b6b04dde03a0f8c0cd57c5ba8451ffa0f49fba788bdbf619dc4d8965352bc",
+  "plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "protocol_identity": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+  "schema": "v13_material_budget_deployment.v1",
+  "source_commit": "63f969395b8b4b6ba3d63b855e0ecef341cb9b7f"
+}

@@ -1,0 +1,23 @@
+{
+  "batch_id": "finqa-v13-20260930-material-01",
+  "completion_guaranteed": false,
+  "effective_hard_cap_microcny": 2000000000,
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "effective_review_mapping_microcny": 1300000000,
+  "id": "67216ab1aa1f89047fa0a15fe7fb5975af0bac846c74e64ff3debbcc494ba1df",
+  "old_retries_authorized": false,
+  "original_holds_preserved": true,
+  "plan_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "purpose_counts": {
+    "mapping": 645,
+    "projection": 671
+  },
+  "quotas_increased": false,
+  "schema": "v13_fixed_material_authorization.v1",
+  "source_review_seal_id": "2562d617f4741a14f1fd635ab557ff1ce58a6c71dff7b95a014949a6d5f0a3a5",
+  "training_authorized_by_this_permit": false,
+  "user_reply": "参照审计修订并开展后续实验"
+}
