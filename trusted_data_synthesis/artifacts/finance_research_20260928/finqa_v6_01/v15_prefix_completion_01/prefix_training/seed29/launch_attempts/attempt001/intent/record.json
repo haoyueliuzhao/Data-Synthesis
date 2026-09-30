@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-30T05:17:43.553167+00:00",
+  "explicit_resume": false,
+  "gpu_observed": {
+    "free": 79121,
+    "index": 1,
+    "processes": [
+      2570630
+    ],
+    "used": 2033,
+    "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a"
+  },
+  "id": "260c7600617c7d33a9dba3942deffa663b5858c02745d8330a08c7870858d200",
+  "no_GPU_placeholder": true,
+  "pid": 3964273,
+  "protocol_id": "d6841ca11342a991a02ac6f12b70c934cbc5702b05d34e1e4799f93a5ba5cc0c",
+  "seed": 29
+}

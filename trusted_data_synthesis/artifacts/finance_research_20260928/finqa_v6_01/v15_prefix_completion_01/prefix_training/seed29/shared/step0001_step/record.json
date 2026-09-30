@@ -1,0 +1,257 @@
+{
+  "actual_state_digest": "4b0d40ffbaef32b59e02d9de6c911a863e2280bd28818c634d8558bdd0dfab60",
+  "contains_actual_theta_Adam_RNG_cursor": true,
+  "contains_state_or_pi": false,
+  "evidence": {
+    "CPU_control_only": false,
+    "actual_batch_size": 5,
+    "actual_parameter_update": true,
+    "additional_batch_division": false,
+    "additional_loss_scaling": false,
+    "arm": "shared_prior_prefix",
+    "cache_id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+    "clip_calls": 1,
+    "engineering_only": false,
+    "execution_design": "canonical_original_unfused_response_rows",
+    "id": "e630dfdac73ab7116dcb1db8fa9d169716a69df1b6bd6faa02b9a6bdab3fbb96",
+    "loss_domain": "original approved response rows/actions/EOS; whole-package L_P",
+    "loss_rule": "1/(actual_B_j*n_x*whole_package_L_P)",
+    "optimizer_step_calls": 1,
+    "package_losses": [
+      {
+        "package_id": "v10gen:0d35158e88d7afb18a847e478f48749623e96820c133d3ee9c6925b244dffe7e",
+        "target_nll_sum": 101.68074935674667,
+        "target_tokens": 139
+      },
+      {
+        "package_id": "v10gen:bd09bde52c80b39748c7d876474965e29803f119fdac5dc3147375664bd4381e",
+        "target_nll_sum": 148.55261452496052,
+        "target_tokens": 187
+      },
+      {
+        "package_id": "v10gen:8b028e71ea4d4c64b167432c4442440f648769f160947f09d3812c15b9acae3c",
+        "target_nll_sum": 121.45809799432755,
+        "target_tokens": 162
+      },
+      {
+        "package_id": "v10gen:7a94521d6f9a1953ae68d7948dcd4d5fd96c4b9e1eb012e8db52c2382d0b9c4b",
+        "target_nll_sum": 189.38723266124725,
+        "target_tokens": 174
+      },
+      {
+        "package_id": "v10gen:25f32d248a00753ef718b9e49445793106214c80f7672db838c3217c29d129cf",
+        "target_nll_sum": 161.9489698112011,
+        "target_tokens": 174
+      },
+      {
+        "package_id": "v10gen:5355734b31f7b29c927c3ec53ca6ee12bd17a5caff890244ad49e002d2175f02",
+        "target_nll_sum": 216.69518150389192,
+        "target_tokens": 189
+      },
+      {
+        "package_id": "v10gen:fd4b3a4edb178152f7afc17049c58fa217a323b282019c9fef2320dcbb2b0fb2",
+        "target_nll_sum": 264.31763380765915,
+        "target_tokens": 218
+      },
+      {
+        "package_id": "v10gen:eb82eba16ec7f44a709c5b55349aa2604159f3f186832baeca915fbc1af8e719",
+        "target_nll_sum": 338.7775793671608,
+        "target_tokens": 226
+      },
+      {
+        "package_id": "v10gen:fdde8ec9cad51b37fd2a4934418c31f7984ee5bfc6c5676e58c86d3f97e27f0a",
+        "target_nll_sum": 203.22046801447868,
+        "target_tokens": 185
+      },
+      {
+        "package_id": "v10gen:62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e",
+        "target_nll_sum": 55.416554510593414,
+        "target_tokens": 87
+      },
+      {
+        "package_id": "v10gen:fa35a6316a8f66725432dbff1194ade102efb023913c639d9e5cc37301370235",
+        "target_nll_sum": 116.45063757896423,
+        "target_tokens": 140
+      },
+      {
+        "package_id": "v10gen:b3e3276f9476e07bd09127242606ab5238ab63cbe338af4767a82ce5ca29bf59",
+        "target_nll_sum": 184.88568663597107,
+        "target_tokens": 180
+      },
+      {
+        "package_id": "v10gen:205399842f5d4ff9a44d90a0def42d9e377228439d3f1a55de45f5eaae45b323",
+        "target_nll_sum": 97.26109020411968,
+        "target_tokens": 143
+      }
+    ],
+    "packages": [
+      {
+        "coefficient_float": 0.0007194244604316547,
+        "fused": false,
+        "package_id": "v10gen:0d35158e88d7afb18a847e478f48749623e96820c133d3ee9c6925b244dffe7e",
+        "target_token_coefficient": "1/1390",
+        "task_draw_index": 0,
+        "task_id": "FRT/2007/page_137.pdf-2",
+        "whole_package_target_tokens": 139
+      },
+      {
+        "coefficient_float": 0.0005347593582887701,
+        "fused": false,
+        "package_id": "v10gen:bd09bde52c80b39748c7d876474965e29803f119fdac5dc3147375664bd4381e",
+        "target_token_coefficient": "1/1870",
+        "task_draw_index": 0,
+        "task_id": "FRT/2007/page_137.pdf-2",
+        "whole_package_target_tokens": 187
+      },
+      {
+        "coefficient_float": 0.0006172839506172839,
+        "fused": false,
+        "package_id": "v10gen:8b028e71ea4d4c64b167432c4442440f648769f160947f09d3812c15b9acae3c",
+        "target_token_coefficient": "1/1620",
+        "task_draw_index": 1,
+        "task_id": "BDX/2009/page_81.pdf-3",
+        "whole_package_target_tokens": 162
+      },
+      {
+        "coefficient_float": 0.0005747126436781609,
+        "fused": false,
+        "package_id": "v10gen:7a94521d6f9a1953ae68d7948dcd4d5fd96c4b9e1eb012e8db52c2382d0b9c4b",
+        "target_token_coefficient": "1/1740",
+        "task_draw_index": 1,
+        "task_id": "BDX/2009/page_81.pdf-3",
+        "whole_package_target_tokens": 174
+      },
+      {
+        "coefficient_float": 0.0011494252873563218,
+        "fused": false,
+        "package_id": "v10gen:25f32d248a00753ef718b9e49445793106214c80f7672db838c3217c29d129cf",
+        "target_token_coefficient": "1/870",
+        "task_draw_index": 2,
+        "task_id": "KIM/2014/page_59.pdf-1",
+        "whole_package_target_tokens": 174
+      },
+      {
+        "coefficient_float": 0.00026455026455026457,
+        "fused": false,
+        "package_id": "v10gen:5355734b31f7b29c927c3ec53ca6ee12bd17a5caff890244ad49e002d2175f02",
+        "target_token_coefficient": "1/3780",
+        "task_draw_index": 3,
+        "task_id": "LMT/2013/page_81.pdf-1",
+        "whole_package_target_tokens": 189
+      },
+      {
+        "coefficient_float": 0.00022935779816513763,
+        "fused": false,
+        "package_id": "v10gen:fd4b3a4edb178152f7afc17049c58fa217a323b282019c9fef2320dcbb2b0fb2",
+        "target_token_coefficient": "1/4360",
+        "task_draw_index": 3,
+        "task_id": "LMT/2013/page_81.pdf-1",
+        "whole_package_target_tokens": 218
+      },
+      {
+        "coefficient_float": 0.00022123893805309734,
+        "fused": false,
+        "package_id": "v10gen:eb82eba16ec7f44a709c5b55349aa2604159f3f186832baeca915fbc1af8e719",
+        "target_token_coefficient": "1/4520",
+        "task_draw_index": 3,
+        "task_id": "LMT/2013/page_81.pdf-1",
+        "whole_package_target_tokens": 226
+      },
+      {
+        "coefficient_float": 0.0002702702702702703,
+        "fused": false,
+        "package_id": "v10gen:fdde8ec9cad51b37fd2a4934418c31f7984ee5bfc6c5676e58c86d3f97e27f0a",
+        "target_token_coefficient": "1/3700",
+        "task_draw_index": 3,
+        "task_id": "LMT/2013/page_81.pdf-1",
+        "whole_package_target_tokens": 185
+      },
+      {
+        "coefficient_float": 0.0005747126436781609,
+        "fused": false,
+        "package_id": "v10gen:62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e",
+        "target_token_coefficient": "1/1740",
+        "task_draw_index": 4,
+        "task_id": "MRO/2012/page_22.pdf-2",
+        "whole_package_target_tokens": 87
+      },
+      {
+        "coefficient_float": 0.00035714285714285714,
+        "fused": false,
+        "package_id": "v10gen:fa35a6316a8f66725432dbff1194ade102efb023913c639d9e5cc37301370235",
+        "target_token_coefficient": "1/2800",
+        "task_draw_index": 4,
+        "task_id": "MRO/2012/page_22.pdf-2",
+        "whole_package_target_tokens": 140
+      },
+      {
+        "coefficient_float": 0.0002777777777777778,
+        "fused": false,
+        "package_id": "v10gen:b3e3276f9476e07bd09127242606ab5238ab63cbe338af4767a82ce5ca29bf59",
+        "target_token_coefficient": "1/3600",
+        "task_draw_index": 4,
+        "task_id": "MRO/2012/page_22.pdf-2",
+        "whole_package_target_tokens": 180
+      },
+      {
+        "coefficient_float": 0.00034965034965034965,
+        "fused": false,
+        "package_id": "v10gen:205399842f5d4ff9a44d90a0def42d9e377228439d3f1a55de45f5eaae45b323",
+        "target_token_coefficient": "1/2860",
+        "task_draw_index": 4,
+        "task_id": "MRO/2012/page_22.pdf-2",
+        "whole_package_target_tokens": 143
+      }
+    ],
+    "packages_completed": 13,
+    "peak_memory": {
+      "cuda_memory_measured": true,
+      "current_allocated_bytes": 15339761664,
+      "current_reserved_bytes": 21187526656,
+      "device": "cuda:0",
+      "peak_allocated_bytes": 18008120832,
+      "peak_reserved_bytes": 21187526656
+    },
+    "physical_package_count": 13,
+    "pool": "finqa",
+    "preclip_gradient_norm": 0.9153110980987549,
+    "rows_completed": 25,
+    "schema": "v15_actual_state_free_prefix_update.v1",
+    "sequence_tokens": 111658,
+    "state_or_pi_used": false,
+    "target_tokens": 2204,
+    "task_batch": {
+      "actual_batch_size": 5,
+      "batch_index": 0,
+      "epoch": 1,
+      "step": 1,
+      "task_ids": [
+        "FRT/2007/page_137.pdf-2",
+        "BDX/2009/page_81.pdf-3",
+        "KIM/2014/page_59.pdf-1",
+        "LMT/2013/page_81.pdf-1",
+        "MRO/2012/page_22.pdf-2"
+      ]
+    },
+    "tasks": [
+      "FRT/2007/page_137.pdf-2",
+      "BDX/2009/page_81.pdf-3",
+      "KIM/2014/page_59.pdf-1",
+      "LMT/2013/page_81.pdf-1",
+      "MRO/2012/page_22.pdf-2"
+    ],
+    "underlying_consumer_id": "optimizer_update:88553dd18031a8f0dd72beb13a8e4b8cca11ef105010e097c154905ec8c80b23",
+    "weighted_loss": 0.9291850700974464,
+    "whole_population_retained": true,
+    "zero_grad_calls": 1
+  },
+  "execution_order_id": "0ce2382b3a219d476aced5f8931e71a1d627544a39728f6437bb3b433f7a638b",
+  "material_order_id": "ad3c7301edbf3e1f1b590a86b87a12c8a84587bf438ff069d5309aa662508f82",
+  "phase": "step",
+  "pool_id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+  "schedule_sha256": "9dcd6c63fa4f4b3f33027c4626f25a0df31ee956b75119bdebcb102c43062f71",
+  "schema": "v15_prior_prefix_checkpoint.v1",
+  "seed": 29,
+  "state_sha256": "1f74d42c9c8f2014dd7d69dbf53abdd5e35e8853c19870d08a7f2f37ee5b4f55",
+  "step": 1
+}

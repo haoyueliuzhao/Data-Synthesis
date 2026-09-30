@@ -1,0 +1,271 @@
+{
+  "actual_state_digest": "f6d482f1e0f69964d98b0f094625ad932f719ddf3c9c51de23f4b8878a21ce1c",
+  "contains_actual_theta_Adam_RNG_cursor": true,
+  "contains_state_or_pi": false,
+  "evidence": {
+    "CPU_control_only": false,
+    "actual_batch_size": 5,
+    "actual_parameter_update": true,
+    "additional_batch_division": false,
+    "additional_loss_scaling": false,
+    "arm": "shared_prior_prefix",
+    "cache_id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+    "clip_calls": 1,
+    "engineering_only": false,
+    "execution_design": "canonical_original_unfused_response_rows",
+    "id": "d5f12e931262a9772728b927b6cbcb73606b4b95fbdcd80f4afdf0926aae91be",
+    "loss_domain": "original approved response rows/actions/EOS; whole-package L_P",
+    "loss_rule": "1/(actual_B_j*n_x*whole_package_L_P)",
+    "optimizer_step_calls": 1,
+    "package_losses": [
+      {
+        "package_id": "v10gen:099c41c4831f9bfce3722afff20ee153a042387319b25dcbf472b4108cccb260",
+        "target_nll_sum": 206.3367348909378,
+        "target_tokens": 236
+      },
+      {
+        "package_id": "v10gen:747ae255fed1b627ac99ee4a5285f09180ea47f80960237d813885b777601ea5",
+        "target_nll_sum": 217.52850651741028,
+        "target_tokens": 218
+      },
+      {
+        "package_id": "v10gen:5ed6531b4e787608b5ff0ec6a64c952b0381fd61870cd9ecf7718c8914ed13d7",
+        "target_nll_sum": 229.79008555412292,
+        "target_tokens": 255
+      },
+      {
+        "package_id": "v10gen:f7ff4b3292b9cbccd5d969bb87da9800eff9d67dc319aff414f9cab34a5030e6",
+        "target_nll_sum": 165.14884047210217,
+        "target_tokens": 196
+      },
+      {
+        "package_id": "v10gen:5af06f8a74f255fe3e6ddea29c614e73a45a1a73a7ddb24282078f891e7df420",
+        "target_nll_sum": 110.03826605156064,
+        "target_tokens": 175
+      },
+      {
+        "package_id": "v10gen:8bfd4b02ce117a8f58d6382c13a484821ff4a56b9cf943ca703ed4bdeeedab94",
+        "target_nll_sum": 106.8609707057476,
+        "target_tokens": 161
+      },
+      {
+        "package_id": "v10gen:7098cd903dd6094021e0bdf1f173efc4f192794f1bc7814f64482b5a3de8c7b2",
+        "target_nll_sum": 287.1122731268406,
+        "target_tokens": 327
+      },
+      {
+        "package_id": "v10gen:60f559e8d25ddee647a7964f156b6c7736400269a38e246b7b0039eaa39f41ab",
+        "target_nll_sum": 423.6013689637184,
+        "target_tokens": 431
+      },
+      {
+        "package_id": "v10gen:c10d40061876e5ff4a950f8fc72c710647e8c1a75faffb6c5fb2789617f18202",
+        "target_nll_sum": 807.0695110782981,
+        "target_tokens": 497
+      },
+      {
+        "package_id": "v10gen:152259594c24894857199f14626190c590a6a3aa535dc41ff17f546686a69797",
+        "target_nll_sum": 177.58726626634598,
+        "target_tokens": 190
+      },
+      {
+        "package_id": "v10gen:f5fc1faa894a840ea85a2dd21c21fefa608289841d21d29ab584242b98714954",
+        "target_nll_sum": 200.62820568680763,
+        "target_tokens": 189
+      },
+      {
+        "package_id": "v10gen:8bb6eeb423b7179c3af0edfb56e16de2ce7c4b424a76a00765b6735b234c2c1b",
+        "target_nll_sum": 126.11410617828368,
+        "target_tokens": 160
+      },
+      {
+        "package_id": "v10gen:e1e2171b7293cfe3e243fc102bfed4b93784ca7222d100e4fb78ca80205f1ecb",
+        "target_nll_sum": 332.7786395698786,
+        "target_tokens": 263
+      },
+      {
+        "package_id": "v10gen:d27201c894d268c0de2a91e33ad80511b74464930878a8b3ca6121e4f8f5cdbb",
+        "target_nll_sum": 202.27067403495312,
+        "target_tokens": 187
+      }
+    ],
+    "packages": [
+      {
+        "coefficient_float": 0.000847457627118644,
+        "fused": false,
+        "package_id": "v10gen:099c41c4831f9bfce3722afff20ee153a042387319b25dcbf472b4108cccb260",
+        "target_token_coefficient": "1/1180",
+        "task_draw_index": 0,
+        "task_id": "UPS/2016/page_34.pdf-4",
+        "whole_package_target_tokens": 236
+      },
+      {
+        "coefficient_float": 0.00045871559633027525,
+        "fused": false,
+        "package_id": "v10gen:747ae255fed1b627ac99ee4a5285f09180ea47f80960237d813885b777601ea5",
+        "target_token_coefficient": "1/2180",
+        "task_draw_index": 1,
+        "task_id": "RCL/2009/page_90.pdf-3",
+        "whole_package_target_tokens": 218
+      },
+      {
+        "coefficient_float": 0.000392156862745098,
+        "fused": false,
+        "package_id": "v10gen:5ed6531b4e787608b5ff0ec6a64c952b0381fd61870cd9ecf7718c8914ed13d7",
+        "target_token_coefficient": "1/2550",
+        "task_draw_index": 1,
+        "task_id": "RCL/2009/page_90.pdf-3",
+        "whole_package_target_tokens": 255
+      },
+      {
+        "coefficient_float": 0.0003401360544217687,
+        "fused": false,
+        "package_id": "v10gen:f7ff4b3292b9cbccd5d969bb87da9800eff9d67dc319aff414f9cab34a5030e6",
+        "target_token_coefficient": "1/2940",
+        "task_draw_index": 2,
+        "task_id": "C/2009/page_41.pdf-1",
+        "whole_package_target_tokens": 196
+      },
+      {
+        "coefficient_float": 0.00038095238095238096,
+        "fused": false,
+        "package_id": "v10gen:5af06f8a74f255fe3e6ddea29c614e73a45a1a73a7ddb24282078f891e7df420",
+        "target_token_coefficient": "1/2625",
+        "task_draw_index": 2,
+        "task_id": "C/2009/page_41.pdf-1",
+        "whole_package_target_tokens": 175
+      },
+      {
+        "coefficient_float": 0.00041407867494824016,
+        "fused": false,
+        "package_id": "v10gen:8bfd4b02ce117a8f58d6382c13a484821ff4a56b9cf943ca703ed4bdeeedab94",
+        "target_token_coefficient": "1/2415",
+        "task_draw_index": 2,
+        "task_id": "C/2009/page_41.pdf-1",
+        "whole_package_target_tokens": 161
+      },
+      {
+        "coefficient_float": 0.0003058103975535168,
+        "fused": false,
+        "package_id": "v10gen:7098cd903dd6094021e0bdf1f173efc4f192794f1bc7814f64482b5a3de8c7b2",
+        "target_token_coefficient": "1/3270",
+        "task_draw_index": 3,
+        "task_id": "FRT/2009/page_124.pdf-1",
+        "whole_package_target_tokens": 327
+      },
+      {
+        "coefficient_float": 0.0002320185614849188,
+        "fused": false,
+        "package_id": "v10gen:60f559e8d25ddee647a7964f156b6c7736400269a38e246b7b0039eaa39f41ab",
+        "target_token_coefficient": "1/4310",
+        "task_draw_index": 3,
+        "task_id": "FRT/2009/page_124.pdf-1",
+        "whole_package_target_tokens": 431
+      },
+      {
+        "coefficient_float": 6.70690811535882e-05,
+        "fused": false,
+        "package_id": "v10gen:c10d40061876e5ff4a950f8fc72c710647e8c1a75faffb6c5fb2789617f18202",
+        "target_token_coefficient": "1/14910",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 497
+      },
+      {
+        "coefficient_float": 0.00017543859649122806,
+        "fused": false,
+        "package_id": "v10gen:152259594c24894857199f14626190c590a6a3aa535dc41ff17f546686a69797",
+        "target_token_coefficient": "1/5700",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 190
+      },
+      {
+        "coefficient_float": 0.0001763668430335097,
+        "fused": false,
+        "package_id": "v10gen:f5fc1faa894a840ea85a2dd21c21fefa608289841d21d29ab584242b98714954",
+        "target_token_coefficient": "1/5670",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 189
+      },
+      {
+        "coefficient_float": 0.00020833333333333335,
+        "fused": false,
+        "package_id": "v10gen:8bb6eeb423b7179c3af0edfb56e16de2ce7c4b424a76a00765b6735b234c2c1b",
+        "target_token_coefficient": "1/4800",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 160
+      },
+      {
+        "coefficient_float": 0.00012674271229404308,
+        "fused": false,
+        "package_id": "v10gen:e1e2171b7293cfe3e243fc102bfed4b93784ca7222d100e4fb78ca80205f1ecb",
+        "target_token_coefficient": "1/7890",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 263
+      },
+      {
+        "coefficient_float": 0.00017825311942959,
+        "fused": false,
+        "package_id": "v10gen:d27201c894d268c0de2a91e33ad80511b74464930878a8b3ca6121e4f8f5cdbb",
+        "target_token_coefficient": "1/5610",
+        "task_draw_index": 4,
+        "task_id": "NKE/2014/page_36.pdf-2",
+        "whole_package_target_tokens": 187
+      }
+    ],
+    "packages_completed": 14,
+    "peak_memory": {
+      "cuda_memory_measured": true,
+      "current_allocated_bytes": 15339761664,
+      "current_reserved_bytes": 23626514432,
+      "device": "cuda:0",
+      "peak_allocated_bytes": 18854925312,
+      "peak_reserved_bytes": 23626514432
+    },
+    "physical_package_count": 14,
+    "pool": "finqa",
+    "preclip_gradient_norm": 0.7646853923797607,
+    "rows_completed": 30,
+    "schema": "v15_actual_state_free_prefix_update.v1",
+    "sequence_tokens": 151706,
+    "state_or_pi_used": false,
+    "target_tokens": 3485,
+    "task_batch": {
+      "actual_batch_size": 5,
+      "batch_index": 0,
+      "epoch": 1,
+      "step": 1,
+      "task_ids": [
+        "UPS/2016/page_34.pdf-4",
+        "RCL/2009/page_90.pdf-3",
+        "C/2009/page_41.pdf-1",
+        "FRT/2009/page_124.pdf-1",
+        "NKE/2014/page_36.pdf-2"
+      ]
+    },
+    "tasks": [
+      "UPS/2016/page_34.pdf-4",
+      "RCL/2009/page_90.pdf-3",
+      "C/2009/page_41.pdf-1",
+      "FRT/2009/page_124.pdf-1",
+      "NKE/2014/page_36.pdf-2"
+    ],
+    "underlying_consumer_id": "optimizer_update:b79aa20a1fbd54c786e8da058e7fe30a0b0388ddce5be572b89919a1c6ab605f",
+    "weighted_loss": 0.9183613322675228,
+    "whole_population_retained": true,
+    "zero_grad_calls": 1
+  },
+  "execution_order_id": "0ce2382b3a219d476aced5f8931e71a1d627544a39728f6437bb3b433f7a638b",
+  "material_order_id": "ad3c7301edbf3e1f1b590a86b87a12c8a84587bf438ff069d5309aa662508f82",
+  "phase": "step",
+  "pool_id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+  "schedule_sha256": "9d0855bcdd9e392f1281544d8f5fe507f0ac1e064330d050e4ea3cf01bc97176",
+  "schema": "v15_prior_prefix_checkpoint.v1",
+  "seed": 47,
+  "state_sha256": "09eeec56fb542d77d664d61dcb62fa3f0e791164538dd5d1d03d753fb02a0b2c",
+  "step": 1
+}

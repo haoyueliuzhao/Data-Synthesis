@@ -1,0 +1,42 @@
+{
+  "CUDA_acceptance": true,
+  "additional_optimizer_steps": 0,
+  "checkpoint": {
+    "actual_state_digest": "f6d482f1e0f69964d98b0f094625ad932f719ddf3c9c51de23f4b8878a21ce1c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/prefix_training/seed47/shared/step0001_step",
+    "phase": "step",
+    "state_sha256": "09eeec56fb542d77d664d61dcb62fa3f0e791164538dd5d1d03d753fb02a0b2c",
+    "step": 1
+  },
+  "finite_gradients_checked_by_original_error_if_nonfinite_clip": true,
+  "finite_parameters_and_Adam_state": true,
+  "first_batch": {
+    "actual_batch_size": 5,
+    "batch_index": 0,
+    "epoch": 1,
+    "step": 1,
+    "task_ids": [
+      "UPS/2016/page_34.pdf-4",
+      "RCL/2009/page_90.pdf-3",
+      "C/2009/page_41.pdf-1",
+      "FRT/2009/page_124.pdf-1",
+      "NKE/2014/page_36.pdf-2"
+    ]
+  },
+  "id": "d8e6a42d8338c89d8cc415c90ef064010addd812a6dd0f8c9cfb75140ee8507a",
+  "peak_memory": {
+    "cuda_memory_measured": true,
+    "current_allocated_bytes": 15339761664,
+    "current_reserved_bytes": 23666360320,
+    "device": "cuda:0",
+    "peak_allocated_bytes": 18854925312,
+    "peak_reserved_bytes": 23666360320
+  },
+  "post_restore_digest": "f6d482f1e0f69964d98b0f094625ad932f719ddf3c9c51de23f4b8878a21ce1c",
+  "pre_restore_digest": "f6d482f1e0f69964d98b0f094625ad932f719ddf3c9c51de23f4b8878a21ce1c",
+  "repeat_first_update": false,
+  "same_actual_state": true,
+  "schema": "v15_actual_first_step_acceptance.v1",
+  "seed": 47,
+  "separate_validation_update": false
+}

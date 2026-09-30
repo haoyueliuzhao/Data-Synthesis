@@ -1,0 +1,28 @@
+{
+  "at": "2026-09-30T05:17:26.286351+00:00",
+  "code_commit": "c0e339cf9e993515deac6d0f60d1cdf504705c1e",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-m",
+    "trusted_synthesis.finance_research.v15_workflow",
+    "run",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01"
+  ],
+  "hard_prefix_steps": 298,
+  "id": "fd108b57598a43fa684904d4ab37047368f7cd1be5c480092c20c16d98322027",
+  "mapping_calls": 36,
+  "no_prefix_feedback_or_dev": true,
+  "no_temporary_states": true,
+  "pid": 3964243,
+  "prefix_seeds": [
+    11,
+    29,
+    47
+  ],
+  "process_start_time_ticks": "316984146",
+  "registration_id": "92e12ababef3143bf94a5e1e80ef9259909f7488bafb3630c9d64a6fcffcab8c",
+  "schema": "v15_parallel_workflow_launch.v1",
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v15-prefix-20260930"
+}

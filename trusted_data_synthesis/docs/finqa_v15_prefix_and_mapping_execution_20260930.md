@@ -1,5 +1,7 @@
 # V15：无状态共同前缀与固定54题映射裁定并行（2026-09-30）
 
+> 运行更新：36项新映射全部真实返回，30题通过、0新增UNKNOWN，完整分区现为738/744，余6题。共同前缀已经实际训练：三个seed的正式step1及真实保存/恢复均通过；北京时间13:27:42分别提交9、10、9步，继续向各298步推进。完整五臂仍未准入。实测来源、费用和停止边界见第9节。
+
 ## 1. 这次修订改变启动依赖，不改变研究总体与五臂目标
 
 本轮依据用户提供的 V14 增补审计及“参照审计修订并开展后续实验”。原 V14 仍是全部监督/编码完成、690/744 题映射完整、54题阻塞完整五臂的历史结果；不改写原失败或伪造 V14 完整训练 binding。
@@ -140,3 +142,74 @@ Prefix CPU对照从非空Adam及相同dropout RNG出发，比较三种合法分�
 原V14返回、690个成立权威、2468包原轨迹/监督/编码均以hash引用，不覆盖。定点解释在 `mapping_review/`、新请求在 `requests/`、真实新返回在 `annotations/`；prefix材料在 `prefix_material/`，真实训练与保存点在 `prefix_training/seed*/`；完整状态绑定仍需后续 `material/binding/`。
 
 prefix实现细节见[专门训练说明](finqa_v15_state_free_prefix_training_20260930.md)。所有计划步数、费用预留、表示解释与实际训练结果分别记录，不把支持域非退化或prefix损失变化写成VTDO训练价值确认。
+
+## 9. 已真实启动：三个共同前缀首步通过，完整映射仍余6题
+
+### 9.1 冻结、许可与启动身份
+
+执行源码固定在提交 `c0e339cf9e993515deac6d0f60d1cdf504705c1e`，独立目录 `.codex-worktrees/finqa-v15-prefix-20260930`。目录只检出实际代码、脚本、测试和文档，原数据/缓存仍引用canonical绝对路径。首次稀疏检出未初始化index，实际启动前已正确填充并显式核对模块 `__file__` 属于该冻结目录；在此之前无新API和GPU装载。
+
+| 实际登记 / 执行证据 | ID |
+| --- | --- |
+| prefix launcher | `d6841ca11342a991a02ac6f12b70c934cbc5702b05d34e1e4799f93a5ba5cc0c` |
+| Student前的continuation intent | `cd508f367ef232ca18931181793ff675e3b28c4a1c4485fac6b3d061e6805b9e` |
+| 并行workflow登记 | `c91e2562b380fddc28a998cd75865852dcdc7a6ea78ed58cf958c1b1716e35d1` |
+| 原钱包新精确permit | `b2399f87ed15e3fa0f82a2255b95f61282e7c61bc9073684573cc06734b5945b` |
+| 钱包部署收据 | `bd78c1aa8853bfa9b70b82e0b746d201ff02ea373864aad7b55cfdf2de2d078d` |
+| 实际workflow launch | `fd108b57598a43fa684904d4ab37047368f7cd1be5c480092c20c16d98322027` |
+
+真实启动为北京时间 **13:17:26.286**，父PID3964243。按当时实际余量，seed11/29/47分别分配GPU6/1/2，PID3964272/3964273/3964274；并非预占设备或仅完成代码。初始前缀许可时没有Student结果，mapping全部请求已准备；后继映射审计人员未访问Student loss、梯度、checkpoint或评价。
+
+### 9.2 API侧已经完成，未隐式重试
+
+36项首派发13:17:28.354，末结算13:17:51.696，API完成心跳13:17:52.189；全部真实返回，用时约23.34秒，逻辑峰值16。新映射完整30，6份不可用，UNKNOWN0；原始36份都声称complete，不表示校验全部通过。
+
+| 6份剩余首因 | 数量 | 实际细分 |
+| --- | ---: | --- |
+| 状态对象缺字段 | 3 | 1份缺members；2份缺members与partial_evidence，无extra字段 |
+| consequence超出typed enum | 2 | 原选择未改为近似ID或χ0 |
+| complete与非空ambiguity_notes合同冲突 | 1 | 成员已覆盖，但原说明非空，未删除后放行 |
+
+这次首因不再是summary/basis缺失。完整原件及首因保留，不能推断未执行的后续检查都无误。所有返回以tool_calls结束，length及触cap均0；completion P50/P95/P99/max为655/1094/2074/2074，没有扩大cap的证据依据。
+
+完整分区由690旧权威＋18派生＋30新模型构成，共 **738/744**；剩6题仍在完整分母，不影响全部原包参与Static先验前缀，但阻断五臂和反馈。`material/result`明确为 `BLOCKED_MAPPING`，`material/binding`不存在；这个完整训练门没有被prefix-only许可改成true。
+
+已解析738题含2444包、1349状态。在这些已成立分区与χ不变的条件下，`611≤D_pi≤629`、多状态任务224–230、χ灵活任务82–88；完整support的Dπ等仍为null。已知任务对固定744题边际的TV贡献分别为 `324361/20623680`、`585613/38301120`，不是准确率或完整干预剂量。
+
+### 9.3 首次真实CUDA/保存恢复验收通过
+
+三个seed都已完成正式首批forward/backward、有限梯度clip、一次AdamW更新，并从自己的step0001保存点实际恢复。三份acceptance均为 `CUDA_acceptance=true`、`same_actual_state=true`，恢复前后状态摘要一致；`additional_optimizer_steps=0`、`repeat_first_update=false`，未重新训练一遍“验证首步”。暂无该观测窗口内的数值、资源或执行失败。
+
+| seed / GPU | 模型加载peak allocated | 首步验收peak allocated / reserved |
+| --- | ---: | ---: |
+| 11 / 6 | 14.20 GiB | 16.89 / 20.82 GiB |
+| 29 / 1 | 14.20 GiB | 16.77 / 19.77 GiB |
+| 47 / 2 | 14.20 GiB | 17.56 / 22.04 GiB |
+
+这些是实际加载与首步窗口的测量，不是后续所有批次或长历史反馈的显存上界，也不是预先证明24GiB一定足够。首步证据保存在各 `prefix_training/seed*/shared/first_step_acceptance/record.json`。
+
+北京时间 **13:27:42** 的只读快照：seed11已提交 **9/298**、seed29 **10/298**、seed47 **9/298**，三worker和父工作流仍存活。完整范围仍是744题/2468包；没有因6题分区未齐而缩成738题训练。该快照只读取已保存record，不加载state.pt，也不增加模型更新。
+
+本轮当前已有真实训练保存点，但还没有298步完成、五臂分叉、C/N机制、dev883成绩或训练价值确认。到298时若6题仍未解决，程序会保存并释放本任务GPU等待，不靠继续Static超出原前缀来消耗资源。
+
+### 9.4 费用收尾与预算边界
+
+本批已知usage账本结算 **3.003354元**，新增UNKNOWN预留0。输入1416697 Token（hit18432、miss1398265），输出25760，总1442457。使用原历史峰值费率、逐请求微元向上取整，不是供应商账单核验。
+
+最终全局已知结算1268.079741元、保留332.464128元、风险余量 **399.456131元**；审阅子额已知结算908.142538元、保留187.629568元、余 **204.227894元**。子额请求24656/25000，名义余344次不自动授权新一轮补问。历史UNKNOWN总152及保留额在部署前、终态和只读账本计数中守恒；本次未再逐条重hash历史152行。
+
+CPU映射测量已经收口，GPU共同前缀继续运行。没有追加新API来补这6题，没有修改既有690权威、监督mask、模型或Loss。后续定点修订需保留上述来源和前缀等价边界；不能把运行中的Student表现反馈给映射判定。
+
+### 9.5 收尾及运行快照原件
+
+| 证据 | ID |
+| --- | --- |
+| completion_seal | `196b39ddfaafb3ad94f09ed3bd5f6b45f38a0760794026a9b40b11ff5501799a` |
+| 完整材料阻塞结果 | `c97f506954473dad014092db997c1681364452583489d5ec6b798b31ab4491a1` |
+| `report_run_01/mapping_annotations/record.json` | `157574211bdc5cbfaabb823ce0b4e86b6af0b351fd40737b37ae08c77500f35d` |
+| `report_run_01/mapping_runtime/record.json` | `471d0ee2321d2885a821b105d7eb27639baab94b2ec1f8ff3334196e7deda564` |
+| `report_run_01/prefix_progress_01/record.json` | `af22926859a578b6de9b5d12f61bd6f7348e33aa92fc3e95c601dbb49197f13d` |
+
+只读进度入口为 `scripts/observe_finqa_v15_prefix.py --output <正式根目录>`，按真实提交目录与出生身份观测，不控制或重启进程。模型/Adam/RNG的state.pt只保留本地，不推送Git；报告与首次验收JSON可归档审计。
+
+收尾版本对canonical映射控制器仅作括号排版修正，以通过仓库format检查；已经完成的API及仍在运行的prefix均继续使用上述冻结c0e339cf9e源码，不迁移任务、不关闭完整性校验、不改已有请求或保存点。

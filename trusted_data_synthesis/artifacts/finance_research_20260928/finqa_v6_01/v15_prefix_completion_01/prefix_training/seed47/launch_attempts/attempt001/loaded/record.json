@@ -1,0 +1,13 @@
+{
+  "actual_load_peak_memory": {
+    "cuda_memory_measured": true,
+    "current_allocated_bytes": 15242375168,
+    "current_reserved_bytes": 15244197888,
+    "device": "cuda:0",
+    "peak_allocated_bytes": 15242633728,
+    "peak_reserved_bytes": 15244197888
+  },
+  "at": "2026-09-30T05:18:38.871906+00:00",
+  "id": "6bc0870d36ad90f9c0dd2ed8c74a878c3ac3b3afb6c236cfaa1ef8c80ca58577",
+  "seed": 47
+}

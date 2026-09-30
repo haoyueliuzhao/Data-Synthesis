@@ -1,0 +1,333 @@
+{
+  "actual_return_denominator": 36,
+  "audit_code": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v15_mapping_annotation_audit.py",
+      "sha256": "9200979e85056a6e0459ab54c8fddb8cfab68beff37d467a3adbf9edb1f8ca0f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v14_annotation_audit.py",
+      "sha256": "7ef0bab3edfd45c94c36deea16b48ef797cc10037e06f663ea66e97ea2dccf67"
+    }
+  ],
+  "completion_above_cap": 0,
+  "completion_equal_cap": 0,
+  "completion_seal": {
+    "id": "196b39ddfaafb3ad94f09ed3bd5f6b45f38a0760794026a9b40b11ff5501799a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/completion_seal/record.json",
+    "sha256": "ebc50cd056345ec4d52f5d54282bb03876e176b785e37dc53e8654d892a990cc"
+  },
+  "completion_tokens": {
+    "max": 2074,
+    "min": 363,
+    "n": 36,
+    "p50": 655,
+    "p95": 1094,
+    "p99": 2074,
+    "total": 25760
+  },
+  "examples": [
+    {
+      "completion_tokens": 1094,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[1].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 2909,
+        "start": 2669,
+        "text": "4 (the table total converted to millions), producing the unit-consistent ratio 0.65773.\", \"kind\": \"revision\", \"observation\": \"p2:u00054\", \"partial_consequence_quote\": \"result\\\": 0.65773\"}], \"members\": [\"p1\", \"p2\"], \"partial_evidence\": []}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "a863bde15696d982fdd3a5d80f604b5fdec76704281fe39abea8567c0d214b0b",
+      "record": {
+        "id": "dc3c8a06fdcb40f8c8d48a886d49df654541e605ec6061afe2e6a7e3118bb304",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/436db77b93ddb8aa5bf69b7d84edbf10439702c50b0eebc9f35129975a498c96/record/record.json",
+        "sha256": "bb3fbe860be87b87e3c34b61bfa422ce2bd1c5d5e976ff0b9075360cc426b7d4"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 821,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[1]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 2117,
+        "start": 1877,
+        "text": "yields 10.35 and is the program finally submitted.\", \"kind\": \"revision\", \"observation\": \"p2:u00046\", \"partial_consequence_quote\": \"Annual interest expense should be $345.0 million × 0.03.\"}], \"partial_evidence\": []}], \"ambiguity_notes\": []}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "ec488cd1af988e20d5a35ebe9d0e941be013a6089554e27f05829de2749e650e",
+      "record": {
+        "id": "b0232e84e8386ce012b96a31ffb6a6cfc6b92301f55bf4105c135480919ca578",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/2b28476e9d60378e9f089c51f5037a1154e507e28d83f96eb9b30c2693e56e13/record/record.json",
+        "sha256": "414db33d2bb90582160c8dc5f3115207cbd34a4cdcdc83e1404966b4f871aa48"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1030,
+      "error_labels": [
+        "ValueError: complete partition requires all original members and no ambiguity"
+      ],
+      "errors": [
+        "ValueError: complete partition requires all original members and no ambiguity"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: complete partition requires all original members and no ambiguity",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 1,
+      "raw_excerpt": {
+        "end": 2494,
+        "start": 2254,
+        "text": "\"p3:u00050\", \"p3:u00051\", \"p3:u00052\", \"p3:u00053\", \"p3:u00054\", \"p3:u00055\", \"p3:u00056\", \"p3:u00057\", \"p3:u00058\", \"p3:u00059\", \"p3:u00060\", \"p3:u00061\"], \"interventions\": [], \"members\": [\"p0\", \"p1\", \"p2\", \"p3\"], \"partial_evidence\": []}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "3a97b7a82463373f3608f0fd4a22af20ee0475cde8801d836c090301ed7781ef",
+      "record": {
+        "id": "4bb201c4e5bf4a6a4679c7465668f4e5f76922b4411d8a818fd717c67cee9ed9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/35b5bb77ec8fd82220b6de32bb47dbbeda018bc671ccdb1323dd7d848bd8e856/record/record.json",
+        "sha256": "0f5dae423579faec2172cd23ce14a234fc4c6653391de9d8be9682f7dbef7dea"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IPG/2018/page_39.pdf-2",
+      "usable": false
+    }
+  ],
+  "failed_annotation_records": [
+    {
+      "completion_tokens": 1094,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[1].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "a863bde15696d982fdd3a5d80f604b5fdec76704281fe39abea8567c0d214b0b",
+      "record": {
+        "id": "dc3c8a06fdcb40f8c8d48a886d49df654541e605ec6061afe2e6a7e3118bb304",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/436db77b93ddb8aa5bf69b7d84edbf10439702c50b0eebc9f35129975a498c96/record/record.json",
+        "sha256": "bb3fbe860be87b87e3c34b61bfa422ce2bd1c5d5e976ff0b9075360cc426b7d4"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 821,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[1]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "ec488cd1af988e20d5a35ebe9d0e941be013a6089554e27f05829de2749e650e",
+      "record": {
+        "id": "b0232e84e8386ce012b96a31ffb6a6cfc6b92301f55bf4105c135480919ca578",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/2b28476e9d60378e9f089c51f5037a1154e507e28d83f96eb9b30c2693e56e13/record/record.json",
+        "sha256": "414db33d2bb90582160c8dc5f3115207cbd34a4cdcdc83e1404966b4f871aa48"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1030,
+      "error_labels": [
+        "ValueError: complete partition requires all original members and no ambiguity"
+      ],
+      "errors": [
+        "ValueError: complete partition requires all original members and no ambiguity"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: complete partition requires all original members and no ambiguity",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 1,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "3a97b7a82463373f3608f0fd4a22af20ee0475cde8801d836c090301ed7781ef",
+      "record": {
+        "id": "4bb201c4e5bf4a6a4679c7465668f4e5f76922b4411d8a818fd717c67cee9ed9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/35b5bb77ec8fd82220b6de32bb47dbbeda018bc671ccdb1323dd7d848bd8e856/record/record.json",
+        "sha256": "0f5dae423579faec2172cd23ce14a234fc4c6653391de9d8be9682f7dbef7dea"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IPG/2018/page_39.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 721,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[0].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "5c13483453fd2cafdad53b4a0c4b149bdb69aa3d365d64c1a18bbdf703f4089f",
+      "record": {
+        "id": "9bc62b68858229f038b501ccea56b26a2d345c083cb3da21f37994397b3a4a9c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/b9c5cadace72322c60cf64e3b1e57be97154b17194899ea40de9afa44cc19c5d/record/record.json",
+        "sha256": "a02639b9fc900c8e4818977351ccd5ddc22548a4a3867aa84fc5a4d6e3c9043c"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "KHC/2018/page_27.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1053,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[1]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "9fc483c499578c282adb1cd957f2148e509c828a2376f44c158ed79765adf417",
+      "record": {
+        "id": "83efca4d6baba85ac87a12716be111ca63904466f7af79107c8449afe4e5f5ce",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/2bf99589d0d20df7734f6d939c90a353c5cd9ee026310e103d5a498fb5c68191/record/record.json",
+        "sha256": "d4a4bc9646465ebf958ebc52dc9ade97161c149345bf2aa36a321332eaa5ee06"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MRO/2012/page_22.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 993,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[2]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "f8fb0c0b3bcd6686db58f1c768d8c83b21b73b16a8a34853ae074d525fe1b04f",
+      "record": {
+        "id": "4822375bf102f3f8d8222f283310c241a420152d50bc95a5727ae237bcb3130b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/e1bc395f6fea7c0093cb4ae4487559f29d3fb8e65fa154ebb1e59dc3093ed21d/record/record.json",
+        "sha256": "88e16c3f00091398773699b85f5ee20c8646bf8fb7673e3ac17f6f2b4e310ab0"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "PNC/2016/page_73.pdf-1",
+      "usable": false
+    }
+  ],
+  "finish_reason": {
+    "tool_calls": 36
+  },
+  "id": "157574211bdc5cbfaabb823ce0b4e86b6af0b351fd40737b37ae08c77500f35d",
+  "length_count": 0,
+  "methods": [
+    "Read original terminal-bound record and saved inspection only; never run inspector again.",
+    "First diagnostics partition unusable returns; multi-label counts can overlap.",
+    "Raw complete/unknown is a model claim, not semantic truth or training admission.",
+    "Network unknowns never count as returned format failures.",
+    "Nearest-rank token quantiles; only this exact new 36-job matrix is the denominator."
+  ],
+  "mutually_exclusive_first_diagnostic": {
+    "ValueError: $.states[].interventions[].consequence: outside typed enum": 2,
+    "ValueError: $.states[]: missing/extra wire field": 3,
+    "ValueError: complete partition requires all original members and no ambiguity": 1
+  },
+  "network_unknown_records": [],
+  "network_unknowns": 0,
+  "no_API_or_wallet_access": true,
+  "no_JSON_repair": true,
+  "no_Student_artifact_read": true,
+  "no_rejudgment": true,
+  "nonexclusive_error_labels": {
+    "ValueError: $.states[].interventions[].consequence: outside typed enum": 2,
+    "ValueError: $.states[]: missing/extra wire field": 3,
+    "ValueError: complete partition requires all original members and no ambiguity": 1
+  },
+  "original_meaning_and_labels_preserved": true,
+  "output_caps": {
+    "16384": 6,
+    "32768": 18,
+    "65536": 12
+  },
+  "raw_mapping_status": {
+    "complete": 36
+  },
+  "registered_denominator": 36,
+  "returned_with_nonempty_ambiguity_notes": 1,
+  "saved_error_multiplicity": {
+    "1": 6
+  },
+  "schema": "v15_sealed_mapping_annotation_audit.v1",
+  "seal_alignment_passed": true,
+  "source_records_identity_sha256": "3107ef5df4eef5cc2d2bff7fc99574f7a7d91957bfc7eb8a123814affd5da0dc",
+  "unusable": 6,
+  "unusable_completion_tokens": {
+    "max": 1094,
+    "min": 721,
+    "n": 6,
+    "p50": 993,
+    "p95": 1094,
+    "p99": 1094,
+    "total": 5712
+  },
+  "usable": 30,
+  "whole_training_material_admission_not_decided_here": true
+}

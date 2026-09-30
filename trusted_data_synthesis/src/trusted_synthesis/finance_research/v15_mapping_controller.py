@@ -574,8 +574,10 @@ def freeze_completion_seal(ctx, terminals):
             )
             returns[purpose] += 1
             inspection = record["inspection"]
-            approved = (inspection.get("mapping_status") == "complete"
-                        and inspection.get("mapping_admitted") is True)
+            approved = (
+                inspection.get("mapping_status") == "complete"
+                and inspection.get("mapping_admitted") is True
+            )
             usable[purpose] += int(approved)
             if not approved:
                 failures[purpose]["annotation_unusable"] += 1
