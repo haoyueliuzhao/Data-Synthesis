@@ -8,9 +8,29 @@ from pathlib import Path
 
 from . import v16_material as shared
 from .v6_collection import bound, require, sha
-from .v13_material_registration import entry, read_ref
+from .v13_material_registration import checked, entry, read_ref
 
 BINDING_SCHEMA = "v17_three_task_complete_material_binding.v1"
+
+
+def check_admission_hold(output, *, reject=True):
+    """A structural binding does not override an explicit semantic admission hold."""
+    output = Path(output).resolve()
+    hold_path = output / "admission_hold/record.json"
+    if not hold_path.exists():
+        return None
+    hold = checked(hold_path)
+    binding_path = output / "material/binding/record.json"
+    require(
+        hold["schema"] == "v17_explicit_semantic_admission_hold.v1"
+        and hold["revoked_binding"] == entry(binding_path)
+        and hold["registration"] == checked(binding_path)["registration"]
+        and hold["original_prefix_must_continue"] is True
+        and hold["no_replacement_partition_or_chi_supplied"] is True,
+        "semantic hold must bind the unchanged current material and registration",
+    )
+    require(not reject, "semantic admission hold blocks all five-arm training: " + hold["id"])
+    return hold
 
 
 def historical_context(definition):
@@ -153,6 +173,7 @@ def load_historical_prefix(definition):
 
 
 def load_training_pool(binding_path):
+    check_admission_hold(Path(binding_path).resolve().parents[2])
     return shared.load_training_pool(
         binding_path,
         schema=BINDING_SCHEMA,

@@ -4,8 +4,9 @@ from pathlib import Path
 
 from . import v16_workflow as shared
 from .v6_collection import sha
+from .v13_material_registration import entry
 from .v17_continuation import register_and_migrate
-from .v17_material import produce
+from .v17_material import check_admission_hold, produce
 from .v17_registration import OUTPUT, checked_plan
 
 SOURCES = shared.SOURCES + ("v17_workflow.py", "v17_material.py", "v17_continuation.py")
@@ -31,6 +32,21 @@ class Supervisor(shared.Supervisor):
     source_loader = staticmethod(source_bindings)
     scope_label = "THREE_TASK"
     mainline_schema = "v17_three_task_complete_mainline_result.v1"
+
+    def admission_blocked(self):
+        hold = check_admission_hold(self.output, reject=False)
+        if hold is None:
+            return False
+        self.update(
+            "SEMANTIC_HOLD_PREFIX_UNTOUCHED",
+            admission_hold=entry(self.output / "admission_hold/record.json"),
+            revoked_binding=hold["revoked_binding"],
+            original_prefix_control_untouched=True,
+            no_branch_or_feedback_started=True,
+            no_replacement_partition_or_chi=True,
+            no_retry=True,
+        )
+        return True
 
     def produce_material(self):
         return produce(self.output)

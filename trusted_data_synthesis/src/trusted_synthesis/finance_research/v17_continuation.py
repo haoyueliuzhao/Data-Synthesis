@@ -5,7 +5,12 @@ from datetime import datetime
 from . import v16_continuation as shared
 from .v6_collection import require
 from .v13_material_registration import read_ref
-from .v17_material import BINDING_SCHEMA, load_historical_prefix, load_training_pool
+from .v17_material import (
+    BINDING_SCHEMA,
+    check_admission_hold,
+    load_historical_prefix,
+    load_training_pool,
+)
 
 SCHEMA = "v17_three_task_condition_realization.v1"
 
@@ -43,6 +48,7 @@ def validate_condition_realization(record, material_binding, material_identity):
 
 
 def register_and_migrate(output, *, allowed_gpu_indices):
+    check_admission_hold(output)
     return shared.register_and_migrate(
         output,
         allowed_gpu_indices=allowed_gpu_indices,

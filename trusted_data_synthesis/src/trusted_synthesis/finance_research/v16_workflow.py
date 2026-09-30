@@ -134,6 +134,8 @@ class Supervisor(ExistingSupervisor):
         seal = self.output / "completion_seal/record.json"
         material = self.output / "material/result/record.json"
         while not self.stop:
+            if self.admission_blocked():
+                return False
             controller_result = self.output / "controller_result/record.json"
             if marker_complete(controller_result) and not marker_complete(seal):
                 result = checked(controller_result)
@@ -178,6 +180,10 @@ class Supervisor(ExistingSupervisor):
             )
             time.sleep(30)
         self.update("SUCCESSOR_WAIT_STOPPED_ORIGINAL_PREFIX_UNTOUCHED")
+        return False
+
+    def admission_blocked(self):
+        """Successor-specific explicit holds precede every material/prefix check."""
         return False
 
     def run(self):
