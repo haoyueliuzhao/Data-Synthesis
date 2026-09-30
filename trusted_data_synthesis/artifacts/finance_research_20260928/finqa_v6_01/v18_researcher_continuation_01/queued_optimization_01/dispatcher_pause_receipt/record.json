@@ -1,0 +1,19 @@
+{
+  "at": "2026-09-30T16:41:55.303135+00:00",
+  "id": "ea1acd1c75dbcd6c3759a45b95f45cfc70af7a94f66c0ae9d4695b9a3cc392fa",
+  "intent_id": "0b8615abfb22a79145a5d1f45b1c482e0234a13f685e9076f97202ab13319d30",
+  "no_Student_signal_sent": true,
+  "observed_process_state": "T",
+  "old_dispatcher_owned_Student_children": 0,
+  "original_parent_2769608_untouched": true,
+  "original_worker_identity_matches": {
+    "2777056": true,
+    "2777057": true,
+    "2777058": true,
+    "2777059": true
+  },
+  "queued_eleven_not_started": true,
+  "schema": "v19_queued_only_dispatcher_pause_receipt.v1",
+  "target_birth": "319331700",
+  "target_pid": 895990
+}

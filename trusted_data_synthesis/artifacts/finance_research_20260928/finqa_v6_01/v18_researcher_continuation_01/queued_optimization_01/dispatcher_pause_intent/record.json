@@ -1,0 +1,56 @@
+{
+  "API_calls": 0,
+  "Student_signals_authorized": false,
+  "at": "2026-09-30T16:41:55.297936+00:00",
+  "id": "0b8615abfb22a79145a5d1f45b1c482e0234a13f685e9076f97202ab13319d30",
+  "old_dispatcher": {
+    "id": "3d01027022d66037a051530d77b682fac8d77876e2298dcf23da8bbda0949df3",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queue_recovery_01/launch_01/record.json",
+    "sha256": "1dbd3576c6995b8289c4e5f357bcb221e37f06b3dcbb203cd5b8ad82571cd20f"
+  },
+  "original_workers": [
+    {
+      "birth": "318187132",
+      "gpu": 1,
+      "job_key": "arm-11-c_only",
+      "pid": 2777056
+    },
+    {
+      "birth": "318187132",
+      "gpu": 2,
+      "job_key": "arm-29-c_only",
+      "pid": 2777057
+    },
+    {
+      "birth": "318187133",
+      "gpu": 3,
+      "job_key": "arm-47-c_only",
+      "pid": 2777058
+    },
+    {
+      "birth": "318187133",
+      "gpu": 6,
+      "job_key": "arm-11-full",
+      "pid": 2777059
+    }
+  ],
+  "pending_jobs": [
+    "arm-29-full",
+    "arm-47-full",
+    "arm-11-static",
+    "arm-29-static",
+    "arm-47-static",
+    "arm-11-manual_plus",
+    "arm-29-manual_plus",
+    "arm-47-manual_plus",
+    "arm-11-manual_minus",
+    "arm-29-manual_minus",
+    "arm-47-manual_minus"
+  ],
+  "schema": "v19_queued_only_dispatcher_pause_intent.v1",
+  "scope": "CPU-only recovery dispatcher that observes but does not own the four original Student workers",
+  "signal": "SIGSTOP",
+  "target_birth": "319331700",
+  "target_pid": 895990,
+  "user_request": "针对正在排队的任务做优化，正在运行的实验不受干预，同时注意保存断点及恢复相关的设置，优化完毕之后继续在这四张卡上排队"
+}
