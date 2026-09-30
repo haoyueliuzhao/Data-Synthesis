@@ -1,0 +1,985 @@
+{
+  "API_calls_by_this_report": 0,
+  "GPU_used": false,
+  "Student_signals_read": false,
+  "after_budget": {
+    "acknowledged_unknown_held_microcny": 332464128,
+    "acknowledged_unknown_requests": 152,
+    "actual_cache_hit_tokens_settled": 238365403,
+    "actual_cache_miss_tokens_settled": 426800657,
+    "actual_completion_tokens_settled": 50645548,
+    "actual_prompt_tokens_settled": 665166060,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "effective_hard_cap_microcny": 2000000000,
+    "exposure_microcny": 1600800955,
+    "exposure_warning_reached": true,
+    "funding_overlay": {
+      "applied_after_requests": 59412,
+      "applies_only_to_current_batch_review_mapping": true,
+      "at_unix": 1790690115.5916739,
+      "authorization": {
+        "at": "2026-09-29T13:55:07.769955+00:00",
+        "batch_id": "finqa-v10-20260929-new8000-01",
+        "effective_hard_cap_microcny": 2000000000,
+        "effective_review_mapping_microcny": 1300000000,
+        "id": "cd4d83bd2b6a079edada61ceb6b50dfec4055d10c6c452e69be2a03140d88a4a",
+        "no_new_cohort": true,
+        "no_prefix_training": true,
+        "no_resend": true,
+        "schema": "v10_funding_authorization.v1",
+        "source_migration_reply": "批准预算提升，减少冗余校验",
+        "user_reply": "总上限提高到 2000 元，审阅／映射子额 1300 元"
+      },
+      "backup": {
+        "bytes": 1632804864,
+        "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_funding_backup_2mcs6281/wallet.sqlite3",
+        "sha256": "02c14a4da2792d189729f12f16048765831f104ce62d8a1986b4a0c15b92ea60"
+      },
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "config_tariff_namespaces_requests_and_zero_retry_unchanged": true,
+      "effective_hard_cap_microcny": 2000000000,
+      "effective_review_mapping_microcny": 1300000000,
+      "effective_unallocated_microcny": 118901111,
+      "generation_new_reservations_authorized": false,
+      "historical_UNKNOWN_and_current_records_holds_unchanged": true,
+      "id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "original_950_buffer_spendable": false,
+      "original_requests": {
+        "ordering": "invocation_id ASC",
+        "row_encoding": "_request_record_digest with exact blob lengths/SHA256",
+        "rows": 59412,
+        "schema": "v10_original_request_stream.v1",
+        "sha256": "074175ef8b3be8fb8a86fd72bf9ca1b903ddaa360b7fe59effbdd257858c8605"
+      },
+      "original_unallocated_microcny": 68901111,
+      "original_v10_partition": {
+        "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+        "key": "v10_new_batch_partition",
+        "stored_bytes_sha256": "ddbb33060f8ba892b35c3a081b39fcdc2cd4b73b0de0117f53fd5bd848cc6033"
+      },
+      "preserved_counters": {
+        "completion_tokens": 28102975,
+        "dispatched": 59412,
+        "held": 146948096,
+        "hit_tokens": 214803291,
+        "miss_tokens": 153994293,
+        "pending": 0,
+        "prompt_tokens": 368797584,
+        "requests": 59412,
+        "singleton": 1,
+        "spent": 541429680,
+        "unknown": 66
+      },
+      "preserved_generation_microcny": 100000000,
+      "preserved_quota_rows": [
+        {
+          "category": "generation",
+          "dispatched": 16312,
+          "held": 0,
+          "money_cap": 100000000,
+          "pending": 0,
+          "request_cap": 199000,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        {
+          "category": "review_mapping",
+          "dispatched": 3024,
+          "held": 2113536,
+          "money_cap": 550000000,
+          "pending": 0,
+          "request_cap": 17000,
+          "requests": 3024,
+          "spent": 181492477,
+          "unknown": 1
+        }
+      ],
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "previous_effective_hard_cap_microcny": 1200000000,
+      "previous_monetary_amendment": {
+        "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+        "key": "v9_prospective_monetary_amendment",
+        "stored_bytes_sha256": "1a671f70b1756a8ab5402d839975e185a6f16241c0c5f9472292b9d45acd951d"
+      },
+      "previous_review_mapping_microcny": 550000000,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v10_prospective_funding_overlay.v1",
+      "unallocated_spendable": false
+    },
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 332464128,
+    "monetary_amendment": {
+      "acknowledged_unknowns_sha256": "12e8f6570d7cff53dabb0ebc5fa70a823727e4db043d1968997cfb341342d5ec",
+      "amendment_id": "v9-money:8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+      "applied_after_requests": 35336,
+      "applies_to_future_reservations_only": true,
+      "at_unix": 1790661076.7432575,
+      "authorization": {
+        "additional_authorized_microcny": 400000000,
+        "at": "2026-09-29T05:41:22.230135+00:00",
+        "audit_source": {
+          "path": "/home/zhuxinrui/.codex/attachments/72dcc627-ca88-40a9-909e-a5a7fa08512a/已粘贴的文本.txt",
+          "sha256": "c514295a49836796d251ed7a80371615f4733fe768707784a92a85c8677168e5"
+        },
+        "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+        "complete_scope_requests": 13022,
+        "explicit_user_authorization": true,
+        "hard_cap_microcny": 1200000000,
+        "history_and_UNKNOWN_reservations_preserved": true,
+        "id": "8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+        "new_wallet": false,
+        "no_automatic_new_technical_cohort": true,
+        "no_new_generation": true,
+        "no_prefix_training": true,
+        "original_cap_microcny": 800000000,
+        "output_limits_and_review_policy_unchanged": true,
+        "preflight_id": "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc",
+        "production_request_subcap": 18000,
+        "request_cap": 258000,
+        "risk_of_incomplete_cohort_accepted": true,
+        "schema": "v9_production_funding_decision.v1",
+        "scope_authorization_id": "caeae28e7005257809a02e263e1561f5722e3c5d49759f42a6b9a5c3010b6a58",
+        "strategy": "bounded_full_cohort_attempt",
+        "user_reply": "批准1200元总上限及上述风险",
+        "warning_microcny": 700000000
+      },
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "effective_hard_cap_microcny": 1200000000,
+      "historical_request_records_sha256": "cc496aa47a33c54593fb392f1685fc3fb00cfe7ee5d07b8c72c08447ac6caf98",
+      "historical_rows_unchanged": true,
+      "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+      "original_hard_cap_microcny": 800000000,
+      "permanent_unknown_holds_unchanged": true,
+      "preserved_counters": {
+        "completion_tokens": 11523354,
+        "dispatched": 35336,
+        "held": 2228224,
+        "hit_tokens": 124083171,
+        "miss_tokens": 29685208,
+        "pending": 0,
+        "prompt_tokens": 153768379,
+        "requests": 35336,
+        "singleton": 1,
+        "spent": 156536406,
+        "unknown": 1
+      },
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "request_partition_id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "request_partition_unchanged": true,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v9_prospective_monetary_amendment.v1",
+      "wallet_config_unchanged": true
+    },
+    "original_remaining_exposure_microcny": -800800955,
+    "pending_requests": 0,
+    "previous_effective_hard_cap_microcny": 1200000000,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 399199045,
+    "request_cap": 258000,
+    "request_partition": {
+      "buffer_requests": 950,
+      "buffer_spendable": false,
+      "consumed": {
+        "generation": 16286,
+        "production_review": 4740,
+        "technical_review": 108
+      },
+      "generation_episode_ids_sha256": "9aa15c1ab29935b20ac7607f215216979f9ca7e9a8a52556dab17b36eb36ef51",
+      "historical_requests": 18942,
+      "id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "limits": {
+        "generation": 220000,
+        "production_review": 18000,
+        "technical_review": 108
+      },
+      "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3"
+    },
+    "requests_dispatched": 81050,
+    "requests_reserved": 81050,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 1268336827,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 152,
+    "v10_partition": {
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "consumed": {
+        "generation": {
+          "dispatched": 16312,
+          "held": 0,
+          "pending": 0,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        "review_mapping": {
+          "dispatched": 24662,
+          "held": 187629568,
+          "pending": 0,
+          "requests": 24662,
+          "spent": 908399624,
+          "unknown": 87
+        }
+      },
+      "effective_limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 191000
+        },
+        "review_mapping": {
+          "microcny": 1300000000,
+          "requests": 25000
+        }
+      },
+      "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "generation_new_reservations_authorized": false,
+      "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+      "limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 199000
+        },
+        "review_mapping": {
+          "microcny": 550000000,
+          "requests": 17000
+        }
+      },
+      "old_namespaces_admitted": false,
+      "original_950_buffer_spendable": false,
+      "original_unallocated_microcny": 68901111,
+      "output_limits": {
+        "generation": [
+          2048,
+          16384
+        ],
+        "mapping": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ],
+        "review": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ]
+      },
+      "roster_sha256": "2b56d09e331c3ad1188da730a829a3e1dc974362f28e8f51ad42f7806aed8bdb",
+      "unallocated_microcny": 118901111,
+      "unallocated_requests": 1924,
+      "unallocated_spendable": false
+    },
+    "warning_microcny": 700000000,
+    "warning_reached": true
+  },
+  "at": "2026-09-30T07:04:41.698350+00:00",
+  "automatic_retries": 0,
+  "before_budget": {
+    "acknowledged_unknown_held_microcny": 332464128,
+    "acknowledged_unknown_requests": 152,
+    "actual_cache_hit_tokens_settled": 238365403,
+    "actual_cache_miss_tokens_settled": 426699970,
+    "actual_completion_tokens_settled": 50638584,
+    "actual_prompt_tokens_settled": 665065373,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "effective_hard_cap_microcny": 2000000000,
+    "exposure_microcny": 1600543869,
+    "exposure_warning_reached": true,
+    "funding_overlay": {
+      "applied_after_requests": 59412,
+      "applies_only_to_current_batch_review_mapping": true,
+      "at_unix": 1790690115.5916739,
+      "authorization": {
+        "at": "2026-09-29T13:55:07.769955+00:00",
+        "batch_id": "finqa-v10-20260929-new8000-01",
+        "effective_hard_cap_microcny": 2000000000,
+        "effective_review_mapping_microcny": 1300000000,
+        "id": "cd4d83bd2b6a079edada61ceb6b50dfec4055d10c6c452e69be2a03140d88a4a",
+        "no_new_cohort": true,
+        "no_prefix_training": true,
+        "no_resend": true,
+        "schema": "v10_funding_authorization.v1",
+        "source_migration_reply": "批准预算提升，减少冗余校验",
+        "user_reply": "总上限提高到 2000 元，审阅／映射子额 1300 元"
+      },
+      "backup": {
+        "bytes": 1632804864,
+        "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_funding_backup_2mcs6281/wallet.sqlite3",
+        "sha256": "02c14a4da2792d189729f12f16048765831f104ce62d8a1986b4a0c15b92ea60"
+      },
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "config_tariff_namespaces_requests_and_zero_retry_unchanged": true,
+      "effective_hard_cap_microcny": 2000000000,
+      "effective_review_mapping_microcny": 1300000000,
+      "effective_unallocated_microcny": 118901111,
+      "generation_new_reservations_authorized": false,
+      "historical_UNKNOWN_and_current_records_holds_unchanged": true,
+      "id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "original_950_buffer_spendable": false,
+      "original_requests": {
+        "ordering": "invocation_id ASC",
+        "row_encoding": "_request_record_digest with exact blob lengths/SHA256",
+        "rows": 59412,
+        "schema": "v10_original_request_stream.v1",
+        "sha256": "074175ef8b3be8fb8a86fd72bf9ca1b903ddaa360b7fe59effbdd257858c8605"
+      },
+      "original_unallocated_microcny": 68901111,
+      "original_v10_partition": {
+        "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+        "key": "v10_new_batch_partition",
+        "stored_bytes_sha256": "ddbb33060f8ba892b35c3a081b39fcdc2cd4b73b0de0117f53fd5bd848cc6033"
+      },
+      "preserved_counters": {
+        "completion_tokens": 28102975,
+        "dispatched": 59412,
+        "held": 146948096,
+        "hit_tokens": 214803291,
+        "miss_tokens": 153994293,
+        "pending": 0,
+        "prompt_tokens": 368797584,
+        "requests": 59412,
+        "singleton": 1,
+        "spent": 541429680,
+        "unknown": 66
+      },
+      "preserved_generation_microcny": 100000000,
+      "preserved_quota_rows": [
+        {
+          "category": "generation",
+          "dispatched": 16312,
+          "held": 0,
+          "money_cap": 100000000,
+          "pending": 0,
+          "request_cap": 199000,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        {
+          "category": "review_mapping",
+          "dispatched": 3024,
+          "held": 2113536,
+          "money_cap": 550000000,
+          "pending": 0,
+          "request_cap": 17000,
+          "requests": 3024,
+          "spent": 181492477,
+          "unknown": 1
+        }
+      ],
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "previous_effective_hard_cap_microcny": 1200000000,
+      "previous_monetary_amendment": {
+        "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+        "key": "v9_prospective_monetary_amendment",
+        "stored_bytes_sha256": "1a671f70b1756a8ab5402d839975e185a6f16241c0c5f9472292b9d45acd951d"
+      },
+      "previous_review_mapping_microcny": 550000000,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v10_prospective_funding_overlay.v1",
+      "unallocated_spendable": false
+    },
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 332464128,
+    "monetary_amendment": {
+      "acknowledged_unknowns_sha256": "12e8f6570d7cff53dabb0ebc5fa70a823727e4db043d1968997cfb341342d5ec",
+      "amendment_id": "v9-money:8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+      "applied_after_requests": 35336,
+      "applies_to_future_reservations_only": true,
+      "at_unix": 1790661076.7432575,
+      "authorization": {
+        "additional_authorized_microcny": 400000000,
+        "at": "2026-09-29T05:41:22.230135+00:00",
+        "audit_source": {
+          "path": "/home/zhuxinrui/.codex/attachments/72dcc627-ca88-40a9-909e-a5a7fa08512a/已粘贴的文本.txt",
+          "sha256": "c514295a49836796d251ed7a80371615f4733fe768707784a92a85c8677168e5"
+        },
+        "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+        "complete_scope_requests": 13022,
+        "explicit_user_authorization": true,
+        "hard_cap_microcny": 1200000000,
+        "history_and_UNKNOWN_reservations_preserved": true,
+        "id": "8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+        "new_wallet": false,
+        "no_automatic_new_technical_cohort": true,
+        "no_new_generation": true,
+        "no_prefix_training": true,
+        "original_cap_microcny": 800000000,
+        "output_limits_and_review_policy_unchanged": true,
+        "preflight_id": "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc",
+        "production_request_subcap": 18000,
+        "request_cap": 258000,
+        "risk_of_incomplete_cohort_accepted": true,
+        "schema": "v9_production_funding_decision.v1",
+        "scope_authorization_id": "caeae28e7005257809a02e263e1561f5722e3c5d49759f42a6b9a5c3010b6a58",
+        "strategy": "bounded_full_cohort_attempt",
+        "user_reply": "批准1200元总上限及上述风险",
+        "warning_microcny": 700000000
+      },
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "effective_hard_cap_microcny": 1200000000,
+      "historical_request_records_sha256": "cc496aa47a33c54593fb392f1685fc3fb00cfe7ee5d07b8c72c08447ac6caf98",
+      "historical_rows_unchanged": true,
+      "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+      "original_hard_cap_microcny": 800000000,
+      "permanent_unknown_holds_unchanged": true,
+      "preserved_counters": {
+        "completion_tokens": 11523354,
+        "dispatched": 35336,
+        "held": 2228224,
+        "hit_tokens": 124083171,
+        "miss_tokens": 29685208,
+        "pending": 0,
+        "prompt_tokens": 153768379,
+        "requests": 35336,
+        "singleton": 1,
+        "spent": 156536406,
+        "unknown": 1
+      },
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "request_partition_id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "request_partition_unchanged": true,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v9_prospective_monetary_amendment.v1",
+      "wallet_config_unchanged": true
+    },
+    "original_remaining_exposure_microcny": -800543869,
+    "pending_requests": 0,
+    "previous_effective_hard_cap_microcny": 1200000000,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 399456131,
+    "request_cap": 258000,
+    "request_partition": {
+      "buffer_requests": 950,
+      "buffer_spendable": false,
+      "consumed": {
+        "generation": 16286,
+        "production_review": 4740,
+        "technical_review": 108
+      },
+      "generation_episode_ids_sha256": "9aa15c1ab29935b20ac7607f215216979f9ca7e9a8a52556dab17b36eb36ef51",
+      "historical_requests": 18942,
+      "id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "limits": {
+        "generation": 220000,
+        "production_review": 18000,
+        "technical_review": 108
+      },
+      "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3"
+    },
+    "requests_dispatched": 81044,
+    "requests_reserved": 81044,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 1268079741,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 152,
+    "v10_partition": {
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "consumed": {
+        "generation": {
+          "dispatched": 16312,
+          "held": 0,
+          "pending": 0,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        "review_mapping": {
+          "dispatched": 24656,
+          "held": 187629568,
+          "pending": 0,
+          "requests": 24656,
+          "spent": 908142538,
+          "unknown": 87
+        }
+      },
+      "effective_limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 191000
+        },
+        "review_mapping": {
+          "microcny": 1300000000,
+          "requests": 25000
+        }
+      },
+      "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "generation_new_reservations_authorized": false,
+      "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+      "limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 199000
+        },
+        "review_mapping": {
+          "microcny": 550000000,
+          "requests": 17000
+        }
+      },
+      "old_namespaces_admitted": false,
+      "original_950_buffer_spendable": false,
+      "original_unallocated_microcny": 68901111,
+      "output_limits": {
+        "generation": [
+          2048,
+          16384
+        ],
+        "mapping": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ],
+        "review": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ]
+      },
+      "roster_sha256": "2b56d09e331c3ad1188da730a829a3e1dc974362f28e8f51ad42f7806aed8bdb",
+      "unallocated_microcny": 118901111,
+      "unallocated_requests": 1924,
+      "unallocated_spendable": false
+    },
+    "warning_microcny": 700000000,
+    "warning_reached": true
+  },
+  "complete_capability_profile": {
+    "D_pi": null,
+    "M_flex": null,
+    "N": 744,
+    "all_public_reasoning_masked": false,
+    "approved_public_content_characters": 1025730,
+    "blockers": [
+      {
+        "reason": "whole_task_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:b6b414e57372182e9bf3f9ee75e724741aa026cb476b2d1a213c9dca549e67c7",
+          "v10gen:a7f734cb59fc46817f1670ab99f452f2f3c6e8a38d2c15e3657d3e5f34673f3e",
+          "v10gen:51baaf5cea8a4448633d8291f09caeb422f4819d70249f35d84429a9116e59ce",
+          "v10gen:a1ea38bef7c04bae1731a453fc1ccb4cc474465f383d14fcecda035dfdfebb32"
+        ],
+        "task_id": "ABMD/2008/page_87.pdf-1"
+      },
+      {
+        "reason": "whole_task_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:95775cf8cd69753d8333b9e9155848280bc30c8ad1146df3d69c4c93b7f4437b",
+          "v10gen:ea9327c8c9e10cfa2fdcb10894904f8f57523bb997c4973fe3b46283c74593bf",
+          "v10gen:d40c5737e9bdc43469cd52d3e63cdb74cc31cfbc6886d09b1d24bee0fad6874c",
+          "v10gen:3b0358576e1f3f32d7cf21a2db19915f12b1891c35a30d22f88dbad573ba0faa",
+          "v10gen:eb14e9b46954e9841b33b11055786008f57e3ee2e7c334ac2f19472089c58dac"
+        ],
+        "task_id": "KHC/2018/page_27.pdf-1"
+      },
+      {
+        "reason": "whole_task_mapping_unresolved",
+        "slot_ids": [
+          "v10gen:6ae35f029c670227d51aa14df6a61de643698aaeda306bfb7136357c8535a120",
+          "v10gen:358811bf5547be8e152b10e910fbc4b0a844e77b47fb4a647b7baa7669fcc365",
+          "v10gen:a55e2a5ab45b6aad6735cd2933fd4d3f03c29fa7233550085bd67c5472f8d1d9",
+          "v10gen:a1128ee34a539043ad834e926de6e7956b0516b7291b49f0d33fa9b4c2794220"
+        ],
+        "task_id": "PNC/2016/page_73.pdf-1"
+      }
+    ],
+    "chi_flexible_mass": null,
+    "chi_flexible_tasks": null,
+    "deterministic_singleton_tasks": [
+      "AAPL/2010/page_42.pdf-3",
+      "AAPL/2010/page_73.pdf-1",
+      "AAPL/2014/page_26.pdf-2",
+      "AAPL/2014/page_67.pdf-1",
+      "ABMD/2006/page_62.pdf-4",
+      "AES/2001/page_77.pdf-2",
+      "AES/2017/page_110.pdf-2",
+      "AES/2017/page_85.pdf-2",
+      "AON/2015/page_50.pdf-1",
+      "APD/2019/page_39.pdf-2",
+      "APD/2019/page_53.pdf-2",
+      "APTV/2014/page_46.pdf-3",
+      "AWK/2013/page_12.pdf-1",
+      "BDX/2017/page_32.pdf-1",
+      "BLK/2014/page_33.pdf-1",
+      "BLK/2015/page_123.pdf-1",
+      "BLK/2017/page_77.pdf-1",
+      "BLK/2017/page_77.pdf-2",
+      "BLK/2017/page_81.pdf-2",
+      "C/2009/page_162.pdf-2",
+      "C/2009/page_200.pdf-3",
+      "C/2009/page_255.pdf-1",
+      "C/2009/page_255.pdf-2",
+      "C/2009/page_38.pdf-1",
+      "C/2015/page_314.pdf-3",
+      "C/2015/page_46.pdf-1",
+      "C/2015/page_46.pdf-2",
+      "C/2015/page_73.pdf-2",
+      "C/2015/page_73.pdf-3",
+      "CAG/2008/page_35.pdf-2",
+      "CDNS/2007/page_93.pdf-2",
+      "CDNS/2007/page_93.pdf-4",
+      "CDNS/2012/page_31.pdf-1",
+      "CDNS/2012/page_41.pdf-1",
+      "CDNS/2012/page_58.pdf-1",
+      "CDNS/2012/page_58.pdf-2",
+      "CDW/2015/page_34.pdf-1",
+      "CDW/2015/page_35.pdf-1",
+      "DISCA/2017/page_41.pdf-1",
+      "DRE/2008/page_49.pdf-1",
+      "GPN/2007/page_97.pdf-2",
+      "GPN/2008/page_88.pdf-1",
+      "GPN/2016/page_84.pdf-1",
+      "HFC/2018/page_43.pdf-5",
+      "HIG/2013/page_212.pdf-1",
+      "HUM/2005/page_18.pdf-2",
+      "HUM/2005/page_80.pdf-2",
+      "HUM/2005/page_80.pdf-3",
+      "HUM/2016/page_133.pdf-1",
+      "ILMN/2017/page_23.pdf-1",
+      "INTC/2015/page_122.pdf-3",
+      "IP/2018/page_50.pdf-1",
+      "IPG/2018/page_104.pdf-2",
+      "IPG/2018/page_52.pdf-1",
+      "IQV/2016/page_65.pdf-2",
+      "JKHY/2018/page_16.pdf-2",
+      "KIM/2014/page_59.pdf-1",
+      "KMI/2014/page_18.pdf-2",
+      "LMT/2007/page_37.pdf-3",
+      "LMT/2007/page_39.pdf-1",
+      "LMT/2007/page_39.pdf-3",
+      "LMT/2013/page_44.pdf-1",
+      "LMT/2013/page_49.pdf-1",
+      "LMT/2013/page_87.pdf-2",
+      "LMT/2014/page_47.pdf-1",
+      "LMT/2014/page_49.pdf-3",
+      "MA/2008/page_113.pdf-3",
+      "MAS/2010/page_89.pdf-2",
+      "MAS/2017/page_37.pdf-2",
+      "MAS/2017/page_37.pdf-4",
+      "MRO/2008/page_44.pdf-3",
+      "MRO/2012/page_41.pdf-2",
+      "MS/2012/page_150.pdf-1",
+      "MS/2015/page_200.pdf-2",
+      "PM/2014/page_112.pdf-2",
+      "PNC/2018/page_45.pdf-5",
+      "PNC/2018/page_81.pdf-1",
+      "PPG/2015/page_40.pdf-3",
+      "PPG/2015/page_40.pdf-4",
+      "RCL/2017/page_38.pdf-3",
+      "RE/2013/page_40.pdf-3",
+      "RSG/2013/page_16.pdf-1",
+      "RSG/2013/page_16.pdf-2",
+      "RSG/2016/page_69.pdf-1",
+      "STT/2007/page_65.pdf-1",
+      "STT/2013/page_107.pdf-2",
+      "TFX/2006/page_50.pdf-1",
+      "TSCO/2017/page_73.pdf-2",
+      "UPS/2010/page_33.pdf-1",
+      "UPS/2013/page_34.pdf-3",
+      "UPS/2016/page_34.pdf-4",
+      "V/2009/page_88.pdf-1",
+      "VNO/2011/page_85.pdf-2",
+      "VTR/2003/page_39.pdf-2",
+      "VTR/2003/page_39.pdf-3",
+      "VTR/2007/page_106.pdf-1",
+      "VTR/2007/page_97.pdf-2",
+      "WELL/2016/page_61.pdf-3",
+      "WELL/2017/page_116.pdf-3"
+    ],
+    "encoding_started_packages": 2468,
+    "five_arm_algebraic_distinguishability_possible": false,
+    "id": "59202d8d7066734d2c896a3bd1c074c6c391da77aed7bb8a9d1a4175837bcaca",
+    "manual_intervention_dose": null,
+    "material_complete": false,
+    "maximum_sequence_tokens": 9698,
+    "multi_state_tasks": null,
+    "no_arbitrary_minimum_N": true,
+    "nontrivial_manual": false,
+    "nontrivial_pi": false,
+    "observed_encoded_supervised_tokens": {
+      "final": 89789,
+      "reason": 325582,
+      "tool": 88905
+    },
+    "observed_known_approved_public_content_characters": 1025730,
+    "one_state_tasks": null,
+    "package_count": 2468,
+    "power_established": false,
+    "public_content_all_masked_packages": [],
+    "raw_public_content_characters": 1088636,
+    "reason_coverage_is_not_substantive_reasoning_quality": true,
+    "schema": "v14_conditional_capability_profile.v1",
+    "singleton_package_tasks": 99,
+    "state_count": null,
+    "student_results_used": false,
+    "supervised_tokens": {
+      "final": 89789,
+      "reason": 325582,
+      "tool": 88905
+    },
+    "total_sequence_tokens": 21458048
+  },
+  "completion_seal": {
+    "id": "b993a8400f0abeed144c1f6c187cf97c3445256bee10d5055e7db40505540b04",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/completion_seal/record.json",
+    "sha256": "b4c5938db7e6ca00aca0ee44e2e4ec78a1476c767d26c14c04ac7b540ed6f5f6"
+  },
+  "controller_elapsed_seconds": 10.078137,
+  "controller_result": {
+    "id": "3e38a9f7057f32f3e13112bd2a9a036069ae07b827a5ed1f3e700fd99764db20",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/controller_result/record.json",
+    "sha256": "cee2aa70673e6c77dbb3ec3866e414fc9b0738f5aaf0fadffc2ff47b8da489b1"
+  },
+  "fixed_packages": 24,
+  "fixed_tasks": 6,
+  "id": "0ab942245a3cd7fa53648d35b4ac1515db79f26187f76501c11ff10ec6b2ac2b",
+  "material_result": {
+    "id": "a60e252df0208362189ae4f1939e9ea5749892ce99a508be6489f987dca12126",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/material/result/record.json",
+    "sha256": "74ba8df21cb4cf8552054efb122707f48c0a9606ef4c045b7e715104b2b21c4e"
+  },
+  "new_UNKNOWN_count": 0,
+  "new_UNKNOWN_hold_microcny": 0,
+  "original_738_authorities_unchanged": true,
+  "original_UNKNOWN_count": 152,
+  "original_UNKNOWN_hold_microcny": 332464128,
+  "registration": {
+    "id": "17fc3b80a108990c9ea64594e320dd55613bf2b4a6d4463712cdb6ae47d34220",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/registration/record.json",
+    "sha256": "87ac63947837aeded8cc38681348e386b5289c31ec500e19f7dc3ea2c2584fb6"
+  },
+  "returned": 6,
+  "same_model": "deepseek-flash",
+  "schema": "v16_actual_six_task_report.v1",
+  "settled_upper_bound_microcny": 257086,
+  "source_is_model_judgment_not_independent_financial_truth": true,
+  "tasks": [
+    {
+      "authority": {
+        "id": "f7b2049699fd013c526f3fe018d13433637e49f7cf6436c44f03494cbd3639c9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/57f39558bbb33f0d510b976faac5ea41a71b83b511973380cf6927128f2a9077/record/record.json",
+        "sha256": "e53f667e4af25075882e12dc59c8885c8b129335853f0beaf834f0722eb6cd41"
+      },
+      "completion_tokens": 1369,
+      "cost_microcny": 45324,
+      "errors": [
+        "ValueError: consequence must be later original model behavior, never a tool result"
+      ],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": false,
+      "original_failure": {
+        "id": "dc3c8a06fdcb40f8c8d48a886d49df654541e605ec6061afe2e6a7e3118bb304",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/436db77b93ddb8aa5bf69b7d84edbf10439702c50b0eebc9f35129975a498c96/record/record.json",
+        "sha256": "bb3fbe860be87b87e3c34b61bfa422ce2bd1c5d5e976ff0b9075360cc426b7d4"
+      },
+      "original_packages": 4,
+      "output_cap": 8192,
+      "resolution": "The prior failed annotation had a schema error (consequence outside typed enum) and also mis-grouped packages. Re-reading all four packages: p0 and p3 both compute the ratio with a single unit-consistent program on the first run and never observe a wrong-unit result; their later submit_program calls resubmit the identical program, so there is no substantive verification or revision. p1 and p2 both first produce the wrong-unit result 0.00066 (p1 via run_program p1:a0, p2 via run_program p2:a1), then revise to a unit-consistent program yielding 0.65773. However, p1 and p2 differ in the nature of the revision: p1 explicitly states the prior division mixed units and is invalid (p1:u00056) before revising, whereas p2's revision is a direct unit-alignment choice made in its reasoning (p2:u00052) without an explicit invalidation statement. This is a substantive difference in the model's judgment and acceptance rationale, so p1 and p2 are separate states. The original ambiguity_notes was empty, so there is no old note to reconcile. The prior annotation's grouping of p0+p3 and p1+p2 is partially correct (p0/p3 share chi=0; p1/p2 share chi=1) but the prior annotation's p1/p2 state conflated two distinct revision rationales and its consequence field used an invalid enum value. This partition resolves both issues.",
+      "states": [],
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "unresolved": ""
+    },
+    {
+      "authority": {
+        "id": "be5cabd1c71340615fde5e3961eec44455941162c3b4758217608fe2cea148e9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/a6b69d9f7afd9015603bad74a9b31d9146b2e701a7846f97c987ea7f829a4e47/record/record.json",
+        "sha256": "42034bdad8949506032d1c7bf8808ad0bd79cb25b41d0890237cd9f8603e361d"
+      },
+      "completion_tokens": 1106,
+      "cost_microcny": 32634,
+      "errors": [],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": true,
+      "original_failure": {
+        "id": "b0232e84e8386ce012b96a31ffb6a6cfc6b92301f55bf4105c135480919ca578",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/2b28476e9d60378e9f089c51f5037a1154e507e28d83f96eb9b30c2693e56e13/record/record.json",
+        "sha256": "414db33d2bb90582160c8dc5f3115207cbd34a4cdcdc83e1404966b4f871aa48"
+      },
+      "original_packages": 3,
+      "output_cap": 8192,
+      "resolution": "The prior failed return used the wrong wire schema (mapping_status, evidence_ids, interventions, partial_evidence, partial_consequence_quote, observation) and was rejected for a missing/extra wire field. Re-adjudicating on the merits: p0 and p1 both read the 3.00% convertible notes row (principal 345.0) and immediately program multiply(345.0, 0.03), obtaining 10.35 on the first run; neither model ever entertains or corrects an alternative rate, so both are chi=0. p2 initially programs multiply(345.0, 3.00), observes 1035.0, then in public content explains that 3.00% is a percent literal that the DSL divides by 100 and that the prior run wrongly used 3.00 directly, and issues the corrected multiply(345.0, 0.03), which yields 10.35 and is the program finally submitted. That is a genuine substantive revision with a later model consequence, so p2 is chi=1. The original ambiguity_notes list was empty, so there is no old note to preserve or delete; the only original ambiguity was the schema failure, now resolved by emitting the required fields.",
+      "states": [
+        {
+          "basis": "p0 and p1 share a state because both derive the answer identically: each reads the 3.00% convertible notes row (p0:u00025/p1:u00025) with principal 345.0 (p0:u00027/p1:u00027), states in public content that annual interest = principal x rate (p0:u00044/p1:u00044), and immediately programs multiply(345.0, 0.03) (p0:u00045/p1:u00045), whose first run returns 10.35 (p0:u00046/p1:u00046). Neither model ever considers or corrects an alternative rate; the later public content (p0:u00047/p1:u00047) and submit_program calls (p0:u00052/p1:u00048) merely restate and submit the same program. They differ from p2, which first used 3.00 and had to revise. Because no member performs any verification or revision that changes its program or acceptance rationale, chi=0.",
+          "chi": 0,
+          "members": [
+            "v10gen:ca0a6a56ca5f9fa2c672d8f7ac8661fa2b7127bf7b67a70da1bcc9d2c6dbbb5c",
+            "v10gen:d9745a94c56f6c66e660cbf0c168be14849d8452486eb9c203a070291ffeca79"
+          ],
+          "state_id": "z0000"
+        },
+        {
+          "basis": "p2 is alone because its trajectory contains a substantive revision absent from p0/p1. It first programs multiply(345.0, 3.00) (p2:u00045), and the run returns 1035.0 (p2:u00046). In public content p2:u00047 the model reinterprets the observation: 3.00% is a percent literal that the DSL divides by 100, so the prior run wrongly used 3.00 directly instead of the rate 0.03. It then issues the corrected program multiply(345.0, 0.03) (p2:u00048), whose run returns 10.35 (p2:u00049), and that corrected program is what is finally submitted (p2:u00051, p2:u00052). This is a real before/after change in the model's program and acceptance rationale, so chi=1.",
+          "chi": 1,
+          "members": [
+            "v10gen:90d0cf354694e5a37bc7c97d518fd3f1ebcc14405b0ef6942f6471b5decf072e"
+          ],
+          "state_id": "z0001"
+        }
+      ],
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "unresolved": ""
+    },
+    {
+      "authority": {
+        "id": "f6a4f6741a100dee96339fc052ac2908fd3db19b13ff09afbf2f22587b33a545",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/7a21c77e7c3435c4f79809d5494dd7aa407bbf650f4856b4029b58976e92d513/record/record.json",
+        "sha256": "a39b18e5b2541a60d01010c2cd5d6b7a741a651a1cb2073f60dcc5bbdb842a69"
+      },
+      "completion_tokens": 1693,
+      "cost_microcny": 48556,
+      "errors": [],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": true,
+      "original_failure": {
+        "id": "4bb201c4e5bf4a6a4679c7465668f4e5f76922b4411d8a818fd717c67cee9ed9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/35b5bb77ec8fd82220b6de32bb47dbbeda018bc671ccdb1323dd7d848bd8e856/record/record.json",
+        "sha256": "0f5dae423579faec2172cd23ce14a234fc4c6653391de9d8be9682f7dbef7dea"
+      },
+      "original_packages": 4,
+      "output_cap": 8192,
+      "resolution": "The prior annotation collapsed all four packages into one chi=0 state, treating the differences as ordinary retries. Re-reading the full histories shows that is not quite right: p0, p1, and p2 do share one substantive state, but p3 differs in a consequential way. p3, after its first failed table_max/table_min attempt, called read_source(table:0) and used the returned table content to verify the exact row label and the three numeric values before retrying. That read_source is not an ordinary execution retry: it is a source-verification action that changed p3's later reasoning (p3:u00053 explicitly states the row label is exactly \"net cash provided by ( used in ) financing activities\" and derives the range from the confirmed values), and p3 then retried the same table program once more before falling back to literals. p0, p1, and p2 never performed such a source read; they only re-issued or simplified the failing table program and then switched to numeric literals. The old ambiguity note's claim that \"the only differences are the number and kind of failed attempts\" is therefore rejected as to p3: the read_source is a substantive verification step, not a mere retry. The note's observation that all four converge on subtract(1853.2, -1004.9) and 2858.1 is correct but, as the instructions state, sharing a final answer alone does not establish equivalence. The old note is otherwise consistent with the partition in that p0/p1/p2 are grouped together; it is not silently deleted but corrected on the p3 point. The original first failure (complete partition requires all original members and no ambiguity) is resolved by placing each of p0,p1,p2,p3 exactly once: p0,p1,p2 in the shared state and p3 in its own state.",
+      "states": [
+        {
+          "basis": "p0, p1, and p2 share a state because they follow the same substantive trajectory: each reads the same table row (label at u00026 with values u00027/u00028/u00029), attempts a table_max/table_min FinQA program on the row label, receives ToolInputError, then abandons the table operators in favor of the numeric literals 1853.2 and -1004.9, runs subtract(1853.2, -1004.9) successfully, and submits that same program. None of them performs a source read or any other verification of the row label; their only response to the error is to re-issue or simplify the failing table program and then switch to literals. They differ from p3, which does perform a read_source verification of table:0 before its final fallback. chi=0 because no member of this state performs a consequential verification or revision: the failed table attempts are ordinary tool errors, the successful run merely executes the already-chosen arithmetic, and the submit repeats the same program without altering any substantive conclusion.",
+          "chi": 0,
+          "members": [
+            "v10gen:e375b69885479f8b7aea4d95717e5e0cbbb261edff7fe42d15ffafd62234407b",
+            "v10gen:96b1b2911d7ecc8343e48d37c67d64ad65ffd714d40a1198e0eadcf9d6cd0363",
+            "v10gen:44dc97d612b870456eae50965df21c7406df13df2b3449ac6e79a34f6a99ae97"
+          ],
+          "state_id": "z0000"
+        },
+        {
+          "basis": "p3 is its own state because, unlike p0/p1/p2, it performs a substantive source verification between its failed table attempts and its final fallback. After the first ToolInputError, p3 calls read_source(table:0) (p3:u00051), receives the full table content (p3:u00052), and then explicitly uses that content to confirm the exact row label and the three numeric values (p3:u00053: 'The row label is exactly \"net cash provided by ( used in ) financing activities\". The range = max(1853.2, -1004.9, -666.4) - min(...) = 1853.2 - (-1004.9) = 2858.1.'). It then retries the same table program once more (p3:u00054) before finally falling back to subtract(1853.2, -1004.9) (p3:u00057) and submitting it (p3:u00060). This read_source is not an ordinary execution retry: it is a verification action that changed p3's later reasoning by grounding the row label and values in the actual source content. p3 differs from the p0/p1/p2 state precisely by this verification step. chi=1 because p3 has a valid verification change: the read_source action and its use in p3:u00053 constitute a consequential verification of the source data that affects the subsequent program choice.",
+          "chi": 1,
+          "members": [
+            "v10gen:1f47e32ab5f9f6a96525e077d44acbe55d57bb7546d873f98bf79efb1fd9610b"
+          ],
+          "state_id": "z0001"
+        }
+      ],
+      "task_id": "IPG/2018/page_39.pdf-2",
+      "unresolved": ""
+    },
+    {
+      "authority": {
+        "id": "1cc6098379babd28083f327e0493ba1b3f03e4dd3e0c563553eee0a1086a339e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/781528a3dadd234c1a2130b3adf57e5113fa6346ea0ee9f8ce26da610e5e53e4/record/record.json",
+        "sha256": "4548795a908b735a77fe5e0f7b1a37b28e631dd93e9c07d197c4bce4d7aa4ed7"
+      },
+      "completion_tokens": 889,
+      "cost_microcny": 45090,
+      "errors": [
+        "ValueError: consequence must be later original model behavior, never a tool result"
+      ],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": false,
+      "original_failure": {
+        "id": "9bc62b68858229f038b501ccea56b26a2d345c083cb3da21f37994397b3a4a9c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/b9c5cadace72322c60cf64e3b1e57be97154b17194899ea40de9afa44cc19c5d/record/record.json",
+        "sha256": "a02639b9fc900c8e4818977351ccd5ddc22548a4a3867aa84fc5a4d6e3c9043c"
+      },
+      "original_packages": 5,
+      "output_cap": 8192,
+      "resolution": "The prior failed return was rejected only for a schema violation (consequence \"p0:u00065\" was a tool_observation, not a model public-content/action-arguments unit). Re-adjudicating the substance: p0 is the only package that ran a program, observed a wrong result (0.00705), diagnosed the cause (table_sum/blank-cell \"2014\" parsing artifact), and revised its program to direct literals add(27,2), divide(#0,84), which then returned 0.34524 and was submitted. That is a genuine revision with a later model consequence, so p0 is chi=1. p1, p2, p3, p4 each ran a program whose first observation already equaled the final answer (0.34524) and submitted the same program unchanged; no substantive verification or revision occurred, so they are chi=0. The prior annotation's ambiguity_notes was empty, so there is no old note to preserve or delete; the only original ambiguity was the schema error, now resolved. Membership is a complete partition {p0} and {p1,p2,p3,p4}.",
+      "states": [],
+      "task_id": "KHC/2018/page_27.pdf-1",
+      "unresolved": ""
+    },
+    {
+      "authority": {
+        "id": "7bc413fd289309bc493f8484cd727c761602307d68e663ab9aff58023710067d",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/e3b24e9bf03439b971affc5da31306f2726171e30c915b372a89ea3f005f67da/record/record.json",
+        "sha256": "d46661b4b81b4c11b59e4d1eadb5917ebcd3d39b287a317a61e6e2b82874fc50"
+      },
+      "completion_tokens": 850,
+      "cost_microcny": 38788,
+      "errors": [],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": true,
+      "original_failure": {
+        "id": "83efca4d6baba85ac87a12716be111ca63904466f7af79107c8449afe4e5f5ce",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/2bf99589d0d20df7734f6d939c90a353c5cd9ee026310e103d5a498fb5c68191/record/record.json",
+        "sha256": "d4a4bc9646465ebf958ebc52dc9ade97161c149345bf2aa36a321332eaa5ee06"
+      },
+      "original_packages": 4,
+      "output_cap": 8192,
+      "resolution": "The prior failed return was rejected for a wire-field error (missing/extra wire field) and also contained substantive defects: it used non-wire field names (evidence_ids, interventions, partial_evidence, observation, partial_consequence_quote), duplicated the same basis text across states, and asserted chi=1 for p1/p2/p3 on the ground that each run_program observation was \"cited as confirming\" the sum. Re-examining the sources: p0 submits add(30,14) directly with no execution; p1, p2, and p3 each run add(30,14), observe result 44.0, then submit the identical program. In p1/p2/p3 the post-observation public content merely restates the already-known arithmetic (30+14=44) and the same program is resubmitted unchanged; no model judgment, program, or acceptance rationale is altered by the observation. The observation is therefore a redundant confirmation of a value the model had already derived from post_text:3, not a consequential verification, and there is no revision. All four packages thus share one state with chi=0. The original ambiguity_notes were empty, so there is no old note to preserve or delete; the only ambiguity in the failed return was its own unsupported chi split, which is resolved here by collapsing to a single state. No substantive membership, equivalence, or chi question remains open.",
+      "states": [
+        {
+          "basis": "All four packages answer the same question with the same program add(30, 14), derived from the same source sentence (post_text:3: 30 mmboe Eagle Ford and 14 mmboe Bakken transferred from proved undeveloped to proved developed). p0 submits directly; p1, p2, and p3 each first run add(30, 14), observe result 44.0, then submit the identical program. The run_program step in p1/p2/p3 does not change the model's judgment, program, or acceptance rationale: the post-observation public content only restates the arithmetic already established from the source text (30+14=44) and the same program is resubmitted unchanged, so the observation is a redundant confirmation rather than a consequential verification, and no revision occurs. This state differs from any alternative partition because there is no package whose program, interpretation, or acceptance rationale is actually altered by an observation; the only variation is the presence of a non-consequential execution step, which is not a semantic distinction. chi=0 for all members because no member has a valid verification or revision change: the observations produce no later model consequence that depends on them, and the submissions are identical to the pre-observation programs.",
+          "chi": 0,
+          "members": [
+            "v10gen:62eb1ca2c7db680555556c25a491e11bc108eab9b263f5ef989e171c501c4f1e",
+            "v10gen:fa35a6316a8f66725432dbff1194ade102efb023913c639d9e5cc37301370235",
+            "v10gen:b3e3276f9476e07bd09127242606ab5238ab63cbe338af4767a82ce5ca29bf59",
+            "v10gen:205399842f5d4ff9a44d90a0def42d9e377228439d3f1a55de45f5eaae45b323"
+          ],
+          "state_id": "z0000"
+        }
+      ],
+      "task_id": "MRO/2012/page_22.pdf-2",
+      "unresolved": ""
+    },
+    {
+      "authority": {
+        "id": "9bc18199f0a622da65d5a3c4084458f624b3ea87cbcf0e6da0c72b32828a12d3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/annotations/d8cda9118b9b447b6278bda2522df3b5f065b2c8b155570d9fc4b18160faeccb/record/record.json",
+        "sha256": "d049cc230bfe8d2adb049d565c646246254ff62d47c9e126ea97c5a74f8e4df4"
+      },
+      "completion_tokens": 1057,
+      "cost_microcny": 46694,
+      "errors": [
+        "ValueError: $.states[1]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "mapping_admitted": false,
+      "original_failure": {
+        "id": "4822375bf102f3f8d8222f283310c241a420152d50bc95a5727ae237bcb3130b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/annotations/e1bc395f6fea7c0093cb4ae4487559f29d3fb8e65fa154ebb1e59dc3093ed21d/record/record.json",
+        "sha256": "88e16c3f00091398773699b85f5ee20c8646bf8fb7673e3ac17f6f2b4e310ab0"
+      },
+      "original_packages": 4,
+      "output_cap": 8192,
+      "resolution": "The prior failed return was rejected for a wire-field error (missing/extra field), so its semantic content is re-adjudicated from scratch. The four packages p0–p3 all answer the same question from the same table: total interest-only product ($6401M) plus principal-and-interest product ($8425M) = $14,826M. p0, p2, and p3 read the total row directly, run add(6401, 8425) successfully on the first attempt, and submit the identical program with no failed attempt and no substantive model revision; they differ only in ordinary execute-then-submit ordering and wording, which is not a distinction. They therefore form one chi=0 state. p1 is genuinely distinct: it first attempts a table_sum DSL program, receives a ToolInputError, revises to a second table_sum formulation using the exact row label, receives an invalid-syntax error, then abandons the DSL and switches to the direct add(6401, 8425) program that succeeds and is submitted. These are real verification/revision interventions whose observations substantively change the model's subsequent program choice, so p1 is chi=1. The original ambiguity_notes were empty, so there is no old note to preserve or delete; the partition is complete and no substantive membership, equivalence, or chi question remains open.",
+      "states": [],
+      "task_id": "PNC/2016/page_73.pdf-1",
+      "unresolved": ""
+    }
+  ],
+  "tokens": {
+    "completion_tokens": 6964,
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 100687,
+    "prompt_tokens": 100687,
+    "total_tokens": 107651
+  },
+  "usable": 3
+}

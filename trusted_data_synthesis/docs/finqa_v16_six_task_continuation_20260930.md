@@ -144,4 +144,4 @@ Experiment 4 的限定数学证明仍与动态 Student 曲线分开。Experiment
 | 后继进程事后观察receipt | `4eb4647c06d2892e9bbed51abc5b1e45694912bcccb2b0d4a3795802b71198f0` |
 | 15:05原共同前缀快照 | `d62ab225066725310b927adb275b7e90b9f090800ee763fa0a2cb0648aebf304` |
 
-原请求、artifact、paid record和terminal位于本轮 `requests/` 与 `annotations/`，详细汇总为 `report_run_01/adjudication/record.json`。原始载荷、钱包备份和模型Tensor保持本地，不推送。自动外发审查未批准将全部原始请求和响应上传GitHub；因此远端本轮只归档代码、本文及不含载荷的登记、计数、来源引用、条件界限和停止记录，原件如需上传应另行获准。实施和六次定点调用已完成，三份真实step298、完整状态绑定及五臂实验结果尚未完成，不能以本轮交付替代这些后续结果。
+原请求、artifact、paid record和terminal位于本轮 `requests/` 与 `annotations/`，详细汇总为 `report_run_01/adjudication/record.json`。首次外发审查未批准原始载荷上传，因此首次交付只推送了代码及无载荷汇总。随后用户明确回复“追加授权，同时授权推送”，同时批准剩余三题各追加一次deepseek-flash和原件上传GitHub；本次按该追加许可归档上述原始JSON，未改写原件，并在 `raw_export_authorization/record.json` 记录精确文件SHA及密钥未出现检查。钱包备份和模型Tensor仍只保留本地。V16实施和六次调用已经完成，但其原终态仍为三题未解决，后续授权不回写为V16成功。三份真实step298、完整状态绑定及五臂结果以之后的实际后继工件为准。
