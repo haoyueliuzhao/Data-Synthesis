@@ -211,6 +211,10 @@ def run_arm(output, seed, arm, gpu_index, *, resume=False):
                             at=now(),
                             error_type=type(failure).__name__,
                             error=str(failure),
+                            outer_failure_audit=getattr(failure, "outer_failure_audit", None),
+                            outer_audit_write_error=getattr(
+                                failure, "outer_audit_write_error", None
+                            ),
                             retry_performed=False,
                             partial_feedback_resampled=False,
                             recovery="explicit resume restores committed model/Adam/RNG/pi",

@@ -12,6 +12,10 @@ from .v10_material import BINDING_SCHEMA
 
 def load_training_pool(binding_path):
     schema = read_json(binding_path).get("schema")
+    if schema == "v18_researcher_complete_material_binding.v1":
+        from .v18_material import load_training_pool as load_v18
+
+        return load_v18(binding_path)
     if schema == "v17_three_task_complete_material_binding.v1":
         from .v17_material import load_training_pool as load_v17
 

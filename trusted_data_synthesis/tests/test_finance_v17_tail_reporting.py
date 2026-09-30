@@ -8,6 +8,7 @@ from trusted_synthesis.finance_research.v8_training_driver import material_repor
 @pytest.mark.parametrize(
     "schema,version",
     [
+        ("v18_researcher_complete_material_binding.v1", "v18"),
         ("v17_three_task_complete_material_binding.v1", "v17"),
         ("v16_six_task_complete_material_binding.v1", "v16"),
         ("v15_complete_material_binding.v1", "v15"),

@@ -594,12 +594,14 @@ class LocalFeedbackCollector:
             "feedback must use the registered fixed local harness/sampling contract",
         )
 
-    def collect(self, model, tokenizer, theta, *, point_id):
+    def collect(self, model, tokenizer, theta, *, point_id, event_sink=None):
         from .planning import task_key
         from .storage import _read_snapshot_rows, execute_run, prepare_run, sealed_episodes
         from .v6_task import score_public_reasoning_program
 
         root = self.root / digest(point_id)
+        emit = event_sink or (lambda event: None)
+        emit(dict(phase="feedback_point_installation", feedback_root=str(root)))
         with installed_point(model, theta) as installed:
             identity = local_model_identity(
                 model,
@@ -618,6 +620,7 @@ class LocalFeedbackCollector:
                 denominator=700,
             )
             if root.exists():
+                emit(dict(phase="restore_complete_feedback", feedback_root=str(root)))
                 _require(
                     json.loads((root / "intent/record.json").read_bytes())
                     == json.loads(_json(intent)),
@@ -630,6 +633,14 @@ class LocalFeedbackCollector:
             else:
                 _publish(root / "intent", intent)
                 for index, seed in enumerate(self.seeds):
+                    emit(
+                        dict(
+                            phase="feedback_generation",
+                            feedback_root=str(root),
+                            draw_index=index,
+                            feedback_seed=seed,
+                        )
+                    )
                     cfg = self.config.model_copy(update={"seed": seed})
                     directory = root / f"draw{index}"
                     prepare_run(
@@ -645,6 +656,7 @@ class LocalFeedbackCollector:
                         model, tokenizer, identity, parameter_tensors=installed
                     )
                     asyncio.run(execute_run(directory, provider))
+            emit(dict(phase="feedback_cohort_validation", feedback_root=str(root)))
             episodes = []
             for index in range(2):
                 _, _, part = sealed_episodes(root / f"draw{index}")
@@ -657,6 +669,14 @@ class LocalFeedbackCollector:
                 registered_episode_keys=[episode_key(ep) for ep in episodes],
             )
             _publish(root / "cohort_seal", cohort.model_dump(mode="json"))
+            emit(
+                dict(
+                    phase="native_scoring",
+                    feedback_root=str(root),
+                    cohort_seal_sha256=cohort.seal_sha256,
+                    denominator=cohort.denominator,
+                )
+            )
             # This is deliberately AFTER the common 700-cohort seal, not after draw0.
             references = _read_snapshot_rows(
                 self.snapshot, "private.references.jsonl", PrivateReference, self.manifest
@@ -667,13 +687,47 @@ class LocalFeedbackCollector:
             }
             scores = [score_public_reasoning_program(bundles[e.task_id], e) for e in episodes]
             rewards = [score["native"]["execution_accuracy"] for score in scores]
+            valid_rewards = all(type(r) in (int, float) and r in (0, 1) for r in rewards)
+            if not valid_rewards:
+                # Preserve each fixed-cohort position and actual None/reason before
+                # the original rejection. This artifact is never a reward source.
+                _publish(
+                    root / "native_scoring_failure",
+                    dict(
+                        schema="fixed_feedback_scoring_failure.v1",
+                        cohort_seal_sha256=cohort.seal_sha256,
+                        denominator=cohort.denominator,
+                        positions=[
+                            dict(
+                                index=i,
+                                episode_key=episode_key(ep),
+                                task_id=ep.task_id,
+                                feedback_seed=ep.config.seed,
+                                score=score,
+                            )
+                            for i, (ep, score) in enumerate(zip(episodes, scores, strict=True))
+                        ],
+                        unmodified_native_values=rewards,
+                        not_rewards_admitted=True,
+                        missing_or_unknown_values_imputed=False,
+                        feedback_resampled=False,
+                    ),
+                )
             _require(
-                all(type(r) in (int, float) and r in (0, 1) for r in rewards),
+                valid_rewards,
                 "infrastructure/reference unknown cannot become zero reward",
             )
             _publish(
                 root / "native_rewards",
                 dict(cohort_seal_sha256=cohort.seal_sha256, rewards=rewards, scores=scores),
+            )
+            emit(
+                dict(
+                    phase="feedback_and_native_rewards_complete",
+                    feedback_root=str(root),
+                    cohort_seal_sha256=cohort.seal_sha256,
+                    denominator=cohort.denominator,
+                )
             )
             return cohort, rewards
 
@@ -771,6 +825,7 @@ def validate_student_adapters(model, adapter_scope=None):
 def material_report_identity(material_schema):
     """Audit labels follow the real successor binding; original supervision stays fixed."""
     version = {
+        "v18_researcher_complete_material_binding.v1": "v18",
         "v17_three_task_complete_material_binding.v1": "v17",
         "v16_six_task_complete_material_binding.v1": "v16",
         "v15_complete_material_binding.v1": "v15",
@@ -779,6 +834,7 @@ def material_report_identity(material_schema):
         "v10_material_binding.v1": "v10",
     }.get(material_schema, "v8")
     policy = {
+        "v18": "v14_state_independent_original_span_union.v1",
         "v17": "v14_state_independent_original_span_union.v1",
         "v16": "v14_state_independent_original_span_union.v1",
         "v15": "v14_state_independent_original_span_union.v1",
@@ -788,6 +844,186 @@ def material_report_identity(material_schema):
         "v8": "v8_single_authoritative_targets.v1",
     }[version]
     return version, policy
+
+
+def outer_failure_kind(error, phase):
+    """Classify only observed exceptions/stages, never reinterpret a failure as Q=0."""
+    chain, seen, current = [], set(), error
+    while current is not None and id(current) not in seen and len(chain) < 8:
+        seen.add(id(current))
+        chain.append(current)
+        current = current.__cause__ or current.__context__
+    messages = " ".join(str(item).lower() for item in chain)
+    if (
+        any(isinstance(item, (MemoryError, torch.cuda.OutOfMemoryError)) for item in chain)
+        or "out of memory" in messages
+    ):
+        return "resource_OOM"
+    if phase == "logP_replay" and (
+        "probability_mismatch" in messages
+        or "probabilities differ" in messages
+        or "sampling_probability_mismatch" in messages
+    ):
+        return "logP_replay_mismatch"
+    if any(word in messages for word in ("nonfinite", "non-finite")) or re.search(
+        r"\b(?:nan|infinity)\b", messages
+    ):
+        return "nonfinite_numeric"
+    if isinstance(error, OSError):
+        return "other_engineering_failure"
+    if phase == "native_scoring":
+        return "scoring_infrastructure_failure"
+    if phase in {"feedback_generation", "restore_complete_feedback", "feedback_cohort_validation"}:
+        return "missing_or_incomplete_feedback"
+    return "other_engineering_failure"
+
+
+class FirstOuterAudit:
+    """Append-only first-formal-outer phases; no extra Student computation or sampling."""
+
+    def __init__(self, driver):
+        from .calibration import now
+
+        self.driver, self.now = driver, now
+        attempts = driver.root / "outer_attempts" / f"step{driver.step_index:04d}"
+        self.root = attempts / f"attempt{len(list(attempts.glob('attempt*'))) + 1:03d}"
+        self.last_phase, self.last_phase_ref, self.last_replay_progress = None, None, None
+        self.counter, self.feedback_root = 0, None
+        self.identity = dict(
+            seed=driver.seed,
+            arm=driver.arm,
+            step=driver.step_index,
+            pool_id=driver.pool.cache_id,
+            schedule_sha256=driver.schedule["schedule_sha256"],
+            CPU_control_only=not driver.pool.production_verified,
+        )
+        self.intent = self.publish(
+            "intent",
+            dict(
+                schema="first_formal_outer_intent.v1",
+                at=now(),
+                **self.identity,
+                formal_experiment_not_pilot=True,
+                registered_denominator=700 if driver.pool.production_verified else None,
+                last_committed_training_step=driver.step_index,
+                optimizer_steps_in_outer=0,
+                automatic_resampling=False,
+                context_or_denominator_changed=False,
+            ),
+        )
+
+    def publish(self, relative, value):
+        record = {**value, "id": digest(value)}
+        directory = self.root / relative
+        _publish(directory, record)
+        path = directory / "record.json"
+        return dict(path=str(path.resolve()), id=record["id"], sha256=_sha(path.read_bytes()))
+
+    def phase(self, name, **metadata):
+        self.last_phase = name
+        if "feedback_root" in metadata:
+            self.feedback_root = metadata["feedback_root"]
+        self.last_phase_ref = self.publish(
+            f"phases/{self.counter:03d}",
+            dict(
+                schema="first_formal_outer_phase.v1",
+                at=self.now(),
+                **self.identity,
+                phase=name,
+                **metadata,
+            ),
+        )
+        self.counter += 1
+
+    def collector_event(self, event):
+        self.phase(event["phase"], **{k: v for k, v in event.items() if k != "phase"})
+
+    def replay_progress(self, event):
+        # The existing callback reports completed response backpropagation only.
+        # Keep that limited meaning; it does not identify a later failing token.
+        self.last_replay_progress = copy.deepcopy(event)
+
+    def failure(self, error):
+        seals, incomplete = {}, []
+        if self.feedback_root is not None:
+            root = Path(self.feedback_root)
+            for name, relative in (
+                ("draw0", "draw0/generation_seal/seal.json"),
+                ("draw1", "draw1/generation_seal/seal.json"),
+                ("cohort", "cohort_seal/record.json"),
+                ("scoring_failure", "native_scoring_failure/record.json"),
+                ("native_rewards", "native_rewards/record.json"),
+            ):
+                path = root / relative
+                seals[name] = dict(path=str(path.resolve()), exists=path.is_file())
+            # execute_run retains the actual provider settlement before raising
+            # its generic UnsettledExecution. Preserve its observed exception type
+            # so a wrapped CUDA OOM is not mislabeled as merely a missing receipt.
+            for path in sorted(root.glob("draw*/incomplete/*/record.json")):
+                record = json.loads(path.read_bytes())
+                incomplete.append(
+                    dict(
+                        path=str(path.resolve()),
+                        sha256=_sha(path.read_bytes()),
+                        episode_key=record.get("episode_key"),
+                        stop_reason=record.get("stop_reason"),
+                        exception_types=[
+                            row.get("evidence", {}).get("exception_type")
+                            for row in record.get("call_settlements", [])
+                        ],
+                    )
+                )
+        kind = outer_failure_kind(error, self.last_phase)
+        if any(
+            name in {"OutOfMemoryError", "MemoryError"}
+            for record in incomplete
+            for name in record["exception_types"]
+        ):
+            kind = "resource_OOM"
+        checkpoint = self.driver.root / f"step{self.driver.step_index:04d}_outer/record.json"
+        return self.publish(
+            "failure",
+            dict(
+                schema="first_formal_outer_failure.v1",
+                at=self.now(),
+                **self.identity,
+                intent=self.intent,
+                last_phase=self.last_phase,
+                last_phase_record=self.last_phase_ref,
+                failure_kind=kind,
+                error_type=type(error).__name__,
+                error=str(error),
+                last_completed_replay_response=self.last_replay_progress,
+                feedback_artifacts=seals,
+                retained_incomplete_feedback=incomplete,
+                outer_commit_record_exists=checkpoint.is_file(),
+                last_committed_training_step=self.driver.step_index,
+                failure_counted_as_Q_zero=False,
+                feedback_resampled=False,
+                context_or_denominator_changed=False,
+                automatic_retry=False,
+                stopped_before_next_training_step=True,
+                recovery=(
+                    "explicit inspection and durable checkpoint restore; never refill partial700"
+                ),
+            ),
+        )
+
+    def complete(self, checkpoint):
+        self.publish(
+            "complete",
+            dict(
+                schema="first_formal_outer_complete.v1",
+                at=self.now(),
+                **self.identity,
+                intent=self.intent,
+                last_phase=self.last_phase,
+                last_phase_record=self.last_phase_ref,
+                outer_checkpoint=str(checkpoint.resolve()),
+                outer_commit_completed=True,
+                optimizer_steps_in_outer=0,
+            ),
+        )
 
 
 class TrainingDriver:
@@ -1093,10 +1329,36 @@ class TrainingDriver:
                 and cpu_control_feedback is None,
                 "production cannot replace real collection/replay with test callbacks",
             )
+        audit = FirstOuterAudit(self) if self.step_index == self.shared_step else None
+        try:
+            return self._outer_update(
+                cpu_control_feedback=cpu_control_feedback, replay=replay, audit=audit
+            )
+        except BaseException as failure:
+            self.tainted = True
+            if audit is not None:
+                try:
+                    failure.outer_failure_audit = audit.failure(failure)
+                except Exception as audit_failure:
+                    # Never replace the real engineering fault with a logging fault.
+                    failure.outer_audit_write_error = (
+                        f"{type(audit_failure).__name__}: {audit_failure}"
+                    )
+            raise
+
+    def _outer_update(self, *, cpu_control_feedback=None, replay=None, audit=None):
+        if audit is not None:
+            audit.phase("capture_pre_outer_state")
         pre_outer_state = self._payload()
+        if audit is not None:
+            audit.phase("full_class_gradients")
         gradients = class_gradients(self.model, self.pool, device=self.device)
         mu = self.pool._manifest.registration.mu
+        if audit is not None:
+            audit.phase("virtual_Adam")
         prepared = prepare_virtual_point(self.parameters, self.optimizer, gradients, self.pi, mu)
+        if audit is not None:
+            audit.phase("virtual_point_identity")
         point_id = digest(
             dict(
                 pool=self.pool.cache_id,
@@ -1118,9 +1380,20 @@ class TrainingDriver:
             )
         )
         self.tainted = True
+        if audit is not None:
+            audit.phase("feedback_generation_and_scoring", point_id=point_id)
         if self.pool.production_verified or self.collector is not None:
+            collector_options = (
+                dict(event_sink=audit.collector_event)
+                if audit is not None and type(self.collector) is LocalFeedbackCollector
+                else {}
+            )
             cohort, rewards = self.collector.collect(
-                self.model, self.tokenizer, prepared["theta_bar"], point_id=point_id
+                self.model,
+                self.tokenizer,
+                prepared["theta_bar"],
+                point_id=point_id,
+                **collector_options,
             )
         else:
             cohort, rewards = cpu_control_feedback(prepared, point_id)
@@ -1128,8 +1401,20 @@ class TrainingDriver:
             not self.pool.production_verified or cohort.denominator == 700,
             "production feedback denominator must remain 700",
         )
+        if audit is not None:
+            audit.phase(
+                "logP_replay",
+                point_id=point_id,
+                cohort_seal_sha256=cohort.seal_sha256,
+                denominator=cohort.denominator,
+            )
         with installed_point(self.model, prepared["theta_bar"]) as installed:
-            gJ, report = feedback_gradient(cohort, rewards, self.model, installed, replay=replay)
+            replay_options = dict(event_sink=audit.replay_progress) if audit is not None else {}
+            gJ, report = feedback_gradient(
+                cohort, rewards, self.model, installed, replay=replay, **replay_options
+            )
+        if audit is not None:
+            audit.phase("optimizer_pullback_Contribution_and_pi", point_id=point_id)
         result = update_distribution(
             prepared,
             gradients,
@@ -1142,6 +1427,8 @@ class TrainingDriver:
             control_tasks=[t for t, p in self.prior.items() if len(p) == 1],
             **PARAMETERS,
         )
+        if audit is not None:
+            audit.phase("outer_commit", point_id=point_id)
         self.pi = result["distribution"]["pi_next"]
         self.outer_done.append(self.step_index)
         evidence = {k: v for k, v in result.items() if k != "a"}
@@ -1173,7 +1460,9 @@ class TrainingDriver:
             actual_tensors_saved=True,
             new_feedback_for_mechanisms=False,
         )
-        self.commit("outer", evidence, outer_inputs=outer_inputs)
+        checkpoint = self.commit("outer", evidence, outer_inputs=outer_inputs)
+        if audit is not None:
+            audit.complete(checkpoint)
         self.tainted = False
         return evidence
 
