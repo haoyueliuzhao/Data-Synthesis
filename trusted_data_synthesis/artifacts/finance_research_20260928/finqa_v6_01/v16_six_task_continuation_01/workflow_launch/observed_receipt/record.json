@@ -1,0 +1,49 @@
+{
+  "id": "4eb4647c06d2892e9bbed51abc5b1e45694912bcccb2b0d4a3795802b71198f0",
+  "initial_launch_receipt_failed": true,
+  "initial_receipt_error": "FileExistsError: immutable artifact directory already exists: workflow_launch; controller.log was opened before persist",
+  "material_result": {
+    "id": "a60e252df0208362189ae4f1939e9ea5749892ce99a508be6489f987dca12126",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/material/result/record.json",
+    "sha256": "74ba8df21cb4cf8552054efb122707f48c0a9606ef4c045b7e715104b2b21c4e"
+  },
+  "no_GPU_children_launched": true,
+  "observation_not_backdated": true,
+  "observed_at": "2026-09-30T07:04:41.925332+00:00",
+  "observed_pid": 2375657,
+  "observed_process_start_time_local": "2026-09-30 15:01:55 +08:00",
+  "process_birth_ticks": null,
+  "process_exited_after_material_block": true,
+  "process_not_restarted": true,
+  "process_time_source": "ps -eo pid,ppid,lstart,args observed 15:02:29",
+  "registration": {
+    "id": "500d779f77921b9a8643e2a8561a8e29cbc02f1ae7d880ae53506f80a2b9a385",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/workflow/registration/record.json",
+    "sha256": "33b79fe80986221fe1195a94a90a1a332e8fa419ae242168958b9f9253b9c678"
+  },
+  "schema": "v16_observed_successor_run_receipt.v1",
+  "source_commit": "599bb28bfc346e3fc7e9d76f874add72ee886870",
+  "terminal_workflow_status": {
+    "active_children": [],
+    "at": "2026-09-30T07:02:52.903769+00:00",
+    "batch_id": "finqa-v16-20260930-six-task-continuation-01",
+    "mapping_result": {
+      "id": "a60e252df0208362189ae4f1939e9ea5749892ce99a508be6489f987dca12126",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/material/result/record.json",
+      "sha256": "74ba8df21cb4cf8552054efb122707f48c0a9606ef4c045b7e715104b2b21c4e"
+    },
+    "max_gpu_workers": 8,
+    "no_GPU_placeholder": true,
+    "no_branch_or_feedback_started": true,
+    "no_resampling": true,
+    "no_retry": true,
+    "original_prefix_control_untouched": true,
+    "phase": "SIX_TASK_MAPPING_UNRESOLVED_PREFIX_UNTOUCHED",
+    "protocol_id": "17fc3b80a108990c9ea64594e320dd55613bf2b4a6d4463712cdb6ae47d34220"
+  },
+  "terminal_workflow_status_source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v16_six_task_continuation_01/workflow/status.json",
+    "sha256": "c45efcbfbde8748350d03c68b500159efb4bb669a2b2317ab4cd4a87fb4fbd10"
+  },
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v16-six-continuation-20260930"
+}
