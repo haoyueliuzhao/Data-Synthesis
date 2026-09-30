@@ -86,7 +86,7 @@ def _softmax(logits):
     return _positive({key: math.exp(value - log_z) for key, value in logits.items()}, simplex=True)
 
 
-def manual_distribution(prior, coarse, *, direction):
+def manual_distribution(prior, coarse, *, direction, registered_singleton_tasks=()):
     """Fixed odds tilt r*2**(+/- chi), not fixed 2/3 mass or a C-derived control.
 
     A single coarse group returns its original row values exactly, including any
@@ -98,10 +98,20 @@ def manual_distribution(prior, coarse, *, direction):
     _same(prior, coarse)
     if not prior:
         raise ValueError("task support cannot be empty")
+    singletons = set(registered_singleton_tasks)
+    if not singletons <= set(prior):
+        raise ValueError("registered singleton task outside current support")
     result = {}
     for task, original in prior.items():
         row, chi = _positive(original, simplex=True), coarse[task]
         _same(row, chi)
+        if task in singletons:
+            if len(row) != 1 or list(chi.values()) != [None] or list(row.values()) != [1.0]:
+                raise ValueError(
+                    "registered true singleton requires one unit-mass state and null chi"
+                )
+            result[task] = copy.deepcopy(original)
+            continue
         if any(type(value) is not int or value not in (0, 1) for value in chi.values()):
             raise ValueError("coarse projection must be registered binary integers")
         if len(set(chi.values())) == 1:

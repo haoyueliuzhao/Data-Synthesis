@@ -962,7 +962,12 @@ class TrainingDriver:
         self.step_index, self.outer_done, self.tainted = state["step"], state["outer_done"], False
         self.initialized = True
         if branch and self.arm in ("Manual+", "Manual-"):
-            self.pi = manual_distribution(self.prior, self.pool.chi, direction=self.arm)
+            self.pi = manual_distribution(
+                self.prior,
+                self.pool.chi,
+                direction=self.arm,
+                registered_singleton_tasks=getattr(self.pool, "registered_singleton_tasks", ()),
+            )
         if branch:
             self.commit(
                 "branch",
@@ -1026,32 +1031,26 @@ class TrainingDriver:
         )
         self.step_index += 1
         underlying_update_id = report.pop("id")
-        v10_material = getattr(self.pool, "material_schema", None) == "v10_material_binding.v1"
+        material_version = {
+            "v13_material_binding.v1": "v13",
+            "v10_material_binding.v1": "v10",
+        }.get(getattr(self.pool, "material_schema", None), "v8")
+        supervision_policy = {
+            "v13": "v13_fixed_authority_original_spans.v1",
+            "v10": "v10_single_authority_original_spans.v1",
+            "v8": "v8_single_authoritative_targets.v1",
+        }[material_version]
         report.update(
-            schema_version=(
-                "v10_actual_task_batch_update.v1"
-                if v10_material
-                else "v8_actual_task_batch_update.v1"
-            ),
+            schema_version=f"{material_version}_actual_task_batch_update.v1",
             underlying_task_batch_update_id=underlying_update_id,
-            supervision_policy=(
-                "v10_single_authority_original_spans.v1"
-                if v10_material
-                else "v8_single_authoritative_targets.v1"
-            ),
+            supervision_policy=supervision_policy,
             loss_domain="review-approved original token spans/actions/EOS; full-package L_P",
-            execution_design=(
-                "original_unfused_response_rows_v10"
-                if v10_material
-                else "original_unfused_response_rows_v8"
-            ),
+            execution_design=f"original_unfused_response_rows_{material_version}",
             original_history_retained=True,
             actual_parameter_update=True,
             CPU_control_only=not self.pool.production_verified,
         )
-        report["id"] = (
-            "v10_task_batch_update:" if v10_material else "v8_task_batch_update:"
-        ) + digest(report)
+        report["id"] = f"{material_version}_task_batch_update:" + digest(report)
         self.commit("step", report)
         self.tainted = False
         return report

@@ -34,6 +34,30 @@ def encode_process_review_for_student(
     """
     from .v10_process_review import validate_manifest
 
+    return _encode_original_spans_for_student(
+        episode,
+        manifest,
+        tokenizer,
+        context_limit=context_limit,
+        validate_manifest=validate_manifest,
+        schema="v10_student_encoding.v1",
+        encoding_policy=ENCODING_POLICY,
+        encoding_id_prefix="v10_student_encoding:",
+    )
+
+
+def _encode_original_spans_for_student(
+    episode,
+    manifest,
+    tokenizer,
+    *,
+    context_limit,
+    validate_manifest,
+    schema,
+    encoding_policy,
+    encoding_id_prefix,
+):
+    """Shared lossless rendering; each public protocol owns its own validation."""
     if type(context_limit) is not int or context_limit != CONTEXT_LIMIT:
         raise ValueError("registered Student context is 24576; no silent length variant")
     validate_manifest(episode, manifest)
@@ -175,7 +199,7 @@ def encode_process_review_for_student(
         for layer in ("reason", "tool", "final")
     }
     body = dict(
-        schema="v10_student_encoding.v1",
+        schema=schema,
         task_id=episode.task_id,
         episode_sha256=digest(episode),
         view_id=view["view_id"],
@@ -185,7 +209,7 @@ def encode_process_review_for_student(
         context_limit=context_limit,
         context_truncated=False,
         original_history_retained=True,
-        encoding_policy=ENCODING_POLICY,
+        encoding_policy=encoding_policy,
         eos_policy=EOS_POLICY,
         encoding_origin="offline_student_tokenizer_not_api_sampling",
         api_original_sampling_tokens_claimed=False,
@@ -208,4 +232,4 @@ def encode_process_review_for_student(
         substantive_reasoning_quality="not_inferred_from_tags_or_token_counts",
         layer_normalization="none; all five arms use q/(batch_size*whole_package_L_P)",
     )
-    return body | dict(encoding_id="v10_student_encoding:" + digest(body))
+    return body | dict(encoding_id=encoding_id_prefix + digest(body))

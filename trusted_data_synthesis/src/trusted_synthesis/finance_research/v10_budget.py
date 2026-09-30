@@ -217,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v13"):
+        from .v13_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     if coordinates["episode_id"].startswith("v12"):
         from .v12_budget import eligible
 
@@ -242,9 +246,19 @@ def _eligible(connection, config, coordinates, output_limit):
 
 def admit(connection, config, coordinates, output_limit, reservation, *, request_body=None):
     from .v12_budget import eligible, read_matrix_permit
+    from .v13_budget import eligible as v13_eligible
+    from .v13_budget import read_matrix_permit as read_v13_permit
 
     matrix = read_matrix_permit(connection, config)
-    if matrix is not None:
+    material = read_v13_permit(connection, config)
+    if material is not None:
+        if (
+            not coordinates["episode_id"].startswith(("v13projection:", "v13mapping:"))
+            or request_body is None
+        ):
+            raise BudgetUnavailable("V13 permits only its new exact material-purpose matrix")
+        v13_eligible(connection, config, coordinates, output_limit, request_body=request_body)
+    elif matrix is not None:
         if not coordinates["episode_id"].startswith("v12review:") or request_body is None:
             raise BudgetUnavailable("V12 registration forbids old/unrelated reservations")
         eligible(connection, config, coordinates, output_limit, request_body=request_body)
