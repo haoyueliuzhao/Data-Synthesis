@@ -1,0 +1,29 @@
+{
+  "D_pi_interval": [
+    607,
+    768
+  ],
+  "chi_flexible_task_interval": [
+    80,
+    134
+  ],
+  "conditional_on_all_existing_partitions_and_chi_remaining_unchanged": true,
+  "fixed_packages": 2468,
+  "fixed_tasks": 744,
+  "full_domain_measurements_replaced": false,
+  "id": "83b9b5a02b311a298359c563d16184bcade443ed71bb155c92400624bdf71c32",
+  "known_mu_weighted_TV_minus": "570169/38301120",
+  "known_mu_weighted_TV_plus": "2039/133056",
+  "multi_state_task_interval": [
+    220,
+    274
+  ],
+  "resolved_packages": 2253,
+  "resolved_states": 1297,
+  "resolved_tasks": 690,
+  "schema": "v14_conditional_resolved_support_bounds.v1",
+  "statistical_power_established": false,
+  "training_authorized": false,
+  "unknown_task_dose_not_imputed": true,
+  "unresolved_tasks": 54
+}

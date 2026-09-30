@@ -1,0 +1,19 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "N": 744,
+  "all_originals_retained": true,
+  "id": "4362e34617de45dd4952f3aa27aa4649916fe54245ee02e20f0d4a3425f40732",
+  "no_subset_training": true,
+  "package_count": 2468,
+  "phase": "BLOCKED_COMPLETE_MATERIAL",
+  "protocol_id": "17d360e436eb6267221fa2d4fc5e4fe4d9efa2226fe35b378aa1ae0a37100091",
+  "registration_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+  "schema": "v14_material_freeze_result.v1",
+  "support": {
+    "id": "124c26dbf6a5d717dbb14a30ea4ea2b33cb09f0dcb0bfb60f4908eb22cde19a1",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/material/support/record.json",
+    "sha256": "e8e8978defaa74f1983519ca564cfb5bc7df40238f78392b130faf89d7d33f9f"
+  },
+  "training_admitted": false
+}

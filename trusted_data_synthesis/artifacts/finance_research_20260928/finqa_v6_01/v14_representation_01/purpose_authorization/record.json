@@ -1,0 +1,25 @@
+{
+  "batch_id": "finqa-v14-20260930-representation-01",
+  "completion_guaranteed": false,
+  "effective_hard_cap_microcny": 2000000000,
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "effective_review_mapping_microcny": 1300000000,
+  "exact_new_call_count": 309,
+  "id": "bea9861fcaa396493829ed490952708a8b1985592a06ddc01579e44c5b88eaa8",
+  "old_retries_authorized": false,
+  "original_holds_preserved": true,
+  "plan_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+  "purpose_counts": {
+    "mapping": 308,
+    "projection": 1
+  },
+  "quotas_increased": false,
+  "representation_review_id": "34fa80cf31de4830710e18f618e3d516e0d92def7f6b4b3ffc0c4addeee98d88",
+  "schema": "v14_fixed_material_authorization.v1",
+  "source_review_seal_id": "a6ed08fc61b25616e78a47773e81975a161f795b56ce02b5462e406526a3bc73",
+  "training_authorized_by_this_permit": false,
+  "user_reply": "参照审计修订并开展后续实验"
+}

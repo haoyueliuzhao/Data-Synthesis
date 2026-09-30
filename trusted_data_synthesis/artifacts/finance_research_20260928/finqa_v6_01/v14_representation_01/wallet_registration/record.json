@@ -1,0 +1,182 @@
+{
+  "applied_after_requests": 80699,
+  "authorization": {
+    "batch_id": "finqa-v14-20260930-representation-01",
+    "completion_guaranteed": false,
+    "effective_hard_cap_microcny": 2000000000,
+    "effective_request_limits": {
+      "generation": 191000,
+      "review_mapping": 25000
+    },
+    "effective_review_mapping_microcny": 1300000000,
+    "exact_new_call_count": 309,
+    "id": "bea9861fcaa396493829ed490952708a8b1985592a06ddc01579e44c5b88eaa8",
+    "old_retries_authorized": false,
+    "original_holds_preserved": true,
+    "plan_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+    "purpose_counts": {
+      "mapping": 308,
+      "projection": 1
+    },
+    "quotas_increased": false,
+    "representation_review_id": "34fa80cf31de4830710e18f618e3d516e0d92def7f6b4b3ffc0c4addeee98d88",
+    "schema": "v14_fixed_material_authorization.v1",
+    "source_review_seal_id": "a6ed08fc61b25616e78a47773e81975a161f795b56ce02b5462e406526a3bc73",
+    "training_authorized_by_this_permit": false,
+    "user_reply": "参照审计修订并开展后续实验"
+  },
+  "backup": {
+    "bytes": 2662305792,
+    "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/wallet_before_v14_residual.sqlite3",
+    "sha256": "44b0cfc5f76ed40198f442c9eaa7e451a94e097daff290ba1d32d474493a2aab"
+  },
+  "batch_id": "finqa-v14-20260930-representation-01",
+  "concurrency": {
+    "max": 16,
+    "ramp": [
+      {
+        "settled_at_least": 0,
+        "workers": 16
+      }
+    ]
+  },
+  "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+  "effective_request_limits": {
+    "generation": 191000,
+    "review_mapping": 25000
+  },
+  "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+  "id": "552d8c5c66009736f6891780e7c05ef27237fac07aecc99a6c1b2865074e0d4f",
+  "job_count": 309,
+  "money_limits_unchanged": true,
+  "no_retry": true,
+  "old_new_reservations_authorized": false,
+  "original_network_unknowns": {
+    "AAPL/2013/page_39.pdf-2": {
+      "invocation_id": "invocation:f211b7b69bebe8d5b232895f63b42250843ac2fa1e95af00aa171d539f946abf",
+      "original_row_sha256": "d4581441f96e0a9a9f4bec52dae98768e836ee850ab193082933a5bc48da8fd0",
+      "permanent_reserved_microcny": 2359296
+    },
+    "DISCA/2017/page_22.pdf-1": {
+      "invocation_id": "invocation:f6e54fae08570655a239ae39d85ab38c4b0d013e7c8dcacba0aa7f12f148cafc",
+      "original_row_sha256": "3e235764d1bd7364b4013697993a8ee7344c54be9672bd921a87a95d5cfbe8f6",
+      "permanent_reserved_microcny": 2359296
+    },
+    "DRE/2008/page_49.pdf-2": {
+      "invocation_id": "invocation:bf2e1d650a68c6ce1c6ddf8276d0acc723fff2faf30de576b7143a088a638b47",
+      "original_row_sha256": "ed8a1dcee673fb510c5be85e5f620be374df4ae423b80ddce0587c575f71f8c1",
+      "permanent_reserved_microcny": 2359296
+    },
+    "GIS/2008/page_83.pdf-1": {
+      "invocation_id": "invocation:d16cb2ad28228ee6a0be00f5306b2d92e02ba74ab29bc703ccbc4112c9f66668",
+      "original_row_sha256": "18d6fe98e83556c1e0a70c3e30cc7a07b3bf597a13348282194223b473cb127e",
+      "permanent_reserved_microcny": 2359296
+    },
+    "INTC/2018/page_105.pdf-1": {
+      "invocation_id": "invocation:ad78db406347b40fc71ef86e7a042cd7c40b179ee98c5b8d8837d27d69eaaf8d",
+      "original_row_sha256": "7d55a02cd2161a04aa53d42ca69ce15f4c280c4014e75b86fc395246898a2880",
+      "permanent_reserved_microcny": 2621440
+    },
+    "IP/2005/page_31.pdf-1": {
+      "invocation_id": "invocation:dd7f37766ed70d68bb34994b3be2522e5b86d66b5095db2139d46bc9385c074b",
+      "original_row_sha256": "314a8f1a769f1a1d6dcbcf38e9a9007dc7d7a1821b9a8221b1ba914b5ebfdfc6",
+      "permanent_reserved_microcny": 2228224
+    },
+    "KMI/2010/page_164.pdf-4": {
+      "invocation_id": "invocation:1cb09b248332395d71d918a3ee368b193c89881a9240568c08693665d1abda82",
+      "original_row_sha256": "c0a1bd3ad0611af74f5b62b398d9f7a9216e38906c5147114e6f13523b5ed295",
+      "permanent_reserved_microcny": 2359296
+    },
+    "LMT/2015/page_52.pdf-4": {
+      "invocation_id": "invocation:d635b2f00073d0491cf7c805254461be115542d9909f4ae4a74224322a69550e",
+      "original_row_sha256": "d455bd5180a790b597837ab666b94f976d4d31480d4cfeea492d3b5628911c6e",
+      "permanent_reserved_microcny": 2621440
+    },
+    "MA/2008/page_116.pdf-2": {
+      "invocation_id": "invocation:8b533f9315364e3b9b430687e96c165993ecd1dc60d242787bba72ce96950bc5",
+      "original_row_sha256": "3de14ed892d110236eee6a8749a8380376455ed201e3c0199b093427cb816075",
+      "permanent_reserved_microcny": 2228224
+    },
+    "PNC/2016/page_44.pdf-2": {
+      "invocation_id": "invocation:aac4b20a90d089a3e855888effd07102abb0f518a663fa2f3d0e03f9b299b913",
+      "original_row_sha256": "48e1ca1a0d506c290bda1845228487f6422684bfac4e3f9829efeb7d1a02667c",
+      "permanent_reserved_microcny": 2621440
+    },
+    "TSCO/2017/page_68.pdf-2": {
+      "invocation_id": "invocation:e37ee2aff1205354b3d43094b04f0155427e40569b5f63cb6d161f3e3da51b58",
+      "original_row_sha256": "26122089081f70e1de2c202d9f43284e7dc798e16f7e5ccb33d9a520c2764ac7",
+      "permanent_reserved_microcny": 2359296
+    },
+    "WELL/2017/page_48.pdf-4": {
+      "invocation_id": "invocation:d73cd0849afcd9c6f8bfb6a381966542330629df8ab36dc6e52bc8de9084ae94",
+      "original_row_sha256": "a7b2fa943ef9cc1ffa047cd3f897aa9fcc7692dd89c60da2e89305282deae3e8",
+      "permanent_reserved_microcny": 2621440
+    }
+  },
+  "original_partition_id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+  "original_request_limits": {
+    "generation": 199000,
+    "review_mapping": 17000
+  },
+  "parent_v13_permit_id": "4f3b6b04dde03a0f8c0cd57c5ba8451ffa0f49fba788bdbf619dc4d8965352bc",
+  "plan_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+  "preserved_counters": {
+    "completion_tokens": 50090275,
+    "dispatched": 80699,
+    "held": 332464128,
+    "hit_tokens": 238007515,
+    "miss_tokens": 413036619,
+    "pending": 0,
+    "prompt_tokens": 651044134,
+    "requests": 80699,
+    "singleton": 1,
+    "spent": 1236352110,
+    "unknown": 152
+  },
+  "preserved_quota_rows": [
+    {
+      "category": "generation",
+      "dispatched": 16312,
+      "held": 0,
+      "money_cap": 100000000,
+      "pending": 0,
+      "request_cap": 199000,
+      "requests": 16312,
+      "spent": 23672874,
+      "unknown": 0
+    },
+    {
+      "category": "review_mapping",
+      "dispatched": 24311,
+      "held": 187629568,
+      "money_cap": 550000000,
+      "pending": 0,
+      "request_cap": 17000,
+      "requests": 24311,
+      "spent": 876414907,
+      "unknown": 87
+    }
+  ],
+  "protocol_id": "17d360e436eb6267221fa2d4fc5e4fe4d9efa2226fe35b378aa1ae0a37100091",
+  "purpose_counts": {
+    "mapping": 308,
+    "projection": 1
+  },
+  "registered_at_unix": 1790740440.7181346,
+  "representation_review": {
+    "id": "34fa80cf31de4830710e18f618e3d516e0d92def7f6b4b3ffc0c4addeee98d88",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/representation_review/summary/record.json",
+    "sha256": "cb0dabfdffb04aee29ced94a99160cf9642dbf71a4fc3d701231679eabaead19"
+  },
+  "request_limits_unchanged": true,
+  "roster_sha256": "e19d4314b3a2b57fd8112fd34bbd92d104f0d3053ccf76d0e888935cab3d63d6",
+  "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+  "schema": "v14_material_matrix_permit.v1",
+  "source_batch_id": "finqa-v13-20260930-material-01",
+  "source_protocol_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "source_review_seal_id": "a6ed08fc61b25616e78a47773e81975a161f795b56ce02b5462e406526a3bc73",
+  "source_review_seal_sha256": "a1d8018ae602afdf382af99bb0cedfe22d706d0bfcd2cfb3f2a38cd87a4c5d90",
+  "source_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02",
+  "transferred_unused_generation_requests": 0
+}

@@ -1,0 +1,1727 @@
+{
+  "actual_returns": 309,
+  "by_purpose": {
+    "mapping": {
+      "caps": {
+        "16384": 30,
+        "32768": 162,
+        "65536": 116
+      },
+      "completion_above_cap": 0,
+      "completion_equal_cap": 0,
+      "completion_tokens": {
+        "max": 4749,
+        "min": 563,
+        "n": 308,
+        "p50": 1472,
+        "p95": 3520,
+        "p99": 4425,
+        "total": 522433
+      },
+      "finish_reason": {
+        "tool_calls": 308
+      },
+      "length_count": 0,
+      "mutually_exclusive_first_diagnostic": {
+        "ValueError: $.states[].interventions[].consequence: outside typed enum": 6,
+        "ValueError: $.states[]: missing/extra wire field": 19,
+        "ValueError: chi cannot be inferred from one exemplar or tool count": 1,
+        "ValueError: chi requires the actual action/observation pair": 1,
+        "ValueError: partial mapping evidence must be nonempty": 1,
+        "ValueError: partial_quote_absent_or_not_unique": 17,
+        "ValueError: partial_quote_outside_selected_unit": 5,
+        "ValueError: state evidence must belong to its members": 4
+      },
+      "network_unknown": 0,
+      "nonexclusive_error_labels": {
+        "ValueError: $.states[].interventions[].consequence: outside typed enum": 6,
+        "ValueError: $.states[]: missing/extra wire field": 19,
+        "ValueError: chi cannot be inferred from one exemplar or tool count": 1,
+        "ValueError: chi requires the actual action/observation pair": 1,
+        "ValueError: partial mapping evidence must be nonempty": 1,
+        "ValueError: partial_quote_absent_or_not_unique": 17,
+        "ValueError: partial_quote_outside_selected_unit": 5,
+        "ValueError: state evidence must belong to its members": 4
+      },
+      "raw_mapping_status": {
+        "complete": 308
+      },
+      "registered": 308,
+      "returned": 308,
+      "returned_with_nonempty_ambiguity_notes": 0,
+      "saved_error_multiplicity": {
+        "1": 54
+      },
+      "unusable": 54,
+      "unusable_completion_tokens": {
+        "max": 4749,
+        "min": 712,
+        "n": 54,
+        "p50": 1425,
+        "p95": 3876,
+        "p99": 4749,
+        "total": 88728
+      },
+      "usable": 254
+    },
+    "projection": {
+      "caps": {
+        "16384": 1
+      },
+      "completion_above_cap": 0,
+      "completion_equal_cap": 0,
+      "completion_tokens": {
+        "max": 116,
+        "min": 116,
+        "n": 1,
+        "p50": 116,
+        "p95": 116,
+        "p99": 116,
+        "total": 116
+      },
+      "finish_reason": {
+        "tool_calls": 1
+      },
+      "length_count": 0,
+      "mutually_exclusive_first_diagnostic": {},
+      "network_unknown": 0,
+      "nonexclusive_error_labels": {},
+      "registered": 1,
+      "returned": 1,
+      "saved_error_multiplicity": {},
+      "unusable": 0,
+      "unusable_completion_tokens": {
+        "n": 0
+      },
+      "usable": 1
+    }
+  },
+  "completion_seal": {
+    "id": "1e6faa2f1bf25358baf903072c91756de21daee5970c848e041ca2c8b00927fc",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/completion_seal/record.json",
+    "sha256": "10239ba8e20c6403d7a655410838b22c68b90a0db55848b7e7d39e613216baa9"
+  },
+  "examples": [
+    {
+      "completion_tokens": 1013,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 2432,
+        "start": 2192,
+        "text": "matching the three stated annual rates of 24%, 32%, and 32%.\"}, {\"id\": \"p1:u00051\", \"quote\": \"{\\\"program\\\": \\\"add(24, 32), add(#0, 32), divide(#1, const_3)\\\"}\"}, {\"id\": \"p1:u00052\", \"quote\": \"\\\"submitted\\\": true\"}]}], \"ambiguity_notes\": []}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "f7a8da208497fb9a57e20bd42be336050eb1e56c7148c08192d99f684db540ce",
+      "record": {
+        "id": "02fd1e21ecc12fc1138ab2a66d2849f0b7f59a9bf03ba0839744546ddefb87f6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/b190476ccedf8056b24c4b36e62357212f94bbdee9e73d14185af7a0eaffff3a/record/record.json",
+        "sha256": "2dbd7c1b07e4a96af314aae49b078cb7340c9113d7730b07b11ea1499af2df08"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AAPL/2010/page_42.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1715,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 5262,
+        "start": 5022,
+        "text": "vided percentage convention.\"}], \"semantic_summary\": \"Reads purchase obligations 18,616 and total 41,685 from the table, computes divide(18616,41685), and submits the ratio as the percentage answer (~44.66%) under the stated convention.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "89339730cebc4e1a47aaa9d709bf9ccb67d1a09e381ef9f93284bb4c69e44669",
+      "record": {
+        "id": "9926ddf46dab2b60647334866e5779a1b642c4a3284fc185836786764ac22f24",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/ebc6328425d5a1c64233b970e09c9589dd1a807fb214685185322cb1aeffd317/record/record.json",
+        "sha256": "3dd151681e2f3919e26717d3387b0f74f2f809fe6a400c51713af18bfc97d1f9"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AAPL/2013/page_41.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1425,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[1].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 4255,
+        "start": 4015,
+        "text": "nt\"}], \"semantic_summary\": \"Computes the rent sum in millions, converts the $7,754 thousand table total to millions via divide(7754, 1000), divides, and submits the unit-consistent ratio 0.65773 without any observed failure or revision.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "88162278fe0a8af5c589dd5bcaed0cc179a00fa97519ee71770b921c4d2f0b62",
+      "record": {
+        "id": "a3ed2189f7151570f8b37eaeab5e4e96d67111d4ee4fafecbe3cd5ac982f1cab",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/7ef015cf3605817473b2c648a14c13c9bcbc99eaf3577de731ac318db878a9e0/record/record.json",
+        "sha256": "89c30fff7c0a677570ff403c34f260d66b370a0b3af5ba96f97cc01a2efb7a72"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1304,
+      "error_labels": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "errors": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: state evidence must belong to its members",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 3719,
+        "start": 3479,
+        "text": "tiply(345.0, 3.00), obtaining 1035.0. Observing this, it recognized the 3.00% note is a percent literal that the DSL divides by 100, revised the program to multiply(345.0, 0.03), re-ran to get 10.35, and submitted the corrected program.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "087f04726317057c7d5f34a94f8743d36410c95beb8c75fea9b1bcd39077cc3a",
+      "record": {
+        "id": "50084687cf13d79f9934f6ce00c26ae23245e60a4c05745065be65c218017d80",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/7972c0e86af9c34b5024d7bb4bc950b1b4b5ee0fb021a72c32e933583edfe947/record/record.json",
+        "sha256": "dae1e55ac8b9fefe4fd8714eb6178df507442facfeafddcd9c4080bc4f2b250a"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 3925,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 8980,
+        "start": 8740,
+        "text": "mputing subtract(218, 180), observing the executor result 38.0, and submitting the same program. They share the same evidence choice, derivation, and interpretation; the only differences are wording and formatting of the reasoning text.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "72527beaef09df4e1fa3c85f28dfaac89f682e0fa3e5b1e6499f445d76e8ab88",
+      "record": {
+        "id": "8590e542c679548c5535b94b49b9c59f22d3742be836b9c4ccad73a7a30dfa4d",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/18269018aee372a67b15364073066b7cded51788b0ab0848cf723316532ab836/record/record.json",
+        "sha256": "3949c1d56a22b434c0c5107fac50e3cfd2ddfa7e0b98c534995c470da0e8a104"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AON/2015/page_77.pdf-4",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2227,
+      "error_labels": [
+        "ValueError: partial mapping evidence must be nonempty"
+      ],
+      "errors": [
+        "ValueError: partial mapping evidence must be nonempty"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial mapping evidence must be nonempty",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 6086,
+        "start": 5846,
+        "text": "ing it to obtain 8.35593, interpreting that output as the requested ratio, and then submitting the same program. They share the same evidence choice, derivation, and consequential verification of the computed quotient before submission.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "7fb868e7b194bc2800aa498d0bde58874da09474063bd3b93db8a8a3ee98654b",
+      "record": {
+        "id": "2b313d88ea3fd06213e0e418b4dbdeeacf5aea00b7f81f357645ffb64c643d3e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/03c8e431596e8661e4656f0c3fa596745f73714ea569986280fb47fc7ab75671/record/record.json",
+        "sha256": "ccef84d1ab4bb6e76a46ebd1ad9ed325156ac641ff46f45c9130ea4887526b33"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "C/2009/page_141.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1134,
+      "error_labels": [
+        "ValueError: chi cannot be inferred from one exemplar or tool count"
+      ],
+      "errors": [
+        "ValueError: chi cannot be inferred from one exemplar or tool count"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: chi cannot be inferred from one exemplar or tool count",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 3181,
+        "start": 2941,
+        "text": "ote\": \"$ 74814\"}, {\"id\": \"p2:u00044\", \"quote\": \"0.377\"}], \"semantic_summary\": \"p2 identifies the same 2008 table values, runs divide(28205, 74814), observes the numeric result 0.377, interprets it as 37.7%, and submits the same program.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "8c915b73e79e240d3c77f5e1ce8ef5a6a146619b7d836cc2d3be44eff08dede4",
+      "record": {
+        "id": "8672464a2e96d4d1a5c51c7d24b0007c9009e8e1bf69755865febba6cd87b4fa",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/fb7703c0bc5a1de91b01ad490f4831ff886825d969c5e54151688b7bd436ee1b/record/record.json",
+        "sha256": "31c0153b57e2c0993bae4d69d327d29d797238f45a460e586dd15e11aa7bba53"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "DRE/2008/page_29.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1210,
+      "error_labels": [
+        "ValueError: chi requires the actual action/observation pair"
+      ],
+      "errors": [
+        "ValueError: chi requires the actual action/observation pair"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: chi requires the actual action/observation pair",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_excerpt": {
+        "end": 3542,
+        "start": 3302,
+        "text": "antic_summary\": \"Reads the WTI benchmark row, computes (94.15 − 79.61)/79.61, and after the run result explicitly verifies that the ratio is the percentage expressed as a decimal (no 100× step needed) before submitting the same program.\"}]}",
+        "unchanged": true
+      },
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "d1a49c44a7f957d55685e8d27c10ac79cfae345c9a47fd7bdd40c278f5001760",
+      "record": {
+        "id": "df98416af997bab234fd186348f05f9caf224535b1b2a074c317d7e54c5f92db",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/1a7ba284efa359696568197bb8062cd6334d3a74040b23fe4135ccb38f8a2640/record/record.json",
+        "sha256": "7ab6c5a4c1d4c6cbd24de6095801af712de15f4c5fc29b8c06a8f986def114a2"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MRO/2012/page_39.pdf-3",
+      "usable": false
+    }
+  ],
+  "failed_annotation_records": [
+    {
+      "completion_tokens": 1013,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "f7a8da208497fb9a57e20bd42be336050eb1e56c7148c08192d99f684db540ce",
+      "record": {
+        "id": "02fd1e21ecc12fc1138ab2a66d2849f0b7f59a9bf03ba0839744546ddefb87f6",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/b190476ccedf8056b24c4b36e62357212f94bbdee9e73d14185af7a0eaffff3a/record/record.json",
+        "sha256": "2dbd7c1b07e4a96af314aae49b078cb7340c9113d7730b07b11ea1499af2df08"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AAPL/2010/page_42.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1715,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "89339730cebc4e1a47aaa9d709bf9ccb67d1a09e381ef9f93284bb4c69e44669",
+      "record": {
+        "id": "9926ddf46dab2b60647334866e5779a1b642c4a3284fc185836786764ac22f24",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/ebc6328425d5a1c64233b970e09c9589dd1a807fb214685185322cb1aeffd317/record/record.json",
+        "sha256": "3dd151681e2f3919e26717d3387b0f74f2f809fe6a400c51713af18bfc97d1f9"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AAPL/2013/page_41.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1524,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "2dbbef2ca96e9c21fa6cda14ed6ede0a2c73706a4060af62c38dd30a744b52fb",
+      "record": {
+        "id": "708fa4ccfeb4456d1fbcd4ea35de4dfcb9d65182643f94195abf1f3115533ad5",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/be18613a791db46a7090496fede9e90189dd456d7a44fa2e5cd77d962f04f66d/record/record.json",
+        "sha256": "70f16d4329b1ecef8a03fce6a72b159e299bc6b9ad65df4ec950c83c46566482"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ABMD/2008/page_52.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1425,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[1].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "88162278fe0a8af5c589dd5bcaed0cc179a00fa97519ee71770b921c4d2f0b62",
+      "record": {
+        "id": "a3ed2189f7151570f8b37eaeab5e4e96d67111d4ee4fafecbe3cd5ac982f1cab",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/7ef015cf3605817473b2c648a14c13c9bcbc99eaf3577de731ac318db878a9e0/record/record.json",
+        "sha256": "89c30fff7c0a677570ff403c34f260d66b370a0b3af5ba96f97cc01a2efb7a72"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ABMD/2008/page_87.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2452,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "ebd397498bdb4c1f06b013835172051e995d4a19010aa99290b382d592d9df13",
+      "record": {
+        "id": "a0b210b29aa23fdf200ea8d793f8b0ab5db410d831ea33725e41017fb6b2f73c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/172f705926b3ce19bf1aa47ccba5cdb4e40f602fa5fb4c5ff3b13551e8d9ba98/record/record.json",
+        "sha256": "c09d9b0e1805b67987d9b096e1c46d355d65bdc701b82bcba9681878071ca2ad"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "ADI/2012/page_65.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 3806,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "4e1f12e7088d4f4b4b14fbb03a634d94a35ff521e807f68c1a86d87777b71053",
+      "record": {
+        "id": "84c68e0f5b985a8ee736aceb87b2fb002b3d717ddc8e51270e4b076f6d67a1ad",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/78a76c7b75fc669bff1a8d7d0889411ce92e9d23da7175b15092a5731f58fc3e/record/record.json",
+        "sha256": "5e96ba5b20b5dae6a8e52df03263662fda17a7b74cf89aecc16da3d8d04d6998"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AES/2017/page_168.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1304,
+      "error_labels": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "errors": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: state evidence must belong to its members",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "087f04726317057c7d5f34a94f8743d36410c95beb8c75fea9b1bcd39077cc3a",
+      "record": {
+        "id": "50084687cf13d79f9934f6ce00c26ae23245e60a4c05745065be65c218017d80",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/7972c0e86af9c34b5024d7bb4bc950b1b4b5ee0fb021a72c32e933583edfe947/record/record.json",
+        "sha256": "dae1e55ac8b9fefe4fd8714eb6178df507442facfeafddcd9c4080bc4f2b250a"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AMT/2004/page_46.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 993,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "2c3cd00ee23db9f885bfbb9017f0355c1677d68a2ccdd1fa9290a95a4f5312a0",
+      "record": {
+        "id": "a727cb628900bdeb613b202ab2ae8ef2d5d28af11011671fc5aea22ede4b53ae",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/b4fe8e8ace32a896389c9fe9c58a605eb972e7f85d1baf5a9b0f44945def95dc/record/record.json",
+        "sha256": "d257dc258ade074c24c6de4f221bd08a1afa23ff0d249837eb85ad39bf0416f5"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AMT/2004/page_91.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 3925,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "72527beaef09df4e1fa3c85f28dfaac89f682e0fa3e5b1e6499f445d76e8ab88",
+      "record": {
+        "id": "8590e542c679548c5535b94b49b9c59f22d3742be836b9c4ccad73a7a30dfa4d",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/18269018aee372a67b15364073066b7cded51788b0ab0848cf723316532ab836/record/record.json",
+        "sha256": "3949c1d56a22b434c0c5107fac50e3cfd2ddfa7e0b98c534995c470da0e8a104"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "AON/2015/page_77.pdf-4",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1038,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "1b0b185d32a50773d7263e09ff6617021685d66dc9b496201f839305cfe7eb29",
+      "record": {
+        "id": "82ee791acb57b35aede61cd17a3344642ca5daf5d914f57a8ff6676ee2fb977f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/e6ee290ab2895e0c52f21f8c3862273ce6721c3bd0750e906062087b3b0b62aa/record/record.json",
+        "sha256": "e4d152b334ae5c81c44e9d8d4277dea7bbfaed2cd7476b2129d72edb6a82989d"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "BLK/2017/page_81.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2227,
+      "error_labels": [
+        "ValueError: partial mapping evidence must be nonempty"
+      ],
+      "errors": [
+        "ValueError: partial mapping evidence must be nonempty"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial mapping evidence must be nonempty",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "7fb868e7b194bc2800aa498d0bde58874da09474063bd3b93db8a8a3ee98654b",
+      "record": {
+        "id": "2b313d88ea3fd06213e0e418b4dbdeeacf5aea00b7f81f357645ffb64c643d3e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/03c8e431596e8661e4656f0c3fa596745f73714ea569986280fb47fc7ab75671/record/record.json",
+        "sha256": "ccef84d1ab4bb6e76a46ebd1ad9ed325156ac641ff46f45c9130ea4887526b33"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "C/2009/page_141.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1180,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "bb9306b084effac8cfa81f1a47cdaeee88d9cfb9e34906777fe1080b5058e5fa",
+      "record": {
+        "id": "615042f9dc5919dc24bc27846c3fffb3af49cab39e000aaeb498ec1c59d3b26e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/8210e1d586815ddd6f20d0a4a15f6a8d28029df841c6c0fd1624d8517864284e/record/record.json",
+        "sha256": "acb3b7fe4ec8f407fc4ad9e28194fe84bf1e22177db900582fbda3dec5f5814e"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "C/2009/page_38.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1538,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "896c15f3f291061107dd975ea3b52c98750f2dba7bccd1b511af155f53057748",
+      "record": {
+        "id": "09cf70f4b9b227cbc03b730c9f18bd1d2aaa18952170f7743a5a92b193ce417c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/aff465bc0b61bcc4f764ff9866d9e265a5a362e1dc90f4758475ce9f508475a0/record/record.json",
+        "sha256": "ca6939e6ecce3fa1c2b852237a10d65fe44b38cc2e0ca87d4e37f0e2fd4e432d"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "CDW/2015/page_53.pdf-4",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1094,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "366f9f43e93d7d77c1fd7f18ee95ba85d5278fe3295f33a43634d81446f8e97a",
+      "record": {
+        "id": "fcc6901d5f811de5f88246020328f098e3c95ea80b16e4a2c40530395eb8b720",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/6168c209ddce5b8b0602f4455ea0e3c52c1500f7233bdcd58d8f4d587b98759a/record/record.json",
+        "sha256": "ba80480cbeee68127961062e070b924380119fc3e82cfe1349d548f0cfd137e4"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "DISH/2008/page_120.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1086,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "3a0103f0ec62e1a5a2167d536aa83d229179340f45f0a7076fb9be5178b15869",
+      "record": {
+        "id": "9d863bdd6043e8ec856a8a7537e194187d2e3755ac5a5a8bd92aab24c8482453",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/5bfdfe704f77b75a1451ca8686ccbf924dcc5f2354f9596020c88252a43a4b81/record/record.json",
+        "sha256": "7c1065aedc1c3335f24d4c2e78e32f0ee9453098fb9824b287e6cacd6ce8ea74"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "DISH/2011/page_130.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1134,
+      "error_labels": [
+        "ValueError: chi cannot be inferred from one exemplar or tool count"
+      ],
+      "errors": [
+        "ValueError: chi cannot be inferred from one exemplar or tool count"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: chi cannot be inferred from one exemplar or tool count",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "8c915b73e79e240d3c77f5e1ce8ef5a6a146619b7d836cc2d3be44eff08dede4",
+      "record": {
+        "id": "8672464a2e96d4d1a5c51c7d24b0007c9009e8e1bf69755865febba6cd87b4fa",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/fb7703c0bc5a1de91b01ad490f4831ff886825d969c5e54151688b7bd436ee1b/record/record.json",
+        "sha256": "31c0153b57e2c0993bae4d69d327d29d797238f45a460e586dd15e11aa7bba53"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "DRE/2008/page_29.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1717,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "659a8fc6134b47b1e75046334da693edbe7fff96244e5c041722ea6b50f84205",
+      "record": {
+        "id": "cfe405cbb3393d21a792ca7f288d3bd42524f4daa045faf48fa88ae2549cd37a",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/6fa4bc4b03b11ee00b1bedfe28a0280d2278b76b5ff75aaaa5db454dd6192101/record/record.json",
+        "sha256": "0ae2b5957787432d623879f9aaabd2f55948405efe0d7803bb4729e949abba80"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "EOG/2017/page_103.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1412,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "7dae682bd46e55e4f7911be7b7aa340664efe4d48d2ef66cfd95148ff0f1ac46",
+      "record": {
+        "id": "c9e0dba3e7c2e5b97f3f50eda75859c7081eabd706f4296f5177db1b6e11a426",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/df43bc4d1f63a1760da1abbf94689686b8427476ec4936e2b4cfe354b423c66a/record/record.json",
+        "sha256": "e92aef8d8237ce794fefc75da730f6d679d3ca95582e7f6914dc0a5e5ff14955"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "EOG/2017/page_103.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1031,
+      "error_labels": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "errors": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: state evidence must belong to its members",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "fdda1f8c791c9d10f8426ad7aa0cdc1f2b84aae20864b10cb5b385391989b713",
+      "record": {
+        "id": "532f0800400482dab33137f86e6b05290929cfc854b70a95f738fb9666b975ab",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/9d8c39ce6cf36428236370776fe39300b91357c3addd11acc03d984c28990f2b/record/record.json",
+        "sha256": "a478ca2813a5620e60ea59d68fb32a0544eb905fff0dd02c081c6b481f1f1fa4"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "GPN/2008/page_92.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1007,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "d4372fe7f14ac5cb6bbf3ad2678985693e0b4c7efe3760e9267bcf3f8d111702",
+      "record": {
+        "id": "8123f9915cca709eb6e5c72e6ed0f1f5e78639a8dbbf04491168eb593293196f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/e93c989493bd44335f4c8018b19595d120daa859fbf0ea964e831ecd3190230c/record/record.json",
+        "sha256": "4fe3448bd5a056e426df35020e9b986d86b8b593a9601cd9ae35a3cbb16f762c"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "GPN/2016/page_83.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1331,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "357055efb993e528fd0bc081aa5141d16047eddfba5437b8e54d2913875aff1c",
+      "record": {
+        "id": "d0278d073272ccef92d3e53e461d1326cddc17437a73f935e7a70d5abadb4138",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/a2604daac566f7270fc980ba20745954723d6516e229cdce598d26558ea63c31/record/record.json",
+        "sha256": "142dc0b985ee80c5c7a6e395db7896aa0e791dc6159b74c73832838e3859caba"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "HFC/2011/page_88.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1540,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "e7443120dcc8b2406b14f7a5cc0f8852bde75c4301b53df917bf4fa9e19d7e6f",
+      "record": {
+        "id": "bbf672e135ade66c8411196c96a28fbe4c12ee22b769a82b0025a5b3cf70781c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/0ab18a535dc2c5ed36b6128a31b38c8325a379b86cdb9e9d8088e0a84b339113/record/record.json",
+        "sha256": "9cc3b0688991d5732548fbdb868b03a7d1d14ebf9ff0a0f3a5c20c5178d6fba5"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "HFC/2011/page_92.pdf-5",
+      "usable": false
+    },
+    {
+      "completion_tokens": 962,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "235fdc8c54d20b76ec32a93e485e028e1e7ad5742bbc63ee324321a6c3f83397",
+      "record": {
+        "id": "ab30f996fd1671928eed14448fb80c26aa6157d65e74010016798b14b195a963",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/990fed0a59d291f603d042961688bade169224b967e1872df80d76d1bc682275/record/record.json",
+        "sha256": "76741e323d99565e83cdf9bcb7d03331f0f4fd9d5c166503f5f522fa04e21ec6"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "HUM/2016/page_133.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1814,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "dece12805bbaa9513e13872e73da681cd34cc549d4d5e48f1d4df8bf99f0ee97",
+      "record": {
+        "id": "c645069a17fbb99c1b0c647a831fdec2ff546f1ca4a666d760e3f9892214ecf9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/1453cd3bb158c651618cf30ebba873aa3c7f25f9fcc05cd5c023176111c5343b/record/record.json",
+        "sha256": "4f2296ed629d61eaf108e0531a5b9d1fed8302023003d13025c32a4c4bb48028"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IP/2005/page_28.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 712,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "d29d77cff42e23a7cb96a1607b0bf886e7899a5e4a35e7e820e319ca924a6db8",
+      "record": {
+        "id": "e78a244c4777c4e108fb8e8cd2fd3fdf2c08e37e62a01bd079cf265641051a8a",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/5d81215f79b6cd3096f06c81e59d4142bebc3af539fb46d8890e167307ce7c7f/record/record.json",
+        "sha256": "02537019fb1e2242f5a24a7626d2fa823dafed3bfb6a7e8e282186968e3e16e8"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IP/2005/page_28.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1180,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "a6e01c308825108b41460c3bd030b9b28385eef5285c7251364d4a93a5bbaedb",
+      "record": {
+        "id": "61e482ada9d636491be74c495f29b684f26a28f3261bcc1999bf759d6fd04e30",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/0299097a65eaf394c5a885491e31ffa558d306a063495b84049c7b0fe4b4ff59/record/record.json",
+        "sha256": "62ad7fb540bee6b4e179114c27421549d055768da4f41a8704bad55b376879d0"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IP/2005/page_31.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2054,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "4cf86cdf0de29603cc0f603a3ec1999c027f6eefc6e88424a17a9aa10c127d1e",
+      "record": {
+        "id": "3130ff8f58a397600831f5fb2c0272d95afb8bf453db9debadcbc7683781b694",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/01c0ae6f45800210c58c5a08df1db0db05ac7ae7f128a4b6c241745c0dab10b7/record/record.json",
+        "sha256": "21f9d013f4e8dd6add1ac7d68f57ff461ad4a2170793123f361685a00c8dea78"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IP/2013/page_101.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1567,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "23e4d08430d22cabffbdc155f35ec05ee8c24531fd2182c85c7ea7c6d517d904",
+      "record": {
+        "id": "f0d5aef95569f78dd17944faa11c80b8856b3e8bd390405fbbd3cb6f85741e0b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/77c82c4051431cf06ed9d9f83ffca9cf258ae0c1987609f28e83e42d7effb072/record/record.json",
+        "sha256": "da9c7584e5bfdcbe1fcc6041fab9ea436308268700103e6814222b6cad8bb517"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IP/2018/page_83.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 3876,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "c775adac80c92bfb657cffe90304f9cd12866d14debfb86772b14a8806376016",
+      "record": {
+        "id": "8cebbfbab962d2a72b45e26fc20cc2840e2390196eded8369247449a17e54516",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/c6a6135a7bda6f0563cc575327318c5e87ae8409d1ec17ed163c2830b22ac3a3/record/record.json",
+        "sha256": "da2f1cbdc48f256d98699abc60643797ca9732abc4d3f26e00a490594fa2db3b"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IPG/2018/page_39.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1383,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "9b8d86d46156a5e054858d176fa0ef753038cb9e0d5f58a5e41575b33ea49e3e",
+      "record": {
+        "id": "582b92d2f96d70208001c760a12d4328f13f6cd567ca0f8c0e145657e2b85e9e",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/701b1020d1e347e355ba02716d0395eead21d35ece61088db6c4c38fac66e5b0/record/record.json",
+        "sha256": "81b8e85c4ae7c4c550267cc7ac4d2eb514c62b5b6d2b66c5af5ba6c6d31d7a8c"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "IPG/2018/page_78.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2131,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "9ef58fed14bdef5a86da345106227b4550ec336b77a531263fe340f84b540c24",
+      "record": {
+        "id": "a0475efd436370aaeedf92c61676eec04aa8e8e3fc331b1d6c018d43fa678bd2",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/382071d8a10376448dbb9dcda17f90792e12c9f35f1b6ab0404fe25e1b09fb8d/record/record.json",
+        "sha256": "f17277e1f76353964479d13cbc67c00c09f99bbf67bb528c309ed91b53e133a7"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "JKHY/2011/page_55.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1630,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "5ce84da3e78bf22f6c4d896c19913e08734d2a36e4df8e52855e7c607f1c370d",
+      "record": {
+        "id": "3d12c07ae41a54238e11282b27c633a493eb3431ece98a084800e78ea721bb19",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/11467d9c0148b372649ee634b00bddc51b7680739a2678512de19c38a4021be3/record/record.json",
+        "sha256": "26f29147811d6b5f7a70cc9fcc97fcccd1510ddad1dc60270128aea178c00889"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "JPM/2017/page_144.pdf-4",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1730,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[0].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "fb4f1ef8c6d143a880768a500f6f5f4ede0cb13a0d2a57ae7290837bca226db6",
+      "record": {
+        "id": "2b62d82782c86d24a9a299c9089d0a24a3b39a39f9e32b0c9024a95db7c981d7",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/bce8bb9c2457a040e3ee0df84d5523590eae9e6a4c98eee7d2ab2f347f976727/record/record.json",
+        "sha256": "636e21f0ffdf5e8dfbecb968fa8a2317413b20376b9c78e031beee428dc089bf"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "KHC/2018/page_27.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 840,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[0].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "e963f99d5b693cdda087a29ee22c87f56cb9d806fbf803b39ac6407388ae9f51",
+      "record": {
+        "id": "704114aa9f12bfb66034f331aa894870d9113bc9f6c889fcbc973e435571596b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/23b10621e9739833b98e867cafe251adc83ad6aea45e5d4dca7304a8080f6134/record/record.json",
+        "sha256": "2e42ec7ca0718bf670e8868ecf08d67e4c5839537f78efeed344ea8293488c18"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "L/2010/page_41.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1372,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "a6ad9480436b4b05813a4cd6727d292910fd9792712bd949ce86b607e51c8edb",
+      "record": {
+        "id": "db82f1baec577966b01d66b6a92cf9b47218e4458ea6bc37bdf47029b4224043",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/dcb5c1228c6707256fca3c97cecc2fd6b1813e55fd7a87987e0e18f87a102483/record/record.json",
+        "sha256": "4ea2b33648f3fe2a609ac7b3023121816fbc385260676b94ce4c3ff9727e9f7e"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "LMT/2014/page_46.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 2203,
+      "error_labels": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "errors": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: state evidence must belong to its members",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "7421ce6e44876d3a32b7c9194430b98a204d89b4f4cb9ae264597a8121a05400",
+      "record": {
+        "id": "8774cb92995e108fe162c5d6a0dbf67e4919ee7f59b271a23cf9ab6827e389b3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/b0522d12d3d9dd2d89851adf730303f99107f66fb4f8aaa5d8381ae7a37f652a/record/record.json",
+        "sha256": "62689c2b10096d30ff2e870b16a165df8e1d215ef7b8520b4268ef360bd18935"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "LMT/2015/page_55.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 835,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "58632ad5c52e89a9399da0d0845945614b4c25e5536d81eb2a67b753f086599d",
+      "record": {
+        "id": "9a8ee5bcf8afd926e1dec29dbb95b1e28b5bca507585de814a7933916ceb3ae0",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/5dd92de3c96e3f901b5f68e75ef855d0f2a1f4fc1ea7cabb26d36b92b778eb88/record/record.json",
+        "sha256": "aac67e82da082327004207d929c21f19e4ab062ad328f21a3e068c25a6b60891"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MA/2008/page_70.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 4749,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "1a057d3c82e951a982ce909ce0b08535aa8fedd6c6d23d8a323600d31cd1e8f7",
+      "record": {
+        "id": "1a5918889bf6a0e394d6ab2ef92b4f689e05c071ab8fb148c1d31331ab264c24",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/5640b9835bfadfcde1a62050b9ffed7e43988e846d3df0cb551c08cc3b2a5a49/record/record.json",
+        "sha256": "96c1df2f4a7e14b0aa0b4401a94c557cca629b9c6802b75f8e21d45d06b29aca"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MA/2008/page_70.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1286,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "5accf8296105bb17f294c6c828fc8d715621f505db6397f01759441bb8360f7d",
+      "record": {
+        "id": "844ebbff2dd6a87341efa568a29b28631f64ef4b0bbabc1a90532e4f25829424",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/abf4c4dc758a56efbdf8ec74849219678c83886c4689e94661c25af813d97ac5/record/record.json",
+        "sha256": "8719eefd20eeafcb798bfaf433f60a493b519d6eed60cd48bac1ed73fa6cd20a"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MRO/2012/page_18.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1734,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "f069546fa89420d4aa1e6730609621ea69057aaf06fe4c81be2a018b29af8135",
+      "record": {
+        "id": "19ce266a31a66b5786d03e223da3876b4a59125ac918ccb6bfccf329b84a0a05",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/b42aa12b273e839018ecf68e544691a7c585d300966bc87ead8e9cc6fcf17f2b/record/record.json",
+        "sha256": "3644fa2df517dfa88a5c7015f9791cc106827740beb31cd3a442bbb9393016b6"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MRO/2012/page_22.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1210,
+      "error_labels": [
+        "ValueError: chi requires the actual action/observation pair"
+      ],
+      "errors": [
+        "ValueError: chi requires the actual action/observation pair"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: chi requires the actual action/observation pair",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "d1a49c44a7f957d55685e8d27c10ac79cfae345c9a47fd7bdd40c278f5001760",
+      "record": {
+        "id": "df98416af997bab234fd186348f05f9caf224535b1b2a074c317d7e54c5f92db",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/1a7ba284efa359696568197bb8062cd6334d3a74040b23fe4135ccb38f8a2640/record/record.json",
+        "sha256": "7ab6c5a4c1d4c6cbd24de6095801af712de15f4c5fc29b8c06a8f986def114a2"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MRO/2012/page_39.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1859,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "763b228da2b56f5abf444ee3c5da2400be899266ca24ed667fab6f36a18781bc",
+      "record": {
+        "id": "65f33a4b5fd70f38e139ba39a01c2650cf4a81a0051017d4b09124449d0c7153",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/d3a463595c53a7fc05d653de0273dc3498dbf870d145891c6da02a55e0929279/record/record.json",
+        "sha256": "ba49cc84329cd26ef63aaf6298df9b148ffc14a49cea6dc7869d32d3c7a2c7d8"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "MSI/2005/page_64.pdf-4",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1634,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "c5bb044fc637061939311b64e6cfff5426aabbdea4a0bf9ce91ec825c2577c85",
+      "record": {
+        "id": "76c395e64a5e61ff31982c4960d71f0b344ec7d43d0e1e83c622aff543fb46de",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/877ef37df3183771913c5f16015bcbc86c6189eeb418b89502a5df98f4f25f83/record/record.json",
+        "sha256": "9c7f6b61b9f9db82b6c021082e37d4b30c65ee9d48707a7282113a2593971e0e"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "NKE/2014/page_36.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1848,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[1].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "17ef866f05a2c942c176fba6bd99f22dd1b58c1f3db6c2d8de8415c144bfaec7",
+      "record": {
+        "id": "05360472d2104bf0a71784f042f805a76816aea86072bd88a8e5d68a3e30f4dd",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/463cc0c9c067cbb937b87c4504a2241965c6e1c020d63f199a86e9ada87820ea/record/record.json",
+        "sha256": "000498e8878cf9c332d55ad0c9662e5d2bd043263770c5b571f588bed66cad5a"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "PNC/2016/page_73.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1407,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "cf4139b31ca7e4da053a443b750e5c00ed4ca42c42dd87ea614c1954a2898163",
+      "record": {
+        "id": "fd7806ff7f21276c0c926392da7920fe066870ce865ff29f5d832512e6cd957c",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/0c0608f26f26b841686c7c69bdcbb5892a05a85988dcf3b471353f5d5b1bf9b7/record/record.json",
+        "sha256": "3361c91110043a130a23f90c1d899a602cc856be4bd59ca3622202bda4538418"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "RSG/2013/page_69.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1820,
+      "error_labels": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "errors": [
+        "ValueError: partial_quote_outside_selected_unit"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_outside_selected_unit",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "644e9e14c6f6bd13f89caa20a3c71a495b65ad0eda03cb63a397d03cbe56d172",
+      "record": {
+        "id": "c69ad1a77fc8fe4fbbab673efec32ef1135cc267e45723dd4bbf053da2363763",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/48f8e2cb08412f7b04383e425002f5325d957a740bca106df3c1b0e85b30625b/record/record.json",
+        "sha256": "f530b3a23457fa91e8a5b29dcf45a5c2f59f680507d2f078da874086f14e3e80"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "SNA/2013/page_56.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1253,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "798def160c63aac91120608048acd8e70d7b1d6de7d43a8fc487e7dccd804d2a",
+      "record": {
+        "id": "31d1c1627479b381ced5dbc5a4e625bb89036b09bdb93eaa5b92ca975553b5b1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/bd69aea007251a748a1faf300364bd541e756071ef79d2d8974fe90528a8d9b6/record/record.json",
+        "sha256": "da6edcb9dcd4de90bb3f604e0c3c221ae07b8ac992dbab0c1510d4b120c1b4bf"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "SNPS/2003/page_39.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1967,
+      "error_labels": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "errors": [
+        "ValueError: state evidence must belong to its members"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: state evidence must belong to its members",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "92e97c0e94c4ad465cae77e9d8546f2a18ce4d34246a3a1669dec0ab31c9eeb2",
+      "record": {
+        "id": "67e8cc72fccb68cdce49ab8f7607858f29cd3a63c790d1146d37a29bf31c0de1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/869bfa2e85694ee9ff3c4bc318ead7bd2ef5defcd399a7eb6f0f85faed9ebaca/record/record.json",
+        "sha256": "dac2c8f9e44b70f4eabc6de9a92f57bb9624033caa0ff0f1c9ea4ec9ef801e74"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "STT/2013/page_175.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 905,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "46808767622bdddf99ec77e11a8fb6b3124e5d8d179828ab705fcaf2c8168f40",
+      "record": {
+        "id": "d2a8fbd0c9f913cec95c4291de82f1183cea104a79ff265f349010f62061b838",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/da072c3a3e7a63b556c2f763bd437ac4389e49428bb88041407c263e51c99be1/record/record.json",
+        "sha256": "e64630cc83d6617ad79eb67996b91dbe389cb10b5daabb9bb4c75b38c6d2ebd9"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "STT/2013/page_71.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1356,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 65536,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "943a3fa629b4fd54e1bc2cc43b1f43a73063a86c9a0b4e8bf942aa9490091650",
+      "record": {
+        "id": "545ac1f73b84840a07f32e451c9bfabbfe6c5c6ca0b98c282dba2c961c3bfe79",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/fa03edb7691ebbf6c9d63d649e7eef3f0188422801b40e7e382aa7d41185f9af/record/record.json",
+        "sha256": "4716c7cc2c63e0f5ba650a6d444c4e31d549f0cb2451df40503147eda2b5356d"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "STZ/2010/page_51.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1453,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[0].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 16384,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "f4b5d130eed2abcb45661226d9faf174cc3ee09c622e6387ba33fe6fa385e09e",
+      "record": {
+        "id": "028a50c637cdefd8cb3fcfb5f7c24552cf1810dda97fe1654cc2e2908763e526",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/4946c0d24b61f92d6aacb5cfa40f97af6a4c8591870b6026eed58ee128d3ab2e/record/record.json",
+        "sha256": "ea49b48b1195353ded09a25f0aac57ce17b60c4737a60d4789c85fc60cd9f00a"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "TFX/2015/page_42.pdf-1",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1884,
+      "error_labels": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "errors": [
+        "ValueError: partial_quote_absent_or_not_unique"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: partial_quote_absent_or_not_unique",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "e757d6dac3ccef32f13b7fa9e9e75e7e05a3749c2a94c52bca349d27e73174a5",
+      "record": {
+        "id": "a4beb45c8ac64c686c262a9cff59062b55038cb7d962b18a5935dbc69b0eed16",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/70dce249893845388f3a720cb0514777695e323486d4f880bc87b95a2690033d/record/record.json",
+        "sha256": "3d938f4ab8232e7305ea5471bbdd6182758d35c67f8773c69ca49c0b55a8c1ee"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "TSCO/2017/page_68.pdf-2",
+      "usable": false
+    },
+    {
+      "completion_tokens": 1692,
+      "error_labels": [
+        "ValueError: $.states[].interventions[].consequence: outside typed enum"
+      ],
+      "errors": [
+        "ValueError: $.states[0].interventions[0].consequence: outside typed enum"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[].interventions[].consequence: outside typed enum",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "ba97901c038e8b255000b3c68df9478ee9f6d2cbab146f8a0a6ad28f220bb411",
+      "record": {
+        "id": "3990291b2c249d42152895bf73c89ecedd6cb46c5821ec6068280c001a4271d1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/10573c52a2154a7c6e7612013cfd58c496f3538b93085ae63f183bd3b9ce69a6/record/record.json",
+        "sha256": "feb0b8cfd80fea36e62516629fdc1dc3ac7f4142d0ab7b3faac54f003f3737bb"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "VLO/2012/page_27.pdf-3",
+      "usable": false
+    },
+    {
+      "completion_tokens": 890,
+      "error_labels": [
+        "ValueError: $.states[]: missing/extra wire field"
+      ],
+      "errors": [
+        "ValueError: $.states[0]: missing/extra wire field"
+      ],
+      "finish_reason": "tool_calls",
+      "first_error": "ValueError: $.states[]: missing/extra wire field",
+      "max_output_tokens": 32768,
+      "purpose": "mapping",
+      "raw_ambiguity_count": 0,
+      "raw_mapping_status": "complete",
+      "raw_review_sha256": "397924277276c0ab9336e57967da9dcc1ceefc4f72e216e47ed10a5317955a35",
+      "record": {
+        "id": "c6ef3ec060860de8e79e7b5c1a7eae0deff453f8ca711ae1bb279b36440aa79b",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01/annotations/e9d85fab3acedba73c4b5dfb5e766e8875b9dbab7d1373c2661b7c903b530809/record/record.json",
+        "sha256": "9e8d0d245672a55ef59721bc25a50d82d73fddd83fac8a9c9380ade34198db68"
+      },
+      "returned": true,
+      "review_format_error": null,
+      "task_id": "VNO/2011/page_85.pdf-1",
+      "usable": false
+    }
+  ],
+  "id": "b686b7c88f2b68a94f59649fb2ed61c8a0bb9c49c2263f13912c8c9a19b09e74",
+  "network_unknowns": 0,
+  "no_API_or_wallet_access": true,
+  "no_JSON_repair": true,
+  "no_rejudgment": true,
+  "notes": [
+    "Whole newly registered matrix, not all historical mappings or a causal before/after comparison.",
+    "First diagnostics are mutually exclusive; all-error labels may overlap.",
+    "Raw complete/unknown is the saved model claim, not a host semantic truth certificate.",
+    "Missing model responses are excluded from format/annotation failures.",
+    "Quantiles use nearest rank ceil(p*n); no output-limit inference from response content."
+  ],
+  "original_meaning_and_labels_preserved": true,
+  "registered": 309,
+  "schema": "v14_sealed_annotation_report.v1",
+  "script": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v14_annotation_audit.py",
+    "sha256": "7ef0bab3edfd45c94c36deea16b48ef797cc10037e06f663ea66e97ea2dccf67"
+  },
+  "seal_alignment_passed": true,
+  "source_records_identity_sha256": "b4853e373e34d3caba811e4427eb0e81fa18413fdd4a3ed6ee6d3999b56312b5"
+}

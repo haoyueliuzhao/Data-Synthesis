@@ -1,0 +1,25 @@
+{
+  "at": "2026-09-30T03:55:09.627072+00:00",
+  "code_commit": "eb8446b35fddceeb9ab734faf5b15ef60bae74ae",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-m",
+    "trusted_synthesis.finance_research.v14_workflow",
+    "run",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v14_representation_01"
+  ],
+  "expected_new_calls": 309,
+  "id": "c5e8657e790d826d07d7a3bba908b669c19081edf3fb89fbe6dc059603c66c50",
+  "initial_encoding_already_complete": true,
+  "maximum_concurrency": 16,
+  "no_GPU_placeholder": true,
+  "old_unknown_reservations_preserved": true,
+  "pid": 2775635,
+  "process_start_time_ticks": "316490480",
+  "registration_id": "3fbd9f11bf7cc91dda26d9805d6bb033863d6e8be9bcaa477b16bc3429a24a81",
+  "schema": "v14_workflow_launch.v1",
+  "source_model": "deepseek-flash",
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v14-representation-20260930"
+}
