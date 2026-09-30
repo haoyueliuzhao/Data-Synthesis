@@ -2,7 +2,9 @@
 
 本轮按用户“参照审计修订并开展后续实验”执行：不再向 DeepSeek 请求第四次 ABMD 重映射，保留原共同前缀，使用一次具名的原件研究裁定建立新的 V18 完整材料，再接续原十五个训练分支。本报告区分原始轨迹事实、研究判断、机械核验和真实训练进展；材料完整不代表 VTDO 已有收益。
 
-截至本轮材料登记，三个 seed11／29／47 已自然完成真实 step298。ABMD 四包的完整研究判断为 `{p0,p2,p3}: χ=0`、`{p1}: χ=1`，不是在失效返回上只改 p2 的 χ。旧 V17 binding 和 semantic hold 原样保留，新的判断只在后继 V18 生效。实际材料统计、迁移和首次正式 outer 的结果在下文追加，不将 CPU 控制或排队登记表述为 CUDA 验收。
+截至北京时间16时42分28秒，V18新binding及三个真实step298的零更新迁移均已完成。C-only三个seed与Full seed11已经进入首次正式outer的全类G阶段；另外四个分支在加载前因GPU二次显存准入不足退出，剩余七个分支未启动。故完整十五分支尚未全部运行，首个outer的700条反馈与回放也未验收完成。
+
+ABMD 四包的完整研究判断为 `{p0,p2,p3}: χ=0`、`{p1}: χ=1`，不是在失效返回上只改 p2 的 χ。旧 V17 binding 和 semantic hold 原样保留，新的判断只在后继 V18 生效。下文提供真实材料统计、迁移及启动记录，不将 CPU 控制或排队登记表述为 CUDA 验收。
 
 ## 裁定来源与信息隔离
 
@@ -99,3 +101,41 @@ p2:q005 确切是 a1 的 run_program → 真实0.65773观察 → 后续 submit �
 执行源码冻结提交为 `e99185b657`，对应目录 `.codex-worktrees/finqa-v18-researcher-continuation-20260930`，该提交已推送远端。新workflow于北京时间16时35分58秒启动，PID2769608、birth ticks318175480，启动receipt为 `36326ca543369b79b79da5bdaf170829cef581ddfd405a2607010defe7f59ab1`。启动日志与immutable receipt目录分离。
 
 排队准入仍观察至少24576 MiB空闲显存并使用原GPU锁，不将该门槛当作outer显存保证。当时 GPU1／2／3／6 空闲，0／4／5／7有其他进程且不足门槛，未干预这些外部进程。登记允许0至7、最多8个独立worker；实际只会在可用设备上启动工作，不占位等待。迁移完成和正式GPU阶段以随后产生的真实receipt为准。
+
+## 零更新迁移与正式外层启动实测
+
+三份迁移分别在北京时间16时37分54.185秒、54.832秒和55.483秒完成，输入和输出均为step298，optimizer steps均为0。迁移实现对模型参数、buffer、非空Adam、RNG、游标和日程等共同计算字段计算迁移前后digest并要求相等。加入分布元数据后，整个state文件SHA和整体state digest必然可不同；不把文件SHA不同误写为重训，也不声称整个文件字节相同。
+
+| Seed | 零更新迁移receipt ID |
+| --- | --- |
+| 11 | `4c43efe2a3ea20f0a7bc943d2c79612b24b4f711b178f5b572304ea119258ffe` |
+| 29 | `ee017cf3c898cebdfce8d76b583d9cf27c6ed6ecdd4eb322713e504eaa5e9bc5` |
+| 47 | `d1332910d9421b0429d0dd4d0a3c106f1665a42493aa4768e367182b1a8b1821` |
+
+原十五分支launcher登记为 `4afb7bf1526da7bee652061e4935b20955f17d61a112a341bb202c50df8eeaf1`，training handoff为 `855d0d979c96584e7334f68b7e44eb61dbabec3026aa6ba1deaa6daa9da1609e`。原机制来源证明为 `931ff46478ce85e5c0f0b7a9ed474f2dec53e21ac68ec55934e410e0128b37a3`，其登记早于任何本launcher迁移checkpoint。
+
+| 活动分支 | GPU | 实际PID | 首次进入全类G的北京时间 |
+| --- | ---: | ---: | --- |
+| C-only seed11 | 1 | 2777056 | 16:39:31.529 |
+| C-only seed29 | 2 | 2777057 | 16:39:32.362 |
+| C-only seed47 | 3 | 2777058 | 16:39:30.967 |
+| Full seed11 | 6 | 2777059 | 16:39:31.553 |
+
+以上均为真实Student恢复后进入step298的首次正式outer，不是pilot或占位进程。截至16时42分28秒四者最后阶段仍为 `full_class_gradients`，均没有outer failure或complete记录。此刻尚无虚拟Adam完成、700条封口、logP回放、gJ、Contribution、π更新或step299成功的证据，不能提前宣布完整外层验收。
+
+## 显存二次准入失败和剩余工作
+
+Supervisor于16时38分16秒又尝试启动四个分支；其实际子进程在模型加载前重新检查设备，均返回 `ValueError: insufficient GPU margin; no allocation/placeholder/wait`。这些是共享服务器显存准入失败，不是CUDA OOM，也不是outer数值或反馈失败。
+
+| 未通过准入的分支 | 被选设备 | PID | 本次结果 |
+| --- | ---: | ---: | --- |
+| Full seed29 | 0 | 2778462 | exit1，未加载本分支Student，未生成arm intent或反馈 |
+| Full seed47 | 7 | 2778463 | 同上 |
+| Static seed11 | 4 | 2778464 | 同上 |
+| Static seed29 | 5 | 2778465 | 同上 |
+
+这是两次资源观察间的准入差异；日志足以确认二次检查失败，但未保存第一次挑选时的完整显存快照，因此不臆测外部进程的确切分配时间或用途。没有为了启动这些分支中止他人进程、放宽24576 MiB门槛、缩上下文或改实验参数。
+
+按冻结supervisor策略，发现失败后不再派新job，但不取消已进入真实计算的四个分支。剩余Static seed47、Manual+三个seed、Manual−三个seed共七项仍未启动。完整矩阵仍为原十五项，没有转成四项成功子集；这次启动不能表述为全部五臂正常推进。后续资源恢复应明确登记恢复操作，保留原失败attempt，从已保存的共同点或正式commit继续，不能静默重采部分700反馈。
+
+定点启动观察保存在 `start_observation_01/record.json`，ID为 `cb5f4baa47640a92ebfb5f06675eed24e3edb4ff78189d00041a9b6a2e735a20`，包含三迁移引用、四个正式outer intent／phase、四个原始准入异常、当时controller状态和GPU观察。报告不使用训练loss筛选分支，不打开dev或public test。本轮V18新研究权威、完整binding、负控制、必要迁移与启动证据定点归档；旧V17派生工件的既有外发范围不扩大，钱包、`.env`、Student Tensor与实时大日志不上传。

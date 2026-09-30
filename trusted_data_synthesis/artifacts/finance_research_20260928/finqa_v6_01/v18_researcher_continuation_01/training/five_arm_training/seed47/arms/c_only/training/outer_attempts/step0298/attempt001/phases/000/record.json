@@ -1,0 +1,12 @@
+{
+  "CPU_control_only": false,
+  "arm": "C-only",
+  "at": "2026-09-30T08:39:30.943086+00:00",
+  "id": "5d19201710e162e85237eed5a90d709005da5c6f2fd6fcd4dec42d9b6b411892",
+  "phase": "capture_pre_outer_state",
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "schedule_sha256": "9d0855bcdd9e392f1281544d8f5fe507f0ac1e064330d050e4ea3cf01bc97176",
+  "schema": "first_formal_outer_phase.v1",
+  "seed": 47,
+  "step": 298
+}

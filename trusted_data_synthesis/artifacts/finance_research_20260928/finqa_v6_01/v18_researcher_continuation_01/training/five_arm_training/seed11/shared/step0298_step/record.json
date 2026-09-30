@@ -1,0 +1,36 @@
+{
+  "actual_state_digest": "49d5ec97f748107c695d614ba44f84c79d77dd701ee57c0e8ed0931d2202540a",
+  "arm": "shared",
+  "checkpoint_contains_actual_model_Adam_RNG_pi": true,
+  "evidence": {
+    "actual_computation_digest": "1c7cd24cd29108186db7d3361bb19beefbf8b4e5d47ea2542451750ae62e9b9b",
+    "first_outer_not_executed": true,
+    "full_pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+    "genuine_completed_mapping_prior_added": true,
+    "id": "29fee1f11b43e8b9c113787f5878070dd3b3ba6c18098d7b217106f3bda5de73",
+    "material_order_id": "ad3c7301edbf3e1f1b590a86b87a12c8a84587bf438ff069d5309aa662508f82",
+    "optimizer_steps_performed": 0,
+    "original_prefix_contained_pi": false,
+    "prefix_binding": {
+      "id": "7cf8cca1d6ba08130587a3f38a00432e7d880b49fdf2c3e56a8dcbc8684ea0fa",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/prefix_material/binding/record.json",
+      "sha256": "4d7144e6e116cdf1d5d93e3117a72bbc18d2418052eba0d25c9be96bea236b6e"
+    },
+    "prefix_retrained": false,
+    "schema": "v15_completed_prefix_migration.v1",
+    "source_prefix": {
+      "actual_state_digest": "3f09fb7e4c7a3cb87be3bbf7251e2f3838515e4da6e4188e0b0b737c2c1475fb",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/prefix_training/seed11/shared/step0298_step",
+      "phase": "step",
+      "state_sha256": "f9875e85f3d20b8f1d390c33767a67d87b105d2352dbfbd95cdbba033131c03d",
+      "step": 298
+    }
+  },
+  "phase": "step",
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "schedule_sha256": "0ca86be2e1fa3ea826ecb93795169152c122dba30f1b440cc663c0348ea1300c",
+  "seed": 11,
+  "source_prefix_checkpoint_schema": "v15_prior_prefix_checkpoint.v1",
+  "state_sha256": "c78b87f6edf438bf556f8d191f66873f718a3c0e3fe22bd7e49e920c08a8b3ff",
+  "step": 298
+}

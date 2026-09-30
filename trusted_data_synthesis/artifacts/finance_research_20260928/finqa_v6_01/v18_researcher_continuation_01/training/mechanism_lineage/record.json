@@ -1,0 +1,30 @@
+{
+  "Student_results_used": false,
+  "choices_changed_after_Student": false,
+  "choices_source": "original_registered_five_arm_mainline",
+  "id": "931ff46478ce85e5c0f0b7a9ed474f2dec53e21ac68ec55934e410e0128b37a3",
+  "launcher_id": "4afb7bf1526da7bee652061e4935b20955f17d61a112a341bb202c50df8eeaf1",
+  "mechanism_registration": {
+    "id": "64281af85e8f381f5fa2bbd7398272af5d54967e125ca6890653ec42a2a72114",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/registration/record.json",
+    "sha256": "f9c64a105c50a03d82a25f9b89d89b4450aaa38c18a8380129c6476a8c0d7149"
+  },
+  "original_mechanism_source_sha256": "fd050f5ce6d6287133b4dc712fb124f02a94c253ab622975242492a98114198a",
+  "original_pre_prefix_workflow": {
+    "id": "c91e2562b380fddc28a998cd75865852dcdc7a6ea78ed58cf958c1b1716e35d1",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/workflow/registration/record.json",
+    "sha256": "74e038e39c0f5ce9493e23b3247e53ad637559808a06c5575f66039386189c09"
+  },
+  "original_registration": {
+    "id": "92e12ababef3143bf94a5e1e80ef9259909f7488bafb3630c9d64a6fcffcab8c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/registration/record.json",
+    "sha256": "9326b7df92d3aa56fa49d87a57dc5bf3afa1065ad5a31d07383658ecc91d740a"
+  },
+  "prospective_intent": {
+    "id": "cd508f367ef232ca18931181793ff675e3b28c4a1c4485fac6b3d061e6805b9e",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/continuation_intent/record.json",
+    "sha256": "b9e359748733c40447bea4146ae882e37edac9f77193e1f02fb4001e5177db84"
+  },
+  "registration_precedes_any_launcher_checkpoint": true,
+  "schema": "fixed_mechanism_prefix_handoff.v1"
+}

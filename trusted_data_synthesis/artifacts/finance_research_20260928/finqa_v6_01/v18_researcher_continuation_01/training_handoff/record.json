@@ -1,0 +1,48 @@
+{
+  "API_calls": 0,
+  "GPU_used": false,
+  "arms": [
+    "Static",
+    "Manual+",
+    "Manual-",
+    "C-only",
+    "Full"
+  ],
+  "condition_realization": {
+    "id": "c71a5b8a47bf206fb41412bc687ed08ccee87142717ed97c06d51beccebfaeb3",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/condition_realization/record.json",
+    "sha256": "6aaf873f36570fbd2ff66991bc1ce746b9445e96846779faea1827cd51cd3581"
+  },
+  "dev_sessions": 13245,
+  "dev_tasks_per_model": 883,
+  "final_dev_models": 15,
+  "first_formal_outer_required_before_C_or_Full_step299": true,
+  "id": "855d0d979c96584e7334f68b7e44eb61dbabec3026aa6ba1deaa6daa9da1609e",
+  "launcher": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training",
+  "launcher_id": "4afb7bf1526da7bee652061e4935b20955f17d61a112a341bb202c50df8eeaf1",
+  "migrations": {
+    "11": {
+      "id": "4c43efe2a3ea20f0a7bc943d2c79612b24b4f711b178f5b572304ea119258ffe",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/prefix_migrations/seed11/record.json",
+      "sha256": "aca95a85ed9729cb3d783ee6e7d03dd61bfe9f751100ea4e65eb20807f1fcef6"
+    },
+    "29": {
+      "id": "ee017cf3c898cebdfce8d76b583d9cf27c6ed6ecdd4eb322713e504eaa5e9bc5",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/prefix_migrations/seed29/record.json",
+      "sha256": "573337a9d7944d01103b1dad5903864e71121d3839e64c00ac094755ce8fd76c"
+    },
+    "47": {
+      "id": "d1332910d9421b0429d0dd4d0a3c106f1665a42493aa4768e367182b1a8b1821",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/prefix_migrations/seed47/record.json",
+      "sha256": "880616eb246489fc0131eaa69233f8711e58765ef339762be255a7784390015e"
+    }
+  },
+  "optimizer_steps_during_migration": 0,
+  "prefix_retrained": false,
+  "schema": "v18_researcher_original_five_arm_handoff.v1",
+  "seeds": [
+    11,
+    29,
+    47
+  ]
+}

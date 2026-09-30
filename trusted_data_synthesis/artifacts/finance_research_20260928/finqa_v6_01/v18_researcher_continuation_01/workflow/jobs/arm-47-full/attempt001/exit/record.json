@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-30T08:38:57.128732+00:00",
+  "completed": false,
+  "exit_code": 1,
+  "failed_attempt_retained": true,
+  "id": "24f622c9f873c31aaf1d20e043bc258507013e21d988897f6a3ad630a7d43dd0",
+  "key": "arm-47-full",
+  "pid": 2778463,
+  "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training/seed47/arms/full/result/record.json",
+  "retry_performed": false
+}

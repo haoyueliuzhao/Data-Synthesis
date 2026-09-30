@@ -1,0 +1,17 @@
+{
+  "CPU_control_only": false,
+  "arm": "Full",
+  "at": "2026-09-30T08:39:31.520823+00:00",
+  "automatic_resampling": false,
+  "context_or_denominator_changed": false,
+  "formal_experiment_not_pilot": true,
+  "id": "1dba1e889d1d7f39f871a9584ddd079bcdfc7358291d461265ec2799f86ede68",
+  "last_committed_training_step": 298,
+  "optimizer_steps_in_outer": 0,
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "registered_denominator": 700,
+  "schedule_sha256": "0ca86be2e1fa3ea826ecb93795169152c122dba30f1b440cc663c0348ea1300c",
+  "schema": "first_formal_outer_intent.v1",
+  "seed": 11,
+  "step": 298
+}

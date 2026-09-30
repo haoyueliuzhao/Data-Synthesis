@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-30T08:38:57.140291+00:00",
+  "completed": false,
+  "exit_code": 1,
+  "failed_attempt_retained": true,
+  "id": "658d342bbc7c06e0e581dff2de3d090c43dcff0f499880f06c56090a7b90b287",
+  "key": "arm-29-static",
+  "pid": 2778465,
+  "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training/seed29/arms/static/result/record.json",
+  "retry_performed": false
+}

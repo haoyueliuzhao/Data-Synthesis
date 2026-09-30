@@ -1,0 +1,27 @@
+{
+  "at": "2026-09-30T08:37:56.154814+00:00",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-m",
+    "trusted_synthesis.finance_research.v16_arm_training",
+    "run-arm",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training",
+    "--seed",
+    "47",
+    "--arm",
+    "C-only",
+    "--gpu-index",
+    "3"
+  ],
+  "gpu_index": 3,
+  "id": "8c7121a759619d45b75f371ebeb045cb6c1116ca39ee20026f7fac534db42b35",
+  "key": "arm-47-c_only",
+  "new_sampling_retry": false,
+  "pid": 2777058,
+  "process_start_time_ticks": "318187133",
+  "protocol_id": "5ecd737d512f48661dc634e7ccc47a49e060dc0f259ef60ebc79a037e2d8753e",
+  "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training/seed47/arms/c_only/result/record.json",
+  "worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930"
+}
