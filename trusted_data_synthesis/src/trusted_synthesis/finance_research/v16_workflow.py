@@ -41,9 +41,17 @@ def source_bindings():
     return {name: sha(Path(__file__).parent / name) for name in SOURCES}
 
 
-def register_workflow(output=OUTPUT, *, allowed_gpu_indices, max_gpu_workers=8):
+def register_workflow(
+    output=OUTPUT,
+    *,
+    allowed_gpu_indices,
+    max_gpu_workers=8,
+    plan_loader=None,
+    source_loader=None,
+    schema="v16_six_task_continuation_workflow.v1",
+):
     output = Path(output).resolve()
-    plan = checked_plan(output)
+    plan = (plan_loader or checked_plan)(output)
     definition = read_ref(plan["definition"])
     original = checked(Path(definition["source_root"]) / "prefix_training/registration/record.json")
     allowed = list(allowed_gpu_indices)
@@ -56,13 +64,13 @@ def register_workflow(output=OUTPUT, *, allowed_gpu_indices, max_gpu_workers=8):
     )
     value = bound(
         dict(
-            schema="v16_six_task_continuation_workflow.v1",
+            schema=schema,
             at=now(),
             registration_id=plan["id"],
             successor_registration=entry(output / "registration/record.json"),
             original_prefix_root=str(Path(definition["source_root"]) / "prefix_training"),
             prospective_intent=definition["prospective_intent"],
-            source_bindings=source_bindings(),
+            source_bindings=(source_loader or source_bindings)(),
             allowed_gpu_indices=allowed,
             max_gpu_workers=max_gpu_workers,
             minimum_free_mib=24576,
@@ -90,18 +98,35 @@ def register_workflow(output=OUTPUT, *, allowed_gpu_indices, max_gpu_workers=8):
 
 
 class Supervisor(ExistingSupervisor):
+    plan_loader = staticmethod(checked_plan)
+    source_loader = staticmethod(source_bindings)
+    scope_label = "SIX_TASK"
+    mainline_schema = "v16_complete_mainline_result.v1"
+
     def __init__(self, output):
         self.output = Path(output).resolve()
         self.root = self.output / "workflow"
-        self.plan = checked_plan(self.output)
+        self.plan = self.plan_loader(self.output)
         self.workflow = checked(self.root / "registration/record.json")
         require(
             self.workflow["registration_id"] == self.plan["id"]
-            and self.workflow["source_bindings"] == source_bindings(),
-            "frozen six-task successor workflow required",
+            and self.workflow["source_bindings"] == self.source_loader(),
+            "frozen fixed-task successor workflow required",
         )
         self.stop, self.children = False, {}
         self.max_gpu_workers = self.workflow["max_gpu_workers"]
+
+    def produce_material(self):
+        from .v16_material import produce
+
+        return produce(self.output)
+
+    def migrate(self):
+        from .v16_continuation import register_and_migrate
+
+        return register_and_migrate(
+            self.output, allowed_gpu_indices=self.workflow["allowed_gpu_indices"]
+        )
 
     def wait_for_inputs(self):
         """Only completion JSONs are polled: no model, checkpoint tensors or GPU held."""
@@ -117,7 +142,7 @@ class Supervisor(ExistingSupervisor):
                     "controller failure belongs to another plan",
                 )
                 self.update(
-                    "SIX_TASK_API_FAILURE_SAVED_PREFIX_UNTOUCHED",
+                    self.scope_label + "_API_FAILURE_SAVED_PREFIX_UNTOUCHED",
                     controller_result=entry(controller_result),
                     original_prefix_control_untouched=True,
                     no_branch_or_feedback_started=True,
@@ -125,13 +150,11 @@ class Supervisor(ExistingSupervisor):
                 )
                 return False
             if marker_complete(seal) and not marker_complete(material):
-                from .v16_material import produce
-
-                produce(self.output)
+                self.produce_material()
             material_done = marker_complete(material)
             if material_done and not checked(material)["training_admitted"]:
                 self.update(
-                    "SIX_TASK_MAPPING_UNRESOLVED_PREFIX_UNTOUCHED",
+                    self.scope_label + "_MAPPING_UNRESOLVED_PREFIX_UNTOUCHED",
                     mapping_result=entry(material),
                     no_branch_or_feedback_started=True,
                     original_prefix_control_untouched=True,
@@ -146,7 +169,7 @@ class Supervisor(ExistingSupervisor):
             if material_done and len(completed) == 3:
                 return True
             self.update(
-                "WAITING_FOR_ORIGINAL_PREFIX_AND_SIX_TASK_BINDING",
+                "WAITING_FOR_ORIGINAL_PREFIX_AND_" + self.scope_label + "_BINDING",
                 completed_prefix_seeds=completed,
                 complete_material_ready=material_done,
                 original_prefix_control_untouched=True,
@@ -160,12 +183,8 @@ class Supervisor(ExistingSupervisor):
     def run(self):
         if not self.wait_for_inputs():
             return None
-        from .v16_continuation import register_and_migrate
-
         self.update("VERIFYING_FIXED_MATERIAL_AND_ZERO_UPDATE_MIGRATION")
-        handoff = register_and_migrate(
-            self.output, allowed_gpu_indices=self.workflow["allowed_gpu_indices"]
-        )
+        handoff = self.migrate()
         return self.run_remaining_mainline(handoff)
 
     def arm_jobs(self, launcher):
@@ -298,7 +317,7 @@ class Supervisor(ExistingSupervisor):
         report = mechanisms.aggregate(mechanism_root)
         value = bound(
             dict(
-                schema="v16_complete_mainline_result.v1",
+                schema=self.mainline_schema,
                 at=now(),
                 registration_id=self.plan["id"],
                 prefix_retrained=False,
@@ -315,32 +334,39 @@ class Supervisor(ExistingSupervisor):
         return value
 
 
-def main():
+def main(
+    *,
+    default_output=OUTPUT,
+    workflow_register=None,
+    supervisor_class=None,
+    material_producer=None,
+    migrator=None,
+):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("register", "run", "material", "migrate"))
-    parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument("--output", type=Path, default=default_output)
     parser.add_argument("--gpus", default="0,1,2,3,4,5,6,7")
     parser.add_argument("--max-gpu-workers", type=int, default=8)
     args = parser.parse_args()
     gpus = [int(i) for i in args.gpus.split(",")]
     if args.action == "register":
-        result = register_workflow(
+        result = (workflow_register or register_workflow)(
             args.output, allowed_gpu_indices=gpus, max_gpu_workers=args.max_gpu_workers
         )
     elif args.action == "material":
         from .v16_material import produce
 
-        result = produce(args.output)
+        result = (material_producer or produce)(args.output)
     elif args.action == "migrate":
         from .v16_continuation import register_and_migrate
 
-        result = register_and_migrate(args.output, allowed_gpu_indices=gpus)
+        result = (migrator or register_and_migrate)(args.output, allowed_gpu_indices=gpus)
     else:
         root = args.output / "workflow"
         root.mkdir(parents=True, exist_ok=True)
         with (root / "controller.lock").open("a") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            supervisor = Supervisor(args.output)
+            supervisor = (supervisor_class or Supervisor)(args.output)
 
             def stop_requested(signum, frame):
                 supervisor.stop = True

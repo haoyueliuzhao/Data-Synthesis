@@ -165,21 +165,30 @@ def load_historical_prefix(definition, *, history=None):
     return pool
 
 
-def successor_results(output, plan, definition):
-    """Consume six explicit terminal sources; missing/failed returns never mean chi=0."""
+def successor_results(
+    output,
+    plan,
+    definition,
+    *,
+    expected_calls=6,
+    paid_schema="v16_paid_material_annotation.v1",
+    receipt_verifier=None,
+):
+    """Consume a fixed explicit successor wave; missing returns never mean chi=0."""
+    receipt_verifier = receipt_verifier or verify_successor_receipt
     seal = checked(Path(output) / "completion_seal/record.json")
     require(
         seal["registration_id"] == plan["id"]
         and seal["protocol_id"] == plan["protocol_identity"]
         and seal["all_registered_jobs_have_authentic_terminals"] is True
-        and seal["expected_calls"] == len(seal["terminals"]) == len(plan["jobs"]) == 6,
-        "all six authentic successor terminals required",
+        and seal["expected_calls"] == len(seal["terminals"]) == len(plan["jobs"]) == expected_calls,
+        "all registered authentic successor terminals required",
     )
     results = {}
     for job, ref in zip(plan["jobs"], seal["terminals"], strict=True):
         terminal = read_ref(ref)
         record = read_ref(terminal["record"])
-        verify_successor_receipt(plan, job, terminal, record)
+        receipt_verifier(plan, job, terminal, record)
         task = job["task_id"]
         require(
             task not in results
@@ -189,7 +198,7 @@ def successor_results(output, plan, definition):
         )
         if terminal["terminal_kind"] == "paid_model_return":
             require(
-                record["schema"] == "v16_paid_material_annotation.v1"
+                record["schema"] == paid_schema
                 and record["actual_model_call_receipt_verified"] is True
                 and record["request"] == read_ref(job["request"]),
                 "new mapping must have its own authentic one-shot source",
@@ -205,14 +214,15 @@ def successor_results(output, plan, definition):
         results[task] = dict(inspection=inspection, reference=terminal["record"])
     require(
         set(results) == set(definition["fixed_unresolved_task_ids"]),
-        "six-task successor scope changed",
+        "fixed successor scope changed",
     )
     return seal, results
 
 
-def verify_successor_receipt(plan, job, terminal, record):
-    """New paid/UNKNOWN sources retain their actual six-call ledger evidence."""
-    from .v16_provider import paid_record, restore_settled
+def verify_successor_receipt(plan, job, terminal, record, *, provider=None):
+    """New paid/UNKNOWN sources retain their actual fixed-wave ledger evidence."""
+    if provider is None:
+        from . import v16_provider as provider
 
     db = sqlite3.connect(Path(plan["budget_database"]).resolve().as_uri() + "?mode=ro", uri=True)
     db.row_factory = sqlite3.Row
@@ -227,10 +237,13 @@ def verify_successor_receipt(plan, job, terminal, record):
                 "SELECT * FROM requests WHERE invocation_id=?",
                 (record["artifact"]["budget_invocation_id"],),
             ).fetchone()
-            require(row is not None, "new six-task paid receipt missing")
+            require(row is not None, "new successor paid receipt missing")
             request = read_ref(job["request"])
             require(
-                record == paid_record(request, restore_settled(dict(row), request), dict(row)),
+                record
+                == provider.paid_record(
+                    request, provider.restore_settled(dict(row), request), dict(row)
+                ),
                 "successor raw response or inspection changed",
             )
         else:
@@ -261,15 +274,23 @@ def verify_successor_receipt(plan, job, terminal, record):
         db.close()
 
 
-def collect(output):
-    from .v16_registration import checked_plan
+def collect(
+    output,
+    *,
+    plan_loader=None,
+    history_loader=None,
+    results_loader=None,
+    support_schema="v16_complete_support_manifest.v1",
+):
+    if plan_loader is None:
+        from .v16_registration import checked_plan as plan_loader
 
     output = Path(output).resolve()
-    plan = checked_plan(output)
+    plan = plan_loader(output)
     definition = read_ref(plan["definition"])
-    history = historical_context(definition)
+    history = (history_loader or historical_context)(definition)
     prefix = load_historical_prefix(definition, history=history)
-    seal, replacements = successor_results(output, plan, definition)
+    seal, replacements = (results_loader or successor_results)(output, plan, definition)
     mappings, authorities = history["mappings"], history["authorities"]
     for task, value in replacements.items():
         mappings[task], authorities[task] = value["inspection"], value["reference"]
@@ -281,7 +302,7 @@ def collect(output):
     support = token_independent_profile(definition["fixed_task_slots"], mappings, encodings, [])
     body = {k: v for k, v in support.items() if k != "id"}
     body.update(
-        schema="v16_complete_support_manifest.v1",
+        schema=support_schema,
         prefix_binding=definition["prefix_material_binding"],
         supervision_and_encoding_unchanged=True,
         original_738_authorities_unchanged=True,
@@ -298,10 +319,10 @@ def collect(output):
     )
 
 
-def binding_body(output, value):
+def binding_body(output, value, *, schema=BINDING_SCHEMA):
     plan, definition, prefix = value["plan"], value["definition"], value["prefix"]
     return dict(
-        schema=BINDING_SCHEMA,
+        schema=schema,
         material_root=str(Path(output).resolve()),
         registration_id=plan["id"],
         protocol_id=plan["protocol_identity"],
@@ -328,9 +349,11 @@ def binding_body(output, value):
     )
 
 
-def produce(output):
+def produce(
+    output, *, collector=None, body_builder=None, result_schema="v16_complete_material_result.v1"
+):
     output = Path(output).resolve()
-    value = collect(output)
+    value = (collector or collect)(output)
     support = value["support"]
     persist(output / "material/support", support)
     persist(
@@ -339,7 +362,7 @@ def produce(output):
     )
     ready = support["material_complete"] and support["exploratory_training_admitted"]
     result = dict(
-        schema="v16_complete_material_result.v1",
+        schema=result_schema,
         registration_id=value["plan"]["id"],
         protocol_id=value["plan"]["protocol_identity"],
         N=744,
@@ -357,28 +380,35 @@ def produce(output):
         GPU_used=False,
     )
     if ready:
-        persist(output / "material/binding", bound(binding_body(output, value)))
+        persist(output / "material/binding", bound((body_builder or binding_body)(output, value)))
         result["binding"] = entry(output / "material/binding/record.json")
     result = bound(result)
     persist(output / "material/result", result)
     return result
 
 
-def load_training_pool(binding_path):
+def load_training_pool(
+    binding_path,
+    *,
+    schema=BINDING_SCHEMA,
+    collector=None,
+    body_builder=None,
+    validator_id="v16_six_successor_states_original_supervision.v1",
+):
     path = Path(binding_path).resolve()
     binding = checked(path)
     require(
-        binding["schema"] == BINDING_SCHEMA
+        binding["schema"] == schema
         and path == Path(binding["material_root"]) / "material/binding/record.json",
-        "genuine V16 complete binding required",
+        "genuine complete successor binding required",
     )
-    value = collect(binding["material_root"])
+    value = (collector or collect)(binding["material_root"])
     prefix, support = value["prefix"], value["support"]
     require(
         support["material_complete"]
         and support["exploratory_training_admitted"]
         and read_ref(binding["support_manifest"]) == support
-        and binding == bound(binding_body(binding["material_root"], value)),
+        and binding == bound((body_builder or binding_body)(binding["material_root"], value)),
         "unchanged complete binding, inherited authorities and original supervision required",
     )
     packages = [
@@ -405,10 +435,8 @@ def load_training_pool(binding_path):
         == prefix.material_order_id,
         "genuine state names cannot alter execution order",
     )
-    pool._manifest.registration.validator_binding_id = (
-        "v16_six_successor_states_original_supervision.v1"
-    )
-    pool.material_schema, pool.conditional_scope_verified = BINDING_SCHEMA, True
+    pool._manifest.registration.validator_binding_id = validator_id
+    pool.material_schema, pool.conditional_scope_verified = schema, True
     pool.registered_singleton_tasks = tuple(support["registered_singleton_tasks"])
     pool.execution_plan, pool.support_manifest = support["execution_plan"], support
     pool.capability_profile, pool.tokenizer_binding = (

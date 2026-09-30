@@ -768,6 +768,28 @@ def validate_student_adapters(model, adapter_scope=None):
     )
 
 
+def material_report_identity(material_schema):
+    """Audit labels follow the real successor binding; original supervision stays fixed."""
+    version = {
+        "v17_three_task_complete_material_binding.v1": "v17",
+        "v16_six_task_complete_material_binding.v1": "v16",
+        "v15_complete_material_binding.v1": "v15",
+        "v14_material_binding.v1": "v14",
+        "v13_material_binding.v1": "v13",
+        "v10_material_binding.v1": "v10",
+    }.get(material_schema, "v8")
+    policy = {
+        "v17": "v14_state_independent_original_span_union.v1",
+        "v16": "v14_state_independent_original_span_union.v1",
+        "v15": "v14_state_independent_original_span_union.v1",
+        "v14": "v14_state_independent_original_span_union.v1",
+        "v13": "v13_fixed_authority_original_spans.v1",
+        "v10": "v10_single_authority_original_spans.v1",
+        "v8": "v8_single_authoritative_targets.v1",
+    }[version]
+    return version, policy
+
+
 class TrainingDriver:
     """One actual optimizer step/commit per call; explicit arms after shared step400."""
 
@@ -1033,19 +1055,9 @@ class TrainingDriver:
         )
         self.step_index += 1
         underlying_update_id = report.pop("id")
-        material_version = {
-            "v15_complete_material_binding.v1": "v15",
-            "v14_material_binding.v1": "v14",
-            "v13_material_binding.v1": "v13",
-            "v10_material_binding.v1": "v10",
-        }.get(getattr(self.pool, "material_schema", None), "v8")
-        supervision_policy = {
-            "v15": "v14_state_independent_original_span_union.v1",
-            "v14": "v14_state_independent_original_span_union.v1",
-            "v13": "v13_fixed_authority_original_spans.v1",
-            "v10": "v10_single_authority_original_spans.v1",
-            "v8": "v8_single_authoritative_targets.v1",
-        }[material_version]
+        material_version, supervision_policy = material_report_identity(
+            getattr(self.pool, "material_schema", None)
+        )
         report.update(
             schema_version=f"{material_version}_actual_task_batch_update.v1",
             underlying_task_batch_update_id=underlying_update_id,

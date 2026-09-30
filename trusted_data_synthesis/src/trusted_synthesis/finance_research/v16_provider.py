@@ -140,9 +140,9 @@ def _response(value, request):
     return message, finish
 
 
-def restore_settled(row, request):
+def restore_settled(row, request, *, protocol=None, version="v16"):
     """Read only, no reserve/send and no repair of the original annotation string."""
-    body = request_body(request)
+    body = request_body(request) if protocol is None else protocol.request_body(request)
     wire = _json(body).encode()
     require(
         isinstance(row, dict)
@@ -187,7 +187,7 @@ def restore_settled(row, request):
     )
     return bound(
         dict(
-            schema="v16_settled_material_artifact.v1",
+            schema=f"{version}_settled_material_artifact.v1",
             **_binding(request),
             budget_invocation_id=row["invocation_id"],
             budget_coordinates=coords,
@@ -213,12 +213,16 @@ def restore_settled(row, request):
     )
 
 
-def paid_record(request, artifact, row):
-    require(restore_settled(row, request) == artifact, "paid receipt is not exact settled replay")
-    inspected = inspect_paid_annotation(request, artifact)
+def paid_record(request, artifact, row, *, protocol=None, version="v16"):
+    require(
+        restore_settled(row, request, protocol=protocol, version=version) == artifact,
+        "paid receipt is not exact settled replay",
+    )
+    inspect = inspect_paid_annotation if protocol is None else protocol.inspect_paid_annotation
+    inspected = inspect(request, artifact)
     return bound(
         dict(
-            schema="v16_paid_material_annotation.v1",
+            schema=f"{version}_paid_material_annotation.v1",
             request=copy.deepcopy(request),
             artifact=copy.deepcopy(artifact),
             inspection=inspected,
@@ -233,8 +237,24 @@ def paid_record(request, artifact, row):
     )
 
 
-async def request_once(*, ledger, api_key, request, client, timeout=1200.0, resume_reserved=False):
-    checked_request(request)
+async def request_once(
+    *,
+    ledger,
+    api_key,
+    request,
+    client,
+    timeout=1200.0,
+    resume_reserved=False,
+    protocol=None,
+    budget=None,
+    version="v16",
+):
+    check = checked_request if protocol is None else protocol.checked_request
+    read_permit = read_matrix_permit if budget is None else budget.read_matrix_permit
+    resume = continue_reserved if budget is None else budget.continue_reserved
+    network_reason = NETWORK_REASON if budget is None else budget.NETWORK_REASON
+    check(request)
+    require(request.get("model") == "deepseek-flash", "explicit deepseek-flash required")
     require(
         isinstance(ledger, ProbeBudget)
         and ledger.purpose == V6_PURPOSE
@@ -252,12 +272,12 @@ async def request_once(*, ledger, api_key, request, client, timeout=1200.0, resu
         "registered read timeout >=900 required",
     )
     with ledger._transaction() as db:
-        permit = read_matrix_permit(db, ledger.config)
+        permit = read_permit(db, ledger.config)
         require(
             permit is not None and permit["protocol_id"] == request["protocol_id"],
             "request must bind registered V16 protocol",
         )
-    body = request_body(request)
+    body = request_body(request) if protocol is None else protocol.request_body(request)
     wire = _json(body).encode()
     require(api_key.encode() not in wire, "key cannot enter retained model input")
     coords = invocation_identity(
@@ -266,7 +286,7 @@ async def request_once(*, ledger, api_key, request, client, timeout=1200.0, resu
     iid = coords["invocation_id"]
     local = {**_binding(request), "price_sheet_id": ledger.price_sheet.id}
     if resume_reserved:
-        continue_reserved(ledger, iid, coordinates=coords, request=body, request_body=wire)
+        resume(ledger, iid, coordinates=coords, request=body, request_body=wire)
     else:
         ledger.reserve(iid, coordinates=coords, request=body, request_body=wire)
     ledger.mark_dispatched(iid)
@@ -296,7 +316,7 @@ async def request_once(*, ledger, api_key, request, client, timeout=1200.0, resu
         )
     except BaseException as failure:
         error = unknown(
-            NETWORK_REASON,
+            network_reason,
             extra=dict(exception_type=type(failure).__name__, service_response_received=False),
         )
         if not isinstance(failure, Exception):
@@ -381,4 +401,4 @@ async def request_once(*, ledger, api_key, request, client, timeout=1200.0, resu
             ),
         ) from failure
     settle("model_response", dict(response_id=value["id"], finish_reason=finish))
-    return restore_settled(ledger.request_record(iid), request)
+    return restore_settled(ledger.request_record(iid), request, protocol=protocol, version=version)

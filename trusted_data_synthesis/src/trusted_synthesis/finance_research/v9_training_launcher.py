@@ -178,12 +178,17 @@ def register(
         from .v16_continuation import validate_condition_realization
 
         validate_condition_realization(scale, material_binding, identity)
+    if scale.get("schema") == "v17_three_task_condition_realization.v1":
+        from .v17_continuation import validate_condition_realization
+
+        validate_condition_realization(scale, material_binding, identity)
     require(
         scale["schema"]
         in {
             "v9_pre_student_scale_decision.v1",
             "v15_prospective_condition_realization.v1",
             "v16_six_task_condition_realization.v1",
+            "v17_three_task_condition_realization.v1",
         }
         and scale["material_identity"] == identity
         and scale["material_binding"] == file_binding(material_binding)
@@ -294,6 +299,12 @@ def checked_launch(output):
         )
     if scale.get("schema") == "v16_six_task_condition_realization.v1":
         from .v16_continuation import validate_condition_realization
+
+        validate_condition_realization(
+            scale, plan["material_binding"]["path"], plan["material_identity"]
+        )
+    if scale.get("schema") == "v17_three_task_condition_realization.v1":
+        from .v17_continuation import validate_condition_realization
 
         validate_condition_realization(
             scale, plan["material_binding"]["path"], plan["material_identity"]

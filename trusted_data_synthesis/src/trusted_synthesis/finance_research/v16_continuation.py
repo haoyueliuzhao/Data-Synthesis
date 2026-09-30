@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .calibration import now
-from .v6_collection import bound, persist, require
+from .v6_collection import bound, persist, require, sha
 from .v13_material_registration import checked, entry, read_ref
 from .v16_material import BINDING_SCHEMA
 
@@ -15,13 +15,21 @@ SEEDS = (11, 29, 47)
 ARMS = ["Static", "Manual+", "Manual-", "C-only", "Full"]
 
 
-def validate_lineage(binding, definition):
+def validate_lineage(
+    binding,
+    definition,
+    *,
+    binding_schema=BINDING_SCHEMA,
+    definition_schema="v16_six_task_definition.v1",
+    inherited_count=738,
+    successor_count=6,
+):
     """The old registration remains old; the new one is never backdated."""
     intent = read_ref(definition["prospective_intent"])
     source = Path(definition["source_root"])
     require(
-        binding["schema"] == BINDING_SCHEMA
-        and definition["schema"] == "v16_six_task_definition.v1"
+        binding["schema"] == binding_schema
+        and definition["schema"] == definition_schema
         and binding["original_registration"]
         == definition["source_registration"]
         == intent["mapping_plan"]
@@ -32,8 +40,8 @@ def validate_lineage(binding, definition):
         and binding["inherited_mapping_authorities"] == definition["inherited_mapping_authorities"]
         and binding["previous_failed_authorities"] == definition["previous_failed_authorities"]
         and binding["successor_task_ids"] == definition["fixed_unresolved_task_ids"]
-        and len(binding["inherited_mapping_authorities"]) == 738
-        and len(binding["successor_task_ids"]) == 6
+        and len(binding["inherited_mapping_authorities"]) == inherited_count
+        and len(binding["successor_task_ids"]) == successor_count
         and intent["schema"] == "v15_pre_student_continuation_intent.v1"
         and intent["decision"] == "proceed_exploratory_if_complete_nontrivial_material"
         and intent["no_student_started_at_registration"] is True
@@ -44,7 +52,7 @@ def validate_lineage(binding, definition):
         and intent["require_actual_prefix_step"] == 298
         and intent["feedback_denominator"] == binding["feedback_denominator"] == 700
         and intent["dev_tasks"] == 883,
-        "six-task inheritance must preserve the prospective choice and original 738 authorities",
+        "fixed successor inheritance must preserve the prospective choice and prior authorities",
     )
     original_at, successor_at = (
         datetime.fromisoformat(intent["at"]),
@@ -62,12 +70,14 @@ def validate_lineage(binding, definition):
     return intent
 
 
-def validate_condition_realization(record, material_binding, material_identity):
+def validate_condition_realization(
+    record, material_binding, material_identity, *, schema=SCHEMA, lineage_validator=None
+):
     binding = checked(material_binding)
     definition = read_ref(binding["definition"])
-    validate_lineage(binding, definition)
+    (lineage_validator or validate_lineage)(binding, definition)
     require(
-        record["schema"] == SCHEMA
+        record["schema"] == schema
         and record["prospective_intent"] == definition["prospective_intent"]
         and record["successor_registration"] == binding["registration"]
         and record["original_registration"] == definition["source_registration"]
@@ -106,7 +116,17 @@ def completed_prefixes(definition):
     return result
 
 
-def register_and_migrate(output, *, allowed_gpu_indices):
+def register_and_migrate(
+    output,
+    *,
+    allowed_gpu_indices,
+    lineage_validator=None,
+    prefix_loader=None,
+    pool_loader=None,
+    schema=SCHEMA,
+    receipt_schema="v16_prefix_migration_receipt.v1",
+    handoff_schema="v16_original_five_arm_handoff.v1",
+):
     from .v9_training_launcher import checked_launch, file_binding, material_identity, register
     from .v15_prefix_training import checkpoint_ref, migrate_prefix_checkpoint
     from .v16_material import load_historical_prefix, load_training_pool
@@ -115,14 +135,17 @@ def register_and_migrate(output, *, allowed_gpu_indices):
     binding_path = output / "material/binding/record.json"
     binding = checked(binding_path)
     definition = read_ref(binding["definition"])
-    intent = validate_lineage(binding, definition)
+    intent = (lineage_validator or validate_lineage)(binding, definition)
     prefixes = completed_prefixes(definition)
-    prefix_pool, full_pool = load_historical_prefix(definition), load_training_pool(binding_path)
+    prefix_pool, full_pool = (
+        (prefix_loader or load_historical_prefix)(definition),
+        (pool_loader or load_training_pool)(binding_path),
+    )
     identity = material_identity(full_pool)
     scale_root = output / "training/condition_realization"
     scale = bound(
         dict(
-            schema=SCHEMA,
+            schema=schema,
             prospective_intent=definition["prospective_intent"],
             successor_registration=binding["registration"],
             original_registration=definition["source_registration"],
@@ -151,6 +174,39 @@ def register_and_migrate(output, *, allowed_gpu_indices):
             allowed_gpu_indices=allowed_gpu_indices,
             minimum_free_mib=24576,
         )
+    # The original mechanism registrar rejects any launcher state.pt. Freeze the
+    # unchanged mechanism contract before adding even a zero-update shared state.
+    from .v9_mechanism_execution import register as register_mechanisms
+
+    original_workflow_path = Path(definition["source_root"]) / "workflow/registration/record.json"
+    original_workflow = checked(original_workflow_path)
+    original_mechanism_sha = original_workflow["source_bindings"]["v9_mechanism_execution.py"]
+    require(
+        original_workflow["continuation_intent_id"] == intent["id"]
+        and sha(Path(__file__).parent / "v9_mechanism_execution.py") == original_mechanism_sha,
+        "original pre-prefix mechanism implementation choices must remain byte-identical",
+    )
+    mechanism_root = output / "mechanisms"
+    if not (mechanism_root / "registration/record.json").exists():
+        register_mechanisms(launcher, mechanism_root)
+    persist(
+        output / "training/mechanism_lineage",
+        bound(
+            dict(
+                schema="fixed_mechanism_prefix_handoff.v1",
+                prospective_intent=definition["prospective_intent"],
+                original_registration=definition["source_registration"],
+                launcher_id=plan["id"],
+                original_pre_prefix_workflow=entry(original_workflow_path),
+                original_mechanism_source_sha256=original_mechanism_sha,
+                mechanism_registration=entry(mechanism_root / "registration/record.json"),
+                choices_source="original_registered_five_arm_mainline",
+                choices_changed_after_Student=False,
+                Student_results_used=False,
+                registration_precedes_any_launcher_checkpoint=True,
+            )
+        ),
+    )
     migrations = {}
     for seed in SEEDS:
         prefix_result, checkpoint = prefixes[seed]["result"], prefixes[seed]["checkpoint"]
@@ -173,7 +229,7 @@ def register_and_migrate(output, *, allowed_gpu_indices):
             )
             receipt = bound(
                 dict(
-                    schema="v16_prefix_migration_receipt.v1",
+                    schema=receipt_schema,
                     at=now(),
                     seed=seed,
                     source_prefix_result_id=prefix_result["id"],
@@ -187,7 +243,7 @@ def register_and_migrate(output, *, allowed_gpu_indices):
         migrations[str(seed)] = entry(receipt_path)
     result = bound(
         dict(
-            schema="v16_original_five_arm_handoff.v1",
+            schema=handoff_schema,
             launcher=str(launcher),
             launcher_id=plan["id"],
             condition_realization=entry(scale_root / "record.json"),

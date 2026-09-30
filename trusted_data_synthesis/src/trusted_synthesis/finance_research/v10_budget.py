@@ -217,6 +217,10 @@ def partition_snapshot(connection, config):
 
 
 def _eligible(connection, config, coordinates, output_limit):
+    if coordinates["episode_id"].startswith("v17"):
+        from .v17_budget import eligible
+
+        return eligible(connection, config, coordinates, output_limit)
     if coordinates["episode_id"].startswith("v16"):
         from .v16_budget import eligible
 
@@ -266,13 +270,20 @@ def admit(connection, config, coordinates, output_limit, reservation, *, request
     from .v15_budget import read_matrix_permit as read_v15_permit
     from .v16_budget import eligible as v16_eligible
     from .v16_budget import read_matrix_permit as read_v16_permit
+    from .v17_budget import eligible as v17_eligible
+    from .v17_budget import read_matrix_permit as read_v17_permit
 
     matrix = read_matrix_permit(connection, config)
     material = read_v13_permit(connection, config)
     residual = read_v14_permit(connection, config)
     mapping = read_v15_permit(connection, config)
     adjudication = read_v16_permit(connection, config)
-    if adjudication is not None:
+    additional = read_v17_permit(connection, config)
+    if additional is not None:
+        if not coordinates["episode_id"].startswith("v17mapping:") or request_body is None:
+            raise BudgetUnavailable("V17 permits only the three explicitly authorized tasks")
+        v17_eligible(connection, config, coordinates, output_limit, request_body=request_body)
+    elif adjudication is not None:
         if not coordinates["episode_id"].startswith("v16mapping:") or request_body is None:
             raise BudgetUnavailable("V16 permits only its six fixed once-only adjudications")
         v16_eligible(connection, config, coordinates, output_limit, request_body=request_body)

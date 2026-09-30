@@ -12,7 +12,15 @@ from trusted_synthesis.finance_research.v13_material_registration import checked
 from trusted_synthesis.finance_research.v16_registration import OUTPUT
 
 
-def summarize(output, destination):
+def summarize(
+    output,
+    destination,
+    *,
+    expected_calls=6,
+    expected_packages=24,
+    inherited_tasks=738,
+    schema="v16_actual_six_task_report.v1",
+):
     output = Path(output).resolve()
     plan = checked(output / "registration/record.json")
     definition = read_ref(plan["definition"])
@@ -66,8 +74,8 @@ def summarize(output, destination):
         )
     before, after = result["before_budget"], result["after_budget"]
     require(
-        len(tasks) == 6
-        and sum(t["original_packages"] for t in tasks) == 24
+        len(tasks) == expected_calls
+        and sum(t["original_packages"] for t in tasks) == expected_packages
         and after["settled_tariff_microcny"] - before["settled_tariff_microcny"] == fee
         and after["held_microcny"] == before["held_microcny"]
         and after["unknown_requests"] == before["unknown_requests"],
@@ -83,15 +91,16 @@ def summarize(output, destination):
         }
     report = bound(
         dict(
-            schema="v16_actual_six_task_report.v1",
+            schema=schema,
             at=now(),
             registration=entry(output / "registration/record.json"),
             controller_result=entry(output / "controller_result/record.json"),
             completion_seal=result["completion_seal"],
-            fixed_tasks=6,
-            fixed_packages=24,
+            fixed_tasks=expected_calls,
+            fixed_packages=expected_packages,
+            inherited_tasks_unchanged=inherited_tasks,
             original_738_authorities_unchanged=True,
-            returned=6,
+            returned=expected_calls,
             usable=sum(t["mapping_admitted"] for t in tasks),
             controller_elapsed_seconds=(
                 datetime.fromisoformat(seal["at"]) - datetime.fromisoformat(seal["started_at"])
