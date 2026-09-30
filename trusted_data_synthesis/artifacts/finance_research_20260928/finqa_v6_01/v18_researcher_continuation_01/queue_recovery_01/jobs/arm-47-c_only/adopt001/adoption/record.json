@@ -1,0 +1,16 @@
+{
+  "at": "2026-09-30T11:48:43.277343+00:00",
+  "birth": "318187133",
+  "gpu": 3,
+  "id": "b63316e3aa50809479dcd534e2630a548fbe00e5ff30ee38700b61181a8eaf1a",
+  "no_model_or_feedback_restarted": true,
+  "no_signal_sent": true,
+  "original_launch": {
+    "id": "8c7121a759619d45b75f371ebeb045cb6c1116ca39ee20026f7fac534db42b35",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/workflow/jobs/arm-47-c_only/attempt001/launch/record.json",
+    "sha256": "1ea59fde1737cedbccd6a623edb5eec45010d5b88ee4334b9da99456161fc6e4"
+  },
+  "pid": 2777058,
+  "recovery_id": "36d6cc6d4f44fb94c14a609db7d9535df63a7c74723b03820dc175f2b063176e",
+  "schema": "v18_existing_worker_adoption.v1"
+}
