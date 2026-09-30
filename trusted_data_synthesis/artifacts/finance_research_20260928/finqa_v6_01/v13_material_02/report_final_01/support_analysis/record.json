@@ -1,0 +1,164 @@
+{
+  "API_calls_by_this_report": 0,
+  "GPU_used_by_this_report": false,
+  "admission": {
+    "binding_exists": false,
+    "completed_formal_seed_arm_runs": 0,
+    "current_round_student_or_dev_results_available": false,
+    "five_arm_experiment_started": false,
+    "formal_dev883_evaluations": 0,
+    "formal_student_checkpoints": 0,
+    "material_complete": false,
+    "no_fixed_original_removed": true,
+    "training_admitted": false,
+    "training_started": false
+  },
+  "calls": {
+    "all_model_responses_returned": false,
+    "all_registered_jobs_terminal": true,
+    "authentic_terminals": 1316,
+    "failures_by_purpose": {
+      "mapping": {"annotation_unusable": 308, "transport_unknown": 12},
+      "projection": {"annotation_unusable": 3}
+    },
+    "network_unknown": 12,
+    "registered": 1316,
+    "returned": 1304,
+    "returns_by_purpose": {"mapping": 633, "projection": 671}
+  },
+  "conditional_plan_not_execution": {
+    "final_step": 1490,
+    "loss_coefficient": "pi(z|x)/(actual_B_j*n_xz*L_P)",
+    "none_of_these_plan_coordinates_are_observed_training_results": true,
+    "outer_steps": [298, 596, 894, 1192],
+    "planned_arms": ["Static", "Manual+", "Manual-", "C-only", "Full"],
+    "planned_dev_sessions": 13245,
+    "planned_dev_tasks_per_model": 883,
+    "planned_seed_arm_runs": 15,
+    "planned_seeds": [11, 29, 47],
+    "real_tail_batch_size": 4,
+    "registered_task_count": 744,
+    "shared_step": 298,
+    "steps_per_epoch": 149
+  },
+  "encoding": {
+    "all_public_reasoning_masked": null,
+    "blocker_failure_reason_counts": {"whole_pool_authority_barrier_unresolved": 2468},
+    "deferred_packages": 2468,
+    "encoding_directory_exists": false,
+    "full_supervised_tokens": null,
+    "interpretation": "2468 deferred encodings are consequences of the whole-pool authority barrier, not 2468 model or tokenizer failures.",
+    "observed_encoding_failure_packages": 0,
+    "started_packages": 0
+  },
+  "fixed_population": {"packages": 2468, "tasks": 744},
+  "full_population_capability": {
+    "D_pi": null,
+    "M_flex": null,
+    "chi_flexible_mass": null,
+    "chi_flexible_tasks": null,
+    "interpretation": "Unknown because complete fixed-population mapping is unavailable; not measured zero or proven degeneracy.",
+    "manual_intervention_dose": null,
+    "multi_state_tasks": null,
+    "state_count": null
+  },
+  "id": "159f4dfd7ba9535957a77a0d0eabe68f2c6fdae7ef33475af5653b1b0ca2cd0e",
+  "mainline_experiment_boundaries": {
+    "Exp0": {
+      "name": "support_and_state_validation",
+      "realized": "Full fixed population retained; all calls terminal; projection and state support remain incomplete.",
+      "status": "attempt_completed_but_material_gate_blocked"
+    },
+    "Exp1": {
+      "blocker": "Complete material and actual Student training unavailable.",
+      "name": "Static_Manual_fixed_intervention",
+      "status": "not_started_this_round"
+    },
+    "Exp2": {
+      "name": "C_N_mechanisms",
+      "realized_mechanism_student_experiments": 0,
+      "status": "not_started_this_round"
+    },
+    "Exp3": {
+      "completed_formal_seed_arm_runs": 0,
+      "name": "full_five_arm_experiment",
+      "status": "not_started_this_round"
+    },
+    "Exp4": {
+      "historical_artifacts_reaudited_by_this_report": false,
+      "historical_boundary": "Historical work was only a synthetic fixed-potential demonstration; it does not prove dynamic Student convergence.",
+      "name": "restricted_mathematical_study",
+      "status": "not_rerun_this_round"
+    },
+    "Exp5": {"name": "fixed_pi_training_objective_ablation", "status": "deferred_not_started_this_round"}
+  },
+  "mapping": {
+    "deterministic_true_singletons": 99,
+    "incomplete_mapping_does_not_invalidate_original_process": true,
+    "model_complete": 325,
+    "model_registered_calls": 645,
+    "resolved_tasks": 424,
+    "singleton_chi": null,
+    "singleton_chi_status": "not_required_for_weighting",
+    "unresolved_tasks": 320
+  },
+  "material_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02",
+  "phase": "BLOCKED_REPRESENTATION_OR_MAPPING",
+  "projection": {
+    "character_coverage_is_not_reasoning_quality": true,
+    "failed_projection_does_not_invalidate_original_process": true,
+    "full_positive_public_content_characters": null,
+    "full_raw_public_content_characters": 1088636,
+    "inherited_original_V12_usable": 1797,
+    "known_subset_positive_public_content_characters": 1024254,
+    "known_zero_positive_reason_character_packages": 0,
+    "missing": 3,
+    "new_registered_calls": 671,
+    "new_usable": 668,
+    "total_known_usable": 2465
+  },
+  "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+  "registration_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "report_only": true,
+  "report_scope": "Final factual accounting of this blocked V13 attempt, not a claim of successful five-arm completion.",
+  "report_script": {
+    "repository_path": "trusted_data_synthesis/scripts/finqa_v13_support_report.py",
+    "sha256": "bed9377e3c77c45de85f0cd6fd09e2eb9a812c0a746036c795f5f719e913a467"
+  },
+  "resolved_subset_only": {
+    "chi_0_1_contrast_tasks": 22,
+    "chi_state_histogram": {"0": 566, "1": 29, "null": 99},
+    "multi_state_tasks": 102,
+    "no_projection_to_full_population": true,
+    "no_subset_training_authorized": true,
+    "one_state_tasks": 322,
+    "packages": 1199,
+    "scope": "424 resolved tasks only; not the fixed 744-task population or an admitted pool",
+    "state_count_minus_task_count": 270,
+    "state_package_count_histogram": {"1": 469, "2": 95, "3": 39, "4": 47, "5": 31, "6": 11, "7": 2},
+    "states": 694,
+    "task_state_count_histogram": {"1": 322, "2": 18, "3": 34, "4": 27, "5": 15, "6": 5, "7": 3},
+    "tasks": 424
+  },
+  "schema": "v13_final_support_analysis.v1",
+  "semantic_rejudgment": false,
+  "source_records": {
+    "completion_seal": {
+      "id": "a6ed08fc61b25616e78a47773e81975a161f795b56ce02b5462e406526a3bc73",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/completion_seal/record.json",
+      "sha256": "a1d8018ae602afdf382af99bb0cedfe22d706d0bfcd2cfb3f2a38cd87a4c5d90"
+    },
+    "result": {
+      "id": "275ace6320543670570c4f9691fd540189c8a0b242c25585365a61e12b318f97",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/material/result/record.json",
+      "sha256": "129c7bb1a04eec82e0da0dfd82195205d03a501e6fab3e31dc4480d9893f7b69"
+    },
+    "support": {
+      "id": "bbe56fa76892fb4f9df8e0c911e38bc82472cbbd3bd4fa98db38cd07159afcde",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v13_material_02/material/support/record.json",
+      "sha256": "f35bef336f0ba92177ef05f6bc4bc8122d1ccc868b308b7c4639ecdea5dffba7"
+    }
+  },
+  "source_records_modified": false,
+  "subset_selection": false
+}

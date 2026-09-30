@@ -1,0 +1,326 @@
+{
+  "active": 0,
+  "actual_returns": 1304,
+  "at": "2026-09-30T02:11:02.230644+00:00",
+  "budget": {
+    "acknowledged_unknown_held_microcny": 332464128,
+    "acknowledged_unknown_requests": 152,
+    "actual_cache_hit_tokens_settled": 238007515,
+    "actual_cache_miss_tokens_settled": 413036619,
+    "actual_completion_tokens_settled": 50090275,
+    "actual_prompt_tokens_settled": 651044134,
+    "cost_semantics": "upward-rounded peak-tariff upper bound applied to actual usage; not a provider invoice",
+    "effective_hard_cap_microcny": 2000000000,
+    "exposure_microcny": 1568816238,
+    "exposure_warning_reached": true,
+    "funding_overlay": {
+      "applied_after_requests": 59412,
+      "applies_only_to_current_batch_review_mapping": true,
+      "at_unix": 1790690115.5916739,
+      "authorization": {
+        "at": "2026-09-29T13:55:07.769955+00:00",
+        "batch_id": "finqa-v10-20260929-new8000-01",
+        "effective_hard_cap_microcny": 2000000000,
+        "effective_review_mapping_microcny": 1300000000,
+        "id": "cd4d83bd2b6a079edada61ceb6b50dfec4055d10c6c452e69be2a03140d88a4a",
+        "no_new_cohort": true,
+        "no_prefix_training": true,
+        "no_resend": true,
+        "schema": "v10_funding_authorization.v1",
+        "source_migration_reply": "批准预算提升，减少冗余校验",
+        "user_reply": "总上限提高到 2000 元，审阅／映射子额 1300 元"
+      },
+      "backup": {
+        "bytes": 1632804864,
+        "method": "SQLite online backup under original-wallet BEGIN IMMEDIATE",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v10_funding_backup_2mcs6281/wallet.sqlite3",
+        "sha256": "02c14a4da2792d189729f12f16048765831f104ce62d8a1986b4a0c15b92ea60"
+      },
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "config_tariff_namespaces_requests_and_zero_retry_unchanged": true,
+      "effective_hard_cap_microcny": 2000000000,
+      "effective_review_mapping_microcny": 1300000000,
+      "effective_unallocated_microcny": 118901111,
+      "generation_new_reservations_authorized": false,
+      "historical_UNKNOWN_and_current_records_holds_unchanged": true,
+      "id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "original_950_buffer_spendable": false,
+      "original_requests": {
+        "ordering": "invocation_id ASC",
+        "row_encoding": "_request_record_digest with exact blob lengths/SHA256",
+        "rows": 59412,
+        "schema": "v10_original_request_stream.v1",
+        "sha256": "074175ef8b3be8fb8a86fd72bf9ca1b903ddaa360b7fe59effbdd257858c8605"
+      },
+      "original_unallocated_microcny": 68901111,
+      "original_v10_partition": {
+        "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+        "key": "v10_new_batch_partition",
+        "stored_bytes_sha256": "ddbb33060f8ba892b35c3a081b39fcdc2cd4b73b0de0117f53fd5bd848cc6033"
+      },
+      "preserved_counters": {
+        "completion_tokens": 28102975,
+        "dispatched": 59412,
+        "held": 146948096,
+        "hit_tokens": 214803291,
+        "miss_tokens": 153994293,
+        "pending": 0,
+        "prompt_tokens": 368797584,
+        "requests": 59412,
+        "singleton": 1,
+        "spent": 541429680,
+        "unknown": 66
+      },
+      "preserved_generation_microcny": 100000000,
+      "preserved_quota_rows": [
+        {
+          "category": "generation",
+          "dispatched": 16312,
+          "held": 0,
+          "money_cap": 100000000,
+          "pending": 0,
+          "request_cap": 199000,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        {
+          "category": "review_mapping",
+          "dispatched": 3024,
+          "held": 2113536,
+          "money_cap": 550000000,
+          "pending": 0,
+          "request_cap": 17000,
+          "requests": 3024,
+          "spent": 181492477,
+          "unknown": 1
+        }
+      ],
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "previous_effective_hard_cap_microcny": 1200000000,
+      "previous_monetary_amendment": {
+        "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+        "key": "v9_prospective_monetary_amendment",
+        "stored_bytes_sha256": "1a671f70b1756a8ab5402d839975e185a6f16241c0c5f9472292b9d45acd951d"
+      },
+      "previous_review_mapping_microcny": 550000000,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v10_prospective_funding_overlay.v1",
+      "unallocated_spendable": false
+    },
+    "halt": null,
+    "hard_cap_microcny": 800000000,
+    "held_microcny": 332464128,
+    "monetary_amendment": {
+      "acknowledged_unknowns_sha256": "12e8f6570d7cff53dabb0ebc5fa70a823727e4db043d1968997cfb341342d5ec",
+      "amendment_id": "v9-money:8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+      "applied_after_requests": 35336,
+      "applies_to_future_reservations_only": true,
+      "at_unix": 1790661076.7432575,
+      "authorization": {
+        "additional_authorized_microcny": 400000000,
+        "at": "2026-09-29T05:41:22.230135+00:00",
+        "audit_source": {
+          "path": "/home/zhuxinrui/.codex/attachments/72dcc627-ca88-40a9-909e-a5a7fa08512a/已粘贴的文本.txt",
+          "sha256": "c514295a49836796d251ed7a80371615f4733fe768707784a92a85c8677168e5"
+        },
+        "budget_config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+        "complete_scope_requests": 13022,
+        "explicit_user_authorization": true,
+        "hard_cap_microcny": 1200000000,
+        "history_and_UNKNOWN_reservations_preserved": true,
+        "id": "8cec7bae7726c91da4ed21046ee37a1d3048882388c965c1bec6d2ce76443e32",
+        "new_wallet": false,
+        "no_automatic_new_technical_cohort": true,
+        "no_new_generation": true,
+        "no_prefix_training": true,
+        "original_cap_microcny": 800000000,
+        "output_limits_and_review_policy_unchanged": true,
+        "preflight_id": "ceeb89519387dfd98e47015128137b9fe901689644c9b4f42391782f399ce4bc",
+        "production_request_subcap": 18000,
+        "request_cap": 258000,
+        "risk_of_incomplete_cohort_accepted": true,
+        "schema": "v9_production_funding_decision.v1",
+        "scope_authorization_id": "caeae28e7005257809a02e263e1561f5722e3c5d49759f42a6b9a5c3010b6a58",
+        "strategy": "bounded_full_cohort_attempt",
+        "user_reply": "批准1200元总上限及上述风险",
+        "warning_microcny": 700000000
+      },
+      "completion_guarantee": false,
+      "config_sha256": "9179f64c7ab4a7ee7c9cb4d8955457811a3c38d1476901cab11c4c65b52c95ca",
+      "effective_hard_cap_microcny": 1200000000,
+      "historical_request_records_sha256": "cc496aa47a33c54593fb392f1685fc3fb00cfe7ee5d07b8c72c08447ac6caf98",
+      "historical_rows_unchanged": true,
+      "id": "37f31b93518a4da193150cbdbdee25b71696b20fd28bf7d67cc2d22ea449aaa3",
+      "original_hard_cap_microcny": 800000000,
+      "permanent_unknown_holds_unchanged": true,
+      "preserved_counters": {
+        "completion_tokens": 11523354,
+        "dispatched": 35336,
+        "held": 2228224,
+        "hit_tokens": 124083171,
+        "miss_tokens": 29685208,
+        "pending": 0,
+        "prompt_tokens": 153768379,
+        "requests": 35336,
+        "singleton": 1,
+        "spent": 156536406,
+        "unknown": 1
+      },
+      "preserved_request_cap": 258000,
+      "preserved_warning_microcny": 700000000,
+      "request_partition_id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "request_partition_unchanged": true,
+      "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+      "schema": "v9_prospective_monetary_amendment.v1",
+      "wallet_config_unchanged": true
+    },
+    "original_remaining_exposure_microcny": -768816238,
+    "pending_requests": 0,
+    "previous_effective_hard_cap_microcny": 1200000000,
+    "price_sheet_id": "probe_price_sheet:e3a7df2af2aae3af6d0525681811540d0ce9acffb9c59508a0e8cca130df53a9",
+    "purpose": "finqa_v6_generation_and_semantic_review_v1",
+    "remaining_exposure_microcny": 431183762,
+    "request_cap": 258000,
+    "request_partition": {
+      "buffer_requests": 950,
+      "buffer_spendable": false,
+      "consumed": {
+        "generation": 16286,
+        "production_review": 4740,
+        "technical_review": 108
+      },
+      "generation_episode_ids_sha256": "9aa15c1ab29935b20ac7607f215216979f9ca7e9a8a52556dab17b36eb36ef51",
+      "historical_requests": 18942,
+      "id": "3144de0211296a048de460e3860430632a2898eba759c04566c9ea27eae28c1d",
+      "limits": {
+        "generation": 220000,
+        "production_review": 18000,
+        "technical_review": 108
+      },
+      "partition_id": "v8-partition:12ed3cb4fb3fa4fa249bc11507d11d47d20d46b61560da58bfb5b9f20a0d28c3"
+    },
+    "requests_dispatched": 80699,
+    "requests_reserved": 80699,
+    "run_id": "2a454291257bb8e34a55b58761b41f80b6cc8956b1bfd21d5bd2fc5200fb81d2",
+    "settled_tariff_microcny": 1236352110,
+    "unacknowledged_unknown_requests": 0,
+    "unknown_requests": 152,
+    "v10_partition": {
+      "batch_id": "finqa-v10-20260929-new8000-01",
+      "consumed": {
+        "generation": {
+          "dispatched": 16312,
+          "held": 0,
+          "pending": 0,
+          "requests": 16312,
+          "spent": 23672874,
+          "unknown": 0
+        },
+        "review_mapping": {
+          "dispatched": 24311,
+          "held": 187629568,
+          "pending": 0,
+          "requests": 24311,
+          "spent": 876414907,
+          "unknown": 87
+        }
+      },
+      "effective_limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 191000
+        },
+        "review_mapping": {
+          "microcny": 1300000000,
+          "requests": 25000
+        }
+      },
+      "funding_overlay_id": "b0660a06ea1e70f53f961c9d892857266c6c41f42749b145d2e3c35a3bfe74a9",
+      "generation_new_reservations_authorized": false,
+      "id": "cfbde903166dae7a543e433f808e9924808489f73c56a1e5f8286070c10095fc",
+      "limits": {
+        "generation": {
+          "microcny": 100000000,
+          "requests": 199000
+        },
+        "review_mapping": {
+          "microcny": 550000000,
+          "requests": 17000
+        }
+      },
+      "old_namespaces_admitted": false,
+      "original_950_buffer_spendable": false,
+      "original_unallocated_microcny": 68901111,
+      "output_limits": {
+        "generation": [
+          2048,
+          16384
+        ],
+        "mapping": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ],
+        "review": [
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65536
+        ]
+      },
+      "roster_sha256": "2b56d09e331c3ad1188da730a829a3e1dc974362f28e8f51ad42f7806aed8bdb",
+      "unallocated_microcny": 118901111,
+      "unallocated_requests": 1924,
+      "unallocated_spendable": false
+    },
+    "warning_microcny": 700000000,
+    "warning_reached": true
+  },
+  "current_wave_limit": 16,
+  "denominator": 1316,
+  "effective_max_concurrency": 16,
+  "last_wave_errors": [],
+  "network_unknowns": 12,
+  "no_automatic_retry": true,
+  "old_V12_process_judgments_unchanged": true,
+  "original_registered_concurrency": {
+    "max": 64,
+    "ramp": [
+      {
+        "settled_at_least": 0,
+        "workers": 16
+      },
+      {
+        "settled_at_least": 16,
+        "workers": 32
+      },
+      {
+        "settled_at_least": 64,
+        "workers": 64
+      }
+    ]
+  },
+  "phase": "MATERIAL_ANNOTATIONS_COMPLETE",
+  "processed": 1316,
+  "projection_and_mapping_independent": true,
+  "protocol_id": "3aa817da0ceff3807404a24a5c91b8ba42a9efc2000d99c805978d6ca710621e",
+  "recovery_denominator": 1,
+  "recovery_scanned": 1,
+  "registered_concurrency_ceiling": 16,
+  "registration_id": "c8e0d29cb6116bba4d9483f0763973c31160e2ceca63b16e9950243fd1cc141b",
+  "runtime_registration_id": "ba9299e0d73e8daaa1a18eb95e06ccf407a0dee3a84d9e15522a6694dc5f71d0",
+  "schema": "v13_material_controller_status.v1",
+  "seal_id": "a6ed08fc61b25616e78a47773e81975a161f795b56ce02b5462e406526a3bc73",
+  "stop_reason": "network",
+  "successful_transport_settlements": 1304,
+  "training_started": false
+}
