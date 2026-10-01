@@ -1,0 +1,81 @@
+{
+  "API_calls": 0,
+  "Full29_actual_parent_pid": 4143342,
+  "Full29_parent_must_continue_reaping": true,
+  "Full29_worker_profile": {
+    "id": "7f9855f0b7243be081070a9ac3b62c48123fed705e624edfdad5a299cec5eae9",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01/registration/record.json",
+    "sha256": "a28e76989eebf05edc9df1536851409634115d8864712be0f699d46d68bbec5e"
+  },
+  "Full29_worker_profile_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01",
+  "Full29_worker_script": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v20-five-gpu-20261001/trusted_data_synthesis/scripts/finqa_v20_five_gpu_queue.py",
+  "Full47_worker_profile": {
+    "id": "74c65037b26784c1d45c01f2fe9cd0c4c0531224456c512d562701a290562e40",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01/registration/record.json",
+    "sha256": "461f7731b3f42c15bf5e194846d80986ba682aa6bf58c8536cdc39bf50600436"
+  },
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    6
+  ],
+  "at": "2026-10-01T15:21:02.515346+00:00",
+  "cold_resume_command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v21-six-gpu-20261001/trusted_data_synthesis/scripts/finqa_v21_six_gpu_queue.py",
+    "resume",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01"
+  ],
+  "controller_lock": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01/queue/controller.lock",
+  "do_not_pause_or_restart_draining_parent": true,
+  "do_not_resume_paused_dispatcher_pids": [
+    895990,
+    2927149
+  ],
+  "draining_dispatcher_pid": 4143342,
+  "environment_overrides": {
+    "MKL_NUM_THREADS": "4",
+    "OMP_NUM_THREADS": "4",
+    "PYTHONPATH": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "execution_profile": {
+    "id": "74c65037b26784c1d45c01f2fe9cd0c4c0531224456c512d562701a290562e40",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01/registration/record.json",
+    "sha256": "461f7731b3f42c15bf5e194846d80986ba682aa6bf58c8536cdc39bf50600436"
+  },
+  "first_start_command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v21-six-gpu-20261001/trusted_data_synthesis/scripts/finqa_v21_six_gpu_queue.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01"
+  ],
+  "id": "f5e4342781a4e47dee388506220a71838bcd4e3d5d65ea4ecfec3c7d1db628d3",
+  "inherited_CUDA_acceptance": {
+    "id": "f8334b0d4f6dd1facc2424fb3ec1c621d93771c91c773866f24c935b3fc4d37a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01/validation/result/record.json",
+    "sha256": "17801d7c0e7e8db4092b9c1b5919ad7cd90234835905fbe56e918235d595f2ad"
+  },
+  "interpreter": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+  "manual_numerical_recovery_requires_inspection_and_explicit_process_handoff": true,
+  "max_gpu_workers": 6,
+  "no_automatic_Student_restart": true,
+  "ordinary_checkpoint_every_optimizer_step": true,
+  "replay_checkpoint_every_completed_responses": 16,
+  "restore_requires_same_resource_profile": true,
+  "schema": "v21_six_gpu_controller_restore_settings.v1",
+  "script_commit": "55b79fcf20af8397ab4e361de8ac05dae9bdbea4",
+  "script_worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v21-six-gpu-20261001",
+  "state_file": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01/queue/status.json",
+  "unset_environment": [
+    "CUDA_VISIBLE_DEVICES"
+  ],
+  "working_directory": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930"
+}

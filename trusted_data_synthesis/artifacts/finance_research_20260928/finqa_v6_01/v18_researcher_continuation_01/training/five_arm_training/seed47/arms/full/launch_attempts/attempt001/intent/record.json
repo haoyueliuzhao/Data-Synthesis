@@ -1,0 +1,27 @@
+{
+  "arm": "Full",
+  "at": "2026-10-01T15:21:39.032051+00:00",
+  "explicit_resume": false,
+  "gpu_observed": {
+    "free": 81151,
+    "index": 0,
+    "processes": [],
+    "used": 4,
+    "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5"
+  },
+  "id": "fe457dacd5100ff4247ef1af10fe5b12dbb0da9cda78bfef328e53910a1e617a",
+  "no_GPU_placeholder": true,
+  "pid": 73851,
+  "prefix_retrained": false,
+  "protocol_id": "4afb7bf1526da7bee652061e4935b20955f17d61a112a341bb202c50df8eeaf1",
+  "schema": "v16_independent_arm_attempt.v1",
+  "seed": 47,
+  "shared_checkpoint": {
+    "actual_state_digest": "52e0aa7715d265986233d68ec2f454c8d2a3bdbb4606f6f31a59e4a4207c22a4",
+    "arm": "shared",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training/seed47/shared/step0298_step",
+    "phase": "step",
+    "state_sha256": "81f750661756cac6cf80b13d26832e890f64456bd124d094bad7ac4166b6edf1",
+    "step": 298
+  }
+}
