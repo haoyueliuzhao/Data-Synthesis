@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-01T13:17:47.835930+00:00",
+  "id": "0878e0ca17b3683d382086d234d29dfd7636b58c9a18186b2a6e75e425b44afd",
+  "intent_id": "3c21a8877ca679a33538f241afdfa94bccefbf34d55adac3d097b55445ef5548",
+  "no_Student_signal_sent": true,
+  "observed_process_state": "T",
+  "old_dispatcher_owned_Student_children": 0,
+  "original_parent_2769608_untouched": true,
+  "original_worker_identity_matches": {
+    "2777056": true,
+    "2777057": true,
+    "2777058": true,
+    "2777059": true
+  },
+  "queued_eleven_not_started": true,
+  "schema": "v20_GPU4_dispatcher_pause_receipt.v1",
+  "target_birth": "321560146",
+  "target_pid": 2927149
+}
