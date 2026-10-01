@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-01T13:21:28.146342+00:00",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v20-five-gpu-20261001/trusted_data_synthesis/scripts/finqa_v20_five_gpu_queue.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01"
+  ],
+  "execution_profile_id": "7f9855f0b7243be081070a9ac3b62c48123fed705e624edfdad5a299cec5eae9",
+  "first_new_job": "replay-CUDA-equivalence-gate",
+  "id": "5e24707d30c7d201416d4d46a40ee6709d63be959a81beed717175a499b2b1f5",
+  "no_Student_checkpoint_modified": true,
+  "no_Student_signal": true,
+  "protected_workers": [
+    {
+      "birth": "318187132",
+      "gpu": 1,
+      "identity_before": "318187132",
+      "key": "arm-11-c_only",
+      "pid": 2777056
+    },
+    {
+      "birth": "318187132",
+      "gpu": 2,
+      "identity_before": "318187132",
+      "key": "arm-29-c_only",
+      "pid": 2777057
+    },
+    {
+      "birth": "318187133",
+      "gpu": 3,
+      "identity_before": "318187133",
+      "key": "arm-47-c_only",
+      "pid": 2777058
+    },
+    {
+      "birth": "318187133",
+      "gpu": 6,
+      "identity_before": "318187133",
+      "key": "arm-11-full",
+      "pid": 2777059
+    }
+  ],
+  "schema": "v20_five_gpu_launch_intent.v1",
+  "settings_id": "aa1f1ecdc72ae90222fdd835521cac42007360c33a095d30e97bb431fb633de3"
+}
