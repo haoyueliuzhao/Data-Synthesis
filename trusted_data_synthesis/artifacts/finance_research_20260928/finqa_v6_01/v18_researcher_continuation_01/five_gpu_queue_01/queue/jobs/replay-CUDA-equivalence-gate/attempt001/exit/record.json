@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-01T13:36:50.788873+00:00",
+  "completed": true,
+  "execution_profile_id": "7f9855f0b7243be081070a9ac3b62c48123fed705e624edfdad5a299cec5eae9",
+  "exit_code": 0,
+  "exit_code_source": "Popen_wait_status",
+  "failed_attempt_retained": true,
+  "id": "dc4db6487ca53a53880328b348d9bca0108c28e957da5fa5c1be365977ce321c",
+  "key": "replay-CUDA-equivalence-gate",
+  "partial_feedback_resampled": false,
+  "pid": 4143556,
+  "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01/validation/result/record.json",
+  "schema": "v19_queued_worker_exit.v1",
+  "unallocated_headroom_deferral": false
+}

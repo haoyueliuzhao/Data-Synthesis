@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-01T13:36:51.011192+00:00",
+  "base_runtime_worktree": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v20-five-gpu-20261001/trusted_data_synthesis/scripts/finqa_v20_five_gpu_queue.py",
+    "run-arm",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training",
+    "--seed",
+    "29",
+    "--arm",
+    "Full",
+    "--profile-root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/five_gpu_queue_01",
+    "--gpu-index",
+    "4"
+  ],
+  "execution_kind": "unchanged_v19_replay_with_GPU4_resource_extension",
+  "execution_profile_id": "7f9855f0b7243be081070a9ac3b62c48123fed705e624edfdad5a299cec5eae9",
+  "gpu_index": 4,
+  "id": "9e2ad8119b2c16204fefc12ec79d52538e168075582b36638e2a9ceaaed21edb",
+  "key": "arm-29-full",
+  "new_sampling_retry": false,
+  "parent_execution_profile": {
+    "id": "7cee422a26730584c2992a8ab79c7e6c9470a5fbacec39ad0c1f9ae7a58dc02b",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queued_optimization_01/registration/record.json",
+    "sha256": "ddc4b3fcf838412ea4b469c69cadb403ae91cc7bde862b4478284c24fa1f62c0"
+  },
+  "pid": 4168617,
+  "process_start_time_ticks": "328620618",
+  "protected_running_workers_not_changed": true,
+  "requested_cpu_affinity": "38-75,114-151",
+  "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/training/five_arm_training/seed29/arms/full/result/record.json",
+  "schema": "v20_five_gpu_worker_launch.v1"
+}

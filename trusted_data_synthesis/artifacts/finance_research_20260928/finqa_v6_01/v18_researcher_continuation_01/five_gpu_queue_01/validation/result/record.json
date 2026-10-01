@@ -1,0 +1,20 @@
+{
+  "API_calls": 0,
+  "actual_point_model_RNG_buffers_unchanged": true,
+  "admitted": true,
+  "all_cases_bitwise_equal": true,
+  "at": "2026-10-01T13:36:45.411249+00:00",
+  "baseline_total_seconds": 457.19515696680173,
+  "case_count": 4,
+  "execution_profile_id": "7f9855f0b7243be081070a9ac3b62c48123fed705e624edfdad5a299cec5eae9",
+  "gpu_index": 4,
+  "id": "f8334b0d4f6dd1facc2424fb3ec1c621d93771c91c773866f24c935b3fc4d37a",
+  "new_generation_calls": 0,
+  "optimized_over_baseline": 0.8949590645616063,
+  "optimized_total_seconds": 409.17095000110567,
+  "optimizer_steps": 0,
+  "production_CUDA_measured": true,
+  "report_scope": "four existing responses; not a full700 benchmark or universal memory guarantee",
+  "saved_KV_residency_exercised": true,
+  "schema": "v19_actual_replay_CUDA_validation.v1"
+}
