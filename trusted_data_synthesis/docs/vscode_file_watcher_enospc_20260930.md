@@ -1,5 +1,7 @@
 # VS Code 文件监听额度耗尽排查（2026-09-30）
 
+> 2026-10-02 至 10-03 复查：新会话再次记录过 ENOSPC，但随后实际监听占用已低于上限，本项目保留范围的 204 个目录全部已有监听。详见文末；下文原始结论及“尚未验证”描述保留其 9 月 30 日的时间范围。
+
 ## 结论
 
 本次“无法监视文件更改”警告的直接原因是远端 Linux 当前用户的 inotify watch 配额耗尽。VS Code 递归监听了包含大量实验产物和嵌套工作树的项目目录。日志明确报告 `Inotify limit reached (ENOSPC)`，因此本次错误指向监听额度；不能仅凭 `ENOSPC` 字样解释为磁盘容量不足。
@@ -74,3 +76,60 @@ watch 数通过读取当前 UID 下 `/proc/<pid>/fd` 中的 inotify 描述符，
 在打开本项目的 VS Code 窗口中运行命令面板的 `Developer: Reload Window`（开发人员：重新加载窗口）。如果同时通过两个路径打开了同一项目，各窗口都需要加载新配置；持有旧监听的窗口也需要重载或关闭。重载会重启该窗口的扩展宿主，应在当前交互任务结束后操作。本次没有主动重启窗口或杀死其进程。
 
 重载后应检查是否仍有新时间戳的 `Inotify limit reached` / `ENOSPC`，并观察文件变化是否恢复自动刷新；历史日志里的旧错误不会自动删除。GUI 重载及重载后的实际占用下降尚未验证。
+
+
+## 2026-10-02 至 10-03 再次告警复查
+
+### 新错误与当前状态
+
+用户再次报告 VS Code 的“无法监视文件更改。请按照说明链接来解决此问题”警告。最新服务端日志为 `~/.vscode-server/data/logs/20261002T095833/remoteagent.log`，其中第 88 行记录：
+
+```text
+2026-10-02 23:53:22.710 [error] [File Watcher ('parcel')] Inotify limit reached (ENOSPC) (path: /home/zhuxinrui/datatmp/projects/Data-Synthesis)
+```
+
+这是本次会话的新错误，不能用 9 月 30 日的旧日志替代解释。相关窗口在 23:52:31 左右建立连接；本次 `/proc` 采样发生在错误之后，没有采到报错瞬间的 watch 峰值。以下为复查观测值，不能回填为报错瞬间的状态。
+
+| 指标 | 复查值 |
+| --- | ---: |
+| `fs.inotify.max_user_watches` | 1,048,576 |
+| `fs.inotify.max_user_instances` | 128 |
+| `fs.inotify.max_queued_events` | 16,384 |
+| 当前 UID 可读取的 inotify watch 合计 | 162,533 |
+| 当前 UID 可读取的 inotify 实例数 | 12 |
+| 本项目 fileWatcher PID 4165109 的 watch 数 | 437 |
+| 另一工作区 fileWatcher PID 4084783 的 watch 数 | 161,998 |
+| 项目所在磁盘可用空间（`df -h` 舍入值） | 466 GB |
+
+PID 4084783 的监听集合包含另一工作区的根目录；结合对应窗口的 Git 日志，可将该进程识别为另一工作区的监听器。没有修改该仓库或终止其进程。当前用户的配额由各进程共享，但复查占用没有接近上限，不能把另一窗口的占用直接认定为本次错误的原因。
+
+### 已有规则的实际生效检查
+
+根目录 `.vscode/settings.json` 已有 9 月 30 日加入的八条排除规则，远端 Machine 设置文件为空对象。复查没有重复添加设置。
+
+仅遍历保留目录，剪枝既有排除项和 `.git`，不跟随目录符号链接，再与 PID 4165109 的 `/proc/<pid>/fdinfo/27` 中的实际监听 inode 匹配：
+
+| 保留目录分组 | 目录数 | 已有实际监听 |
+| --- | ---: | ---: |
+| 项目根目录 | 1 | 1 |
+| `.github` | 2 | 2 |
+| `raw_financial_data_lake`（排除 `data`） | 25 | 25 |
+| `trusted_data_synthesis`（排除产物、虚拟环境、缓存） | 175 | 175 |
+| `.vscode` | 1 | 1 |
+| 合计 | 204 | 204 |
+
+四个大型目录 `.codex-worktrees`、`trusted_data_synthesis/artifacts`、`raw_financial_data_lake/data` 和 `trusted_data_synthesis/.venv` 的根目录 inode 均不在该监听器集合中。源码、测试、文档及配置目录则有实际监听。204 是上述核验范围的目录数，437 是该监听器全部 watch 数，两者统计范围不同。
+
+另核对当前安装版本 `@parcel/watcher 2.5.6` 的排除匹配逻辑：现有四条大型目录 glob 均能匹配目录本身及其子目录，也能匹配 `/home/zhuxinrui/datatmp/…` 和 `/data1/zhuxinrui/…` 两个路径别名。这项核验不支持“末尾 `/**` 漏掉目录本身”或“路径别名导致这四条规则失效”的解释。[Parcel 扫描实现](https://github.com/parcel-bundler/watcher/blob/v2.5.6/src/unix/fts.cc)在遇到排除目录时直接跳过该子树，正常流程不会先给全部排除目录添加监听。
+
+### 结论、边界与处理
+
+日志确认此次警告属于文件监听 ENOSPC；当前磁盘空间与该条明确的 inotify 错误不支持磁盘已满的解释。报错后的实际监听已覆盖全部核验目录，排除规则生效，当前也没有配额持续耗尽的证据。
+
+现有日志没有记录报错瞬间的完整监听请求、规则加载顺序或内核资源占用，因此不能确定为何新会话曾触发 ENOSPC。“启动阶段先建立大范围监听，再加载排除规则”只是一种待验证解释，不作为本次根因结论。实际安装的 VS Code 监听器代码会对 ENOSPC 错误去重，因此后续没有新错误日志不能单独证明恢复。目录已有监听也不等同于已经验证客户端事件投递或警告消失。
+
+依照 [VS Code 官方 Linux 排障说明](https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc)，优先排除无需监听的大目录。本项目这一步已经落实并通过实际监听核验；本次没有必要继续扩大排除范围或提高系统限额，更不能把现有 1,048,576 覆盖成文档示例的 524,288。
+
+如果客户端仍保留该通知，可先关闭通知并观察源码或文档的外部修改是否正常刷新。若刷新仍异常，在保存编辑后运行 `Developer: Reload Window`（开发人员：重新加载窗口）。若重载后再次出现新告警，应采集新时间戳对应的文件监视日志和当时的配额占用；不能仅凭本次状态断言以后不会复发。
+
+本次仅补充排查记录；未修改监听配置、系统限额或实验代码，未重启编辑器或实验进程，也未运行模型 API、GPU 或业务测试。客户端 GUI 的最终显示状态尚未直接验证。
