@@ -1,0 +1,424 @@
+{
+  "started_utc": "2026-10-03T16:21:16.756638+00:00",
+  "plan_sha256": "2590601702e5ad35d9673372118006be3b3d8d7d1dc03cd4323882e68e9f24b4",
+  "removed": [
+    {
+      "path": "trusted_data_synthesis/artifacts/test_tmp",
+      "before_bytes": 16462897152,
+      "after_bytes": 0,
+      "removed_bytes": 16462897152,
+      "files": 34621,
+      "symlinks": 504,
+      "removed_children": [
+        "v11-funnel.5iuv60",
+        "v11-mapping-bound.MXceAU",
+        "v12-capacity.dgoo8G",
+        "v12-controller.TaHkau",
+        "v12-effective-projection.jCFmwR",
+        "v12-final.Tu9rAX",
+        "v12-final.uYDxp3",
+        "v12-gate.t6e1Oj",
+        "v12-protocol.rgOFzY",
+        "v12-release.z02bZz",
+        "v13-final.IngvCP",
+        "v13-material-cpu-GYdglN",
+        "v13-material-cpu-yxoRsD",
+        "v13-protocol.3oTwx0",
+        "v13-protocol.3qSxCw",
+        "v13-protocol.rdsO1k",
+        "v13-workflow.TyaZRH",
+        "v14-encoding-cpu-BBKXUl",
+        "v14-encoding-cpu-ud4g3K",
+        "v14-execution-3OsagL",
+        "v14-final-join.zWqjAZ",
+        "v14-material.wb4rTv",
+        "v14-protocol.IXZyUp",
+        "v14-summary.NyFZF6",
+        "v15-dependency.dj0kr5",
+        "v15-mapping-ZMnUec",
+        "v15-mapping.oBiFKm",
+        "v15-prefix-cpu-W043O2",
+        "v15-prefix-cpu-sV6QrC",
+        "v16-adjudication-5mcYvh",
+        "v16-adjudication-UiKxHL",
+        "v16-adjudication-iqoI4y",
+        "v16-arms.MrGhxt",
+        "v16-continuation-DMu1Ke",
+        "v16-continuation-final-IMYgdR",
+        "v16-execution-regression-ZE0OBb",
+        "v16-execution.M7ZiyT",
+        "v16-execution.PYG1Sd",
+        "v16-execution.pVb7UP",
+        "v17-adjudication-QLZA1V",
+        "v17-execution-ssE4A8",
+        "v17-hold-MenYSB",
+        "v17-lineage-GWSCln",
+        "v17-tail-reporting.zMKwBd",
+        "v18-lineage-aKki61",
+        "v18-outer-audit.9ALQm8",
+        "v18-outer-audit.Q46zvo",
+        "v18-queue-recovery-4e28Yb",
+        "v18-queue-recovery-Ype2fF",
+        "v18-registration-9EUpHI",
+        "v18-researcher-authority.E7andw",
+        "v19-final-biWXkZ",
+        "v19-final-cpu-aYV05I",
+        "v19-kv-lifetime-JJkDDW",
+        "v19-replay-fixed-RKxqjA",
+        "v19-replay-yOfMbs",
+        "v19-residency-gradient-gXJVRF",
+        "v19-resident-kv-FrdBre",
+        "v19-worker-queue-ssxxaT",
+        "v20-five-gpu-SHWPgg",
+        "v21-six-gpu-QUM4eH",
+        "v26_141"
+      ]
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/local_test_archive_20260930_9Yxnr7",
+      "before_bytes": 3444908032,
+      "after_bytes": 0,
+      "removed_bytes": 3444908032,
+      "files": 1388,
+      "symlinks": 88
+    },
+    {
+      "path": ".mypy_cache",
+      "before_bytes": 229806080,
+      "after_bytes": 0,
+      "removed_bytes": 229806080,
+      "files": 50,
+      "symlinks": 0
+    },
+    {
+      "path": ".pytest_cache",
+      "before_bytes": 86016,
+      "after_bytes": 0,
+      "removed_bytes": 86016,
+      "files": 4,
+      "symlinks": 0
+    },
+    {
+      "path": ".ruff_cache",
+      "before_bytes": 77824,
+      "after_bytes": 0,
+      "removed_bytes": 77824,
+      "files": 18,
+      "symlinks": 0
+    },
+    {
+      "path": ".codex-worktrees/v26-182-qa-parent-authority",
+      "head": "adea7e69dfc6d84d9d22bde8a12c1ca459e1529c",
+      "before_bytes": 1119105024,
+      "gitdir_before_bytes": 9752576,
+      "after_bytes": 0,
+      "removed_bytes": 1128857600,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-183-qa-release-authority",
+      "head": "2485d44b506814a507b4c45fa3245758bcd16d11",
+      "before_bytes": 1116237824,
+      "gitdir_before_bytes": 9752576,
+      "after_bytes": 0,
+      "removed_bytes": 1125990400,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-184-qa-envelope-authority",
+      "head": "8831a2e7e933125009721e6807882ce32c27394d",
+      "before_bytes": 1109925888,
+      "gitdir_before_bytes": 9756672,
+      "after_bytes": 0,
+      "removed_bytes": 1119682560,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-185-qa-envelope-independent-audit",
+      "head": "fc48f9b770b8b9fbd1b5cf71096cde708e796f03",
+      "before_bytes": 1080791040,
+      "gitdir_before_bytes": 9760768,
+      "after_bytes": 0,
+      "removed_bytes": 1090551808,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-186-artifact-backed-outcome-authority",
+      "head": "9bc76bc66aef2b9b40485580e5e7fb1d4f160e69",
+      "before_bytes": 1087373312,
+      "gitdir_before_bytes": 9961472,
+      "after_bytes": 0,
+      "removed_bytes": 1097334784,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-187-artifact-backed-outcome-independent-audit",
+      "head": "d30b7cb105d1e469cb34c68ada363f642181cc03",
+      "before_bytes": 1134026752,
+      "gitdir_before_bytes": 9969664,
+      "after_bytes": 0,
+      "removed_bytes": 1143996416,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-187-source-identity-doc-fix",
+      "head": "41893e9284b5bba2a3818c448c3de74dbe6bba55",
+      "before_bytes": 1084571648,
+      "gitdir_before_bytes": 9969664,
+      "after_bytes": 0,
+      "removed_bytes": 1094541312,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-188-artifact-backed-online-development",
+      "head": "da40cb1512d86296cbeb14b127ace4c20cfd076e",
+      "before_bytes": 1115250688,
+      "gitdir_before_bytes": 10399744,
+      "after_bytes": 0,
+      "removed_bytes": 1125650432,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-193-prompt-authority",
+      "head": "631bbbb0cbe5df78bcf94614557da702835145c7",
+      "before_bytes": 1259708416,
+      "gitdir_before_bytes": 10420224,
+      "after_bytes": 0,
+      "removed_bytes": 1270128640,
+      "method": "git worktree remove (no force)"
+    },
+    {
+      "path": ".codex-worktrees/v26-195-fresh-outcome-authority",
+      "head": "4ce98dbd711f3264e62ce2c6ee3d268c0144a113",
+      "before_bytes": 1265311744,
+      "gitdir_before_bytes": 10534912,
+      "after_bytes": 0,
+      "removed_bytes": 1275846656,
+      "method": "git worktree remove (no force)"
+    }
+  ],
+  "retained": [],
+  "process_checks": [
+    {
+      "time_utc": "2026-10-03T16:21:16.775889+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:21.341870+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:23.039224+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:24.490966+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:26.120162+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568,
+        1314535,
+        1314536,
+        1314747
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:27.671665+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:28.929742+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:30.203674+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:31.407511+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:33.117955+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    },
+    {
+      "time_utc": "2026-10-03T16:21:34.747195+00:00",
+      "hits": [],
+      "inaccessible_or_exited": [
+        6878,
+        6879,
+        1284892,
+        1285568
+      ]
+    }
+  ],
+  "experiment_processes_before": [
+    {
+      "pid": 73792,
+      "expected_birth": "329245770",
+      "observed_birth": "329245770"
+    },
+    {
+      "pid": 73851,
+      "expected_birth": "329246141",
+      "observed_birth": "329246141"
+    },
+    {
+      "pid": 720623,
+      "expected_birth": "343385670",
+      "observed_birth": "343385670"
+    },
+    {
+      "pid": 774613,
+      "expected_birth": "343777109",
+      "observed_birth": "343777109"
+    },
+    {
+      "pid": 806659,
+      "expected_birth": "344003339",
+      "observed_birth": "344003339"
+    },
+    {
+      "pid": 895990,
+      "expected_birth": "319331700",
+      "observed_birth": "319331700"
+    },
+    {
+      "pid": 1021442,
+      "expected_birth": "345461001",
+      "observed_birth": "345461001"
+    },
+    {
+      "pid": 2927149,
+      "expected_birth": "321560146",
+      "observed_birth": "321560146"
+    },
+    {
+      "pid": 4143342,
+      "expected_birth": "328528332",
+      "observed_birth": "328528332"
+    },
+    {
+      "pid": 4168617,
+      "expected_birth": "328620618",
+      "observed_birth": "328620618"
+    }
+  ],
+  "disk_available_before": 586264719360,
+  "experiment_processes_after": [
+    {
+      "pid": 73792,
+      "expected_birth": "329245770",
+      "observed_birth": "329245770"
+    },
+    {
+      "pid": 73851,
+      "expected_birth": "329246141",
+      "observed_birth": "329246141"
+    },
+    {
+      "pid": 720623,
+      "expected_birth": "343385670",
+      "observed_birth": "343385670"
+    },
+    {
+      "pid": 774613,
+      "expected_birth": "343777109",
+      "observed_birth": "343777109"
+    },
+    {
+      "pid": 806659,
+      "expected_birth": "344003339",
+      "observed_birth": "344003339"
+    },
+    {
+      "pid": 895990,
+      "expected_birth": "319331700",
+      "observed_birth": "319331700"
+    },
+    {
+      "pid": 1021442,
+      "expected_birth": "345461001",
+      "observed_birth": "345461001"
+    },
+    {
+      "pid": 2927149,
+      "expected_birth": "321560146",
+      "observed_birth": "321560146"
+    },
+    {
+      "pid": 4143342,
+      "expected_birth": "328528332",
+      "observed_birth": "328528332"
+    },
+    {
+      "pid": 4168617,
+      "expected_birth": "328620618",
+      "observed_birth": "328620618"
+    }
+  ],
+  "disk_available_after": 617987907584,
+  "removed_bytes": 31610355712,
+  "completed_utc": "2026-10-03T16:21:36.444916+00:00"
+}
