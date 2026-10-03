@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-03T11:51:09+08:00",
+  "before": {
+    "at": "2026-10-03T11:51:09+08:00",
+    "disk_free_bytes": 404832452608,
+    "failures": [],
+    "heartbeat_at": "2026-10-03T03:50:59.845679+00:00",
+    "phase": "V21_SIX_GPU_QUEUE_RUNNING",
+    "queued": [
+      "arm-29-manual_plus",
+      "arm-47-manual_plus",
+      "arm-11-manual_minus",
+      "arm-29-manual_minus",
+      "arm-47-manual_minus"
+    ],
+    "workers": [
+      {
+        "birth": "328620618",
+        "gpu": 4,
+        "job_key": "arm-29-full",
+        "pid": 4168617
+      },
+      {
+        "birth": "329246141",
+        "gpu": 0,
+        "job_key": "arm-47-full",
+        "pid": 73851
+      },
+      {
+        "birth": "339050125",
+        "gpu": 2,
+        "job_key": "arm-11-static",
+        "pid": 98140
+      },
+      {
+        "birth": "339449566",
+        "gpu": 6,
+        "job_key": "arm-29-static",
+        "pid": 152606
+      },
+      {
+        "birth": "339661916",
+        "gpu": 1,
+        "job_key": "arm-47-static",
+        "pid": 189728
+      },
+      {
+        "birth": "341122151",
+        "gpu": 3,
+        "job_key": "arm-11-manual_plus",
+        "pid": 396377
+      }
+    ]
+  },
+  "plan_sha256": "dff4e3a2188fdbe2f9e9e8d4f43defbe562db4ab82c5b5835c345f7907901dce"
+}

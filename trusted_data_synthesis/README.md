@@ -25,6 +25,12 @@ data-production route for the new FinQA experiment.
 
 ## Historical framework and experiment entries
 
+Selected legacy gradient tensors, optimizer checkpoints, and an undispatched
+request draft were retired with user approval on 2026-10-03. Reports, final models,
+the nine fixed Student points, and the current FinQA dependency chain remain.
+Historical tensor-level replay is no longer available for those deleted files;
+see the [cleanup scope and recovery limits](docs/legacy_training_artifact_cleanup_20261003.md).
+
 Trusted Data Synthesis is a domain-agnostic framework for constructing and evaluating
 proof-carrying agent trajectories. Finance is the first full reference implementation, not the
 specification of the core framework.
