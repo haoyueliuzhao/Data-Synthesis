@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-04T06:54:39.983044+00:00",
+  "files": {
+    "finqa_v22_eval_continuation.py": {
+      "bytes": 19500,
+      "sha256": "304e3aa8ed25dc8ef3c9f70bc754d5c926bb83d5735bfa1f9e7f3828e1dd1433"
+    },
+    "finqa_v22_provider_compat.py": {
+      "bytes": 6119,
+      "sha256": "9a84297381d0b39fe1c143bd118dca8ed41cd88da4756bf76bc7bb2e23f9dd64"
+    }
+  },
+  "id": "ded181b441dd68a3057ce46d495886be6fd8f0824c608dab4088818cffcab661",
+  "schema": "v22_frozen_control_implementation.v1",
+  "scientific_runtime_changed": false,
+  "source_commit": "86f1a246cf800a8380f00bfa5487bf4cd5d83c62"
+}

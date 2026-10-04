@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-04T06:00:10.242276+00:00",
+  "error": "public execution/scorer source differs from frozen Base; no silent comparability claim",
+  "error_type": "ValueError",
+  "id": "a25410e79952cc7f397379259fc681fb2c97596361109b30917cce0bc7d32065",
+  "no_Student_signal_sent": true,
+  "no_implicit_retry": true
+}

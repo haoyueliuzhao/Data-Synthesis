@@ -1,0 +1,14 @@
+{
+  "compatibility": {
+    "id": "03ebb91819993862178f17ef08c7322a3069463d544d6ae89885a253994836c5",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/evaluation_continuation_01/compatibility/record.json",
+    "sha256": "e64c6dda8607c91b7007386102e809258c3b5221ac48901620f15d150504e568"
+  },
+  "final_registration": {
+    "id": "af67256cf6484c67321513e6b3ad4f5c7327f5ba38db85ff4069cc76de0729e3",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/registration/record.json",
+    "sha256": "8dff00654abeaace8a7d182c6d34910b6826808cc3f26fdb245bdb6a0d586bba"
+  },
+  "id": "7d6d6616fa1e8074740fd00f0908307a5beb5283edb1229b4a61f8bcfd2e9969",
+  "schema": "v22_final_registration_binding.v1"
+}

@@ -1,0 +1,44 @@
+{
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "at": "2026-10-04T06:54:43.135795+00:00",
+  "cpu_affinity": {
+    "0": "0-37,76-113",
+    "1": "0-37,76-113",
+    "2": "0-37,76-113",
+    "3": "0-37,76-113",
+    "4": "38-75,114-151",
+    "5": "38-75,114-151",
+    "6": "38-75,114-151",
+    "7": "38-75,114-151"
+  },
+  "headroom_is_not_an_OOM_guarantee": true,
+  "id": "85c86064aa274f2bf065326911d47558150dee515c7c4cf77608fc2ef88cc790",
+  "max_gpu_workers": 8,
+  "minimum_free_mib": 24576,
+  "no_other_process_signal": true,
+  "no_training_launch": true,
+  "parent_training_execution_profile": {
+    "id": "74c65037b26784c1d45c01f2fe9cd0c4c0531224456c512d562701a290562e40",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/six_gpu_queue_01/registration/record.json",
+    "sha256": "461f7731b3f42c15bf5e194846d80986ba682aa6bf58c8536cdc39bf50600436"
+  },
+  "schema": "v22_eight_gpu_evaluation_resources.v1",
+  "source_bindings": {
+    "finqa_v22_eval_continuation.py": "304e3aa8ed25dc8ef3c9f70bc754d5c926bb83d5735bfa1f9e7f3828e1dd1433",
+    "finqa_v22_provider_compat.py": "9a84297381d0b39fe1c143bd118dca8ed41cd88da4756bf76bc7bb2e23f9dd64"
+  },
+  "taskset": {
+    "path": "/usr/bin/taskset",
+    "sha256": "56131d7b7317a88aa6e10f5ac3493c481a99a89d7292da6976d03ea43d5d87bb"
+  },
+  "user_request": "八卡全部纳入可用范围"
+}

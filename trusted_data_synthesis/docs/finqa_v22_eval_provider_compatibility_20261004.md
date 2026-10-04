@@ -2,7 +2,7 @@
 
 2026年10月4日13:58，十五个训练分支全部完成。随后评测登记被源码一致性保护拒绝，原六卡调度器保存失败并退出。用户授权“处理问题恢复评测”，并进一步要求“八卡全部纳入可用范围”。本次新增外置、版本化的评测恢复入口，不修改旧Base协议、冻结运行时、训练结果或既定评测方案。
 
-本方案仅恢复原十五模型dev、预登记机制实验及汇总，不重训，不追加API，不重采训练反馈，不重跑Base，不打开public test或Experiment 5。代码冻结时尚未开始本次GPU评测；实际恢复记录在部署后追加。
+本次已恢复原十五模型dev及其后续预登记机制实验与汇总。15:02的观察确认八张卡上的评测worker均已实际生成会话，另有七个模型排队。不重训，不追加API，不重采训练反馈，不重跑Base，不打开public test或Experiment 5；评测尚未全部完成，不能据启动状态报告模型成绩。
 
 ## 失败原因和严格适用范围
 
@@ -76,4 +76,38 @@ httpx.AsyncClient(timeout=self.timeout, trust_env=False)
 
 ## 实际恢复记录
 
-待部署后记录源码冻结提交、兼容性证据ID、资源策略ID、十五终点评测登记ID、控制器恢复设置和实际GPU任务观察。恢复过程中若出现新的拒绝或失败，保留真实结果，不将本节提前填写为成功。
+修复代码冻结于提交 `86f1a246cf800a8380f00bfa5487bf4cd5d83c62`。仅将两个外置控制脚本的已提交字节保存到新root的 `implementation/`，并登记各自SHA；没有复制或修改整个旧科学工作树。解释器仍为项目 `.venv/bin/python`，工作目录和 `PYTHONPATH`仍指向原V18冻结目录。
+
+保留原 `OMP_NUM_THREADS=4`、`MKL_NUM_THREADS=4` 和 `TOKENIZERS_PARALLELISM=false`，控制器清除继承的 `CUDA_VISIBLE_DEVICES`，由原worker按指定GPU映射。新增 `PYTHONDONTWRITEBYTECODE=1` 只禁止写入源码目录下的字节码缓存，不改模型计算或生成配置。
+
+北京时间14:54启动持久控制器，PID为2430833、birth标识为352127516。原十五终点正式核验及评测登记随后通过，14:57开始派发GPU任务。新评测计划保持十五模型、每模型883题、总13,245会话，记录 `Base_rerun=False`、`API_calls=0` 和实际V18 runtime。
+
+15:02:51的不可变观察确认：状态为 `V22_DEV_EVALUATION_RUNNING`，八个worker的PID与birth均存活，实际GPU UUID与各自指派一致，每个worker都已分配模型显存并产生完整episode文件；共观察到150个已生成会话，七个模型尚在队列，`failures=[]`。
+
+| 首批模型 | GPU | 观察时已生成会话 |
+| --- | ---: | ---: |
+| Static seed11 | 4 | 21 |
+| Manual+ seed11 | 1 | 19 |
+| Manual− seed11 | 0 | 20 |
+| C-only seed11 | 3 | 18 |
+| Full seed11 | 2 | 21 |
+| Static seed29 | 6 | 16 |
+| Manual+ seed29 | 7 | 18 |
+| Manual− seed29 | 5 | 17 |
+
+这是生成进度，不是准确率或已完成整模型评测数量；原完整883题生成后再评分的规则不变。实际记录仅支持恢复和八卡工作已开始，不构成整轮成功、固定加速比例或后续无OOM的保证。
+
+| 不可变记录 | ID |
+| --- | --- |
+| 冻结控制实现 | `ded181b441dd68a3057ce46d495886be6fd8f0824c608dab4088818cffcab661` |
+| 恢复设置 | `1cdf5a78b21585567066bd4f2d908f101cd572b36de5327c5b3184df1cc4da34` |
+| 控制器启动 | `60561c9df6e64ea57d4009b9d719ba76d8dbb5f8f6b600ef83fce666cd731d57` |
+| 八卡资源策略 | `85c86064aa274f2bf065326911d47558150dee515c7c4cf77608fc2ef88cc790` |
+| 精确源码兼容证明 | `03ebb91819993862178f17ef08c7322a3069463d544d6ae89885a253994836c5` |
+| 后继恢复登记 | `7019c355912e2d13f8d178894668b022e847eadefecccad6a9f256527934360f` |
+| 十五终点评测登记 | `af67256cf6484c67321513e6b3ad4f5c7327f5ba38db85ff4069cc76de0729e3` |
+| 八卡实际生成观察 | `dbb1358869c26b6c37b986fd57a941be6c16b5fda9afb2af0248c18677fadf53` |
+
+当前权威状态文件是 `evaluation_continuation_01/queue/status.json`。完整首次启动和冷恢复命令、双锁、环境、解释器与实现绑定保存在 `controller_restore_settings/record.json`；不要再用旧六卡控制器继续派发。
+
+本次提交保留必要的登记、启动、worker launch和定点观察证据，不提交实时status、模型Tensor、生成大日志或测试模拟产物。旧Base、旧失败及训练历史均未覆盖。
