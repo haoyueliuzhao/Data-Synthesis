@@ -1,0 +1,118 @@
+{
+  "after": {
+    "at": "2026-10-04T10:54:30+08:00",
+    "disk_free_bytes": 425659125760,
+    "failures": [],
+    "heartbeat_at": "2026-10-04T02:54:30.002831+00:00",
+    "phase": "V21_SIX_GPU_QUEUE_RUNNING",
+    "queued": [],
+    "workers": [
+      {
+        "birth": "329246141",
+        "gpu": 0,
+        "job_key": "arm-47-full",
+        "pid": 73851
+      },
+      {
+        "birth": "347459649",
+        "gpu": 4,
+        "job_key": "arm-47-manual_minus",
+        "pid": 1475362
+      }
+    ]
+  },
+  "at": "2026-10-04T10:54:30+08:00",
+  "backup_created": false,
+  "before": {
+    "at": "2026-10-04T10:54:30+08:00",
+    "disk_free_bytes": 345589911552,
+    "failures": [],
+    "heartbeat_at": "2026-10-04T02:54:30.002831+00:00",
+    "phase": "V21_SIX_GPU_QUEUE_RUNNING",
+    "queued": [],
+    "workers": [
+      {
+        "birth": "329246141",
+        "gpu": 0,
+        "job_key": "arm-47-full",
+        "pid": 73851
+      },
+      {
+        "birth": "347459649",
+        "gpu": 4,
+        "job_key": "arm-47-manual_minus",
+        "pid": 1475362
+      }
+    ]
+  },
+  "deleted_allocated_bytes": 80069025792,
+  "deleted_file_count": 1542,
+  "git_recovery_available": false,
+  "groups": {
+    "trusted_data_synthesis/artifacts/qa_vnext_fixed_kernel_value/delayed_C_recovery_cache_20260921/A_delayed_c_29/feedback": {
+      "allocated_bytes": 6381527040,
+      "files": 630
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase15_gradient_projection_30task_v1/state_gradients": {
+      "allocated_bytes": 7271792640,
+      "files": 90
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase16_batch_symmetric_30task_v1/batch_directions": {
+      "allocated_bytes": 5171052544,
+      "files": 64
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase16_batch_symmetric_30task_v1/coordinate_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase17_gp_abc_30task_v1/optimizer_batch_directions": {
+      "allocated_bytes": 5171052544,
+      "files": 64
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase17_gp_abc_30task_v1/optimizer_coordinates": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase18_contribution_authorization_v1/optimizer_coordinates": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase18_contribution_authorization_v1/optimizer_directions": {
+      "allocated_bytes": 5171052544,
+      "files": 64
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_phase18_gradient_projection_30task_v1/state_gradients": {
+      "allocated_bytes": 7271792640,
+      "files": 90
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v19_sealed_causal_pilot_fp32_alg_v2_20260806/gradient/common_token_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v19_sealed_causal_pilot_fp32_alg_v2_20260806/gradient/differential_token_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v19_sealed_causal_pilot_fp32_alg_v2_20260806/gradient/state_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v20_target_identifiability_gradient_projection6_k3_v1_20260806/common_token_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v20_target_identifiability_gradient_projection6_k3_v1_20260806/differential_token_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    },
+    "trusted_data_synthesis/artifacts/vtdo_experiment/finance_v20_target_identifiability_gradient_projection6_k3_v1_20260806/state_gradients": {
+      "allocated_bytes": 4847861760,
+      "files": 60
+    }
+  },
+  "net_free_increase_bytes": 80069214208,
+  "plan_sha256": "e4746f80d0f114a9b6fadf3cc302239252253abae756071288e1913854ae10eb",
+  "protected_files_unchanged": 29,
+  "retained_files_unchanged": 1,
+  "status": "complete"
+}

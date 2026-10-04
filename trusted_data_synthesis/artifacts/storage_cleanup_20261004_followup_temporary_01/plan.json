@@ -1,0 +1,317 @@
+{
+  "created_utc": "2026-10-04T02:44:44.991905+00:00",
+  "root": "/data1/zhuxinrui/projects/Data-Synthesis",
+  "candidates": [
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-retry-cpu.WZaKYF",
+      "bytes": 417488896,
+      "files": 195,
+      "symlinks": 8,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-29T14:19:11.181554+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "1051c09ecf506790cd55071f85c06a94a5779a4c7631a53fcecb380b6cc06079",
+      "structure": {
+        "children": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_exact_original_request_in0",
+          "test_exact_original_request_incurrent",
+          "test_material_provenance_binds0",
+          "test_material_provenance_bindscurrent",
+          "test_no_permit_keeps_original_0",
+          "test_no_permit_keeps_original_current",
+          "test_second_network_unknown_is0",
+          "test_second_network_unknown_iscurrent",
+          "test_three_network_errors_drai0",
+          "test_three_network_errors_draicurrent",
+          "test_whole_primary_matrix_befo0",
+          "test_whole_primary_matrix_befocurrent",
+          "v9-synthetic-parent0",
+          "v9-synthetic-parentcurrent"
+        ],
+        "v9-synthetic-parent0": [
+          "original.sqlite3"
+        ],
+        "synthetic-v10-history0": [
+          "wallet.sqlite"
+        ],
+        "test_no_permit_keeps_original_0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_three_network_errors_drai0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_whole_primary_matrix_befo0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_exact_original_request_in0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_second_network_unknown_is0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_material_provenance_binds0": [
+          "production",
+          "v10-test.sqlite"
+        ]
+      }
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-retry-regression.yn4Y3A",
+      "bytes": 391200768,
+      "files": 124,
+      "symlinks": 6,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-29T14:20:01.238261+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "687b4373ff5d7c717eccf5314b74ee78fc52283a24cf3a2161c3fc20806833e1",
+      "structure": {
+        "children": [
+          "synthetic-v10-history0",
+          "synthetic-v10-history1",
+          "synthetic-v10-historycurrent",
+          "test_full_actual_returns_A_aut0",
+          "test_full_actual_returns_A_autcurrent",
+          "test_network_missing_return_co0",
+          "test_network_missing_return_cocurrent",
+          "test_real_receipt_A_mask_once_0",
+          "test_real_receipt_A_mask_once_current",
+          "test_settled_rows_restore_exac0",
+          "test_settled_rows_restore_exaccurrent",
+          "v9-synthetic-parent0",
+          "v9-synthetic-parent1",
+          "v9-synthetic-parentcurrent"
+        ],
+        "v9-synthetic-parent0": [
+          "original.sqlite3"
+        ],
+        "synthetic-v10-history0": [
+          "wallet.sqlite"
+        ],
+        "test_full_actual_returns_A_aut0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_network_missing_return_co0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_settled_rows_restore_exac0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "v9-synthetic-parent1": [
+          "original.sqlite3"
+        ],
+        "synthetic-v10-history1": [
+          "wallet.sqlite"
+        ],
+        "test_real_receipt_A_mask_once_0": [
+          "assets",
+          "snapshot",
+          "synthetic-new-v10",
+          "v10-test.sqlite"
+        ]
+      }
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-network-retry-cpu.YIb0E8",
+      "bytes": 304828416,
+      "files": 155,
+      "symlinks": 5,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-29T14:51:40.192101+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "aba99e7b293da1e7844378ae6dae49d75d8eea6e442b9a02885845d42b3cb208",
+      "structure": {
+        "children": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_group_requires_whole_prim0",
+          "test_group_requires_whole_prim1",
+          "test_group_requires_whole_primcurrent",
+          "test_group_resume_unique_attem0",
+          "test_group_resume_unique_attemcurrent",
+          "test_material_group_provenance0",
+          "test_material_group_provenancecurrent",
+          "v9-synthetic-parent0",
+          "v9-synthetic-parentcurrent"
+        ],
+        "v9-synthetic-parent0": [
+          "original.sqlite3"
+        ],
+        "synthetic-v10-history0": [
+          "wallet.sqlite"
+        ],
+        "test_group_requires_whole_prim0": [
+          "production",
+          "v10-test.sqlite",
+          "v10-test.sqlite-shm",
+          "v10-test.sqlite-wal"
+        ],
+        "test_group_requires_whole_prim1": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_group_resume_unique_attem0": [
+          "production",
+          "v10-test.sqlite"
+        ],
+        "test_material_group_provenance0": [
+          "production",
+          "v10-test.sqlite"
+        ]
+      }
+    },
+    {
+      "path": ".codex-worktrees/finqa-v12-rereview-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "bytes": 2194804736,
+      "files": 43,
+      "symlinks": 30,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-29T18:56:07.286764+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "81360ebedec66b2d2e9dd5df17a09f6b7611cc97053772d772d21880cb96dca5",
+      "structure": {
+        "children": [
+          "v12-budget-Na5nHm",
+          "v12-budget-final-zOO9iO",
+          "v12-budget-tQIJWt"
+        ],
+        "v12-budget-tQIJWt": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_registration_backup_appen0",
+          "test_registration_backup_appencurrent",
+          "test_registration_rejects_chan0",
+          "test_registration_rejects_chancurrent",
+          "v12-funded-fixture0",
+          "v12-funded-fixturecurrent",
+          "v12-registered-fixture0",
+          "v12-registered-fixturecurrent",
+          "v9-synthetic-parent0",
+          "v9-synthetic-parentcurrent"
+        ],
+        "v12-budget-Na5nHm": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_drained_network_group_pre0",
+          "test_drained_network_group_precurrent",
+          "test_effective_caps_atomic_con0",
+          "test_effective_caps_atomic_con1",
+          "test_effective_caps_atomic_concurrent",
+          "test_new_roster_bytes_no_old_q0",
+          "test_new_roster_bytes_no_old_qcurrent",
+          "test_once_provider_exact_settl0",
+          "test_once_provider_exact_settlcurrent",
+          "test_provider_reserved_continu0",
+          "test_provider_reserved_continucurrent",
+          "test_provider_unknown_hold_net0",
+          "test_provider_unknown_hold_net1",
+          "test_provider_unknown_hold_netcurrent",
+          "test_registration_backup_appen0",
+          "test_registration_backup_appencurrent",
+          "test_registration_rejects_chan0",
+          "test_registration_rejects_chancurrent"
+        ],
+        "v12-budget-final-zOO9iO": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_drained_network_group_pre0",
+          "test_drained_network_group_precurrent",
+          "test_effective_caps_atomic_con0",
+          "test_effective_caps_atomic_con1",
+          "test_effective_caps_atomic_concurrent",
+          "test_new_roster_bytes_no_old_q0",
+          "test_new_roster_bytes_no_old_qcurrent",
+          "test_once_provider_exact_settl0",
+          "test_once_provider_exact_settlcurrent",
+          "test_provider_reserved_continu0",
+          "test_provider_reserved_continucurrent",
+          "test_provider_unknown_hold_net0",
+          "test_provider_unknown_hold_net1",
+          "test_provider_unknown_hold_netcurrent",
+          "test_registration_backup_appen0",
+          "test_registration_backup_appencurrent",
+          "test_registration_rejects_chan0",
+          "test_registration_rejects_chancurrent"
+        ]
+      }
+    },
+    {
+      "path": ".codex-worktrees/finqa-v13-material-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "bytes": 1097949184,
+      "files": 5337,
+      "symlinks": 13,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-30T01:19:15.011557+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "53f88761d9bf1baf7c8112aa00c25c049800184fd1003d89f04b1f7d0984fde8",
+      "structure": {
+        "children": [
+          "v13-execution-PzvmyJ"
+        ],
+        "v13-execution-PzvmyJ": [
+          "synthetic-v10-history0",
+          "synthetic-v10-historycurrent",
+          "test_controller_full1316_indep0",
+          "test_controller_full1316_indepcurrent",
+          "test_controller_network_wave_s0",
+          "test_controller_network_wave_scurrent",
+          "test_exact_reserved_resume_rej0",
+          "test_exact_reserved_resume_rejcurrent",
+          "test_network_only_terminal_pre0",
+          "test_network_only_terminal_pre1",
+          "test_network_only_terminal_precurrent",
+          "test_new_exact_scope_append_pr0",
+          "test_new_exact_scope_append_prcurrent",
+          "test_provider_new_tool_real_te0",
+          "test_provider_new_tool_real_tecurrent",
+          "test_wrong_source_scope_and_pa0",
+          "test_wrong_source_scope_and_pacurrent",
+          "test_wrong_tool_is_paid_failur0",
+          "test_wrong_tool_is_paid_failurcurrent",
+          "v12-funded-fixture0"
+        ]
+      }
+    },
+    {
+      "path": ".codex-worktrees/finqa-v13-c16-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "bytes": 1372160,
+      "files": 324,
+      "symlinks": 4,
+      "hardlinks": 0,
+      "newest_mtime_UTC": "2026-09-30T01:55:16.082983+00:00",
+      "external_symlinks": [],
+      "tracked": "",
+      "metadata_sha256": "230d2382c7c3fd76849650eec44fb9a290604dce4c01531c799393c8a71caffa",
+      "structure": {
+        "children": [
+          "v13-c16-hJ4VtC"
+        ],
+        "v13-c16-hJ4VtC": [
+          "test_fixed16_never_mutates_ori0",
+          "test_fixed16_never_mutates_oricurrent",
+          "test_original_unsent_whitelist0",
+          "test_original_unsent_whitelistcurrent",
+          "test_register_exact_baseline_w0",
+          "test_register_exact_baseline_wcurrent",
+          "test_samewave_three_unknowns_d0",
+          "test_samewave_three_unknowns_dcurrent"
+        ]
+      }
+    }
+  ],
+  "total_bytes": 4407644160
+}

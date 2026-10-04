@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-04T10:54:30+08:00",
+  "before": {
+    "at": "2026-10-04T10:54:30+08:00",
+    "disk_free_bytes": 345589911552,
+    "failures": [],
+    "heartbeat_at": "2026-10-04T02:54:30.002831+00:00",
+    "phase": "V21_SIX_GPU_QUEUE_RUNNING",
+    "queued": [],
+    "workers": [
+      {
+        "birth": "329246141",
+        "gpu": 0,
+        "job_key": "arm-47-full",
+        "pid": 73851
+      },
+      {
+        "birth": "347459649",
+        "gpu": 4,
+        "job_key": "arm-47-manual_minus",
+        "pid": 1475362
+      }
+    ]
+  },
+  "plan_sha256": "e4746f80d0f114a9b6fadf3cc302239252253abae756071288e1913854ae10eb"
+}

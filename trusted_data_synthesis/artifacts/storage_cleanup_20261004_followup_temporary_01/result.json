@@ -1,0 +1,152 @@
+{
+  "started_utc": "2026-10-04T02:47:31.642954+00:00",
+  "plan_sha256": "dde2e84451de36292493dbf58ca9872fa918224ff26ae8928f54fd23e85cb75f",
+  "removed": [
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-retry-cpu.WZaKYF",
+      "before_bytes": 417488896,
+      "after_bytes": 0,
+      "removed_bytes": 417488896,
+      "files": 195,
+      "symlinks": 8,
+      "group": "main_worktree_test_fixtures"
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-retry-regression.yn4Y3A",
+      "before_bytes": 391200768,
+      "after_bytes": 0,
+      "removed_bytes": 391200768,
+      "files": 124,
+      "symlinks": 6,
+      "group": "main_worktree_test_fixtures"
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/v10-network-retry-cpu.YIb0E8",
+      "before_bytes": 304828416,
+      "after_bytes": 0,
+      "removed_bytes": 304828416,
+      "files": 155,
+      "symlinks": 5,
+      "group": "main_worktree_test_fixtures"
+    },
+    {
+      "path": ".codex-worktrees/finqa-v12-rereview-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "before_bytes": 2194804736,
+      "after_bytes": 0,
+      "removed_bytes": 2194804736,
+      "files": 43,
+      "symlinks": 30,
+      "group": "retained_worktree_test_fixtures"
+    },
+    {
+      "path": ".codex-worktrees/finqa-v13-material-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "before_bytes": 1097949184,
+      "after_bytes": 0,
+      "removed_bytes": 1097949184,
+      "files": 5337,
+      "symlinks": 13,
+      "group": "retained_worktree_test_fixtures"
+    },
+    {
+      "path": ".codex-worktrees/finqa-v13-c16-20260930/trusted_data_synthesis/artifacts/test_tmp",
+      "before_bytes": 1372160,
+      "after_bytes": 0,
+      "removed_bytes": 1372160,
+      "files": 324,
+      "symlinks": 4,
+      "group": "retained_worktree_test_fixtures"
+    }
+  ],
+  "retained": [],
+  "processes_before": [
+    {
+      "pid": 73792,
+      "expected_birth": "329245770",
+      "observed_birth": "329245770"
+    },
+    {
+      "pid": 73851,
+      "expected_birth": "329246141",
+      "observed_birth": "329246141"
+    },
+    {
+      "pid": 895990,
+      "expected_birth": "319331700",
+      "observed_birth": "319331700"
+    },
+    {
+      "pid": 1475362,
+      "expected_birth": "347459649",
+      "observed_birth": "347459649"
+    },
+    {
+      "pid": 2927149,
+      "expected_birth": "321560146",
+      "observed_birth": "321560146"
+    }
+  ],
+  "process_boundary": {
+    "hits": [],
+    "inaccessible_or_exited": [
+      6878,
+      6879,
+      2119983,
+      2127482
+    ]
+  },
+  "worktree_status_before": {
+    ".codex-worktrees/finqa-v12-rereview-20260930": "",
+    ".codex-worktrees/finqa-v13-c16-20260930": "",
+    ".codex-worktrees/finqa-v13-material-20260930": "?? trusted_data_synthesis/scripts/finqa_v13_support_report.py\n"
+  },
+  "user_script_before": [
+    66304,
+    3595779308,
+    12469,
+    1790736927330807511,
+    1790736927330807511,
+    "bed9377e3c77c45de85f0cd6fd09e2eb9a812c0a746036c795f5f719e913a467"
+  ],
+  "worktree_status_after": {
+    ".codex-worktrees/finqa-v12-rereview-20260930": "",
+    ".codex-worktrees/finqa-v13-c16-20260930": "",
+    ".codex-worktrees/finqa-v13-material-20260930": "?? trusted_data_synthesis/scripts/finqa_v13_support_report.py\n"
+  },
+  "user_script_after": [
+    66304,
+    3595779308,
+    12469,
+    1790736927330807511,
+    1790736927330807511,
+    "bed9377e3c77c45de85f0cd6fd09e2eb9a812c0a746036c795f5f719e913a467"
+  ],
+  "processes_after": [
+    {
+      "pid": 73792,
+      "expected_birth": "329245770",
+      "observed_birth": "329245770"
+    },
+    {
+      "pid": 73851,
+      "expected_birth": "329246141",
+      "observed_birth": "329246141"
+    },
+    {
+      "pid": 895990,
+      "expected_birth": "319331700",
+      "observed_birth": "319331700"
+    },
+    {
+      "pid": 1475362,
+      "expected_birth": "347459649",
+      "observed_birth": "347459649"
+    },
+    {
+      "pid": 2927149,
+      "expected_birth": "321560146",
+      "observed_birth": "321560146"
+    }
+  ],
+  "removed_bytes": 4407644160,
+  "completed_utc": "2026-10-04T02:47:35.669405+00:00"
+}
