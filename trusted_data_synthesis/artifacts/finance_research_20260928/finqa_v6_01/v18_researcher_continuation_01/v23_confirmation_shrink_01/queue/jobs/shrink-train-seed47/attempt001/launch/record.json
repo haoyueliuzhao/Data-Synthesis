@@ -1,0 +1,38 @@
+{
+  "schema": "v23_worker_launch.v1",
+  "at": "2026-10-05T04:27:40.916099+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "job": {
+    "key": "shrink-train-seed47",
+    "script": "finqa_v23_shrink_control.py",
+    "branch": "shrink_control",
+    "args": [
+      "train",
+      "--seed",
+      "47"
+    ],
+    "dependencies": [],
+    "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/shrink_control/seed47/result/record.json"
+  },
+  "gpu": 6,
+  "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+  "pid": 3982457,
+  "birth": "359885609",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/implementation/finqa_v23_shrink_control.py",
+    "train",
+    "--seed",
+    "47",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/shrink_control",
+    "--gpu-index",
+    "6"
+  ],
+  "no_resampling": true,
+  "id": "2f5dc6ee939d5421fa346b59f0ead62ade2a52252a8916c7d07737dadf5d38b5"
+}

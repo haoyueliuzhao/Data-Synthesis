@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-05T07:45:39.859920+00:00",
+  "phase": "FOLLOWUP_COMPLETE",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "completed": [
+    "shrink-generate-seed11",
+    "shrink-generate-seed29",
+    "shrink-generate-seed47",
+    "shrink-train-seed11",
+    "shrink-train-seed29",
+    "shrink-train-seed47",
+    "test-seed11-full",
+    "test-seed11-static",
+    "test-seed29-full",
+    "test-seed29-static",
+    "test-seed47-full",
+    "test-seed47-static"
+  ],
+  "total_jobs": 12,
+  "active_children": [],
+  "queued": [],
+  "failures": [],
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_gpu_workers": 8,
+  "API_calls": 0,
+  "no_resampling": true,
+  "parent_experiment_remains_complete": true
+}

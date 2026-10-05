@@ -1,0 +1,16 @@
+{
+  "schema": "v23_worker_exit.v1",
+  "at": "2026-10-05T04:28:01.130732+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "key": "shrink-train-seed29",
+  "exit_code": 0,
+  "exit_code_source": "Popen_wait_status",
+  "completed": true,
+  "result": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/shrink_control/seed29/result/record.json",
+    "sha256": "48dd99eff2c4c0eab8f866fda76acb2e7ff9a2202f5c2d0f144f4f01d4e62e5f",
+    "id": "ebcb33f33688cb864501c44904e69eb8aac1bf39d97d88fc96d6f0ea7e828e39"
+  },
+  "no_automatic_retry": true,
+  "id": "69b438a0c6301bdef1389110008fe7dea90511a20839f866621a354315906065"
+}

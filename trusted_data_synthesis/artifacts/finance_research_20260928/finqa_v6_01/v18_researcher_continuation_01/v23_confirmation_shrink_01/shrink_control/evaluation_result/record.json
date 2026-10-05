@@ -1,0 +1,1005 @@
+{
+  "API_calls": 0,
+  "all_new_generation_before_scoring": true,
+  "applicable": true,
+  "exposed_calibration_diagnostic_only": true,
+  "id": "6ef3677000848cbfff50d933c471dcb3e49835129bd1e51df91e691f58644ff5",
+  "matched_only_global_prior_KL": true,
+  "mean_differences": {
+    "execution_accuracy": {
+      "greedy": {
+        "Full-C-only": -0.013888888888888888,
+        "Full-shrink": 0.0,
+        "shrink-C-only": -0.013888888888888888
+      },
+      "legacy_mixed_descriptive": {
+        "Full-C-only": -0.00925925925925926,
+        "Full-shrink": -0.018518518518518517,
+        "shrink-C-only": 0.009259259259259259
+      },
+      "stochastic_expectation": {
+        "Full-C-only": -0.006944444444444444,
+        "Full-shrink": -0.027777777777777776,
+        "shrink-C-only": 0.020833333333333332
+      }
+    },
+    "program_accuracy": {
+      "greedy": {
+        "Full-C-only": -0.005555555555555554,
+        "Full-shrink": -0.002777777777777778,
+        "shrink-C-only": -0.002777777777777778
+      },
+      "legacy_mixed_descriptive": {
+        "Full-C-only": -0.0037037037037037034,
+        "Full-shrink": -0.010185185185185184,
+        "shrink-C-only": 0.006481481481481481
+      },
+      "stochastic_expectation": {
+        "Full-C-only": -0.002777777777777776,
+        "Full-shrink": -0.01388888888888889,
+        "shrink-C-only": 0.011111111111111112
+      }
+    }
+  },
+  "new_denominator": 1080,
+  "new_feedback_sessions": 0,
+  "new_training_steps": 447,
+  "old_mixed_result_unchanged": true,
+  "registration_id": "93bd3524df8c4a8a276d413e575d66174f7637d87205d0daef6d186762ed112c",
+  "reused_denominator": 2160,
+  "schema": "v23_shrink_evaluation_result.v1",
+  "seeds": {
+    "11": {
+      "comparisons": {
+        "execution_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": -0.008333333333333333,
+              "losses": 7,
+              "ties": 107,
+              "wins": 6
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": -0.008333333333333333,
+              "losses": 8,
+              "ties": 105,
+              "wins": 7
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": 0.0,
+              "losses": 8,
+              "ties": 104,
+              "wins": 8
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": -0.058333333333333334,
+              "losses": 50,
+              "ties": 281,
+              "wins": 29
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": -0.03611111111111111,
+              "losses": 40,
+              "ties": 293,
+              "wins": 27
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": -0.022222222222222223,
+              "losses": 44,
+              "ties": 280,
+              "wins": 36
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": -0.08333333333333333,
+              "losses": 43,
+              "ties": 174,
+              "wins": 23
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": -0.05,
+              "losses": 32,
+              "ties": 188,
+              "wins": 20
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": -0.03333333333333333,
+              "losses": 36,
+              "ties": 176,
+              "wins": 28
+            }
+          }
+        },
+        "program_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": -0.008333333333333333,
+              "losses": 6,
+              "ties": 109,
+              "wins": 5
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": 0.0,
+              "losses": 8,
+              "ties": 104,
+              "wins": 8
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": -0.008333333333333333,
+              "losses": 9,
+              "ties": 103,
+              "wins": 8
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": -0.03333333333333333,
+              "losses": 38,
+              "ties": 296,
+              "wins": 26
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": -0.016666666666666666,
+              "losses": 32,
+              "ties": 302,
+              "wins": 26
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": -0.016666666666666666,
+              "losses": 39,
+              "ties": 288,
+              "wins": 33
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": -0.04583333333333333,
+              "losses": 32,
+              "ties": 187,
+              "wins": 21
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": -0.025,
+              "losses": 24,
+              "ties": 198,
+              "wins": 18
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": -0.020833333333333332,
+              "losses": 30,
+              "ties": 185,
+              "wins": 25
+            }
+          }
+        }
+      },
+      "groups": {
+        "C-only": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 60.0,
+              "denominator": 120,
+              "mean": 0.5
+            },
+            "draw1": {
+              "correct": 61.0,
+              "denominator": 120,
+              "mean": 0.5083333333333333
+            },
+            "greedy": {
+              "correct": 74.0,
+              "denominator": 120,
+              "mean": 0.6166666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 195.0,
+              "denominator": 360,
+              "mean": 0.5416666666666666
+            },
+            "stochastic_expectation": {
+              "correct": 121.0,
+              "denominator": 240,
+              "mean": 0.5041666666666667
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 51.0,
+              "denominator": 120,
+              "mean": 0.425
+            },
+            "draw1": {
+              "correct": 50.0,
+              "denominator": 120,
+              "mean": 0.4166666666666667
+            },
+            "greedy": {
+              "correct": 66.0,
+              "denominator": 120,
+              "mean": 0.55
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 167.0,
+              "denominator": 360,
+              "mean": 0.4638888888888889
+            },
+            "stochastic_expectation": {
+              "correct": 101.0,
+              "denominator": 240,
+              "mean": 0.42083333333333334
+            }
+          }
+        },
+        "Full": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 49.0,
+              "denominator": 120,
+              "mean": 0.4083333333333333
+            },
+            "draw1": {
+              "correct": 52.0,
+              "denominator": 120,
+              "mean": 0.43333333333333335
+            },
+            "greedy": {
+              "correct": 73.0,
+              "denominator": 120,
+              "mean": 0.6083333333333333
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 174.0,
+              "denominator": 360,
+              "mean": 0.48333333333333334
+            },
+            "stochastic_expectation": {
+              "correct": 101.0,
+              "denominator": 240,
+              "mean": 0.42083333333333334
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 43.0,
+              "denominator": 120,
+              "mean": 0.35833333333333334
+            },
+            "draw1": {
+              "correct": 47.0,
+              "denominator": 120,
+              "mean": 0.39166666666666666
+            },
+            "greedy": {
+              "correct": 65.0,
+              "denominator": 120,
+              "mean": 0.5416666666666666
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 155.0,
+              "denominator": 360,
+              "mean": 0.4305555555555556
+            },
+            "stochastic_expectation": {
+              "correct": 90.0,
+              "denominator": 240,
+              "mean": 0.375
+            }
+          }
+        },
+        "shrink": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 55.0,
+              "denominator": 120,
+              "mean": 0.4583333333333333
+            },
+            "draw1": {
+              "correct": 58.0,
+              "denominator": 120,
+              "mean": 0.48333333333333334
+            },
+            "greedy": {
+              "correct": 74.0,
+              "denominator": 120,
+              "mean": 0.6166666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 187.0,
+              "denominator": 360,
+              "mean": 0.5194444444444445
+            },
+            "stochastic_expectation": {
+              "correct": 113.0,
+              "denominator": 240,
+              "mean": 0.4708333333333333
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 48.0,
+              "denominator": 120,
+              "mean": 0.4
+            },
+            "draw1": {
+              "correct": 48.0,
+              "denominator": 120,
+              "mean": 0.4
+            },
+            "greedy": {
+              "correct": 65.0,
+              "denominator": 120,
+              "mean": 0.5416666666666666
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 161.0,
+              "denominator": 360,
+              "mean": 0.44722222222222224
+            },
+            "stochastic_expectation": {
+              "correct": 96.0,
+              "denominator": 240,
+              "mean": 0.4
+            }
+          }
+        }
+      },
+      "score_id": "f879cb52efcaa1c558f48ff8b52e21c073cd7a382d1fb4d55d6720d2883dab86"
+    },
+    "29": {
+      "comparisons": {
+        "execution_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": 0.008333333333333333,
+              "losses": 6,
+              "ties": 107,
+              "wins": 7
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": 0.008333333333333333,
+              "losses": 8,
+              "ties": 103,
+              "wins": 9
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": 0.0,
+              "losses": 8,
+              "ties": 104,
+              "wins": 8
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": 0.016666666666666666,
+              "losses": 38,
+              "ties": 278,
+              "wins": 44
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": -0.025,
+              "losses": 53,
+              "ties": 263,
+              "wins": 44
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": 0.041666666666666664,
+              "losses": 40,
+              "ties": 265,
+              "wins": 55
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": 0.020833333333333332,
+              "losses": 32,
+              "ties": 171,
+              "wins": 37
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": -0.041666666666666664,
+              "losses": 45,
+              "ties": 160,
+              "wins": 35
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": 0.0625,
+              "losses": 32,
+              "ties": 161,
+              "wins": 47
+            }
+          }
+        },
+        "program_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": 0.025,
+              "losses": 4,
+              "ties": 109,
+              "wins": 7
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": 0.0,
+              "losses": 7,
+              "ties": 106,
+              "wins": 7
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": 0.025,
+              "losses": 5,
+              "ties": 107,
+              "wins": 8
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": 0.016666666666666666,
+              "losses": 33,
+              "ties": 288,
+              "wins": 39
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": -0.016666666666666666,
+              "losses": 43,
+              "ties": 280,
+              "wins": 37
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": 0.03333333333333333,
+              "losses": 35,
+              "ties": 278,
+              "wins": 47
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": 0.0125,
+              "losses": 29,
+              "ties": 179,
+              "wins": 32
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": -0.025,
+              "losses": 36,
+              "ties": 174,
+              "wins": 30
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": 0.0375,
+              "losses": 30,
+              "ties": 171,
+              "wins": 39
+            }
+          }
+        }
+      },
+      "groups": {
+        "C-only": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 45.0,
+              "denominator": 120,
+              "mean": 0.375
+            },
+            "draw1": {
+              "correct": 35.0,
+              "denominator": 120,
+              "mean": 0.2916666666666667
+            },
+            "greedy": {
+              "correct": 71.0,
+              "denominator": 120,
+              "mean": 0.5916666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 151.0,
+              "denominator": 360,
+              "mean": 0.41944444444444445
+            },
+            "stochastic_expectation": {
+              "correct": 80.0,
+              "denominator": 240,
+              "mean": 0.3333333333333333
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 39.0,
+              "denominator": 120,
+              "mean": 0.325
+            },
+            "draw1": {
+              "correct": 32.0,
+              "denominator": 120,
+              "mean": 0.26666666666666666
+            },
+            "greedy": {
+              "correct": 62.0,
+              "denominator": 120,
+              "mean": 0.5166666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 133.0,
+              "denominator": 360,
+              "mean": 0.36944444444444446
+            },
+            "stochastic_expectation": {
+              "correct": 71.0,
+              "denominator": 240,
+              "mean": 0.29583333333333334
+            }
+          }
+        },
+        "Full": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 48.0,
+              "denominator": 120,
+              "mean": 0.4
+            },
+            "draw1": {
+              "correct": 37.0,
+              "denominator": 120,
+              "mean": 0.30833333333333335
+            },
+            "greedy": {
+              "correct": 72.0,
+              "denominator": 120,
+              "mean": 0.6
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 157.0,
+              "denominator": 360,
+              "mean": 0.4361111111111111
+            },
+            "stochastic_expectation": {
+              "correct": 85.0,
+              "denominator": 240,
+              "mean": 0.3541666666666667
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 41.0,
+              "denominator": 120,
+              "mean": 0.3416666666666667
+            },
+            "draw1": {
+              "correct": 33.0,
+              "denominator": 120,
+              "mean": 0.275
+            },
+            "greedy": {
+              "correct": 65.0,
+              "denominator": 120,
+              "mean": 0.5416666666666666
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 139.0,
+              "denominator": 360,
+              "mean": 0.3861111111111111
+            },
+            "stochastic_expectation": {
+              "correct": 74.0,
+              "denominator": 240,
+              "mean": 0.30833333333333335
+            }
+          }
+        },
+        "shrink": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 49.0,
+              "denominator": 120,
+              "mean": 0.4083333333333333
+            },
+            "draw1": {
+              "correct": 46.0,
+              "denominator": 120,
+              "mean": 0.38333333333333336
+            },
+            "greedy": {
+              "correct": 71.0,
+              "denominator": 120,
+              "mean": 0.5916666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 166.0,
+              "denominator": 360,
+              "mean": 0.46111111111111114
+            },
+            "stochastic_expectation": {
+              "correct": 95.0,
+              "denominator": 240,
+              "mean": 0.3958333333333333
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 41.0,
+              "denominator": 120,
+              "mean": 0.3416666666666667
+            },
+            "draw1": {
+              "correct": 39.0,
+              "denominator": 120,
+              "mean": 0.325
+            },
+            "greedy": {
+              "correct": 65.0,
+              "denominator": 120,
+              "mean": 0.5416666666666666
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 145.0,
+              "denominator": 360,
+              "mean": 0.4027777777777778
+            },
+            "stochastic_expectation": {
+              "correct": 80.0,
+              "denominator": 240,
+              "mean": 0.3333333333333333
+            }
+          }
+        }
+      },
+      "score_id": "175b0d4ea8e08bee8dea916c3fbb4ae53c4b0790ba062e86d944552eb17f55ec"
+    },
+    "47": {
+      "comparisons": {
+        "execution_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": -0.041666666666666664,
+              "losses": 9,
+              "ties": 107,
+              "wins": 4
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": 0.0,
+              "losses": 8,
+              "ties": 104,
+              "wins": 8
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": -0.041666666666666664,
+              "losses": 7,
+              "ties": 111,
+              "wins": 2
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": 0.013888888888888888,
+              "losses": 44,
+              "ties": 267,
+              "wins": 49
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": 0.005555555555555556,
+              "losses": 47,
+              "ties": 264,
+              "wins": 49
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": 0.008333333333333333,
+              "losses": 38,
+              "ties": 281,
+              "wins": 41
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": 0.041666666666666664,
+              "losses": 35,
+              "ties": 160,
+              "wins": 45
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": 0.008333333333333333,
+              "losses": 39,
+              "ties": 160,
+              "wins": 41
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": 0.03333333333333333,
+              "losses": 31,
+              "ties": 170,
+              "wins": 39
+            }
+          }
+        },
+        "program_accuracy": {
+          "greedy": {
+            "Full-C-only": {
+              "denominator": 120,
+              "difference": -0.03333333333333333,
+              "losses": 10,
+              "ties": 104,
+              "wins": 6
+            },
+            "Full-shrink": {
+              "denominator": 120,
+              "difference": -0.008333333333333333,
+              "losses": 9,
+              "ties": 103,
+              "wins": 8
+            },
+            "shrink-C-only": {
+              "denominator": 120,
+              "difference": -0.025,
+              "losses": 5,
+              "ties": 113,
+              "wins": 2
+            }
+          },
+          "legacy_mixed_descriptive": {
+            "Full-C-only": {
+              "denominator": 360,
+              "difference": 0.005555555555555556,
+              "losses": 44,
+              "ties": 270,
+              "wins": 46
+            },
+            "Full-shrink": {
+              "denominator": 360,
+              "difference": 0.002777777777777778,
+              "losses": 41,
+              "ties": 277,
+              "wins": 42
+            },
+            "shrink-C-only": {
+              "denominator": 360,
+              "difference": 0.002777777777777778,
+              "losses": 34,
+              "ties": 291,
+              "wins": 35
+            }
+          },
+          "stochastic_expectation": {
+            "Full-C-only": {
+              "denominator": 240,
+              "difference": 0.025,
+              "losses": 34,
+              "ties": 166,
+              "wins": 40
+            },
+            "Full-shrink": {
+              "denominator": 240,
+              "difference": 0.008333333333333333,
+              "losses": 32,
+              "ties": 174,
+              "wins": 34
+            },
+            "shrink-C-only": {
+              "denominator": 240,
+              "difference": 0.016666666666666666,
+              "losses": 29,
+              "ties": 178,
+              "wins": 33
+            }
+          }
+        }
+      },
+      "groups": {
+        "C-only": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 38.0,
+              "denominator": 120,
+              "mean": 0.31666666666666665
+            },
+            "draw1": {
+              "correct": 38.0,
+              "denominator": 120,
+              "mean": 0.31666666666666665
+            },
+            "greedy": {
+              "correct": 76.0,
+              "denominator": 120,
+              "mean": 0.6333333333333333
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 152.0,
+              "denominator": 360,
+              "mean": 0.4222222222222222
+            },
+            "stochastic_expectation": {
+              "correct": 76.0,
+              "denominator": 240,
+              "mean": 0.31666666666666665
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 32.0,
+              "denominator": 120,
+              "mean": 0.26666666666666666
+            },
+            "draw1": {
+              "correct": 35.0,
+              "denominator": 120,
+              "mean": 0.2916666666666667
+            },
+            "greedy": {
+              "correct": 68.0,
+              "denominator": 120,
+              "mean": 0.5666666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 135.0,
+              "denominator": 360,
+              "mean": 0.375
+            },
+            "stochastic_expectation": {
+              "correct": 67.0,
+              "denominator": 240,
+              "mean": 0.2791666666666667
+            }
+          }
+        },
+        "Full": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 37.0,
+              "denominator": 120,
+              "mean": 0.30833333333333335
+            },
+            "draw1": {
+              "correct": 49.0,
+              "denominator": 120,
+              "mean": 0.4083333333333333
+            },
+            "greedy": {
+              "correct": 71.0,
+              "denominator": 120,
+              "mean": 0.5916666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 157.0,
+              "denominator": 360,
+              "mean": 0.4361111111111111
+            },
+            "stochastic_expectation": {
+              "correct": 86.0,
+              "denominator": 240,
+              "mean": 0.35833333333333334
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 32.0,
+              "denominator": 120,
+              "mean": 0.26666666666666666
+            },
+            "draw1": {
+              "correct": 41.0,
+              "denominator": 120,
+              "mean": 0.3416666666666667
+            },
+            "greedy": {
+              "correct": 64.0,
+              "denominator": 120,
+              "mean": 0.5333333333333333
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 137.0,
+              "denominator": 360,
+              "mean": 0.38055555555555554
+            },
+            "stochastic_expectation": {
+              "correct": 73.0,
+              "denominator": 240,
+              "mean": 0.30416666666666664
+            }
+          }
+        },
+        "shrink": {
+          "execution_accuracy": {
+            "draw0": {
+              "correct": 40.0,
+              "denominator": 120,
+              "mean": 0.3333333333333333
+            },
+            "draw1": {
+              "correct": 44.0,
+              "denominator": 120,
+              "mean": 0.36666666666666664
+            },
+            "greedy": {
+              "correct": 71.0,
+              "denominator": 120,
+              "mean": 0.5916666666666667
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 155.0,
+              "denominator": 360,
+              "mean": 0.4305555555555556
+            },
+            "stochastic_expectation": {
+              "correct": 84.0,
+              "denominator": 240,
+              "mean": 0.35
+            }
+          },
+          "program_accuracy": {
+            "draw0": {
+              "correct": 34.0,
+              "denominator": 120,
+              "mean": 0.2833333333333333
+            },
+            "draw1": {
+              "correct": 37.0,
+              "denominator": 120,
+              "mean": 0.30833333333333335
+            },
+            "greedy": {
+              "correct": 65.0,
+              "denominator": 120,
+              "mean": 0.5416666666666666
+            },
+            "legacy_mixed_descriptive": {
+              "correct": 136.0,
+              "denominator": 360,
+              "mean": 0.37777777777777777
+            },
+            "stochastic_expectation": {
+              "correct": 71.0,
+              "denominator": 240,
+              "mean": 0.29583333333333334
+            }
+          }
+        }
+      },
+      "score_id": "52767c670478f06401451876a382feca900251a30d082589d8d1d785f1282bd1"
+    }
+  },
+  "statistical_significance_claimed": false
+}
