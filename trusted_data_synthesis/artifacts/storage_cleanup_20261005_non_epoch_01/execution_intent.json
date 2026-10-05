@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-05T16:10:07.493365+00:00",
+  "authorization_exact": "同意，清理完成后继续本轮实验",
+  "filesystem_before": {
+    "available_bytes": 174687182848,
+    "free_bytes": 174687182848
+  },
+  "no_retry_or_resume": true,
+  "plan_sha256": "4f63a2d2ea36223ba84afb5585c78172e1f4f6e0578940074bb42540f6297908",
+  "process_audit": {
+    "active_relevant_workers": [],
+    "at": "2026-10-05T16:10:07.472016+00:00",
+    "limitation": "FD audit covers readable processes of this account; other users and protected FD tables of explicitly identified sshd/systemd/PAM daemons are not claimed to have been inspected. No process is signaled.",
+    "other_uid_processes_not_inspected": 1771,
+    "own_uid": 1004,
+    "own_uid_processes_checked": 28,
+    "paused_historical_controllers": [
+      {
+        "birth": "321560146",
+        "command": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python -u /data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v19-queued-optimization-20261001/trusted_data_synthesis/scripts/finqa_v19_queued_scheduler.py run --root /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/queued_optimization_01",
+        "pid": 2927149,
+        "state": "T"
+      },
+      {
+        "birth": "319331700",
+        "command": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python -u /data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-four-gpu-queue-20260930/trusted_data_synthesis/scripts/finqa_v18_four_gpu_queue_recovery.py run --output /data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01",
+        "pid": 895990,
+        "state": "T"
+      }
+    ],
+    "privileged_system_daemon_fd_tables_not_inspected": [
+      {
+        "command": "sshd: zhuxinrui",
+        "pid": 2382127,
+        "reason": "protected system daemon FD table"
+      },
+      {
+        "command": "sshd: zhuxinrui@notty",
+        "pid": 2383405,
+        "reason": "protected system daemon FD table"
+      },
+      {
+        "command": "/usr/lib/systemd/systemd --user",
+        "pid": 6878,
+        "reason": "protected system daemon FD table"
+      },
+      {
+        "command": "(sd-pam)",
+        "pid": 6879,
+        "reason": "protected system daemon FD table"
+      }
+    ],
+    "target_open_fds": [],
+    "vanished_processes": 0
+  },
+  "protected_before": {
+    "compared_fields": "all recorded metadata and summary SHA256",
+    "protected_count": 20639,
+    "protection_counts": {
+      "all_V15_prefix_tensors": 897,
+      "all_V18_mechanism_tensors": 903,
+      "all_V23_tensors": 450,
+      "all_main_checkpoint_records": 17919,
+      "all_shared_files": 6,
+      "authoritative_summary": 7,
+      "epoch_tensor": 120,
+      "explicit_C_only_test_extension_endpoint": 3,
+      "feedback_replay_tensor": 256,
+      "initial_branch_outer_tensor": 39,
+      "main_arm_result": 15,
+      "main_seed_result": 3,
+      "outer_inputs": 24
+    },
+    "unchanged": true
+  },
+  "script_sha256": "232f419898c04c6fe813a9f0b43984f64a064b36537276b084eebcb122e982df"
+}
