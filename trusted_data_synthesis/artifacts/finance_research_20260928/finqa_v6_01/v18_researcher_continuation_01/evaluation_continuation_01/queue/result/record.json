@@ -1,0 +1,13 @@
+{
+  "Experiment5_started": false,
+  "at": "2026-10-04T20:56:34.432733+00:00",
+  "dynamic_student_convergence_proved": false,
+  "final_evaluation_id": "b0d5b94e8bcb982a912c0114be0dfbb81a6fe42fc0657bad58230b9aa87611a9",
+  "id": "62ae77b4d4a163ccd5ed754786bec34883ee8f467290dc93ce16d55ff6004787",
+  "mechanism_report_id": "1d4a3da48048fbfa1da4c5a772cd6a7ce846c678adbbaaa7aa01253b96e68d5b",
+  "original_738_authorities_unchanged": true,
+  "prefix_retrained": false,
+  "registration_id": "5ecd737d512f48661dc634e7ccc47a49e060dc0f259ef60ebc79a037e2d8753e",
+  "schema": "v22_evaluation_tail_complete_mainline.v1",
+  "test1147_opened": false
+}

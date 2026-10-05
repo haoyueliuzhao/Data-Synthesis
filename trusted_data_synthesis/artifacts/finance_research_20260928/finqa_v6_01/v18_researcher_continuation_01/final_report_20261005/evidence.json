@@ -1,0 +1,2851 @@
+{
+  "schema": "finqa_v18_completed_report_evidence.v1",
+  "completion": {
+    "Experiment5_started": false,
+    "at": "2026-10-04T20:56:34.432733+00:00",
+    "dynamic_student_convergence_proved": false,
+    "final_evaluation_id": "b0d5b94e8bcb982a912c0114be0dfbb81a6fe42fc0657bad58230b9aa87611a9",
+    "id": "62ae77b4d4a163ccd5ed754786bec34883ee8f467290dc93ce16d55ff6004787",
+    "mechanism_report_id": "1d4a3da48048fbfa1da4c5a772cd6a7ce846c678adbbaaa7aa01253b96e68d5b",
+    "original_738_authorities_unchanged": true,
+    "prefix_retrained": false,
+    "registration_id": "5ecd737d512f48661dc634e7ccc47a49e060dc0f259ef60ebc79a037e2d8753e",
+    "schema": "v22_evaluation_tail_complete_mainline.v1",
+    "test1147_opened": false
+  },
+  "report_scope": "Completed fixed V18 five-arm experiment and V22 evaluation continuation; descriptive analysis only",
+  "source_manifest": {
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/evaluation_continuation_01/queue/result/record.json": {
+      "id": "62ae77b4d4a163ccd5ed754786bec34883ee8f467290dc93ce16d55ff6004787",
+      "sha256": "dfeb8c1f64a6d255bafdb21f1fa02970d2054fd79db00bb09831c93e78f393ac",
+      "bytes": 635
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/paired_summary/record.json": {
+      "id": "b0d5b94e8bcb982a912c0114be0dfbb81a6fe42fc0657bad58230b9aa87611a9",
+      "sha256": "d959e72323cc46e94387ae39f3b45fb17e58ce1f5001bcad83ad0e33d99cb260",
+      "bytes": 620141
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/evaluation_result/record.json": {
+      "id": "1d4a3da48048fbfa1da4c5a772cd6a7ce846c678adbbaaa7aa01253b96e68d5b",
+      "sha256": "ff39dd8ed1f30a037c75012612b9e5e23bc07329581bd95b7938a9d57234d2e7",
+      "bytes": 2713
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/registration/record.json": {
+      "id": "64281af85e8f381f5fa2bbd7398272af5d54967e125ca6890653ec42a2a72114",
+      "sha256": "f9c64a105c50a03d82a25f9b89d89b4450aaa38c18a8380129c6476a8c0d7149",
+      "bytes": 28787
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_five_arm_mainline_20260929/base_dev883_01/scores/record.json": {
+      "id": "a777398d33b3fdd60013d3a46b71a90d7bbb5c5181eff7b6f21c7a86525ec36c",
+      "sha256": "a9c790bfcf76a9ab8eca964ff3f2805c5300d1640c2a9822047ac6b96381e699",
+      "bytes": 616339
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed11/static/scores/record.json": {
+      "id": "1ce3522488cc58c0f770ea222f18a1864245ffff0c05ef40b56dc34e281bc21c",
+      "sha256": "1d42739fffca7ddb920a92a4a2eab31bc84e471e4f0b67463d7f92c28bf98208",
+      "bytes": 654504
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed11/manual_plus/scores/record.json": {
+      "id": "a6ef516241c3b302f8a111f18f48f2dc1e6f69c2737e2378b346069ae25df51c",
+      "sha256": "c46f10f305df8dfb5e5b7134bd529daef4db4333dd33b032e6374f87789abd97",
+      "bytes": 652365
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed11/manual_minus/scores/record.json": {
+      "id": "6f876c16599034c689fc62cfcfb5c48a500f8cebd8caf0c28fd8396221212d59",
+      "sha256": "1b2aff121232aade170d4574f772436f661ee3cd35d3ef3ee794e30125b82749",
+      "bytes": 654648
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed11/c_only/scores/record.json": {
+      "id": "abaf49e4d6c402d5cbfcb8e2c34e8a8dbec9d523d09085e3e5cb8d17708876b8",
+      "sha256": "86ce6daaf0accfeee311154f1e872352f87b310c52c62b9c99e068f6474dbfde",
+      "bytes": 651447
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed11/full/scores/record.json": {
+      "id": "584cd12fc7e6e63a62e47a0b426f7c117dcb9f4df3d545fb4deaddb6c0ca4988",
+      "sha256": "aeb71809f91b8f77d27387fdacac78fd5da0acdd657821e88b75129d8df80450",
+      "bytes": 653013
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed29/static/scores/record.json": {
+      "id": "81a9d43130ffd887220c2cf23c691c2b88ae6a957d9553bf6bbee688a3842303",
+      "sha256": "935b759eb1abde0cde6a548413bac2ef415c88f0e82d1d16a758c3a076133c78",
+      "bytes": 652888
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed29/manual_plus/scores/record.json": {
+      "id": "e854e2f825af3290370c3f5c5e23dd832796c3893c4f3df67b08c0a82f770572",
+      "sha256": "dc676031669342a70d79b6d0bdc7750b5419a5e1c81552621ba15ace67d9da2a",
+      "bytes": 654211
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed29/manual_minus/scores/record.json": {
+      "id": "27094eda672d621873bdff62e7ffdac313e03ca5461b751a14a74965daee58f1",
+      "sha256": "a2ff83bcbbb356c0fe7b4c214d756a33e965c6a9bedcc6152226a62d82e6f05b",
+      "bytes": 655438
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed29/c_only/scores/record.json": {
+      "id": "af60e5d8ffb9fb9eb409f4cf5e28ec24ef1103b0a9a74c8c87325d88e288d058",
+      "sha256": "f49030dbbe47b93127f3dd5ddee5311b17e19c7f52d699ef29b59434f374dbb1",
+      "bytes": 653072
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed29/full/scores/record.json": {
+      "id": "8468bb12c5c7a4e493e60282c38ca83238192b81f7a88a8dbdd210b6ee81b052",
+      "sha256": "5e3b08a9a00faac9714bc9b671fe72bff7696fa491a25610c3a8be1801cbb5cf",
+      "bytes": 654962
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed47/static/scores/record.json": {
+      "id": "4bd7c66752fbdb6868e0e5c578a7921c9aace37c0c107f51f93158d54b2beb86",
+      "sha256": "2d2aa697024cfed548e1d6d63e7377e40c543c3931b5852739c401c5b8a7b6c5",
+      "bytes": 658650
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed47/manual_plus/scores/record.json": {
+      "id": "1d0e4b35703e048efbccef8aebbd938c5beb51b6824e93f139b3acb7a8dadc1c",
+      "sha256": "f6cee62654053721a9a4b38de7ec4834669e959b739076e0d15d8761bcd59e21",
+      "bytes": 656528
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed47/manual_minus/scores/record.json": {
+      "id": "026c97aa3a69bd1c400d2e622941c558058ffbcf1964b3f61337373c6c2ec352",
+      "sha256": "1f5fa4040fc16491f462be694afc513e463730f585c2ce2d0322a328c486e1fe",
+      "bytes": 656253
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed47/c_only/scores/record.json": {
+      "id": "58dea12d8ed9b6a910c502d31f797f43b0fe3961c104119e00e78b8e51c40a90",
+      "sha256": "1dbc205bdb5539e8d29f0be0e614b0c6a488cd42f79f7277cd85f81b5823c2e1",
+      "bytes": 656566
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/final_evaluation/models/seed47/full/scores/record.json": {
+      "id": "8318c75f12e9c1011d2094f116a676e81cabadf8d4e7f1fb571b54eac13e3bd1",
+      "sha256": "8af1c9d4f54bd3cc091942f7b185ccf279846bc98138cd084113b3a0cea406b8",
+      "bytes": 656567
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/C_direction/result/record.json": {
+      "id": "a1b9547a656896598d7c321ea7be7e6d62b5d5d40a4f80c5669f5da175feb6a7",
+      "sha256": "9f2d7b4d2f5dce3c530ebf4c772bfc04c72c865d22a4e677daf57664348a229a",
+      "bytes": 479044
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/evaluation/C_direction/Static/scores/record.json": {
+      "id": "efa29d1bcd0f5845bf0c0956297b97dd482a4f8157fde1ed61a9f4a186a99ffa",
+      "sha256": "9fde5b45854ee1671b2872b84b159a7bfe99e3100567db9fb7fd7f158fcc3ddf",
+      "bytes": 261224
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/evaluation/C_direction/positive/scores/record.json": {
+      "id": "8c14e5c6801848bf0c1c42ad1e74c53b68aa94a83571c8fef926592cf9b34e5c",
+      "sha256": "a267505374c6a4a5818206b2fbb73bdf7410ae581786e00afc65f7890d439435",
+      "bytes": 261153
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/evaluation/C_direction/reverse/scores/record.json": {
+      "id": "efebc57fd584d74deb58bc491066d938ccfb16d56749af8e17aff565a1ab33e5",
+      "sha256": "12141206b7f78c4808744d26e021648e525a4cf33cd67a644543a33f339dcf19",
+      "bytes": 261138
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/N_same_point/result/record.json": {
+      "id": "b74d07d1acec3b22192f7ed283840227eaae1a70bafadf418df6cc37010e22b2",
+      "sha256": "238990cd096562545775d726ba6e037796dd716cf527fdc8f82fe5339ab6f1c5",
+      "bytes": 306558
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/evaluation/N_same_point/C-only/scores/record.json": {
+      "id": "bd4db41a13b491c8795d23320a9490f02bda97fc7e1e19e4872f15264ce19b74",
+      "sha256": "f125d9d79f10f15ddf78d0acd9183c8f6de44d700ed3dbd12723cbc449f55401",
+      "bytes": 260796
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed11/evaluation/N_same_point/Full/scores/record.json": {
+      "id": "6c37c178a0501ef25de226632b7ed387d81c957c212dceb5c85d583ecf5a8ca7",
+      "sha256": "1fef1764ee8770989f9f206ed1b9153ea3c78fdaca57fd20ead967633d3fbfad",
+      "bytes": 261147
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/C_direction/result/record.json": {
+      "id": "a62b928a28d2586bfd25f082867f3fb382045d886e9b0be7bc9b191bdca1408b",
+      "sha256": "5e1a0e682b3398f8dc8635b014b7c56ce11ceb1bf7609176022077bed74aec8b",
+      "bytes": 479077
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/evaluation/C_direction/Static/scores/record.json": {
+      "id": "79169993880adbde988f48dcdc2b8fb161779bf82a0aa0dcf2c8f2124fe47890",
+      "sha256": "5ebfbd840b93a3b3c4c56645665ad6a67cbf37a4b84b2dc64a6bcec138cf77fc",
+      "bytes": 261206
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/evaluation/C_direction/positive/scores/record.json": {
+      "id": "7244e28064c84581fc3aa82cb2cec4bfff7e3c8b7f01bcae90d06838cb948721",
+      "sha256": "81526f8b9ca762467fea885be3250009efcac0c5063ae0423ac4618bca53432a",
+      "bytes": 261003
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/evaluation/C_direction/reverse/scores/record.json": {
+      "id": "2a5c02d73b9369c4ac7d6a15a7025ba904d158dc8c47d8972b90245cf1245c77",
+      "sha256": "67dbbd1d242a4b08d3d986216d828219bbcf39853738b44e07dfcfa3edbd1315",
+      "bytes": 261239
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/N_same_point/result/record.json": {
+      "id": "7f2f43f9a888af254a995c1355da96805ce085d33ba7c2edb982e829fa4294e9",
+      "sha256": "5ee78e5928b528e8b0a3a9e4b8ac2f9934b36c79a6ba6aace9973952de0b1945",
+      "bytes": 306583
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/evaluation/N_same_point/C-only/scores/record.json": {
+      "id": "1f28b12d158a818e36bf53067a4b37eefaa64034678be0614ff3938b764ec124",
+      "sha256": "502047fe53631bbbcdc38aad178dfb28d34e1360d43cc680095ea9436a4f0c49",
+      "bytes": 262011
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed29/evaluation/N_same_point/Full/scores/record.json": {
+      "id": "769d9ae7056017b59f6fbf33dfa9d27aefaea673737338bf196838a8a51ed999",
+      "sha256": "c133a0b13f880f17f7357b7092e14dddd0bb90e77d0b4ce29afe7ec9ac2dcb46",
+      "bytes": 261785
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/C_direction/result/record.json": {
+      "id": "1e555d9b065dc517caa98ff19a46fd3f4d88708f200cc6662a6a796e6261ded9",
+      "sha256": "d49e5f01734f5a0f60ede5c49c47f584f5568fb4498ed42efed9497358d03b7d",
+      "bytes": 479032
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/evaluation/C_direction/Static/scores/record.json": {
+      "id": "be835b11dbcfe1d7381ed8953fe096dcbdacce2c96a3f7c2fd3e29b4b7d958c1",
+      "sha256": "1209304d7365c728bd381530e8a209ce4e0b8d0de478d45baa99f336ebe4c3be",
+      "bytes": 261434
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/evaluation/C_direction/positive/scores/record.json": {
+      "id": "e269ea833ca422c6ff8d532dc1f60f1ea3ff1d166f9267d2516c2de11458f53c",
+      "sha256": "103697a9c4d4c0f1f2194fbde2f6a12c4d258f1e7fa0e10634d2b1250b4491ab",
+      "bytes": 261533
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/evaluation/C_direction/reverse/scores/record.json": {
+      "id": "aae9c03333d0ad0c3562d47ce176df3fcdea22b98b359b13d995cdafd4fc97a5",
+      "sha256": "bf555b2456e41be95d99a103e920ce99240ee64b5390291668115839b69b5c8b",
+      "bytes": 261399
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/N_same_point/result/record.json": {
+      "id": "495092d2176563b31dd34b7c29885361d7d7521fc7a4b8cc5f91721099734e72",
+      "sha256": "2441c3c91b76079cc21e119f644908c046f179a0073d44fd787eccbca92c1603",
+      "bytes": 306621
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/evaluation/N_same_point/C-only/scores/record.json": {
+      "id": "b081be816173f7e597b87adca289707f9809658f3a5c9df89353cb3f06a445ad",
+      "sha256": "602771219654f2a81308f6c2c9e7e2f0629451bfcc53f00d066f0a0e8544a3b1",
+      "bytes": 261912
+    },
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/mechanisms/seed47/evaluation/N_same_point/Full/scores/record.json": {
+      "id": "d4a60ae9996cc2fa20272da84fe72b6f396dc83162a365f1bc13b2dbbf1b19e1",
+      "sha256": "ff03758ff68ad4eb9e5184bbbdcb7becaff68fb806e17d54835ce06d6662f33e",
+      "bytes": 262069
+    }
+  },
+  "checks": {
+    "source_content_ids_and_final_dev_report_hash_bindings": true,
+    "dev_rosters_counts_binary_scores_and_paired_effects": true,
+    "mechanism_rosters_counts_draws_and_aggregate": true,
+    "tensor_or_episode_reaudit_performed": false,
+    "private_references_read": false,
+    "new_API_or_GPU_calls": 0
+  },
+  "statistics_contract": {
+    "Static_minus_Base": "ordinary learning effect, never the VTDO increment",
+    "confidence_intervals": null,
+    "main_estimate": "mean of three within-seed mean paired differences over the same883 tasks",
+    "model_count": 15,
+    "native_execution_is_not_process_reliability": true,
+    "no_selecting_best_seed_or_endpoint": true,
+    "p_values": null,
+    "primary": "Full-Static native execution accuracy",
+    "repeated_seeds_do_not_make_2649_independent_questions": true,
+    "same_tasks_paired_within_seed": true,
+    "secondary": [
+      "Full-C-only",
+      "Manual+-Static",
+      "Manual--Static"
+    ],
+    "seed_spread_is_descriptive_not_confidence_interval": true,
+    "seeds": [
+      11,
+      29,
+      47
+    ],
+    "source_groups": "fixed original lineage.source_group; descriptive within-cluster means",
+    "statistical_power_claimed": false,
+    "task_denominator": 883
+  },
+  "outcome_code_definition": "Character per roster position: execution_correct + 2 * program_correct; integers 0..3. Not raw predictions.",
+  "Base_metrics": {
+    "execution_accuracy": {
+      "complete_dataset_mean": 0.03737259343148358,
+      "denominator": 883,
+      "mean_over_scored": 0.03737259343148358,
+      "scored": 883,
+      "unknown": 0
+    },
+    "program_accuracy": {
+      "complete_dataset_mean": 0.006795016987542469,
+      "denominator": 883,
+      "mean_over_scored": 0.006795016987542469,
+      "scored": 883,
+      "unknown": 0
+    }
+  },
+  "Base_rerun": false,
+  "dev_task_keys": [
+    "finqa/V/2008/page_17.pdf-1",
+    "finqa/C/2017/page_328.pdf-1",
+    "finqa/DVN/2007/page_58.pdf-2",
+    "finqa/ETR/2011/page_341.pdf-3",
+    "finqa/ETR/2004/page_213.pdf-2",
+    "finqa/PM/2017/page_38.pdf-1",
+    "finqa/JPM/2008/page_85.pdf-3",
+    "finqa/PNC/2013/page_207.pdf-1",
+    "finqa/CME/2017/page_97.pdf-5",
+    "finqa/PNC/2013/page_62.pdf-2",
+    "finqa/AAPL/2004/page_36.pdf-2",
+    "finqa/PKG/2009/page_65.pdf-4",
+    "finqa/LMT/2013/page_74.pdf-4",
+    "finqa/STT/2011/page_83.pdf-1",
+    "finqa/MRO/2007/page_149.pdf-2",
+    "finqa/AOS/2004/page_11.pdf-2",
+    "finqa/C/2010/page_223.pdf-3",
+    "finqa/MSI/2006/page_61.pdf-3",
+    "finqa/ABMD/2006/page_75.pdf-1",
+    "finqa/AMAT/2013/page_18.pdf-2",
+    "finqa/DVN/2014/page_85.pdf-1",
+    "finqa/SPGI/2018/page_74.pdf-1",
+    "finqa/ZBH/2003/page_58.pdf-3",
+    "finqa/AMT/2005/page_105.pdf-2",
+    "finqa/ETR/2015/page_131.pdf-1",
+    "finqa/PNC/2009/page_46.pdf-2",
+    "finqa/PM/2017/page_38.pdf-3",
+    "finqa/HOLX/2015/page_98.pdf-2",
+    "finqa/ETR/2017/page_114.pdf-2",
+    "finqa/UNP/2008/page_77.pdf-1",
+    "finqa/AES/2016/page_191.pdf-3",
+    "finqa/ETFC/2007/page_126.pdf-3",
+    "finqa/MAS/2012/page_70.pdf-1",
+    "finqa/AON/2010/page_28.pdf-1",
+    "finqa/AES/2002/page_46.pdf-4",
+    "finqa/CB/2010/page_200.pdf-4",
+    "finqa/PM/2015/page_85.pdf-1",
+    "finqa/ETFC/2014/page_26.pdf-2",
+    "finqa/ZBH/2003/page_40.pdf-1",
+    "finqa/AAPL/2014/page_38.pdf-3",
+    "finqa/ETR/2003/page_84.pdf-2",
+    "finqa/LMT/2012/page_47.pdf-3",
+    "finqa/MAS/2018/page_35.pdf-3",
+    "finqa/SYY/2019/page_9.pdf-2",
+    "finqa/ETR/2002/page_86.pdf-3",
+    "finqa/ZBH/2003/page_58.pdf-1",
+    "finqa/AMT/2010/page_34.pdf-2",
+    "finqa/PM/2014/page_67.pdf-2",
+    "finqa/ETR/2002/page_24.pdf-1",
+    "finqa/PM/2015/page_127.pdf-4",
+    "finqa/RSG/2016/page_144.pdf-1",
+    "finqa/SNPS/2006/page_69.pdf-2",
+    "finqa/GIS/2019/page_37.pdf-3",
+    "finqa/JPM/2018/page_110.pdf-2",
+    "finqa/STT/2008/page_83.pdf-2",
+    "finqa/AES/2016/page_185.pdf-4",
+    "finqa/CDNS/2012/page_30.pdf-4",
+    "finqa/AMAT/2014/page_35.pdf-1",
+    "finqa/LMT/2006/page_90.pdf-3",
+    "finqa/MO/2012/page_44.pdf-2",
+    "finqa/GS/2017/page_106.pdf-4",
+    "finqa/EW/2016/page_79.pdf-4",
+    "finqa/SLB/2012/page_44.pdf-3",
+    "finqa/GIS/2012/page_64.pdf-2",
+    "finqa/PM/2017/page_99.pdf-1",
+    "finqa/IP/2007/page_75.pdf-1",
+    "finqa/GS/2017/page_143.pdf-2",
+    "finqa/IPG/2009/page_85.pdf-2",
+    "finqa/ABMD/2009/page_88.pdf-1",
+    "finqa/IP/2006/page_32.pdf-1",
+    "finqa/CDNS/2018/page_31.pdf-3",
+    "finqa/L/2015/page_59.pdf-4",
+    "finqa/ILMN/2007/page_78.pdf-4",
+    "finqa/ADI/2011/page_81.pdf-1",
+    "finqa/MRO/2006/page_33.pdf-1",
+    "finqa/AMT/2012/page_125.pdf-2",
+    "finqa/ETR/2004/page_213.pdf-4",
+    "finqa/IP/2007/page_31.pdf-1",
+    "finqa/AMT/2005/page_54.pdf-2",
+    "finqa/FBHS/2017/page_23.pdf-2",
+    "finqa/MSI/2009/page_65.pdf-2",
+    "finqa/PM/2015/page_38.pdf-1",
+    "finqa/AON/2009/page_48.pdf-4",
+    "finqa/CDNS/2006/page_30.pdf-1",
+    "finqa/ALXN/2007/page_104.pdf-2",
+    "finqa/AES/2016/page_191.pdf-2",
+    "finqa/CB/2010/page_200.pdf-3",
+    "finqa/IP/2012/page_93.pdf-1",
+    "finqa/GS/2017/page_143.pdf-1",
+    "finqa/HWM/2017/page_41.pdf-1",
+    "finqa/RSG/2009/page_100.pdf-2",
+    "finqa/BLK/2013/page_124.pdf-2",
+    "finqa/AAP/2011/page_28.pdf-2",
+    "finqa/HOLX/2007/page_129.pdf-1",
+    "finqa/LKQ/2010/page_84.pdf-1",
+    "finqa/AAPL/2008/page_78.pdf-2",
+    "finqa/GS/2013/page_152.pdf-2",
+    "finqa/GPN/2009/page_70.pdf-2",
+    "finqa/C/2008/page_102.pdf-2",
+    "finqa/LMT/2006/page_37.pdf-1",
+    "finqa/AES/2015/page_117.pdf-2",
+    "finqa/AMT/2005/page_85.pdf-1",
+    "finqa/ABMD/2009/page_56.pdf-1",
+    "finqa/DISH/2013/page_138.pdf-1",
+    "finqa/PM/2018/page_24.pdf-2",
+    "finqa/ZBH/2003/page_58.pdf-4",
+    "finqa/LMT/2013/page_74.pdf-1",
+    "finqa/ETR/2003/page_84.pdf-1",
+    "finqa/AMT/2008/page_32.pdf-3",
+    "finqa/TROW/2010/page_22.pdf-2",
+    "finqa/UNP/2008/page_27.pdf-1",
+    "finqa/APD/2016/page_57.pdf-2",
+    "finqa/ETR/2017/page_114.pdf-1",
+    "finqa/GIS/2012/page_64.pdf-1",
+    "finqa/IPG/2009/page_85.pdf-3",
+    "finqa/INTC/2013/page_29.pdf-3",
+    "finqa/ADBE/2018/page_86.pdf-1",
+    "finqa/APD/2019/page_48.pdf-2",
+    "finqa/UNP/2015/page_24.pdf-1",
+    "finqa/ETR/2008/page_355.pdf-2",
+    "finqa/IPG/2008/page_62.pdf-2",
+    "finqa/AES/2017/page_157.pdf-1",
+    "finqa/JPM/2005/page_37.pdf-1",
+    "finqa/BLK/2014/page_119.pdf-1",
+    "finqa/ETR/2008/page_377.pdf-4",
+    "finqa/ETR/2017/page_26.pdf-4",
+    "finqa/PNC/2009/page_46.pdf-4",
+    "finqa/ZBH/2017/page_53.pdf-1",
+    "finqa/MRO/2004/page_36.pdf-2",
+    "finqa/AON/2014/page_47.pdf-1",
+    "finqa/MAS/2018/page_60.pdf-2",
+    "finqa/MRO/2007/page_134.pdf-2",
+    "finqa/ETR/2017/page_316.pdf-3",
+    "finqa/LMT/2017/page_80.pdf-1",
+    "finqa/GS/2012/page_165.pdf-2",
+    "finqa/CME/2017/page_97.pdf-4",
+    "finqa/JPM/2018/page_110.pdf-4",
+    "finqa/MRO/2015/page_18.pdf-2",
+    "finqa/AMAT/2014/page_18.pdf-2",
+    "finqa/IPG/2008/page_62.pdf-1",
+    "finqa/APD/2013/page_36.pdf-1",
+    "finqa/HIG/2011/page_188.pdf-2",
+    "finqa/PNC/2015/page_159.pdf-2",
+    "finqa/MRO/2017/page_111.pdf-2",
+    "finqa/PNC/2009/page_46.pdf-3",
+    "finqa/IP/2005/page_35.pdf-1",
+    "finqa/LMT/2015/page_56.pdf-4",
+    "finqa/BLL/2010/page_28.pdf-3",
+    "finqa/IPG/2015/page_37.pdf-3",
+    "finqa/KHC/2016/page_23.pdf-3",
+    "finqa/AON/2009/page_46.pdf-2",
+    "finqa/GS/2014/page_136.pdf-1",
+    "finqa/RSG/2015/page_142.pdf-2",
+    "finqa/MMM/2005/page_95.pdf-1",
+    "finqa/GS/2017/page_106.pdf-2",
+    "finqa/UAA/2016/page_52.pdf-1",
+    "finqa/LMT/2015/page_56.pdf-3",
+    "finqa/DVN/2007/page_58.pdf-3",
+    "finqa/INTC/2013/page_33.pdf-2",
+    "finqa/OKE/2008/page_86.pdf-1",
+    "finqa/ETR/2017/page_316.pdf-1",
+    "finqa/OKE/2008/page_86.pdf-2",
+    "finqa/FRT/2005/page_117.pdf-1",
+    "finqa/MRO/2007/page_149.pdf-1",
+    "finqa/AES/2016/page_191.pdf-1",
+    "finqa/STZ/2006/page_68.pdf-2",
+    "finqa/INTC/2013/page_29.pdf-1",
+    "finqa/CDNS/2012/page_30.pdf-1",
+    "finqa/GPN/2017/page_77.pdf-3",
+    "finqa/STT/2009/page_73.pdf-1",
+    "finqa/BLK/2012/page_37.pdf-2",
+    "finqa/HII/2017/page_104.pdf-3",
+    "finqa/SWKS/2006/page_81.pdf-2",
+    "finqa/FBHS/2017/page_23.pdf-1",
+    "finqa/HOLX/2008/page_84.pdf-2",
+    "finqa/MRO/2015/page_18.pdf-3",
+    "finqa/HOLX/2010/page_124.pdf-1",
+    "finqa/ALXN/2007/page_104.pdf-1",
+    "finqa/AES/2015/page_117.pdf-4",
+    "finqa/PPG/2011/page_70.pdf-1",
+    "finqa/BLK/2013/page_125.pdf-2",
+    "finqa/VLO/2018/page_25.pdf-1",
+    "finqa/C/2008/page_102.pdf-3",
+    "finqa/LMT/2012/page_47.pdf-1",
+    "finqa/ETFC/2013/page_26.pdf-2",
+    "finqa/LMT/2005/page_40.pdf-4",
+    "finqa/DRE/2002/page_40.pdf-1",
+    "finqa/AMT/2005/page_54.pdf-1",
+    "finqa/ETR/2008/page_355.pdf-1",
+    "finqa/AON/2014/page_47.pdf-3",
+    "finqa/ETR/2008/page_377.pdf-2",
+    "finqa/CDNS/2006/page_30.pdf-2",
+    "finqa/UA/2015/page_71.pdf-1",
+    "finqa/RSG/2015/page_126.pdf-2",
+    "finqa/PNC/2009/page_41.pdf-3",
+    "finqa/GIS/2019/page_37.pdf-2",
+    "finqa/ADBE/2018/page_86.pdf-2",
+    "finqa/DRE/2013/page_39.pdf-2",
+    "finqa/UNP/2006/page_37.pdf-2",
+    "finqa/UNP/2006/page_37.pdf-1",
+    "finqa/STZ/2006/page_68.pdf-3",
+    "finqa/AES/2017/page_157.pdf-2",
+    "finqa/AMT/2004/page_81.pdf-1",
+    "finqa/PM/2015/page_127.pdf-1",
+    "finqa/K/2013/page_62.pdf-2",
+    "finqa/MS/2014/page_292.pdf-2",
+    "finqa/IP/2012/page_93.pdf-2",
+    "finqa/PPG/2011/page_70.pdf-2",
+    "finqa/C/2017/page_328.pdf-4",
+    "finqa/PNC/2013/page_112.pdf-2",
+    "finqa/LMT/2017/page_80.pdf-2",
+    "finqa/LLY/2018/page_63.pdf-1",
+    "finqa/HOLX/2008/page_144.pdf-1",
+    "finqa/DRE/2009/page_72.pdf-2",
+    "finqa/ETFC/2007/page_126.pdf-2",
+    "finqa/IP/2009/page_37.pdf-2",
+    "finqa/ADBE/2018/page_86.pdf-4",
+    "finqa/C/2017/page_328.pdf-3",
+    "finqa/PNC/2009/page_46.pdf-1",
+    "finqa/ETR/2011/page_324.pdf-4",
+    "finqa/PM/2015/page_85.pdf-3",
+    "finqa/AAPL/2003/page_24.pdf-1",
+    "finqa/ETR/2015/page_109.pdf-1",
+    "finqa/MSI/2006/page_61.pdf-4",
+    "finqa/CDNS/2018/page_31.pdf-2",
+    "finqa/HWM/2016/page_40.pdf-2",
+    "finqa/ETR/2017/page_26.pdf-3",
+    "finqa/ABMD/2006/page_75.pdf-2",
+    "finqa/BDX/2019/page_45.pdf-1",
+    "finqa/UNP/2013/page_54.pdf-2",
+    "finqa/AWK/2013/page_132.pdf-4",
+    "finqa/MRO/2009/page_56.pdf-2",
+    "finqa/IP/2006/page_32.pdf-2",
+    "finqa/LMT/2005/page_40.pdf-3",
+    "finqa/APD/2014/page_44.pdf-1",
+    "finqa/IPG/2015/page_48.pdf-2",
+    "finqa/AES/2002/page_46.pdf-2",
+    "finqa/JPM/2008/page_85.pdf-4",
+    "finqa/DRE/2009/page_72.pdf-1",
+    "finqa/APTV/2014/page_49.pdf-2",
+    "finqa/ILMN/2007/page_78.pdf-2",
+    "finqa/BLK/2012/page_160.pdf-1",
+    "finqa/EW/2017/page_82.pdf-2",
+    "finqa/JPM/2008/page_85.pdf-1",
+    "finqa/APD/2018/page_59.pdf-1",
+    "finqa/ETR/2002/page_24.pdf-2",
+    "finqa/PNC/2011/page_87.pdf-4",
+    "finqa/UNP/2011/page_76.pdf-2",
+    "finqa/HII/2017/page_104.pdf-4",
+    "finqa/GPN/2009/page_70.pdf-3",
+    "finqa/MSI/2009/page_65.pdf-1",
+    "finqa/DISH/2013/page_138.pdf-3",
+    "finqa/ANSS/2013/page_55.pdf-1",
+    "finqa/MRO/2008/page_69.pdf-1",
+    "finqa/IPG/2008/page_93.pdf-4",
+    "finqa/ETR/2017/page_316.pdf-2",
+    "finqa/HIG/2008/page_318.pdf-1",
+    "finqa/HII/2017/page_47.pdf-1",
+    "finqa/AMT/2005/page_105.pdf-3",
+    "finqa/MAS/2012/page_70.pdf-3",
+    "finqa/L/2015/page_59.pdf-1",
+    "finqa/AAPL/2003/page_24.pdf-2",
+    "finqa/RE/2015/page_33.pdf-3",
+    "finqa/GPN/2009/page_70.pdf-4",
+    "finqa/CAG/2008/page_75.pdf-1",
+    "finqa/K/2013/page_62.pdf-1",
+    "finqa/UAA/2016/page_52.pdf-2",
+    "finqa/DISCA/2012/page_39.pdf-1",
+    "finqa/PM/2015/page_38.pdf-2",
+    "finqa/CME/2012/page_70.pdf-3",
+    "finqa/APD/2013/page_32.pdf-2",
+    "finqa/ILMN/2007/page_78.pdf-1",
+    "finqa/PM/2015/page_127.pdf-2",
+    "finqa/ETR/2016/page_418.pdf-2",
+    "finqa/CDNS/2018/page_31.pdf-4",
+    "finqa/SNA/2012/page_33.pdf-3",
+    "finqa/AON/2009/page_48.pdf-3",
+    "finqa/C/2010/page_223.pdf-2",
+    "finqa/MRO/2009/page_139.pdf-2",
+    "finqa/CMCSA/2015/page_64.pdf-1",
+    "finqa/STZ/2006/page_68.pdf-1",
+    "finqa/ETR/2002/page_24.pdf-3",
+    "finqa/LMT/2015/page_54.pdf-2",
+    "finqa/RSG/2015/page_126.pdf-1",
+    "finqa/AAP/2012/page_12.pdf-2",
+    "finqa/KHC/2016/page_23.pdf-1",
+    "finqa/IPG/2008/page_21.pdf-3",
+    "finqa/C/2010/page_223.pdf-4",
+    "finqa/BLL/2007/page_35.pdf-4",
+    "finqa/BLL/2010/page_28.pdf-1",
+    "finqa/AES/2015/page_117.pdf-1",
+    "finqa/ZBH/2017/page_71.pdf-1",
+    "finqa/ETFC/2011/page_82.pdf-1",
+    "finqa/LMT/2005/page_40.pdf-2",
+    "finqa/FIS/2007/page_94.pdf-2",
+    "finqa/HUM/2017/page_133.pdf-4",
+    "finqa/PKG/2009/page_65.pdf-2",
+    "finqa/MRO/2017/page_111.pdf-1",
+    "finqa/LLY/2018/page_63.pdf-3",
+    "finqa/APD/2013/page_32.pdf-1",
+    "finqa/RSG/2017/page_138.pdf-1",
+    "finqa/MS/2017/page_74.pdf-2",
+    "finqa/HII/2017/page_47.pdf-2",
+    "finqa/MS/2014/page_267.pdf-1",
+    "finqa/AMT/2008/page_32.pdf-2",
+    "finqa/MRO/2008/page_69.pdf-4",
+    "finqa/HOLX/2008/page_144.pdf-2",
+    "finqa/PNC/2016/page_177.pdf-1",
+    "finqa/AES/2015/page_117.pdf-3",
+    "finqa/CDNS/2018/page_31.pdf-1",
+    "finqa/PNC/2018/page_171.pdf-2",
+    "finqa/V/2013/page_41.pdf-1",
+    "finqa/HOLX/2008/page_142.pdf-2",
+    "finqa/JPM/2005/page_37.pdf-2",
+    "finqa/ETFC/2014/page_26.pdf-4",
+    "finqa/JPM/2009/page_133.pdf-2",
+    "finqa/MRO/2007/page_134.pdf-3",
+    "finqa/BLK/2012/page_37.pdf-1",
+    "finqa/PPG/2013/page_40.pdf-2",
+    "finqa/ETR/2008/page_321.pdf-1",
+    "finqa/C/2008/page_211.pdf-2",
+    "finqa/AES/2003/page_52.pdf-1",
+    "finqa/STZ/2006/page_68.pdf-4",
+    "finqa/JPM/2014/page_65.pdf-1",
+    "finqa/NKE/2016/page_37.pdf-2",
+    "finqa/L/2015/page_59.pdf-3",
+    "finqa/HOLX/2007/page_129.pdf-2",
+    "finqa/LKQ/2016/page_26.pdf-1",
+    "finqa/VRTX/2003/page_71.pdf-1",
+    "finqa/PNC/2011/page_87.pdf-1",
+    "finqa/GS/2012/page_165.pdf-3",
+    "finqa/JPM/2018/page_110.pdf-1",
+    "finqa/PNC/2011/page_78.pdf-3",
+    "finqa/ILMN/2007/page_78.pdf-3",
+    "finqa/PM/2017/page_99.pdf-2",
+    "finqa/EW/2016/page_94.pdf-2",
+    "finqa/HWM/2016/page_40.pdf-1",
+    "finqa/PM/2018/page_24.pdf-3",
+    "finqa/IP/2005/page_35.pdf-2",
+    "finqa/UPS/2006/page_32.pdf-4",
+    "finqa/AAL/2015/page_118.pdf-2",
+    "finqa/ETR/2004/page_213.pdf-3",
+    "finqa/CME/2010/page_42.pdf-1",
+    "finqa/ETFC/2013/page_26.pdf-1",
+    "finqa/LMT/2010/page_42.pdf-1",
+    "finqa/TSCO/2017/page_31.pdf-1",
+    "finqa/C/2008/page_211.pdf-4",
+    "finqa/FRT/2005/page_117.pdf-2",
+    "finqa/ETFC/2011/page_82.pdf-3",
+    "finqa/UNP/2007/page_65.pdf-1",
+    "finqa/ETR/2002/page_86.pdf-1",
+    "finqa/CAT/2017/page_85.pdf-2",
+    "finqa/AES/2017/page_175.pdf-1",
+    "finqa/HII/2014/page_69.pdf-2",
+    "finqa/VTR/2007/page_47.pdf-4",
+    "finqa/AAL/2015/page_118.pdf-1",
+    "finqa/CNP/2010/page_31.pdf-2",
+    "finqa/LMT/2015/page_99.pdf-3",
+    "finqa/HUM/2017/page_133.pdf-2",
+    "finqa/JPM/2013/page_209.pdf-3",
+    "finqa/JPM/2005/page_37.pdf-3",
+    "finqa/EW/2016/page_79.pdf-2",
+    "finqa/ZBH/2003/page_40.pdf-2",
+    "finqa/EW/2016/page_79.pdf-3",
+    "finqa/DISH/2013/page_138.pdf-2",
+    "finqa/UNP/2011/page_21.pdf-2",
+    "finqa/PM/2018/page_24.pdf-1",
+    "finqa/ETR/2013/page_118.pdf-4",
+    "finqa/APD/2016/page_39.pdf-2",
+    "finqa/AAP/2011/page_28.pdf-1",
+    "finqa/C/2008/page_102.pdf-1",
+    "finqa/IPG/2015/page_48.pdf-3",
+    "finqa/MRO/2011/page_73.pdf-4",
+    "finqa/IP/2005/page_19.pdf-2",
+    "finqa/IPG/2015/page_37.pdf-1",
+    "finqa/STT/2009/page_73.pdf-2",
+    "finqa/MO/2012/page_44.pdf-1",
+    "finqa/MRO/2017/page_111.pdf-3",
+    "finqa/DRE/2007/page_59.pdf-1",
+    "finqa/AMT/2005/page_85.pdf-2",
+    "finqa/CME/2017/page_97.pdf-2",
+    "finqa/LMT/2005/page_40.pdf-1",
+    "finqa/EW/2017/page_82.pdf-1",
+    "finqa/CDNS/2012/page_30.pdf-3",
+    "finqa/ETR/2011/page_324.pdf-2",
+    "finqa/BLK/2014/page_119.pdf-2",
+    "finqa/ETR/2002/page_86.pdf-2",
+    "finqa/HII/2014/page_69.pdf-1",
+    "finqa/BLL/2007/page_47.pdf-4",
+    "finqa/MS/2017/page_74.pdf-1",
+    "finqa/STT/2011/page_83.pdf-2",
+    "finqa/ETFC/2014/page_26.pdf-3",
+    "finqa/AMT/2010/page_34.pdf-3",
+    "finqa/MS/2014/page_292.pdf-1",
+    "finqa/ETFC/2014/page_26.pdf-1",
+    "finqa/UNP/2011/page_21.pdf-1",
+    "finqa/ETR/2011/page_341.pdf-2",
+    "finqa/C/2017/page_328.pdf-2",
+    "finqa/JPM/2014/page_65.pdf-3",
+    "finqa/HIG/2008/page_318.pdf-2",
+    "finqa/APD/2014/page_39.pdf-2",
+    "finqa/JPM/2008/page_85.pdf-2",
+    "finqa/GPN/2009/page_70.pdf-1",
+    "finqa/ADBE/2018/page_86.pdf-3",
+    "finqa/JPM/2007/page_147.pdf-2",
+    "finqa/AON/2009/page_48.pdf-1",
+    "finqa/ETR/2008/page_355.pdf-3",
+    "finqa/APD/2019/page_48.pdf-1",
+    "finqa/MRO/2006/page_33.pdf-2",
+    "finqa/JPM/2007/page_33.pdf-2",
+    "finqa/JPM/2013/page_209.pdf-1",
+    "finqa/ETR/2002/page_24.pdf-4",
+    "finqa/EW/2016/page_94.pdf-3",
+    "finqa/C/2010/page_223.pdf-1",
+    "finqa/ABMD/2009/page_88.pdf-2",
+    "finqa/AES/2017/page_157.pdf-4",
+    "finqa/HII/2017/page_124.pdf-4",
+    "finqa/ETR/2013/page_118.pdf-3",
+    "finqa/HOLX/2008/page_142.pdf-1",
+    "finqa/IPG/2008/page_93.pdf-3",
+    "finqa/BLL/2007/page_47.pdf-3",
+    "finqa/HOLX/2012/page_113.pdf-1",
+    "finqa/HUM/2017/page_133.pdf-3",
+    "finqa/ETR/2008/page_249.pdf-2",
+    "finqa/AON/2009/page_46.pdf-3",
+    "finqa/LKQ/2018/page_83.pdf-1",
+    "finqa/PM/2014/page_67.pdf-1",
+    "finqa/PM/2017/page_38.pdf-2",
+    "finqa/IPG/2008/page_93.pdf-1",
+    "finqa/BLK/2013/page_125.pdf-1",
+    "finqa/AAP/2012/page_12.pdf-1",
+    "finqa/CDNS/2006/page_30.pdf-3",
+    "finqa/EW/2016/page_94.pdf-4",
+    "finqa/VLO/2018/page_25.pdf-2",
+    "finqa/APD/2014/page_44.pdf-2",
+    "finqa/CME/2012/page_70.pdf-1",
+    "finqa/BLK/2017/page_122.pdf-2",
+    "finqa/INTC/2013/page_29.pdf-4",
+    "finqa/ETR/2011/page_324.pdf-1",
+    "finqa/APD/2019/page_31.pdf-1",
+    "finqa/PNC/2013/page_62.pdf-1",
+    "finqa/KHC/2016/page_23.pdf-2",
+    "finqa/BLL/2007/page_35.pdf-3",
+    "finqa/CB/2010/page_200.pdf-1",
+    "finqa/MRO/2011/page_73.pdf-2",
+    "finqa/UNP/2009/page_65.pdf-2",
+    "finqa/ETFC/2007/page_126.pdf-1",
+    "finqa/AES/2017/page_175.pdf-3",
+    "finqa/BLL/2007/page_47.pdf-1",
+    "finqa/MA/2008/page_126.pdf-1",
+    "finqa/AWK/2013/page_132.pdf-2",
+    "finqa/MRO/2007/page_134.pdf-1",
+    "finqa/INTC/2013/page_29.pdf-2",
+    "finqa/MAS/2018/page_35.pdf-1",
+    "finqa/PPG/2013/page_40.pdf-1",
+    "finqa/ETR/2015/page_131.pdf-4",
+    "finqa/VNO/2012/page_84.pdf-2",
+    "finqa/VTR/2007/page_47.pdf-3",
+    "finqa/UPS/2006/page_32.pdf-2",
+    "finqa/HII/2017/page_124.pdf-2",
+    "finqa/VRTX/2003/page_71.pdf-2",
+    "finqa/GS/2016/page_77.pdf-4",
+    "finqa/AES/2003/page_52.pdf-2",
+    "finqa/MAS/2012/page_70.pdf-2",
+    "finqa/AON/2011/page_134.pdf-2",
+    "finqa/HII/2014/page_69.pdf-3",
+    "finqa/DRE/2009/page_56.pdf-1",
+    "finqa/RCL/2014/page_17.pdf-2",
+    "finqa/AAL/2015/page_118.pdf-3",
+    "finqa/LMT/2015/page_56.pdf-2",
+    "finqa/PM/2015/page_127.pdf-3",
+    "finqa/LMT/2012/page_47.pdf-4",
+    "finqa/AAPL/2005/page_83.pdf-1",
+    "finqa/PM/2014/page_67.pdf-3",
+    "finqa/ETR/2013/page_118.pdf-2",
+    "finqa/HOLX/2007/page_128.pdf-2",
+    "finqa/GIS/2019/page_37.pdf-1",
+    "finqa/IPG/2009/page_85.pdf-1",
+    "finqa/RE/2017/page_159.pdf-4",
+    "finqa/JPM/2018/page_110.pdf-3",
+    "finqa/MRO/2009/page_139.pdf-4",
+    "finqa/UNP/2014/page_35.pdf-2",
+    "finqa/RSG/2017/page_142.pdf-1",
+    "finqa/C/2008/page_211.pdf-3",
+    "finqa/AES/2002/page_46.pdf-3",
+    "finqa/UPS/2006/page_32.pdf-3",
+    "finqa/NWS/2016/page_61.pdf-1",
+    "finqa/JPM/2014/page_65.pdf-2",
+    "finqa/APD/2016/page_39.pdf-1",
+    "finqa/IPG/2008/page_93.pdf-2",
+    "finqa/AMT/2004/page_81.pdf-3",
+    "finqa/AES/2016/page_185.pdf-3",
+    "finqa/ETR/2015/page_131.pdf-2",
+    "finqa/IPG/2008/page_21.pdf-1",
+    "finqa/GS/2017/page_106.pdf-1",
+    "finqa/STT/2011/page_83.pdf-3",
+    "finqa/APD/2019/page_31.pdf-2",
+    "finqa/LMT/2015/page_54.pdf-1",
+    "finqa/MRO/2008/page_69.pdf-2",
+    "finqa/JPM/2013/page_209.pdf-2",
+    "finqa/AON/2010/page_115.pdf-3",
+    "finqa/AMT/2005/page_105.pdf-4",
+    "finqa/IPG/2015/page_37.pdf-2",
+    "finqa/LMT/2013/page_74.pdf-3",
+    "finqa/PM/2017/page_38.pdf-4",
+    "finqa/RCL/2014/page_17.pdf-1",
+    "finqa/UNP/2011/page_76.pdf-1",
+    "finqa/LMT/2006/page_90.pdf-4",
+    "finqa/AES/2016/page_185.pdf-2",
+    "finqa/TSCO/2018/page_34.pdf-2",
+    "finqa/ABMD/2004/page_26.pdf-1",
+    "finqa/AES/2017/page_175.pdf-2",
+    "finqa/LMT/2016/page_48.pdf-4",
+    "finqa/HOLX/2007/page_128.pdf-1",
+    "finqa/PNC/2011/page_78.pdf-1",
+    "finqa/GS/2014/page_136.pdf-2",
+    "finqa/DISCA/2012/page_39.pdf-4",
+    "finqa/LMT/2015/page_54.pdf-3",
+    "finqa/LMT/2015/page_99.pdf-2",
+    "finqa/C/2008/page_211.pdf-1",
+    "finqa/LMT/2010/page_42.pdf-4",
+    "finqa/ETFC/2011/page_82.pdf-2",
+    "finqa/AON/2010/page_115.pdf-1",
+    "finqa/PNC/2009/page_41.pdf-1",
+    "finqa/MRO/2011/page_73.pdf-1",
+    "finqa/UNP/2013/page_54.pdf-1",
+    "finqa/JKHY/2014/page_30.pdf-2",
+    "finqa/L/2015/page_59.pdf-2",
+    "finqa/ABMD/2007/page_52.pdf-2",
+    "finqa/LMT/2015/page_99.pdf-4",
+    "finqa/PKG/2009/page_65.pdf-1",
+    "finqa/UPS/2006/page_32.pdf-1",
+    "finqa/HII/2017/page_104.pdf-1",
+    "finqa/CDNS/2006/page_30.pdf-4",
+    "finqa/ABMD/2004/page_26.pdf-2",
+    "finqa/ADI/2011/page_50.pdf-2",
+    "finqa/UNP/2014/page_25.pdf-2",
+    "finqa/ADI/2011/page_81.pdf-2",
+    "finqa/AWK/2013/page_132.pdf-3",
+    "finqa/UNP/2008/page_79.pdf-1",
+    "finqa/AAL/2013/page_15.pdf-3",
+    "finqa/AMT/2012/page_125.pdf-1",
+    "finqa/EW/2016/page_79.pdf-1",
+    "finqa/PM/2015/page_85.pdf-2",
+    "finqa/AAL/2013/page_15.pdf-2",
+    "finqa/MRO/2011/page_73.pdf-3",
+    "finqa/ETR/2004/page_213.pdf-1",
+    "finqa/PNC/2009/page_41.pdf-2",
+    "finqa/BKR/2017/page_103.pdf-1",
+    "finqa/AMT/2010/page_34.pdf-4",
+    "finqa/GS/2012/page_165.pdf-1",
+    "finqa/BLL/2010/page_28.pdf-2",
+    "finqa/AON/2011/page_134.pdf-4",
+    "finqa/ETR/2016/page_418.pdf-4",
+    "finqa/GS/2016/page_70.pdf-1",
+    "finqa/TSCO/2018/page_34.pdf-1",
+    "finqa/JPM/2007/page_157.pdf-2",
+    "finqa/GS/2016/page_70.pdf-2",
+    "finqa/UA/2015/page_71.pdf-2",
+    "finqa/RE/2015/page_33.pdf-2",
+    "finqa/V/2008/page_17.pdf-2",
+    "finqa/AON/2009/page_48.pdf-2",
+    "finqa/DRE/2002/page_40.pdf-2",
+    "finqa/APD/2016/page_96.pdf-2",
+    "finqa/SLB/2012/page_44.pdf-2",
+    "finqa/UNP/2013/page_44.pdf-1",
+    "finqa/DVN/2014/page_85.pdf-2",
+    "finqa/APD/2014/page_39.pdf-1",
+    "finqa/JPM/2007/page_157.pdf-1",
+    "finqa/CAT/2017/page_85.pdf-1",
+    "finqa/DISCA/2012/page_39.pdf-3",
+    "finqa/AOS/2004/page_11.pdf-1",
+    "finqa/AON/2011/page_134.pdf-3",
+    "finqa/RE/2015/page_33.pdf-4",
+    "finqa/JPM/2007/page_33.pdf-1",
+    "finqa/IPG/2015/page_48.pdf-1",
+    "finqa/PNC/2015/page_159.pdf-1",
+    "finqa/ETR/2016/page_418.pdf-1",
+    "finqa/AAPL/2005/page_83.pdf-2",
+    "finqa/MRO/2009/page_139.pdf-3",
+    "finqa/APD/2018/page_59.pdf-2",
+    "finqa/LLY/2018/page_63.pdf-2",
+    "finqa/LMT/2015/page_99.pdf-1",
+    "finqa/CME/2017/page_97.pdf-3",
+    "finqa/MRO/2009/page_56.pdf-1",
+    "finqa/IPG/2008/page_62.pdf-3",
+    "finqa/EW/2016/page_94.pdf-1",
+    "finqa/CB/2010/page_88.pdf-1",
+    "finqa/MRO/2004/page_36.pdf-1",
+    "finqa/GPN/2017/page_77.pdf-2",
+    "finqa/APD/2013/page_40.pdf-1",
+    "finqa/GS/2013/page_152.pdf-3",
+    "finqa/VTR/2007/page_47.pdf-2",
+    "finqa/AMAT/2013/page_18.pdf-1",
+    "finqa/ETR/2011/page_376.pdf-2",
+    "finqa/HII/2017/page_124.pdf-3",
+    "finqa/INTC/2013/page_33.pdf-1",
+    "finqa/ETR/2013/page_118.pdf-1",
+    "finqa/BLK/2012/page_160.pdf-2",
+    "finqa/BDX/2018/page_82.pdf-2",
+    "finqa/FIS/2007/page_94.pdf-3",
+    "finqa/MA/2008/page_126.pdf-2",
+    "finqa/AES/2016/page_185.pdf-1",
+    "finqa/OKE/2012/page_52.pdf-1",
+    "finqa/ETFC/2011/page_82.pdf-4",
+    "finqa/LKQ/2016/page_26.pdf-2",
+    "finqa/ETR/2011/page_324.pdf-3",
+    "finqa/ETR/2008/page_355.pdf-4",
+    "finqa/INTC/2013/page_33.pdf-3",
+    "finqa/UNP/2014/page_35.pdf-1",
+    "finqa/HII/2014/page_69.pdf-4",
+    "finqa/IP/2009/page_37.pdf-1",
+    "finqa/PM/2018/page_31.pdf-1",
+    "finqa/JPM/2014/page_65.pdf-4",
+    "finqa/SWKS/2006/page_81.pdf-1",
+    "finqa/IP/2005/page_19.pdf-1",
+    "finqa/PNC/2013/page_112.pdf-1",
+    "finqa/KHC/2016/page_23.pdf-4",
+    "finqa/UNP/2015/page_35.pdf-1",
+    "finqa/AMT/2008/page_32.pdf-4",
+    "finqa/PKG/2009/page_65.pdf-3",
+    "finqa/PNC/2011/page_78.pdf-4",
+    "finqa/PM/2018/page_31.pdf-2",
+    "finqa/IPG/2008/page_62.pdf-4",
+    "finqa/TSCO/2017/page_31.pdf-2",
+    "finqa/APD/2016/page_96.pdf-1",
+    "finqa/BLL/2007/page_47.pdf-2",
+    "finqa/UNP/2014/page_25.pdf-1",
+    "finqa/RSG/2009/page_100.pdf-1",
+    "finqa/PNC/2011/page_87.pdf-2",
+    "finqa/AES/2001/page_44.pdf-2",
+    "finqa/FBHS/2017/page_43.pdf-1",
+    "finqa/MSI/2006/page_61.pdf-2",
+    "finqa/BLK/2013/page_124.pdf-1",
+    "finqa/SNA/2012/page_33.pdf-2",
+    "finqa/LMT/2016/page_48.pdf-1",
+    "finqa/TROW/2010/page_22.pdf-3",
+    "finqa/AAPL/2014/page_38.pdf-4",
+    "finqa/AES/2017/page_157.pdf-3",
+    "finqa/FIS/2007/page_91.pdf-1",
+    "finqa/CNP/2010/page_31.pdf-1",
+    "finqa/UNP/2009/page_65.pdf-1",
+    "finqa/AON/2010/page_115.pdf-2",
+    "finqa/ETR/2008/page_377.pdf-1",
+    "finqa/TROW/2010/page_22.pdf-1",
+    "finqa/MRO/2015/page_18.pdf-4",
+    "finqa/ETR/2011/page_376.pdf-1",
+    "finqa/ETR/2017/page_316.pdf-4",
+    "finqa/CAG/2008/page_75.pdf-2",
+    "finqa/AES/2002/page_46.pdf-1",
+    "finqa/LMT/2016/page_48.pdf-3",
+    "finqa/RE/2017/page_159.pdf-3",
+    "finqa/BDX/2018/page_82.pdf-1",
+    "finqa/CB/2010/page_88.pdf-2",
+    "finqa/AON/2014/page_47.pdf-2",
+    "finqa/AON/2014/page_47.pdf-4",
+    "finqa/PNC/2013/page_207.pdf-2",
+    "finqa/CB/2010/page_88.pdf-3",
+    "finqa/BLL/2007/page_35.pdf-1",
+    "finqa/GS/2016/page_77.pdf-1",
+    "finqa/BLL/2010/page_28.pdf-4",
+    "finqa/GPN/2017/page_77.pdf-1",
+    "finqa/CME/2012/page_70.pdf-4",
+    "finqa/DRE/2007/page_59.pdf-2",
+    "finqa/JPM/2007/page_147.pdf-3",
+    "finqa/PNC/2018/page_171.pdf-1",
+    "finqa/HIG/2011/page_188.pdf-1",
+    "finqa/FBHS/2017/page_76.pdf-1",
+    "finqa/AAL/2013/page_15.pdf-1",
+    "finqa/LMT/2013/page_74.pdf-2",
+    "finqa/ALLE/2016/page_43.pdf-1",
+    "finqa/HUM/2017/page_133.pdf-1",
+    "finqa/FIS/2007/page_91.pdf-2",
+    "finqa/HIG/2008/page_318.pdf-3",
+    "finqa/RE/2015/page_33.pdf-1",
+    "finqa/MRO/2009/page_56.pdf-3",
+    "finqa/MSI/2006/page_61.pdf-1",
+    "finqa/PNC/2011/page_87.pdf-3",
+    "finqa/SNA/2012/page_33.pdf-1",
+    "finqa/NKE/2016/page_37.pdf-1",
+    "finqa/ZBH/2017/page_71.pdf-3",
+    "finqa/CMCSA/2015/page_64.pdf-2",
+    "finqa/SLB/2012/page_44.pdf-1",
+    "finqa/MRO/2006/page_33.pdf-3",
+    "finqa/ETR/2016/page_418.pdf-3",
+    "finqa/MRO/2015/page_18.pdf-1",
+    "finqa/LMT/2017/page_80.pdf-3",
+    "finqa/ETR/2008/page_377.pdf-3",
+    "finqa/GS/2017/page_106.pdf-3",
+    "finqa/RE/2017/page_159.pdf-1",
+    "finqa/LMT/2010/page_42.pdf-2",
+    "finqa/AES/2017/page_175.pdf-4",
+    "finqa/HII/2017/page_124.pdf-1",
+    "finqa/CME/2012/page_70.pdf-2",
+    "finqa/ETR/2017/page_26.pdf-2",
+    "finqa/CDNS/2012/page_30.pdf-2",
+    "finqa/FIS/2007/page_94.pdf-4",
+    "finqa/AMT/2008/page_32.pdf-1",
+    "finqa/PM/2017/page_99.pdf-3",
+    "finqa/PNC/2011/page_78.pdf-2",
+    "finqa/JPM/2009/page_133.pdf-1",
+    "finqa/LMT/2006/page_90.pdf-2",
+    "finqa/AMT/2005/page_105.pdf-1",
+    "finqa/DRE/2013/page_39.pdf-1",
+    "finqa/AON/2011/page_134.pdf-1",
+    "finqa/DISCA/2012/page_39.pdf-2",
+    "finqa/MAS/2018/page_35.pdf-2",
+    "finqa/MRO/2008/page_69.pdf-3",
+    "finqa/MRO/2009/page_139.pdf-1",
+    "finqa/SPGI/2015/page_57.pdf-1",
+    "finqa/FBHS/2017/page_76.pdf-2",
+    "finqa/UNP/2014/page_75.pdf-1",
+    "finqa/STT/2009/page_73.pdf-3",
+    "finqa/MRO/2017/page_111.pdf-4",
+    "finqa/RSG/2015/page_142.pdf-1",
+    "finqa/APD/2016/page_57.pdf-1",
+    "finqa/ABMD/2007/page_52.pdf-1",
+    "finqa/RSG/2016/page_144.pdf-2",
+    "finqa/GPN/2017/page_77.pdf-4",
+    "finqa/MRO/2014/page_58.pdf-1",
+    "finqa/CME/2017/page_97.pdf-1",
+    "finqa/SLB/2012/page_44.pdf-4",
+    "finqa/APD/2013/page_36.pdf-2",
+    "finqa/ZBH/2017/page_71.pdf-2",
+    "finqa/RSG/2017/page_142.pdf-2",
+    "finqa/HOLX/2008/page_84.pdf-1",
+    "finqa/HIG/2011/page_188.pdf-3",
+    "finqa/UA/2009/page_50.pdf-2",
+    "finqa/ZBH/2003/page_58.pdf-2",
+    "finqa/HOLX/2012/page_113.pdf-2",
+    "finqa/GS/2016/page_77.pdf-2",
+    "finqa/JPM/2018/page_110.pdf-5",
+    "finqa/SNPS/2006/page_69.pdf-1",
+    "finqa/LKQ/2010/page_84.pdf-2",
+    "finqa/ETR/2008/page_249.pdf-1",
+    "finqa/STT/2008/page_83.pdf-1",
+    "finqa/CB/2010/page_200.pdf-2",
+    "finqa/AAPL/2014/page_38.pdf-1",
+    "finqa/AAL/2013/page_15.pdf-4",
+    "finqa/ETR/2011/page_341.pdf-1",
+    "finqa/JPM/2014/page_65.pdf-5",
+    "finqa/AAPL/2014/page_38.pdf-2",
+    "finqa/RE/2017/page_159.pdf-2",
+    "finqa/LMT/2012/page_47.pdf-2",
+    "finqa/BKR/2017/page_103.pdf-2",
+    "finqa/LMT/2016/page_48.pdf-2",
+    "finqa/SYY/2019/page_9.pdf-1",
+    "finqa/FIS/2007/page_94.pdf-1",
+    "finqa/AON/2009/page_46.pdf-1",
+    "finqa/TROW/2010/page_22.pdf-4",
+    "finqa/ETR/2011/page_376.pdf-3",
+    "finqa/VTR/2007/page_47.pdf-1",
+    "finqa/BLK/2016/page_119.pdf-2",
+    "finqa/BLK/2016/page_119.pdf-1",
+    "finqa/AMT/2004/page_81.pdf-2",
+    "finqa/BLL/2007/page_35.pdf-2",
+    "finqa/TFX/2015/page_70.pdf-1",
+    "finqa/ADI/2011/page_50.pdf-1",
+    "finqa/LMT/2010/page_42.pdf-3",
+    "finqa/JPM/2007/page_147.pdf-1",
+    "finqa/IPG/2008/page_21.pdf-4",
+    "finqa/GS/2016/page_77.pdf-3",
+    "finqa/LMT/2006/page_90.pdf-1",
+    "finqa/MAS/2018/page_60.pdf-1",
+    "finqa/MRO/2007/page_134.pdf-4",
+    "finqa/PM/2017/page_99.pdf-4",
+    "finqa/JPM/2008/page_85.pdf-5",
+    "finqa/TFX/2015/page_70.pdf-2",
+    "finqa/AWK/2013/page_132.pdf-1",
+    "finqa/HWM/2017/page_41.pdf-2",
+    "finqa/IP/2007/page_75.pdf-2",
+    "finqa/IP/2007/page_31.pdf-2",
+    "finqa/AMAT/2014/page_18.pdf-1",
+    "finqa/AMT/2010/page_34.pdf-1",
+    "finqa/JKHY/2014/page_30.pdf-1",
+    "finqa/AAPL/2004/page_36.pdf-1",
+    "finqa/PNC/2009/page_41.pdf-4",
+    "finqa/ETR/2002/page_86.pdf-4",
+    "finqa/PM/2015/page_85.pdf-4",
+    "finqa/DRE/2007/page_59.pdf-3",
+    "finqa/AES/2001/page_44.pdf-4",
+    "finqa/AON/2010/page_115.pdf-4",
+    "finqa/ETR/2017/page_26.pdf-1",
+    "finqa/HII/2017/page_104.pdf-2",
+    "finqa/ETR/2015/page_131.pdf-3",
+    "finqa/UAA/2016/page_52.pdf-3",
+    "finqa/IPG/2008/page_21.pdf-2",
+    "finqa/VNO/2012/page_84.pdf-1",
+    "finqa/ETR/2011/page_376.pdf-4",
+    "finqa/CMCSA/2015/page_64.pdf-3",
+    "finqa/IP/2007/page_31.pdf-3",
+    "finqa/UNP/2014/page_25.pdf-3",
+    "finqa/UNP/2006/page_37.pdf-3",
+    "finqa/UNP/2014/page_35.pdf-3",
+    "finqa/ABMD/2009/page_56.pdf-2",
+    "finqa/CAT/2017/page_85.pdf-3",
+    "finqa/AAP/2012/page_12.pdf-3",
+    "finqa/UNP/2014/page_75.pdf-2",
+    "finqa/UNP/2015/page_24.pdf-2",
+    "finqa/BDX/2018/page_82.pdf-3",
+    "finqa/IP/2012/page_93.pdf-3",
+    "finqa/BDX/2018/page_82.pdf-4",
+    "finqa/PPG/2011/page_70.pdf-3",
+    "finqa/ABMD/2006/page_75.pdf-3",
+    "finqa/UNP/2011/page_76.pdf-3",
+    "finqa/ABMD/2009/page_88.pdf-3",
+    "finqa/IP/2012/page_93.pdf-4",
+    "finqa/ABMD/2009/page_56.pdf-3",
+    "finqa/UNP/2007/page_65.pdf-2",
+    "finqa/BKR/2017/page_103.pdf-3",
+    "finqa/PPG/2011/page_70.pdf-4",
+    "finqa/CAT/2017/page_85.pdf-4",
+    "finqa/IP/2009/page_37.pdf-3",
+    "finqa/UNP/2013/page_54.pdf-3",
+    "finqa/IP/2005/page_19.pdf-3",
+    "finqa/UNP/2008/page_79.pdf-2",
+    "finqa/BLK/2012/page_160.pdf-3",
+    "finqa/IP/2007/page_75.pdf-3",
+    "finqa/UNP/2008/page_77.pdf-2",
+    "finqa/ANSS/2013/page_55.pdf-2",
+    "finqa/UNP/2014/page_75.pdf-3",
+    "finqa/BLK/2017/page_122.pdf-1",
+    "finqa/UNP/2015/page_35.pdf-2",
+    "finqa/UNP/2014/page_25.pdf-4",
+    "finqa/IP/2009/page_37.pdf-4",
+    "finqa/ANSS/2013/page_55.pdf-3",
+    "finqa/ABMD/2009/page_88.pdf-4",
+    "finqa/ABMD/2007/page_52.pdf-3",
+    "finqa/UNP/2015/page_24.pdf-3",
+    "finqa/BLK/2014/page_119.pdf-3",
+    "finqa/LKQ/2010/page_84.pdf-3",
+    "finqa/UNP/2011/page_21.pdf-3",
+    "finqa/MO/2012/page_44.pdf-3",
+    "finqa/LKQ/2018/page_83.pdf-2",
+    "finqa/BLK/2012/page_37.pdf-3",
+    "finqa/BLK/2013/page_124.pdf-3",
+    "finqa/LKQ/2010/page_84.pdf-4",
+    "finqa/APTV/2014/page_49.pdf-1",
+    "finqa/IP/2005/page_35.pdf-3",
+    "finqa/BLK/2014/page_119.pdf-4",
+    "finqa/TFX/2015/page_70.pdf-3",
+    "finqa/UNP/2013/page_44.pdf-2",
+    "finqa/UNP/2014/page_35.pdf-4",
+    "finqa/UNP/2011/page_21.pdf-4",
+    "finqa/BLK/2016/page_119.pdf-3",
+    "finqa/SNPS/2006/page_69.pdf-3",
+    "finqa/UNP/2008/page_77.pdf-3",
+    "finqa/AAP/2011/page_28.pdf-3",
+    "finqa/BLK/2016/page_119.pdf-4",
+    "finqa/MO/2012/page_44.pdf-4",
+    "finqa/IP/2006/page_32.pdf-3",
+    "finqa/LKQ/2018/page_83.pdf-3",
+    "finqa/PPG/2013/page_40.pdf-3",
+    "finqa/IP/2007/page_75.pdf-4",
+    "finqa/BLK/2012/page_37.pdf-4",
+    "finqa/PPG/2013/page_40.pdf-4",
+    "finqa/BLK/2013/page_125.pdf-3",
+    "finqa/ABMD/2004/page_26.pdf-3",
+    "finqa/IP/2005/page_35.pdf-4",
+    "finqa/IP/2006/page_32.pdf-4",
+    "finqa/UNP/2015/page_35.pdf-3",
+    "finqa/VLO/2018/page_25.pdf-3",
+    "finqa/UNP/2011/page_76.pdf-4",
+    "finqa/BLK/2013/page_125.pdf-4",
+    "finqa/BLK/2013/page_124.pdf-4",
+    "finqa/ABMD/2004/page_26.pdf-4",
+    "finqa/UNP/2008/page_79.pdf-3",
+    "finqa/UNP/2013/page_54.pdf-4",
+    "finqa/UNP/2013/page_44.pdf-3",
+    "finqa/IP/2007/page_31.pdf-4",
+    "finqa/BLK/2017/page_122.pdf-3",
+    "finqa/LKQ/2016/page_26.pdf-3",
+    "finqa/UNP/2006/page_37.pdf-4",
+    "finqa/BLK/2012/page_160.pdf-4",
+    "finqa/BKR/2017/page_103.pdf-4",
+    "finqa/SNPS/2006/page_69.pdf-4",
+    "finqa/VRTX/2003/page_71.pdf-3",
+    "finqa/APTV/2014/page_49.pdf-3",
+    "finqa/ABMD/2007/page_52.pdf-4",
+    "finqa/ABMD/2006/page_75.pdf-4",
+    "finqa/ADI/2011/page_81.pdf-3",
+    "finqa/ADI/2011/page_50.pdf-3",
+    "finqa/UNP/2007/page_65.pdf-3"
+  ],
+  "dev_source_group_count": 224,
+  "models": {
+    "seed11/static": {
+      "score_id": "1ce3522488cc58c0f770ea222f18a1864245ffff0c05ef40b56dc34e281bc21c",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.44733861834654587,
+          "correct": 395.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.38505096262740657,
+          "correct": 340.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1100300331333003030000013303333330033033030111033330030000030303333303300003300300013303310003300300130003013030000300300331303033303130300333300300133003331000330000310330003030003003330030303000030030000330333333303000030001300000003001000033030000003330330303113003300313131030301033300110303130330033003330300300003000313133300003003003030330003030103330303330300001300003330033010300130000000030300030313300130000300303330003301001300331000000030030303000330330000000000303033000030130003030103003030300000033030030030303003000300103000030330033310000303330000003000033000130133003000333000000000003300000000300030003300030003303130300313000033000100030030010003331003300000003033333001303303300003333100000003030003000330300331330033003330003330000030300001000300031030300300300030330013300033330030303033030000030333303033003030000000333033030003033000333000300030333300003303",
+      "native_status_counts": {
+        "scored": 591,
+        "invalid_prediction": 292
+      },
+      "native_reason_counts": {
+        "scored": 591,
+        "missing_or_invalid_submission": 287,
+        "nonexecutable_submission": 5
+      },
+      "stop_reason_counts": {
+        "final_answer": 611,
+        "no_tool_call": 272
+      },
+      "actual_model_calls": 1400
+    },
+    "seed11/manual_plus": {
+      "score_id": "a6ef516241c3b302f8a111f18f48f2dc1e6f69c2737e2378b346069ae25df51c",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5311438278595696,
+          "correct": 469.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.4507361268403171,
+          "correct": 398.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0100333331033033030010033003033003030103033101303330030300033303333303000003300033013000313010013330130003013130000330333331330330333130030303300000000333331003330000310333000330003003330130313000030030033330333333300000030001300000003301300133033301033330333313013003300013101030331030330113333133033303033330303300333100303030300303333103030000003303100333333330300101010303330033310030130000030033330333333300030310301303303003310301000331000033033030303310330330030010300330033000330130000030130003033000330030301333330313013031300000303133030033310300303003000003000333001130133103000301030333000033330000003103330003300300103303010301003003003330130033033310030331033330000033033033301300303333033330000303003030003300300333030330033003300003000003030330000000300301030300000300030330003300030103333003333330000033300333033003333000030303033003033303033330300300030003000033301",
+      "native_status_counts": {
+        "scored": 703,
+        "invalid_prediction": 180
+      },
+      "native_reason_counts": {
+        "scored": 703,
+        "missing_or_invalid_submission": 179,
+        "nonexecutable_submission": 1
+      },
+      "stop_reason_counts": {
+        "final_answer": 715,
+        "no_tool_call": 168
+      },
+      "actual_model_calls": 1566
+    },
+    "seed11/manual_minus": {
+      "score_id": "6f876c16599034c689fc62cfcfb5c48a500f8cebd8caf0c28fd8396221212d59",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.44733861834654587,
+          "correct": 395.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.3827859569648924,
+          "correct": 338.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1100330331303003030010330303303333000133033101033330030303130303033003000000010330300303310003033330100000000030010330310331333330033130330000000030033033330000000000003333003000003003330030313030030330000330033033000000030001000330303331300103030110000330303303103003030003131033303033000113333133003333033030300300130100303033300303003000030333000300300333333030000101000303330030310330003000000003300030003000030300301330303003301301103301000030030030303000330331000330000003330000000100000033130003033301300033330333000313003000000003300030000033310030303033000003000333001030033103000031000300000303010000013103030003000000103303030000303000033033100033030010000330003300000330010030301303333300033303000003003000003300030003001030030000300003030000030030331000303331030300300300030300030300033000033003330030000033300330003000303030003000033000033333330333330300330303003033303",
+      "native_status_counts": {
+        "scored": 584,
+        "invalid_prediction": 299
+      },
+      "native_reason_counts": {
+        "scored": 584,
+        "missing_or_invalid_submission": 296,
+        "nonexecutable_submission": 3
+      },
+      "stop_reason_counts": {
+        "final_answer": 598,
+        "no_tool_call": 285
+      },
+      "actual_model_calls": 1408
+    },
+    "seed11/c_only": {
+      "score_id": "abaf49e4d6c402d5cbfcb8e2c34e8a8dbec9d523d09085e3e5cb8d17708876b8",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5673839184597962,
+          "correct": 501.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.48357870894677235,
+          "correct": 427.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1100330331030303000000033303333333303033033111033330030300033303333303000003310303313303313013303330130303003130000300310331133010333330300333301030003333331003330030010333003030003033330030303030030330013330303333303000133001300030303301300133033311003330303013033010300310131133330030330113333133333030033330303300301000303030300003333133030330303003103333003330000100000303330033310030133000000033300030303000130330301333333003311301303331030033033030303310330030030330000333333000331130003033030001033301030003331330330303013030300103003033330030310301303003000003000333001130133003003133000303000333330300000300330003300030133303130301300300033333330133031310030331003300301333033030301300333303000333030003003030003333330333131330030003300003330000030010001003303030030300300303030330000300033300033300330330003033303333033003333030030333333000330333330333330300030300300033303",
+      "native_status_counts": {
+        "scored": 748,
+        "invalid_prediction": 135
+      },
+      "native_reason_counts": {
+        "scored": 748,
+        "missing_or_invalid_submission": 131,
+        "nonexecutable_submission": 4
+      },
+      "stop_reason_counts": {
+        "final_answer": 765,
+        "no_tool_call": 118
+      },
+      "actual_model_calls": 1567
+    },
+    "seed11/full": {
+      "score_id": "584cd12fc7e6e63a62e47a0b426f7c117dcb9f4df3d545fb4deaddb6c0ca4988",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5141562853907135,
+          "correct": 454.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.434881087202718,
+          "correct": 384.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1000330031033003000000003303333033003003033110033130030000333303333303300000300333013303313013003330133303010130010300313331303310303330330003301300103303301003330000300333003030003003330130303030030333010330003333303000133001300010300301300133030310033330003303033003330310031030331033331103330130303300033310303300300000310030300003303000030301303333003333000330001100303303330033310330130000000033330013303000130031301033300033311301300301003033030030303010330031300330100033303000000130000000130003100000330003331333030303003031000003001033030033300000303333000003000300001030033003003333000300003333300330013013330003000330133303000301303300003303100100031010033300003330001333133330300300003003033333030003003000333303330333030330330003300013330003000300300000313330030300300300030330030300000130333003333330003003303330030003300030300333033003003333030333300300330303000033303",
+      "native_status_counts": {
+        "scored": 669,
+        "invalid_prediction": 214
+      },
+      "native_reason_counts": {
+        "scored": 669,
+        "missing_or_invalid_submission": 209,
+        "nonexecutable_submission": 5
+      },
+      "stop_reason_counts": {
+        "final_answer": 687,
+        "no_tool_call": 196
+      },
+      "actual_model_calls": 1439
+    },
+    "seed29/static": {
+      "score_id": "81a9d43130ffd887220c2cf23c691c2b88ae6a957d9553bf6bbee688a3842303",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5028312570781427,
+          "correct": 444.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.42808607021517553,
+          "correct": 378.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1000330033313003030010003303333030033003033110030300030303033303030300000003300333310300313013033330130303033030000300333331333300333130030030300330103333331003330030310033003030000033030030303003030333013330303333300000130001300000003031310003030303030330331300003003330013131030001033330113333133033030033330003300330100313000300003303003030331003333303330033330300130310303300033310330103300030000300030313300130330300333333003311301300331030033033030300010330330030310300300330000330100300033133000000001300033330300330313003001000103303003000033300330303033000000000303301130133103030031003103000000300300003310330003300300100303130300303300003333130133030310000300003033301003133033303300303303000330000003003300033030330033330000330003000003300003030330031003303331030000300300030330003000033103033003330330000030303033003003000030000330003000000003013333330300330000330003303",
+      "native_status_counts": {
+        "scored": 676,
+        "invalid_prediction": 207
+      },
+      "native_reason_counts": {
+        "scored": 676,
+        "missing_or_invalid_submission": 203,
+        "nonexecutable_submission": 4
+      },
+      "stop_reason_counts": {
+        "final_answer": 691,
+        "no_tool_call": 192
+      },
+      "actual_model_calls": 1618
+    },
+    "seed29/manual_plus": {
+      "score_id": "e854e2f825af3290370c3f5c5e23dd832796c3893c4f3df67b08c0a82f770572",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.4563986409966025,
+          "correct": 403.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.39637599093997733,
+          "correct": 350.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000330331033003030000333303333303033033033101033101000300330303330003300000310300013000013010313330033013000030300300303330330300003330030030301030103333030003330000300033003030003033300000303030030330003330033330003000130001000030000000000030030310033330333013030003000013031130300033000100330130300030033330003003000000313033300003303100030330003330000333033300001030000303330033300330000000130030300030003000130300300303000003310301303331030000033030003330330030030330000000330000000100000000030000033001330033031330330013013030000003331033030030300301003033000003000300301130033103030333000003000003330000013113330003300330103303030001313300033030110103030300003331033000031333030033001300303003033333000303303000003030330033330000030033330003330003300330000003303331030300300300030300003000033003033003333330000033300033033003333030000333000000003333033330330300300003000033003",
+      "native_status_counts": {
+        "scored": 606,
+        "invalid_prediction": 277
+      },
+      "native_reason_counts": {
+        "scored": 606,
+        "missing_or_invalid_submission": 268,
+        "nonexecutable_submission": 9
+      },
+      "stop_reason_counts": {
+        "final_answer": 623,
+        "no_tool_call": 260
+      },
+      "actual_model_calls": 1472
+    },
+    "seed29/manual_minus": {
+      "score_id": "27094eda672d621873bdff62e7ffdac313e03ca5461b751a14a74965daee58f1",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.42242355605889015,
+          "correct": 373.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.35334088335220837,
+          "correct": 312.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1000333031003303000000000300301333003000033000300000000303030303033300000003310303303303003003010300130300000030300330310330333300333030030030000030103303331003330000000330000330000003330030303033030333013300330333000000000011300030303301313130030000030300030303003013000313131130331030000010333133030030003000003000300100303130300003033103030333303303103333000300031031000303300003300300003300130030301030300000130300301333300000310001303031000033033000303010330330000300000300030000031000000003033001030301330033330003030313010000000100003033000030310000303030000303000303001000033103003333001303000003330100010310030003000330003303000000303300033300100033001310000331003000331303033333300000303300003300000003003300000000300333131030030033000003130000300310000000303001030300000300030000033000003103003003330330000000300033003003303000000033003000030330003330300300303303330003300",
+      "native_status_counts": {
+        "scored": 546,
+        "invalid_prediction": 337
+      },
+      "native_reason_counts": {
+        "scored": 546,
+        "missing_or_invalid_submission": 336,
+        "nonexecutable_submission": 1
+      },
+      "stop_reason_counts": {
+        "final_answer": 559,
+        "no_tool_call": 323,
+        "max_steps": 1
+      },
+      "actual_model_calls": 1492
+    },
+    "seed29/c_only": {
+      "score_id": "af60e5d8ffb9fb9eb409f4cf5e28ec24ef1103b0a9a74c8c87325d88e288d058",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5050962627406569,
+          "correct": 446.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.4258210645526614,
+          "correct": 376.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000333331033003030010333300333000033103033101333101030000330303033003000003310003313003313003013030133003000130300301313031303030333130030030301030103330031003330000300333000030003003330030003033030330003330003333303000100011300030300300000030003110033000330003003003000310131033331030030003333133333030033310003300333100303130300003030003030333003330300333303300000000000303330033300300133330130033300033010000130330300030333003311301300331000030033030003010330330030010000330330100330030003003033000033311330033131333330313003000000003303003000030310030303333000000000330000130133133030333001303000033300010013113330003300330103003030301303300033303100030030310000331003333000333033333301300303330033333000303303300003330330330301300030013300013330000000300300000303031000300300303000000003300033100033303330330000033303033033003303030000333003000033033303330300300330333300033313",
+      "native_status_counts": {
+        "scored": 668,
+        "invalid_prediction": 215
+      },
+      "native_reason_counts": {
+        "scored": 668,
+        "missing_or_invalid_submission": 213,
+        "nonexecutable_submission": 2
+      },
+      "stop_reason_counts": {
+        "final_answer": 685,
+        "no_tool_call": 198
+      },
+      "actual_model_calls": 1665
+    },
+    "seed29/full": {
+      "score_id": "8468bb12c5c7a4e493e60282c38ca83238192b81f7a88a8dbdd210b6ee81b052",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.43827859569648925,
+          "correct": 387.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.3793884484711212,
+          "correct": 335.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000330033303303030010000303333000033103030101030001030003330303033003300003310330300003313000033300130003000130000301300331133330300100030000000000103330301000000000301033000030003033330030303030030330003330003333300000030001030000303331300000030003033030333300033003000303131033303030000103330133033003033310003300000100013100300003033003030303003333300333330300300101000303300033300330003030030033300000313000130330301030330003301001300330000033003000303030330031000330300330030000030100300000003000333301330000130303330303003000000003303033030030310000333033000003000330301030130133000333003300000033030100010310330033001030133303100300303300003300100033030300000331033330000330030033301300330300003300000003003000033000330033301000030003000000330003000000300000303330000000000000030330003300033100033003330330003033333333003000303030000333033003030303000303300300330003300003303",
+      "native_status_counts": {
+        "scored": 569,
+        "invalid_prediction": 314
+      },
+      "native_reason_counts": {
+        "scored": 569,
+        "missing_or_invalid_submission": 307,
+        "nonexecutable_submission": 7
+      },
+      "stop_reason_counts": {
+        "final_answer": 588,
+        "no_tool_call": 295
+      },
+      "actual_model_calls": 1588
+    },
+    "seed47/static": {
+      "score_id": "4bd7c66752fbdb6868e0e5c578a7921c9aace37c0c107f51f93158d54b2beb86",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.3001132502831257,
+          "correct": 265.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.25141562853907135,
+          "correct": 222.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000030000003000000000033003030303303103033111030331000300030000330300000003000300300300013010013300030000010000310030000031003300030030030000000030033003031003330030000000000130000003300000300000030030003000330333000000003000000010300031000000000000000300330000100003000013100033301303300110001100300303003300000303000000303000300300300103030300000003003330033000000030010303330033300000030030100000300000010000000000000330303000310000000000000033030000003000300300030030300033300000330000003003100001133001300033031030030003010030300003303030030000300300300003000000000330000000003033000001000000003303330030000010030000300300003303000001303000000330100000000000000301003000000003033300300000000000033300000300000330000003030030101300030033300000030003030000001000300000000300000000030300003300003303033003330030000030000010003000300000000003033000000303030033000300300330000003300",
+      "native_status_counts": {
+        "invalid_prediction": 502,
+        "scored": 381
+      },
+      "native_reason_counts": {
+        "missing_or_invalid_submission": 498,
+        "scored": 381,
+        "nonexecutable_submission": 4
+      },
+      "stop_reason_counts": {
+        "no_tool_call": 490,
+        "final_answer": 393
+      },
+      "actual_model_calls": 1326
+    },
+    "seed47/manual_plus": {
+      "score_id": "1d0e4b35703e048efbccef8aebbd938c5beb51b6824e93f139b3acb7a8dadc1c",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.3782559456398641,
+          "correct": 334.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.3250283125707814,
+          "correct": 287.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000030300303003100000033303333033000100033111330330000000333303003000300000000330300300300000300000033303003100010300303000103030330130000300000000003033331000300030310303003030003003300030300000030330010300033330310000003001000010303000010033000000030030030003000003030310031000301033000110000130003033003030003300000000303003300003303003000303003033303310033300000100010003330033300000030000000033001030000000030000300330300003310300300031000003033030000000030330030310003030030000300000000000030001333301330003030330000013010000000003303033030000300300300003000000000333300130130000000001000010003303030130010013310030300300003303000001303000030003100133030300000301000303300033033033301300303033033303000003000330033030330333130300030033300000300003333330000003300000030300000300030300033300003330333003330030000033303030003000030030030003033000000003330330330300300000003003303",
+      "native_status_counts": {
+        "invalid_prediction": 391,
+        "scored": 492
+      },
+      "native_reason_counts": {
+        "missing_or_invalid_submission": 390,
+        "scored": 492,
+        "nonexecutable_submission": 1
+      },
+      "stop_reason_counts": {
+        "no_tool_call": 379,
+        "final_answer": 504
+      },
+      "actual_model_calls": 1392
+    },
+    "seed47/manual_minus": {
+      "score_id": "026c97aa3a69bd1c400d2e622941c558058ffbcf1964b3f61337373c6c2ec352",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.3895809739524349,
+          "correct": 344.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.332955832389581,
+          "correct": 294.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "0000030033303003030010033003303333300133033111330330000000330300300000000000300300013000300000303330100000000030310000303331030300030030330030001030033303303003330030000300000130000003000130303000030330013030030030310000133001300000300031000030033303000330330013000003000013031000001000300110333130333030003330003300133000300000000003303100000000300300000033333030001000310303000033310030100000030003300003313300000030301030333030101000003031000033030030003300000030030330000330300000300000000000010001133000300033331330030013003031000003300030030000300300300033000003000030300000033133003033000003003303300300010300030030000300103303030300303300033333130003001310000300003000000003033303301300003000003003000003300330003303330330133030330003300003300003000330300003300301030000000300030000003300003300030003300030000030303030003000033000000033033000003003033033300300330330330033303",
+      "native_status_counts": {
+        "invalid_prediction": 379,
+        "scored": 504
+      },
+      "native_reason_counts": {
+        "missing_or_invalid_submission": 378,
+        "scored": 504,
+        "nonexecutable_submission": 1
+      },
+      "stop_reason_counts": {
+        "no_tool_call": 372,
+        "final_answer": 511
+      },
+      "actual_model_calls": 1413
+    },
+    "seed47/c_only": {
+      "score_id": "58dea12d8ed9b6a910c502d31f797f43b0fe3961c104119e00e78b8e51c40a90",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.3827859569648924,
+          "correct": 338.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.3261608154020385,
+          "correct": 288.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1000030330313003030010030003303003303033033101030300000000030003303300000000300300313000303003030000100003000130310331300331033000330030300300000030033303301003330000311303000100000003300000000000030330003300303033300000003001000010303031000033033300003030030003000003000310000033300033330003333133333003003330003300000000300033300003300000000000003303003033333300000100010003030030310000100000130000330030000300130030301330300000101300000031033003030030003300300001030330000030333000330000000030033003333001030010030000000013013031000003003003000030300301300303000003000330000130030133033333001033003303300030003010030000000000100303030300303003030003110033000300000331033000300033003300301300303003000303000303003300003000330330131000330003300003300003030300001003300300030000000303000000003300003333033003300330000030303310003000333000000000003003003033300030300000300330000030303",
+      "native_status_counts": {
+        "scored": 489,
+        "invalid_prediction": 394
+      },
+      "native_reason_counts": {
+        "scored": 489,
+        "missing_or_invalid_submission": 391,
+        "nonexecutable_submission": 3
+      },
+      "stop_reason_counts": {
+        "final_answer": 495,
+        "no_tool_call": 388
+      },
+      "actual_model_calls": 1390
+    },
+    "seed47/full": {
+      "score_id": "8318c75f12e9c1011d2094f116a676e81cabadf8d4e7f1fb571b54eac13e3bd1",
+      "metrics": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.3737259343148358,
+          "correct": 330.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.31370328425821065,
+          "correct": 277.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        }
+      },
+      "outcome_codes": "1100030331033003000000033300033033300003033111030301000300033003300300300003000300303300303000033000030000000000300031303031100300333130330000000030133303330000000000010303000100003003300030300000030330010330003030300000033011300000000330310130033300100330330003000003000313131033330330000013033130303030003300003300000000300003000003303100000000003300003333333300000031010003000030310300000300000003330033000300131030300300303000311300003001000030033030000330300030030330000033300000300130003033030003333000300033101300000013000030000000000000000030300001303303000003000333000130130000030003000000000030000030010300000033301330103303130301303300030303100033031300000000003000030303033300300000303003030333000003300000003000030333130330030013300013330003000030301000000000030300000300030000000000033003033003300030000000000030003000333030000300003003003003000330330300030000300033313",
+      "native_status_counts": {
+        "scored": 486,
+        "invalid_prediction": 397
+      },
+      "native_reason_counts": {
+        "scored": 486,
+        "missing_or_invalid_submission": 395,
+        "nonexecutable_submission": 2
+      },
+      "stop_reason_counts": {
+        "final_answer": 493,
+        "no_tool_call": 390
+      },
+      "actual_model_calls": 1409
+    }
+  },
+  "arm_summary": {
+    "Static": {
+      "execution_accuracy": {
+        "mean": 0.41676104190260477,
+        "sample_sd": 0.10476110301836716,
+        "seed_values": [
+          0.44733861834654587,
+          0.5028312570781427,
+          0.3001132502831257
+        ]
+      },
+      "program_accuracy": {
+        "mean": 0.3548508871272178,
+        "sample_sd": 0.09212570032662036,
+        "seed_values": [
+          0.38505096262740657,
+          0.42808607021517553,
+          0.25141562853907135
+        ]
+      }
+    },
+    "Manual+": {
+      "execution_accuracy": {
+        "mean": 0.4552661381653454,
+        "sample_sd": 0.07645023253335297,
+        "seed_values": [
+          0.5311438278595696,
+          0.4563986409966025,
+          0.3782559456398641
+        ]
+      },
+      "program_accuracy": {
+        "mean": 0.39071347678369195,
+        "sample_sd": 0.06304491805081215,
+        "seed_values": [
+          0.4507361268403171,
+          0.39637599093997733,
+          0.3250283125707814
+        ]
+      }
+    },
+    "Manual-": {
+      "execution_accuracy": {
+        "mean": 0.4197810494526236,
+        "sample_sd": 0.028969354538240337,
+        "seed_values": [
+          0.44733861834654587,
+          0.42242355605889015,
+          0.3895809739524349
+        ]
+      },
+      "program_accuracy": {
+        "mean": 0.3563608909022273,
+        "sample_sd": 0.025051959264684124,
+        "seed_values": [
+          0.3827859569648924,
+          0.35334088335220837,
+          0.332955832389581
+        ]
+      }
+    },
+    "C-only": {
+      "execution_accuracy": {
+        "mean": 0.48508871272178183,
+        "sample_sd": 0.09391127935629902,
+        "seed_values": [
+          0.5673839184597962,
+          0.5050962627406569,
+          0.3827859569648924
+        ]
+      },
+      "program_accuracy": {
+        "mean": 0.4118535296338241,
+        "sample_sd": 0.07963301655592983,
+        "seed_values": [
+          0.48357870894677235,
+          0.4258210645526614,
+          0.3261608154020385
+        ]
+      }
+    },
+    "Full": {
+      "execution_accuracy": {
+        "mean": 0.4420536051340128,
+        "sample_sd": 0.07029124339498916,
+        "seed_values": [
+          0.5141562853907135,
+          0.43827859569648925,
+          0.3737259343148358
+        ]
+      },
+      "program_accuracy": {
+        "mean": 0.37599093997734995,
+        "sample_sd": 0.060660302336770465,
+        "seed_values": [
+          0.434881087202718,
+          0.3793884484711212,
+          0.31370328425821065
+        ]
+      }
+    }
+  },
+  "comparisons": {
+    "execution_accuracy": {
+      "Full-C-only": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.06681766704416761,
+          -0.009060022650056626
+        ],
+        "descriptive_seed_sample_sd": 0.030197716027119778,
+        "mean_difference": -0.04303510758776897,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 127,
+            "mean_difference": -0.053227633069082674,
+            "task_denominator": 883,
+            "ties": 676,
+            "wins": 80
+          },
+          "29": {
+            "losses": 138,
+            "mean_difference": -0.06681766704416761,
+            "task_denominator": 883,
+            "ties": 666,
+            "wins": 79
+          },
+          "47": {
+            "losses": 126,
+            "mean_difference": -0.009060022650056626,
+            "task_denominator": 883,
+            "ties": 639,
+            "wins": 118
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Full-Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.06455266138165346,
+          0.07361268403171008
+        ],
+        "descriptive_seed_sample_sd": 0.0778823879532071,
+        "mean_difference": 0.025292563231408077,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 100,
+            "mean_difference": 0.06681766704416761,
+            "task_denominator": 883,
+            "ties": 624,
+            "wins": 159
+          },
+          "29": {
+            "losses": 142,
+            "mean_difference": -0.06455266138165346,
+            "task_denominator": 883,
+            "ties": 656,
+            "wins": 85
+          },
+          "47": {
+            "losses": 103,
+            "mean_difference": 0.07361268403171008,
+            "task_denominator": 883,
+            "ties": 612,
+            "wins": 168
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Manual+-Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.0464326160815402,
+          0.08380520951302378
+        ],
+        "descriptive_seed_sample_sd": 0.07361268403171008,
+        "mean_difference": 0.03850509626274066,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 89,
+            "mean_difference": 0.08380520951302378,
+            "task_denominator": 883,
+            "ties": 631,
+            "wins": 163
+          },
+          "29": {
+            "losses": 140,
+            "mean_difference": -0.0464326160815402,
+            "task_denominator": 883,
+            "ties": 644,
+            "wins": 99
+          },
+          "47": {
+            "losses": 91,
+            "mean_difference": 0.07814269535673839,
+            "task_denominator": 883,
+            "ties": 632,
+            "wins": 160
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Manual--Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.08040770101925254,
+          0.08946772366930918
+        ],
+        "descriptive_seed_sample_sd": 0.08497796957142144,
+        "mean_difference": 0.003020007550018878,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 127,
+            "mean_difference": 0.0,
+            "task_denominator": 883,
+            "ties": 629,
+            "wins": 127
+          },
+          "29": {
+            "losses": 158,
+            "mean_difference": -0.08040770101925254,
+            "task_denominator": 883,
+            "ties": 638,
+            "wins": 87
+          },
+          "47": {
+            "losses": 84,
+            "mean_difference": 0.08946772366930918,
+            "task_denominator": 883,
+            "ties": 636,
+            "wins": 163
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      }
+    },
+    "program_accuracy": {
+      "Full-C-only": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.04869762174405436,
+          -0.01245753114382786
+        ],
+        "descriptive_seed_sample_sd": 0.02030098853869196,
+        "mean_difference": -0.035862589656474146,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 106,
+            "mean_difference": -0.04869762174405436,
+            "task_denominator": 883,
+            "ties": 714,
+            "wins": 63
+          },
+          "29": {
+            "losses": 114,
+            "mean_difference": -0.0464326160815402,
+            "task_denominator": 883,
+            "ties": 696,
+            "wins": 73
+          },
+          "47": {
+            "losses": 102,
+            "mean_difference": -0.01245753114382786,
+            "task_denominator": 883,
+            "ties": 690,
+            "wins": 91
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Full-Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.04869762174405436,
+          0.0622876557191393
+        ],
+        "descriptive_seed_sample_sd": 0.06080109468662938,
+        "mean_difference": 0.021140052850132124,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 82,
+            "mean_difference": 0.04983012457531144,
+            "task_denominator": 883,
+            "ties": 675,
+            "wins": 126
+          },
+          "29": {
+            "losses": 119,
+            "mean_difference": -0.04869762174405436,
+            "task_denominator": 883,
+            "ties": 688,
+            "wins": 76
+          },
+          "47": {
+            "losses": 85,
+            "mean_difference": 0.0622876557191393,
+            "task_denominator": 883,
+            "ties": 658,
+            "wins": 140
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Manual+-Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.031710079275198186,
+          0.07361268403171008
+        ],
+        "descriptive_seed_sample_sd": 0.058653734600035576,
+        "mean_difference": 0.03586258965647414,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 79,
+            "mean_difference": 0.06568516421291053,
+            "task_denominator": 883,
+            "ties": 667,
+            "wins": 137
+          },
+          "29": {
+            "losses": 116,
+            "mean_difference": -0.031710079275198186,
+            "task_denominator": 883,
+            "ties": 679,
+            "wins": 88
+          },
+          "47": {
+            "losses": 76,
+            "mean_difference": 0.07361268403171008,
+            "task_denominator": 883,
+            "ties": 666,
+            "wins": 141
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      },
+      "Manual--Static": {
+        "confidence_interval": null,
+        "descriptive_seed_range": [
+          -0.07474518686296716,
+          0.08154020385050963
+        ],
+        "descriptive_seed_sample_sd": 0.07821105330965739,
+        "mean_difference": 0.0015100037750094362,
+        "p_value": null,
+        "paired_by_seed": {
+          "11": {
+            "losses": 111,
+            "mean_difference": -0.0022650056625141564,
+            "task_denominator": 883,
+            "ties": 663,
+            "wins": 109
+          },
+          "29": {
+            "losses": 136,
+            "mean_difference": -0.07474518686296716,
+            "task_denominator": 883,
+            "ties": 677,
+            "wins": 70
+          },
+          "47": {
+            "losses": 68,
+            "mean_difference": 0.08154020385050963,
+            "task_denominator": 883,
+            "ties": 675,
+            "wins": 140
+          }
+        },
+        "repeated_task_count": 883,
+        "source_cluster_count": 224,
+        "training_seed_count": 3
+      }
+    }
+  },
+  "Static_minus_Base_ordinary_learning": {
+    "execution_accuracy": {
+      "11": 0.4099660249150623,
+      "29": 0.4654586636466591,
+      "47": 0.2627406568516421
+    },
+    "program_accuracy": {
+      "11": 0.3782559456398641,
+      "29": 0.42129105322763305,
+      "47": 0.24462061155152887
+    }
+  },
+  "mechanism_registered_aggregate": {
+    "API_calls": 0,
+    "denominator": 5400,
+    "exposed_diagnostic_not_blind_test": true,
+    "extra_feedback_sessions": 0,
+    "id": "1d4a3da48048fbfa1da4c5a772cd6a7ce846c678adbbaaa7aa01253b96e68d5b",
+    "intermediate_checkpoint_selection": false,
+    "original_calibration_tasks": 120,
+    "registration_id": "64281af85e8f381f5fa2bbd7398272af5d54967e125ca6890653ec42a2a72114",
+    "schema": "v9_complete_mechanism_evaluation.v1",
+    "seeds": {
+      "11": {
+        "C": {
+          "actual_evaluation_provenance_verified": false,
+          "checkpoint_selection_allowed": false,
+          "denominator_per_direction": 360,
+          "means": {
+            "Static": 0.475,
+            "positive": 0.5,
+            "reverse": 0.4527777777777778
+          },
+          "observed_numeric_positive_vs_Static": true,
+          "only_less_harmed_than_reverse": false,
+          "positive_minus_Static": 0.025000000000000022,
+          "positive_minus_reverse": 0.04722222222222222,
+          "statistical_significance_established": false
+        },
+        "N_Full_minus_C_only": -0.05833333333333329,
+        "N_means": {
+          "C-only": 0.5416666666666666,
+          "Full": 0.48333333333333334
+        }
+      },
+      "29": {
+        "C": {
+          "actual_evaluation_provenance_verified": false,
+          "checkpoint_selection_allowed": false,
+          "denominator_per_direction": 360,
+          "means": {
+            "Static": 0.475,
+            "positive": 0.48055555555555557,
+            "reverse": 0.44722222222222224
+          },
+          "observed_numeric_positive_vs_Static": true,
+          "only_less_harmed_than_reverse": false,
+          "positive_minus_Static": 0.005555555555555591,
+          "positive_minus_reverse": 0.033333333333333326,
+          "statistical_significance_established": false
+        },
+        "N_Full_minus_C_only": 0.016666666666666663,
+        "N_means": {
+          "C-only": 0.41944444444444445,
+          "Full": 0.4361111111111111
+        }
+      },
+      "47": {
+        "C": {
+          "actual_evaluation_provenance_verified": false,
+          "checkpoint_selection_allowed": false,
+          "denominator_per_direction": 360,
+          "means": {
+            "Static": 0.45555555555555555,
+            "positive": 0.44722222222222224,
+            "reverse": 0.4444444444444444
+          },
+          "observed_numeric_positive_vs_Static": false,
+          "only_less_harmed_than_reverse": true,
+          "positive_minus_Static": -0.008333333333333304,
+          "positive_minus_reverse": 0.0027777777777778234,
+          "statistical_significance_established": false
+        },
+        "N_Full_minus_C_only": 0.013888888888888895,
+        "N_means": {
+          "C-only": 0.4222222222222222,
+          "Full": 0.4361111111111111
+        }
+      }
+    },
+    "statistical_significance_claimed": false
+  },
+  "mechanism_builds": {
+    "11": {
+      "C_direction": {
+        "id": "a1b9547a656896598d7c321ea7be7e6d62b5d5d40a4f80c5669f5da175feb6a7",
+        "start_step": 298,
+        "end_step": 447,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "positive_change": {
+          "KL_new_to_old": 0.0006778073237762138,
+          "TV": 0.007643985786327419,
+          "entropy_new": 0.37885267704551023,
+          "entropy_old": 0.379608407128671
+        },
+        "reverse_change": {
+          "KL_new_to_old": 0.000657632410779678,
+          "TV": 0.007643985786327419,
+          "entropy_new": 0.3790286974772759,
+          "entropy_old": 0.379608407128671
+        }
+      },
+      "N_same_point": {
+        "id": "b74d07d1acec3b22192f7ed283840227eaae1a70bafadf418df6cc37010e22b2",
+        "start_step": 596,
+        "end_step": 745,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "N_activated": true,
+        "same_point_check": {
+          "exact_evidence": {
+            "C": false,
+            "G": true,
+            "feedback_seal": false,
+            "gJ": true,
+            "mu": true,
+            "pullback": true,
+            "rewards": true,
+            "theta_Adam_RNG_pi_prior_schedule": false,
+            "theta_bar": true
+          },
+          "reward_count_alone_sufficient": false,
+          "same_point": false
+        },
+        "distribution_change": {
+          "KL_new_to_old": 3.3894020995392556e-05,
+          "TV": 0.0018068269748136546,
+          "entropy_new": 0.37836393764945464,
+          "entropy_old": 0.37803865526957253
+        }
+      }
+    },
+    "29": {
+      "C_direction": {
+        "id": "a62b928a28d2586bfd25f082867f3fb382045d886e9b0be7bc9b191bdca1408b",
+        "start_step": 298,
+        "end_step": 447,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "positive_change": {
+          "KL_new_to_old": 0.0006889222143833998,
+          "TV": 0.007845808444144044,
+          "entropy_new": 0.37903238272675593,
+          "entropy_old": 0.379608407128671
+        },
+        "reverse_change": {
+          "KL_new_to_old": 0.0006696698449418101,
+          "TV": 0.007845808444144044,
+          "entropy_new": 0.3788258394712609,
+          "entropy_old": 0.379608407128671
+        }
+      },
+      "N_same_point": {
+        "id": "7f2f43f9a888af254a995c1355da96805ce085d33ba7c2edb982e829fa4294e9",
+        "start_step": 596,
+        "end_step": 745,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "N_activated": true,
+        "same_point_check": {
+          "exact_evidence": {
+            "C": false,
+            "G": true,
+            "feedback_seal": false,
+            "gJ": true,
+            "mu": true,
+            "pullback": true,
+            "rewards": true,
+            "theta_Adam_RNG_pi_prior_schedule": false,
+            "theta_bar": true
+          },
+          "reward_count_alone_sufficient": false,
+          "same_point": false
+        },
+        "distribution_change": {
+          "KL_new_to_old": 3.420999621052797e-05,
+          "TV": 0.001825713188521129,
+          "entropy_new": 0.3781348210368486,
+          "entropy_old": 0.377772200026225
+        }
+      }
+    },
+    "47": {
+      "C_direction": {
+        "id": "1e555d9b065dc517caa98ff19a46fd3f4d88708f200cc6662a6a796e6261ded9",
+        "start_step": 298,
+        "end_step": 447,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "positive_change": {
+          "KL_new_to_old": 0.0007074242378853436,
+          "TV": 0.007954101338101415,
+          "entropy_new": 0.37886336423439965,
+          "entropy_old": 0.379608407128671
+        },
+        "reverse_change": {
+          "KL_new_to_old": 0.0006879834933394164,
+          "TV": 0.007954101338101415,
+          "entropy_new": 0.3789580422917176,
+          "entropy_old": 0.379608407128671
+        }
+      },
+      "N_same_point": {
+        "id": "495092d2176563b31dd34b7c29885361d7d7521fc7a4b8cc5f91721099734e72",
+        "start_step": 596,
+        "end_step": 745,
+        "actual_extra_training_steps": 149,
+        "API_calls": 0,
+        "new_feedback_sessions": 0,
+        "N_activated": true,
+        "same_point_check": {
+          "exact_evidence": {
+            "C": false,
+            "G": true,
+            "feedback_seal": false,
+            "gJ": true,
+            "mu": true,
+            "pullback": true,
+            "rewards": true,
+            "theta_Adam_RNG_pi_prior_schedule": false,
+            "theta_bar": true
+          },
+          "reward_count_alone_sufficient": false,
+          "same_point": false
+        },
+        "distribution_change": {
+          "KL_new_to_old": 3.6579962101470815e-05,
+          "TV": 0.0019118923296746178,
+          "entropy_new": 0.37874108342754853,
+          "entropy_old": 0.3785042038975667
+        }
+      }
+    }
+  },
+  "calibration_task_ids": [
+    "JPM/2012/page_157.pdf-2",
+    "ETFC/2013/page_84.pdf-1",
+    "AAPL/2008/page_77.pdf-1",
+    "AAPL/2008/page_52.pdf-1",
+    "GS/2012/page_58.pdf-3",
+    "JPM/2013/page_124.pdf-2",
+    "GS/2012/page_154.pdf-3",
+    "GS/2012/page_129.pdf-4",
+    "GS/2012/page_186.pdf-4",
+    "JPM/2013/page_158.pdf-2",
+    "GS/2012/page_56.pdf-3",
+    "GS/2012/page_57.pdf-2",
+    "AAPL/2008/page_52.pdf-2",
+    "GS/2012/page_152.pdf-1",
+    "JPM/2013/page_158.pdf-3",
+    "GS/2012/page_129.pdf-3",
+    "AAPL/2008/page_50.pdf-2",
+    "ETFC/2013/page_155.pdf-2",
+    "ETFC/2013/page_159.pdf-1",
+    "JPM/2013/page_104.pdf-1",
+    "BDX/2019/page_86.pdf-2",
+    "JPM/2013/page_132.pdf-2",
+    "MAS/2012/page_92.pdf-3",
+    "JPM/2012/page_109.pdf-1",
+    "JPM/2012/page_157.pdf-1",
+    "GS/2012/page_64.pdf-1",
+    "JPM/2012/page_109.pdf-2",
+    "L/2008/page_120.pdf-2",
+    "GS/2012/page_197.pdf-1",
+    "JPM/2012/page_239.pdf-4",
+    "GS/2012/page_50.pdf-2",
+    "GS/2012/page_50.pdf-1",
+    "AAPL/2008/page_38.pdf-2",
+    "ETFC/2012/page_85.pdf-2",
+    "GS/2012/page_177.pdf-4",
+    "GS/2012/page_83.pdf-1",
+    "BDX/2019/page_86.pdf-1",
+    "GS/2012/page_58.pdf-4",
+    "JPM/2013/page_104.pdf-3",
+    "JPM/2013/page_132.pdf-3",
+    "GS/2012/page_89.pdf-3",
+    "JPM/2013/page_158.pdf-1",
+    "ETFC/2013/page_155.pdf-1",
+    "GS/2012/page_177.pdf-2",
+    "GS/2012/page_56.pdf-1",
+    "JPM/2013/page_124.pdf-1",
+    "GS/2012/page_95.pdf-3",
+    "GS/2012/page_95.pdf-1",
+    "GS/2012/page_95.pdf-2",
+    "GS/2012/page_152.pdf-2",
+    "JPM/2012/page_109.pdf-4",
+    "JPM/2012/page_93.pdf-4",
+    "JPM/2012/page_93.pdf-5",
+    "JPM/2012/page_93.pdf-3",
+    "GS/2012/page_154.pdf-1",
+    "AAPL/2008/page_76.pdf-1",
+    "ETFC/2012/page_155.pdf-1",
+    "JPM/2012/page_239.pdf-3",
+    "GS/2012/page_83.pdf-2",
+    "GS/2012/page_196.pdf-2",
+    "GS/2012/page_58.pdf-2",
+    "GS/2012/page_89.pdf-2",
+    "JPM/2012/page_148.pdf-1",
+    "GS/2012/page_57.pdf-4",
+    "JPM/2012/page_148.pdf-2",
+    "JPM/2012/page_148.pdf-3",
+    "JKHY/2010/page_50.pdf-2",
+    "GS/2012/page_186.pdf-2",
+    "MAS/2012/page_86.pdf-2",
+    "JPM/2012/page_93.pdf-2",
+    "GS/2012/page_83.pdf-3",
+    "ETFC/2013/page_84.pdf-2",
+    "JPM/2013/page_104.pdf-2",
+    "MAS/2012/page_86.pdf-1",
+    "GS/2012/page_57.pdf-3",
+    "MAS/2012/page_86.pdf-4",
+    "JPM/2013/page_132.pdf-4",
+    "GS/2012/page_154.pdf-2",
+    "ETFC/2012/page_155.pdf-2",
+    "JPM/2012/page_110.pdf-2",
+    "GS/2012/page_196.pdf-1",
+    "JPM/2012/page_110.pdf-3",
+    "ETFC/2013/page_159.pdf-2",
+    "JPM/2012/page_239.pdf-1",
+    "GS/2012/page_197.pdf-2",
+    "GS/2012/page_186.pdf-3",
+    "JPM/2012/page_157.pdf-3",
+    "JPM/2012/page_110.pdf-1",
+    "JPM/2013/page_104.pdf-5",
+    "ETFC/2012/page_85.pdf-3",
+    "JPM/2012/page_239.pdf-2",
+    "GS/2012/page_64.pdf-2",
+    "MAS/2012/page_92.pdf-2",
+    "JPM/2013/page_132.pdf-1",
+    "AAPL/2008/page_76.pdf-2",
+    "GS/2012/page_129.pdf-2",
+    "MAS/2012/page_92.pdf-1",
+    "GS/2012/page_129.pdf-1",
+    "JPM/2013/page_104.pdf-4",
+    "GS/2012/page_95.pdf-4",
+    "JPM/2012/page_109.pdf-3",
+    "GS/2012/page_89.pdf-1",
+    "AAPL/2008/page_50.pdf-1",
+    "GS/2012/page_177.pdf-3",
+    "ETFC/2012/page_85.pdf-1",
+    "GS/2012/page_177.pdf-1",
+    "GS/2012/page_56.pdf-2",
+    "JPM/2012/page_93.pdf-1",
+    "GS/2012/page_57.pdf-1",
+    "L/2008/page_120.pdf-1",
+    "ETFC/2013/page_84.pdf-3",
+    "JPM/2012/page_110.pdf-4",
+    "MAS/2012/page_86.pdf-3",
+    "GS/2012/page_186.pdf-1",
+    "JKHY/2010/page_50.pdf-1",
+    "GS/2012/page_58.pdf-1",
+    "GS/2012/page_56.pdf-4",
+    "BDX/2019/page_86.pdf-3",
+    "NCLH/2018/page_69.pdf-1",
+    "BDX/2019/page_86.pdf-4"
+  ],
+  "mechanism_points": {
+    "seed11/C_direction/Static": {
+      "score_id": "efa29d1bcd0f5845bf0c0956297b97dd482a4f8157fde1ed61a9f4a186a99ffa",
+      "seal_id": "0abc4a715746ad69dde3118b1d06ac0040bda44e2945b0fda953f8ef785d02bc",
+      "denominator": 360,
+      "correct": 171,
+      "mean": 0.475,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 48,
+          "mean": 0.4,
+          "outcome_codes": "130303013003030031000033030000300333333003030000000003033030100000003030030303000003000303330310303010033300000300030300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 49,
+          "mean": 0.4083333333333333,
+          "outcome_codes": "033033313000300031300033000030000030033003330000300000033303000030030003330303000030000003330330003000333033303330000300"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 74,
+          "mean": 0.6166666666666667,
+          "outcome_codes": "033333313003300031301033030030330030333300030300303303033333300030033030330303303133330103333310303010333303303330000311"
+        }
+      }
+    },
+    "seed11/C_direction/positive": {
+      "score_id": "8c14e5c6801848bf0c1c42ad1e74c53b68aa94a83571c8fef926592cf9b34e5c",
+      "seal_id": "db45248744d45be85d06f4d7c1eb24a2f86dfc247e07eb060dfedeb1d04016ac",
+      "denominator": 360,
+      "correct": 180,
+      "mean": 0.5,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 60,
+          "mean": 0.5,
+          "outcome_codes": "133333013003300001003033030030330333333003030000303003033333300000033030330313003003000103330310300300033003300300000301"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 53,
+          "mean": 0.44166666666666665,
+          "outcome_codes": "133330013003300031300033000000300300000033030300000003033333000030003033300303003003330003330330303010333003303330000000"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 67,
+          "mean": 0.5583333333333333,
+          "outcome_codes": "133333313003000031001033030030330033333300030000303003033333000000033030330003003133030103333310303300333313303330000011"
+        }
+      }
+    },
+    "seed11/C_direction/reverse": {
+      "score_id": "efebc57fd584d74deb58bc491066d938ccfb16d56749af8e17aff565a1ab33e5",
+      "seal_id": "1e3d706415fd3e3ce67ac88a8271c8ae06cb52d4b79d6cd7c589ef7802542b55",
+      "denominator": 360,
+      "correct": 163,
+      "mean": 0.4527777777777778,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 44,
+          "mean": 0.36666666666666664,
+          "outcome_codes": "033330000003300030101000030000330333303003300300003003033333300000030010330300000030000003330010003010033000000300000300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 51,
+          "mean": 0.425,
+          "outcome_codes": "030300303030300001011033000030330033333003000300300003000333000000013000000303300133330000330330303300333000303000000311"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 68,
+          "mean": 0.5666666666666667,
+          "outcome_codes": "133333303003300031001033000130330033333303300300303003033333300000033030330303303133030003303300303310300303303330000311"
+        }
+      }
+    },
+    "seed11/N_same_point/C-only": {
+      "score_id": "bd4db41a13b491c8795d23320a9490f02bda97fc7e1e19e4872f15264ce19b74",
+      "seal_id": "ea59aee891c637dea4dae23334712854ce8f43aeb82ca797eb0fa8382b6f3d06",
+      "denominator": 360,
+      "correct": 195,
+      "mean": 0.5416666666666666,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 60,
+          "mean": 0.5,
+          "outcome_codes": "033033013003300031001003030030330333330003330300000300033333000030010033030303000103300003333310303310333103300330000010"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 61,
+          "mean": 0.5083333333333333,
+          "outcome_codes": "033333313003000031300033030030330333300000330300301003033333100000003030330303303100030103033310003310333010003300000011"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 74,
+          "mean": 0.6166666666666667,
+          "outcome_codes": "133033303003330031301033030030330333333000330000303003033033330030030030330303003133130303333310333310333333303330000013"
+        }
+      }
+    },
+    "seed11/N_same_point/Full": {
+      "score_id": "6c37c178a0501ef25de226632b7ed387d81c957c212dceb5c85d583ecf5a8ca7",
+      "seal_id": "49d4d139b41d272e92e678017638061a9c8407cd8a884e30d2cdcb45fa899adb",
+      "denominator": 360,
+      "correct": 174,
+      "mean": 0.48333333333333334,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 49,
+          "mean": 0.4083333333333333,
+          "outcome_codes": "033033003000000331301003000030030303300003030300000003033033000030003030300300003100030003033310000011333003303330030300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 52,
+          "mean": 0.43333333333333335,
+          "outcome_codes": "133033303003030331301003030030330303033000330300303003033003030000000000330303003133330000030310000000333003003000000300"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 73,
+          "mean": 0.6083333333333333,
+          "outcome_codes": "033333313003300031301033030000330333333300330300301303033033000030033030330303003133030303333310333310033333303330000013"
+        }
+      }
+    },
+    "seed29/C_direction/Static": {
+      "score_id": "79169993880adbde988f48dcdc2b8fb161779bf82a0aa0dcf2c8f2124fe47890",
+      "seal_id": "0a82fbf27984873069f83c1dfe9c09fdac42301146267998db705d0351db966e",
+      "denominator": 360,
+      "correct": 171,
+      "mean": 0.475,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 53,
+          "mean": 0.44166666666666665,
+          "outcome_codes": "130030013003330031001030030000300303333003330300330000000333300000000000030300003000330300333310303110033003303301030300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 48,
+          "mean": 0.4,
+          "outcome_codes": "030033003033000000000033330030330330333000330300000003030033100330000000030303000000030100003300303300330033303300000313"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 70,
+          "mean": 0.5833333333333334,
+          "outcome_codes": "133303313003300331301030030030330333333003330300003003003003100030013030330303003133130303333310303300333103303330000011"
+        }
+      }
+    },
+    "seed29/C_direction/positive": {
+      "score_id": "7244e28064c84581fc3aa82cb2cec4bfff7e3c8b7f01bcae90d06838cb948721",
+      "seal_id": "303740478f4b5591513b31d65473b0a9b3911cfd6e3ee533291f8f065481223e",
+      "denominator": 360,
+      "correct": 173,
+      "mean": 0.48055555555555557,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 44,
+          "mean": 0.36666666666666664,
+          "outcome_codes": "133033003003000030301033030000000330333003000000000000030000000000303000030303003000030100003010303010333303300301030301"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 60,
+          "mean": 0.5,
+          "outcome_codes": "133303313000000031300003030030330330333030330300000300003033100300333030333003000033330003331300303010003333303300000301"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 69,
+          "mean": 0.575,
+          "outcome_codes": "133333313003300331303033001030330333333003330300303003033003100000033030330303003133030303033310303300333303003300000013"
+        }
+      }
+    },
+    "seed29/C_direction/reverse": {
+      "score_id": "2a5c02d73b9369c4ac7d6a15a7025ba904d158dc8c47d8972b90245cf1245c77",
+      "seal_id": "ff3001f951d9aa11db6f48ee1e13016ea58f7448e59d7c55c34ebb3c349fdcc1",
+      "denominator": 360,
+      "correct": 161,
+      "mean": 0.44722222222222224,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 42,
+          "mean": 0.35,
+          "outcome_codes": "033330003000000000301033030000330300333003300300003003033000300000000300000303003100030100033310000300033000303001030000"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 51,
+          "mean": 0.425,
+          "outcome_codes": "033333300000000030001033030000330330300003330300003003003033100000333030000300003030130000033303003310033100303301000303"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 68,
+          "mean": 0.5666666666666667,
+          "outcome_codes": "133333313003300331300033000030330330333303330300303003033003100030330030330303003133130100030010303310333303303300000013"
+        }
+      }
+    },
+    "seed29/N_same_point/C-only": {
+      "score_id": "1f28b12d158a818e36bf53067a4b37eefaa64034678be0614ff3938b764ec124",
+      "seal_id": "c8cbaa0b4903625b58037a3b64489538c14b4507e749b69357b11ce7dfb4caf8",
+      "denominator": 360,
+      "correct": 151,
+      "mean": 0.41944444444444445,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 45,
+          "mean": 0.375,
+          "outcome_codes": "130331303000000031301003000000330330333000030000003003030300300030000000300300003100330303033013300300000030300330000300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 35,
+          "mean": 0.2916666666666667,
+          "outcome_codes": "033333000000300030000033000000030330030000330000300000030330300000003000000000300100300003330313000300033000000000000301"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 71,
+          "mean": 0.5916666666666667,
+          "outcome_codes": "133333313003300030300030031030330333333303330000001003033333300000033030330303303133130003333313033010333030303330000013"
+        }
+      }
+    },
+    "seed29/N_same_point/Full": {
+      "score_id": "769d9ae7056017b59f6fbf33dfa9d27aefaea673737338bf196838a8a51ed999",
+      "seal_id": "6ff73f587b0fafad261ca971efbfaf3d17c2199904c485fea265320a5746576f",
+      "denominator": 360,
+      "correct": 157,
+      "mean": 0.4361111111111111,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 48,
+          "mean": 0.4,
+          "outcome_codes": "030030303000000031000033030030030000300000330000000003030330300330330300330013003103000103330013000310333303300030000301"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 37,
+          "mean": 0.30833333333333335,
+          "outcome_codes": "033030300003000031000030031000330333333000330000000000033033100030003000030000000000000003000313000000333300000300000000"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 72,
+          "mean": 0.6,
+          "outcome_codes": "133333313003300030303030031030330333333003330300001003033333300030033030330303003003130303333313033000333333303300300013"
+        }
+      }
+    },
+    "seed47/C_direction/Static": {
+      "score_id": "be835b11dbcfe1d7381ed8953fe096dcbdacce2c96a3f7c2fd3e29b4b7d958c1",
+      "seal_id": "0787dc379e720cf19bfc13977ce464aa47b2593f48f2b740bae52f1e8ad89ef3",
+      "denominator": 360,
+      "correct": 164,
+      "mean": 0.45555555555555555,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 45,
+          "mean": 0.375,
+          "outcome_codes": "033033313003300030300003030030301333300000030300000000003003030000000030030303000033030303303300303010003100030000030300"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 50,
+          "mean": 0.4166666666666667,
+          "outcome_codes": "133330013003000031000033030030330030300033330000000003030033300000033330030003000000000303033330303300033003033300000301"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 69,
+          "mean": 0.575,
+          "outcome_codes": "033333303003300331003033031000330333333030330300301003033333300000333000330303303133300303333310303010330003303330000300"
+        }
+      }
+    },
+    "seed47/C_direction/positive": {
+      "score_id": "e269ea833ca422c6ff8d532dc1f60f1ea3ff1d166f9267d2516c2de11458f53c",
+      "seal_id": "7232f106146a70e49795b8ce5b4ea1d065d010648f6b6da8ef9881437c438c98",
+      "denominator": 360,
+      "correct": 161,
+      "mean": 0.44722222222222224,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 49,
+          "mean": 0.4083333333333333,
+          "outcome_codes": "103033003003000030300033030030330330333300030300300003000330300030030000300313000130030003333300003000003103300030000301"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 50,
+          "mean": 0.4166666666666667,
+          "outcome_codes": "133331303003300000000033030000330033303000310300300003030303300000330000130003003030000003003330300310033003003000030313"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 62,
+          "mean": 0.5166666666666667,
+          "outcome_codes": "033033310003300031000033001030330333333030330000000303033333300000333030300003303133300303333310303010303003303300000001"
+        }
+      }
+    },
+    "seed47/C_direction/reverse": {
+      "score_id": "aae9c03333d0ad0c3562d47ce176df3fcdea22b98b359b13d995cdafd4fc97a5",
+      "seal_id": "27854ca312e9b04343e602834a83b9796a1328997b931357a4301e2a152a7243",
+      "denominator": 360,
+      "correct": 160,
+      "mean": 0.4444444444444444,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 50,
+          "mean": 0.4166666666666667,
+          "outcome_codes": "133033010003300030300030000000330333330303300000300000000333330000003300330303003133030000003100303300003300300300030301"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 46,
+          "mean": 0.38333333333333336,
+          "outcome_codes": "103000003003030001300033031030330330333000330300300003033300300000033000030003300030000003330310300310000003003000000310"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 64,
+          "mean": 0.5333333333333333,
+          "outcome_codes": "033030313003300331000003030000330333333030300300303003033333300000033300330303303133000303333310303010333003303300000301"
+        }
+      }
+    },
+    "seed47/N_same_point/C-only": {
+      "score_id": "b081be816173f7e597b87adca289707f9809658f3a5c9df89353cb3f06a445ad",
+      "seal_id": "96a276ba512f935952a02fd41e2a58a4ae3f91aa461b01ddde7f5a3012a20f62",
+      "denominator": 360,
+      "correct": 152,
+      "mean": 0.4222222222222222,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 38,
+          "mean": 0.31666666666666665,
+          "outcome_codes": "133000003000030330301000030030030003003000030000000003030030330030003030000003000100030103333300003300330100000000000001"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 38,
+          "mean": 0.31666666666666665,
+          "outcome_codes": "030330303000000001301003000000330030033033030000000000003330300000033030030303000000000300303000003300330103000000030300"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 76,
+          "mean": 0.6333333333333333,
+          "outcome_codes": "133333313003300331301033031030330333333033330300303303033333300000033030330303003133030003333310303300333313303300000303"
+        }
+      }
+    },
+    "seed47/N_same_point/Full": {
+      "score_id": "d4a60ae9996cc2fa20272da84fe72b6f396dc83162a365f1bc13b2dbbf1b19e1",
+      "seal_id": "6d4c5a563b70af5b4f061f1332a7c86fcea2b39ec41b9e594bd6a56b0ae9ffb3",
+      "denominator": 360,
+      "correct": 157,
+      "mean": 0.4361111111111111,
+      "draws": {
+        "0": {
+          "denominator": 120,
+          "correct": 37,
+          "mean": 0.30833333333333335,
+          "outcome_codes": "133033000000300031300033030030300333003003000000000000030030130000030000300000000003000000033000003300000330003330000011"
+        },
+        "1": {
+          "denominator": 120,
+          "correct": 49,
+          "mean": 0.4083333333333333,
+          "outcome_codes": "133333000003330030301003030030030013303033300000000303003000130030003000030303003130000100030310000300333000303000300310"
+        },
+        "2": {
+          "denominator": 120,
+          "correct": 71,
+          "mean": 0.5916666666666667,
+          "outcome_codes": "133333303003300001003033031030030331333033330300303303033333330000003330330003003133030303333310330300033333303300000301"
+        }
+      }
+    }
+  },
+  "draw_split_scope": "Post-hoc descriptive decomposition only; draw0 stochastic seed11, draw1 stochastic seed29, draw2 greedy; original mixed360 estimand unchanged."
+}

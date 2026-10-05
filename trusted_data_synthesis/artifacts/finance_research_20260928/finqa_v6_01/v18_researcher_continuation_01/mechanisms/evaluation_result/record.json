@@ -1,0 +1,80 @@
+{
+  "API_calls": 0,
+  "denominator": 5400,
+  "exposed_diagnostic_not_blind_test": true,
+  "extra_feedback_sessions": 0,
+  "id": "1d4a3da48048fbfa1da4c5a772cd6a7ce846c678adbbaaa7aa01253b96e68d5b",
+  "intermediate_checkpoint_selection": false,
+  "original_calibration_tasks": 120,
+  "registration_id": "64281af85e8f381f5fa2bbd7398272af5d54967e125ca6890653ec42a2a72114",
+  "schema": "v9_complete_mechanism_evaluation.v1",
+  "seeds": {
+    "11": {
+      "C": {
+        "actual_evaluation_provenance_verified": false,
+        "checkpoint_selection_allowed": false,
+        "denominator_per_direction": 360,
+        "means": {
+          "Static": 0.475,
+          "positive": 0.5,
+          "reverse": 0.4527777777777778
+        },
+        "observed_numeric_positive_vs_Static": true,
+        "only_less_harmed_than_reverse": false,
+        "positive_minus_Static": 0.025000000000000022,
+        "positive_minus_reverse": 0.04722222222222222,
+        "statistical_significance_established": false
+      },
+      "N_Full_minus_C_only": -0.05833333333333329,
+      "N_means": {
+        "C-only": 0.5416666666666666,
+        "Full": 0.48333333333333334
+      }
+    },
+    "29": {
+      "C": {
+        "actual_evaluation_provenance_verified": false,
+        "checkpoint_selection_allowed": false,
+        "denominator_per_direction": 360,
+        "means": {
+          "Static": 0.475,
+          "positive": 0.48055555555555557,
+          "reverse": 0.44722222222222224
+        },
+        "observed_numeric_positive_vs_Static": true,
+        "only_less_harmed_than_reverse": false,
+        "positive_minus_Static": 0.005555555555555591,
+        "positive_minus_reverse": 0.033333333333333326,
+        "statistical_significance_established": false
+      },
+      "N_Full_minus_C_only": 0.016666666666666663,
+      "N_means": {
+        "C-only": 0.41944444444444445,
+        "Full": 0.4361111111111111
+      }
+    },
+    "47": {
+      "C": {
+        "actual_evaluation_provenance_verified": false,
+        "checkpoint_selection_allowed": false,
+        "denominator_per_direction": 360,
+        "means": {
+          "Static": 0.45555555555555555,
+          "positive": 0.44722222222222224,
+          "reverse": 0.4444444444444444
+        },
+        "observed_numeric_positive_vs_Static": false,
+        "only_less_harmed_than_reverse": true,
+        "positive_minus_Static": -0.008333333333333304,
+        "positive_minus_reverse": 0.0027777777777778234,
+        "statistical_significance_established": false
+      },
+      "N_Full_minus_C_only": 0.013888888888888895,
+      "N_means": {
+        "C-only": 0.4222222222222222,
+        "Full": 0.4361111111111111
+      }
+    }
+  },
+  "statistical_significance_claimed": false
+}
