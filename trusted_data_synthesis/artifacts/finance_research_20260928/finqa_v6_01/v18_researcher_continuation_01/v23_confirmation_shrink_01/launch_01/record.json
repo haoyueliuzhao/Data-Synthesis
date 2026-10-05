@@ -1,0 +1,22 @@
+{
+  "schema": "v23_controller_launch.v1",
+  "at": "2026-10-05T02:55:42.174187+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "pid": 3889857,
+  "birth": "359333735",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/implementation/finqa_v23_followup_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01"
+  ],
+  "cwd": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "restore_settings": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/restore_settings/record.json",
+    "sha256": "2eb16e60c8a9002c20be8105db7cb19af3bb8c1315e96234cf52911f52b89898",
+    "id": "e84c0582d5100645f137156d2eed098d57f794bac9a65ce5a46c66d5bf9f1b9b"
+  },
+  "id": "25bcf3c64f200e4b9e232aee5fd1c88b7e07073a50499166d8c1f59231fadbf9"
+}

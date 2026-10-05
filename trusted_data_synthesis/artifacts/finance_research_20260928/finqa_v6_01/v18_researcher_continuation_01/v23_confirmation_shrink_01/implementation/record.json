@@ -1,0 +1,12 @@
+{
+  "schema": "v23_frozen_followup_implementation.v1",
+  "source_commit": "a267dd11ca6d15d5fe7ca2f12aadba8917f865a7",
+  "sha256": {
+    "finqa_v23_followup_controller.py": "b9d25ac7c4c4c36ef32887c0668f1a0fd2ccb44ef810f6f0778450d9c52917fb",
+    "finqa_v23_test_confirmation.py": "780cc48eb0f23840eb400be138a6277c4261dff17253c162eff9c9cd309a2f74",
+    "finqa_v23_shrink_control.py": "02512c61d535d60d50e67dae09e8cd87b492c536aaefffbd2b14ae1497b68dbd"
+  },
+  "scientific_runtime": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "at": "2026-10-05T02:53:53.702799+00:00",
+  "id": "0b62c02e9f9bfada8dbc91216fe1f928ee33a18066def9387986a7fe213cb2ae"
+}

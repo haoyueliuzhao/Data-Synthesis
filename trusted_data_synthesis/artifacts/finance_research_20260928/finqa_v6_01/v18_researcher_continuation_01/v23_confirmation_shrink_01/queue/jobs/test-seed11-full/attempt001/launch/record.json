@@ -1,0 +1,42 @@
+{
+  "schema": "v23_worker_launch.v1",
+  "at": "2026-10-05T02:55:42.665234+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "job": {
+    "key": "test-seed11-full",
+    "script": "finqa_v23_test_confirmation.py",
+    "branch": "test_confirmation",
+    "args": [
+      "generate",
+      "--seed",
+      "11",
+      "--arm",
+      "full"
+    ],
+    "dependencies": [],
+    "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed11/full/whole_test_seal/record.json"
+  },
+  "gpu": 1,
+  "gpu_uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+  "pid": 3889861,
+  "birth": "359333784",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "0-37,76-113",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/implementation/finqa_v23_test_confirmation.py",
+    "generate",
+    "--seed",
+    "11",
+    "--arm",
+    "full",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation",
+    "--gpu-index",
+    "1"
+  ],
+  "no_resampling": true,
+  "id": "b12e60834abe978f7d2125e0abd27b7c045c7cf2d66904c9618b41afe2aab1c8"
+}

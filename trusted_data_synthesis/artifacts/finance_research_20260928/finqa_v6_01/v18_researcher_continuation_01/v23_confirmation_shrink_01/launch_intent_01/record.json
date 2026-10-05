@@ -1,0 +1,22 @@
+{
+  "schema": "v23_controller_launch_intent.v1",
+  "at": "2026-10-05T02:55:42.172569+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/implementation/finqa_v23_followup_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01"
+  ],
+  "cwd": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "environment_overrides": {
+    "PYTHONPATH": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "id": "7b17c297df13434c66e507c7df35bfa2d556b41283147d0925d08ccf6e6c3ff9"
+}

@@ -142,3 +142,36 @@ Full／C-only 的原执行正确数差可以按逐题配对分解为：
 69项CPU/mock集成测试全部通过，用时8.00秒；新增脚本与测试的Ruff检查通过。覆盖A的22项合同与评分屏障、B的16项分布与控制、提交诊断10项、队列21项。测试验证合同、统计口径、回缩边界、无自动重试、调度依赖和故障收尾，不代替真实模型推理或数值效果验收。正式登记、源提交、启动时间和首批实际GPU观察以对应原件及实际执行记录为准；在有结果前，不将计划会话数写成已完成数。
 
 原轮是否完成、后继是否启动、后继是否得到正向科学结论是三个不同状态。本次使用来源簇区间只针对新test确认，不追溯给原dev补写显著性。
+
+### 正式登记和启动实测
+
+外置实现已从提交 `a267dd11ca6d15d5fe7ca2f12aadba8917f865a7` 的已提交字节冻结，旧科学运行时不变。10月5日10:53:59完成A登记，10:54:15整体工作流登记封口，此时三个B控制均已按完整精度固定；未生成test回答或读取test参考。10:55:42启动持久控制器，PID3889857，birth标识359333735。
+
+10:59:03的定点观察确认八个worker均存活，实际GPU UUID与登记一致，并已经产生真实输出或参数更新：
+
+| 工作 | GPU | 实测进展 |
+| --- | ---: | --- |
+| Static seed11 test | 0 | 已生成13条 |
+| Full seed11 test | 1 | 已生成13条 |
+| Static seed29 test | 2 | 已生成10条 |
+| Full seed29 test | 3 | 已生成10条 |
+| Static seed47 test | 4 | 已生成12条 |
+| Full seed47 test | 5 | 已生成12条 |
+| 回缩短训练 seed11 | 6 | step599，已新增3步 |
+| 回缩短训练 seed29 | 7 | step598，已新增2步 |
+
+当时新test回答共70／6,882条，未评分；回缩seed47训练及三个后继回缩生成任务仍在队列，`failures=[]`。这证明实验已实际开展，不是GPU占位或仅完成注册；它不证明整轮完成或效果为正。观察过程只读取数量、保存点名称和进程／GPU身份，没有读取test回答内容或参考答案。
+
+| 不可变记录 | ID |
+| --- | --- |
+| 原轮 scoped closeout | `6c3f97fa042be21dbe630b8e1545e0bde71668681af30fd101efd6b2fe8fe5e2` |
+| 冻结外置实现 | `0b62c02e9f9bfada8dbc91216fe1f928ee33a18066def9387986a7fe213cb2ae` |
+| A test确认登记 | `a7a0058f6e37e22cf5dcb7d6f8f757cf2d4982104c809cbb0f06942f9f1bdd44` |
+| B 回缩控制登记 | `93bd3524df8c4a8a276d413e575d66174f7637d87205d0daef6d186762ed112c` |
+| 工作流登记 | `852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8` |
+| 控制器启动 | `25bcf3c64f200e4b9e232aee5fd1c88b7e07073a50499166d8c1f59231fadbf9` |
+| 八卡实际运行观察 | `a9814385a953b36b2f2fd936ecab4d64e824b373bfe5e92406ee752557baf106` |
+
+当前进度权威为新根目录的 `queue/status.json`。完整启动／恢复命令和环境在 `restore_settings/record.json`，冷恢复使用同一冻结入口的 `resume`，不可用旧V22完成队列再次派发。A最终结果写入 `test_confirmation/summary/record.json`，B最终结果写入 `shrink_control/evaluation_result/record.json`，全部后继收口写入 `result/record.json`。
+
+提交诊断保存了不可变 `submission_diagnostic/selection.json` 和不含原始回答全文的 `summary.json`；完整读取记录 `evidence.json` 留在本地。上述源代码、协议、固定分布、启动和必要观察证据单独提交，不上传模型Tensor、生成大日志、原始回答全文或测试临时夹具。

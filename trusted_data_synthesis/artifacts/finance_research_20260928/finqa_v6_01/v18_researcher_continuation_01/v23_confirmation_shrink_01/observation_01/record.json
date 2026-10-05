@@ -1,0 +1,118 @@
+{
+  "schema": "v23_first_real_eight_gpu_observation.v1",
+  "at": "2026-10-05T02:59:03.046696+00:00",
+  "protocol_id": "852709ebb4e1b2017304386b8094af3b7884d28415542efb9f078feb325c54b8",
+  "phase": "FOLLOWUP_GPU_RUNNING",
+  "source_status_at": "2026-10-05T02:58:56.911241+00:00",
+  "workers": [
+    {
+      "key": "test-seed11-static",
+      "gpu": 0,
+      "pid": 3889860,
+      "birth": "359333783",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "memory_mib": 18256
+      },
+      "generated_episodes": 13
+    },
+    {
+      "key": "test-seed11-full",
+      "gpu": 1,
+      "pid": 3889861,
+      "birth": "359333784",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+        "memory_mib": 17346
+      },
+      "generated_episodes": 13
+    },
+    {
+      "key": "test-seed29-static",
+      "gpu": 2,
+      "pid": 3889862,
+      "birth": "359333784",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "memory_mib": 18250
+      },
+      "generated_episodes": 10
+    },
+    {
+      "key": "test-seed29-full",
+      "gpu": 3,
+      "pid": 3889863,
+      "birth": "359333784",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "memory_mib": 18286
+      },
+      "generated_episodes": 10
+    },
+    {
+      "key": "test-seed47-static",
+      "gpu": 4,
+      "pid": 3889864,
+      "birth": "359333785",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "memory_mib": 18196
+      },
+      "generated_episodes": 12
+    },
+    {
+      "key": "test-seed47-full",
+      "gpu": 5,
+      "pid": 3889865,
+      "birth": "359333785",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+        "memory_mib": 17406
+      },
+      "generated_episodes": 12
+    },
+    {
+      "key": "shrink-train-seed11",
+      "gpu": 6,
+      "pid": 3889866,
+      "birth": "359333786",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+        "memory_mib": 21846
+      },
+      "steps_written": 3,
+      "latest_step": "step0599_step"
+    },
+    {
+      "key": "shrink-train-seed29",
+      "gpu": 7,
+      "pid": 3889867,
+      "birth": "359333786",
+      "alive": true,
+      "gpu_allocation": {
+        "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+        "memory_mib": 22280
+      },
+      "steps_written": 2,
+      "latest_step": "step0598_step"
+    }
+  ],
+  "queued": [
+    "shrink-train-seed47",
+    "shrink-generate-seed11",
+    "shrink-generate-seed29",
+    "shrink-generate-seed47"
+  ],
+  "failures": [],
+  "test_answers_not_read": true,
+  "test_references_not_read": true,
+  "no_scores_claimed": true,
+  "id": "a9814385a953b36b2f2fd936ecab4d64e824b373bfe5e92406ee752557baf106"
+}
