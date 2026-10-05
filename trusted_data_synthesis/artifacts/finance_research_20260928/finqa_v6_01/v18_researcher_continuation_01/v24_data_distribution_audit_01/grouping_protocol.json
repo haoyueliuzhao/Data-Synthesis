@@ -1,0 +1,136 @@
+{
+  "frozen_at": "2026-10-05T03:33:41.502860+00:00",
+  "id": "5161df1a31478821485a2c3aaddc4187c422b698267686745c07ac57c4c889a2",
+  "rules": {
+    "common_support_effect_contract": {
+      "common_support": "only categories with target mass>0 AND dev task count>=20; report retained target mass and raw dev task mass; renormalize target mass within retained support",
+      "fields": [
+        "intent_proxy",
+        "input_size_bin"
+      ],
+      "formula": "sum_g target_mass(g)/target_common_mass * mean_dev_g(Full-Static); descriptive covariate-standardized contrast, not population generalization or causal transport",
+      "minimum_dev_group_tasks": 20,
+      "separate_marginal_groups_not_joint_cells": true,
+      "target": [
+        "sft1000",
+        "train744",
+        "train_multi229",
+        "train_chiflex87"
+      ]
+    },
+    "concentration": "HHI=sum task share squared; inverse HHI is equivalent source diversity, NOT statistical effective sample size; top1/top5/top10 mass and linear-interpolated group-size quantiles",
+    "dev_effect_suppression": {
+      "minimum_group_tasks": 20,
+      "negative_controls": [
+        "Manual+ - Manual-",
+        "Full - C-only"
+      ],
+      "smaller_groups": "counts only, no selected efficacy claim",
+      "top_sources": "highest dev task counts, tie lexicographic; never highest gains"
+    },
+    "distribution_distance": "TV=0.5*sum(abs(p-q)); JS=0.5*KL2(p||m)+0.5*KL2(q||m), m=(p+q)/2; 0*log(0)=0, absent categories probability0; range[0,1]",
+    "group_fields": [
+      "company",
+      "report_group",
+      "year",
+      "intent_proxy",
+      "input_size_bin",
+      "question_size_bin"
+    ],
+    "input_bins": [
+      [
+        2000,
+        "<=2000"
+      ],
+      [
+        5000,
+        "2001-5000"
+      ],
+      [
+        10000,
+        "5001-10000"
+      ],
+      [
+        null,
+        ">10000"
+      ]
+    ],
+    "input_chars": "len(question) + sum(len(json.dumps(source.content, ensure_ascii=False, separators=(',', ':'))) for source in public.sources); Unicode codepoints, no tokenizer; includes quoted text serialization",
+    "intent": {
+      "fallback": "other",
+      "flags": "re.IGNORECASE; all matches separately retained",
+      "meaning": "public-question lexical intent proxy; not gold operation or difficulty",
+      "patterns": {
+        "average": "\\b(?:average|mean)\\b",
+        "count": "\\b(?:how many|number of|count)\\b",
+        "difference_change": "\\b(?:difference|change|changed|increase|increased|decrease|decreased|growth|decline|declined|reduction|reduced|more|less|higher|lower)\\b",
+        "minmax": "\\b(?:minimum|maximum|min|max|highest|lowest|largest|smallest|greatest|least)\\b",
+        "percent_change": "\\b(?:(?:percent(?:age)?|rate)\\s+(?:of\\s+)?(?:change|increase|decrease|growth|decline|reduction)|(?:change|increase|decrease|growth|decline|reduction)\\s+(?:in\\s+)?percent(?:age)?|growth\\s+rate|rate\\s+of\\s+growth)\\b",
+        "ratio_percentage": "\\b(?:ratio|percent|percentage|proportion|fraction|share|portion|rate)\\b|%",
+        "sum_total": "\\b(?:sum|total|combined|aggregate)\\b"
+      },
+      "priority": [
+        "percent_change",
+        "difference_change",
+        "ratio_percentage",
+        "sum_total",
+        "average",
+        "minmax",
+        "count"
+      ]
+    },
+    "lineage_whitelist": [
+      "dataset",
+      "original_id",
+      "original_split",
+      "company",
+      "year",
+      "report",
+      "source_group"
+    ],
+    "question_bins": [
+      [
+        79,
+        "<=79"
+      ],
+      [
+        119,
+        "80-119"
+      ],
+      [
+        199,
+        "120-199"
+      ],
+      [
+        null,
+        ">=200"
+      ]
+    ],
+    "question_chars": "len(public.question), Unicode codepoints",
+    "schema": "v24_public_grouping_rules.v1",
+    "scope": {
+      "api_calls": 0,
+      "dev_score_reads_by_this_script": false,
+      "gpu_calls": 0,
+      "historical_dev_results_already_known_to_project": true,
+      "lineage_strata_access": false,
+      "new_rules_frozen_before_new_group_correctness_join": true,
+      "original_experiment_mutations": false,
+      "private_reference_reads": false,
+      "test_correctness_reads": false,
+      "test_public_features_only": true,
+      "v23_mutations": false
+    },
+    "source_taxonomy": {
+      "company": "original lineage.company exact, verified against original_id first path segment",
+      "report": "original lineage.report = <company>/<year>",
+      "report_group": "original lineage.source_group exact = finqa:report:<company>/<year>",
+      "year": "original lineage.year exact string, verified against original_id second path segment"
+    },
+    "tables": "public.sources where kind == table; content must be list of lists; table_rows=sum row counts including headers, table_columns=max row length; invalid table omitted and count reported",
+    "task_key": "dataset + '/' + task_id (original canonical slash format)",
+    "weights": "one equal weight per task; native820/training subsets defined only by preexisting sealed eligibility/support"
+  },
+  "rules_id": "d8c32e1547a7d757ac965c03679435a4439b81feafddc659eaa2bf775a5e09ae",
+  "schema": "v24_frozen_grouping_protocol.v1"
+}

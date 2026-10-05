@@ -1,0 +1,77 @@
+{
+  "schema": "finqa_v24_frozen_dev_analysis_protocol.v1",
+  "grouping_protocol_id": "5161df1a31478821485a2c3aaddc4187c422b698267686745c07ac57c4c889a2",
+  "grouping_rules_id": "d8c32e1547a7d757ac965c03679435a4439b81feafddc659eaa2bf775a5e09ae",
+  "reason": "Implementation coordination before any group correctness join; historical global dev results already known. No outcome-informed rule change or prospective registration claim.",
+  "overrides_only": [
+    "rules.dev_effect_suppression",
+    "rules.common_support_effect_contract"
+  ],
+  "feature_rules_regex_and_bins_unchanged": true,
+  "metrics": [
+    "execution_accuracy",
+    "program_accuracy"
+  ],
+  "registered_comparisons": [
+    "Full-Static",
+    "Full-C-only",
+    "Manual+-Static",
+    "Manual--Static"
+  ],
+  "supplementary_comparisons": [
+    "C-only-Static"
+  ],
+  "group_dimensions": [
+    "intent_proxy",
+    "input_size_bin",
+    "question_size_bin",
+    "report_group",
+    "company",
+    "year"
+  ],
+  "group_effect_contract": {
+    "all_categories": "Retain n, wins, losses, ties and paired means for each seed and equal-seed mean in machine attachment; never select favorable categories.",
+    "main_text_minimum_group_tasks": 20,
+    "small_groups_flag": "descriptive_small_group_no_efficacy_claim",
+    "registered_full_dev_denominator": 883,
+    "confidence_intervals": null,
+    "p_values": null
+  },
+  "leave_one_out": {
+    "fields": [
+      "report_group",
+      "company"
+    ],
+    "all_groups": true,
+    "actual_remaining_denominator": true,
+    "estimand": "Overall paired effect sensitivity, not small-group efficacy."
+  },
+  "standardization": {
+    "fields": [
+      "intent_proxy",
+      "input_size_bin"
+    ],
+    "targets": [
+      "sft1000",
+      "train744",
+      "feedback350",
+      "calibration120"
+    ],
+    "mathematical_positive_support": "target_n > 0 AND dev_n > 0; report dev/target coverage only",
+    "stable_support_H": "target_n > 0 AND dev_n >= 20; report dev/target coverage, then renormalize target mass within H",
+    "minimum_dev_group_tasks": 20,
+    "effects_computed_only_on_stable_support": true,
+    "unsupported_cells_filled_or_extrapolated": false,
+    "joint_high_dimensional_cells": false,
+    "interpretation": "Observed dev cell effects standardized to target composition conditional on H, not new test performance or causal evidence."
+  },
+  "scope": {
+    "post_hoc_descriptive": true,
+    "test_correctness_read": false,
+    "private_references_read": false,
+    "new_API_or_GPU_calls": 0,
+    "original_experiment_mutations": false
+  },
+  "frozen_at": "2026-10-05T03:39:29.832233+00:00",
+  "id": "bdb1a9befaf1330e23169e4b721100557cd7792a4c8379866c59b761f594943a"
+}
