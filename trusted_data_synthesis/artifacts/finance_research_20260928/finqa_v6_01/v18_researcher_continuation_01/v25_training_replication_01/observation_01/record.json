@@ -1,0 +1,68 @@
+{
+  "schema": "v25_first_actual_execution_observation.v1",
+  "at": "2026-10-05T16:38:57.184624+00:00",
+  "protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "heartbeat_at": "2026-10-05T16:38:50.562872+00:00",
+  "phase": "REPLICATION_GPU_RUNNING",
+  "controller_pid": 2488534,
+  "controller_birth": "364253129",
+  "workers": [
+    {
+      "pid": 2488544,
+      "birth": "364253173",
+      "gpu": 3,
+      "job": "extension-test-seed11-c_only"
+    }
+  ],
+  "owned_gpu_allocations": [
+    {
+      "pid": 2488544,
+      "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+      "used_mib": 18236
+    }
+  ],
+  "completed_jobs": [],
+  "queued_jobs": [
+    "replication-prefix-seed137",
+    "extension-test-seed29-c_only",
+    "replication-prefix-seed251",
+    "extension-test-seed47-c_only",
+    "replication-prefix-seed389",
+    "replication-train-seed137-static",
+    "replication-train-seed137-c_only",
+    "replication-train-seed137-full",
+    "replication-train-seed251-static",
+    "replication-train-seed251-c_only",
+    "replication-train-seed251-full",
+    "replication-train-seed389-static",
+    "replication-train-seed389-c_only",
+    "replication-train-seed389-full",
+    "replication-test-seed137-static",
+    "replication-test-seed137-c_only",
+    "replication-test-seed137-full",
+    "replication-test-seed251-static",
+    "replication-test-seed251-c_only",
+    "replication-test-seed251-full",
+    "replication-test-seed389-static",
+    "replication-test-seed389-c_only",
+    "replication-test-seed389-full"
+  ],
+  "failures": [],
+  "extension_generated_per_seed": {
+    "11": 6,
+    "29": 0,
+    "47": 0
+  },
+  "extension_generated_total": 6,
+  "extension_registered_total": 3441,
+  "new_prefix_step_records": {
+    "137": 0,
+    "251": 0,
+    "389": 0
+  },
+  "counts_are_filenames_only": true,
+  "test_answer_content_read": false,
+  "test_correctness_read": false,
+  "no_placeholder": true,
+  "id": "a244067375ff2fef3463f345c5797593b79c8330452af5066a1c023b378d7293"
+}

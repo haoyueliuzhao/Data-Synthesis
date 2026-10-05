@@ -1,0 +1,21 @@
+{
+  "schema": "v25_parent_scoped_closeout.v1",
+  "at": "2026-10-05T16:32:47.307731+00:00",
+  "parent_completion": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/result/record.json",
+    "sha256": "78b76f71470955b351a8c1f3772a71dd9e26c73c645f1cb32a689a1c5a7c37bc",
+    "id": "5e78a50033afb2d25144a1fdac74c0f6b4cb9676566f79a448c969df26ee0fea"
+  },
+  "verdict": "PASS_AS_SCOPED",
+  "fixed_model_Full_minus_Static_positive_confirmation": true,
+  "retraining_stability_established": false,
+  "Full_over_C_only_advantage_established": false,
+  "independent_N_value_established": false,
+  "old_records_unchanged": true,
+  "audit_request": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/audit_request/record.json",
+    "sha256": "51f5e8b113c5188bf9ea6ca63a11f893c12e3f638b7a2c7e1ab511b8a2ea87a2",
+    "id": "d7f0a7ed17d1790825f8e2b9e1a83ee5719b98118d3ea0537bd12ddd358364d7"
+  },
+  "id": "3396c65f8e5aed235ed440f736fdc3618ef18b6bec1a39ee4d865a2469d30027"
+}

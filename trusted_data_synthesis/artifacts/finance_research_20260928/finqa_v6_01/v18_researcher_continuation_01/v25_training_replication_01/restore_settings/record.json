@@ -1,0 +1,35 @@
+{
+  "schema": "v25_queue_launch_and_explicit_restore_settings.v1",
+  "at": "2026-10-05T16:35:36.114521+00:00",
+  "protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "cwd": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_replication_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01"
+  ],
+  "explicit_resume_command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_replication_controller.py",
+    "resume",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01"
+  ],
+  "environment_changes": {
+    "PYTHONPATH": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "unset in controller; each registered worker binds GPU UUID"
+  },
+  "controller_detached": true,
+  "old_queues_untouched": true,
+  "automatic_retry": false,
+  "resume_requires_explicit_failure_inspection": true,
+  "id": "4dc49ebd485a70157e56a2c08b46ea72feadc088e0b95a3e7e6f5ae732b6abb2"
+}
