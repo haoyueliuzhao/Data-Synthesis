@@ -1,0 +1,10 @@
+{
+  "schema": "v27_frozen_same_run_recovery.v1",
+  "at": "2026-10-06T12:17:53.167318+00:00",
+  "source_commit": "6ef012042efc7faee459bdf8eddca80e65445f33",
+  "sha256": {
+    "finqa_v27_same_run_recovery.py": "95f5e44b884da3d868e9ec38a35ae8b757d8b1afa18ec3887ad6e9c6c6254a1c",
+    "finqa_v27_resume_proof.py": "74d7217c8be845e35f45052c7d6e1db67b4769c51092dc133d5984cd30a38e7c"
+  },
+  "id": "37436ce4ad62c1c70390406e7b924cb022904424decb29d2830326de0039a85a"
+}

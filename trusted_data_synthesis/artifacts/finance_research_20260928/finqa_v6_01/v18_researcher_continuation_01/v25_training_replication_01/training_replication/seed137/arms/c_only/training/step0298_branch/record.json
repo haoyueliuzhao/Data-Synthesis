@@ -1,0 +1,15 @@
+{
+  "actual_state_digest": "ce5fe908e8f754ece54b857ec99c72476bcba3af710357680a100d33a414dd4e",
+  "arm": "C-only",
+  "checkpoint_contains_actual_model_Adam_RNG_pi": true,
+  "evidence": {
+    "shared_actual_state_digest": "ed2fa6ea7b309234be2a0b4cc7247ec908f6cf62fbe88af6cee568fb443cf06c",
+    "shared_checkpoint": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/shared/step0298_step"
+  },
+  "phase": "branch",
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "schedule_sha256": "d2e35cc7d8723be4f2790702f14e63ddd7affd71c29b43a954971d716dc919b9",
+  "seed": 137,
+  "state_sha256": "f16ef5cc4b9739713e2b66c1330e4ea8ab8f506b65761c0e52f49f4708fbf24f",
+  "step": 298
+}

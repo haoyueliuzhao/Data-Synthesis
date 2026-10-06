@@ -1,0 +1,36 @@
+{
+  "CPU_control_only": false,
+  "arm": "C-only",
+  "at": "2026-10-06T10:27:52.836529+00:00",
+  "automatic_retry": false,
+  "context_or_denominator_changed": false,
+  "error": "CUDA out of memory. Tried to allocate 104.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 61.38 MiB is free. Including non-PyTorch memory, this process has 54.19 GiB memory in use. Process 4144942 has 24.99 GiB memory in use. Of the allocated memory 51.58 GiB is allocated by PyTorch, and 2.05 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+  "error_type": "OutOfMemoryError",
+  "failure_counted_as_Q_zero": false,
+  "failure_kind": "resource_OOM",
+  "feedback_artifacts": {},
+  "feedback_resampled": false,
+  "id": "711d64768c2dbbbc49b0ed5c01dfdc316d5f516064a7377ba63e68bedf88d0b6",
+  "intent": {
+    "id": "57d76bd8e83e4aac168324dec7a4344765cc7c473d5eee5b5158b77ae772ec2e",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/outer_attempts/step0298/attempt001/intent/record.json",
+    "sha256": "a8831ecba339ed2215a08d4f5c6d1ad01619308c84bdb2d6f2f4848ce1673456"
+  },
+  "last_committed_training_step": 298,
+  "last_completed_replay_response": null,
+  "last_phase": "full_class_gradients",
+  "last_phase_record": {
+    "id": "95625149bf7f94f2986f12b0d6ce08f249d0c32076d0c6bfc00e6e9dc311854c",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/outer_attempts/step0298/attempt001/phases/001/record.json",
+    "sha256": "dc455c6f580c7fa78e6c1e3ec87e9f71b0253e1d152625ddda82f0ffe0ce2cb9"
+  },
+  "outer_commit_record_exists": false,
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "recovery": "explicit inspection and durable checkpoint restore; never refill partial700",
+  "retained_incomplete_feedback": [],
+  "schedule_sha256": "d2e35cc7d8723be4f2790702f14e63ddd7affd71c29b43a954971d716dc919b9",
+  "schema": "first_formal_outer_failure.v1",
+  "seed": 137,
+  "step": 298,
+  "stopped_before_next_training_step": true
+}

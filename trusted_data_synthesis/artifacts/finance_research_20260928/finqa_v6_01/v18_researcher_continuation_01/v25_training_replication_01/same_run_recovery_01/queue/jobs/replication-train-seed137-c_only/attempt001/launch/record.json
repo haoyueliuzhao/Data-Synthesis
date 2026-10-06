@@ -1,0 +1,54 @@
+{
+  "schema": "v27_worker_launch.v1",
+  "at": "2026-10-06T12:19:35.122723+00:00",
+  "protocol_id": "cb179148832b7de2496783fc74ec5a4a7de4466251d0b931279502d9796bdba4",
+  "scientific_protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "job": {
+    "key": "replication-train-seed137-c_only",
+    "script": "finqa_v25_training_replication.py",
+    "branch": "training_replication",
+    "args": [
+      "train",
+      "--seed",
+      "137",
+      "--arm",
+      "c_only"
+    ],
+    "dependencies": [
+      "replication-prefix-seed137"
+    ],
+    "kind": "arm",
+    "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/result/record.json",
+    "minimum_free_mib": 49152
+  },
+  "gpu": 3,
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "0-37,76-113",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+    "train",
+    "--seed",
+    "137",
+    "--arm",
+    "c_only",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+    "--gpu-index",
+    "3",
+    "--resume"
+  ],
+  "origin_attempt": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/execution_continuation_01/queue/jobs/replication-train-seed137-c_only/attempt001",
+  "previous_execution_attempt": null,
+  "explicit_same_run_checkpoint_resume": true,
+  "uncommitted_gradient_recomputation": true,
+  "no_feedback_resampling": true,
+  "no_additional_samples": true,
+  "execution_minimum_free_mib": 76800,
+  "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+  "pid": 153536,
+  "birth": "371357029",
+  "id": "3b9075588083eaea0cecae32983dc735d86194dc2f6b798a0981a6c52dd8fc36"
+}

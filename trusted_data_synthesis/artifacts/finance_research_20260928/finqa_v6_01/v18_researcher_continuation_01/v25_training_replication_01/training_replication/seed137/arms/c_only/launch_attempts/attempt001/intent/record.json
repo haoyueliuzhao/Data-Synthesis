@@ -1,0 +1,29 @@
+{
+  "admission": {
+    "disk": {
+      "each_worker_not_charged_full_budget_again": true,
+      "free_bytes": 662808838144,
+      "physical_reservation": false,
+      "remaining_required_bytes": 393859629056,
+      "replication_allocated_bytes": 35637100544,
+      "total_registered_budget_bytes": 429496729600
+    },
+    "gpu": {
+      "free": 81154,
+      "index": 7,
+      "processes": [],
+      "used": 0,
+      "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+    }
+  },
+  "arm": "C-only",
+  "at": "2026-10-06T10:04:46.682003+00:00",
+  "automatic_retry": false,
+  "explicit_resume": false,
+  "id": "88a37720d4ebd677bc559071578b6df1db8a73faf61e29a389123a461c86764c",
+  "no_GPU_placeholder": true,
+  "pid": 4143959,
+  "protocol_id": "2f4ae04413376f0109e8f5f4f905a7fe69549ae4aea4686907ef917e1ca85649",
+  "schema": "v25_fresh_replication_attempt.v1",
+  "seed": 137
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "v27_worker_launch.v1",
+  "at": "2026-10-06T12:19:35.334864+00:00",
+  "protocol_id": "cb179148832b7de2496783fc74ec5a4a7de4466251d0b931279502d9796bdba4",
+  "scientific_protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "job": {
+    "key": "replication-train-seed251-static",
+    "script": "finqa_v25_training_replication.py",
+    "branch": "training_replication",
+    "args": [
+      "train",
+      "--seed",
+      "251",
+      "--arm",
+      "static"
+    ],
+    "dependencies": [
+      "replication-prefix-seed251"
+    ],
+    "kind": "arm",
+    "result": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/static/result/record.json",
+    "minimum_free_mib": 49152
+  },
+  "gpu": 7,
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+    "train",
+    "--seed",
+    "251",
+    "--arm",
+    "static",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+    "--gpu-index",
+    "7"
+  ],
+  "origin_attempt": null,
+  "previous_execution_attempt": null,
+  "explicit_same_run_checkpoint_resume": false,
+  "uncommitted_gradient_recomputation": false,
+  "no_feedback_resampling": true,
+  "no_additional_samples": true,
+  "execution_minimum_free_mib": 49152,
+  "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+  "pid": 153550,
+  "birth": "371357051",
+  "id": "6c23b9eacf263834b42acf91f5e8977a19f8523bade2520d0a3d49b65b1466fc"
+}
