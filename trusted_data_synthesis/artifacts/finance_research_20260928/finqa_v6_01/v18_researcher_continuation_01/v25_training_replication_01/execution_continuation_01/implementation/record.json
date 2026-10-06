@@ -1,0 +1,10 @@
+{
+  "schema": "v26_frozen_execution_only_implementation.v1",
+  "source_commit": "764f9760a6d2065fa3be4a8850eb2e60043b91d0",
+  "sha256": {
+    "finqa_v26_execution_continuation.py": "734bd3eda928b8be6089f417308a5694fa5314d396ed4e8056097af36a32c1e8",
+    "finqa_v26_admission_proof.py": "fa6cbd9ab8d24af0e6a618d34d2ebbfd5c9c5bfb2be3962865d9c743f7ef7beb"
+  },
+  "at": "2026-10-06T07:01:56.254342+00:00",
+  "id": "ebe1b16cf25cbd5a2f3f5ee5540c40ce9037af5859b7a09d9f20cce37f87115a"
+}
