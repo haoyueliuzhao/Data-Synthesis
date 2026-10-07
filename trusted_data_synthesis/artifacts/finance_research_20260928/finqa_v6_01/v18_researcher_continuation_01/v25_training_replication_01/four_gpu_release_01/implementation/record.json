@@ -1,0 +1,15 @@
+{
+  "schema": "v29_frozen_retained_gpu_controller.v1",
+  "at": "2026-10-07T06:13:10.153466+00:00",
+  "source_commit": "fe43d4d0975b3dd1369a1706bbd6c385a74aad46",
+  "sha256": {
+    "finqa_v29_retained_gpu_controller.py": "29a551331f6b19f994f5ecb509600cc95dc79f3b858d3934fa4a2336b7c0fadc",
+    "finqa_v29_checkpoint_resume.py": "2d471d4d532c5162add06c40fb4414c52c5a4185f52d863d044ea24a35d9f52b"
+  },
+  "predecessor_implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/resource_recovery_02/implementation/record.json",
+    "sha256": "bb88a74084c58afea835662720ec4e8782076835bfb2a1070d57a2fb5061d5b2",
+    "id": "1395e827152317a76809a1c9913224ed70d9af9513718c7cb4ae566bd405932a"
+  },
+  "id": "addac94dd8513847087e919e1afeb55d9946a242b032b587c175a3dd412f5b9e"
+}

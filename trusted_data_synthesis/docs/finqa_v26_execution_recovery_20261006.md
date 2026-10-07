@@ -2,7 +2,7 @@
 
 2026年10月6日，用户明确要求“继续完成实验”。本次恢复原V25的24项固定工作，不新增模型、seed、题目或统计比较，不改科学实现、显存门槛和训练预算。原V25协议及其冻结worker保持不变，新的执行接续记录放在 `v25_training_replication_01/execution_continuation_01/`。
 
-后续状态：本队列于18:28遇到seed137 C-only训练中OOM，随后由[V27同运行恢复](finqa_v27_same_run_oom_recovery_20261006.md)接管；10月7日进一步转入[V28双模式资源恢复](finqa_v28_high_memory_recovery_20261007.md)，当前进度改读 `resource_recovery_02/queue/status.json`。本文下述启动状态、资源门槛及V26路径保留为当时记录，不代表最新运行状态。
+后续状态：本队列于18:28遇到seed137 C-only训练中OOM，随后经历[V27同运行恢复](finqa_v27_same_run_oom_recovery_20261006.md)与[V28双模式资源恢复](finqa_v28_high_memory_recovery_20261007.md)。10月7日让渡四卡后由[V29六卡上限接续](finqa_v29_six_gpu_release_20261007.md)接管，当前进度改读 `four_gpu_release_01/queue/status.json`。本文下述启动状态、资源门槛及V26路径保留为当时记录，不代表最新运行状态。
 
 ## 停止原因与已有进度
 

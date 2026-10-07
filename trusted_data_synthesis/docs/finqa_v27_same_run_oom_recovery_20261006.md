@@ -2,7 +2,7 @@
 
 2026年10月6日，seed137的C-only分支在首次outer的全类别梯度计算中发生CUDA显存溢出。用户随后要求“尝试恢复任务”。本次只恢复原V25实验：从该分支已经提交的step298状态接续，保留已完成结果及其他仍在运行的worker，不重置模型、Adam、随机状态或分布，不改变训练与评价预算。
 
-后续状态：10月7日seed137 C-only已完成首次outer，实际跨过本次OOM位置；但seed251 C-only在GPU5遇到另一次共卡OOM。用户授权的新[V28双模式显存与断点恢复](finqa_v28_high_memory_recovery_20261007.md)已接管，当前进度改读 `resource_recovery_02/queue/status.json`。本篇运行状态和V27路径保留为当时记录。
+后续状态：10月7日seed137 C-only已完成首次outer，实际跨过本次OOM位置；seed251的后续共卡OOM由[V28双模式显存与断点恢复](finqa_v28_high_memory_recovery_20261007.md)处理。同日让渡四卡后又转入[V29六卡上限接续](finqa_v29_six_gpu_release_20261007.md)，当前进度改读 `four_gpu_release_01/queue/status.json`。本篇运行状态和V27路径保留为当时记录。
 
 ## 失败事实
 

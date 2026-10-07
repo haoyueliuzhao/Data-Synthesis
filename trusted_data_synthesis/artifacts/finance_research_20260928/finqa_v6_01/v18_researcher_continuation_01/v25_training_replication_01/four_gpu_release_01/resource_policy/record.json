@@ -1,0 +1,23 @@
+{
+  "schema": "v29_six_gpu_followup_policy.v1",
+  "at": "2026-10-07T06:04:16.228242+00:00",
+  "release_ref": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/resource_release/record.json",
+    "sha256": "cc7952b3e97bffd802f6894edb6d34954c481eca0c0ca3fc7e98c6c4ce10a342",
+    "id": "2ab587a16a7503cc9098e50560f1b47b37dd8b95cae86e07a4e4a74357e17d66"
+  },
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_gpu_workers": 6,
+  "released_gpus_reusable_only_when_idle": true,
+  "explicit_followup_authority": "只要仍空闲即可重新使用，但总占卡不超过6张",
+  "id": "6a40e434db76620a33d066f6ae3939569297d5fdcfe156be8d274cf9b1bc9639"
+}

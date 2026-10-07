@@ -2,7 +2,7 @@
 
 本说明落实用户在2026年10月5日审计后提出的“参照审计修订并开展后续实验”，以及随后明确授权的“同意，清理完成后继续本轮实验”。旧V23已经完成，不恢复旧队列；本次分别登记既有C-only终点的test扩展和固定新seed的三臂从头训练复制，不再开展材料生产或搜索N参数。
 
-执行接续说明：原队列先按[V26执行层恢复](finqa_v26_execution_recovery_20261006.md)处理启动前显存拒绝，再按[V27同运行恢复](finqa_v27_same_run_oom_recovery_20261006.md)恢复seed137 C-only。10月7日用户进一步要求空卡高显存占用、共享卡断点续跑，已按[V28双模式资源恢复](finqa_v28_high_memory_recovery_20261007.md)接管并恢复seed251。全部科学合同、完成结果和失败历史保留；当前进度以 `resource_recovery_02/queue/status.json` 为准，前三个队列状态仅为历史。
+执行接续说明：原队列依次经历[V26启动前拒绝恢复](finqa_v26_execution_recovery_20261006.md)、[V27同运行恢复](finqa_v27_same_run_oom_recovery_20261006.md)和[V28双模式资源恢复](finqa_v28_high_memory_recovery_20261007.md)。10月7日13:59按用户要求让出四张卡，随后按[V29六卡上限](finqa_v29_six_gpu_release_20261007.md)继续；当前进度以 `four_gpu_release_01/queue/status.json` 为准。科学合同、完成结果及失败历史保留，旧队列状态仅为历史。
 
 ## 审计采纳与原轮收口
 
