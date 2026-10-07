@@ -1,0 +1,16 @@
+{
+  "schema": "v27_worker_exit.v1",
+  "at": "2026-10-06T19:39:32.515555+00:00",
+  "protocol_id": "cb179148832b7de2496783fc74ec5a4a7de4466251d0b931279502d9796bdba4",
+  "scientific_protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "key": "replication-train-seed251-c_only",
+  "exit_code": 1,
+  "completed": false,
+  "result": null,
+  "exit_code_source": "Popen_wait_status",
+  "explicit_same_run_checkpoint_resume": false,
+  "uncommitted_gradient_recomputation": false,
+  "no_feedback_resampling": true,
+  "no_additional_samples": true,
+  "id": "86d571b14e3c513fdafb7d97f367cb25270438c34d3752854c5570fbe97ead27"
+}

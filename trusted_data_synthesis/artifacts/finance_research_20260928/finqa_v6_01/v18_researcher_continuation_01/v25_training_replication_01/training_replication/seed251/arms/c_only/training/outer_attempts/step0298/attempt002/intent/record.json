@@ -1,0 +1,17 @@
+{
+  "CPU_control_only": false,
+  "arm": "C-only",
+  "at": "2026-10-07T02:21:20.015031+00:00",
+  "automatic_resampling": false,
+  "context_or_denominator_changed": false,
+  "formal_experiment_not_pilot": true,
+  "id": "2e4985f9e73490d0be8e9a2858df7f7b13bf4b184487133326a68cd4932a6faa",
+  "last_committed_training_step": 298,
+  "optimizer_steps_in_outer": 0,
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "registered_denominator": 700,
+  "schedule_sha256": "7a7fe11354d02c3d358830e988e5ea2e87e5078c4b7b3598644286f57e860b72",
+  "schema": "first_formal_outer_intent.v1",
+  "seed": 251,
+  "step": 298
+}

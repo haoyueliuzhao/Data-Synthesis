@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-06T19:39:24.054680+00:00",
+  "error": "CUDA out of memory. Tried to allocate 104.00 MiB. GPU 0 has a total capacity of 79.25 GiB of which 91.38 MiB is free. Process 652697 has 24.79 GiB memory in use. Including non-PyTorch memory, this process has 54.36 GiB memory in use. Of the allocated memory 51.68 GiB is allocated by PyTorch, and 2.13 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+  "error_type": "OutOfMemoryError",
+  "id": "de62e39dbe4b32d4b97064f37d198a844dadbf0511f8490b1dd733fbfb64f7b9",
+  "outer_audit_write_error": null,
+  "outer_failure_audit": {
+    "id": "5d9c540e6f8e8558b38ad5388fb44d667db0839c5ea6950eab4c0802de76bd7b",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/outer_attempts/step0298/attempt001/failure/record.json",
+    "sha256": "50ff3b7187e9d5233c17481cc804e3f5166557739a9739013786da5f17a4dd5e"
+  },
+  "partial_feedback_resampled": false,
+  "recovery": "explicit resume from durable same-run model/Adam/RNG/pi only",
+  "retry_performed": false
+}

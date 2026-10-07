@@ -57,6 +57,16 @@ seed251 C-only于03:15:20在GPU5启动，03:39:32退出。错误同样位于 `cl
 
 ## 验证与部署
 
-恢复证明已通过真实CPU状态核验，且对seed137已提交首outer的700个历史episode和封存摘要进行了完整性核验。交接、双模式显存、控制器及自动断点证明的152项CPU集成测试全部通过，用时7.52秒；没有为测试调用GPU模型或外部API。交接工具的真实只读预检确认8项完成、2个可接管worker，没有发送信号。实际显存预留效果仍须由正式GPU7 worker的回执确认，不能仅以CPU测试推定成功。
+恢复证明已通过真实CPU状态核验，且对seed137已提交首outer的700个历史episode和封存摘要进行了完整性核验。交接、双模式显存、控制器及自动断点证明的152项CPU集成测试全部通过，用时7.52秒，十份代码与测试Ruff通过；没有为测试调用GPU模型或外部API。交接工具的真实只读预检确认8项完成、2个可接管worker，没有发送信号。
+
+10:18:56完成控制器交接，只终止旧控制器151980；GPU3的C-only137进程153536、GPU4的Full137进程4155711均原样保留。10:19:10登记新协议 `e9b3dbd1673780ba0d53474ea1271c47ae2b27cfa91c66ef1b9c5de0380baa46`，四份执行实现冻结自源码提交 `a849f1d5266f039971819985ab26acbd78e72642`。10:19:35启动独立后台控制器1176918。
+
+10:20观察时，新队列已经在GPU7派发C-only251的 `high_cache --resume`（PID1177149），并在非空闲GPU5派发Static137终点评价的 `shared_checkpointed`（PID1177171）。这验证了并非“只有空卡才运行”；原两项训练也继续执行。队列为8项完成、4项运行、12项待派发，无新失败。
+
+10:20:22的正式预留回执显示，PyTorch reserved为76 GiB、allocated为0，临时Tensor已释放。10:20:50原模型加载完成，reserved为76.012 GiB、allocated为14.195 GiB，无需第二次补足，说明模型已实际复用预留缓存，并非模型外还永久占着76 GiB。10:21:20写出step298第二次outer的类别梯度阶段记录；10:21:32设备观察为GPU7已使用78483 MiB（约76.64 GiB）、空闲2671 MiB、利用率100%，只有该恢复worker使用GPU7。
+
+10:23:11封存观察确认原两worker身份不变、seed251原step298 Tensor文件SHA不变。seed137 C-only已到step478、完成1次outer；Full仍在step596、完成1次outer；seed251正在重算首次outer；GPU5上的Static137新test已完成10/1147条。该时点无新失败，但seed251恢复后的首次outer尚未完成，不能提前宣称整个实验或该outer已经成功结束。
+
+当前进度入口为 `resource_recovery_02/queue/status.json`，最终完整完成回执为该目录的 `result/record.json`。旧V25、V26、V27状态均为历史记录。
 
 相关说明：[原V25实验](finqa_v25_c_only_extension_and_seed_replication_20261006.md)、[V27同运行恢复](finqa_v27_same_run_oom_recovery_20261006.md)。

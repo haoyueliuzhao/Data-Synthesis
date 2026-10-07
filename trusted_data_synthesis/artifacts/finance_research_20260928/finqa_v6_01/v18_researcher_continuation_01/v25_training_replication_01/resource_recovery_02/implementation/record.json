@@ -1,0 +1,12 @@
+{
+  "schema": "v28_frozen_same_run_recovery.v1",
+  "at": "2026-10-07T02:19:08.546706+00:00",
+  "source_commit": "a849f1d5266f039971819985ab26acbd78e72642",
+  "sha256": {
+    "finqa_v28_execution_recovery.py": "eaffacfcbdf6a0193d684fd91ddc30705f9a95d01006e3e008aa89fb3797ed1c",
+    "finqa_v28_resume_proof.py": "c6e04cfdb247ea9edbd8c73c9c5a40379da547c24cb4659b5f040e13b14dcfc5",
+    "finqa_v28_memory_worker.py": "91d0665292e5f35e5e11a04e7c2d287a9f3891feb4caab86863358eea3407d19",
+    "finqa_v28_checkpoint_resume.py": "41eaf97c7aa31a5bcc7150bbb39d4d61e448bb17bdc1868b7741239d7ac050d5"
+  },
+  "id": "1395e827152317a76809a1c9913224ed70d9af9513718c7cb4ae566bd405932a"
+}

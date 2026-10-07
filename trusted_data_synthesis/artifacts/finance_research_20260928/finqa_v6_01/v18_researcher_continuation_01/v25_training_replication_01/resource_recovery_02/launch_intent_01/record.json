@@ -1,0 +1,30 @@
+{
+  "schema": "v28_queue_launch_intent.v1",
+  "at": "2026-10-07T02:19:35.224790+00:00",
+  "protocol_id": "e9b3dbd1673780ba0d53474ea1271c47ae2b27cfa91c66ef1b9c5de0380baa46",
+  "scientific_protocol_id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/resource_recovery_02/implementation/finqa_v28_execution_recovery.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/resource_recovery_02"
+  ],
+  "handoff": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/resource_recovery_02/handoff/record.json",
+    "sha256": "cad3844e273d68ed1e356e2946c3cfb35ae987795ec1df4f11a14c4efde3532d",
+    "id": "81cb282b5162fee6392e02ed49d1f95c5e00218de4b3770bd727d56d71afdde0"
+  },
+  "memory_policy": {
+    "idle_mode": "high_cache",
+    "idle_minimum_free_mib": 80000,
+    "idle_requires_no_compute_processes": true,
+    "non_idle_mode": "shared_checkpointed",
+    "shared_preserves_original_training_step_checkpoints": true,
+    "partial_feedback_never_resampled_for_recovery": true,
+    "unproven_computational_failure_stops_dispatch": true
+  },
+  "API_calls": 0,
+  "id": "8102f0de5557d76511c94466e3880c5ae31b954a195158b376d059d74a51976b"
+}
