@@ -1,0 +1,19 @@
+{
+  "schema": "v28_same_process_memory_reservation.v1",
+  "at": "2026-10-08T02:27:47.095888+00:00",
+  "stage": "reservation_intent",
+  "pid": 2642715,
+  "gpu_before": {
+    "gpu_index": 5,
+    "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "total_mib": 81920,
+    "free_mib": 81154,
+    "compute_processes": []
+  },
+  "reservation_bytes": 81604378624,
+  "original_GPU_admission_completed": true,
+  "RNG_calls": 0,
+  "tensor_is_temporary_and_cache_is_reusable": true,
+  "hardware_compute_exclusive": false,
+  "id": "2aba14cf9057fa28a6a49af2ea0aa2c9af4e53112c1a80ea8031ff80567bc2bf"
+}

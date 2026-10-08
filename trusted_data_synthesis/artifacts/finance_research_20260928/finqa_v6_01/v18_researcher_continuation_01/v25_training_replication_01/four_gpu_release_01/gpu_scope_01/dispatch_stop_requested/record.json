@@ -1,0 +1,11 @@
+{
+  "schema": "v30_dispatch_stop_requested.v1",
+  "at": "2026-10-08T14:29:41.763720+00:00",
+  "intent_id": "ad27e0998c99b0e43c878eaa8cf8e79e4cf30d9014223bcf1a136a59de3cc940",
+  "pid": 1410417,
+  "birth": "377802709",
+  "signal": "SIGTERM",
+  "semantics": "registered controller handler stops dispatch and drains without worker signals",
+  "no_worker_signals": true,
+  "id": "92e6c0f8386d915de29d706be875d7a56518e854d801105b4fe20d9fa23ec0aa"
+}

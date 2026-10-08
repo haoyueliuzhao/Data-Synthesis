@@ -1,0 +1,28 @@
+{
+  "schema": "v28_same_process_memory_reservation.v1",
+  "at": "2026-10-08T02:27:47.929760+00:00",
+  "stage": "reserved",
+  "pid": 2642715,
+  "gpu_after": {
+    "gpu_index": 5,
+    "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "total_mib": 81920,
+    "free_mib": 2907,
+    "compute_processes": [
+      {
+        "pid": 2642715,
+        "used_mib": 78238
+      }
+    ]
+  },
+  "reservation_bytes": 81604378624,
+  "torch_memory_reserved_bytes": 81604378624,
+  "torch_memory_allocated_bytes": 0,
+  "reservation_tensor_retained": false,
+  "separate_placeholder_process": false,
+  "cache_can_be_reused_by_original_model": true,
+  "hardware_compute_exclusive": false,
+  "does_not_guarantee_future_foreign_process_exclusion": true,
+  "allocator_can_release_cache_if_required": true,
+  "id": "e468476442cac6c531c5277745ae3177a1a4ced7f9dbc8b56bd1cf645294d874"
+}

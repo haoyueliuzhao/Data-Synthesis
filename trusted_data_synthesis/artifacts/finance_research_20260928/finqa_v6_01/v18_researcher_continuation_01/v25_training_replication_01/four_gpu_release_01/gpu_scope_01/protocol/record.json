@@ -1,0 +1,53 @@
+{
+  "schema": "v30_four_gpu_scope_supplement.v1",
+  "at": "2026-10-08T14:37:58.874502+00:00",
+  "user_authority": "2026-10-08：约束任务只在这四张卡上运行；当前四卡为 GPU3、4、5、7",
+  "implementation_id": "b1e979391b7eaabdc9630a619f6d295e41dfab6cd4bb039a41ed34dc82fe32fd",
+  "predecessor_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/protocol/record.json",
+    "sha256": "7e6bc852f58f578c38e1960ce1cd5c9dcd86f1dddce8034bb580a07b63aaeca2",
+    "id": "ca31f1b0117777f3c7c697daa5e101da1cffa6a03893a11f87fc11fa6fd449b5"
+  },
+  "predecessor_resource_policy": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/resource_policy/record.json",
+    "sha256": "c5a8a118a136abb848ae830cd553647e5b07629bf70379969bd0b89610a12e33",
+    "id": "6a40e434db76620a33d066f6ae3939569297d5fdcfe156be8d274cf9b1bc9639"
+  },
+  "scientific_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/protocol/record.json",
+    "sha256": "202eb6973064502d64ca0b4e08e470924615e620aa8c9bd12517e819fef06c35",
+    "id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45"
+  },
+  "queue_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01",
+  "allowed_gpu_indices": [
+    3,
+    4,
+    5,
+    7
+  ],
+  "allowed_gpu_uuids": {
+    "3": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+    "4": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+  },
+  "excluded_gpu_indices": [
+    0,
+    1,
+    2,
+    6
+  ],
+  "max_gpu_workers": 4,
+  "excluded_gpus_reusable_when_idle": false,
+  "scope_applies_to_current_and_future_workers_and_all_resume_paths": true,
+  "cpu_initializing_workers_count_toward_limit": true,
+  "predecessor_scientific_protocol_and_attempts_unchanged": true,
+  "workers_adopted_without_signals_or_restarts": true,
+  "memory_and_checkpoint_recovery_policy_unchanged": true,
+  "no_feedback_resampling": true,
+  "no_additional_samples": true,
+  "API_calls": 0,
+  "api_model": "deepseek-flash",
+  "model_fallback": false,
+  "id": "6fe38d91648ae3519ffbe043c094d9a515dd7d88503c06d36eafa96a2a918cce"
+}
