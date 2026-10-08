@@ -1,0 +1,22 @@
+{
+  "schema": "v31_memory_preserving_hold.v1",
+  "at": "2026-10-08T14:57:20.997533+00:00",
+  "intent": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/experiment_pause_01/memory_hold_intent/record.json",
+    "sha256": "b28fcfc39c50c4b11983519ecd42bec78099ef21e8b456b59e941bc22f61da94",
+    "id": "f94ee8951be4850e5cfb29feb528704e692db7d98af0ed35d4c952211720a9cc"
+  },
+  "process_states": {
+    "3523214": "T",
+    "153536": "T",
+    "4155711": "T",
+    "1177149": "T",
+    "2642715": "T"
+  },
+  "all_target_pid_birth_unchanged": true,
+  "process_memory_preserved": true,
+  "GPU_memory_not_yet_released": true,
+  "no_worker_termination": true,
+  "checkpoint_audit_pending": true,
+  "id": "81ea7cb18ff5ba46f7146b928b10c8b14827d34eea40c431e7e224a167e5ab71"
+}

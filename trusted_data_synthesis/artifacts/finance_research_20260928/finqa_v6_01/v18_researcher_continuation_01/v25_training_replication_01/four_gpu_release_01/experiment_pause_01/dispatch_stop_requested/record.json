@@ -1,0 +1,15 @@
+{
+  "schema": "v31_experiment_pause_dispatch_stop_requested.v1",
+  "at": "2026-10-08T14:54:29.690801+00:00",
+  "intent": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/experiment_pause_01/dispatch_stop_intent/record.json",
+    "sha256": "63dab3fe5dfeb0c07b9968144be529c1ca14f329e623ce9b4ddb0b4b01aa462c",
+    "id": "07e3d135a965b8b32d0009d0f48f19bf1ba96d9943c299203c6ea12442144e69"
+  },
+  "controller_pid": 3523214,
+  "birth": "389522242",
+  "signal": "SIGTERM",
+  "registered_handler_stops_dispatch_only": true,
+  "worker_signals_sent": 0,
+  "id": "12caf2d34e31305f0bd75e607c630f55b9f1ab1bc1d006fdd155fac1e8627bf4"
+}

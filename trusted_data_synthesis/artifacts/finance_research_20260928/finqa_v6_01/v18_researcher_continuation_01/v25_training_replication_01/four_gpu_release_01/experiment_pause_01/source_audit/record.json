@@ -1,0 +1,460 @@
+{
+  "schema": "v31_pause_static_source_audit.v1",
+  "at": "2026-10-08T15:05:12.874225+00:00",
+  "scope": "Current V25 fresh-seed replication, frozen V18; source-only administrative-pause audit.",
+  "sources": {
+    "worker": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+      "sha256": "6be6b697e1517cb87ceb5fc8e33bad73d7affef6e9d9cc8685e88724f019fa05"
+    },
+    "wrapper": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/resource_recovery_02/implementation/finqa_v28_memory_worker.py",
+      "sha256": "91d0665292e5f35e5e11a04e7c2d287a9f3891feb4caab86863358eea3407d19"
+    },
+    "driver": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/v8_training_driver.py",
+      "sha256": "cc5d18faa9af8121926e684d5d8f6a0e6eecacb3b4e725441487f73230c87b4d"
+    },
+    "feedback": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/feedback.py",
+      "sha256": "832318845e8490328486c045b6af1d10015b06e8b42305f7abb16e813b2247ad"
+    },
+    "launcher": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/v9_training_launcher.py",
+      "sha256": "06f2a5d11b9d422103a89398af0de9ff8a38e4978e8281f93a89b9763f217dea"
+    },
+    "arms": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/v16_arm_training.py",
+      "sha256": "4fc19b1f6a241a45e9e3377a41a69631f37e31c28fb452542e5a435a5a6e3086"
+    },
+    "kernel": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/kernel.py",
+      "sha256": "8939c8a73afebf6fbc34f3eb7d29a058f6f7c9a2e53ecb5d495e895a6870e666"
+    },
+    "adam": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/experiments/finance_qa_vnext_anchored_vtdo/optimizer_pullback.py",
+      "sha256": "3cc151c79559e07048c7e0d476a2b26da96fc9454bf99807de02a0f723bca38b"
+    },
+    "atomic": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/core/immutable_artifacts.py",
+      "sha256": "b34f3e04372409fa2ab1e393ba2eaa08088e5705a176736f121b3809908a4c39"
+    },
+    "replay": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/scripts/fixed_kernel_anchored_segmented_replay_20260916.py",
+      "sha256": "e1a3386d199a7b3c000961aea42ed79d2669c1faef9bc195e2ca498db9548997"
+    },
+    "storage": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/scripts/fixed_kernel_anchored_saved_tensors_20260916.py",
+      "sha256": "cb5bc457f97beadd27d712ba94c084ac5ba98f75e66394ec651bac748badb2dc"
+    },
+    "bank": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/scripts/fixed_kernel_anchored_canonical_saves_20260916.py",
+      "sha256": "bae5d77ab7fa71f85a9587b26783a0e72c84cd79d55a1cedb194428cac281aa8"
+    },
+    "v19_replay": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v19_optimized_replay.py",
+      "sha256": "611f5c3607d6bba1f2ed78bbe3fb18b1fe9d9d5779759be7e2e4f3abd260bd5e"
+    },
+    "v19_state": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v19_replay_state.py",
+      "sha256": "823859877873d4db0d7a03ef1a442fe17825ec6a3bad153174899e776adc7264"
+    }
+  },
+  "method": {
+    "raw_episode_answer_files_opened": false,
+    "native_reward_files_opened": false,
+    "GPU_calls": 0,
+    "API_calls": 0,
+    "benchmarks_started": 0,
+    "execution_code_modified": false,
+    "V19_deployed_this_turn": false,
+    "runtime_profile_performed": false
+  },
+  "performance_facts": [
+    {
+      "key": "actual_backend",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "worker",
+          "line_start": 28,
+          "line_end": 87
+        },
+        {
+          "source": "worker",
+          "line_start": 690,
+          "line_end": 736
+        },
+        {
+          "source": "feedback",
+          "line_start": 166,
+          "line_end": 183
+        },
+        {
+          "source": "wrapper",
+          "line_start": 240,
+          "line_end": 267
+        }
+      ],
+      "statement": "V25 loads frozen V18 and default frozen segmented_logp. V28 hooks model loading/cache reservation, not replay. This execution path does not install V19."
+    },
+    {
+      "key": "serial_responses_and_tokens",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "feedback",
+          "line_start": 221,
+          "line_end": 283
+        },
+        {
+          "source": "replay",
+          "line_start": 124,
+          "line_end": 171
+        },
+        {
+          "source": "replay",
+          "line_start": 197,
+          "line_end": 234
+        }
+      ],
+      "statement": "Sequential positive-reward episode/turn replay, batch-one cached token-at-a-time model calls. Zero rewards retain the 700 denominator but skip derivatives. Response count differs from trajectory count. It is not whole-prefix recomputation at every token."
+    },
+    {
+      "key": "fixed8_recomputation",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "replay",
+          "line_start": 179,
+          "line_end": 234
+        },
+        {
+          "source": "replay",
+          "line_start": 271,
+          "line_end": 331
+        },
+        {
+          "source": "replay",
+          "line_start": 47,
+          "line_end": 109
+        }
+      ],
+      "statement": "Default block8: no-grad cached forward, reverse block recompute/VJP, second prompt prefill and checkpoint backward layer recomputation. prefill_forward_passes=2 does not include the extra per-layer backward recompute."
+    },
+    {
+      "key": "KV_round_trips",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "replay",
+          "line_start": 34,
+          "line_end": 43
+        },
+        {
+          "source": "replay",
+          "line_start": 152,
+          "line_end": 170
+        },
+        {
+          "source": "replay",
+          "line_start": 197,
+          "line_end": 210
+        }
+      ],
+      "statement": "Final complete KV is copied GPU to CPU per response; each reverse block copies a growing prefix CPU to GPU. For prompt P, output T, B=ceil((T-1)/8), boundary copies total B*P+4*B*(B-1) token-equivalents per KV field. This is a symbolic count, not measured PCIe bytes."
+    },
+    {
+      "key": "offload_and_bookkeeping",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "storage",
+          "line_start": 61,
+          "line_end": 91
+        },
+        {
+          "source": "storage",
+          "line_start": 141,
+          "line_end": 173
+        },
+        {
+          "source": "storage",
+          "line_start": 199,
+          "line_end": 228
+        },
+        {
+          "source": "replay",
+          "line_start": 197,
+          "line_end": 206
+        },
+        {
+          "source": "replay",
+          "line_start": 86,
+          "line_end": 101
+        }
+      ],
+      "statement": "Non-frozen saved tensors use save_on_cpu. Every reverse block and nested prefill-recompute store scans owners, starts/stops a /proc memory monitoring thread and runs save/unpack bookkeeping. Event.set wakes the monitor: the 0.25-second sampling interval is NOT a fixed per-block delay."
+    },
+    {
+      "key": "bank_and_synchronization",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "replay",
+          "line_start": 197,
+          "line_end": 205
+        },
+        {
+          "source": "bank",
+          "line_start": 15,
+          "line_end": 49
+        },
+        {
+          "source": "replay",
+          "line_start": 184,
+          "line_end": 189
+        },
+        {
+          "source": "replay",
+          "line_start": 219,
+          "line_end": 224
+        },
+        {
+          "source": "replay",
+          "line_start": 305,
+          "line_end": 308
+        },
+        {
+          "source": "feedback",
+          "line_start": 250,
+          "line_end": 264
+        }
+      ],
+      "statement": "Frozen contiguous-layout bank is response-local, not reused across a virtual point. Per-block allclose and per-response per-parameter bool(isfinite) extract device results to host; the registered model has 112 trainable tensors."
+    },
+    {
+      "key": "class_gradient_population",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 489,
+          "line_end": 544
+        },
+        {
+          "source": "adam",
+          "line_start": 411,
+          "line_end": 496
+        },
+        {
+          "source": "kernel",
+          "line_start": 53,
+          "line_end": 65
+        }
+      ],
+      "statement": "Class gradients iterate full packages/rows with row-level autograd.grad and parameter-gradient CPU copies. _DeviceGradients access copies each state back to GPU. Aggregate validation traverses states with per-tensor checks, G is recomputed after feedback, and centered contributions again validates plus double().sum().item() per state/tensor. Registered 1360 states x112 tensors yields 152320 scalar extraction sites in the contribution dot loop, not timing attribution."
+    },
+    {
+      "key": "not_seven_class_JVP",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "kernel",
+          "line_start": 19,
+          "line_end": 27
+        },
+        {
+          "source": "kernel",
+          "line_start": 53,
+          "line_end": 65
+        },
+        {
+          "source": "adam",
+          "line_start": 290,
+          "line_end": 390
+        }
+      ],
+      "statement": "Optimizer pullback is analytic clip-aware AdamW, not seven-class JVP. 7B is model parameter scale, not number of gradient classes."
+    },
+    {
+      "key": "checkpoint_IO",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 1125,
+          "line_end": 1178
+        },
+        {
+          "source": "driver",
+          "line_start": 1284,
+          "line_end": 1315
+        },
+        {
+          "source": "atomic",
+          "line_start": 15,
+          "line_end": 58
+        }
+      ],
+      "statement": "Every SFT step captures full model/Adam/RNG/pi, serializes and hashes it, then fsyncs immutable checkpoint files. Timing share is not measured."
+    }
+  ],
+  "recovery_facts": [
+    {
+      "key": "durable_state",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 1125,
+          "line_end": 1239
+        },
+        {
+          "source": "atomic",
+          "line_start": 15,
+          "line_end": 58
+        },
+        {
+          "source": "launcher",
+          "line_start": 330,
+          "line_end": 350
+        }
+      ],
+      "statement": "Full committed model/buffers/Adam/RNG/pi/schedule/outer_done published atomically. Latest checkpoint uses step and phase priority, outer wins at equal step; path lexicographic sort is not authoritative."
+    },
+    {
+      "key": "no_partial_gJ_checkpoint",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 1349,
+          "line_end": 1467
+        }
+      ],
+      "statement": "G/prepared point/partial gJ are not saved mid-outer. Cold pause loses only uncommitted computation when current feedback is sealed; replay must recompute it from committed pre-outer state."
+    },
+    {
+      "key": "sealed_feedback_reuse",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 53,
+          "line_end": 58
+        },
+        {
+          "source": "driver",
+          "line_start": 597,
+          "line_end": 666
+        },
+        {
+          "source": "driver",
+          "line_start": 713,
+          "line_end": 731
+        },
+        {
+          "source": "driver",
+          "line_start": 470,
+          "line_end": 485
+        },
+        {
+          "source": "arms",
+          "line_start": 68,
+          "line_end": 76
+        }
+      ],
+      "statement": "Both draw seals plus identical intent allow existing sealed episodes without prepare_run/execute_run; cohort/native publication verifies byte identity. installed_point restores mode, parameters and RNG. Partial feedback rejects ordinary resume."
+    },
+    {
+      "key": "future_same_point_guard",
+      "evidence_type": "static_source_fact",
+      "sources": [
+        {
+          "source": "driver",
+          "line_start": 1360,
+          "line_end": 1378
+        },
+        {
+          "source": "driver",
+          "line_start": 599,
+          "line_end": 656
+        }
+      ],
+      "statement": "point_id derives from recomputed G/theta/buffers/Adam/RNG/pi. Numerical mismatch can create a new root and enter generation. Future resume of sealed uncommitted outer must explicitly require original point_id and forbid creation of a new feedback root; --resume alone is not that guard."
+    }
+  ],
+  "hypotheses_not_established": [
+    "Transfers, batch-one launches, Python/storage bookkeeping and synchronization plausibly contribute to long replay; their shares require a profiler.",
+    "Approximately eight hours per outer must be evidenced by separate artifact timestamps, not inferred from source.",
+    "No dominant-bottleneck, percent time, PCIe bandwidth, CPU saturation, disk bottleneck, thermal contention, or measured speedup claim follows from this static audit.",
+    "High GPU utilization does not by itself prove arithmetic saturation."
+  ],
+  "future_candidate_priority": [
+    {
+      "priority": 1,
+      "category": "recoverability_without_intended_scientific_change",
+      "candidate": "Same-point hard guard and response-boundary accumulated-gJ checkpoints binding cohort/parameter/RNG/order.",
+      "benefit": "Limit lost work and prevent resampling; not measured steady-state acceleration.",
+      "sources": [
+        {
+          "source": "v19_state",
+          "line_start": 31,
+          "line_end": 118
+        }
+      ]
+    },
+    {
+      "priority": 2,
+      "category": "storage_and_bookkeeping_without_intended_arithmetic_change",
+      "candidate": "Reuse fixed-point layout/owner bank; move telemetry from blocks to responses; maintain version checks.",
+      "sources": [
+        {
+          "source": "v19_replay",
+          "line_start": 53,
+          "line_end": 188
+        }
+      ],
+      "required": "Real CUDA same-point logP/gradient exactness and no-regression/memory admission."
+    },
+    {
+      "priority": 3,
+      "category": "storage_without_intended_arithmetic_change",
+      "candidate": "Keep complete KV on device plus bounded independent saved-KV copies; retain block8/token/order.",
+      "sources": [
+        {
+          "source": "v19_replay",
+          "line_start": 110,
+          "line_end": 138
+        },
+        {
+          "source": "v19_replay",
+          "line_start": 190,
+          "line_end": 210
+        }
+      ],
+      "required": "Representative lengths, actual peak memory and performance validation; no current gain claimed."
+    },
+    {
+      "priority": 4,
+      "category": "execution_change_with_possible_numerical_change",
+      "candidate": "Batch/vmap responses or rows; larger blocks; changed accumulation; fused/compiled kernels/precision.",
+      "required": "Dedicated numerical-equivalence review and new execution identity, not silent continuation."
+    },
+    {
+      "priority": 5,
+      "category": "scientific_protocol_change",
+      "candidate": "Reduce feedback denominator/outer count/context/tokens, detach prefix derivative, approximate gradients, skip positive responses or share feedback across arms.",
+      "required": "Explicit new protocol and user decision; not a pure performance fix."
+    }
+  ],
+  "V19_status": {
+    "existing_candidate_code": true,
+    "current_V25_backend_uses_V19": false,
+    "current_round_speedup_measured": false,
+    "historical_V19_validation_outcome_not_reaudited_here": true
+  },
+  "source_only_audit_complete": true,
+  "id": "a18a2840ccc50c53774a40ed97312e5163e8ea4ba9bfa11e8869a69eedfd565d"
+}
