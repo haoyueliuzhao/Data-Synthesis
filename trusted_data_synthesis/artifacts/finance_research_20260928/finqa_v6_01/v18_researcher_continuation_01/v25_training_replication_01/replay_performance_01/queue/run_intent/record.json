@@ -1,0 +1,9 @@
+{
+  "schema": "v32_bounded_controller_intent.v1",
+  "at": "2026-10-09T01:00:20.232410+00:00",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "pid": 3990707,
+  "birth": "393201535",
+  "no_automatic_controller_restart": true,
+  "id": "622e6bbbd7153a61d9f4d725ba4846db76c2a93e90da55b2272f9d6208541869"
+}

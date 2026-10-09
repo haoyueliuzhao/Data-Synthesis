@@ -114,4 +114,8 @@ R2的saved-KV预算为2GiB，完整KV另设8GiB准入界限；完整KV、冻结�
 
 新实验根目录为 `v25_training_replication_01/replay_performance_01/`，原B队列仍位于 `four_gpu_release_01/`。实现先提交，再从已提交字节冻结到新根的 `implementation/`；协议、审计请求、同点manifest和运行记录分开保存。原始模型Tensor、回放Tensor、profile大trace、动态日志及CPU测试夹具不提交Git。
 
-首次资源检查时四张白名单设备均有其他任务，每卡仅余约4.6GiB，未达到准入门槛。实际冻结登记与启动观察将在部署后追加；在GPU准入前不得写入加速比或完整回放通过结论。
+首次资源检查时四张白名单设备均有其他任务，每卡仅余约4.6GiB，未达到准入门槛。之后GPU3自然空闲，通过无compute进程、至少72GiB空闲及UUID双重核验。
+
+实现从提交 `6377503523` 冻结，协议ID为 `abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b`。10月9日09:00:20启动独立控制器PID3990707（birth393201535），随后派发GPU3上的R0 worker PID3990722（birth393201575）；观察时为 `RUNNING`，已有真实CUDA模型加载占用，但没有性能验收结果。原B状态仍为 `PAUSED_BY_USER_CHECKPOINT_SAVED`。
+
+协议与固定manifest位于 `protocol/`、`manifests/`，启动记录位于 `launch_01/`，首次状态快照位于 `observation_01/`。后续以独立 `queue/status.json` 和各stage的 `result/record.json` 为准；该首次运行观察不代表R0/R1/R2梯度一致、20%提速门或完整cohort已经通过。任何终态也不自动恢复原B。

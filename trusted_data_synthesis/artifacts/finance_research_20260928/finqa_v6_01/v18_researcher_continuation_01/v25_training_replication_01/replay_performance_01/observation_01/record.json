@@ -1,0 +1,42 @@
+{
+  "schema": "v32_bounded_performance_launch_observation.v1",
+  "at": "2026-10-09T01:00:20.681332+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/protocol/record.json",
+    "sha256": "114318d951fbba712cb4290fc36ff31ca03ec3c330ffb41d1955f27e65e176fa",
+    "id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b"
+  },
+  "launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/launch_01/record.json",
+    "sha256": "cbf823e697403f1206d445493b6ca5f5c3c0ce62f1989918810148c89a4efe7c",
+    "id": "5926f2a523a8adcd5d73a0b597b806bda059b699eb7ae5622d150c3140ac6bce"
+  },
+  "status_snapshot": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/observation_01/snapshot/queue/status.json",
+    "sha256": "7cd6947218ffe548eccf9c0dbebf3b97b516f592676a9ae47ec7c08c048ff145"
+  },
+  "phase": "RUNNING",
+  "active_child": {
+    "stage": "micro_R0",
+    "pid": 3990722,
+    "birth": "393201575",
+    "gpu_index": 3,
+    "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a"
+  },
+  "original_B_queue_status": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/queue/status.json",
+    "sha256": "3043fe0337ec77ee52f5412a375fb4ebe349d1638bdd2431d518ff0e17c07cc3"
+  },
+  "original_B_still_paused": true,
+  "allowed_gpu_indices": [
+    3,
+    4,
+    5,
+    7
+  ],
+  "max_gpu_workers": 1,
+  "performance_results_available": false,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "id": "e0afb86526445075d66ec81309fe8ce1456f832ca4b6924cca2608a228ee2d0e"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "v32_CPU_integration_validation.v1",
+  "at": "2026-10-09T01:03:09.271993+00:00",
+  "source_commit": "6377503523df972c4cc08faf6d3d789b499c0728",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/protocol/record.json",
+    "sha256": "114318d951fbba712cb4290fc36ff31ca03ec3c330ffb41d1955f27e65e176fa",
+    "id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b"
+  },
+  "new_module_tests_passed": 97,
+  "elapsed_seconds": 6.47,
+  "files": [
+    "test_finance_v32_same_point_guard.py",
+    "test_finance_v32_replay_variants.py",
+    "test_finance_v32_performance_controller.py",
+    "test_finance_v32_performance_worker.py"
+  ],
+  "CUDA_VISIBLE_DEVICES": "",
+  "frozen_V18_pythonpath": true,
+  "temporary_artifacts_root": "trusted_data_synthesis/artifacts/test_tmp",
+  "ruff_8_new_files_passed": true,
+  "CPU_tests_are_not_GPU_numeric_or_speed_evidence": true,
+  "actual_manifest_verification": {
+    "fixed_points": 4,
+    "registered_episode_bytes_per_point": 700,
+    "original_experiment_files_changed": false,
+    "CUDA_initialized": false
+  },
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "id": "45916462acdda84c7db4615f347267f7c26326d765947b4b979fa2805ec70393"
+}

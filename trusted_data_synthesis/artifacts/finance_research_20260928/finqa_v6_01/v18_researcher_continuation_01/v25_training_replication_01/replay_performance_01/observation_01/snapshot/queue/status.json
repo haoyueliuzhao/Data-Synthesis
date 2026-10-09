@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-09T01:00:20.579066+00:00",
+  "phase": "RUNNING",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "resource_wait_seconds": 0.34167878376320004,
+  "active_child": {
+    "stage": "micro_R0",
+    "pid": 3990722,
+    "birth": "393201575",
+    "gpu_index": 3,
+    "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a"
+  },
+  "original_B_resume_authorized": false,
+  "stage": "micro_R0"
+}
