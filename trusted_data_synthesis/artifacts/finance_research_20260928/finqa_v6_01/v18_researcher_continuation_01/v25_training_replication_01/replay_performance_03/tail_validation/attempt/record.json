@@ -1,0 +1,16 @@
+{
+  "schema": "v34_tail_attempt.v1",
+  "at": "2026-10-09T16:00:41.164401+00:00",
+  "protocol_id": "480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46",
+  "stage": "tail_validation",
+  "pid": 592774,
+  "gpu_index": 7,
+  "original_B_resume_authorized": false,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "optimizer_steps": 0,
+  "replayed_responses": 0,
+  "automatic_retry": false,
+  "id": "efa59265ab804ba6dbeec22af8889cc45969eae866253034c640b127e8b67dd8"
+}

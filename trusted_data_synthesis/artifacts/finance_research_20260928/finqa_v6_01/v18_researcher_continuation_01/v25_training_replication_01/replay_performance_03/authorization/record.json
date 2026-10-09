@@ -1,0 +1,15 @@
+{
+  "schema": "v34_explicit_tail_supplement_authorization.v1",
+  "user_date": "2026-10-09",
+  "user_question": "是否授权另行登记一次末段显存修订与补验：复用已保存梯度，不重采样、不重放573条、不放宽显存门，原 B 仍暂停？",
+  "user_answer": "授权",
+  "response_annotation_index": 1,
+  "authorization_scope": "one tail-memory revision and supplemental validation using saved response573 gJ; no sampling, no response replay, unchanged memory gates; original B stays paused",
+  "original_B_resume_authorized": false,
+  "prior_closed_trial": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/closeout_01/record.json",
+    "sha256": "a19a84129a2498894f8aebaf9579cec9fd7f5ccbbd42cab16966e96ccd25c1f0",
+    "id": "1b410399abc5e0d3425dd9344474ef2cbca8434cbe3e413450487b9e45c562c4"
+  },
+  "id": "7f83db78da8fd94e1622e3e599bc35e61b0098636937a8ba4342a902588c5d8f"
+}

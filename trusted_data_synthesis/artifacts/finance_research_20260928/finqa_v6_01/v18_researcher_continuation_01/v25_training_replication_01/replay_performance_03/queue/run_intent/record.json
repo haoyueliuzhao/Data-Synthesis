@@ -1,0 +1,9 @@
+{
+  "schema": "v34_bounded_tail_controller_intent.v1",
+  "at": "2026-10-09T16:00:17.754328+00:00",
+  "protocol_id": "480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46",
+  "pid": 592539,
+  "birth": "398601281",
+  "no_automatic_controller_restart": true,
+  "id": "629379e02be2801d657dec81a660ce8d6689e201c498afafec48459b9d34dece"
+}

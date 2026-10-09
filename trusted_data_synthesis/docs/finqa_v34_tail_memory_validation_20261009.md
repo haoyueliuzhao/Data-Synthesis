@@ -4,6 +4,8 @@
 
 本说明按授权日期命名；实际协议冻结、启动、观察和结果的时间以各封存记录为准，用户可见时间统一按北京时间解释。当前登记的是一次有界补验，不预先声称显存修订有效或CUDA数值验收通过。V33的 `STOPPED_FAILURE_NO_RETRY` 终态、原协议和失败记录始终保留。
 
+北京时间10月10日00:00启动独立控制器及GPU7 worker。00:03:39封存观察时为 `RUNNING`，已记录14个类梯度行完成后的资源门通过；尚无本轮最终G、C、π数值比较或完整资源验收结果。额外空闲GPU使用许可已记录，实际仍为GPU7单worker。
+
 ## 前序事实与本轮问题
 
 [V33实测报告](finqa_v33_bounded_activation_residency_20261009.md)记录了同一物理GPU7上的新鲜R0与R3四例配对。正式回放总时间分别为197.85328842327秒和143.8003437584266秒，加速比为1.3758888417933697，超过1.20倍工程准入门，逐例logP和全部梯度逐位相等。随后完成response16实际冷恢复及573条response回放，最终累计梯度已经保存。
@@ -93,6 +95,8 @@ V33在独立类梯度及C、π复算后的最终资源门抛出 `observed CUDA m
 
 V34固定使用V33实际运行的同一物理GPU7，UUID为 `GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434`。虽然项目白名单为GPU3、4、5、7，本轮不会切换到其他卡；GPU0、1、2、6始终不参与。派发前要求GPU7没有compute进程且至少72GiB空闲，并在启动时再次核验设备身份及准入。
 
+协议冻结后，用户进一步表示“本轮实验可以占用额外的空闲显卡”。这扩大了可讨论的资源使用范围，不增加本轮唯一class pass或response预算。当前原类梯度按固定顺序累加，尚无已登记且验证等价的多卡拆分路径，因此实际执行保持上述GPU7单worker方案，未派发额外GPU；新许可单独保存在 `resource_authorization_01/record.json`，不改写本轮冻结协议或恢复原B。
+
 累计等待资源最多24小时，唯一GPU阶段最多4小时，安全退出宽限最多10分钟。这些值是停止上限，不是耗时预测。资源不足时只等待原卡，不驱逐其他作业，不尝试占位缓存，不调低输入规模。
 
 超时或停止请求仅针对本轮已核验PID、birth和命令的worker处理。先请求在安全边界退出，宽限结束仍未退出才终止该worker；不触碰其他项目或账户进程。已有run intent或attempt不得重复启动，任一数值、资源、输入绑定、源代码绑定或阶段失败都停止本轮，不自动retry、fallback或创建第四轮目录。
@@ -102,3 +106,13 @@ V34固定使用V33实际运行的同一物理GPU7，UUID为 `GPU-ab6e97cc-19e4-6
 本轮新增实现为[布局保持存储后端](../scripts/finqa_v34_tail_memory.py)、[单次补验控制器](../scripts/finqa_v34_tail_controller.py)和[末段worker](../scripts/finqa_v34_tail_worker.py)。联合CPU/mock测试163项通过，用时6.60秒，包括存储52项、控制器76项、worker35项；六个Python实现和测试文件的Ruff检查通过。检查覆盖非连续及带offset张量的值和布局、真实小型class pass逐位等价、保存对象和CPU副本释放、输入变异拒绝、资源实值与峰值不可清零、末门失败仍保留实际C与π，以及无回放或真实更新入口。这些检查不是V34 GPU通过结论；仍须冻结已提交源码并执行上述唯一GPU阶段。正式启动、资源等待和结果以V34根目录中的不可变协议、launch、阶段证据及结果记录为准，不把设计条款当成已经执行的事实。
 
 本轮文档后续只追加其自身实施和实测状态；V33原终态与失败证据不回写。原B继续暂停。
+
+## 冻结实现与首次运行观察
+
+实现从提交 `da7d16072b9880aeaa60309d9a4e8f590142b27f` 冻结；新协议ID为 `480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46`。冻结后又在独立CPU进程核验实际依赖导入路径、response573 tensor与原gJ内容摘要一致、RNG与绑定有效，CUDA未初始化；证据为 `CPU_validation/record.json`，ID为 `0dc6385c639187f07ab73a8c00321c7b1a5793470b82209daf05547740aab3c9`。
+
+北京时间10月10日00:00:17启动控制器PID592539、birth398601281；00:00:38派发GPU7 worker PID592774、birth398603361。GPU7启动观察无其他compute进程且空闲81,154MiB，满足登记门槛。模型加载和原pre-state恢复完成后，于00:01:39记录历史allocated峰值约14.214GiB、设备空闲约64.550GiB，两项门均通过。
+
+00:03:39核验控制器和worker的PID及birth仍存活，队列为 `RUNNING`。封存的 `event000018` 记录已完成14个类梯度行，历史allocated峰值约15.136GiB、设备空闲约61.507GiB，资源门通过。这只是早期固定时点的进展，不能外推后续最长输入峰值、完整耗时、最终数值相等或整轮成功。观察记录为 `observation_01/record.json`，ID为 `afd612e23fe97fb7bff52c69a84e467ef165a951ed392a9935b00bcfca66cad0`；包含当时队列及资源快照。
+
+目前本实验只有一个GPU worker，无新增response回放、API、采样、评分或真实optimizer更新。后续应查看新根的 `queue/status.json`、`tail_validation/resources/`、独立 `numeric_comparison/record.json` 和最终 `result/record.json`，不得以本次启动观察代替终态验收。

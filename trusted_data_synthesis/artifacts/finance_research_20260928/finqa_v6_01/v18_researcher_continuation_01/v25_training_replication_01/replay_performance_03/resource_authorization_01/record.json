@@ -1,0 +1,13 @@
+{
+  "schema": "v34_additional_idle_GPU_permission_not_execution_change.v1",
+  "at": "2026-10-09T15:59:56.765186+00:00",
+  "user_statement": "本轮实验可以占用额外的空闲显卡",
+  "permission_only_no_additional_class_passes_or_response_replay": true,
+  "frozen_execution_plan_unchanged": true,
+  "actual_registered_gpu_index": 7,
+  "registered_max_workers": 1,
+  "additional_GPUs_dispatched": 0,
+  "reason": "single original ordered class-gradient pass; no validated multi-GPU decomposition registered",
+  "original_B_resume_authorized": false,
+  "id": "67cd2d76925d9dac398dd939d31ac1891ea5fc0f5361eb7ee6f6da29eebca9de"
+}
