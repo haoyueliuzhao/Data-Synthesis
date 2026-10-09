@@ -1,0 +1,11 @@
+{
+  "schema": "v32_bounded_performance_failure.v1",
+  "at": "2026-10-09T10:28:45.883514+00:00",
+  "protocol_id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a",
+  "error_type": "ValueError",
+  "error": "stage failed/stopped/timed out; no retry, fallback or further dispatch",
+  "no_automatic_retry": true,
+  "no_implicit_fallback": true,
+  "original_B_resume_authorized": false,
+  "id": "c1c6ccb4012e0325cab24b13bfa5ae44aa30619bdc71256e3332b2c806e9403c"
+}

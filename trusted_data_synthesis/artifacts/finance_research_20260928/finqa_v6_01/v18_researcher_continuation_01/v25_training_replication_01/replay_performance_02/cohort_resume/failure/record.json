@@ -1,0 +1,25 @@
+{
+  "schema": "v32_bounded_performance_failure.v1",
+  "at": "2026-10-09T10:28:36.872394+00:00",
+  "protocol_id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a",
+  "stage": "cohort_resume",
+  "error_type": "ValueError",
+  "error": "observed CUDA memory envelope exceeded",
+  "resources": {
+    "sampling_interval_seconds": 1,
+    "sample_count": 24664,
+    "sampled_max_device_used_bytes": 84975550464,
+    "sampled_max_GPU_utilization_percent": 100,
+    "sampled_mean_GPU_utilization_percent": 71.13055465455724,
+    "process_peak_RSS_bytes": 18758582272,
+    "device_peak_is_sampled_not_continuous": true,
+    "sampler_errors": []
+  },
+  "automatic_retry": false,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "optimizer_steps": 0,
+  "API_calls": 0,
+  "original_B_still_paused": true,
+  "id": "14137f9f962b35f6eb12ed8f8d13e97cd9e05373a6c18f651aa6d0d4e9616856"
+}

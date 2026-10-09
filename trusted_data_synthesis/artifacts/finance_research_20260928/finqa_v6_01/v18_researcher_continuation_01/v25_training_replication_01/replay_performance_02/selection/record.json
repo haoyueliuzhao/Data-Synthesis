@@ -1,0 +1,19 @@
+{
+  "schema": "v32_preregistered_backend_selection.v1",
+  "at": "2026-10-09T02:40:34.705277+00:00",
+  "protocol_id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a",
+  "selected_variant": "R3",
+  "unprofiled_seconds": {
+    "R0": 197.85328842327,
+    "R3": 143.8003437584266
+  },
+  "eligible_variants": [
+    "R3"
+  ],
+  "minimum_speedup": 1.2,
+  "speedup_vs_paired_R0": 1.3758888417933697,
+  "fresh_R0_baseline": true,
+  "prior_trial_timings_used": false,
+  "selection_is_not_formal_B_resume_authority": true,
+  "id": "80f8d9a56f7f0a7ca9d6548b09b2d7aa88c18a5f2fd0caf5902b1591d82faa93"
+}

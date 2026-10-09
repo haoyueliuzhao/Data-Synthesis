@@ -1,6 +1,6 @@
 # FinQA有界激活驻留性能对照设计与验收
 
-2026年10月9日，用户在获知V32未达到吞吐准入门后明确选择“另行登记一次有界优化对照”。本次V33只验证一个新候选R3：在原R2存储路径上增加有界的非KV保存激活GPU驻留，以新鲜R0为对照；不恢复原B训练，不采样、不重评分、不执行真实Student更新。实现已提交并冻结，独立CPU控制器于北京时间10:02:01启动；10:02:53封存观察为 `WAITING_FOR_IDLE_GPU`，尚未派发GPU worker，没有本轮GPU计时、逐位对照或完整cohort通过结果。
+2026年10月9日，用户在获知V32未达到吞吐准入门后明确选择“另行登记一次有界优化对照”。本次V33只验证一个新候选R3：在原R2存储路径上增加有界的非KV保存激活GPU驻留，以新鲜R0为对照；不恢复原B训练，不采样、不重评分、不执行真实Student更新。当前终态为 `STOPPED_FAILURE_NO_RETRY`：GPU7上的四例配对取得1.375889倍加速并通过逐位数值门，随后完成实际response16冷恢复及573条response回放，但独立类梯度与C、π复算后的最终显存验收失败，整轮未通过。北京时间23:16:43的收口核验确认控制器和四个阶段worker均已退出，原B继续暂停，未启动重试或新实验。
 
 V32的终态仍为 `STOPPED_NO_MATERIAL_SPEEDUP`。其R0、R1、R2四例非profiler总时间分别为202.795533375、198.502805174、180.998226056秒，最快R2为1.120428倍，未达到原1.20倍门槛。本轮不改写该结论、旧协议或旧阶段记录，也不把旧R0时间作为新候选的计时分母。完整前序结果见[V32收口报告](finqa_v32_bounded_replay_performance_20261009.md)。
 
@@ -108,4 +108,55 @@ worker继承V32测量、逐位比较、计时和实际恢复流程，只对已�
 
 10月9日10:02:01，独立CPU控制器PID4082504、birth393571678启动，启动记录位于 `launch_01/record.json`。10:02:53观察核验该PID及birth仍存活，队列为 `WAITING_FOR_IDLE_GPU`、待执行 `micro_R0`、active child为空。快照中GPU3、4、5、7空闲量依次为53,421、47,561、53,461、49,765MiB，且各有已有compute进程，不满足无compute进程且至少73,728MiB空闲的准入条件。本实验GPU worker为0，未选定配对GPU UUID；GPU0、1、2、6虽为空闲，仍不允许使用。观察封存在 `observation_01/record.json`，包含当时完整队列快照，不将动态队列文件当成不可变结果。
 
-资源条件满足后，控制器只在白名单上派发一个worker，按登记的R0、R3及条件性完整验收顺序执行；累计等待达到24小时仍无准入资源则停止。当前API、新采样、评分及optimizer更新均为0，原B继续 `PAUSED_BY_USER_CHECKPOINT_SAVED`。后续应以新根的实时 `queue/status.json`、逐stage `result/record.json` 及选择记录为准；等待状态不表示GPU对照已经开始或性能准入已经通过。
+上述10:02:53观察是启动初期的历史快照，不是当前状态。其后控制器按登记顺序在同一物理GPU7执行R0、R3及条件性完整验收，最终按资源失败规则停止。以下实测收口保留微观通过项、真实恢复与完整回放事实，同时区分最终验收失败及尚需另行授权的后续工作。
+
+## 微观配对实测结果
+
+本轮R0和R3均使用物理GPU7，UUID为 `GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434`。R0于北京时间10:36:23完成，R3于10:40:29完成；每个版本各有1次预热、4次正式既有response回放，没有新profile。逐例结果如下，秒数来自各例非profiler回放墙钟。
+
+| 固定案例 | 新R0秒 | R3秒 | 新R0除以R3 |
+| --- | ---: | ---: | ---: |
+| 短prompt长output | 56.374714 | 42.456082 | 1.327836倍 |
+| 短prompt短output | 37.660111 | 28.649979 | 1.314490倍 |
+| 长prompt长output | 56.030031 | 39.155711 | 1.430954倍 |
+| 长prompt短output | 47.788432 | 33.538572 | 1.424880倍 |
+| 四例总和 | 197.853288 | 143.800344 | 1.375889倍 |
+
+正式选择使用总时间比 `197.85328842327 / 143.8003437584266 = 1.3758888417933697`，对应回放耗时减少27.3197%，超过预登记的1.20倍门槛。`selection/record.json` 于10:40:34选定R3，未使用V32旧计时。四例的logP及全部梯度均逐位相等，shape、dtype、key一致；每例状态未变，两个阶段的模型、optimizer、RNG和buffers核验均通过。以上是固定四例的实测工程准入，不是统计显著性检验，也不是完整训练吞吐或任务效果的结论。
+
+| 固定案例 | R0 allocated峰值GiB | R3 allocated峰值GiB | R0 reserved峰值GiB | R3 reserved峰值GiB |
+| --- | ---: | ---: | ---: | ---: |
+| 短prompt长output | 42.459 | 31.179 | 42.889 | 33.352 |
+| 短prompt短output | 42.289 | 30.594 | 42.889 | 33.352 |
+| 长prompt长output | 42.490 | 33.179 | 43.904 | 35.703 |
+| 长prompt短output | 43.034 | 33.354 | 43.904 | 37.320 |
+
+R3四例的非KV保存激活live峰值最大为2,920,647,128字节，即约2.720GiB，预算外CPU分流次数均为0；每例结束后的live字节和数量均归零。登记的16GiB是该存储分支的上限，不是实际驻留量，更不是模型总显存上限。R0和R3整阶段每秒采样的设备占用峰值分别为44.4834GiB和37.8818GiB；它们与表中的PyTorch allocated、reserved口径不同，也不代表连续设备峰值。本次观测不能推出增加激活驻留会对所有输入降低总显存。
+
+证据位于本轮根目录下的 `micro_R0/result/record.json`、`micro_R3/result/record.json`、各阶段 `cases/case00` 至 `case03/record.json` 及 `selection/record.json`。两个微观阶段的API、新采样、评分及optimizer steps均为0。
+
+## 实际冷恢复与完整回放结果
+
+`cohort_first/result/record.json` 于北京时间10:51:05记录 `PAUSED_AT_REGISTERED_BOUNDARY`，在第16个完整response提交累计梯度并退出。回放墙钟为568.384823秒，包含point context和checkpoint写入；整个阶段为627.131047秒。该阶段allocated、reserved峰值分别约33.365GiB、38.471GiB。response16断点ID为 `2894490629c8bb4a8bee48fff72dbe88c5e82c03799bffbcd80d92ebd399b8de`，不是在第二进程中从0重新计算后模拟出的恢复点。
+
+第二个冷进程仍在同一GPU7运行。封存的最终progress记录明确为 `restored_completed_responses=16`，随后继续剩余557条；于北京时间16:48:35完成573/573条response并提交 `response000573` 断点。完整回放对应87,586个输出token、175,172个cached forward target positions，跳过原372条零奖励轨迹，分母仍为700。恢复进程记录的回放时间为21,377.271240秒，含35次checkpoint提交，checkpoint写入累计2.061898秒。
+
+这建立了登记response16的实际冷恢复和完整response回放证据，但 `complete_replay=true` 仅表示回放阶段完成，不等于其后的独立G、虚拟参数点、pullback、C、π及资源总验收通过。完整回放证据位于 `cohort_replay/checkpoints/progress/status.json`、`cohort_replay/checkpoints/response000573/record.json`，最终progress快照另封存在 `closeout_01/record.json`，避免将动态progress文件本身作为唯一不可变证据。
+
+## 最终资源验收失败
+
+573条response回放后，worker继续执行登记的独立class-gradients重建以及G、虚拟参数点、pullback、C和π复算。北京时间18:28:36，`cohort_resume` 在冻结的 `implementation/finqa_v32_performance_worker.py` 第663行调用最终资源检查时抛出 `ValueError: observed CUDA memory envelope exceeded`。控制器于18:28:45记录 `STOPPED_FAILURE_NO_RETRY`，不再派发后续任务；累计资源等待为1,763.726141秒。该终态不是吞吐门失败，也不是反馈效用失败。
+
+冻结控制流中的第662行先要求全部最终数值比较成立，第663行才调用资源检查。结合实际traceback，可以判定执行已越过gJ、聚合G、虚拟参数点、pullback、C、π及模型、optimizer、RNG、buffers的比较条件；这属于冻结控制流与异常位置提供的证据。由于异常发生在成功结果落盘之前，最终比较字典没有独立序列化，`cohort_resume/result/record.json` 不存在，因此不能把这一事实记为独立成功结果或整轮验收通过。
+
+最终资源合同同时要求PyTorch allocated峰值不超过76GiB、设备空闲量至少2GiB，但失败时这两个具体读数未被保存，现有记录不能区分究竟是哪一项或两项同时触发。失败阶段按秒采样的设备占用峰值为84,975,550,464字节，即约79.13965GiB；这是设备占用的采样峰值，不是PyTorch allocated峰值，也不是失败瞬间的空闲量，不能将其直接写成“allocated超过76GiB”的证据。现有数据同样不足以把资源失败归因到某一类张量的存储或生命周期。
+
+错误、采样资源与调用位置分别保留在 `cohort_resume/failure/record.json`、`cohort_resume/worker.log` 和冻结worker源码；控制器终止记录为 `failure/record.json`。本轮的 `full_validation_pass` 为false，原始失败分类和阶段产物均不改写。
+
+## CPU封存核验与当前边界
+
+北京时间23:16:43完成的CPU只读收口核验加载最终10,189,983字节checkpoint及原outer数据，核对state文件SHA256、语义摘要、绑定和RNG；CUDA未初始化。最终累计gJ与原实际gJ的逐位内容摘要相等，二者均为 `a75897647fccc988d55edb8e03d7b2bce29d40688390aabbb80d9df41f32c5e5`。这一核验进一步确认已封存的573条累计结果可追溯，并不替代失败的GPU资源门或补写最终C、π成功记录。
+
+收口同时按原登记PID和birth核验控制器及四个阶段worker均已退出，GPU worker数为0；API、新采样、评分与真实optimizer更新均为0。原B仍为 `PAUSED_BY_USER_CHECKPOINT_SAVED`，没有恢复授权。不可变收口记录为 `closeout_01/record.json`，ID为 `1b410399abc5e0d3425dd9344474ef2cbca8434cbe3e413450487b9e45c562c4`。
+
+如继续推进，建议另行明确登记一次末段显存修订与独立验收：复用已经核验的最终gJ，不重采样、不重评分、不重做573条response，不放宽原显存门，限定修改和复算范围并保留本轮失败记录。该新增补验范围尚待明确授权，建议尚未实施；不启动重试、下一轮优化或原B训练。
