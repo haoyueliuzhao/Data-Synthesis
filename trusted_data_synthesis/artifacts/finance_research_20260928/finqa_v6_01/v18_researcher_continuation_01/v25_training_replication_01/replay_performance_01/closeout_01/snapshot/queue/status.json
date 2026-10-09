@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-09T01:28:21.308343+00:00",
+  "phase": "STOPPED_NO_MATERIAL_SPEEDUP",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "resource_wait_seconds": 1.029804889112711,
+  "active_child": null,
+  "original_B_resume_authorized": false,
+  "numeric_pass": true,
+  "full_cohort_validation_complete": false
+}

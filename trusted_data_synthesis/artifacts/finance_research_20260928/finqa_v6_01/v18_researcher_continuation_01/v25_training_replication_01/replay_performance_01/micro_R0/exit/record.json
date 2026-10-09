@@ -1,0 +1,11 @@
+{
+  "schema": "v32_bounded_stage_exit.v1",
+  "at": "2026-10-09T01:18:20.592031+00:00",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "stage": "micro_R0",
+  "returncode": 0,
+  "timed_out": false,
+  "stop_requested": false,
+  "no_retry": true,
+  "id": "a7356b233e769e0f7326706b283b1eb3a0c1ebe819ccd07f04b827ef046b8446"
+}

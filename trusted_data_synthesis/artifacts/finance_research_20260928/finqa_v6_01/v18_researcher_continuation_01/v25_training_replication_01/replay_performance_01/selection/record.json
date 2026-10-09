@@ -1,0 +1,16 @@
+{
+  "schema": "v32_preregistered_backend_selection.v1",
+  "at": "2026-10-09T01:28:21.307049+00:00",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "selected_variant": null,
+  "unprofiled_seconds": {
+    "R0": 202.7955333753489,
+    "R1": 198.5028051743284,
+    "R2": 180.99822605587542
+  },
+  "eligible_variants": [],
+  "minimum_speedup": 1.2,
+  "R2_minimum_extra_speedup": 1.05,
+  "selection_is_not_formal_B_resume_authority": true,
+  "id": "30ca2ee82733dc8087a65e9c2f2775b10579329e133aa3ffccdf6c15281b05a5"
+}

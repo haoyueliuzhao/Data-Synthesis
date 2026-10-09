@@ -1,0 +1,15 @@
+{
+  "schema": "v32_performance_worker_attempt.v1",
+  "at": "2026-10-09T01:18:23.811982+00:00",
+  "protocol_id": "abb414f05f29c6386042a309100f9dc4d47d3c360736de78ea8e3c497a6e858b",
+  "stage": "micro_R1",
+  "pid": 4009249,
+  "gpu_index": 3,
+  "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+  "original_B_resume_authorized": false,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "optimizer_steps": 0,
+  "id": "ce6617884406b13f1ed6babbbfab443f4b9b33a09b570861765314390b4680ed"
+}
