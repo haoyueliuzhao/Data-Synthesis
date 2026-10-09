@@ -1,0 +1,52 @@
+{
+  "schema": "v33_cpu_frozen_integration_validation.v1",
+  "at": "2026-10-09T02:01:40.308793+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/protocol/record.json",
+    "sha256": "868b5636ec022f61fe406fc88940a679222ac96f19cb874803af46f4be594fca",
+    "id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a"
+  },
+  "source_commit": "99d849e235609453d73f8e09b67a0506372deb99",
+  "combined_pytest_passed": 155,
+  "combined_pytest_seconds": 10.3,
+  "test_counts": {
+    "activation_backend": 52,
+    "controller": 42,
+    "worker": 9,
+    "inherited_controller": 52
+  },
+  "ruff_six_new_python_files_passed": true,
+  "frozen_module_origins": {
+    "finqa_v33_performance_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v33_performance_worker.py",
+    "finqa_v33_bounded_controller": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v33_bounded_controller.py",
+    "finqa_v32_same_point_guard": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v32_same_point_guard.py",
+    "finqa_v33_activation_residency": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v33_activation_residency.py",
+    "finqa_v32_replay_variants": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v32_replay_variants.py",
+    "finqa_v19_optimized_replay": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v19_optimized_replay.py",
+    "fixed_kernel_anchored_segmented_replay_20260916": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/fixed_kernel_anchored_segmented_replay_20260916.py",
+    "fixed_kernel_anchored_canonical_saves_20260916": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/fixed_kernel_anchored_canonical_saves_20260916.py",
+    "fixed_kernel_anchored_saved_tensors_20260916": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/fixed_kernel_anchored_saved_tensors_20260916.py"
+  },
+  "CUDA_initialized": false,
+  "accumulation_bytecode_inherited": true,
+  "backend_version_binding": "v33_r2_independent_nonkv_activation_residency.v1",
+  "execution_adapter": {
+    "source": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/implementation/finqa_v32_performance_worker.py",
+      "sha256": "d8774cd9b8c5a679dc0658f3fa49876b2abb287476ea75a731c573d801ace237"
+    },
+    "adaptations": {
+      "controller_import": 1,
+      "stage_allowlist": 1,
+      "cohort_variant": 1,
+      "disable_profile": 1,
+      "zero_profile_count": 1
+    }
+  },
+  "original_B_still_paused": true,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "GPU_performance_validation": false,
+  "full_cohort_validation_complete": false,
+  "id": "578480e8a084e7cc787e503e502ad5a3c86345a8e2f714f5a02d28333dccc2fe"
+}

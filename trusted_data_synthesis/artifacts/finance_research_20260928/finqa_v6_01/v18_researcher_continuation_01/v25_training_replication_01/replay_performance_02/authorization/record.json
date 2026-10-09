@@ -1,0 +1,19 @@
+{
+  "schema": "v33_explicit_followup_authorization.v1",
+  "user_date": "2026-10-09",
+  "user_question": "R2实测为1.120倍，未达到原1.20倍准入门槛。你希望另行登记一次针对同步与数据搬运的有界优化对照（原B仍暂停），还是仅封存结果、保持全部暂停？",
+  "user_answer": "另行登记一次有界优化对照",
+  "authorization_scope": "one R0/R3 zero-new-sampling contrast; original B remains paused",
+  "original_B_resume_authorized": false,
+  "original_audit_request": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/audit_request/record.json",
+    "sha256": "a0f800285794cce52b441a080ac0740d5020508e9e1f7f39dd6ff305cb797c8a",
+    "id": "cd1a59aef3b9ba2de6c8391d40c530295fb5a9b7203ca7bd9c7f8917921adf58"
+  },
+  "prior_closed_trial": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/closeout_01/record.json",
+    "sha256": "6df771ef18c29d1003c5656aefb09d0e0dac8d9ac397c92ed057357567a50639",
+    "id": "04b6c8885911096a9a3f77161d69bde50e7d13a640bb296f5cfb66bea67e0c1b"
+  },
+  "id": "aac80acdc1b7eee6691fc2c956d795da2a5f748712df0c0b2b8a91797de4f505"
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "v33_bounded_performance_launch_observation.v1",
+  "at": "2026-10-09T02:02:53.005497+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/protocol/record.json",
+    "sha256": "868b5636ec022f61fe406fc88940a679222ac96f19cb874803af46f4be594fca",
+    "id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a"
+  },
+  "launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_02/launch_01/record.json",
+    "sha256": "95e5983be5317f86c3eaa6f44cf4e3d7736f6bae9586272e516c4b1720d21021",
+    "id": "a5c170796b7bf1813c2e06cb04d8d43eef0ff4b7f6728183e7d877682a989687"
+  },
+  "controller_birth_verified": true,
+  "status_snapshot": {
+    "at": "2026-10-09T02:02:52.711026+00:00",
+    "phase": "WAITING_FOR_IDLE_GPU",
+    "protocol_id": "7ad6c31cff714508e137f2d6b50797b34aa56172e6387f568614c760af96c68a",
+    "resource_wait_seconds": 50.87299319123849,
+    "active_child": null,
+    "original_B_resume_authorized": false,
+    "waiting_stage": "micro_R0",
+    "gpu_observation": [
+      {
+        "index": 0,
+        "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "total_mib": 81920,
+        "used_mib": 0,
+        "free_mib": 81154,
+        "processes": []
+      },
+      {
+        "index": 1,
+        "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+        "total_mib": 81920,
+        "used_mib": 0,
+        "free_mib": 81154,
+        "processes": []
+      },
+      {
+        "index": 2,
+        "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "total_mib": 81920,
+        "used_mib": 0,
+        "free_mib": 81154,
+        "processes": []
+      },
+      {
+        "index": 3,
+        "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "total_mib": 81920,
+        "used_mib": 27733,
+        "free_mib": 53421,
+        "processes": [
+          {
+            "pid": 4067028,
+            "used_memory_mib": "27724"
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "total_mib": 81920,
+        "used_mib": 33593,
+        "free_mib": 47561,
+        "processes": [
+          {
+            "pid": 4067029,
+            "used_memory_mib": "33584"
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+        "total_mib": 81920,
+        "used_mib": 27693,
+        "free_mib": 53461,
+        "processes": [
+          {
+            "pid": 4067030,
+            "used_memory_mib": "27684"
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+        "total_mib": 81920,
+        "used_mib": 0,
+        "free_mib": 81154,
+        "processes": []
+      },
+      {
+        "index": 7,
+        "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+        "total_mib": 81920,
+        "used_mib": 31389,
+        "free_mib": 49765,
+        "processes": [
+          {
+            "pid": 4067031,
+            "used_memory_mib": "31380"
+          }
+        ]
+      }
+    ]
+  },
+  "status_snapshot_source_sha256": "28cf09cb849eecadc1ca9ba2c7774a997cf0c3709c21da0fb07ca4e213e07235",
+  "original_B_queue_status": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/queue/status.json",
+    "sha256": "3043fe0337ec77ee52f5412a375fb4ebe349d1638bdd2431d518ff0e17c07cc3"
+  },
+  "original_B_still_paused": true,
+  "allowed_gpu_indices": [
+    3,
+    4,
+    5,
+    7
+  ],
+  "max_GPU_workers": 1,
+  "active_GPU_workers_at_snapshot": 0,
+  "performance_results_available": false,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "optimizer_steps": 0,
+  "id": "474646eda0694912ab2950452bcb65d8f3a393bcdebd44ab66adfa138441b0ca"
+}
