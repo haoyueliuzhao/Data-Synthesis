@@ -1,0 +1,15 @@
+{
+  "schema": "v37_supplied_audit.v1",
+  "at": "2026-10-10T07:11:35.305191+00:00",
+  "source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/audit/source.txt",
+    "sha256": "1e6d3e2d555200c694371fd22e269175f79616ce458819311a621949ae9b3659"
+  },
+  "original_attachment": {
+    "path": "/home/zhuxinrui/.codex/attachments/08acbd89-e289-4bba-84e6-171504257744/已粘贴的文本.txt",
+    "sha256": "1e6d3e2d555200c694371fd22e269175f79616ce458819311a621949ae9b3659"
+  },
+  "linked_zip_or_standalone_report_provided": false,
+  "external_audit_calculations_are_not_local_GPU_results": true,
+  "id": "788f5833a7966f52571c1bd4a4c39afc75754cc0ccbc7203f130f99fb0a00406"
+}
