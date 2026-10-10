@@ -1,0 +1,9 @@
+{
+  "date_local": "2026-10-10",
+  "first_prepare": "Refused at the fixed rebuildable_caches count before plan publication or source removal",
+  "cause": "Standard source_from_cache does not parse pytest bytecode tags containing dotted pytest versions",
+  "correction": "Added a strictly matched module.cpython-NNN-pytest-X.Y.Z.pyc fallback mapped to the existing canonical sibling module.py",
+  "expected_cache_count_and_bytes_not_changed": true,
+  "source_missing_bytecode_still_excluded": true,
+  "no_deletion_or_old_plan_execution_occurred": true
+}

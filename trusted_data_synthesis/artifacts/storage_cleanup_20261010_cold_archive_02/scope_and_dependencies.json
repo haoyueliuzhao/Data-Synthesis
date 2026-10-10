@@ -1,0 +1,44 @@
+{
+  "date_local": "2026-10-10",
+  "user_request": "继续审计数据构成，清理或者压缩历史数据",
+  "operation": "Fixed-scope lossless archival using an unchanged hash-pinned engine; all content verified before unlink",
+  "retired_review_inputs": {
+    "scope": ["review_revision_01/inputs", "review_revision_02/inputs", "review_revision_03/slot_inputs", "v12_rereview_01/requests"],
+    "relative_to": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01",
+    "counts": [1000, 1000, 1000, 11438],
+    "allocated_bytes": [489566208, 603983872, 2109407232, 1861259264],
+    "history": "R1/R2 capacity-format blocked with twelve reviews each, R3 technical-gate blocked, no training; V12_01 superseded before dispatch with zero model calls and wallet registrations; actual authority uses V12_02",
+    "direct_references_absent_in_checked_key_registrations": 13,
+    "preserve": "Registrations, status, gate, reviews/jobs, definition, preparation and superseded records"
+  },
+  "legacy_QA": {
+    "four_database_files_allocated_bytes": 1820987392,
+    "old_B_budget_intent_JSON_files": 89148,
+    "old_B_intent_allocated_bytes": 365150208,
+    "old_B_intent_logical_bytes": 22303533,
+    "main_V18_V25_V37_no_direct_candidate_artifact_references_found": true,
+    "old_task_build_SQLite_are_real_recovery_databases_not_disposable_mock_data": true,
+    "databases_archived_as_bytes_without_opening_or_rewriting": true,
+    "future_old_workflows_must_restore_first": true
+  },
+  "vtdo_small_text": {
+    "regular_untracked_JSON_or_JSONL": 14904,
+    "allocated_bytes": 1253564416,
+    "all_current_candidates_smaller_than_1_MiB": true,
+    "exclude_relative_path_matching_case_insensitive": "report|manifest|index",
+    "preserve_entire_beneficiary_adapter": true
+  },
+  "rebuildable_caches": {
+    "raw_tool_caches_and_source_backed_pyc_files": 441,
+    "raw_allocated_bytes": 21254144,
+    "trusted_tool_caches_and_source_backed_pyc_files": 3194,
+    "trusted_allocated_bytes": 247910400,
+    "excluded_source_missing_pyc_files": 12,
+    "excluded_source_missing_pyc_bytes": 499712,
+    "cache_content_also_backed_up_before_unlink": true,
+    "no_virtual_environment_or_worktree_cache_scope": true
+  },
+  "preserved": ["All Git-tracked files", "All source directories and source code", "Fifteen-model V18 training dev/test and complete source chain", "Current V25/V37 state and all V32-V37 evidence", "Nine historical QA Students, cross-market, epoch checkpoints and last feedback", "Existing cold archives and their audit chains", "All actual worktrees, Git objects and registries", "Active trusted_data_synthesis/.venv"],
+  "no_new_GPU_API_or_experiment_signals": true,
+  "not_a_comprehensive_guarantee_for_arbitrary_future_dynamic_references": true
+}
