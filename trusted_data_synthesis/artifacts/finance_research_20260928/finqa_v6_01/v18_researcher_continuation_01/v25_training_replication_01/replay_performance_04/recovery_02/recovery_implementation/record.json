@@ -1,0 +1,18 @@
+{
+  "schema": "v36_lifecycle_overlay_implementation.v1",
+  "at": "2026-10-10T05:40:07.174939+00:00",
+  "source_commit": "6469b82086ad7e776c0d374c86497b0ebc79bf08",
+  "mathematical_implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/record.json",
+    "sha256": "d5f229d00a960c763f83e399348d2ccf8010c9e5950fa25da5c19d4ff35e2cb0",
+    "id": "efc4aaffc238412dff330697c5d8edcfc7b5bb4450d829eaf83de9ca08113261"
+  },
+  "sha256": {
+    "finqa_v35_task_controller.py": "97805caafc1ec543a3fadc886fb91a89c5d8bd23be5a5f056267cec8ed1d8366",
+    "finqa_v36_controller.py": "c067ae42b60d302108f6ce218d04b0b2b985b533f251baf00338822ec70f3946",
+    "finqa_v36_lifecycle.py": "567ed9c0c11d4f4ca1172b316c8e4ce11f2ecc98ef9407b0151d2d5a8c336740",
+    "finqa_v36_cache.py": "0c400006416e6558147606b54dc40b0aefbc122f54e3ec6887721b6d10ce94c5",
+    "finqa_v36_worker.py": "22b46cb7c930e37ea3126547c333e9ad7184e7065f0448b85f52c31903c0cb78"
+  },
+  "id": "0b52938dd5d6cadea60912de46a96b04f4ffc3068bcace3d2cd725369fbc7516"
+}

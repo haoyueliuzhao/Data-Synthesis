@@ -1,0 +1,14 @@
+{
+  "schema": "v35_task_cache_recomputed_point.v1",
+  "at": "2026-10-10T05:52:27.413617+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "comparison": {
+    "gJ_bitwise_equal": true,
+    "aggregate_G_bitwise_equal": true,
+    "theta_bar_bitwise_equal": true,
+    "point_id_equal": true
+  },
+  "assembled_task_count": 744,
+  "class_gradient_passes": 0,
+  "id": "1975d48c4c399ce891b443c650bc638574d7dcf0a2062faddf771a31848fd452"
+}

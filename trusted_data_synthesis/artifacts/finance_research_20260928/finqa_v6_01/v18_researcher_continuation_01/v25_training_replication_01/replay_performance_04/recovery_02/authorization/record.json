@@ -1,0 +1,28 @@
+{
+  "schema": "v36_explicit_three_task_supplement_authorization.v1",
+  "user_date": "2026-10-10",
+  "user_request": "参照审计修订并开展后续实验",
+  "audit": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_02/audit/record.json",
+    "sha256": "bf7c7bfc2d844c2f6a05acbc7f2c57c76e99a3803fe2fe6720deb2994c751b70",
+    "id": "7a6d76e48f865ac21fab381fe85d4b566927ec269f120779209f12315856807d"
+  },
+  "scope": "one shard01 missing-three-task pass, then one original global recomputation",
+  "inherited_task_count": 741,
+  "new_task_indices": [
+    739,
+    741,
+    743
+  ],
+  "new_task_count": 3,
+  "new_complete_task_rows": 26,
+  "maximum_simultaneous_workers": 1,
+  "shard_gpu_index": 4,
+  "coordinator_gpu_index": 7,
+  "original_B_resume_authorized": false,
+  "no_response_replay_or_sampling_or_scoring_or_optimizer_update": true,
+  "previous_failures_reclassified": false,
+  "automatic_retry": false,
+  "original_absolute_deadline_retained": true,
+  "id": "8b6a14ea04febf14f63dce7a4a2fddffc2b5801df5157871817c32438a16caee"
+}

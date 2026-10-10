@@ -1,0 +1,14 @@
+{
+  "schema": "v36_result_aware_process_lifecycle.v1",
+  "at": "2026-10-10T05:53:49.723433+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "kind": "draining_episode_ended",
+  "episode": 2,
+  "first_draining_monotonic": 4036014.690393039,
+  "deadline_monotonic": 4036614.690393039,
+  "first_draining_epoch": 1791611619.5129778,
+  "duration_seconds": 600,
+  "deadline_epoch": 1791612219.5129788,
+  "all_drainers_actually_exited": true,
+  "id": "a2bc2be3c0508f3aafd02f6d6384c1d4e362b550f6622d65997b908884bca8c9"
+}

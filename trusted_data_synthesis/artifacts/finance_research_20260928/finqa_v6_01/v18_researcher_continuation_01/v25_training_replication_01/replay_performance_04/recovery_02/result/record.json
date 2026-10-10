@@ -1,0 +1,42 @@
+{
+  "schema": "v36_completed_fixed_point_supplement.v1",
+  "at": "2026-10-10T05:53:49.724505+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "status": "COMPLETE",
+  "numeric_pass": true,
+  "coordinator_result": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_02/coordinator/result/record.json",
+    "sha256": "3c02feaf5ff78b7beb28e208e773978ac85f5232fb0bba17bad7e32b543caf06",
+    "id": "e76a37704337923be5d87377bfd7a3f3d420389cc40d22b2ae3409e1004b6007"
+  },
+  "cache_coverage": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_02/complete_task_cache/record.json",
+    "sha256": "1190ce0426088689c4d943e0c2413bb5b50ec36a58b357475a7c3c81efbbdfb5",
+    "id": "09ec4643603d6b4808f5fe11249195f8bdcbbe661e5643c7b3a2a1c42b6be5ba"
+  },
+  "task_count": 744,
+  "state_count": 1360,
+  "reused_complete_tasks": 741,
+  "new_complete_tasks": 3,
+  "new_complete_task_rows": 26,
+  "global_recomputations": 1,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "replayed_responses": 0,
+  "optimizer_steps": 0,
+  "original_B_resume_authorized": false,
+  "previous_failures_reclassified": false,
+  "worker_accounting": {
+    "total_elapsed_worker_wall_seconds": 549.9448045012541,
+    "total_elapsed_worker_hours": 0.1527624456947928,
+    "exited_worker_count": 2,
+    "active_worker_count": 0,
+    "active_worker_lifetimes_not_yet_in_sum": false,
+    "includes_CPU_initialization_and_shutdown_grace": true,
+    "basis": "Popen submission to observed process exit; includes polling latency, not GPU compute time",
+    "prior_two_attempts_worker_wall_seconds": 27817.656998324208,
+    "all_attempts_exited_worker_hours": 7.87988938967374
+  },
+  "id": "6503a38618e6456a80a9a126cde04f665bac7367158bf45b0d6d16e758d1e0d0"
+}

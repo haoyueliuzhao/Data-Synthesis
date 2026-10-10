@@ -1,0 +1,14 @@
+{
+  "schema": "v36_inherited_absolute_window.v1",
+  "at": "2026-10-10T05:40:09.018398+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "first_launch_epoch": 1791599254.528971,
+  "deadline_epoch": 1791613654.528971,
+  "source_window": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/execution_window/record.json",
+    "sha256": "8c2b6fe78f5fdd0bf4be7a7814d4da49c6f764dd8107adb5b39f7aeaee124bd6",
+    "id": "e51a53e42cdd5cc5c3104cdccf1b6b06f998321fa8e612a2458decab88011e03"
+  },
+  "additional_runtime_window_seconds": 0,
+  "id": "710398330a70fe0d99085753d95cf56a7790f90fbf7389b9b312d27f4d40160b"
+}

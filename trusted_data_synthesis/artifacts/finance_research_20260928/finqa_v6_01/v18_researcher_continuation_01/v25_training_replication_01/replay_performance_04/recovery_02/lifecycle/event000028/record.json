@@ -1,0 +1,20 @@
+{
+  "schema": "v36_result_aware_process_lifecycle.v1",
+  "at": "2026-10-10T05:48:51.830336+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "kind": "state_transition",
+  "stage": "shard01",
+  "pid": 1532455,
+  "registered_birth": "403547242",
+  "previous_state": "EXITED_PENDING_VALIDATION",
+  "state": "SUCCEEDED",
+  "worker_slot_retained": false,
+  "gpu_lock_retained": false,
+  "actual_returncode": 0,
+  "result": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_02/shard01/result/record.json",
+    "sha256": "222915fedf6813e9d2f42be9a7961d6402d62c2d44aa3c668e5d3a2163498003",
+    "id": "43847bf22515c0dd1bc0f034b6e6f4e137eee113e6defdfaa6fee17069cdea53"
+  },
+  "id": "3752dd6bb2bc2c51371367ce16eea05830155295202ec9ab4964148279d60d34"
+}

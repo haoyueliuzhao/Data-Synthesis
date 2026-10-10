@@ -1,0 +1,15 @@
+{
+  "schema": "v36_result_aware_process_lifecycle.v1",
+  "at": "2026-10-10T05:53:49.688774+00:00",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "kind": "state_transition",
+  "stage": "coordinator",
+  "pid": 1536869,
+  "registered_birth": "403572951",
+  "previous_state": "RESULT_COMMITTED_DRAINING",
+  "state": "EXITED_PENDING_VALIDATION",
+  "worker_slot_retained": true,
+  "gpu_lock_retained": true,
+  "actual_returncode": 0,
+  "id": "f605569a829108c116d447caeb0fb2c58fc43eb3df577634d2c7518bf2129001"
+}

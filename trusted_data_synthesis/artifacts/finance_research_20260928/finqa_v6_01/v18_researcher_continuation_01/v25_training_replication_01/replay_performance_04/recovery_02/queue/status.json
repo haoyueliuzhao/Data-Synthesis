@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-10T05:53:49.779812+00:00",
+  "phase": "COMPLETE",
+  "protocol_id": "a3233f775b8590d9ded49a68a65df6b719c1fe73d43a74a2ecdf2b9179c5b819",
+  "resource_wait_seconds": 1.4249174310825765,
+  "active_children": [],
+  "first_launch_epoch": 1791599254.528971,
+  "global_deadline_epoch": 1791613654.528971,
+  "worker_accounting": {
+    "total_elapsed_worker_wall_seconds": 549.9448045012541,
+    "total_elapsed_worker_hours": 0.1527624456947928,
+    "exited_worker_count": 2,
+    "active_worker_count": 0,
+    "active_worker_lifetimes_not_yet_in_sum": false,
+    "includes_CPU_initialization_and_shutdown_grace": true,
+    "basis": "Popen submission to observed process exit; includes polling latency, not GPU compute time",
+    "prior_two_attempts_worker_wall_seconds": 27817.656998324208,
+    "all_attempts_exited_worker_hours": 7.87988938967374
+  },
+  "completed_stages": [
+    "shard00",
+    "shard02",
+    "shard03",
+    "shard01",
+    "coordinator"
+  ],
+  "original_B_resume_authorized": false,
+  "supplement_validation_complete": true
+}
