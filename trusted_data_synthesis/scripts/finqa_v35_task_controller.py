@@ -45,6 +45,11 @@ GLOBAL_DEADLINE_SECONDS = 4 * 3600
 WAIT_BUDGET_SECONDS = 24 * 3600
 TERM_GRACE_SECONDS = 10 * 60
 POLL_SECONDS = 10
+EXIT_RECHECK_SECONDS = 2.0
+EXIT_RECHECK_POLL_SECONDS = 0.05
+# Linux include/linux/sched.h: address-space and cmdline teardown can precede
+# the zombie/waitable state while this flag is already set.
+PF_EXITING = 0x00000004
 GIB = 1024**3
 MINIMUM_FREE_MIB = 72 * 1024
 MAXIMUM_ALLOCATED_BYTES = 76 * GIB
@@ -111,10 +116,84 @@ inventory = _common.inventory
 verify_original_B_paused = _common.verify_original_B_paused
 worker_environment = _common.worker_environment
 birth = _common.birth
-signal_owned = _common.signal_owned
+_legacy_signal_owned = _common.signal_owned
 COHORT_COMPARISON_KEYS = _common.COHORT_COMPARISON_KEYS
 BACKEND_VERSION = _common.BACKEND_VERSION
 frozen_training_module = _common.frozen_training_module
+
+
+def _process_stat(pid):
+    try:
+        fields = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
+    except (FileNotFoundError, ProcessLookupError):
+        return None
+    return dict(state=fields[0], birth=fields[19], flags=int(fields[6]))
+
+
+def process_observation(pid):
+    """Observe identity and teardown without treating empty cmdline as ownership."""
+    before = _process_stat(pid)
+    if before is None:
+        return None
+    try:
+        command = [
+            part.decode() for part in Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0") if part
+        ]
+    except (FileNotFoundError, ProcessLookupError):
+        command = []
+    after = _process_stat(pid)
+    if after is None:
+        return None
+    return dict(**after, command=command, identity_stable=before["birth"] == after["birth"])
+
+
+def _ended_or_exiting(observed):
+    return (
+        observed is None
+        or observed["state"] in {"Z", "X", "x"}
+        or bool(observed["flags"] & PF_EXITING)
+    )
+
+
+def signal_owned(launch, sig):
+    """Retain the original ownership gate; never signal an empty/foreign argv.
+
+    A known exiting process needs reaping, not another signal. A live process
+    with an empty argv gets only a bounded read-only recheck and still fails
+    closed if ownership cannot be established. The legacy helper performs its
+    original fresh PID/birth/worker/stage checks immediately before os.kill.
+    """
+    deadline = time.monotonic() + EXIT_RECHECK_SECONDS
+    while True:
+        observed = process_observation(launch["pid"])
+        if _ended_or_exiting(observed):
+            return False
+        if not observed["identity_stable"] or observed["birth"] != launch["birth"]:
+            return False
+        command = observed["command"]
+        if command:
+            require(
+                launch["worker"] in command
+                and "--stage" in command
+                and command.index("--stage") + 1 < len(command)
+                and command[command.index("--stage") + 1] == launch["stage"],
+                "PID/birth matches but worker command does not; no signal sent",
+            )
+            try:
+                return _legacy_signal_owned(launch, sig)
+            except ValueError:
+                # Teardown can start between the observation above and the
+                # unchanged legacy helper reading cmdline. Only a confirmed
+                # teardown/exit may turn that guard refusal into a no-op.
+                if _ended_or_exiting(process_observation(launch["pid"])):
+                    return False
+                raise
+        remaining = deadline - time.monotonic()
+        require(
+            remaining > 0,
+            "live worker command unavailable after bounded exit recheck; no signal sent",
+        )
+        time.sleep(min(EXIT_RECHECK_POLL_SECONDS, remaining))
 
 
 def inherited_protocol():
@@ -821,10 +900,14 @@ class Controller:
             launch = item["launch"]
             if item["process"].poll() is not None:
                 continue
-            require(birth(launch["pid"]) == launch["birth"], "live worker ownership changed")
+            observed_birth = birth(launch["pid"])
+            if observed_birth is None:
+                self.recheck_exit(item, "worker identity disappeared during host observation")
+                continue
+            require(observed_birth == launch["birth"], "live worker ownership changed")
             observed = process_memory(launch["pid"])
-            if observed is None:  # Reaped at this observation boundary; checked by poll next.
-                require(item["process"].poll() is not None, "live worker RSS unavailable")
+            if observed is None:
+                self.recheck_exit(item, "live worker RSS unavailable")
                 continue
             limit = HOST_RAM[
                 "coordinator_rss_limit_bytes" if stage == "coordinator" else "shard_rss_limit_bytes"
@@ -858,6 +941,35 @@ class Controller:
         )
         self.host_event_count += 1
         require(passed, "observed host RSS or MemAvailable hard gate failed")
+
+    def recheck_exit(self, item, reason):
+        """Skip an unavailable RSS only after this actual child is waitable.
+
+        No pass is inferred from PF_EXITING, missing /proc data or a result
+        file alone. A still-live child after the short bound remains a hard
+        failure; its lifecycle and GPU lock are retained for the global stop.
+        """
+        process = item["process"]
+        if process.poll() is not None:
+            return
+        try:
+            process.wait(timeout=EXIT_RECHECK_SECONDS)
+        except subprocess.TimeoutExpired as error:
+            raise ValueError(reason + " after bounded exit recheck") from error
+        require(process.poll() is not None, reason + " after bounded exit recheck")
+
+    def collect_finished(self):
+        """Validate exited workers before polling live-process resource files."""
+        for stage in tuple(self.active):
+            item = self.active[stage]
+            failure = self.root / stage / "failure/record.json"
+            require(not failure.exists(), "worker reported failure: " + stage)
+            if item["process"].poll() is not None:
+                code = self.record_exit(stage)
+                require(code == 0, "worker exited unsuccessfully: " + stage)
+                result = checked(self.root / stage / "result/record.json")
+                self.results[stage] = check_result(self.protocol, stage, result, self.task_plan)
+                self.update("RUNNING")
 
     def acquire(self, stages):
         indices = [STAGE_GPU[stage] for stage in stages]
@@ -1078,19 +1190,10 @@ class Controller:
                         del locks[index]
             while self.active:
                 self.time_gate()
-                self.observe_host()
-                for stage in tuple(self.active):
-                    item = self.active[stage]
-                    failure = self.root / stage / "failure/record.json"
-                    require(not failure.exists(), "worker reported failure: " + stage)
-                    if item["process"].poll() is not None:
-                        code = self.record_exit(stage)
-                        require(code == 0, "worker exited unsuccessfully: " + stage)
-                        result = checked(self.root / stage / "result/record.json")
-                        self.results[stage] = check_result(
-                            self.protocol, stage, result, self.task_plan
-                        )
-                        self.update("RUNNING")
+                self.collect_finished()
+                if self.active:
+                    self.observe_host()
+                    self.collect_finished()
                 if self.active:
                     time.sleep(min(POLL_SECONDS, max(0, self.deadline - time.monotonic())))
             self.time_gate()

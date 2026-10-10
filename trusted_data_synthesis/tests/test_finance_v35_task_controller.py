@@ -668,3 +668,160 @@ def test_protocol_separates_scheduled_worker_hours_from_shared_shutdown_grace(tm
     assert body["grace_does_not_authorize_new_tasks"] is True
     assert body["scheduled_worker_hours_excludes_shutdown_grace"] is True
     assert body["global_deadline_seconds"] == 4 * 3600
+
+
+def test_missing_rss_during_actual_exit_is_reaped_without_weakening_live_gate(
+    controller, monkeypatch
+):
+    current, clock = controller
+
+    class ExitingProcess(Process):
+        def wait(self, timeout=None):
+            assert timeout == queue.EXIT_RECHECK_SECONDS
+            clock.sleep(0.05)
+            self.code = 0
+            return 0
+
+    process = ExitingProcess(101)
+    current.active["shard00"] = dict(
+        process=process,
+        lock=Lock(),
+        launch=dict(stage="shard00", pid=101, birth="birth-101", gpu_index=3, gpu_uuid="GPU-3"),
+    )
+    monkeypatch.setattr(queue, "process_memory", lambda _: None)
+    current.observe_host()
+    assert process.poll() == 0
+    assert clock.current == 1000.05
+    # The regular exit collector still must check return code and result; the
+    # RSS observer does not declare scientific success or release the GPU lock.
+    assert "shard00" in current.active and "shard00" not in current.results
+
+
+def test_missing_rss_for_still_live_process_is_bounded_and_fails_closed(controller, monkeypatch):
+    current, clock = controller
+
+    class LiveProcess(Process):
+        def wait(self, timeout=None):
+            assert timeout == queue.EXIT_RECHECK_SECONDS
+            clock.sleep(timeout)
+            raise queue.subprocess.TimeoutExpired("worker", timeout)
+
+    process = LiveProcess(101)
+    lock = Lock()
+    current.active["shard00"] = dict(
+        process=process,
+        lock=lock,
+        launch=dict(stage="shard00", pid=101, birth="birth-101", gpu_index=3, gpu_uuid="GPU-3"),
+    )
+    monkeypatch.setattr(queue, "process_memory", lambda _: None)
+    with pytest.raises(ValueError, match="live worker RSS unavailable after bounded exit recheck"):
+        current.observe_host()
+    assert clock.current == 1000 + queue.EXIT_RECHECK_SECONDS
+    assert process.poll() is None and not lock.closed
+    assert current.host_event_count == 0
+
+
+def test_zombie_birth_disappearance_is_reaped_before_ownership_failure(controller, monkeypatch):
+    current, _ = controller
+
+    class ZombieProcess(Process):
+        def wait(self, timeout=None):
+            self.code = 0
+            return 0
+
+    process = ZombieProcess(101)
+    current.active["shard00"] = dict(
+        process=process,
+        lock=Lock(),
+        launch=dict(stage="shard00", pid=101, birth="birth-101", gpu_index=3, gpu_uuid="GPU-3"),
+    )
+    monkeypatch.setattr(queue, "birth", lambda _: None)
+    monkeypatch.setattr(
+        queue, "process_memory", lambda _: pytest.fail("must reap zombie before RSS read")
+    )
+    current.observe_host()
+    assert process.poll() == 0
+
+
+def live_process_observation(*, command=None, state="R", flags=0, birth="birth-101"):
+    return dict(
+        state=state,
+        birth=birth,
+        flags=flags,
+        identity_stable=True,
+        command=["python", "/frozen/worker.py", "--stage", "shard00"]
+        if command is None
+        else command,
+    )
+
+
+def signal_launch():
+    return dict(pid=101, birth="birth-101", worker="/frozen/worker.py", stage="shard00")
+
+
+@pytest.mark.parametrize(
+    "observation",
+    [
+        None,
+        live_process_observation(command=[], state="Z"),
+        live_process_observation(command=[], flags=queue.PF_EXITING),
+        live_process_observation(birth="reused-pid"),
+    ],
+)
+def test_signal_never_targets_exiting_disappeared_or_reused_pid(monkeypatch, observation):
+    monkeypatch.setattr(queue, "process_observation", lambda _: observation)
+    monkeypatch.setattr(queue, "_legacy_signal_owned", lambda *_: pytest.fail("must not signal"))
+    assert queue.signal_owned(signal_launch(), signal.SIGTERM) is False
+
+
+def test_nonempty_foreign_command_is_refused_without_signaling(monkeypatch):
+    monkeypatch.setattr(
+        queue,
+        "process_observation",
+        lambda _: live_process_observation(
+            command=["python", "/other/project.py", "--stage", "shard00"]
+        ),
+    )
+    monkeypatch.setattr(queue, "_legacy_signal_owned", lambda *_: pytest.fail("must not signal"))
+    with pytest.raises(ValueError, match="worker command does not"):
+        queue.signal_owned(signal_launch(), signal.SIGTERM)
+
+
+def test_empty_live_command_is_bounded_and_never_treated_as_owned(controller, monkeypatch):
+    _, clock = controller
+    monkeypatch.setattr(
+        queue, "process_observation", lambda _: live_process_observation(command=[])
+    )
+    monkeypatch.setattr(queue, "_legacy_signal_owned", lambda *_: pytest.fail("must not signal"))
+    with pytest.raises(
+        ValueError, match="live worker command unavailable after bounded exit recheck"
+    ):
+        queue.signal_owned(signal_launch(), signal.SIGTERM)
+    assert clock.current == 1000 + queue.EXIT_RECHECK_SECONDS
+
+
+def test_cmdline_teardown_between_owned_checks_is_noop_only_if_exit_confirmed(monkeypatch):
+    observations = iter(
+        [live_process_observation(), live_process_observation(command=[], flags=queue.PF_EXITING)]
+    )
+    monkeypatch.setattr(queue, "process_observation", lambda _: next(observations))
+
+    def legacy_guard(*_):
+        raise ValueError("PID/birth matches but worker command does not; no signal sent")
+
+    monkeypatch.setattr(queue, "_legacy_signal_owned", legacy_guard)
+    assert queue.signal_owned(signal_launch(), signal.SIGTERM) is False
+    monkeypatch.setattr(queue, "process_observation", lambda _: live_process_observation())
+    with pytest.raises(ValueError, match="worker command does not"):
+        queue.signal_owned(signal_launch(), signal.SIGTERM)
+
+
+def test_matching_live_worker_still_uses_original_strict_signal_guard(monkeypatch):
+    calls = []
+    monkeypatch.setattr(queue, "process_observation", lambda _: live_process_observation())
+    monkeypatch.setattr(
+        queue, "_legacy_signal_owned", lambda launch, sig: calls.append((launch, sig)) or True
+    )
+    launch = signal_launch()
+    assert queue.signal_owned(launch, signal.SIGTERM) is True
+    assert calls == [(launch, signal.SIGTERM)]
