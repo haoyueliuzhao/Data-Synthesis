@@ -1,0 +1,17 @@
+{
+  "schema": "v35_explicit_recovery_launch.v1",
+  "at": "2026-10-10T04:28:55.391267+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01"
+  ],
+  "pid": 1454063,
+  "birth": "403093056",
+  "original_B_resume_authorized": false,
+  "automatic_retry": false,
+  "id": "1b8141b02a0a3bc04d251d4b269d67a7a4018a8998873557b81b90a5cf832c04"
+}

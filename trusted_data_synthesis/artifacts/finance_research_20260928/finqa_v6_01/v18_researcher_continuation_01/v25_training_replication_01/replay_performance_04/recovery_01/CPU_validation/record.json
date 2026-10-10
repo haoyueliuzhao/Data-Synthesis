@@ -1,0 +1,25 @@
+{
+  "schema": "v35_recovery_frozen_CPU_entry_validation.v1",
+  "at": "2026-10-10T04:28:25.991606+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "original_task_plan_equal": true,
+  "original_pre_state_and_point_equal": true,
+  "cuda_initialized": false,
+  "sample_inherited_tasks_read": [
+    "AAL/2016/page_37.pdf-1",
+    "WELL/2017/page_116.pdf-3"
+  ],
+  "sample_cache_tensor_checks_passed": true,
+  "Python_NumPy_torch_CPU_RNG_unchanged": true,
+  "all_674_gradient_files_verified_during_copy": true,
+  "all_tensor_semantics_required_before_coordinator_CUDA": true,
+  "module_paths": {
+    "finqa_v35_recovery_controller": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_controller.py",
+    "finqa_v35_task_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/implementation/finqa_v35_task_worker.py",
+    "finqa_v34_tail_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/implementation/finqa_v34_tail_worker.py",
+    "finqa_v35_task_cache": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/implementation/finqa_v35_task_cache.py",
+    "finqa_v34_tail_memory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/implementation/finqa_v34_tail_memory.py"
+  },
+  "original_B_resume_authorized": false,
+  "id": "aa5bcd0ed819161cdbd594647a3b60ead6fc8cfa6a06c5753f49c31fefd5fa4b"
+}

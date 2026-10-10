@@ -1,0 +1,9 @@
+{
+  "schema": "v35_explicit_recovery_intent.v1",
+  "at": "2026-10-10T04:28:55.747411+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "pid": 1454063,
+  "birth": "403093056",
+  "no_automatic_controller_restart": true,
+  "id": "4efad4364e6b3fd2c278d993c015b880deb3a1e2515372603a7d55818eee083a"
+}
