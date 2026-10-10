@@ -1,0 +1,206 @@
+{
+  "schema": "v38_same_point_admission_recovery_protocol.v1",
+  "at": "2026-10-10T16:10:33.596149+00:00",
+  "output_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01",
+  "implementation_id": "2446c3b89a5214245657e7fb4f90a42764c5378ff6193b6dfd6897a2e50354a7",
+  "source_commit": "ace664b2a36ba73368d8cb9a86ae0afabae38ac2",
+  "authority": "用户明确要求：修复问题，继续实验；独立登记一次原V37受控恢复",
+  "audit": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/audit/record.json",
+    "sha256": "1cd490294683a932ecdc1af966899094b2fa1869af732f30dd98a2eceb8de3d2",
+    "id": "678c986ab5964e9b916d113379eb0e2a4150e7274fa9c6b7ac29ea6ea8154b6d"
+  },
+  "original_B_resume_authorized": true,
+  "original_queue_restart_authorized": false,
+  "original_failures_reclassified": false,
+  "source_scientific_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/protocol/record.json",
+    "sha256": "202eb6973064502d64ca0b4e08e470924615e620aa8c9bd12517e819fef06c35",
+    "id": "bf2f8bfd34469400444d7597a8d9893678adbd6af296c89b0a69c5e9b5ba6d45"
+  },
+  "source_pause": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/four_gpu_release_01/experiment_pause_01/checkpoint_audit/record.json",
+    "sha256": "c12ef4341848609fd40709d438763a9467e9bb98f8adde680a0c270b97efd59f",
+    "id": "7daf34959c0f4e818dd210e1f81f425d5b636ff68c5308901fe2c5e6db04a1fc"
+  },
+  "verified_fixed_point_result": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_02/result/record.json",
+    "sha256": "83ab14e250946a78773ac8fe18b3d18da99e32887c60031c5c7482c95daff325",
+    "id": "6503a38618e6456a80a9a126cde04f665bac7367158bf45b0d6d16e758d1e0d0"
+  },
+  "initial_state_snapshot": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/initial_state/record.json",
+    "sha256": "b6437683b19a3193144396b776609c62334e10e5cda6b0518321b9be5ef43ac6",
+    "id": "f8c89c4ae7b61c6a65deaaaeff3add5e80b7aa66939a12ab6a9c2406401f2a07"
+  },
+  "initial_progress": {
+    "completed_optimizer_updates": 5812,
+    "remaining_optimizer_updates": 5810,
+    "completed_outer_updates": 9,
+    "remaining_outer_updates": 15,
+    "reused_sealed_feedback_episodes": 2100,
+    "first_sampling_feedback_episodes": 8400,
+    "remaining_endpoint_answers": 8029,
+    "total_endpoint_answers": 10323
+  },
+  "original_matrix": [
+    {
+      "seed": 137,
+      "arm": "Static"
+    },
+    {
+      "seed": 137,
+      "arm": "C-only"
+    },
+    {
+      "seed": 137,
+      "arm": "Full"
+    },
+    {
+      "seed": 251,
+      "arm": "Static"
+    },
+    {
+      "seed": 251,
+      "arm": "C-only"
+    },
+    {
+      "seed": 251,
+      "arm": "Full"
+    },
+    {
+      "seed": 389,
+      "arm": "Static"
+    },
+    {
+      "seed": 389,
+      "arm": "C-only"
+    },
+    {
+      "seed": 389,
+      "arm": "Full"
+    }
+  ],
+  "first_gate": {
+    "seed": 137,
+    "arm": "C-only",
+    "step": 1192,
+    "next_actual_sft_step": 1193
+  },
+  "completed_Static137_Static251_not_retrained_or_regenerated": true,
+  "all_nine_seals_before_any_test_scoring": true,
+  "new_reference_point_rechecks": 0,
+  "API_calls": 0,
+  "api_model": "deepseek-flash",
+  "API_model_fallback": false,
+  "source_evaluation_module": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_evaluation.py",
+    "sha256": "c4b0ac45534a6e0dd12e344bc3cf299c6e44991af7695700a615ce751f292285"
+  },
+  "evaluation_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation",
+  "training_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+  "allowed_gpu_indices": [
+    3,
+    4,
+    5,
+    7
+  ],
+  "max_gpu_workers": 4,
+  "CPU_initialization_and_draining_count_as_workers": true,
+  "one_worker_per_physical_gpu": true,
+  "dynamic_logical_shards_on_whitelisted_idle_GPUs": true,
+  "gpu_uuids": {
+    "3": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+    "4": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+  },
+  "cpu_affinity": {
+    "3": "0-37,76-113",
+    "4": "38-75,114-151",
+    "5": "38-75,114-151",
+    "7": "38-75,114-151"
+  },
+  "minimum_start_free_mib": 73728,
+  "allocated_memory_limit_bytes": 81604378624,
+  "free_memory_reserve_bytes": 2147483648,
+  "host_ram": {
+    "shard_rss_limit_bytes": 171798691840,
+    "coordinator_rss_limit_bytes": 206158430208,
+    "reserve_bytes": 103079215104
+  },
+  "outer_compute_budget_seconds": 86400,
+  "resource_wait_budget_seconds": 86400,
+  "stage_limits_seconds": {
+    "class_gradients": 43200,
+    "virtual_existing": 7200,
+    "virtual_first_sampling": 43200,
+    "replay_R3": 57600,
+    "distribution": 7200,
+    "train": 28800,
+    "generate": 43200
+  },
+  "resource_wait_scope": "global union of zero-owned-lease ready-work idle intervals and all worker pre-CUDA GPU admission wait intervals; plus conservative inherited time; pre-CUDA wait also consumes unchanged stage and outer compute deadlines",
+  "prior_reference_four_hour_deadline_inherited": false,
+  "no_new_speedup_gate": true,
+  "stop_grace_seconds": 600,
+  "safe_boundary_pause_preserves_actual_artifacts": true,
+  "automatic_retry": false,
+  "implicit_fallback": false,
+  "delete_old_or_new_caches_allowed": false,
+  "disk_policy": "remaining scientific checkpoint reservation plus next durable stage projection plus 32GiB reserve",
+  "response_checkpoint_cadence": 16,
+  "numerical_or_same_point_failure_stops_all_owned_workers": true,
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/protocol/record.json",
+    "sha256": "500c3b5be30018f1ff0a7f5b2e973c58092487f662c6576ed4c8559923de82b0",
+    "id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255"
+  },
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/failure/record.json",
+    "sha256": "38349721f65800091c6b37d2a020716344880f704486b8c0524828568902ac74",
+    "id": "9c3c071691670359a4a25e040ab5330768dc07c12783050b3d925105a241758e"
+  },
+  "inheritance": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/inheritance/record.json",
+    "sha256": "af66ee8d41452d4bbfd12c8ed193ace31799e04b10162ab071b174f850bbc722",
+    "id": "69e47670e44fc85de1faadde071e8b8260377cecf5930d5914023a775ed11522"
+  },
+  "inherited_compute_seconds": 27219,
+  "inherited_distribution_seconds": 143,
+  "inherited_resource_wait_seconds": 143,
+  "original_budgets_reset": false,
+  "recovery_scope": {
+    "completed_parent_stages": [
+      "shard00",
+      "shard01",
+      "shard02",
+      "shard03",
+      "virtual_point",
+      "replay_R3"
+    ],
+    "parent_tasks": 744,
+    "parent_valid_rows": 4974,
+    "parent_completed_responses": 527,
+    "inherited_response_denominator": 700,
+    "first_new_stage": "distribution",
+    "first_outer_commits": 1,
+    "first_SFT_step": 1193,
+    "inherited_stages_redispatched": false,
+    "inherited_context_rewritten": false,
+    "inherited_results_relabelled": false,
+    "rest_of_original_matrix_after_real_pilot_exit": true
+  },
+  "pre_cuda_admission": {
+    "busy_GPU_same_worker_bounded_wait": true,
+    "worker_slot_GPU_lease_and_point_locks_retained": true,
+    "CUDA_must_remain_uninitialized": true,
+    "wrong_or_missing_UUID_hard_failure": true,
+    "host_memory_stop_and_deadline_gates_unchanged": true,
+    "after_CUDA_no_retry": true,
+    "process_interference_allowed": false,
+    "poll_seconds": 10,
+    "heartbeat_freshness_seconds": 60
+  },
+  "id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462"
+}

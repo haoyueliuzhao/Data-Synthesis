@@ -1,0 +1,299 @@
+{
+  "schema": "v38_first_point_stage_inheritance.v1",
+  "at": "2026-10-10T16:09:58.762075+00:00",
+  "new_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01",
+  "parent_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01",
+  "original_context": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/context/record.json",
+    "sha256": "1510c6c32d532e639e394f198d53b19cf69b55d641f00a72a0a8c8c707eb00d7",
+    "id": "c5b4ff1eb6feba057306a243866a77a8b7ce5e7e11b22692c3bb59c1305bbe08"
+  },
+  "original_context_id": "c5b4ff1eb6feba057306a243866a77a8b7ce5e7e11b22692c3bb59c1305bbe08",
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer",
+  "new_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer",
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/protocol/record.json",
+    "sha256": "500c3b5be30018f1ff0a7f5b2e973c58092487f662c6576ed4c8559923de82b0",
+    "id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255"
+  },
+  "parent_implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/implementation/record.json",
+    "sha256": "0ce5469c06a3896e7c1b52bb4521030553c199c21f413b86e83718fe7d7324c6",
+    "id": "97d06d127334a0d18a85345c709cbae6faa09ad902714e1b99b2b86d8154b27e"
+  },
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/failure/record.json",
+    "sha256": "38349721f65800091c6b37d2a020716344880f704486b8c0524828568902ac74",
+    "id": "9c3c071691670359a4a25e040ab5330768dc07c12783050b3d925105a241758e"
+  },
+  "parent_queue": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/queue/status.json",
+    "sha256": "165b26c28dd6467cae2356634199411c0f95c5f1468f8168583f0608f1374fbb"
+  },
+  "parent_context_snapshot": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/queue/status.json",
+    "sha256": "57b6f82c8c0c56e5b19466a092a2d5cc9c5bef155c602c30cfcd900afbdbb33d"
+  },
+  "parent_final_progress": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/actual_final_progress/record.json",
+    "sha256": "e81e07f8af247f8e59fdb241d68507a20dc8f146cda26074c908fe627108ac98",
+    "id": "b62c4d6fc6ec9f908f553d289f576aa789160f8d91399bf1c57c5805db154356"
+  },
+  "failed_distribution": {
+    "launch": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/distribution/launch/record.json",
+      "sha256": "5a65c961ef7a79b5222ca56e7163dc79f0f4c6d2e671b8b1b17a299aa4cfc48e",
+      "id": "6a2387a37af8184916c3905caf6bb416852adffcb3a3584f4eeb9802ece6769a"
+    },
+    "failure": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/distribution/failure/record.json",
+      "sha256": "5525c096b41b8771e9199df7d5fc522a0421610656d0ba39f25367137fbf023c",
+      "id": "32515045681f25b3794cf5d2e5f2069fa8d9ffa014218aa99bbcce06e006d83d"
+    },
+    "exit": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/distribution/exit/record.json",
+      "sha256": "32a782dad0f1f1a204e8d084f08ff7d800dda7fce56d0852fced85b2154dcf0d",
+      "id": "35a0af181187d17a4cd5da09f9a3795a182d4ec343d633c8c42aa40f3da7720d"
+    }
+  },
+  "stage_bindings": {
+    "shard00": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard00",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard00/result/record.json",
+        "sha256": "28a012b22b876db06a2d090d4e0ee737f6762b0396aabed8ed59d3bc83545479",
+        "id": "4c4985cff297dd787a8d9879a7bbea908ac493d6d9eceef50bf85da2acbcaa63"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard00/exit/record.json",
+        "sha256": "33168d08070a0bb45a5f8d0a1be90aed7a87e1e94717dcbb321fc26e2d12e338",
+        "id": "9ea8a617d62b85b169a577c5c740b780a63f0fc3eb6f955dfa26fffc317155e1"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard00/launch/record.json",
+        "sha256": "584074fcfd0657ed08c630c273e0e508ac171fb7064e6de56f76fc4fc0356df4",
+        "id": "5053d449d4b1c00b156013225175deb0b6416ee1aad27b9a72c3c0f480891114"
+      }
+    },
+    "shard01": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard01",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard01/result/record.json",
+        "sha256": "f87960b555dd8f807b57e8de327fb07232257ebae4657ce9307d6dab4005940c",
+        "id": "3b1c48a6e244132f5a3ec36b31a167cbdbee00d059eb6c07120107d7248b0bbc"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard01/exit/record.json",
+        "sha256": "ab1e7a6fb719ff98acd6dc6a77a6bd97a3d3cb4e1014705bd506faeb025cf13f",
+        "id": "7995c5caaaee39831c70aaef1deb8ee6d73f275cf7c5e0db2331cbee4cd793fe"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard01/launch/record.json",
+        "sha256": "358ccde6a6ba0c22da1f32787f9410a5d3b11530edbf35e1d701b004144ab7e3",
+        "id": "a1f05aa2b358bcc02bd56057c157f4aa36e4d75eb0b6f3abdb2c4a620608ceaa"
+      }
+    },
+    "shard02": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard02",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard02/result/record.json",
+        "sha256": "e08f48cab3b3c67acec4c9be79471ac0f7284165437f2afb23cf34e5c60c4b04",
+        "id": "447b06d456ad2a19e3566cb6308d32f0376178b3b418b5d9ad6e77738fd45e67"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard02/exit/record.json",
+        "sha256": "66fb9264efca43112455874cda0c3351187601e8ec507658a6f3ffbd23034f8b",
+        "id": "a85ed93fd49aa38fcf26ac5dd1dedfe03a1db8724bdc9fa15e8e4d5ed72c88d8"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard02/launch/record.json",
+        "sha256": "fcbe81250224716f8aaf69d0bea9f0d7c498197715f263052c60e8ab208451fa",
+        "id": "b7af16f95cdd486443f1e4ee7fd73799f72bf6fa4220202df17339ba6494bf8b"
+      }
+    },
+    "shard03": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard03",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard03/result/record.json",
+        "sha256": "701d7d5dd33aee1460a8cd8152cc484bd47c321d739aef5394b9b3c57d321f92",
+        "id": "060054440d5c06fbccaf5d67714bad2ae9d85d1b366c326846582d94f9bddc55"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard03/exit/record.json",
+        "sha256": "57c8c385955478d38336f3ce0399a244e7f6b4f5380da05c9b8cd43403e1ebe9",
+        "id": "8a43f868d066f127b714478a51db3925673f0e64a59d032fb7b5a0813c674c94"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/shard03/launch/record.json",
+        "sha256": "4aa3b554cc28d85d3ce73c13027dc1ac2cc000b915ff141693c65688ac0a156f",
+        "id": "be24e5daf88b5e0dbc7e24382e7fc30bccc57caa1be94910cf652d9c7fe99f5a"
+      }
+    },
+    "virtual_point": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point/result/record.json",
+        "sha256": "91209b457bf8741763321aa4fe4673629c6c89e46556643f1eed8e4eb8feac06",
+        "id": "cfc79f861032ff59005e3bafc6c49792a3031dcd8540a6c1264fc1cc5f2a1d22"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point/exit/record.json",
+        "sha256": "557475df9391d6fbc4f384ae2c341d50fa936efd02e5d9e9b3c3c1947f213649",
+        "id": "55fb62c3b6f573a7b16c4c50a1ce197ddf761261ff333ac9605606076c0b172d"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point/launch/record.json",
+        "sha256": "342e3f0fb27811b387d024015cc937a996259805152d573615bd5d4dd8af79f7",
+        "id": "d6b2660c78df29e9f03ef9b994b76b801dc12b8ece196b83ead9c61c8ad8741c"
+      },
+      "payload": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point/payload/record.json",
+        "sha256": "a6c63fffcf674a10f09b207f66a33878fda15ad7dc787ea6b0e83e85e5be334d",
+        "id": "79fc931132b6ddc49bd108fe56486e04ec67d203f8afc3434d48bb1b78f5d9d2"
+      },
+      "tensor_identity": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/virtual_point/payload/state.pt",
+        "device": 66304,
+        "inode": 5862340853,
+        "bytes": 30589151,
+        "mtime_ns": 1791624328726784688,
+        "ctime_ns": 1791624328726784688
+      }
+    },
+    "replay_R3": {
+      "protocol_scope": "parent",
+      "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3",
+      "result": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/result/record.json",
+        "sha256": "33bad1c53b1cf8d1f5739e59c8e0383088c2302d4a529ff78573cff8ed1d6044",
+        "id": "6c18b0a63ca289350126d47d1053dcb8874964df82f58eb6057032aedd657dc2"
+      },
+      "exit": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/exit/record.json",
+        "sha256": "38c6d86a38060ec8187d953080cdf1230893e913bdbcc8711af50f3709a934cf",
+        "id": "964a5fd9792522d4287534793ca35afb2d37651bf0090eceb35e87637e9fcac9"
+      },
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/launch/record.json",
+        "sha256": "bf1b0e0e58f2c74ae49afba81c5927b9de2932cf76bfd686c6b9eed224cb7b46",
+        "id": "052f838ce767c46fb09691f4e55000c158f9337c079a97341fbc6a6f356c3654"
+      },
+      "payload": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/payload/record.json",
+        "sha256": "aa1c99fd0592e0030ae91d034b825941488d87eff03240bfdb13b5840dbc995a",
+        "id": "87e35e023747c815b19a2e98059fa1c0e16202728057020beb7d4311d5ca62ab"
+      },
+      "tensor_identity": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/payload/state.pt",
+        "device": 66304,
+        "inode": 3419837004,
+        "bytes": 10187295,
+        "mtime_ns": 1791643518798128325,
+        "ctime_ns": 1791643518798128325
+      }
+    },
+    "distribution": {
+      "protocol_scope": "current",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/distribution"
+    },
+    "train": {
+      "protocol_scope": "current",
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/train"
+    }
+  },
+  "checkpoint_tensor_identity": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step1192_step/state.pt",
+    "device": 66304,
+    "inode": 7211851251,
+    "bytes": 30642359,
+    "mtime_ns": 1791440933915356638,
+    "ctime_ns": 1791440933915356638
+  },
+  "task_plan": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/task_plan/record.json",
+    "sha256": "24371fe5f258eccbc6f5071365683c115c47cbe5bba423b0dd709e14dd38be9b",
+    "id": "9786e47eb18b5f1b881995d54a637e38edff706b6bc28969a2f8e34983ded700"
+  },
+  "task_cache_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/task_cache",
+  "task_cache_inventory": {
+    "tasks": 744,
+    "records": 744,
+    "tensors": 744,
+    "rows": 4974,
+    "metadata_digest": "a9a08301a360c20fabbc4e237a5288184d9f2645c86c8691319e948f86453556",
+    "tensor_contents_read": false
+  },
+  "final_response_checkpoint": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/checkpoints/response000527/record.json",
+    "sha256": "64e3b3dda50b18e599a46bd24bf506c155a3cbaaa34cb3c586d9468c4806fbf1",
+    "id": "72dc406223a3066fdcc9a4f4648a06eb91e25db6964b7e5b90b15d05698e1f6e"
+  },
+  "final_response_tensor_identity": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/replay_R3/checkpoints/response000527/state.pt",
+    "device": 66304,
+    "inode": 7719460508,
+    "bytes": 10186271,
+    "mtime_ns": 1791643518683126661,
+    "ctime_ns": 1791643518683126661
+  },
+  "inherited_compute_seconds": 27219,
+  "inherited_distribution_seconds": 143,
+  "inherited_resource_wait_seconds": 143,
+  "timing_accounting": {
+    "first_parent_launch_epoch": 1791616487.393459,
+    "parent_failure_envelope_end_epoch": 1791643706.099814,
+    "last_context_compute_snapshot_seconds": 27045.04046258703,
+    "failed_distribution_worker_seconds": 142.37239307863638,
+    "compute_rule": "ceil(max(wall_envelope, snapshot_plus_failed_worker))",
+    "resource_wait_rule": "ceil(parent_wait_plus_failed_admission_worker)",
+    "conservative_overcount_allowed": true,
+    "budgets_reset_or_enlarged": false
+  },
+  "remaining_scientific_budget": {
+    "completed_optimizer_updates": 5812,
+    "remaining_optimizer_updates": 5810,
+    "completed_outer_updates": 9,
+    "remaining_outer_updates": 15,
+    "reused_sealed_feedback_episodes": 2100,
+    "first_sampling_feedback_episodes": 8400,
+    "remaining_endpoint_answers": 8029,
+    "total_endpoint_answers": 10323
+  },
+  "deferred_feedback_content_verification": [
+    {
+      "reference": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/bf76c0101ec95e3af22aa684a516da92eef775fe10eec74b2e2916aaedb3ddeb/cohort_seal/record.json",
+        "sha256": "44923ede0010ea782d2f6c7554e08d3dbce51e65be64d1f8e759fb8d8da819c6"
+      },
+      "file_identity": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/bf76c0101ec95e3af22aa684a516da92eef775fe10eec74b2e2916aaedb3ddeb/cohort_seal/record.json",
+        "device": 66304,
+        "inode": 5826115407,
+        "bytes": 149980390,
+        "mtime_ns": 1791454041925052624,
+        "ctime_ns": 1791454041925052624
+      },
+      "content_hash_verified_here": false,
+      "required_verification": "original_same_point_worker_before_use"
+    }
+  ],
+  "original_context_rewritten": false,
+  "parent_failure_reclassified": false,
+  "inherited_stage_results_fabricated": false,
+  "tensor_content_verification_deferred_to_worker": true,
+  "new_sampling_calls": 0,
+  "replayed_responses": 0,
+  "optimizer_updates": 0,
+  "id": "69e47670e44fc85de1faadde071e8b8260377cecf5930d5914023a775ed11522"
+}

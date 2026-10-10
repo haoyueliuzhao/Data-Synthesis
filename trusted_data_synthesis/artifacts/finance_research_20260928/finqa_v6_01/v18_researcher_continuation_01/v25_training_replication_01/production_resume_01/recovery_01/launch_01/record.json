@@ -1,0 +1,20 @@
+{
+  "schema": "v38_explicit_single_controller_launch.v1",
+  "at": "2026-10-10T16:11:09.298355+00:00",
+  "protocol_id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462",
+  "source_commit": "ace664b2a36ba73368d8cb9a86ae0afabae38ac2",
+  "pid": 2710385,
+  "birth": "407306447",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-B",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v38_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01"
+  ],
+  "automatic_restart": false,
+  "only_registered_recovery": true,
+  "id": "8dfc76d404a0f1672bc82e18d726465e8b36b93f53105ed67f3c61fc8ab18274"
+}

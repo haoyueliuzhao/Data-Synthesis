@@ -1,0 +1,11 @@
+{
+  "actual_tensors_saved": true,
+  "at": "2026-10-10T16:15:30.911275+00:00",
+  "context_id": "c5b4ff1eb6feba057306a243866a77a8b7ce5e7e11b22692c3bb59c1305bbe08",
+  "id": "5b222de383f85872c741cbd061441e4ce86f109ab89061ea13528d952441332b",
+  "phase": "distribution",
+  "schema": "v37_actual_stage_payload.v1",
+  "state_bytes": 72042739,
+  "state_digest": "dec4e5c25a66bb35e24569f24c5cf1d1d388534ed45fc1b370046a305acbeab0",
+  "state_sha256": "c9a39495a17d847e633b450fab23457a4ff2ec66980e982017501e1be9088f75"
+}

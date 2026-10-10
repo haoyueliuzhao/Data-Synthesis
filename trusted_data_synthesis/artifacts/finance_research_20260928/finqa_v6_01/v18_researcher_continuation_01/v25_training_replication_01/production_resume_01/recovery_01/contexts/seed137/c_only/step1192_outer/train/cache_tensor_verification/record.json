@@ -1,0 +1,15 @@
+{
+  "schema": "v38_actual_point_cache_verification.v1",
+  "at": "2026-10-10T16:18:03.769211+00:00",
+  "protocol_id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462",
+  "context_id": "c5b4ff1eb6feba057306a243866a77a8b7ce5e7e11b22692c3bb59c1305bbe08",
+  "stage": "train",
+  "binding_sha256": "89ba503809adf025c0468d0352f8e61a901d669a441b2653792bc342b1e81e07",
+  "process_id": 2715552,
+  "strict_payload_file_reads": 0,
+  "verified_task_count": 0,
+  "verified_task_ids": [],
+  "cross_process_verification_waiver": false,
+  "cross_parameter_point_reuse": false,
+  "id": "27a576ca9a71f58c8cdf077530219dabab06b777705d2dc90ed5b887bf1fa7ed"
+}

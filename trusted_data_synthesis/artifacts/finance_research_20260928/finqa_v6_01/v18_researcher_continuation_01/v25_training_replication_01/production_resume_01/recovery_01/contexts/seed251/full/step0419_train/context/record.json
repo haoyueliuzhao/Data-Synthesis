@@ -1,0 +1,6589 @@
+{
+  "schema": "v37_actual_production_context.v1",
+  "at": "2026-10-10T16:20:19.978126+00:00",
+  "run_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed251/full/step0419_train",
+  "outer_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed251/full/step0419_train",
+  "training_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+  "arm_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full",
+  "checkpoint": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0419_step",
+    "record": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0419_step/record.json",
+      "sha256": "1ed82c7dd14c8a2f94314566398eeedfe963fb8b2f606e07cd18c85d6fff6bda"
+    },
+    "state": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0419_step/state.pt",
+      "sha256": "6a89e1dbc920d86c943a8ed63a15f61832fa91d719c032f7e63bd6374a5656a0"
+    },
+    "actual_state_digest": "98b200dbd15801fa7ce392269d7ab1a35f7f39859473ed059229316ae2ce52c6",
+    "phase": "step"
+  },
+  "seed": 251,
+  "arm": "Full",
+  "step": 419,
+  "due_outer": false,
+  "outer_done": [
+    298
+  ],
+  "execution_plan": {
+    "schema": "v9_conditional_execution_plan.v1",
+    "N": 744,
+    "steps_per_epoch": 149,
+    "epochs": 10,
+    "maximum_batch_size": 5,
+    "tail_batch_size": 4,
+    "shared_step": 298,
+    "outer_steps": [
+      298,
+      596,
+      894,
+      1192
+    ],
+    "final_step": 1490,
+    "sharing_split_step": 894,
+    "mechanism_steps": {
+      "C_direction": 447,
+      "N_local": 745
+    },
+    "feedback_denominator": 700,
+    "model_history_steps": 22350,
+    "core_physical_steps": 18774,
+    "verified_shared_core_steps": 17880,
+    "reverse_mechanism_extra_steps": 447,
+    "loss_coefficient": "pi(z|x)/(actual_B_j*n_xz*L_P)",
+    "mu": "1/744",
+    "tail_padding": false,
+    "task_deletion": false,
+    "bitwise_equivalent_to_original_1000_schedule": false,
+    "id": "c5eea14fd3eabfcb6bbd45493b7b9968242c43f758883571b1959f2e5416b381"
+  },
+  "schedule_sha256": "7a7fe11354d02c3d358830e988e5ea2e87e5078c4b7b3598644286f57e860b72",
+  "pre_state_digest": "98b200dbd15801fa7ce392269d7ab1a35f7f39859473ed059229316ae2ce52c6",
+  "component_digest": {
+    "parameters": "756d69431febcbafecb45c12e9b2249847cd06529d0b214a15c8d09a630557ad",
+    "buffers": "f27f9e4a029dc14db1fba3a31442e7fa273d7a74d286651fa2fb320e0de790d6",
+    "optimizer": "a933391221ca17564e56ac3ad8c80cc091d7333a17f1cc9d51c8ecb4c2ef66bd",
+    "rng": "bb7e2601c74f3fe4ef0fe95f62f7d15237f6f8ad113089f514c911077406fd37",
+    "pi": "7679a7d9edcb238ce223ea13750bcb195c2194b65f6d654c9ab79b377e8de0e8",
+    "prior": "734b976615b40bcf3fb946d6eb4c9911f115a4cb653d7aec5287f21b37bdce46",
+    "schedule": "0c4e4c8d8ff79f64a895c349739188e7fe41341b972d00d8d630a36544998ff7",
+    "execution_plan": "07ed2d04ef2e72f7d658b42f9e0d60c653d0fcef82c843fd9e9021b4c997a274",
+    "adapter_binding": "b59d2cfd4e0097e4b74a723685b49eea3066574df798520bb8aecf405179002e",
+    "frozen_base_digest": "850900ae041412b4cea111eec9931d8659cd0b2999a8157b11a39074fa16b082",
+    "model_training": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+    "outer_done": "409ef5b58e11e1e0b41a4955bfc65b4c1af3f83e9b708a547dd075cdd5ea0881"
+  },
+  "pi": {
+    "AAL/2016/page_37.pdf-1": {
+      "s0_run_then_submit": 0.26598992688557704,
+      "s1_direct_submit": 0.21718049205214593,
+      "s2_run_then_submit": 0.25759908156928946,
+      "s3_run_then_submit": 0.25923049949298754
+    },
+    "AAL/2016/page_37.pdf-2": {
+      "s1": 1.0
+    },
+    "AAP/2006/page_85.pdf-1": {
+      "z0000": 0.34163362751499876,
+      "z0001": 0.3245809485354065,
+      "z0002": 0.33378542394959476
+    },
+    "AAP/2006/page_85.pdf-2": {
+      "s0": 1.0
+    },
+    "AAP/2006/page_85.pdf-3": {
+      "z0000": 1.0
+    },
+    "AAP/2006/page_85.pdf-4": {
+      "z0000": 1.0
+    },
+    "AAPL/2010/page_42.pdf-1": {
+      "z0000": 1.0
+    },
+    "AAPL/2010/page_42.pdf-3": {
+      "singleton:1d1ce290a1d018c5f292bda92297377a9de0aee12b57413a98c1b6ed4f449f83": 1.0
+    },
+    "AAPL/2010/page_43.pdf-2": {
+      "s1_compute_and_submit_table_min": 1.0
+    },
+    "AAPL/2010/page_73.pdf-1": {
+      "singleton:1735b467b964e02b7b0b91237c33f18e00d319b6422f5a785af3d37911d1c8a8": 1.0
+    },
+    "AAPL/2013/page_27.pdf-1": {
+      "z0000": 0.3424119748064236,
+      "z0001": 0.34720329141163203,
+      "z0002": 0.3103847337819443
+    },
+    "AAPL/2013/page_27.pdf-3": {
+      "s1_equivalent_computation_no_revision": 1.0
+    },
+    "AAPL/2013/page_27.pdf-4": {
+      "z0000": 1.0
+    },
+    "AAPL/2013/page_39.pdf-1": {
+      "z0000": 1.0
+    },
+    "AAPL/2013/page_39.pdf-2": {
+      "z0000": 0.3306106112410898,
+      "z0001": 0.3234792514358677,
+      "z0002": 0.34591013732304243
+    },
+    "AAPL/2013/page_41.pdf-1": {
+      "s0_direct_compute_submit": 0.32720358847699843,
+      "s1_direct_compute_submit": 0.32798179704922087,
+      "s2_verified_source_compute_submit": 0.34481461447378053
+    },
+    "AAPL/2013/page_41.pdf-2": {
+      "z0000": 1.0
+    },
+    "AAPL/2013/page_41.pdf-3": {
+      "s1": 0.34398353546163657,
+      "s2": 0.34758828107071266,
+      "s3": 0.3084281834676507
+    },
+    "AAPL/2013/page_72.pdf-1": {
+      "s0": 1.0
+    },
+    "AAPL/2013/page_78.pdf-1": {
+      "z0000": 1.0
+    },
+    "AAPL/2013/page_78.pdf-3": {
+      "s1": 1.0
+    },
+    "AAPL/2014/page_26.pdf-1": {
+      "p0-direct-submit": 0.5076779244717371,
+      "p1-execute-verify-submit": 0.4923220755282628
+    },
+    "AAPL/2014/page_26.pdf-2": {
+      "singleton:9b1ad61808f32e476ecc4f3b8b251fc3d0e7e9c2ddada9f4e701182c56ed664b": 1.0
+    },
+    "AAPL/2014/page_67.pdf-1": {
+      "singleton:4a51cf498ddbdf19dadd062bf99a13e596df683bce1831edb31062c08b32c096": 1.0
+    },
+    "AAPL/2014/page_67.pdf-2": {
+      "z0000": 1.0
+    },
+    "AAPL/2014/page_67.pdf-3": {
+      "s1": 1.0
+    },
+    "AAPL/2014/page_67.pdf-4": {
+      "s0": 0.30790466072590633,
+      "s1": 0.3363909980986422,
+      "s2": 0.35570434117545147
+    },
+    "AAPL/2014/page_78.pdf-1": {
+      "z0000": 0.20201794217125574,
+      "z0001": 0.2060844103873023,
+      "z0002": 0.2017172497531418,
+      "z0003": 0.20780540786902318,
+      "z0004": 0.18237498981927702
+    },
+    "AAPL/2014/page_78.pdf-2": {
+      "z0000": 1.0
+    },
+    "AAPL/2014/page_78.pdf-3": {
+      "s1": 1.0
+    },
+    "AAPL/2014/page_78.pdf-4": {
+      "s1": 1.0
+    },
+    "ABMD/2006/page_62.pdf-4": {
+      "singleton:f023a25b6d0e0d3e697fe4934de03f7f2bc075995a3be6c95dc1ea31918bfba4": 1.0
+    },
+    "ABMD/2006/page_65.pdf-2": {
+      "direct_zero_submit": 0.19879921588754096,
+      "direct_zero_submit_2": 0.21123580375367432,
+      "read_source_verify_zero": 0.1952012407862425,
+      "read_source_verify_zero_2": 0.1857727881703227,
+      "run_program_verify_zero": 0.2089909514022196
+    },
+    "ABMD/2008/page_52.pdf-2": {
+      "s0": 1.0
+    },
+    "ABMD/2008/page_52.pdf-3": {
+      "z0000": 1.0
+    },
+    "ABMD/2008/page_52.pdf-4": {
+      "z0000": 0.26874623621033106,
+      "z0001": 0.2314582128485821,
+      "z0002": 0.26336334061470157,
+      "z0003": 0.23643221032638512
+    },
+    "ABMD/2008/page_87.pdf-1": {
+      "abmd_consistent_unit_ratio_without_consequential_revision": 0.7507348433644188,
+      "abmd_observed_mixed_unit_division_then_substantive_correction": 0.24926515663558133
+    },
+    "ABMD/2008/page_87.pdf-2": {
+      "z0000": 1.0
+    },
+    "ABMD/2008/page_87.pdf-3": {
+      "z0000": 0.49516490515976874,
+      "z0001": 0.2621076781545452,
+      "z0002": 0.2427274166856859
+    },
+    "ADI/2012/page_65.pdf-2": {
+      "z0000": 1.0
+    },
+    "AES/2001/page_42.pdf-2": {
+      "z0000": 0.2203857340667813,
+      "z0001": 0.17514693942403087,
+      "z0002": 0.20339618275014779,
+      "z0003": 0.19515237049591774,
+      "z0004": 0.20591877326312208
+    },
+    "AES/2001/page_45.pdf-1": {
+      "p0-corrected-percent-scale": 0.4799102757996977,
+      "p1-direct-correct-computation": 0.5200897242003023
+    },
+    "AES/2001/page_45.pdf-2": {
+      "s1": 0.31707332929477755,
+      "s2": 0.33985511529138296,
+      "s3": 0.3430715554138396
+    },
+    "AES/2001/page_48.pdf-1": {
+      "s1": 1.0
+    },
+    "AES/2001/page_51.pdf-1": {
+      "z0000": 0.20878481689590123,
+      "z0001": 0.20909942044735655,
+      "z0002": 0.189977365995044,
+      "z0003": 0.1702759121068241,
+      "z0004": 0.22186248455487417
+    },
+    "AES/2001/page_77.pdf-1": {
+      "z0000": 1.0
+    },
+    "AES/2001/page_77.pdf-2": {
+      "singleton:ea0d2f866575eb13a5155e26ed3dc3dad2177476a6eaa3f03945e20b04ca60d2": 1.0
+    },
+    "AES/2017/page_110.pdf-1": {
+      "s1": 1.0
+    },
+    "AES/2017/page_110.pdf-2": {
+      "singleton:a709d597a58682b82095491034024b032370b374fe5e16e2308ccc99e9758f99": 1.0
+    },
+    "AES/2017/page_110.pdf-3": {
+      "s1": 1.0
+    },
+    "AES/2017/page_110.pdf-4": {
+      "z0000": 1.0
+    },
+    "AES/2017/page_168.pdf-2": {
+      "z0000": 0.4949497616493703,
+      "z0001": 0.5050502383506298
+    },
+    "AES/2017/page_168.pdf-3": {
+      "z0000": 1.0
+    },
+    "AES/2017/page_168.pdf-4": {
+      "z0000": 0.12986215959465897,
+      "z0001": 0.14821539695876404,
+      "z0002": 0.14511858769929614,
+      "z0003": 0.14323843290966223,
+      "z0004": 0.1434818528501197,
+      "z0005": 0.1497064212504954,
+      "z0006": 0.14037714873700344
+    },
+    "AES/2017/page_85.pdf-1": {
+      "s1": 0.3461468720019955,
+      "s2": 0.3122630710273353,
+      "s3": 0.34159005697066913
+    },
+    "AES/2017/page_85.pdf-2": {
+      "singleton:21a28f108b0ed7339920d7738c18a64092aeffc4243f46c05636a421a68b0f04": 1.0
+    },
+    "ALLE/2015/page_81.pdf-1": {
+      "z0000": 0.7902752212494493,
+      "z0001": 0.20972477875055068
+    },
+    "ALLE/2015/page_81.pdf-2": {
+      "p0-direct-submit": 0.4915188483670685,
+      "p1-run-verify-submit": 0.5084811516329315
+    },
+    "AMAT/2012/page_37.pdf-1": {
+      "z0000": 0.32816337429538067,
+      "z0001": 0.3350348108164588,
+      "z0002": 0.33680181488816047
+    },
+    "AMAT/2012/page_37.pdf-2": {
+      "s0": 0.2559161037911949,
+      "s1": 0.23949165199030237,
+      "s2": 0.24617773332169696,
+      "s3": 0.2584145108968057
+    },
+    "AMAT/2016/page_30.pdf-2": {
+      "z0000": 1.0
+    },
+    "AMAT/2016/page_30.pdf-3": {
+      "z0000": 0.2505915004179501,
+      "z0001": 0.2577274010437137,
+      "z0002": 0.22970397954016938,
+      "z0003": 0.26197711899816695
+    },
+    "AMT/2004/page_102.pdf-1": {
+      "s0": 0.3275709885465195,
+      "s1": 0.33139530216223134,
+      "s2": 0.3410337092912493
+    },
+    "AMT/2004/page_102.pdf-4": {
+      "z0000": 1.0
+    },
+    "AMT/2004/page_28.pdf-1": {
+      "z0000": 0.2519112578264164,
+      "z0001": 0.2294557550107914,
+      "z0002": 0.2463002414508142,
+      "z0003": 0.27233274571197785
+    },
+    "AMT/2004/page_28.pdf-2": {
+      "p0_direct_compute_submit": 0.3188751707548986,
+      "p1_direct_compute_submit": 0.3320722777381553,
+      "p2_direct_compute_submit_with_scale_note": 0.34905255150694625
+    },
+    "AMT/2004/page_28.pdf-3": {
+      "s1": 1.0
+    },
+    "AMT/2004/page_46.pdf-1": {
+      "z0000": 0.33876705762983694,
+      "z0001": 0.319375369069731,
+      "z0002": 0.3418575733004321
+    },
+    "AMT/2004/page_46.pdf-2": {
+      "z0000": 0.7002164303352408,
+      "z0001": 0.2997835696647591
+    },
+    "AMT/2004/page_76.pdf-1": {
+      "s1": 0.19295313958942167,
+      "s2": 0.21398006446530357,
+      "s3": 0.21530361067106166,
+      "s4": 0.17242954685806586,
+      "s5": 0.2053336384161473
+    },
+    "AMT/2004/page_76.pdf-2": {
+      "s1": 1.0
+    },
+    "AMT/2004/page_76.pdf-3": {
+      "z0000": 1.0
+    },
+    "AMT/2004/page_76.pdf-4": {
+      "s1": 0.33519016245299527,
+      "s2": 0.3450037116128744,
+      "s3": 0.3198061259341304
+    },
+    "AMT/2004/page_90.pdf-1": {
+      "z0000": 0.24765852931340424,
+      "z0001": 0.2571985928213775,
+      "z0002": 0.24764900261372788,
+      "z0003": 0.24749387525149033
+    },
+    "AMT/2004/page_90.pdf-2": {
+      "s1": 0.3528159959895326,
+      "s2": 0.30853361797845574,
+      "s3": 0.33865038603201153
+    },
+    "AMT/2004/page_91.pdf-1": {
+      "s1": 1.0
+    },
+    "AMT/2004/page_91.pdf-2": {
+      "z0000": 1.0
+    },
+    "AMT/2004/page_91.pdf-3": {
+      "s1": 1.0
+    },
+    "AMT/2004/page_91.pdf-4": {
+      "z0000": 0.14996842892413936,
+      "z0001": 0.14736627995647664,
+      "z0002": 0.13278870864257508,
+      "z0003": 0.15635602804012358,
+      "z0004": 0.13423546076789064,
+      "z0005": 0.14104899779019714,
+      "z0006": 0.13823609587859756
+    },
+    "ANSS/2016/page_82.pdf-2": {
+      "s1": 1.0
+    },
+    "ANSS/2016/page_85.pdf-1": {
+      "z0000": 1.0
+    },
+    "ANSS/2016/page_85.pdf-2": {
+      "z0000": 0.20695403292689676,
+      "z0001": 0.19491863159817566,
+      "z0002": 0.19114128477958475,
+      "z0003": 0.2041932766436239,
+      "z0004": 0.2027927740517191
+    },
+    "ANSS/2016/page_85.pdf-3": {
+      "s1": 1.0
+    },
+    "AON/2015/page_29.pdf-1": {
+      "s1": 0.36202632547157093,
+      "s2": 0.29922846305966416,
+      "s3": 0.33874521146876474
+    },
+    "AON/2015/page_29.pdf-2": {
+      "z0000": 0.1394408259182488,
+      "z0001": 0.16780669044801055,
+      "z0002": 0.17338923735420214,
+      "z0003": 0.1628783167996478,
+      "z0004": 0.174942681763165,
+      "z0005": 0.18154224771672572
+    },
+    "AON/2015/page_43.pdf-3": {
+      "z0000": 1.0
+    },
+    "AON/2015/page_43.pdf-4": {
+      "p0_ebitda_minus_da": 0.48434657653966046,
+      "p1_ni_plus_int_tax": 0.5156534234603395
+    },
+    "AON/2015/page_45.pdf-2": {
+      "s1": 1.0
+    },
+    "AON/2015/page_45.pdf-4": {
+      "z0000": 1.0
+    },
+    "AON/2015/page_50.pdf-1": {
+      "singleton:8aa048543226079a217e6dc4fd3b5c6d63eef53030725a322485dc159ae8d180": 1.0
+    },
+    "AON/2015/page_50.pdf-3": {
+      "p0_ratio_compute_submit": 0.48755711978062927,
+      "p1_ratio_compute_submit": 0.5124428802193707
+    },
+    "AON/2015/page_62.pdf-1": {
+      "z0000": 0.17217605403201156,
+      "z0001": 0.21805386317618775,
+      "z0002": 0.19114647603028384,
+      "z0003": 0.20555885269344765,
+      "z0004": 0.2130647540680692
+    },
+    "AON/2015/page_62.pdf-2": {
+      "z0000": 1.0
+    },
+    "AON/2015/page_62.pdf-3": {
+      "s0": 1.0
+    },
+    "AON/2015/page_62.pdf-4": {
+      "z0000": 1.0
+    },
+    "AON/2015/page_72.pdf-1": {
+      "s1": 1.0
+    },
+    "AON/2015/page_72.pdf-2": {
+      "z0000": 0.7853908518915571,
+      "z0001": 0.21460914810844295
+    },
+    "AON/2015/page_77.pdf-4": {
+      "z0000": 1.0
+    },
+    "APD/2019/page_100.pdf-1": {
+      "s1": 1.0
+    },
+    "APD/2019/page_108.pdf-2": {
+      "z0000": 1.0
+    },
+    "APD/2019/page_39.pdf-2": {
+      "singleton:3244bec009c19823d3d87939a5c91c7dfe99fc7b2f7b83a4b49c1c569e8c96e7": 1.0
+    },
+    "APD/2019/page_53.pdf-2": {
+      "singleton:8cb27e0fcb64cd3b28f6a0585881e5dfbf23c99ab3c3996c5d9411322c34de81": 1.0
+    },
+    "APTV/2014/page_46.pdf-1": {
+      "s1": 1.0
+    },
+    "APTV/2014/page_46.pdf-3": {
+      "singleton:1312d60ba94d602aaf8ed9f7f00a9b6d2a547a09c1afc378eca6b0dbd4fbbf0c": 1.0
+    },
+    "APTV/2014/page_46.pdf-4": {
+      "z0000": 0.1899838706732388,
+      "z0001": 0.21442934797768912,
+      "z0002": 0.19000173982288393,
+      "z0003": 0.18995497585367752,
+      "z0004": 0.21563006567251075
+    },
+    "AWK/2013/page_12.pdf-1": {
+      "singleton:0ecafae2845e9f45073b139baf7f2717cc5447a7dc33d1b073853e54e08a388f": 1.0
+    },
+    "AWK/2013/page_123.pdf-2": {
+      "p0_direct_correct_submit": 0.3315681710867153,
+      "p1_direct_correct_submit": 0.3148264049992595,
+      "p2_revised_to_decrease_sum": 0.35360542391402505
+    },
+    "AWK/2013/page_123.pdf-4": {
+      "s1_divide_ratio_submitted": 1.0
+    },
+    "BDX/2009/page_80.pdf-1": {
+      "z0000": 1.0
+    },
+    "BDX/2009/page_80.pdf-2": {
+      "s1": 0.3857504902861562,
+      "s2": 0.31004460983205817,
+      "s3": 0.3042048998817857
+    },
+    "BDX/2009/page_80.pdf-3": {
+      "z0000": 1.0
+    },
+    "BDX/2009/page_80.pdf-4": {
+      "s1": 1.0
+    },
+    "BDX/2009/page_81.pdf-1": {
+      "s0": 1.0
+    },
+    "BDX/2009/page_81.pdf-2": {
+      "s1": 1.0
+    },
+    "BDX/2009/page_81.pdf-3": {
+      "s1": 1.0
+    },
+    "BDX/2009/page_81.pdf-4": {
+      "z0000": 0.3335071137683781,
+      "z0001": 0.3356391701768382,
+      "z0002": 0.3308537160547838
+    },
+    "BDX/2017/page_28.pdf-1": {
+      "z0000": 0.20880923852934682,
+      "z0001": 0.21163919665585537,
+      "z0002": 0.19788273631493264,
+      "z0003": 0.1763131285797664,
+      "z0004": 0.2053556999200988
+    },
+    "BDX/2017/page_28.pdf-2": {
+      "z0000": 1.0
+    },
+    "BDX/2017/page_32.pdf-1": {
+      "singleton:3b43e6f81b6dfe758af859745a3a491402617635593aba08545839ddc1bc2f84": 1.0
+    },
+    "BDX/2017/page_32.pdf-2": {
+      "s1": 1.0
+    },
+    "BDX/2017/page_32.pdf-3": {
+      "s1": 1.0
+    },
+    "BDX/2017/page_32.pdf-4": {
+      "z0000": 0.1865269725258369,
+      "z0001": 0.17017910966282937,
+      "z0002": 0.2008885342037476,
+      "z0003": 0.22318327976280067,
+      "z0004": 0.2192221038447855
+    },
+    "BLK/2009/page_98.pdf-3": {
+      "z0000": 0.32445649311297503,
+      "z0001": 0.3471462018813665,
+      "z0002": 0.3283973050056584
+    },
+    "BLK/2009/page_98.pdf-4": {
+      "z0000": 0.3251685201945158,
+      "z0001": 0.3558756264983342,
+      "z0002": 0.3189558533071499
+    },
+    "BLK/2014/page_33.pdf-1": {
+      "singleton:30b3478753f379805030d46beb46fce33071f27647bcd4cbe1021c4bf33012b1": 1.0
+    },
+    "BLK/2014/page_33.pdf-4": {
+      "s1": 1.0
+    },
+    "BLK/2014/page_68.pdf-1": {
+      "z0000": 1.0
+    },
+    "BLK/2014/page_68.pdf-2": {
+      "z0000": 1.0
+    },
+    "BLK/2015/page_123.pdf-1": {
+      "singleton:cf85bf734349cd606cf3fcb8f6437911692680131e1c571c053b583acd67396d": 1.0
+    },
+    "BLK/2015/page_123.pdf-3": {
+      "z0000": 1.0
+    },
+    "BLK/2015/page_35.pdf-2": {
+      "z0000": 0.2493570655609635,
+      "z0001": 0.24232074795037614,
+      "z0002": 0.25172192008975636,
+      "z0003": 0.25660026639890404
+    },
+    "BLK/2015/page_35.pdf-3": {
+      "s0": 1.0
+    },
+    "BLK/2015/page_35.pdf-4": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_35.pdf-1": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_35.pdf-2": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_35.pdf-3": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_35.pdf-4": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_77.pdf-1": {
+      "singleton:40d2ffa6b5467106ef7645a4252a9a7258f392ea5457f29f6f6f15f18aab989f": 1.0
+    },
+    "BLK/2017/page_77.pdf-2": {
+      "singleton:40637302e5c5a294d9c9bcf96251da713cb5413547ae8afad3c8be9c8cced544": 1.0
+    },
+    "BLK/2017/page_81.pdf-1": {
+      "z0000": 1.0
+    },
+    "BLK/2017/page_81.pdf-2": {
+      "singleton:e910a2724fd14f916b0f2b9c8fc82b2259445ceab631e4c8d7ead639a342d106": 1.0
+    },
+    "BLK/2017/page_81.pdf-3": {
+      "z0000": 1.0
+    },
+    "BLK/2017/page_81.pdf-4": {
+      "s0_direct_submit": 0.2512690562461243,
+      "s1_execute_then_submit": 0.2510948799890322,
+      "s2_execute_interpret_submit": 0.2428258650265727,
+      "s3_execute_confirm_submit": 0.2548101987382709
+    },
+    "BLK/2017/page_87.pdf-2": {
+      "s1": 1.0
+    },
+    "BLK/2017/page_87.pdf-3": {
+      "z0000": 0.25346996394500637,
+      "z0001": 0.23899865182361946,
+      "z0002": 0.2527885236568549,
+      "z0003": 0.2547428605745193
+    },
+    "BLK/2017/page_87.pdf-4": {
+      "z0000": 1.0
+    },
+    "C/2009/page_141.pdf-1": {
+      "z0000": 1.0
+    },
+    "C/2009/page_141.pdf-2": {
+      "s0": 0.3056321970189469,
+      "s1": 0.3603171797525373,
+      "s2": 0.33405062322851575
+    },
+    "C/2009/page_141.pdf-3": {
+      "s1": 0.13907495252114993,
+      "s2": 0.14194015049656858,
+      "s3": 0.13005105076561815,
+      "s4": 0.15310277464552655,
+      "s5": 0.15402479242008474,
+      "s6": 0.13756238525379952,
+      "s7": 0.14424389389725262
+    },
+    "C/2009/page_141.pdf-4": {
+      "z0000": 0.18221279104959456,
+      "z0001": 0.21186724969718815,
+      "z0002": 0.19805373034637805,
+      "z0003": 0.20585584866986684,
+      "z0004": 0.20201038023697243
+    },
+    "C/2009/page_162.pdf-1": {
+      "z0000": 1.0
+    },
+    "C/2009/page_162.pdf-2": {
+      "singleton:5ffadbcf587b6d72595de199b31be91bc7ee004dc0139822bcd4416d26073fb5": 1.0
+    },
+    "C/2009/page_194.pdf-1": {
+      "s1": 1.0
+    },
+    "C/2009/page_194.pdf-2": {
+      "s1": 1.0
+    },
+    "C/2009/page_200.pdf-1": {
+      "z0000": 1.0
+    },
+    "C/2009/page_200.pdf-2": {
+      "z0000": 0.21090802086932112,
+      "z0001": 0.20139328950400354,
+      "z0002": 0.2109807880030657,
+      "z0003": 0.20373783114840657,
+      "z0004": 0.17298007047520303
+    },
+    "C/2009/page_200.pdf-3": {
+      "singleton:c5f2f31889afdaf7b93ff8a38ce9e80ff7fc9a21da43bff8c03e9d6dc710b9fd": 1.0
+    },
+    "C/2009/page_248.pdf-3": {
+      "s1": 1.0
+    },
+    "C/2009/page_248.pdf-4": {
+      "z0000": 1.0
+    },
+    "C/2009/page_255.pdf-1": {
+      "singleton:a069523775c610e64cfd5de05ccc322558c7ba883856bda336fd6f46c5cbbb74": 1.0
+    },
+    "C/2009/page_255.pdf-2": {
+      "singleton:f57030c3becddce5338ec9c5498dec8044928ccd9320ab3174e7d89ac1f96bfb": 1.0
+    },
+    "C/2009/page_255.pdf-4": {
+      "p0_direct_submit": 0.5081131457129017,
+      "p1_execute_verify_submit": 0.4918868542870984
+    },
+    "C/2009/page_279.pdf-1": {
+      "z0000": 0.2650054283485873,
+      "z0001": 0.22711774087826034,
+      "z0002": 0.2572492592443034,
+      "z0003": 0.25062757152884896
+    },
+    "C/2009/page_279.pdf-2": {
+      "z0000": 1.0
+    },
+    "C/2009/page_38.pdf-1": {
+      "singleton:eed68ab63f81b83d33c0e61bc28fc6659a4f0c4590cbf69b79d209306ea0fef3": 1.0
+    },
+    "C/2009/page_38.pdf-2": {
+      "z0000": 1.0
+    },
+    "C/2009/page_38.pdf-3": {
+      "z0000": 1.0
+    },
+    "C/2009/page_38.pdf-4": {
+      "z0000": 1.0
+    },
+    "C/2009/page_41.pdf-1": {
+      "s0": 1.0
+    },
+    "C/2009/page_41.pdf-2": {
+      "s1_compute_and_submit_ratio": 1.0
+    },
+    "C/2009/page_42.pdf-1": {
+      "s1": 1.0
+    },
+    "C/2009/page_42.pdf-2": {
+      "direct_ratio_compute_and_submit": 1.0
+    },
+    "C/2009/page_48.pdf-1": {
+      "z0000": 0.24818028193271366,
+      "z0001": 0.24850290314377446,
+      "z0002": 0.2645569777711704,
+      "z0003": 0.23875983715234156
+    },
+    "C/2009/page_48.pdf-2": {
+      "s0": 1.0
+    },
+    "C/2009/page_53.pdf-1": {
+      "s1": 1.0
+    },
+    "C/2009/page_53.pdf-2": {
+      "s1": 1.0
+    },
+    "C/2015/page_314.pdf-1": {
+      "s0": 0.2147827513510585,
+      "s1": 0.1869390661560614,
+      "s2": 0.1844630828784286,
+      "s3": 0.20571382735928517,
+      "s4": 0.2081012722551663
+    },
+    "C/2015/page_314.pdf-3": {
+      "singleton:8e88b7b5f1b83e0a183a7c7c04fdfcf0755fe6fb95c924164a9b4e03e9974fb4": 1.0
+    },
+    "C/2015/page_314.pdf-4": {
+      "s0": 0.33097394326747637,
+      "s1": 0.3406837533749214,
+      "s2": 0.32834230335760234
+    },
+    "C/2015/page_46.pdf-1": {
+      "singleton:635ae2406cf6332d3060c007828aadc18d9f6fe36799dfe209163ac4170d021a": 1.0
+    },
+    "C/2015/page_46.pdf-2": {
+      "singleton:4f6c60e5fba07df54dca18f27aba603a6039974dbdc727dbbfa8af927b987f33": 1.0
+    },
+    "C/2015/page_73.pdf-1": {
+      "z0000": 1.0
+    },
+    "C/2015/page_73.pdf-2": {
+      "singleton:1f119aace8e0f6e83fe9ee51f4727352a2faf8866a8cc7c7e63aa26c60403341": 1.0
+    },
+    "C/2015/page_73.pdf-3": {
+      "singleton:77525bd769b08ee4b1613af409e650468582ba5256bc3db7f780a2870968f553": 1.0
+    },
+    "CAG/2008/page_35.pdf-1": {
+      "z0000": 1.0
+    },
+    "CAG/2008/page_35.pdf-2": {
+      "singleton:b5a1d29fcd7ef2fea98980c80f7fbd3e9365767f5c272106b0b3f919d29e445c": 1.0
+    },
+    "CAG/2008/page_47.pdf-1": {
+      "s1_compute_and_submit_ratio": 1.0
+    },
+    "CAG/2008/page_47.pdf-2": {
+      "s0": 0.254856372275162,
+      "s1": 0.22909236202812142,
+      "s2": 0.24631034109459618,
+      "s3": 0.2697409246021204
+    },
+    "CDNS/2007/page_30.pdf-1": {
+      "s0": 1.0
+    },
+    "CDNS/2007/page_30.pdf-2": {
+      "z0000": 1.0
+    },
+    "CDNS/2007/page_30.pdf-4": {
+      "s1": 0.17182806385412816,
+      "s2": 0.18481753266426462,
+      "s3": 0.16643632022948784,
+      "s4": 0.1622327523211448,
+      "s5": 0.16270027340537999,
+      "s6": 0.15198505752559474
+    },
+    "CDNS/2007/page_93.pdf-2": {
+      "singleton:aaee2bb2555269319732533b232375dec6861f0ec8d8e76679f37a7f0c4ad1f0": 1.0
+    },
+    "CDNS/2007/page_93.pdf-3": {
+      "s0": 1.0
+    },
+    "CDNS/2007/page_93.pdf-4": {
+      "singleton:f1e9dfb15008c8014a3cfa79b22bdd5d347007f0ca52e0ae1edb71287a8045e1": 1.0
+    },
+    "CDNS/2012/page_31.pdf-1": {
+      "singleton:a00445ab1b1a2c1ed6ef321f2890ea3e41085345c68b1a397897fcb99d83e513": 1.0
+    },
+    "CDNS/2012/page_31.pdf-2": {
+      "s1": 1.0
+    },
+    "CDNS/2012/page_41.pdf-1": {
+      "singleton:59c147a4fa5559d6e8d8c2a7c77727c420e065a10db6bf86f32ca4469a4227eb": 1.0
+    },
+    "CDNS/2012/page_58.pdf-1": {
+      "singleton:85609e05d7e9013d40ae0b77e1c3a8657bc5a32d9452e30620ed7288c2b188b2": 1.0
+    },
+    "CDNS/2012/page_58.pdf-2": {
+      "singleton:f522a384a3acc1c7f52e77cc3c38751aed669b6e84376793044f03edc0345eb8": 1.0
+    },
+    "CDW/2015/page_34.pdf-1": {
+      "singleton:d1a860e3f390dfd82ae35cd0c75b5919086fdc9e178f0a4b54f2c4b219d52d05": 1.0
+    },
+    "CDW/2015/page_34.pdf-2": {
+      "s0": 0.2107364603214627,
+      "s1": 0.19967938161206042,
+      "s2": 0.18855718879574987,
+      "s3": 0.19978754667003867,
+      "s4": 0.20123942260068833
+    },
+    "CDW/2015/page_35.pdf-1": {
+      "singleton:e6cc1e132093573fc6a69e66a5ea9ea98752c90a7b592a3d8c0f6fac7cb4b179": 1.0
+    },
+    "CDW/2015/page_53.pdf-1": {
+      "p0-direct-derivation": 0.5529714454776825,
+      "p1-direct-derivation": 0.44702855452231743
+    },
+    "CDW/2015/page_53.pdf-4": {
+      "z0000": 1.0
+    },
+    "CDW/2015/page_54.pdf-1": {
+      "z0000": 1.0
+    },
+    "CDW/2015/page_54.pdf-2": {
+      "z0000": 1.0
+    },
+    "CDW/2015/page_54.pdf-3": {
+      "p0_direct_submit": 0.5465288152323972,
+      "p1_run_then_submit": 0.4534711847676028
+    },
+    "CDW/2015/page_54.pdf-4": {
+      "s0": 1.0
+    },
+    "DG/2008/page_73.pdf-1": {
+      "s0": 1.0
+    },
+    "DG/2008/page_73.pdf-2": {
+      "z0000": 1.0
+    },
+    "DG/2008/page_73.pdf-4": {
+      "s1": 1.0
+    },
+    "DG/2008/page_86.pdf-1": {
+      "s0": 1.0
+    },
+    "DG/2008/page_86.pdf-2": {
+      "p0_extract_sum_submit": 0.34131439655201706,
+      "p1_extract_sum_submit": 0.346585949222586,
+      "p2_extract_sum_submit": 0.312099654225397
+    },
+    "DISCA/2011/page_35.pdf-2": {
+      "z0000": 0.20376077836505238,
+      "z0001": 0.19944386479672793,
+      "z0002": 0.20852026706072638,
+      "z0003": 0.20327900385374775,
+      "z0004": 0.1849960859237455
+    },
+    "DISCA/2011/page_35.pdf-3": {
+      "s0_run_then_submit_same": 0.12750213998112087,
+      "s1_run_then_submit_same": 0.16403169393074762,
+      "s2_direct_submit": 0.17808322332239318,
+      "s3_direct_submit": 0.18203919154275588,
+      "s4_run_then_submit_same": 0.17856607033600425,
+      "s5_run_then_submit_same": 0.16977768088697812
+    },
+    "DISCA/2011/page_35.pdf-4": {
+      "s0": 0.315716630419411,
+      "s1": 0.3197901393372688,
+      "s2": 0.3644932302433202
+    },
+    "DISCA/2017/page_22.pdf-1": {
+      "z0000": 0.33483155032111683,
+      "z0001": 0.3250954151935217,
+      "z0002": 0.34007303448536147
+    },
+    "DISCA/2017/page_22.pdf-2": {
+      "s1": 0.15947458078789084,
+      "s2": 0.17194870258546138,
+      "s3": 0.22702876611742576,
+      "s4": 0.20716079063669873,
+      "s5": 0.23438715987252337
+    },
+    "DISCA/2017/page_41.pdf-1": {
+      "singleton:75c845b0354dfeebe6b1349e818af03cab6b3690cbd3ce552f8aec1d720b6353": 1.0
+    },
+    "DISCA/2017/page_41.pdf-2": {
+      "s0_direct_terminal_value_comparison": 0.14312883126549994,
+      "s1_percentage_return_comparison": 0.17735791175372223,
+      "s2_return_ratio_comparison": 0.1771283473324912,
+      "s3_difference_from_base_comparison": 0.1559433735095036,
+      "s4_table_row_max_comparison": 0.17196403337739438,
+      "s5_percentage_return_comparison_variant": 0.1744775027613886
+    },
+    "DISCA/2017/page_41.pdf-3": {
+      "s1": 1.0
+    },
+    "DISH/2008/page_120.pdf-1": {
+      "z0000": 1.0
+    },
+    "DISH/2011/page_130.pdf-1": {
+      "z0000": 1.0
+    },
+    "DISH/2011/page_130.pdf-2": {
+      "z0000": 0.822677173084231,
+      "z0001": 0.17732282691576878
+    },
+    "DRE/2008/page_29.pdf-1": {
+      "z0000": 1.0
+    },
+    "DRE/2008/page_29.pdf-2": {
+      "s0_p0_execute_then_submit": 0.24436860037289998,
+      "s1_p1_execute_then_submit": 0.24458351515683843,
+      "s2_p2_direct_submit": 0.2625248806066684,
+      "s3_p3_direct_submit": 0.24852300386359327
+    },
+    "DRE/2008/page_49.pdf-1": {
+      "singleton:4630e63743281b988d86b480800094fafa69d566a4c0324d39a4d1d489ff027c": 1.0
+    },
+    "DRE/2008/page_49.pdf-2": {
+      "z0000": 1.0
+    },
+    "DRE/2016/page_59.pdf-2": {
+      "s1": 1.0
+    },
+    "DRE/2016/page_64.pdf-4": {
+      "s1": 0.23001876381678274,
+      "s2": 0.26266406904592493,
+      "s3": 0.25100485952015106,
+      "s4": 0.2563123076171413
+    },
+    "DVN/2004/page_50.pdf-1": {
+      "z0000": 0.3246386029968523,
+      "z0001": 0.6753613970031477
+    },
+    "EOG/2017/page_102.pdf-1": {
+      "p0-run-then-submit": 0.2930703800466452,
+      "p1-run-then-submit": 0.3306181629385926,
+      "p2-direct-submit": 0.3763114570147621
+    },
+    "EOG/2017/page_103.pdf-1": {
+      "z0000": 1.0
+    },
+    "EOG/2017/page_103.pdf-2": {
+      "z0000": 1.0
+    },
+    "EOG/2017/page_78.pdf-1": {
+      "p0_direct_max_submit": 0.305005083745743,
+      "p1_confirm_max_submit": 0.3688600814440775,
+      "p2_match_max_submit": 0.3261348348101795
+    },
+    "EOG/2017/page_78.pdf-2": {
+      "s0": 1.0
+    },
+    "EOG/2017/page_93.pdf-2": {
+      "z0000": 0.3563406667075247,
+      "z0001": 0.2948437169011906,
+      "z0002": 0.34881561639128467
+    },
+    "FRT/2006/page_133.pdf-1": {
+      "s0": 1.0
+    },
+    "FRT/2006/page_133.pdf-2": {
+      "z0000": 1.0
+    },
+    "FRT/2007/page_137.pdf-1": {
+      "s0": 1.0
+    },
+    "FRT/2007/page_137.pdf-2": {
+      "s0": 1.0
+    },
+    "FRT/2009/page_124.pdf-1": {
+      "s0": 1.0
+    },
+    "GIS/2008/page_83.pdf-1": {
+      "z0000": 0.33542643158769975,
+      "z0001": 0.3396726742288006,
+      "z0002": 0.3249008941834997
+    },
+    "GIS/2008/page_83.pdf-2": {
+      "z0000": 1.0
+    },
+    "GIS/2008/page_83.pdf-3": {
+      "z0000": 0.19434190809219928,
+      "z0001": 0.20341994559976306,
+      "z0002": 0.18523483519703263,
+      "z0003": 0.220124887629342,
+      "z0004": 0.19687842348166298
+    },
+    "GPN/2007/page_18.pdf-1": {
+      "s1_ratio_computation_no_revision": 1.0
+    },
+    "GPN/2007/page_18.pdf-2": {
+      "s1": 1.0
+    },
+    "GPN/2007/page_39.pdf-1": {
+      "s0": 1.0
+    },
+    "GPN/2007/page_39.pdf-2": {
+      "s1": 1.0
+    },
+    "GPN/2007/page_97.pdf-2": {
+      "singleton:d823f63bbf99f435dfd77068b151d54d6f8020962767b9b814ced3f738e10942": 1.0
+    },
+    "GPN/2008/page_39.pdf-2": {
+      "s1": 1.0
+    },
+    "GPN/2008/page_39.pdf-3": {
+      "z0000": 0.32477972498206886,
+      "z0001": 0.35299080853742937,
+      "z0002": 0.32222946648050166
+    },
+    "GPN/2008/page_88.pdf-1": {
+      "singleton:7a7db9efa266899129afda1982ddb7f457fc246dff3dfae2057dc29e2ac87443": 1.0
+    },
+    "GPN/2008/page_88.pdf-2": {
+      "s0": 1.0
+    },
+    "GPN/2008/page_92.pdf-2": {
+      "z0000": 1.0
+    },
+    "GPN/2008/page_95.pdf-1": {
+      "z0000": 0.31019640453539477,
+      "z0001": 0.34853726433668547,
+      "z0002": 0.34126633112791976
+    },
+    "GPN/2008/page_95.pdf-2": {
+      "s1_direct_ratio_compute_and_submit": 1.0
+    },
+    "GPN/2008/page_95.pdf-4": {
+      "z0000": 1.0
+    },
+    "GPN/2008/page_99.pdf-4": {
+      "s0": 1.0
+    },
+    "GPN/2016/page_67.pdf-1": {
+      "p0_plan_execute_submit": 0.4829301335535391,
+      "p1_plan_execute_verify_submit": 0.517069866446461
+    },
+    "GPN/2016/page_67.pdf-2": {
+      "s1": 1.0
+    },
+    "GPN/2016/page_69.pdf-2": {
+      "s1": 1.0
+    },
+    "GPN/2016/page_83.pdf-1": {
+      "s1": 1.0
+    },
+    "GPN/2016/page_83.pdf-2": {
+      "z0000": 1.0
+    },
+    "GPN/2016/page_83.pdf-3": {
+      "z0000": 1.0
+    },
+    "GPN/2016/page_83.pdf-4": {
+      "s0": 1.0
+    },
+    "GPN/2016/page_84.pdf-1": {
+      "singleton:448c9747dd8f51b57c751f88a957b6b7904d06192fbd7a9cc24efc99f70d4ec6": 1.0
+    },
+    "GPN/2016/page_84.pdf-4": {
+      "p0_read_run_submit": 0.2934400078402599,
+      "p1_run_submit": 0.34776477948791285,
+      "p2_run_submit": 0.3587952126718273
+    },
+    "GPN/2018/page_74.pdf-1": {
+      "s1": 1.0
+    },
+    "GPN/2018/page_79.pdf-1": {
+      "s1": 1.0
+    },
+    "GPN/2018/page_85.pdf-1": {
+      "z0000": 1.0
+    },
+    "GPN/2018/page_85.pdf-2": {
+      "z0000": 0.24820624019715765,
+      "z0001": 0.2575858245095975,
+      "z0002": 0.2352250159167348,
+      "z0003": 0.25898291937651
+    },
+    "GPN/2018/page_85.pdf-3": {
+      "s0": 0.23233486517274254,
+      "s1": 0.24888134646884547,
+      "s2": 0.24524868133988606,
+      "s3": 0.2735351070185259
+    },
+    "GRMN/2004/page_91.pdf-1": {
+      "s0": 0.3239583290348784,
+      "s1": 0.3370203397764612,
+      "s2": 0.33902133118866035
+    },
+    "GRMN/2004/page_91.pdf-2": {
+      "s1": 1.0
+    },
+    "HFC/2011/page_85.pdf-1": {
+      "s0": 1.0
+    },
+    "HFC/2011/page_88.pdf-1": {
+      "p0_compute_and_submit": 0.5210558966250384,
+      "p1_compute_and_submit": 0.47894410337496174
+    },
+    "HFC/2011/page_88.pdf-2": {
+      "z0000": 0.4926064963556804,
+      "z0001": 0.5073935036443196
+    },
+    "HFC/2011/page_88.pdf-3": {
+      "z0000": 1.0
+    },
+    "HFC/2011/page_92.pdf-1": {
+      "s1": 1.0
+    },
+    "HFC/2011/page_92.pdf-2": {
+      "s0": 0.25445281339011294,
+      "s1": 0.2706910187360316,
+      "s2": 0.22376671746938845,
+      "s3": 0.25108945040446706
+    },
+    "HFC/2011/page_92.pdf-3": {
+      "s1": 1.0
+    },
+    "HFC/2011/page_92.pdf-4": {
+      "z0000": 0.17656903665479123,
+      "z0001": 0.21804351109662276,
+      "z0002": 0.20160138874149877,
+      "z0003": 0.19503607960381908,
+      "z0004": 0.20874998390326832
+    },
+    "HFC/2011/page_92.pdf-5": {
+      "z0000": 1.0
+    },
+    "HFC/2011/page_92.pdf-6": {
+      "s1": 1.0
+    },
+    "HFC/2018/page_43.pdf-1": {
+      "z0000": 1.0
+    },
+    "HFC/2018/page_43.pdf-2": {
+      "compute_ratio_and_submit": 1.0
+    },
+    "HFC/2018/page_43.pdf-4": {
+      "z0000": 1.0
+    },
+    "HFC/2018/page_43.pdf-5": {
+      "singleton:548f5d7ea2e588e8648deef6b629f045c42f24da8c2966ee90d71bfc6f025f5a": 1.0
+    },
+    "HIG/2012/page_132.pdf-1": {
+      "p0_direct_compute_submit": 0.36410911095686344,
+      "p1_direct_compute_submit": 0.2682311545321532,
+      "p2_direct_compute_submit": 0.3676597345109834
+    },
+    "HIG/2012/page_132.pdf-3": {
+      "s1": 1.0
+    },
+    "HIG/2013/page_124.pdf-1": {
+      "s1": 1.0
+    },
+    "HIG/2013/page_124.pdf-2": {
+      "s1": 1.0
+    },
+    "HIG/2013/page_124.pdf-3": {
+      "s0_run_then_submit_same_program": 0.2455789360047445,
+      "s1_direct_submit_ratio": 0.2694960617062594,
+      "s2_run_comment_then_submit_same_program": 0.22595361461785754,
+      "s3_run_then_submit_same_program": 0.2589713876711387
+    },
+    "HIG/2013/page_212.pdf-1": {
+      "singleton:610d3b4477d183cd4c31a73d5c53cf5ffb29455c224343b85af80b511889dfe7": 1.0
+    },
+    "HIG/2013/page_212.pdf-2": {
+      "s1": 1.0
+    },
+    "HIG/2013/page_235.pdf-1": {
+      "z0000": 0.16804542000456696,
+      "z0001": 0.16315374283275186,
+      "z0002": 0.16794642961176065,
+      "z0003": 0.17533093889963858,
+      "z0004": 0.17373749278491218,
+      "z0005": 0.15178597586636972
+    },
+    "HIG/2013/page_235.pdf-2": {
+      "z0000": 0.16804895144513618,
+      "z0001": 0.15601355667234784,
+      "z0002": 0.17365193387278263,
+      "z0003": 0.1877459850158259,
+      "z0004": 0.15983119715048755,
+      "z0005": 0.15470837584341982
+    },
+    "HOLX/2009/page_133.pdf-1": {
+      "z0000": 1.0
+    },
+    "HOLX/2009/page_133.pdf-2": {
+      "z0000": 1.0
+    },
+    "HOLX/2009/page_141.pdf-1": {
+      "z0000": 1.0
+    },
+    "HOLX/2009/page_141.pdf-2": {
+      "s1_direct_compute_submit": 1.0
+    },
+    "HOLX/2009/page_153.pdf-1": {
+      "z0000": 0.15082693472636724,
+      "z0001": 0.15910710571459719,
+      "z0002": 0.1355439606025922,
+      "z0003": 0.16399369092358632,
+      "z0004": 0.1404615725444467,
+      "z0005": 0.12284514609765057,
+      "z0006": 0.12722158939075967
+    },
+    "HOLX/2009/page_153.pdf-2": {
+      "s0": 1.0
+    },
+    "HOLX/2009/page_153.pdf-4": {
+      "aggregate_and_submit_15100": 1.0
+    },
+    "HUM/2005/page_18.pdf-2": {
+      "singleton:b1d95242666dad7c5893fb0f0bb52297dc793d0dbf4f5592bc94ad8cc14e88d8": 1.0
+    },
+    "HUM/2005/page_18.pdf-3": {
+      "ratio_computation_and_submission": 1.0
+    },
+    "HUM/2005/page_80.pdf-1": {
+      "z0000": 1.0
+    },
+    "HUM/2005/page_80.pdf-2": {
+      "singleton:53faa1abd27de380a712bc30c8d31c1d00074f381db66ecee78a4b7bd961f71c": 1.0
+    },
+    "HUM/2005/page_80.pdf-3": {
+      "singleton:87392f7e18403b5f42bec85ef59ab831ac0b5e97e26783bbcd3e7bb8213b4151": 1.0
+    },
+    "HUM/2005/page_80.pdf-4": {
+      "liability_sum_computation": 1.0
+    },
+    "HUM/2012/page_109.pdf-2": {
+      "s0": 1.0
+    },
+    "HUM/2016/page_133.pdf-1": {
+      "singleton:6b7e15bec6f382cd67da4c2d40fe8d5f4339d00d69ba1046020d41257dc31814": 1.0
+    },
+    "HUM/2016/page_133.pdf-3": {
+      "z0000": 1.0
+    },
+    "HWM/2016/page_119.pdf-2": {
+      "z0000": 0.2617157605980259,
+      "z0001": 0.23210113585154102,
+      "z0002": 0.24577800812310308,
+      "z0003": 0.2604050954273299
+    },
+    "HWM/2016/page_50.pdf-1": {
+      "s1_ratio_compute_submit": 1.0
+    },
+    "HWM/2016/page_52.pdf-1": {
+      "s1": 1.0
+    },
+    "HWM/2016/page_52.pdf-2": {
+      "z0000": 1.0
+    },
+    "HWM/2016/page_79.pdf-2": {
+      "s1": 1.0
+    },
+    "HWM/2017/page_75.pdf-2": {
+      "z0000": 0.2669542995119082,
+      "z0001": 0.2346099409263343,
+      "z0002": 0.23984754075046347,
+      "z0003": 0.2585882188112942
+    },
+    "HWM/2017/page_77.pdf-2": {
+      "s0_run_then_submit_no_revision": 0.27533489132205324,
+      "s1_direct_submit_no_verification": 0.27765801742259916,
+      "s2_direct_submit_no_verification": 0.1996212439990404,
+      "s3_run_verify_then_submit": 0.2473858472563073
+    },
+    "ILMN/2017/page_23.pdf-1": {
+      "singleton:f3d85c85293933d2d09b7cbf81714a7e01f92a9d11025164d9e92b806f1bba4a": 1.0
+    },
+    "ILMN/2017/page_23.pdf-2": {
+      "z0000": 0.21084397978016495,
+      "z0001": 0.19472287296506377,
+      "z0002": 0.20341459221937502,
+      "z0003": 0.2045860938549246,
+      "z0004": 0.18643246118047171
+    },
+    "INTC/2015/page_122.pdf-1": {
+      "s1": 1.0
+    },
+    "INTC/2015/page_122.pdf-2": {
+      "s1": 1.0
+    },
+    "INTC/2015/page_122.pdf-3": {
+      "singleton:2ba77e24bc5c4128642841ed9a77ea6f30e742564637cf63a50161f08236d199": 1.0
+    },
+    "INTC/2015/page_122.pdf-4": {
+      "s1": 1.0
+    },
+    "INTC/2018/page_105.pdf-1": {
+      "z0000": 0.21572204499720593,
+      "z0001": 0.21617406632676603,
+      "z0002": 0.20627032525197908,
+      "z0003": 0.17122445548230988,
+      "z0004": 0.19060910794173905
+    },
+    "INTC/2018/page_105.pdf-2": {
+      "s1": 1.0
+    },
+    "INTC/2018/page_48.pdf-1": {
+      "s1": 1.0
+    },
+    "INTC/2018/page_48.pdf-2": {
+      "s0": 1.0
+    },
+    "INTC/2018/page_48.pdf-3": {
+      "p0-direct-compute-submit": 0.3380898362605802,
+      "p1-compute-interpret-submit": 0.31063097973565057,
+      "p2-compute-confirm-submit": 0.3512791840037691
+    },
+    "INTC/2018/page_50.pdf-1": {
+      "s1": 1.0
+    },
+    "INTC/2018/page_50.pdf-2": {
+      "s1": 1.0
+    },
+    "INTC/2018/page_50.pdf-3": {
+      "z0000": 0.32597909875965864,
+      "z0001": 0.4025286415793921,
+      "z0002": 0.2714922596609492
+    },
+    "INTC/2018/page_50.pdf-4": {
+      "s1": 1.0
+    },
+    "IP/2005/page_27.pdf-1": {
+      "z0000": 0.31986772003902586,
+      "z0001": 0.31170324583632736,
+      "z0002": 0.36842903412464684
+    },
+    "IP/2005/page_27.pdf-4": {
+      "s0": 1.0
+    },
+    "IP/2005/page_28.pdf-1": {
+      "z0000": 1.0
+    },
+    "IP/2005/page_28.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2005/page_28.pdf-3": {
+      "s1_direct_table_ratio": 1.0
+    },
+    "IP/2005/page_29.pdf-2": {
+      "s1": 0.3676358763619524,
+      "s2": 0.31895596336621634,
+      "s3": 0.3134081602718313
+    },
+    "IP/2005/page_29.pdf-3": {
+      "z0000": 0.17210670463330374,
+      "z0001": 0.2164575082056707,
+      "z0002": 0.2065740241250812,
+      "z0003": 0.18609688724770157,
+      "z0004": 0.2187648757882427
+    },
+    "IP/2005/page_31.pdf-1": {
+      "z0000": 0.5343275247308407,
+      "z0001": 0.46567247526915945
+    },
+    "IP/2005/page_31.pdf-2": {
+      "s0": 1.0
+    },
+    "IP/2005/page_31.pdf-3": {
+      "z0000": 1.0
+    },
+    "IP/2005/page_32.pdf-1": {
+      "s1": 1.0
+    },
+    "IP/2005/page_32.pdf-2": {
+      "s1": 1.0
+    },
+    "IP/2005/page_32.pdf-3": {
+      "z0000": 1.0
+    },
+    "IP/2005/page_32.pdf-4": {
+      "z0000": 1.0
+    },
+    "IP/2005/page_83.pdf-1": {
+      "s1": 1.0
+    },
+    "IP/2006/page_19.pdf-1": {
+      "s0": 1.0
+    },
+    "IP/2006/page_19.pdf-2": {
+      "s1_direct_compute_submit": 1.0
+    },
+    "IP/2006/page_19.pdf-4": {
+      "z0000": 1.0
+    },
+    "IP/2006/page_34.pdf-2": {
+      "s1": 1.0
+    },
+    "IP/2006/page_34.pdf-3": {
+      "s1": 1.0
+    },
+    "IP/2006/page_84.pdf-1": {
+      "s0": 0.36090987046094986,
+      "s1": 0.33624554372037013,
+      "s2": 0.30284458581867985
+    },
+    "IP/2006/page_84.pdf-2": {
+      "s1": 1.0
+    },
+    "IP/2013/page_101.pdf-1": {
+      "s1": 1.0
+    },
+    "IP/2013/page_101.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_101.pdf-3": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_105.pdf-1": {
+      "z0000": 0.2725204242341504,
+      "z0001": 0.23773178881279536,
+      "z0002": 0.21186696872408198,
+      "z0003": 0.2778808182289722
+    },
+    "IP/2013/page_61.pdf-1": {
+      "s1_ratio_compute_submit": 1.0
+    },
+    "IP/2013/page_61.pdf-2": {
+      "z0000": 0.2933925825903733,
+      "z0001": 0.3613436009856204,
+      "z0002": 0.34526381642400633
+    },
+    "IP/2013/page_61.pdf-3": {
+      "z0000": 0.17245397476718802,
+      "z0001": 0.21462490576695956,
+      "z0002": 0.203695270970108,
+      "z0003": 0.21158865938467866,
+      "z0004": 0.19763718911106565
+    },
+    "IP/2013/page_62.pdf-1": {
+      "p0_direct_compute_submit": 0.332143530509592,
+      "p1_single_turn_submit": 0.31542918533133685,
+      "p2_run_interpret_submit": 0.35242728415907126
+    },
+    "IP/2013/page_62.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_62.pdf-3": {
+      "z0000": 0.20694221960115017,
+      "z0001": 0.20680000646564753,
+      "z0002": 0.1856766945914395,
+      "z0003": 0.1913967978482976,
+      "z0004": 0.20918428149346513
+    },
+    "IP/2013/page_62.pdf-4": {
+      "s1": 1.0
+    },
+    "IP/2013/page_64.pdf-1": {
+      "p0_run_then_submit_same_program": 0.23255154217559693,
+      "p1_run_then_submit_same_program": 0.23283233836518705,
+      "p2_direct_submit": 0.27319249115613103,
+      "p3_run_then_submit_same_program": 0.2614236283030849
+    },
+    "IP/2013/page_64.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_65.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_70.pdf-1": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_70.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2013/page_70.pdf-3": {
+      "z0000": 0.31921614299693285,
+      "z0001": 0.3352833450204327,
+      "z0002": 0.34550051198263443
+    },
+    "IP/2018/page_45.pdf-1": {
+      "s1": 0.14440890483374272,
+      "s2": 0.15213314235089745,
+      "s3": 0.17968603921501938,
+      "s4": 0.1729332229349821,
+      "s5": 0.18734754788170987,
+      "s6": 0.16349114278364862
+    },
+    "IP/2018/page_45.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2018/page_50.pdf-1": {
+      "singleton:7dacd02eb067481902f0924d66c211027ddaf9e291f402c593d2ebcbaddd58e9": 1.0
+    },
+    "IP/2018/page_50.pdf-2": {
+      "z0000": 1.0
+    },
+    "IP/2018/page_50.pdf-4": {
+      "s1": 0.16964291652530375,
+      "s2": 0.1705623533070545,
+      "s3": 0.16409834907374507,
+      "s4": 0.1662077636534528,
+      "s5": 0.16818731404969614,
+      "s6": 0.16130130339074775
+    },
+    "IP/2018/page_83.pdf-1": {
+      "z0000": 0.2495169124155737,
+      "z0001": 0.24965803863762429,
+      "z0002": 0.2621828191449273,
+      "z0003": 0.23864222980187472
+    },
+    "IP/2018/page_83.pdf-2": {
+      "z0000": 0.32661071203507896,
+      "z0001": 0.3209577788066675,
+      "z0002": 0.35243150915825344
+    },
+    "IP/2018/page_83.pdf-3": {
+      "z0000": 1.0
+    },
+    "IP/2018/page_83.pdf-4": {
+      "s1_direct_table_max_no_revision": 1.0
+    },
+    "IPG/2018/page_100.pdf-1": {
+      "s0": 1.0
+    },
+    "IPG/2018/page_100.pdf-4": {
+      "z0000": 1.0
+    },
+    "IPG/2018/page_104.pdf-2": {
+      "singleton:b04d2b58722870ff2c9455afc43c28cf9c275a83413f17062625252d3ec900be": 1.0
+    },
+    "IPG/2018/page_26.pdf-1": {
+      "s1": 1.0
+    },
+    "IPG/2018/page_26.pdf-3": {
+      "s0": 1.0
+    },
+    "IPG/2018/page_39.pdf-1": {
+      "s0": 1.0
+    },
+    "IPG/2018/page_39.pdf-2": {
+      "z0000": 0.7810984037157496,
+      "z0001": 0.2189015962842504
+    },
+    "IPG/2018/page_39.pdf-3": {
+      "s0": 0.2413717166704342,
+      "s1": 0.2661344846230828,
+      "s2": 0.2471987913309731,
+      "s3": 0.24529500737551
+    },
+    "IPG/2018/page_52.pdf-1": {
+      "singleton:0d3c201f7d1ba56d63fddb59eaaebe7335075af8d60b9ae4da88138c6cea0fc0": 1.0
+    },
+    "IPG/2018/page_52.pdf-2": {
+      "z0000": 1.0
+    },
+    "IPG/2018/page_78.pdf-1": {
+      "z0000": 1.0
+    },
+    "IPG/2018/page_78.pdf-2": {
+      "z0000": 1.0
+    },
+    "IPG/2018/page_78.pdf-3": {
+      "z0000": 1.0
+    },
+    "IQV/2016/page_57.pdf-1": {
+      "s1": 1.0
+    },
+    "IQV/2016/page_57.pdf-2": {
+      "s0": 0.2502166111606334,
+      "s1": 0.25477137523797877,
+      "s2": 0.2603735001101401,
+      "s3": 0.23463851349124784
+    },
+    "IQV/2016/page_65.pdf-1": {
+      "p0_percent_scale_revision": 0.3438002762041578,
+      "p1_direct_correct_scale": 0.3277994756878422,
+      "p2_direct_ratio_conversion": 0.32840024810799984
+    },
+    "IQV/2016/page_65.pdf-2": {
+      "singleton:80e873d0ef324a09abb65daa0a0a1150b60689ec49574e05a1c92552cd5c33d9": 1.0
+    },
+    "IQV/2016/page_65.pdf-3": {
+      "s1": 0.21126891062448055,
+      "s2": 0.22375134278960498,
+      "s3": 0.18956006799762395,
+      "s4": 0.1724295558011737,
+      "s5": 0.20299012278711678
+    },
+    "IQV/2016/page_79.pdf-1": {
+      "z0000": 1.0
+    },
+    "IQV/2016/page_79.pdf-2": {
+      "s0": 1.0
+    },
+    "IQV/2016/page_79.pdf-3": {
+      "s0": 1.0
+    },
+    "JKHY/2011/page_34.pdf-1": {
+      "s1": 1.0
+    },
+    "JKHY/2011/page_34.pdf-2": {
+      "z0000": 1.0
+    },
+    "JKHY/2011/page_34.pdf-3": {
+      "z0000": 0.6498772477284828,
+      "z0001": 0.1790474048132097,
+      "z0002": 0.1710753474583076
+    },
+    "JKHY/2011/page_55.pdf-2": {
+      "z0000": 1.0
+    },
+    "JKHY/2018/page_16.pdf-2": {
+      "singleton:0e0bf69dc3be8cfe6990d0d67496bcbb96046423eb4d0857df5cc438fab35e1e": 1.0
+    },
+    "JPM/2017/page_104.pdf-1": {
+      "z0000": 1.0
+    },
+    "JPM/2017/page_104.pdf-2": {
+      "z0000": 0.14209859111443224,
+      "z0001": 0.15483176139981397,
+      "z0002": 0.17281109579660453,
+      "z0003": 0.17647120149638718,
+      "z0004": 0.17485522053530392,
+      "z0005": 0.17893212965745814
+    },
+    "JPM/2017/page_119.pdf-1": {
+      "z0000": 0.21463332510427136,
+      "z0001": 0.21370318981604394,
+      "z0002": 0.1492728312948333,
+      "z0003": 0.22261683559457449,
+      "z0004": 0.19977381819027692
+    },
+    "JPM/2017/page_119.pdf-2": {
+      "z0000": 0.3153819735166122,
+      "z0001": 0.34925969601066514,
+      "z0002": 0.33535833047272257
+    },
+    "JPM/2017/page_144.pdf-1": {
+      "s1": 1.0
+    },
+    "JPM/2017/page_144.pdf-3": {
+      "s0_direct_submit": 0.18917859842881252,
+      "s1_run_then_submit": 0.15492573782927802,
+      "s2_run_then_submit": 0.18845502967522504,
+      "s3_run_then_submit": 0.23527828001314938,
+      "s4_run_then_submit": 0.23216235405353494
+    },
+    "JPM/2017/page_144.pdf-4": {
+      "z0000": 1.0
+    },
+    "JPM/2017/page_145.pdf-1": {
+      "z0000": 1.0
+    },
+    "JPM/2017/page_145.pdf-2": {
+      "s0": 1.0
+    },
+    "JPM/2017/page_145.pdf-3": {
+      "z0000": 1.0
+    },
+    "JPM/2017/page_69.pdf-1": {
+      "z0000": 0.6865108864371369,
+      "z0001": 0.3134891135628631
+    },
+    "JPM/2017/page_69.pdf-2": {
+      "z0000": 1.0
+    },
+    "JPM/2017/page_83.pdf-1": {
+      "ratio_computation_and_submission": 1.0
+    },
+    "JPM/2017/page_83.pdf-2": {
+      "z0000": 1.0
+    },
+    "KHC/2018/page_27.pdf-1": {
+      "z0000": 0.17255780570117787,
+      "z0001": 0.8274421942988222
+    },
+    "KHC/2018/page_27.pdf-2": {
+      "p0_run_then_submit_same_program": 0.3301692040451148,
+      "p1_direct_submit_no_execution": 0.3226580002459704,
+      "p2_run_then_submit_same_program": 0.34717279570891474
+    },
+    "KHC/2018/page_27.pdf-3": {
+      "s0": 1.0
+    },
+    "KIM/2006/page_67.pdf-2": {
+      "z0000": 0.4473115412270396,
+      "z0001": 0.5526884587729604
+    },
+    "KIM/2006/page_67.pdf-4": {
+      "s0_ratio_computation_no_revision": 1.0
+    },
+    "KIM/2014/page_108.pdf-1": {
+      "p0_derive_and_submit": 0.4954770078122917,
+      "p1_derive_and_submit": 0.5045229921877084
+    },
+    "KIM/2014/page_108.pdf-2": {
+      "s1": 1.0
+    },
+    "KIM/2014/page_112.pdf-2": {
+      "s1_direct_sum_no_verification": 0.14304193219951983,
+      "s2_failed_tablesum_then_revision": 0.12603497934381358,
+      "s3_failed_tablesum_then_revision": 0.15399897390081432,
+      "s4_direct_sum_no_verification": 0.14127654921694577,
+      "s5_direct_sum_no_verification": 0.1417449216476995,
+      "s6_direct_sum_no_verification": 0.1533249754094747,
+      "s7_direct_sum_no_verification": 0.1405776682817322
+    },
+    "KIM/2014/page_130.pdf-2": {
+      "s1": 1.0
+    },
+    "KIM/2014/page_131.pdf-1": {
+      "s1": 1.0
+    },
+    "KIM/2014/page_131.pdf-2": {
+      "z0000": 0.33114434341694676,
+      "z0001": 0.34529362670699537,
+      "z0002": 0.3235620298760579
+    },
+    "KIM/2014/page_131.pdf-3": {
+      "z0000": 1.0
+    },
+    "KIM/2014/page_131.pdf-4": {
+      "p0-ratio-computation": 0.49426116154686645,
+      "p1-ratio-computation": 0.5057388384531336
+    },
+    "KIM/2014/page_59.pdf-1": {
+      "singleton:e85f74fc4dd5460be6882f16b7afcc0ac68587ca684c1419115394e59bb1d842": 1.0
+    },
+    "KMI/2010/page_164.pdf-2": {
+      "z0000": 0.5261305085414207,
+      "z0001": 0.47386949145857915
+    },
+    "KMI/2010/page_164.pdf-4": {
+      "z0000": 1.0
+    },
+    "KMI/2010/page_2.pdf-1": {
+      "s0": 1.0
+    },
+    "KMI/2014/page_114.pdf-1": {
+      "p0_direct_ratio_compute_submit": 0.3516540807203798,
+      "p1_direct_ratio_compute_submit": 0.29911544254983385,
+      "p2_direct_ratio_compute_submit": 0.3492304767297864
+    },
+    "KMI/2014/page_18.pdf-1": {
+      "s1": 1.0
+    },
+    "KMI/2014/page_18.pdf-2": {
+      "singleton:2c164a4b4a8faa88195a38772008cce663bf98dd12c802fb866030a8846cea33": 1.0
+    },
+    "L/2010/page_41.pdf-1": {
+      "z0000": 0.6767246992516925,
+      "z0001": 0.3232753007483074
+    },
+    "LKQ/2016/page_48.pdf-1": {
+      "z0000": 0.4655493717298709,
+      "z0001": 0.37113580180144806,
+      "z0002": 0.16331482646868095
+    },
+    "LKQ/2016/page_48.pdf-2": {
+      "z0000": 1.0
+    },
+    "LKQ/2016/page_48.pdf-4": {
+      "z0000": 1.0
+    },
+    "LMT/2007/page_37.pdf-3": {
+      "singleton:7eaec974f4830c06a25c5cd249e343266a0eca9838dd914eea85a48e1d758dc2": 1.0
+    },
+    "LMT/2007/page_37.pdf-4": {
+      "s0": 1.0
+    },
+    "LMT/2007/page_39.pdf-1": {
+      "singleton:3a99c463b4a92e6449a5e94f7879121ccf6ab4dbd3ccc893e55028778b240847": 1.0
+    },
+    "LMT/2007/page_39.pdf-2": {
+      "z0000": 0.3272721185754801,
+      "z0001": 0.3182107189808485,
+      "z0002": 0.3545171624436714
+    },
+    "LMT/2007/page_39.pdf-3": {
+      "singleton:5d32ea33ff45dbc75e6eefa8576adc91dc4f547269f7a08720c04ab35cbab43d": 1.0
+    },
+    "LMT/2007/page_55.pdf-1": {
+      "s1": 0.22782467121509747,
+      "s2": 0.24499893641694062,
+      "s3": 0.24419091086462846,
+      "s4": 0.2829854815033333
+    },
+    "LMT/2007/page_55.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2007/page_55.pdf-3": {
+      "s0": 1.0
+    },
+    "LMT/2007/page_55.pdf-4": {
+      "z0000": 0.21856229186243525,
+      "z0001": 0.258535546452153,
+      "z0002": 0.2598013061275387,
+      "z0003": 0.263100855557873
+    },
+    "LMT/2013/page_26.pdf-1": {
+      "s1": 1.0
+    },
+    "LMT/2013/page_26.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2013/page_26.pdf-3": {
+      "z0000": 1.0
+    },
+    "LMT/2013/page_44.pdf-1": {
+      "singleton:2fff37cb037730cd2ecef216a38800b207c58353534e66f26da15a4be8de2a8f": 1.0
+    },
+    "LMT/2013/page_44.pdf-3": {
+      "z0000": 1.0
+    },
+    "LMT/2013/page_45.pdf-1": {
+      "z0000": 0.33880034405446424,
+      "z0001": 0.3241490954958964,
+      "z0002": 0.3370505604496394
+    },
+    "LMT/2013/page_45.pdf-2": {
+      "z0000": 0.17026470685448994,
+      "z0001": 0.1732947949949173,
+      "z0002": 0.17556210845124406,
+      "z0003": 0.16076236331472737,
+      "z0004": 0.14924671840067985,
+      "z0005": 0.1708693079839414
+    },
+    "LMT/2013/page_45.pdf-4": {
+      "p0_table_average_direct": 0.34381692499125077,
+      "p1_table_average_restated": 0.3098730099981064,
+      "p2_explicit_arithmetic_direct": 0.3463100650106428
+    },
+    "LMT/2013/page_47.pdf-1": {
+      "z0000": 1.0
+    },
+    "LMT/2013/page_47.pdf-2": {
+      "z0000": 1.0
+    },
+    "LMT/2013/page_47.pdf-4": {
+      "s0": 1.0
+    },
+    "LMT/2013/page_49.pdf-1": {
+      "singleton:28f9987a7cc2816e8ad1b2de903b38217bcf21c4b73f971d2a3d2a9cdef210bc": 1.0
+    },
+    "LMT/2013/page_49.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2013/page_81.pdf-1": {
+      "z0000": 1.0
+    },
+    "LMT/2013/page_81.pdf-2": {
+      "z0000": 0.4309276676261894,
+      "z0001": 0.5690723323738106
+    },
+    "LMT/2013/page_87.pdf-1": {
+      "s0_direct_run_submit": 0.11187555452206305,
+      "s1_read_sources_then_run_submit": 0.13725069382632402,
+      "s2_run_confirm_submit": 0.14644132752697758,
+      "s3_run_no_revision_submit": 0.151817671816386,
+      "s4_list_sources_run_submit": 0.1315041987941322,
+      "s5_run_confirm_submit": 0.15414621108322252,
+      "s6_run_state_ratio_submit": 0.16696434243089478
+    },
+    "LMT/2013/page_87.pdf-2": {
+      "singleton:f4b8fb3d51be763a9594f0d18511bcf16313cfce0db5930154223f13627aae8d": 1.0
+    },
+    "LMT/2013/page_87.pdf-4": {
+      "s1": 0.33655107644710347,
+      "s2": 0.340648862110187,
+      "s3": 0.32280006144270973
+    },
+    "LMT/2013/page_89.pdf-1": {
+      "z0000": 0.5476913463175753,
+      "z0001": 0.4523086536824248
+    },
+    "LMT/2013/page_89.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2013/page_89.pdf-3": {
+      "s0": 1.0
+    },
+    "LMT/2013/page_89.pdf-4": {
+      "s1": 1.0
+    },
+    "LMT/2014/page_31.pdf-1": {
+      "s1": 1.0
+    },
+    "LMT/2014/page_31.pdf-2": {
+      "z0000": 1.0
+    },
+    "LMT/2014/page_45.pdf-3": {
+      "z0000": 0.24320475160428345,
+      "z0001": 0.24083099886078113,
+      "z0002": 0.2573026903039423,
+      "z0003": 0.25866155923099293
+    },
+    "LMT/2014/page_45.pdf-4": {
+      "s0": 1.0
+    },
+    "LMT/2014/page_46.pdf-1": {
+      "z0000": 1.0
+    },
+    "LMT/2014/page_46.pdf-2": {
+      "z0000": 1.0
+    },
+    "LMT/2014/page_46.pdf-3": {
+      "z0000": 0.16610246301260753,
+      "z0001": 0.18255773127653935,
+      "z0002": 0.17546282779693712,
+      "z0003": 0.15409999518629147,
+      "z0004": 0.16179179357100576,
+      "z0005": 0.15998518915661875
+    },
+    "LMT/2014/page_47.pdf-1": {
+      "singleton:f4332d62fd25f17275fa1c628de56b386c9dd0c0da0a8fb9508d7ff32bc7381e": 1.0
+    },
+    "LMT/2014/page_47.pdf-2": {
+      "z0000": 0.3882838113764743,
+      "z0001": 0.29134602487221944,
+      "z0002": 0.3203701637513062
+    },
+    "LMT/2014/page_47.pdf-3": {
+      "s0": 0.21822467435183987,
+      "s1": 0.2694862611517234,
+      "s2": 0.27725536069869927,
+      "s3": 0.23503370379773747
+    },
+    "LMT/2014/page_49.pdf-1": {
+      "s0_compute_and_submit": 1.0
+    },
+    "LMT/2014/page_49.pdf-2": {
+      "z0000": 0.3447494185844548,
+      "z0001": 0.34184410808280447,
+      "z0002": 0.31340647333274085
+    },
+    "LMT/2014/page_49.pdf-3": {
+      "singleton:c471420e3a51f7af643367195ee7d5d9b9b2627e8b9501853c8d187ed498de75": 1.0
+    },
+    "LMT/2014/page_49.pdf-4": {
+      "z0000": 1.0
+    },
+    "LMT/2014/page_85.pdf-2": {
+      "p0_percentage_change_execution": 0.5121906934322987,
+      "p1_percentage_change_execution": 0.4878093065677013
+    },
+    "LMT/2014/page_85.pdf-3": {
+      "s0": 1.0
+    },
+    "LMT/2014/page_93.pdf-1": {
+      "p0_answer_compute_submit": 0.5175225333573994,
+      "p1_answer_compute_submit": 0.48247746664260066
+    },
+    "LMT/2014/page_93.pdf-2": {
+      "z0000": 0.21057392897281282,
+      "z0001": 0.199462248380153,
+      "z0002": 0.18088780688771197,
+      "z0003": 0.19287530590461632,
+      "z0004": 0.2162007098547057
+    },
+    "LMT/2015/page_106.pdf-1": {
+      "s1": 1.0
+    },
+    "LMT/2015/page_106.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2015/page_106.pdf-3": {
+      "s1": 1.0
+    },
+    "LMT/2015/page_52.pdf-1": {
+      "z0000": 0.34155965896839396,
+      "z0001": 0.31429964757961065,
+      "z0002": 0.3441406934519954
+    },
+    "LMT/2015/page_52.pdf-2": {
+      "z0000": 1.0
+    },
+    "LMT/2015/page_52.pdf-4": {
+      "z0000": 1.0
+    },
+    "LMT/2015/page_53.pdf-2": {
+      "s1": 1.0
+    },
+    "LMT/2015/page_55.pdf-2": {
+      "p0_execute_then_submit": 0.27114636200725784,
+      "p1_execute_then_submit": 0.2741644223776292,
+      "p2_direct_submit": 0.23635996230234183,
+      "p3_execute_then_submit": 0.21832925331277106
+    },
+    "LMT/2015/page_55.pdf-3": {
+      "z0000": 1.0
+    },
+    "LMT/2015/page_55.pdf-4": {
+      "s1_table_average_execution": 1.0
+    },
+    "LMT/2015/page_86.pdf-1": {
+      "z0000": 1.0
+    },
+    "LMT/2015/page_86.pdf-2": {
+      "z0000": 0.34535851199037504,
+      "z0001": 0.3109579588409791,
+      "z0002": 0.3436835291686459
+    },
+    "MA/2008/page_113.pdf-2": {
+      "z0000": 1.0
+    },
+    "MA/2008/page_113.pdf-3": {
+      "singleton:17c4e0716055a248a2e0b6e1ccca37be14628a627f654d2929671e6f0b515e3d": 1.0
+    },
+    "MA/2008/page_113.pdf-4": {
+      "z0000": 1.0
+    },
+    "MA/2008/page_116.pdf-2": {
+      "z0000": 1.0
+    },
+    "MA/2008/page_116.pdf-3": {
+      "s1": 1.0
+    },
+    "MA/2008/page_125.pdf-1": {
+      "s0": 1.0
+    },
+    "MA/2008/page_125.pdf-3": {
+      "z0000": 1.0
+    },
+    "MA/2008/page_125.pdf-4": {
+      "s1": 1.0
+    },
+    "MA/2008/page_70.pdf-1": {
+      "z0000": 1.0
+    },
+    "MA/2008/page_70.pdf-2": {
+      "z0000": 1.0
+    },
+    "MAR/2018/page_42.pdf-1": {
+      "z0000": 0.4902970007274415,
+      "z0001": 0.3619207172559282,
+      "z0002": 0.1477822820166305
+    },
+    "MAR/2018/page_42.pdf-2": {
+      "z0000": 1.0
+    },
+    "MAS/2010/page_29.pdf-1": {
+      "z0000": 1.0
+    },
+    "MAS/2010/page_29.pdf-2": {
+      "p0-compute-submit": 0.3484640216195423,
+      "p1-direct-submit": 0.3561060378184763,
+      "p2-compute-submit": 0.29542994056198146
+    },
+    "MAS/2010/page_29.pdf-3": {
+      "s1": 1.0
+    },
+    "MAS/2010/page_29.pdf-4": {
+      "s1": 1.0
+    },
+    "MAS/2010/page_86.pdf-1": {
+      "z0000": 1.0
+    },
+    "MAS/2010/page_86.pdf-2": {
+      "s1": 1.0
+    },
+    "MAS/2010/page_89.pdf-2": {
+      "singleton:1209e214ded900d891bbbe7db4e023a2bad785e149221dd404ba76c22339867b": 1.0
+    },
+    "MAS/2010/page_89.pdf-3": {
+      "z0000": 1.0
+    },
+    "MAS/2017/page_37.pdf-1": {
+      "s1": 1.0
+    },
+    "MAS/2017/page_37.pdf-2": {
+      "singleton:40001f8f002d29d6af5375c42884507ed29dda3c3df347090939906a5464dce3": 1.0
+    },
+    "MAS/2017/page_37.pdf-4": {
+      "singleton:c417a28e1da374f34f12a7d2999f65d5a3b21de8f02224c129b75a7cb53d8eb4": 1.0
+    },
+    "MRO/2008/page_119.pdf-1": {
+      "s1": 0.22248023036516287,
+      "s2": 0.20657306949289592,
+      "s3": 0.19993178138526863,
+      "s4": 0.16379797172555982,
+      "s5": 0.20721694703111285
+    },
+    "MRO/2008/page_119.pdf-2": {
+      "p0_direct_compute_submit": 0.48311674725803333,
+      "p1_direct_compute_submit": 0.5168832527419667
+    },
+    "MRO/2008/page_119.pdf-3": {
+      "s0": 1.0
+    },
+    "MRO/2008/page_119.pdf-4": {
+      "s1": 0.2205539154340033,
+      "s2": 0.20187239631837828,
+      "s3": 0.1552809200011504,
+      "s4": 0.2137148749292919,
+      "s5": 0.2085778933171762
+    },
+    "MRO/2008/page_130.pdf-1": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_130.pdf-3": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_135.pdf-3": {
+      "s1": 1.0
+    },
+    "MRO/2008/page_142.pdf-1": {
+      "s0": 1.0
+    },
+    "MRO/2008/page_142.pdf-2": {
+      "s0_execute_then_submit": 0.24821328285320635,
+      "s1_execute_narrate_then_submit": 0.2575477292309277,
+      "s2_execute_narrate_then_submit": 0.23196760099709596,
+      "s3_direct_submit": 0.26227138691876983
+    },
+    "MRO/2008/page_145.pdf-1": {
+      "s1": 1.0
+    },
+    "MRO/2008/page_145.pdf-2": {
+      "s1": 1.0
+    },
+    "MRO/2008/page_146.pdf-1": {
+      "s0": 1.0
+    },
+    "MRO/2008/page_146.pdf-3": {
+      "extract_compute_submit": 1.0
+    },
+    "MRO/2008/page_41.pdf-2": {
+      "z0000": 0.2004923426355423,
+      "z0001": 0.18618454462641224,
+      "z0002": 0.2101555595626744,
+      "z0003": 0.20689533930854095,
+      "z0004": 0.19627221386683003
+    },
+    "MRO/2008/page_41.pdf-3": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_41.pdf-4": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_42.pdf-1": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_42.pdf-3": {
+      "s0": 1.0
+    },
+    "MRO/2008/page_42.pdf-4": {
+      "z0000": 0.21868116922075329,
+      "z0001": 0.21336193353582508,
+      "z0002": 0.15707044940064377,
+      "z0003": 0.18566754004326289,
+      "z0004": 0.22521890779951506
+    },
+    "MRO/2008/page_44.pdf-1": {
+      "z0000": 0.2159096892442793,
+      "z0001": 0.22652730249340036,
+      "z0002": 0.27292140946426535,
+      "z0003": 0.28464159879805506
+    },
+    "MRO/2008/page_44.pdf-3": {
+      "singleton:277737351bfb9d4b902ac9eac1cb14f6d5024053a5944367d3f1422a49a91ee6": 1.0
+    },
+    "MRO/2008/page_44.pdf-4": {
+      "z0000": 0.21738644421164133,
+      "z0001": 0.15944399798437803,
+      "z0002": 0.19358905915423186,
+      "z0003": 0.21412544139188555,
+      "z0004": 0.21545505725786337
+    },
+    "MRO/2008/page_70.pdf-1": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_70.pdf-2": {
+      "s1_direct_compare": 0.6381020529013164,
+      "s2_failed_average_then_direct": 0.3618979470986836
+    },
+    "MRO/2008/page_70.pdf-3": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_70.pdf-4": {
+      "s0_direct_submit_no_execution": 0.2526776493085718,
+      "s1_execute_then_submit": 0.2706602297742565,
+      "s2_execute_interpret_then_submit": 0.2402861089193377,
+      "s3_execute_interpret_then_submit": 0.23637601199783398
+    },
+    "MRO/2008/page_99.pdf-1": {
+      "s1": 1.0
+    },
+    "MRO/2008/page_99.pdf-2": {
+      "z0000": 0.3200599111880605,
+      "z0001": 0.3370819752610081,
+      "z0002": 0.3428581135509315
+    },
+    "MRO/2008/page_99.pdf-3": {
+      "z0000": 1.0
+    },
+    "MRO/2008/page_99.pdf-4": {
+      "s1_direct_submit_no_run": 0.20949288780587536,
+      "s2_direct_submit_no_run_alt": 0.20195886227643414,
+      "s3_run_then_submit": 0.1988407822024779,
+      "s4_run_then_submit_alt": 0.18925671669939936,
+      "s5_direct_submit_no_run_alt2": 0.20045075101581317
+    },
+    "MRO/2012/page_18.pdf-1": {
+      "z0000": 0.4589862438716342,
+      "z0001": 0.5410137561283657
+    },
+    "MRO/2012/page_18.pdf-2": {
+      "z0000": 1.0
+    },
+    "MRO/2012/page_22.pdf-2": {
+      "z0000": 1.0
+    },
+    "MRO/2012/page_22.pdf-3": {
+      "s0": 0.23695732387107332,
+      "s1": 0.25032611092593626,
+      "s2": 0.2655372396338983,
+      "s3": 0.24717932556909203
+    },
+    "MRO/2012/page_39.pdf-1": {
+      "z0000": 0.22611266670454633,
+      "z0001": 0.22610074547761952,
+      "z0002": 0.2759582280180502,
+      "z0003": 0.2718283597997841
+    },
+    "MRO/2012/page_39.pdf-2": {
+      "s1": 1.0
+    },
+    "MRO/2012/page_39.pdf-3": {
+      "z0000": 1.0
+    },
+    "MRO/2012/page_40.pdf-1": {
+      "s1": 1.0
+    },
+    "MRO/2012/page_40.pdf-2": {
+      "s0": 0.1865783830722106,
+      "s1": 0.20261705451481968,
+      "s2": 0.20264362851456325,
+      "s3": 0.20256543183449108,
+      "s4": 0.20559550206391547
+    },
+    "MRO/2012/page_41.pdf-2": {
+      "singleton:4d7965a2e0c8b0482292d79cf6c2366e7a1eb413a052eedbcea8c8a01547f91f": 1.0
+    },
+    "MRO/2012/page_41.pdf-3": {
+      "s0": 1.0
+    },
+    "MRO/2012/page_41.pdf-4": {
+      "z0000": 0.48505330296810684,
+      "z0001": 0.5149466970318931
+    },
+    "MS/2012/page_150.pdf-1": {
+      "singleton:d4c5ae1a04935b98efdc83bcd60b3433efb8068f21304205535099d5f5fb9424": 1.0
+    },
+    "MS/2015/page_200.pdf-2": {
+      "singleton:709cb28075f7ca841cb42d2f88b6abb85cb4af8635a51e5fba190cf5e7faaf40": 1.0
+    },
+    "MSI/2005/page_43.pdf-2": {
+      "s1_direct_divide_no_verification": 0.25552501212812756,
+      "s2_rowwide_ops_verified_revised": 0.24240838628857853,
+      "s3_direct_divide_selfcheck": 0.2435118535410458,
+      "s4_direct_divide_plain": 0.25855474804224804
+    },
+    "MSI/2005/page_43.pdf-3": {
+      "z0000": 1.0
+    },
+    "MSI/2005/page_64.pdf-2": {
+      "z0000": 1.0
+    },
+    "MSI/2005/page_64.pdf-3": {
+      "ratio_compute_submit": 1.0
+    },
+    "MSI/2005/page_64.pdf-4": {
+      "z0000": 1.0
+    },
+    "MSI/2005/page_64.pdf-5": {
+      "z0000": 1.0
+    },
+    "MSI/2005/page_64.pdf-6": {
+      "s1_extract_divide_submit": 1.0
+    },
+    "NCLH/2016/page_84.pdf-1": {
+      "s1": 1.0
+    },
+    "NCLH/2016/page_84.pdf-2": {
+      "z0000": 1.0
+    },
+    "NCLH/2016/page_84.pdf-3": {
+      "z0000": 0.6370618369203792,
+      "z0001": 0.3629381630796208
+    },
+    "NKE/2014/page_36.pdf-1": {
+      "s1": 0.34601130180001843,
+      "s2": 0.324657765171945,
+      "s3": 0.3293309330280367
+    },
+    "NKE/2014/page_36.pdf-2": {
+      "z0000": 0.16788780108169407,
+      "z0001": 0.16514447079114558,
+      "z0002": 0.17019369594506192,
+      "z0003": 0.18442708215967726,
+      "z0004": 0.1517464366868275,
+      "z0005": 0.16060051333559386
+    },
+    "NKE/2014/page_36.pdf-3": {
+      "z0000": 0.51195912071141,
+      "z0001": 0.4880408792885899
+    },
+    "NKE/2014/page_36.pdf-4": {
+      "s0": 0.24956531260808554,
+      "s1": 0.2540755424240848,
+      "s2": 0.2627256487196389,
+      "s3": 0.2336334962481907
+    },
+    "NWS/2016/page_148.pdf-1": {
+      "z0000": 1.0
+    },
+    "NWS/2016/page_148.pdf-2": {
+      "s0": 1.0
+    },
+    "ORLY/2015/page_28.pdf-1": {
+      "s0": 1.0
+    },
+    "ORLY/2015/page_28.pdf-2": {
+      "z0000": 0.1862112772418503,
+      "z0001": 0.21023235029845308,
+      "z0002": 0.1982234656443481,
+      "z0003": 0.20114060999840777,
+      "z0004": 0.2041922968169407
+    },
+    "ORLY/2015/page_28.pdf-3": {
+      "z0000": 0.339858412541962,
+      "z0001": 0.34358697641581915,
+      "z0002": 0.31655461104221894
+    },
+    "ORLY/2015/page_28.pdf-4": {
+      "z0000": 0.8404208393657787,
+      "z0001": 0.1595791606342213
+    },
+    "ORLY/2016/page_29.pdf-2": {
+      "s0": 1.0
+    },
+    "PM/2014/page_112.pdf-1": {
+      "z0000": 0.35185160305920304,
+      "z0001": 0.32718558204535547,
+      "z0002": 0.32096281489544143
+    },
+    "PM/2014/page_112.pdf-2": {
+      "singleton:c926e7eb3ae65b4e5b0b1f417a6b80bade25d454b6c7e2dab21a42472fa09a04": 1.0
+    },
+    "PM/2014/page_112.pdf-3": {
+      "s1": 0.2506657821937305,
+      "s2": 0.2563882936571925,
+      "s3": 0.2503206146679978,
+      "s4": 0.24262530948107924
+    },
+    "PM/2014/page_112.pdf-4": {
+      "z0000": 1.0
+    },
+    "PNC/2016/page_155.pdf-1": {
+      "s0": 0.2511080030562932,
+      "s1": 0.2445330375798456,
+      "s2": 0.24806574594980088,
+      "s3": 0.2562932134140603
+    },
+    "PNC/2016/page_155.pdf-2": {
+      "s1": 1.0
+    },
+    "PNC/2016/page_44.pdf-1": {
+      "s1": 1.0
+    },
+    "PNC/2016/page_44.pdf-2": {
+      "z0000": 0.22145520658567605,
+      "z0001": 0.2020776596496616,
+      "z0002": 0.19314697112244622,
+      "z0003": 0.19186306349708532,
+      "z0004": 0.19145709914513073
+    },
+    "PNC/2016/page_73.pdf-1": {
+      "z0000": 0.7390018711561007,
+      "z0001": 0.26099812884389934
+    },
+    "PNC/2016/page_73.pdf-2": {
+      "s1": 0.2122411470634525,
+      "s2": 0.2164193593080103,
+      "s3": 0.20206754225023368,
+      "s4": 0.18861497408115616,
+      "s5": 0.18065697729714725
+    },
+    "PNC/2018/page_45.pdf-1": {
+      "s1": 1.0
+    },
+    "PNC/2018/page_45.pdf-2": {
+      "direct_submit_no_execution": 0.24879630187491877,
+      "execute_confirm_then_submit": 0.24970461500997965,
+      "execute_restate_then_submit": 0.23153989970761887,
+      "execute_then_submit_confirmatory": 0.2699591834074826
+    },
+    "PNC/2018/page_45.pdf-3": {
+      "s1_direct_table_ratio_compute_and_submit": 1.0
+    },
+    "PNC/2018/page_45.pdf-5": {
+      "singleton:313a44c32b876e8275506a94b7d22f8471afd5817323c6013459208c5c9a6764": 1.0
+    },
+    "PNC/2018/page_81.pdf-1": {
+      "singleton:04290529eb40958c5aae6285ddc8af2af69fd61f47c83a1e824bd13b9519c65d": 1.0
+    },
+    "PNC/2018/page_81.pdf-2": {
+      "z0000": 0.23595853353394017,
+      "z0001": 0.25520928480487454,
+      "z0002": 0.2673098569026018,
+      "z0003": 0.24152232475858362
+    },
+    "PNC/2018/page_81.pdf-5": {
+      "s0": 1.0
+    },
+    "PPG/2015/page_40.pdf-1": {
+      "s1": 1.0
+    },
+    "PPG/2015/page_40.pdf-2": {
+      "z0000": 0.23413055997576201,
+      "z0001": 0.2630467837025093,
+      "z0002": 0.2528650551300698,
+      "z0003": 0.24995760119165886
+    },
+    "PPG/2015/page_40.pdf-3": {
+      "singleton:f3f05bf4e6583e2526fc9661a36197d550d5d4576c6b6ffef47d3848ed1c5666": 1.0
+    },
+    "PPG/2015/page_40.pdf-4": {
+      "singleton:52eaed5f27b121c4e932ee89f2cce91afbba50bde899120cd788d496f93a41bf": 1.0
+    },
+    "RCL/2009/page_13.pdf-1": {
+      "s1": 1.0
+    },
+    "RCL/2009/page_90.pdf-1": {
+      "s0": 1.0
+    },
+    "RCL/2009/page_90.pdf-2": {
+      "z0000": 0.3527919930694701,
+      "z0001": 0.3059426145603596,
+      "z0002": 0.34126539237017045
+    },
+    "RCL/2009/page_90.pdf-3": {
+      "s1": 1.0
+    },
+    "RCL/2009/page_90.pdf-4": {
+      "s0": 0.18990658037360417,
+      "s1": 0.20795052972259345,
+      "s2": 0.17214064095455978,
+      "s3": 0.19018433711921287,
+      "s4": 0.23981791183002957
+    },
+    "RCL/2017/page_38.pdf-2": {
+      "z0000": 0.6654779374196449,
+      "z0001": 0.33452206258035505
+    },
+    "RCL/2017/page_38.pdf-3": {
+      "singleton:90bc8d6222a4f5726cb6b77e64f73b6bea8620fea508db255549ec1657e22a38": 1.0
+    },
+    "RE/2013/page_109.pdf-1": {
+      "z0000": 1.0
+    },
+    "RE/2013/page_109.pdf-2": {
+      "z0000": 1.0
+    },
+    "RE/2013/page_109.pdf-3": {
+      "z0000": 1.0
+    },
+    "RE/2013/page_109.pdf-4": {
+      "z0000": 1.0
+    },
+    "RE/2013/page_40.pdf-2": {
+      "s1": 1.0
+    },
+    "RE/2013/page_40.pdf-3": {
+      "singleton:e91e2ac81aa73010bcb85b18cd54a740554f23158d91c828b77029e195658531": 1.0
+    },
+    "RE/2016/page_141.pdf-1": {
+      "s1": 1.0
+    },
+    "RE/2016/page_40.pdf-1": {
+      "z0000": 1.0
+    },
+    "RE/2016/page_40.pdf-2": {
+      "s0": 1.0
+    },
+    "RE/2016/page_40.pdf-3": {
+      "s0": 0.3186591292470514,
+      "s1": 0.33784820534580673,
+      "s2": 0.3434926654071417
+    },
+    "RE/2016/page_40.pdf-4": {
+      "s0": 1.0
+    },
+    "RL/2012/page_13.pdf-1": {
+      "z0000": 1.0
+    },
+    "RL/2012/page_13.pdf-2": {
+      "s0": 1.0
+    },
+    "RSG/2013/page_137.pdf-1": {
+      "s0_execute_submit_no_revision": 0.20239183392198068,
+      "s1_read_execute_submit_no_revision": 0.2119609130686712,
+      "s2_execute_submit_no_revision": 0.19682195839544353,
+      "s3_execute_submit_no_revision": 0.20842504798335615,
+      "s4_execute_submit_no_revision": 0.1804002466305486
+    },
+    "RSG/2013/page_16.pdf-1": {
+      "singleton:a4fa3680e42efd82786d6b18366d038f94c50bcb391960cba27020408e995a19": 1.0
+    },
+    "RSG/2013/page_16.pdf-2": {
+      "singleton:89aec610d682616fb24b1c5b99242a14f22332dd010330442e9ed402e0e9d07e": 1.0
+    },
+    "RSG/2013/page_69.pdf-1": {
+      "z0000": 1.0
+    },
+    "RSG/2013/page_69.pdf-2": {
+      "z0000": 1.0
+    },
+    "RSG/2013/page_92.pdf-2": {
+      "s1": 1.0
+    },
+    "RSG/2016/page_17.pdf-1": {
+      "ratio_from_fleet_table": 1.0
+    },
+    "RSG/2016/page_17.pdf-2": {
+      "s1": 1.0
+    },
+    "RSG/2016/page_50.pdf-1": {
+      "p0-direct-compute-submit": 0.4708312604168583,
+      "p1-denominator-verification-submit": 0.5291687395831417
+    },
+    "RSG/2016/page_50.pdf-2": {
+      "s1": 1.0
+    },
+    "RSG/2016/page_69.pdf-1": {
+      "singleton:172ef15120943a7f2fd25e29e1f600e140f97c8ff4290a3b3e059e33ceed86c6": 1.0
+    },
+    "RSG/2016/page_69.pdf-2": {
+      "s1": 1.0
+    },
+    "RSG/2016/page_98.pdf-1": {
+      "z0000": 1.0
+    },
+    "RSG/2016/page_98.pdf-2": {
+      "s1": 1.0
+    },
+    "SLG/2012/page_61.pdf-1": {
+      "z0000": 0.33305374804665205,
+      "z0001": 0.31141041408683434,
+      "z0002": 0.3555358378665137
+    },
+    "SLG/2012/page_61.pdf-2": {
+      "s0": 1.0
+    },
+    "SLG/2012/page_87.pdf-1": {
+      "z0000": 1.0
+    },
+    "SLG/2018/page_45.pdf-1": {
+      "z0000": 0.13991271639864322,
+      "z0001": 0.13407829234183025,
+      "z0002": 0.1536424774750147,
+      "z0003": 0.15036286557695105,
+      "z0004": 0.13971618376877395,
+      "z0005": 0.13813029365622695,
+      "z0006": 0.1441571707825599
+    },
+    "SNA/2013/page_111.pdf-1": {
+      "s1_table_read_compute_submit": 1.0
+    },
+    "SNA/2013/page_111.pdf-2": {
+      "s0": 0.34230227847998657,
+      "s1": 0.30592321930870686,
+      "s2": 0.3517745022113065
+    },
+    "SNA/2013/page_33.pdf-2": {
+      "s0": 1.0
+    },
+    "SNA/2013/page_56.pdf-1": {
+      "s1": 1.0
+    },
+    "SNA/2013/page_56.pdf-2": {
+      "z0000": 1.0
+    },
+    "SNA/2013/page_59.pdf-1": {
+      "z0000": 1.0
+    },
+    "SNA/2013/page_93.pdf-2": {
+      "z0000": 1.0
+    },
+    "SNA/2013/page_93.pdf-3": {
+      "s0": 1.0
+    },
+    "SNPS/2003/page_39.pdf-2": {
+      "z0000": 1.0
+    },
+    "STT/2007/page_65.pdf-1": {
+      "singleton:1f8208e83c25989edc3235c981ebfefecb8fc2049ace2a5b8e18018a4f20c0d2": 1.0
+    },
+    "STT/2007/page_65.pdf-2": {
+      "derive_total_assets_2006": 1.0
+    },
+    "STT/2007/page_65.pdf-3": {
+      "z0000": 1.0
+    },
+    "STT/2007/page_65.pdf-4": {
+      "z0000": 0.4059150722846637,
+      "z0001": 0.19895734130005674,
+      "z0002": 0.19318345299624332,
+      "z0003": 0.20194413341903641
+    },
+    "STT/2007/page_95.pdf-1": {
+      "s0": 1.0
+    },
+    "STT/2007/page_95.pdf-2": {
+      "s0": 1.0
+    },
+    "STT/2013/page_107.pdf-1": {
+      "z0000": 1.0
+    },
+    "STT/2013/page_107.pdf-2": {
+      "singleton:fccf4c7494ef2d6991c2258f237bb56494827a6f1db6c62dba5ae25ab2ec7a24": 1.0
+    },
+    "STT/2013/page_107.pdf-3": {
+      "z0000": 0.2602939318109454,
+      "z0001": 0.2593315323262869,
+      "z0002": 0.23374713912377584,
+      "z0003": 0.24662739673899184
+    },
+    "STT/2013/page_107.pdf-4": {
+      "s1_ratio_compute_submit": 1.0
+    },
+    "STT/2013/page_175.pdf-1": {
+      "z0000": 1.0
+    },
+    "STT/2013/page_175.pdf-2": {
+      "z0000": 0.5173525736981788,
+      "z0001": 0.48264742630182134
+    },
+    "STT/2013/page_54.pdf-1": {
+      "z0000": 1.0
+    },
+    "STT/2013/page_54.pdf-2": {
+      "s0_run_then_submit_with_ratio_to_percent_interpretation": 0.254701512647002,
+      "s1_direct_submit_with_precomputed_percent": 0.23801929558620347,
+      "s2_direct_submit_with_ratio_result": 0.24771734257077813,
+      "s3_run_then_submit_with_ratio_to_percent_interpretation": 0.2595618491960163
+    },
+    "STT/2013/page_54.pdf-3": {
+      "p0_run_then_submit_same_program": 0.33314578555890145,
+      "p1_direct_submit_roi_program": 0.33380038032088616,
+      "p2_run_then_submit_same_program": 0.3330538341202125
+    },
+    "STT/2013/page_71.pdf-1": {
+      "z0000": 1.0
+    },
+    "STT/2013/page_71.pdf-2": {
+      "z0000": 1.0
+    },
+    "STT/2013/page_71.pdf-3": {
+      "direct_ratio_compute_and_submit": 1.0
+    },
+    "STT/2013/page_71.pdf-4": {
+      "s1": 1.0
+    },
+    "STZ/2010/page_51.pdf-1": {
+      "z0000": 1.0
+    },
+    "STZ/2010/page_51.pdf-2": {
+      "z0000": 1.0
+    },
+    "STZ/2010/page_51.pdf-3": {
+      "s1": 0.2396409662966725,
+      "s2": 0.24390652130671886,
+      "s3": 0.27134182477518054,
+      "s4": 0.24511068762142807
+    },
+    "STZ/2010/page_51.pdf-4": {
+      "z0000": 1.0
+    },
+    "TFX/2006/page_50.pdf-1": {
+      "singleton:ce622ad230e8253c823b3dd1621579b7ad1725b2aba259340b4f957a503ef21c": 1.0
+    },
+    "TFX/2006/page_50.pdf-2": {
+      "p0-proportional-scaling-submit": 0.3377196293428128,
+      "p1-halve-sensitivity-submit": 0.36298370303214156,
+      "p2-syntax-revision-submit": 0.2992966676250457
+    },
+    "TFX/2015/page_42.pdf-1": {
+      "z0000": 1.0
+    },
+    "TFX/2015/page_42.pdf-2": {
+      "s1": 1.0
+    },
+    "TFX/2015/page_42.pdf-3": {
+      "s0_direct_compute_submit": 0.32360732082336924,
+      "s1_direct_compute_submit": 0.35978470600997686,
+      "s2_direct_compute_submit": 0.31660797316665396
+    },
+    "TROW/2011/page_13.pdf-1": {
+      "s0": 0.49296166751241194,
+      "s1": 0.507038332487588
+    },
+    "TROW/2011/page_13.pdf-2": {
+      "s1": 1.0
+    },
+    "TSCO/2017/page_28.pdf-1": {
+      "s1": 1.0
+    },
+    "TSCO/2017/page_28.pdf-2": {
+      "z0000": 0.17071892676195502,
+      "z0001": 0.2101347585369634,
+      "z0002": 0.20852285102098514,
+      "z0003": 0.2045712203894824,
+      "z0004": 0.20605224329061417
+    },
+    "TSCO/2017/page_68.pdf-1": {
+      "z0000": 1.0
+    },
+    "TSCO/2017/page_68.pdf-2": {
+      "z0000": 0.6802281329135705,
+      "z0001": 0.3197718670864294
+    },
+    "TSCO/2017/page_68.pdf-3": {
+      "s0": 1.0
+    },
+    "TSCO/2017/page_73.pdf-2": {
+      "singleton:3111a5a728c89a3f25bb086913c2ff40ac1c431323c8266e7c814cdd379e4409": 1.0
+    },
+    "UA/2009/page_63.pdf-1": {
+      "z0000": 1.0
+    },
+    "UA/2009/page_63.pdf-2": {
+      "z0000": 1.0
+    },
+    "UPS/2010/page_33.pdf-1": {
+      "singleton:9dab5255e1b4bdfeb16cb70ac0ddd4a8d5b501ec636dd11a654c992ebda3e844": 1.0
+    },
+    "UPS/2013/page_34.pdf-1": {
+      "s1": 1.0
+    },
+    "UPS/2013/page_34.pdf-3": {
+      "singleton:b2f10a00e2a966ebe36d3c89bf41d8f6b6bec0bfc31c1e4c06c55a7d779a1b95": 1.0
+    },
+    "UPS/2013/page_56.pdf-1": {
+      "s1": 1.0
+    },
+    "UPS/2013/page_56.pdf-2": {
+      "z0000": 1.0
+    },
+    "UPS/2013/page_56.pdf-3": {
+      "s1": 1.0
+    },
+    "UPS/2013/page_56.pdf-4": {
+      "z0000": 1.0
+    },
+    "UPS/2016/page_34.pdf-2": {
+      "single_pass_table_lookup_and_percentage_computation": 1.0
+    },
+    "UPS/2016/page_34.pdf-4": {
+      "singleton:03a059f9fe85f7a180d55993790fb2b6162770debe27cb18f75a8b281b0709be": 1.0
+    },
+    "V/2009/page_88.pdf-1": {
+      "singleton:c029f08f35be0ad5d3a45e44dd375ff04b9a198ff0f42ad1dea7e950d33d1c83": 1.0
+    },
+    "V/2009/page_89.pdf-1": {
+      "s0": 1.0
+    },
+    "VLO/2012/page_130.pdf-1": {
+      "s0": 1.0
+    },
+    "VLO/2012/page_27.pdf-1": {
+      "s1": 0.2634003013281267,
+      "s2": 0.21793218141916657,
+      "s3": 0.2591108615640143,
+      "s4": 0.2595566556886924
+    },
+    "VLO/2012/page_27.pdf-3": {
+      "z0000": 1.0
+    },
+    "VNO/2005/page_69.pdf-1": {
+      "s1": 1.0
+    },
+    "VNO/2005/page_69.pdf-2": {
+      "z0000": 1.0
+    },
+    "VNO/2011/page_177.pdf-1": {
+      "z0000": 1.0
+    },
+    "VNO/2011/page_85.pdf-1": {
+      "z0000": 1.0
+    },
+    "VNO/2011/page_85.pdf-2": {
+      "singleton:3db0d9b74fcc410b6fe13e20e3db897f68ca29c1bdf45ac08f92f7e0e807e634": 1.0
+    },
+    "VTR/2003/page_39.pdf-2": {
+      "singleton:067cf1480f7f8fc6cb5fe030f4e696f35cef61613f68541c430575c600b7adba": 1.0
+    },
+    "VTR/2003/page_39.pdf-3": {
+      "singleton:4b1e8ca667d11533a8462f75a322d794c0b87300c4a3b00aa766e028820cb3c1": 1.0
+    },
+    "VTR/2007/page_106.pdf-1": {
+      "singleton:3d55d28fb6033852f32d938ad8b70339f3bde04d9519ce5811f8b762f4c698e5": 1.0
+    },
+    "VTR/2007/page_48.pdf-1": {
+      "z0000": 1.0
+    },
+    "VTR/2007/page_48.pdf-2": {
+      "s0": 0.26121247080097515,
+      "s1": 0.2560914596387101,
+      "s2": 0.22678295952973682,
+      "s3": 0.255913110030578
+    },
+    "VTR/2007/page_48.pdf-3": {
+      "s1_ventas_5yr_return_computed_and_submitted": 1.0
+    },
+    "VTR/2007/page_48.pdf-4": {
+      "s1": 0.32296766908072,
+      "s2": 0.33461349728589984,
+      "s3": 0.34241883363338016
+    },
+    "VTR/2007/page_97.pdf-2": {
+      "singleton:58ea45fabc09ede7149efa6d1e2caf03ba370d18643d29d87a7ba7212322121e": 1.0
+    },
+    "VTR/2007/page_97.pdf-3": {
+      "s1": 1.0
+    },
+    "VTR/2007/page_97.pdf-4": {
+      "s1": 1.0
+    },
+    "WELL/2016/page_61.pdf-1": {
+      "s0": 0.2037896359311188,
+      "s1": 0.1987660512809565,
+      "s2": 0.21484181546173808,
+      "s3": 0.18998489196365342,
+      "s4": 0.1926176053625332
+    },
+    "WELL/2016/page_61.pdf-2": {
+      "z0000": 0.14582822105992965,
+      "z0001": 0.16699421111664003,
+      "z0002": 0.14677366999246297,
+      "z0003": 0.17155212194608838,
+      "z0004": 0.1688652476029177,
+      "z0005": 0.19998652828196123
+    },
+    "WELL/2016/page_61.pdf-3": {
+      "singleton:dccc39d695002fbc0dbb575a021e904d424ad3e65fe62f8c4f7ede5a1993b9c9": 1.0
+    },
+    "WELL/2016/page_61.pdf-4": {
+      "z0000": 1.0
+    },
+    "WELL/2017/page_116.pdf-1": {
+      "z0000": 1.0
+    },
+    "WELL/2017/page_116.pdf-2": {
+      "z0000": 0.203259076758728,
+      "z0001": 0.19668490366552202,
+      "z0002": 0.20300098528492033,
+      "z0003": 0.19279810963159486,
+      "z0004": 0.20425692465923456
+    },
+    "WELL/2017/page_116.pdf-3": {
+      "singleton:5cb932e1d023c6546cf164d07fb98c54c8d4dca996f912cf0ee3c4673ce706a7": 1.0
+    },
+    "WELL/2017/page_116.pdf-4": {
+      "z0000": 1.0
+    },
+    "WELL/2017/page_48.pdf-1": {
+      "s0": 1.0
+    },
+    "WELL/2017/page_48.pdf-2": {
+      "s1": 1.0
+    },
+    "WELL/2017/page_48.pdf-3": {
+      "z0000": 1.0
+    },
+    "WELL/2017/page_48.pdf-4": {
+      "z0000": 0.19629402105198374,
+      "z0001": 0.1990712296956057,
+      "z0002": 0.1976923801954009,
+      "z0003": 0.20649844083524355,
+      "z0004": 0.20044392822176602
+    }
+  },
+  "prior": {
+    "AAL/2016/page_37.pdf-1": {
+      "s0_run_then_submit": "1/4",
+      "s1_direct_submit": "1/4",
+      "s2_run_then_submit": "1/4",
+      "s3_run_then_submit": "1/4"
+    },
+    "AAL/2016/page_37.pdf-2": {
+      "s1": "1"
+    },
+    "AAP/2006/page_85.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "AAP/2006/page_85.pdf-2": {
+      "s0": "1"
+    },
+    "AAP/2006/page_85.pdf-3": {
+      "z0000": "1"
+    },
+    "AAP/2006/page_85.pdf-4": {
+      "z0000": "1"
+    },
+    "AAPL/2010/page_42.pdf-1": {
+      "z0000": "1"
+    },
+    "AAPL/2010/page_42.pdf-3": {
+      "singleton:1d1ce290a1d018c5f292bda92297377a9de0aee12b57413a98c1b6ed4f449f83": "1"
+    },
+    "AAPL/2010/page_43.pdf-2": {
+      "s1_compute_and_submit_table_min": "1"
+    },
+    "AAPL/2010/page_73.pdf-1": {
+      "singleton:1735b467b964e02b7b0b91237c33f18e00d319b6422f5a785af3d37911d1c8a8": "1"
+    },
+    "AAPL/2013/page_27.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "AAPL/2013/page_27.pdf-3": {
+      "s1_equivalent_computation_no_revision": "1"
+    },
+    "AAPL/2013/page_27.pdf-4": {
+      "z0000": "1"
+    },
+    "AAPL/2013/page_39.pdf-1": {
+      "z0000": "1"
+    },
+    "AAPL/2013/page_39.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "AAPL/2013/page_41.pdf-1": {
+      "s0_direct_compute_submit": "1/3",
+      "s1_direct_compute_submit": "1/3",
+      "s2_verified_source_compute_submit": "1/3"
+    },
+    "AAPL/2013/page_41.pdf-2": {
+      "z0000": "1"
+    },
+    "AAPL/2013/page_41.pdf-3": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AAPL/2013/page_72.pdf-1": {
+      "s0": "1"
+    },
+    "AAPL/2013/page_78.pdf-1": {
+      "z0000": "1"
+    },
+    "AAPL/2013/page_78.pdf-3": {
+      "s1": "1"
+    },
+    "AAPL/2014/page_26.pdf-1": {
+      "p0-direct-submit": "1/2",
+      "p1-execute-verify-submit": "1/2"
+    },
+    "AAPL/2014/page_26.pdf-2": {
+      "singleton:9b1ad61808f32e476ecc4f3b8b251fc3d0e7e9c2ddada9f4e701182c56ed664b": "1"
+    },
+    "AAPL/2014/page_67.pdf-1": {
+      "singleton:4a51cf498ddbdf19dadd062bf99a13e596df683bce1831edb31062c08b32c096": "1"
+    },
+    "AAPL/2014/page_67.pdf-2": {
+      "z0000": "1"
+    },
+    "AAPL/2014/page_67.pdf-3": {
+      "s1": "1"
+    },
+    "AAPL/2014/page_67.pdf-4": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "AAPL/2014/page_78.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "AAPL/2014/page_78.pdf-2": {
+      "z0000": "1"
+    },
+    "AAPL/2014/page_78.pdf-3": {
+      "s1": "1"
+    },
+    "AAPL/2014/page_78.pdf-4": {
+      "s1": "1"
+    },
+    "ABMD/2006/page_62.pdf-4": {
+      "singleton:f023a25b6d0e0d3e697fe4934de03f7f2bc075995a3be6c95dc1ea31918bfba4": "1"
+    },
+    "ABMD/2006/page_65.pdf-2": {
+      "direct_zero_submit": "1/5",
+      "read_source_verify_zero": "1/5",
+      "run_program_verify_zero": "1/5",
+      "direct_zero_submit_2": "1/5",
+      "read_source_verify_zero_2": "1/5"
+    },
+    "ABMD/2008/page_52.pdf-2": {
+      "s0": "1"
+    },
+    "ABMD/2008/page_52.pdf-3": {
+      "z0000": "1"
+    },
+    "ABMD/2008/page_52.pdf-4": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "ABMD/2008/page_87.pdf-1": {
+      "abmd_consistent_unit_ratio_without_consequential_revision": "3/4",
+      "abmd_observed_mixed_unit_division_then_substantive_correction": "1/4"
+    },
+    "ABMD/2008/page_87.pdf-2": {
+      "z0000": "1"
+    },
+    "ABMD/2008/page_87.pdf-3": {
+      "z0000": "1/2",
+      "z0001": "1/4",
+      "z0002": "1/4"
+    },
+    "ADI/2012/page_65.pdf-2": {
+      "z0000": "1"
+    },
+    "AES/2001/page_42.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "AES/2001/page_45.pdf-1": {
+      "p0-corrected-percent-scale": "1/2",
+      "p1-direct-correct-computation": "1/2"
+    },
+    "AES/2001/page_45.pdf-2": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AES/2001/page_48.pdf-1": {
+      "s1": "1"
+    },
+    "AES/2001/page_51.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "AES/2001/page_77.pdf-1": {
+      "z0000": "1"
+    },
+    "AES/2001/page_77.pdf-2": {
+      "singleton:ea0d2f866575eb13a5155e26ed3dc3dad2177476a6eaa3f03945e20b04ca60d2": "1"
+    },
+    "AES/2017/page_110.pdf-1": {
+      "s1": "1"
+    },
+    "AES/2017/page_110.pdf-2": {
+      "singleton:a709d597a58682b82095491034024b032370b374fe5e16e2308ccc99e9758f99": "1"
+    },
+    "AES/2017/page_110.pdf-3": {
+      "s1": "1"
+    },
+    "AES/2017/page_110.pdf-4": {
+      "z0000": "1"
+    },
+    "AES/2017/page_168.pdf-2": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "AES/2017/page_168.pdf-3": {
+      "z0000": "1"
+    },
+    "AES/2017/page_168.pdf-4": {
+      "z0000": "1/7",
+      "z0001": "1/7",
+      "z0002": "1/7",
+      "z0003": "1/7",
+      "z0004": "1/7",
+      "z0005": "1/7",
+      "z0006": "1/7"
+    },
+    "AES/2017/page_85.pdf-1": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AES/2017/page_85.pdf-2": {
+      "singleton:21a28f108b0ed7339920d7738c18a64092aeffc4243f46c05636a421a68b0f04": "1"
+    },
+    "ALLE/2015/page_81.pdf-1": {
+      "z0000": "4/5",
+      "z0001": "1/5"
+    },
+    "ALLE/2015/page_81.pdf-2": {
+      "p0-direct-submit": "1/2",
+      "p1-run-verify-submit": "1/2"
+    },
+    "AMAT/2012/page_37.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "AMAT/2012/page_37.pdf-2": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "AMAT/2016/page_30.pdf-2": {
+      "z0000": "1"
+    },
+    "AMAT/2016/page_30.pdf-3": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "AMT/2004/page_102.pdf-1": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "AMT/2004/page_102.pdf-4": {
+      "z0000": "1"
+    },
+    "AMT/2004/page_28.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "AMT/2004/page_28.pdf-2": {
+      "p0_direct_compute_submit": "1/3",
+      "p1_direct_compute_submit": "1/3",
+      "p2_direct_compute_submit_with_scale_note": "1/3"
+    },
+    "AMT/2004/page_28.pdf-3": {
+      "s1": "1"
+    },
+    "AMT/2004/page_46.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "AMT/2004/page_46.pdf-2": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "AMT/2004/page_76.pdf-1": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "AMT/2004/page_76.pdf-2": {
+      "s1": "1"
+    },
+    "AMT/2004/page_76.pdf-3": {
+      "z0000": "1"
+    },
+    "AMT/2004/page_76.pdf-4": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AMT/2004/page_90.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "AMT/2004/page_90.pdf-2": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AMT/2004/page_91.pdf-1": {
+      "s1": "1"
+    },
+    "AMT/2004/page_91.pdf-2": {
+      "z0000": "1"
+    },
+    "AMT/2004/page_91.pdf-3": {
+      "s1": "1"
+    },
+    "AMT/2004/page_91.pdf-4": {
+      "z0000": "1/7",
+      "z0001": "1/7",
+      "z0002": "1/7",
+      "z0003": "1/7",
+      "z0004": "1/7",
+      "z0005": "1/7",
+      "z0006": "1/7"
+    },
+    "ANSS/2016/page_82.pdf-2": {
+      "s1": "1"
+    },
+    "ANSS/2016/page_85.pdf-1": {
+      "z0000": "1"
+    },
+    "ANSS/2016/page_85.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "ANSS/2016/page_85.pdf-3": {
+      "s1": "1"
+    },
+    "AON/2015/page_29.pdf-1": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "AON/2015/page_29.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "AON/2015/page_43.pdf-3": {
+      "z0000": "1"
+    },
+    "AON/2015/page_43.pdf-4": {
+      "p0_ebitda_minus_da": "1/2",
+      "p1_ni_plus_int_tax": "1/2"
+    },
+    "AON/2015/page_45.pdf-2": {
+      "s1": "1"
+    },
+    "AON/2015/page_45.pdf-4": {
+      "z0000": "1"
+    },
+    "AON/2015/page_50.pdf-1": {
+      "singleton:8aa048543226079a217e6dc4fd3b5c6d63eef53030725a322485dc159ae8d180": "1"
+    },
+    "AON/2015/page_50.pdf-3": {
+      "p0_ratio_compute_submit": "1/2",
+      "p1_ratio_compute_submit": "1/2"
+    },
+    "AON/2015/page_62.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "AON/2015/page_62.pdf-2": {
+      "z0000": "1"
+    },
+    "AON/2015/page_62.pdf-3": {
+      "s0": "1"
+    },
+    "AON/2015/page_62.pdf-4": {
+      "z0000": "1"
+    },
+    "AON/2015/page_72.pdf-1": {
+      "s1": "1"
+    },
+    "AON/2015/page_72.pdf-2": {
+      "z0000": "3/4",
+      "z0001": "1/4"
+    },
+    "AON/2015/page_77.pdf-4": {
+      "z0000": "1"
+    },
+    "APD/2019/page_100.pdf-1": {
+      "s1": "1"
+    },
+    "APD/2019/page_108.pdf-2": {
+      "z0000": "1"
+    },
+    "APD/2019/page_39.pdf-2": {
+      "singleton:3244bec009c19823d3d87939a5c91c7dfe99fc7b2f7b83a4b49c1c569e8c96e7": "1"
+    },
+    "APD/2019/page_53.pdf-2": {
+      "singleton:8cb27e0fcb64cd3b28f6a0585881e5dfbf23c99ab3c3996c5d9411322c34de81": "1"
+    },
+    "APTV/2014/page_46.pdf-1": {
+      "s1": "1"
+    },
+    "APTV/2014/page_46.pdf-3": {
+      "singleton:1312d60ba94d602aaf8ed9f7f00a9b6d2a547a09c1afc378eca6b0dbd4fbbf0c": "1"
+    },
+    "APTV/2014/page_46.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "AWK/2013/page_12.pdf-1": {
+      "singleton:0ecafae2845e9f45073b139baf7f2717cc5447a7dc33d1b073853e54e08a388f": "1"
+    },
+    "AWK/2013/page_123.pdf-2": {
+      "p0_direct_correct_submit": "1/3",
+      "p1_direct_correct_submit": "1/3",
+      "p2_revised_to_decrease_sum": "1/3"
+    },
+    "AWK/2013/page_123.pdf-4": {
+      "s1_divide_ratio_submitted": "1"
+    },
+    "BDX/2009/page_80.pdf-1": {
+      "z0000": "1"
+    },
+    "BDX/2009/page_80.pdf-2": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "BDX/2009/page_80.pdf-3": {
+      "z0000": "1"
+    },
+    "BDX/2009/page_80.pdf-4": {
+      "s1": "1"
+    },
+    "BDX/2009/page_81.pdf-1": {
+      "s0": "1"
+    },
+    "BDX/2009/page_81.pdf-2": {
+      "s1": "1"
+    },
+    "BDX/2009/page_81.pdf-3": {
+      "s1": "1"
+    },
+    "BDX/2009/page_81.pdf-4": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "BDX/2017/page_28.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "BDX/2017/page_28.pdf-2": {
+      "z0000": "1"
+    },
+    "BDX/2017/page_32.pdf-1": {
+      "singleton:3b43e6f81b6dfe758af859745a3a491402617635593aba08545839ddc1bc2f84": "1"
+    },
+    "BDX/2017/page_32.pdf-2": {
+      "s1": "1"
+    },
+    "BDX/2017/page_32.pdf-3": {
+      "s1": "1"
+    },
+    "BDX/2017/page_32.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "BLK/2009/page_98.pdf-3": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "BLK/2009/page_98.pdf-4": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "BLK/2014/page_33.pdf-1": {
+      "singleton:30b3478753f379805030d46beb46fce33071f27647bcd4cbe1021c4bf33012b1": "1"
+    },
+    "BLK/2014/page_33.pdf-4": {
+      "s1": "1"
+    },
+    "BLK/2014/page_68.pdf-1": {
+      "z0000": "1"
+    },
+    "BLK/2014/page_68.pdf-2": {
+      "z0000": "1"
+    },
+    "BLK/2015/page_123.pdf-1": {
+      "singleton:cf85bf734349cd606cf3fcb8f6437911692680131e1c571c053b583acd67396d": "1"
+    },
+    "BLK/2015/page_123.pdf-3": {
+      "z0000": "1"
+    },
+    "BLK/2015/page_35.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "BLK/2015/page_35.pdf-3": {
+      "s0": "1"
+    },
+    "BLK/2015/page_35.pdf-4": {
+      "s1": "1"
+    },
+    "BLK/2017/page_35.pdf-1": {
+      "s1": "1"
+    },
+    "BLK/2017/page_35.pdf-2": {
+      "s1": "1"
+    },
+    "BLK/2017/page_35.pdf-3": {
+      "s1": "1"
+    },
+    "BLK/2017/page_35.pdf-4": {
+      "s1": "1"
+    },
+    "BLK/2017/page_77.pdf-1": {
+      "singleton:40d2ffa6b5467106ef7645a4252a9a7258f392ea5457f29f6f6f15f18aab989f": "1"
+    },
+    "BLK/2017/page_77.pdf-2": {
+      "singleton:40637302e5c5a294d9c9bcf96251da713cb5413547ae8afad3c8be9c8cced544": "1"
+    },
+    "BLK/2017/page_81.pdf-1": {
+      "z0000": "1"
+    },
+    "BLK/2017/page_81.pdf-2": {
+      "singleton:e910a2724fd14f916b0f2b9c8fc82b2259445ceab631e4c8d7ead639a342d106": "1"
+    },
+    "BLK/2017/page_81.pdf-3": {
+      "z0000": "1"
+    },
+    "BLK/2017/page_81.pdf-4": {
+      "s0_direct_submit": "1/4",
+      "s1_execute_then_submit": "1/4",
+      "s2_execute_interpret_submit": "1/4",
+      "s3_execute_confirm_submit": "1/4"
+    },
+    "BLK/2017/page_87.pdf-2": {
+      "s1": "1"
+    },
+    "BLK/2017/page_87.pdf-3": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "BLK/2017/page_87.pdf-4": {
+      "z0000": "1"
+    },
+    "C/2009/page_141.pdf-1": {
+      "z0000": "1"
+    },
+    "C/2009/page_141.pdf-2": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "C/2009/page_141.pdf-3": {
+      "s1": "1/7",
+      "s2": "1/7",
+      "s3": "1/7",
+      "s4": "1/7",
+      "s5": "1/7",
+      "s6": "1/7",
+      "s7": "1/7"
+    },
+    "C/2009/page_141.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "C/2009/page_162.pdf-1": {
+      "z0000": "1"
+    },
+    "C/2009/page_162.pdf-2": {
+      "singleton:5ffadbcf587b6d72595de199b31be91bc7ee004dc0139822bcd4416d26073fb5": "1"
+    },
+    "C/2009/page_194.pdf-1": {
+      "s1": "1"
+    },
+    "C/2009/page_194.pdf-2": {
+      "s1": "1"
+    },
+    "C/2009/page_200.pdf-1": {
+      "z0000": "1"
+    },
+    "C/2009/page_200.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "C/2009/page_200.pdf-3": {
+      "singleton:c5f2f31889afdaf7b93ff8a38ce9e80ff7fc9a21da43bff8c03e9d6dc710b9fd": "1"
+    },
+    "C/2009/page_248.pdf-3": {
+      "s1": "1"
+    },
+    "C/2009/page_248.pdf-4": {
+      "z0000": "1"
+    },
+    "C/2009/page_255.pdf-1": {
+      "singleton:a069523775c610e64cfd5de05ccc322558c7ba883856bda336fd6f46c5cbbb74": "1"
+    },
+    "C/2009/page_255.pdf-2": {
+      "singleton:f57030c3becddce5338ec9c5498dec8044928ccd9320ab3174e7d89ac1f96bfb": "1"
+    },
+    "C/2009/page_255.pdf-4": {
+      "p0_direct_submit": "1/2",
+      "p1_execute_verify_submit": "1/2"
+    },
+    "C/2009/page_279.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "C/2009/page_279.pdf-2": {
+      "z0000": "1"
+    },
+    "C/2009/page_38.pdf-1": {
+      "singleton:eed68ab63f81b83d33c0e61bc28fc6659a4f0c4590cbf69b79d209306ea0fef3": "1"
+    },
+    "C/2009/page_38.pdf-2": {
+      "z0000": "1"
+    },
+    "C/2009/page_38.pdf-3": {
+      "z0000": "1"
+    },
+    "C/2009/page_38.pdf-4": {
+      "z0000": "1"
+    },
+    "C/2009/page_41.pdf-1": {
+      "s0": "1"
+    },
+    "C/2009/page_41.pdf-2": {
+      "s1_compute_and_submit_ratio": "1"
+    },
+    "C/2009/page_42.pdf-1": {
+      "s1": "1"
+    },
+    "C/2009/page_42.pdf-2": {
+      "direct_ratio_compute_and_submit": "1"
+    },
+    "C/2009/page_48.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "C/2009/page_48.pdf-2": {
+      "s0": "1"
+    },
+    "C/2009/page_53.pdf-1": {
+      "s1": "1"
+    },
+    "C/2009/page_53.pdf-2": {
+      "s1": "1"
+    },
+    "C/2015/page_314.pdf-1": {
+      "s0": "1/5",
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5"
+    },
+    "C/2015/page_314.pdf-3": {
+      "singleton:8e88b7b5f1b83e0a183a7c7c04fdfcf0755fe6fb95c924164a9b4e03e9974fb4": "1"
+    },
+    "C/2015/page_314.pdf-4": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "C/2015/page_46.pdf-1": {
+      "singleton:635ae2406cf6332d3060c007828aadc18d9f6fe36799dfe209163ac4170d021a": "1"
+    },
+    "C/2015/page_46.pdf-2": {
+      "singleton:4f6c60e5fba07df54dca18f27aba603a6039974dbdc727dbbfa8af927b987f33": "1"
+    },
+    "C/2015/page_73.pdf-1": {
+      "z0000": "1"
+    },
+    "C/2015/page_73.pdf-2": {
+      "singleton:1f119aace8e0f6e83fe9ee51f4727352a2faf8866a8cc7c7e63aa26c60403341": "1"
+    },
+    "C/2015/page_73.pdf-3": {
+      "singleton:77525bd769b08ee4b1613af409e650468582ba5256bc3db7f780a2870968f553": "1"
+    },
+    "CAG/2008/page_35.pdf-1": {
+      "z0000": "1"
+    },
+    "CAG/2008/page_35.pdf-2": {
+      "singleton:b5a1d29fcd7ef2fea98980c80f7fbd3e9365767f5c272106b0b3f919d29e445c": "1"
+    },
+    "CAG/2008/page_47.pdf-1": {
+      "s1_compute_and_submit_ratio": "1"
+    },
+    "CAG/2008/page_47.pdf-2": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "CDNS/2007/page_30.pdf-1": {
+      "s0": "1"
+    },
+    "CDNS/2007/page_30.pdf-2": {
+      "z0000": "1"
+    },
+    "CDNS/2007/page_30.pdf-4": {
+      "s1": "1/6",
+      "s2": "1/6",
+      "s3": "1/6",
+      "s4": "1/6",
+      "s5": "1/6",
+      "s6": "1/6"
+    },
+    "CDNS/2007/page_93.pdf-2": {
+      "singleton:aaee2bb2555269319732533b232375dec6861f0ec8d8e76679f37a7f0c4ad1f0": "1"
+    },
+    "CDNS/2007/page_93.pdf-3": {
+      "s0": "1"
+    },
+    "CDNS/2007/page_93.pdf-4": {
+      "singleton:f1e9dfb15008c8014a3cfa79b22bdd5d347007f0ca52e0ae1edb71287a8045e1": "1"
+    },
+    "CDNS/2012/page_31.pdf-1": {
+      "singleton:a00445ab1b1a2c1ed6ef321f2890ea3e41085345c68b1a397897fcb99d83e513": "1"
+    },
+    "CDNS/2012/page_31.pdf-2": {
+      "s1": "1"
+    },
+    "CDNS/2012/page_41.pdf-1": {
+      "singleton:59c147a4fa5559d6e8d8c2a7c77727c420e065a10db6bf86f32ca4469a4227eb": "1"
+    },
+    "CDNS/2012/page_58.pdf-1": {
+      "singleton:85609e05d7e9013d40ae0b77e1c3a8657bc5a32d9452e30620ed7288c2b188b2": "1"
+    },
+    "CDNS/2012/page_58.pdf-2": {
+      "singleton:f522a384a3acc1c7f52e77cc3c38751aed669b6e84376793044f03edc0345eb8": "1"
+    },
+    "CDW/2015/page_34.pdf-1": {
+      "singleton:d1a860e3f390dfd82ae35cd0c75b5919086fdc9e178f0a4b54f2c4b219d52d05": "1"
+    },
+    "CDW/2015/page_34.pdf-2": {
+      "s0": "1/5",
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5"
+    },
+    "CDW/2015/page_35.pdf-1": {
+      "singleton:e6cc1e132093573fc6a69e66a5ea9ea98752c90a7b592a3d8c0f6fac7cb4b179": "1"
+    },
+    "CDW/2015/page_53.pdf-1": {
+      "p0-direct-derivation": "1/2",
+      "p1-direct-derivation": "1/2"
+    },
+    "CDW/2015/page_53.pdf-4": {
+      "z0000": "1"
+    },
+    "CDW/2015/page_54.pdf-1": {
+      "z0000": "1"
+    },
+    "CDW/2015/page_54.pdf-2": {
+      "z0000": "1"
+    },
+    "CDW/2015/page_54.pdf-3": {
+      "p0_direct_submit": "1/2",
+      "p1_run_then_submit": "1/2"
+    },
+    "CDW/2015/page_54.pdf-4": {
+      "s0": "1"
+    },
+    "DG/2008/page_73.pdf-1": {
+      "s0": "1"
+    },
+    "DG/2008/page_73.pdf-2": {
+      "z0000": "1"
+    },
+    "DG/2008/page_73.pdf-4": {
+      "s1": "1"
+    },
+    "DG/2008/page_86.pdf-1": {
+      "s0": "1"
+    },
+    "DG/2008/page_86.pdf-2": {
+      "p0_extract_sum_submit": "1/3",
+      "p1_extract_sum_submit": "1/3",
+      "p2_extract_sum_submit": "1/3"
+    },
+    "DISCA/2011/page_35.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "DISCA/2011/page_35.pdf-3": {
+      "s0_run_then_submit_same": "1/6",
+      "s1_run_then_submit_same": "1/6",
+      "s2_direct_submit": "1/6",
+      "s3_direct_submit": "1/6",
+      "s4_run_then_submit_same": "1/6",
+      "s5_run_then_submit_same": "1/6"
+    },
+    "DISCA/2011/page_35.pdf-4": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "DISCA/2017/page_22.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "DISCA/2017/page_22.pdf-2": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "DISCA/2017/page_41.pdf-1": {
+      "singleton:75c845b0354dfeebe6b1349e818af03cab6b3690cbd3ce552f8aec1d720b6353": "1"
+    },
+    "DISCA/2017/page_41.pdf-2": {
+      "s0_direct_terminal_value_comparison": "1/6",
+      "s1_percentage_return_comparison": "1/6",
+      "s2_return_ratio_comparison": "1/6",
+      "s3_difference_from_base_comparison": "1/6",
+      "s4_table_row_max_comparison": "1/6",
+      "s5_percentage_return_comparison_variant": "1/6"
+    },
+    "DISCA/2017/page_41.pdf-3": {
+      "s1": "1"
+    },
+    "DISH/2008/page_120.pdf-1": {
+      "z0000": "1"
+    },
+    "DISH/2011/page_130.pdf-1": {
+      "z0000": "1"
+    },
+    "DISH/2011/page_130.pdf-2": {
+      "z0000": "5/6",
+      "z0001": "1/6"
+    },
+    "DRE/2008/page_29.pdf-1": {
+      "z0000": "1"
+    },
+    "DRE/2008/page_29.pdf-2": {
+      "s0_p0_execute_then_submit": "1/4",
+      "s1_p1_execute_then_submit": "1/4",
+      "s2_p2_direct_submit": "1/4",
+      "s3_p3_direct_submit": "1/4"
+    },
+    "DRE/2008/page_49.pdf-1": {
+      "singleton:4630e63743281b988d86b480800094fafa69d566a4c0324d39a4d1d489ff027c": "1"
+    },
+    "DRE/2008/page_49.pdf-2": {
+      "z0000": "1"
+    },
+    "DRE/2016/page_59.pdf-2": {
+      "s1": "1"
+    },
+    "DRE/2016/page_64.pdf-4": {
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4",
+      "s4": "1/4"
+    },
+    "DVN/2004/page_50.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "2/3"
+    },
+    "EOG/2017/page_102.pdf-1": {
+      "p0-run-then-submit": "1/3",
+      "p1-run-then-submit": "1/3",
+      "p2-direct-submit": "1/3"
+    },
+    "EOG/2017/page_103.pdf-1": {
+      "z0000": "1"
+    },
+    "EOG/2017/page_103.pdf-2": {
+      "z0000": "1"
+    },
+    "EOG/2017/page_78.pdf-1": {
+      "p0_direct_max_submit": "1/3",
+      "p1_confirm_max_submit": "1/3",
+      "p2_match_max_submit": "1/3"
+    },
+    "EOG/2017/page_78.pdf-2": {
+      "s0": "1"
+    },
+    "EOG/2017/page_93.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "FRT/2006/page_133.pdf-1": {
+      "s0": "1"
+    },
+    "FRT/2006/page_133.pdf-2": {
+      "z0000": "1"
+    },
+    "FRT/2007/page_137.pdf-1": {
+      "s0": "1"
+    },
+    "FRT/2007/page_137.pdf-2": {
+      "s0": "1"
+    },
+    "FRT/2009/page_124.pdf-1": {
+      "s0": "1"
+    },
+    "GIS/2008/page_83.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "GIS/2008/page_83.pdf-2": {
+      "z0000": "1"
+    },
+    "GIS/2008/page_83.pdf-3": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "GPN/2007/page_18.pdf-1": {
+      "s1_ratio_computation_no_revision": "1"
+    },
+    "GPN/2007/page_18.pdf-2": {
+      "s1": "1"
+    },
+    "GPN/2007/page_39.pdf-1": {
+      "s0": "1"
+    },
+    "GPN/2007/page_39.pdf-2": {
+      "s1": "1"
+    },
+    "GPN/2007/page_97.pdf-2": {
+      "singleton:d823f63bbf99f435dfd77068b151d54d6f8020962767b9b814ced3f738e10942": "1"
+    },
+    "GPN/2008/page_39.pdf-2": {
+      "s1": "1"
+    },
+    "GPN/2008/page_39.pdf-3": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "GPN/2008/page_88.pdf-1": {
+      "singleton:7a7db9efa266899129afda1982ddb7f457fc246dff3dfae2057dc29e2ac87443": "1"
+    },
+    "GPN/2008/page_88.pdf-2": {
+      "s0": "1"
+    },
+    "GPN/2008/page_92.pdf-2": {
+      "z0000": "1"
+    },
+    "GPN/2008/page_95.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "GPN/2008/page_95.pdf-2": {
+      "s1_direct_ratio_compute_and_submit": "1"
+    },
+    "GPN/2008/page_95.pdf-4": {
+      "z0000": "1"
+    },
+    "GPN/2008/page_99.pdf-4": {
+      "s0": "1"
+    },
+    "GPN/2016/page_67.pdf-1": {
+      "p0_plan_execute_submit": "1/2",
+      "p1_plan_execute_verify_submit": "1/2"
+    },
+    "GPN/2016/page_67.pdf-2": {
+      "s1": "1"
+    },
+    "GPN/2016/page_69.pdf-2": {
+      "s1": "1"
+    },
+    "GPN/2016/page_83.pdf-1": {
+      "s1": "1"
+    },
+    "GPN/2016/page_83.pdf-2": {
+      "z0000": "1"
+    },
+    "GPN/2016/page_83.pdf-3": {
+      "z0000": "1"
+    },
+    "GPN/2016/page_83.pdf-4": {
+      "s0": "1"
+    },
+    "GPN/2016/page_84.pdf-1": {
+      "singleton:448c9747dd8f51b57c751f88a957b6b7904d06192fbd7a9cc24efc99f70d4ec6": "1"
+    },
+    "GPN/2016/page_84.pdf-4": {
+      "p0_read_run_submit": "1/3",
+      "p1_run_submit": "1/3",
+      "p2_run_submit": "1/3"
+    },
+    "GPN/2018/page_74.pdf-1": {
+      "s1": "1"
+    },
+    "GPN/2018/page_79.pdf-1": {
+      "s1": "1"
+    },
+    "GPN/2018/page_85.pdf-1": {
+      "z0000": "1"
+    },
+    "GPN/2018/page_85.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "GPN/2018/page_85.pdf-3": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "GRMN/2004/page_91.pdf-1": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "GRMN/2004/page_91.pdf-2": {
+      "s1": "1"
+    },
+    "HFC/2011/page_85.pdf-1": {
+      "s0": "1"
+    },
+    "HFC/2011/page_88.pdf-1": {
+      "p0_compute_and_submit": "1/2",
+      "p1_compute_and_submit": "1/2"
+    },
+    "HFC/2011/page_88.pdf-2": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "HFC/2011/page_88.pdf-3": {
+      "z0000": "1"
+    },
+    "HFC/2011/page_92.pdf-1": {
+      "s1": "1"
+    },
+    "HFC/2011/page_92.pdf-2": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "HFC/2011/page_92.pdf-3": {
+      "s1": "1"
+    },
+    "HFC/2011/page_92.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "HFC/2011/page_92.pdf-5": {
+      "z0000": "1"
+    },
+    "HFC/2011/page_92.pdf-6": {
+      "s1": "1"
+    },
+    "HFC/2018/page_43.pdf-1": {
+      "z0000": "1"
+    },
+    "HFC/2018/page_43.pdf-2": {
+      "compute_ratio_and_submit": "1"
+    },
+    "HFC/2018/page_43.pdf-4": {
+      "z0000": "1"
+    },
+    "HFC/2018/page_43.pdf-5": {
+      "singleton:548f5d7ea2e588e8648deef6b629f045c42f24da8c2966ee90d71bfc6f025f5a": "1"
+    },
+    "HIG/2012/page_132.pdf-1": {
+      "p0_direct_compute_submit": "1/3",
+      "p1_direct_compute_submit": "1/3",
+      "p2_direct_compute_submit": "1/3"
+    },
+    "HIG/2012/page_132.pdf-3": {
+      "s1": "1"
+    },
+    "HIG/2013/page_124.pdf-1": {
+      "s1": "1"
+    },
+    "HIG/2013/page_124.pdf-2": {
+      "s1": "1"
+    },
+    "HIG/2013/page_124.pdf-3": {
+      "s0_run_then_submit_same_program": "1/4",
+      "s1_direct_submit_ratio": "1/4",
+      "s2_run_comment_then_submit_same_program": "1/4",
+      "s3_run_then_submit_same_program": "1/4"
+    },
+    "HIG/2013/page_212.pdf-1": {
+      "singleton:610d3b4477d183cd4c31a73d5c53cf5ffb29455c224343b85af80b511889dfe7": "1"
+    },
+    "HIG/2013/page_212.pdf-2": {
+      "s1": "1"
+    },
+    "HIG/2013/page_235.pdf-1": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "HIG/2013/page_235.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "HOLX/2009/page_133.pdf-1": {
+      "z0000": "1"
+    },
+    "HOLX/2009/page_133.pdf-2": {
+      "z0000": "1"
+    },
+    "HOLX/2009/page_141.pdf-1": {
+      "z0000": "1"
+    },
+    "HOLX/2009/page_141.pdf-2": {
+      "s1_direct_compute_submit": "1"
+    },
+    "HOLX/2009/page_153.pdf-1": {
+      "z0000": "1/7",
+      "z0001": "1/7",
+      "z0002": "1/7",
+      "z0003": "1/7",
+      "z0004": "1/7",
+      "z0005": "1/7",
+      "z0006": "1/7"
+    },
+    "HOLX/2009/page_153.pdf-2": {
+      "s0": "1"
+    },
+    "HOLX/2009/page_153.pdf-4": {
+      "aggregate_and_submit_15100": "1"
+    },
+    "HUM/2005/page_18.pdf-2": {
+      "singleton:b1d95242666dad7c5893fb0f0bb52297dc793d0dbf4f5592bc94ad8cc14e88d8": "1"
+    },
+    "HUM/2005/page_18.pdf-3": {
+      "ratio_computation_and_submission": "1"
+    },
+    "HUM/2005/page_80.pdf-1": {
+      "z0000": "1"
+    },
+    "HUM/2005/page_80.pdf-2": {
+      "singleton:53faa1abd27de380a712bc30c8d31c1d00074f381db66ecee78a4b7bd961f71c": "1"
+    },
+    "HUM/2005/page_80.pdf-3": {
+      "singleton:87392f7e18403b5f42bec85ef59ab831ac0b5e97e26783bbcd3e7bb8213b4151": "1"
+    },
+    "HUM/2005/page_80.pdf-4": {
+      "liability_sum_computation": "1"
+    },
+    "HUM/2012/page_109.pdf-2": {
+      "s0": "1"
+    },
+    "HUM/2016/page_133.pdf-1": {
+      "singleton:6b7e15bec6f382cd67da4c2d40fe8d5f4339d00d69ba1046020d41257dc31814": "1"
+    },
+    "HUM/2016/page_133.pdf-3": {
+      "z0000": "1"
+    },
+    "HWM/2016/page_119.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "HWM/2016/page_50.pdf-1": {
+      "s1_ratio_compute_submit": "1"
+    },
+    "HWM/2016/page_52.pdf-1": {
+      "s1": "1"
+    },
+    "HWM/2016/page_52.pdf-2": {
+      "z0000": "1"
+    },
+    "HWM/2016/page_79.pdf-2": {
+      "s1": "1"
+    },
+    "HWM/2017/page_75.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "HWM/2017/page_77.pdf-2": {
+      "s0_run_then_submit_no_revision": "1/4",
+      "s1_direct_submit_no_verification": "1/4",
+      "s2_direct_submit_no_verification": "1/4",
+      "s3_run_verify_then_submit": "1/4"
+    },
+    "ILMN/2017/page_23.pdf-1": {
+      "singleton:f3d85c85293933d2d09b7cbf81714a7e01f92a9d11025164d9e92b806f1bba4a": "1"
+    },
+    "ILMN/2017/page_23.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "INTC/2015/page_122.pdf-1": {
+      "s1": "1"
+    },
+    "INTC/2015/page_122.pdf-2": {
+      "s1": "1"
+    },
+    "INTC/2015/page_122.pdf-3": {
+      "singleton:2ba77e24bc5c4128642841ed9a77ea6f30e742564637cf63a50161f08236d199": "1"
+    },
+    "INTC/2015/page_122.pdf-4": {
+      "s1": "1"
+    },
+    "INTC/2018/page_105.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "INTC/2018/page_105.pdf-2": {
+      "s1": "1"
+    },
+    "INTC/2018/page_48.pdf-1": {
+      "s1": "1"
+    },
+    "INTC/2018/page_48.pdf-2": {
+      "s0": "1"
+    },
+    "INTC/2018/page_48.pdf-3": {
+      "p0-direct-compute-submit": "1/3",
+      "p1-compute-interpret-submit": "1/3",
+      "p2-compute-confirm-submit": "1/3"
+    },
+    "INTC/2018/page_50.pdf-1": {
+      "s1": "1"
+    },
+    "INTC/2018/page_50.pdf-2": {
+      "s1": "1"
+    },
+    "INTC/2018/page_50.pdf-3": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "INTC/2018/page_50.pdf-4": {
+      "s1": "1"
+    },
+    "IP/2005/page_27.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "IP/2005/page_27.pdf-4": {
+      "s0": "1"
+    },
+    "IP/2005/page_28.pdf-1": {
+      "z0000": "1"
+    },
+    "IP/2005/page_28.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2005/page_28.pdf-3": {
+      "s1_direct_table_ratio": "1"
+    },
+    "IP/2005/page_29.pdf-2": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "IP/2005/page_29.pdf-3": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "IP/2005/page_31.pdf-1": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "IP/2005/page_31.pdf-2": {
+      "s0": "1"
+    },
+    "IP/2005/page_31.pdf-3": {
+      "z0000": "1"
+    },
+    "IP/2005/page_32.pdf-1": {
+      "s1": "1"
+    },
+    "IP/2005/page_32.pdf-2": {
+      "s1": "1"
+    },
+    "IP/2005/page_32.pdf-3": {
+      "z0000": "1"
+    },
+    "IP/2005/page_32.pdf-4": {
+      "z0000": "1"
+    },
+    "IP/2005/page_83.pdf-1": {
+      "s1": "1"
+    },
+    "IP/2006/page_19.pdf-1": {
+      "s0": "1"
+    },
+    "IP/2006/page_19.pdf-2": {
+      "s1_direct_compute_submit": "1"
+    },
+    "IP/2006/page_19.pdf-4": {
+      "z0000": "1"
+    },
+    "IP/2006/page_34.pdf-2": {
+      "s1": "1"
+    },
+    "IP/2006/page_34.pdf-3": {
+      "s1": "1"
+    },
+    "IP/2006/page_84.pdf-1": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "IP/2006/page_84.pdf-2": {
+      "s1": "1"
+    },
+    "IP/2013/page_101.pdf-1": {
+      "s1": "1"
+    },
+    "IP/2013/page_101.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2013/page_101.pdf-3": {
+      "z0000": "1"
+    },
+    "IP/2013/page_105.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "IP/2013/page_61.pdf-1": {
+      "s1_ratio_compute_submit": "1"
+    },
+    "IP/2013/page_61.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "IP/2013/page_61.pdf-3": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "IP/2013/page_62.pdf-1": {
+      "p0_direct_compute_submit": "1/3",
+      "p1_single_turn_submit": "1/3",
+      "p2_run_interpret_submit": "1/3"
+    },
+    "IP/2013/page_62.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2013/page_62.pdf-3": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "IP/2013/page_62.pdf-4": {
+      "s1": "1"
+    },
+    "IP/2013/page_64.pdf-1": {
+      "p0_run_then_submit_same_program": "1/4",
+      "p1_run_then_submit_same_program": "1/4",
+      "p2_direct_submit": "1/4",
+      "p3_run_then_submit_same_program": "1/4"
+    },
+    "IP/2013/page_64.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2013/page_65.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2013/page_70.pdf-1": {
+      "z0000": "1"
+    },
+    "IP/2013/page_70.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2013/page_70.pdf-3": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "IP/2018/page_45.pdf-1": {
+      "s1": "1/6",
+      "s2": "1/6",
+      "s3": "1/6",
+      "s4": "1/6",
+      "s5": "1/6",
+      "s6": "1/6"
+    },
+    "IP/2018/page_45.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2018/page_50.pdf-1": {
+      "singleton:7dacd02eb067481902f0924d66c211027ddaf9e291f402c593d2ebcbaddd58e9": "1"
+    },
+    "IP/2018/page_50.pdf-2": {
+      "z0000": "1"
+    },
+    "IP/2018/page_50.pdf-4": {
+      "s1": "1/6",
+      "s2": "1/6",
+      "s3": "1/6",
+      "s4": "1/6",
+      "s5": "1/6",
+      "s6": "1/6"
+    },
+    "IP/2018/page_83.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "IP/2018/page_83.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "IP/2018/page_83.pdf-3": {
+      "z0000": "1"
+    },
+    "IP/2018/page_83.pdf-4": {
+      "s1_direct_table_max_no_revision": "1"
+    },
+    "IPG/2018/page_100.pdf-1": {
+      "s0": "1"
+    },
+    "IPG/2018/page_100.pdf-4": {
+      "z0000": "1"
+    },
+    "IPG/2018/page_104.pdf-2": {
+      "singleton:b04d2b58722870ff2c9455afc43c28cf9c275a83413f17062625252d3ec900be": "1"
+    },
+    "IPG/2018/page_26.pdf-1": {
+      "s1": "1"
+    },
+    "IPG/2018/page_26.pdf-3": {
+      "s0": "1"
+    },
+    "IPG/2018/page_39.pdf-1": {
+      "s0": "1"
+    },
+    "IPG/2018/page_39.pdf-2": {
+      "z0000": "3/4",
+      "z0001": "1/4"
+    },
+    "IPG/2018/page_39.pdf-3": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "IPG/2018/page_52.pdf-1": {
+      "singleton:0d3c201f7d1ba56d63fddb59eaaebe7335075af8d60b9ae4da88138c6cea0fc0": "1"
+    },
+    "IPG/2018/page_52.pdf-2": {
+      "z0000": "1"
+    },
+    "IPG/2018/page_78.pdf-1": {
+      "z0000": "1"
+    },
+    "IPG/2018/page_78.pdf-2": {
+      "z0000": "1"
+    },
+    "IPG/2018/page_78.pdf-3": {
+      "z0000": "1"
+    },
+    "IQV/2016/page_57.pdf-1": {
+      "s1": "1"
+    },
+    "IQV/2016/page_57.pdf-2": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "IQV/2016/page_65.pdf-1": {
+      "p0_percent_scale_revision": "1/3",
+      "p1_direct_correct_scale": "1/3",
+      "p2_direct_ratio_conversion": "1/3"
+    },
+    "IQV/2016/page_65.pdf-2": {
+      "singleton:80e873d0ef324a09abb65daa0a0a1150b60689ec49574e05a1c92552cd5c33d9": "1"
+    },
+    "IQV/2016/page_65.pdf-3": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "IQV/2016/page_79.pdf-1": {
+      "z0000": "1"
+    },
+    "IQV/2016/page_79.pdf-2": {
+      "s0": "1"
+    },
+    "IQV/2016/page_79.pdf-3": {
+      "s0": "1"
+    },
+    "JKHY/2011/page_34.pdf-1": {
+      "s1": "1"
+    },
+    "JKHY/2011/page_34.pdf-2": {
+      "z0000": "1"
+    },
+    "JKHY/2011/page_34.pdf-3": {
+      "z0000": "2/3",
+      "z0001": "1/6",
+      "z0002": "1/6"
+    },
+    "JKHY/2011/page_55.pdf-2": {
+      "z0000": "1"
+    },
+    "JKHY/2018/page_16.pdf-2": {
+      "singleton:0e0bf69dc3be8cfe6990d0d67496bcbb96046423eb4d0857df5cc438fab35e1e": "1"
+    },
+    "JPM/2017/page_104.pdf-1": {
+      "z0000": "1"
+    },
+    "JPM/2017/page_104.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "JPM/2017/page_119.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "JPM/2017/page_119.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "JPM/2017/page_144.pdf-1": {
+      "s1": "1"
+    },
+    "JPM/2017/page_144.pdf-3": {
+      "s0_direct_submit": "1/5",
+      "s1_run_then_submit": "1/5",
+      "s2_run_then_submit": "1/5",
+      "s3_run_then_submit": "1/5",
+      "s4_run_then_submit": "1/5"
+    },
+    "JPM/2017/page_144.pdf-4": {
+      "z0000": "1"
+    },
+    "JPM/2017/page_145.pdf-1": {
+      "z0000": "1"
+    },
+    "JPM/2017/page_145.pdf-2": {
+      "s0": "1"
+    },
+    "JPM/2017/page_145.pdf-3": {
+      "z0000": "1"
+    },
+    "JPM/2017/page_69.pdf-1": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "JPM/2017/page_69.pdf-2": {
+      "z0000": "1"
+    },
+    "JPM/2017/page_83.pdf-1": {
+      "ratio_computation_and_submission": "1"
+    },
+    "JPM/2017/page_83.pdf-2": {
+      "z0000": "1"
+    },
+    "KHC/2018/page_27.pdf-1": {
+      "z0000": "1/5",
+      "z0001": "4/5"
+    },
+    "KHC/2018/page_27.pdf-2": {
+      "p0_run_then_submit_same_program": "1/3",
+      "p1_direct_submit_no_execution": "1/3",
+      "p2_run_then_submit_same_program": "1/3"
+    },
+    "KHC/2018/page_27.pdf-3": {
+      "s0": "1"
+    },
+    "KIM/2006/page_67.pdf-2": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "KIM/2006/page_67.pdf-4": {
+      "s0_ratio_computation_no_revision": "1"
+    },
+    "KIM/2014/page_108.pdf-1": {
+      "p0_derive_and_submit": "1/2",
+      "p1_derive_and_submit": "1/2"
+    },
+    "KIM/2014/page_108.pdf-2": {
+      "s1": "1"
+    },
+    "KIM/2014/page_112.pdf-2": {
+      "s1_direct_sum_no_verification": "1/7",
+      "s2_failed_tablesum_then_revision": "1/7",
+      "s3_failed_tablesum_then_revision": "1/7",
+      "s4_direct_sum_no_verification": "1/7",
+      "s5_direct_sum_no_verification": "1/7",
+      "s6_direct_sum_no_verification": "1/7",
+      "s7_direct_sum_no_verification": "1/7"
+    },
+    "KIM/2014/page_130.pdf-2": {
+      "s1": "1"
+    },
+    "KIM/2014/page_131.pdf-1": {
+      "s1": "1"
+    },
+    "KIM/2014/page_131.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "KIM/2014/page_131.pdf-3": {
+      "z0000": "1"
+    },
+    "KIM/2014/page_131.pdf-4": {
+      "p0-ratio-computation": "1/2",
+      "p1-ratio-computation": "1/2"
+    },
+    "KIM/2014/page_59.pdf-1": {
+      "singleton:e85f74fc4dd5460be6882f16b7afcc0ac68587ca684c1419115394e59bb1d842": "1"
+    },
+    "KMI/2010/page_164.pdf-2": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "KMI/2010/page_164.pdf-4": {
+      "z0000": "1"
+    },
+    "KMI/2010/page_2.pdf-1": {
+      "s0": "1"
+    },
+    "KMI/2014/page_114.pdf-1": {
+      "p0_direct_ratio_compute_submit": "1/3",
+      "p1_direct_ratio_compute_submit": "1/3",
+      "p2_direct_ratio_compute_submit": "1/3"
+    },
+    "KMI/2014/page_18.pdf-1": {
+      "s1": "1"
+    },
+    "KMI/2014/page_18.pdf-2": {
+      "singleton:2c164a4b4a8faa88195a38772008cce663bf98dd12c802fb866030a8846cea33": "1"
+    },
+    "L/2010/page_41.pdf-1": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "LKQ/2016/page_48.pdf-1": {
+      "z0000": "2/5",
+      "z0001": "2/5",
+      "z0002": "1/5"
+    },
+    "LKQ/2016/page_48.pdf-2": {
+      "z0000": "1"
+    },
+    "LKQ/2016/page_48.pdf-4": {
+      "z0000": "1"
+    },
+    "LMT/2007/page_37.pdf-3": {
+      "singleton:7eaec974f4830c06a25c5cd249e343266a0eca9838dd914eea85a48e1d758dc2": "1"
+    },
+    "LMT/2007/page_37.pdf-4": {
+      "s0": "1"
+    },
+    "LMT/2007/page_39.pdf-1": {
+      "singleton:3a99c463b4a92e6449a5e94f7879121ccf6ab4dbd3ccc893e55028778b240847": "1"
+    },
+    "LMT/2007/page_39.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "LMT/2007/page_39.pdf-3": {
+      "singleton:5d32ea33ff45dbc75e6eefa8576adc91dc4f547269f7a08720c04ab35cbab43d": "1"
+    },
+    "LMT/2007/page_55.pdf-1": {
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4",
+      "s4": "1/4"
+    },
+    "LMT/2007/page_55.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2007/page_55.pdf-3": {
+      "s0": "1"
+    },
+    "LMT/2007/page_55.pdf-4": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "LMT/2013/page_26.pdf-1": {
+      "s1": "1"
+    },
+    "LMT/2013/page_26.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2013/page_26.pdf-3": {
+      "z0000": "1"
+    },
+    "LMT/2013/page_44.pdf-1": {
+      "singleton:2fff37cb037730cd2ecef216a38800b207c58353534e66f26da15a4be8de2a8f": "1"
+    },
+    "LMT/2013/page_44.pdf-3": {
+      "z0000": "1"
+    },
+    "LMT/2013/page_45.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "LMT/2013/page_45.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "LMT/2013/page_45.pdf-4": {
+      "p0_table_average_direct": "1/3",
+      "p1_table_average_restated": "1/3",
+      "p2_explicit_arithmetic_direct": "1/3"
+    },
+    "LMT/2013/page_47.pdf-1": {
+      "z0000": "1"
+    },
+    "LMT/2013/page_47.pdf-2": {
+      "z0000": "1"
+    },
+    "LMT/2013/page_47.pdf-4": {
+      "s0": "1"
+    },
+    "LMT/2013/page_49.pdf-1": {
+      "singleton:28f9987a7cc2816e8ad1b2de903b38217bcf21c4b73f971d2a3d2a9cdef210bc": "1"
+    },
+    "LMT/2013/page_49.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2013/page_81.pdf-1": {
+      "z0000": "1"
+    },
+    "LMT/2013/page_81.pdf-2": {
+      "z0000": "2/5",
+      "z0001": "3/5"
+    },
+    "LMT/2013/page_87.pdf-1": {
+      "s0_direct_run_submit": "1/7",
+      "s1_read_sources_then_run_submit": "1/7",
+      "s2_run_confirm_submit": "1/7",
+      "s3_run_no_revision_submit": "1/7",
+      "s4_list_sources_run_submit": "1/7",
+      "s5_run_confirm_submit": "1/7",
+      "s6_run_state_ratio_submit": "1/7"
+    },
+    "LMT/2013/page_87.pdf-2": {
+      "singleton:f4b8fb3d51be763a9594f0d18511bcf16313cfce0db5930154223f13627aae8d": "1"
+    },
+    "LMT/2013/page_87.pdf-4": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "LMT/2013/page_89.pdf-1": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "LMT/2013/page_89.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2013/page_89.pdf-3": {
+      "s0": "1"
+    },
+    "LMT/2013/page_89.pdf-4": {
+      "s1": "1"
+    },
+    "LMT/2014/page_31.pdf-1": {
+      "s1": "1"
+    },
+    "LMT/2014/page_31.pdf-2": {
+      "z0000": "1"
+    },
+    "LMT/2014/page_45.pdf-3": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "LMT/2014/page_45.pdf-4": {
+      "s0": "1"
+    },
+    "LMT/2014/page_46.pdf-1": {
+      "z0000": "1"
+    },
+    "LMT/2014/page_46.pdf-2": {
+      "z0000": "1"
+    },
+    "LMT/2014/page_46.pdf-3": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "LMT/2014/page_47.pdf-1": {
+      "singleton:f4332d62fd25f17275fa1c628de56b386c9dd0c0da0a8fb9508d7ff32bc7381e": "1"
+    },
+    "LMT/2014/page_47.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "LMT/2014/page_47.pdf-3": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "LMT/2014/page_49.pdf-1": {
+      "s0_compute_and_submit": "1"
+    },
+    "LMT/2014/page_49.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "LMT/2014/page_49.pdf-3": {
+      "singleton:c471420e3a51f7af643367195ee7d5d9b9b2627e8b9501853c8d187ed498de75": "1"
+    },
+    "LMT/2014/page_49.pdf-4": {
+      "z0000": "1"
+    },
+    "LMT/2014/page_85.pdf-2": {
+      "p0_percentage_change_execution": "1/2",
+      "p1_percentage_change_execution": "1/2"
+    },
+    "LMT/2014/page_85.pdf-3": {
+      "s0": "1"
+    },
+    "LMT/2014/page_93.pdf-1": {
+      "p0_answer_compute_submit": "1/2",
+      "p1_answer_compute_submit": "1/2"
+    },
+    "LMT/2014/page_93.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "LMT/2015/page_106.pdf-1": {
+      "s1": "1"
+    },
+    "LMT/2015/page_106.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2015/page_106.pdf-3": {
+      "s1": "1"
+    },
+    "LMT/2015/page_52.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "LMT/2015/page_52.pdf-2": {
+      "z0000": "1"
+    },
+    "LMT/2015/page_52.pdf-4": {
+      "z0000": "1"
+    },
+    "LMT/2015/page_53.pdf-2": {
+      "s1": "1"
+    },
+    "LMT/2015/page_55.pdf-2": {
+      "p0_execute_then_submit": "1/4",
+      "p1_execute_then_submit": "1/4",
+      "p2_direct_submit": "1/4",
+      "p3_execute_then_submit": "1/4"
+    },
+    "LMT/2015/page_55.pdf-3": {
+      "z0000": "1"
+    },
+    "LMT/2015/page_55.pdf-4": {
+      "s1_table_average_execution": "1"
+    },
+    "LMT/2015/page_86.pdf-1": {
+      "z0000": "1"
+    },
+    "LMT/2015/page_86.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "MA/2008/page_113.pdf-2": {
+      "z0000": "1"
+    },
+    "MA/2008/page_113.pdf-3": {
+      "singleton:17c4e0716055a248a2e0b6e1ccca37be14628a627f654d2929671e6f0b515e3d": "1"
+    },
+    "MA/2008/page_113.pdf-4": {
+      "z0000": "1"
+    },
+    "MA/2008/page_116.pdf-2": {
+      "z0000": "1"
+    },
+    "MA/2008/page_116.pdf-3": {
+      "s1": "1"
+    },
+    "MA/2008/page_125.pdf-1": {
+      "s0": "1"
+    },
+    "MA/2008/page_125.pdf-3": {
+      "z0000": "1"
+    },
+    "MA/2008/page_125.pdf-4": {
+      "s1": "1"
+    },
+    "MA/2008/page_70.pdf-1": {
+      "z0000": "1"
+    },
+    "MA/2008/page_70.pdf-2": {
+      "z0000": "1"
+    },
+    "MAR/2018/page_42.pdf-1": {
+      "z0000": "1/2",
+      "z0001": "1/3",
+      "z0002": "1/6"
+    },
+    "MAR/2018/page_42.pdf-2": {
+      "z0000": "1"
+    },
+    "MAS/2010/page_29.pdf-1": {
+      "z0000": "1"
+    },
+    "MAS/2010/page_29.pdf-2": {
+      "p0-compute-submit": "1/3",
+      "p1-direct-submit": "1/3",
+      "p2-compute-submit": "1/3"
+    },
+    "MAS/2010/page_29.pdf-3": {
+      "s1": "1"
+    },
+    "MAS/2010/page_29.pdf-4": {
+      "s1": "1"
+    },
+    "MAS/2010/page_86.pdf-1": {
+      "z0000": "1"
+    },
+    "MAS/2010/page_86.pdf-2": {
+      "s1": "1"
+    },
+    "MAS/2010/page_89.pdf-2": {
+      "singleton:1209e214ded900d891bbbe7db4e023a2bad785e149221dd404ba76c22339867b": "1"
+    },
+    "MAS/2010/page_89.pdf-3": {
+      "z0000": "1"
+    },
+    "MAS/2017/page_37.pdf-1": {
+      "s1": "1"
+    },
+    "MAS/2017/page_37.pdf-2": {
+      "singleton:40001f8f002d29d6af5375c42884507ed29dda3c3df347090939906a5464dce3": "1"
+    },
+    "MAS/2017/page_37.pdf-4": {
+      "singleton:c417a28e1da374f34f12a7d2999f65d5a3b21de8f02224c129b75a7cb53d8eb4": "1"
+    },
+    "MRO/2008/page_119.pdf-1": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "MRO/2008/page_119.pdf-2": {
+      "p0_direct_compute_submit": "1/2",
+      "p1_direct_compute_submit": "1/2"
+    },
+    "MRO/2008/page_119.pdf-3": {
+      "s0": "1"
+    },
+    "MRO/2008/page_119.pdf-4": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "MRO/2008/page_130.pdf-1": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_130.pdf-3": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_135.pdf-3": {
+      "s1": "1"
+    },
+    "MRO/2008/page_142.pdf-1": {
+      "s0": "1"
+    },
+    "MRO/2008/page_142.pdf-2": {
+      "s0_execute_then_submit": "1/4",
+      "s1_execute_narrate_then_submit": "1/4",
+      "s2_execute_narrate_then_submit": "1/4",
+      "s3_direct_submit": "1/4"
+    },
+    "MRO/2008/page_145.pdf-1": {
+      "s1": "1"
+    },
+    "MRO/2008/page_145.pdf-2": {
+      "s1": "1"
+    },
+    "MRO/2008/page_146.pdf-1": {
+      "s0": "1"
+    },
+    "MRO/2008/page_146.pdf-3": {
+      "extract_compute_submit": "1"
+    },
+    "MRO/2008/page_41.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "MRO/2008/page_41.pdf-3": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_41.pdf-4": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_42.pdf-1": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_42.pdf-3": {
+      "s0": "1"
+    },
+    "MRO/2008/page_42.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "MRO/2008/page_44.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "MRO/2008/page_44.pdf-3": {
+      "singleton:277737351bfb9d4b902ac9eac1cb14f6d5024053a5944367d3f1422a49a91ee6": "1"
+    },
+    "MRO/2008/page_44.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "MRO/2008/page_70.pdf-1": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_70.pdf-2": {
+      "s1_direct_compare": "5/8",
+      "s2_failed_average_then_direct": "3/8"
+    },
+    "MRO/2008/page_70.pdf-3": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_70.pdf-4": {
+      "s0_direct_submit_no_execution": "1/4",
+      "s1_execute_then_submit": "1/4",
+      "s2_execute_interpret_then_submit": "1/4",
+      "s3_execute_interpret_then_submit": "1/4"
+    },
+    "MRO/2008/page_99.pdf-1": {
+      "s1": "1"
+    },
+    "MRO/2008/page_99.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "MRO/2008/page_99.pdf-3": {
+      "z0000": "1"
+    },
+    "MRO/2008/page_99.pdf-4": {
+      "s1_direct_submit_no_run": "1/5",
+      "s2_direct_submit_no_run_alt": "1/5",
+      "s3_run_then_submit": "1/5",
+      "s4_run_then_submit_alt": "1/5",
+      "s5_direct_submit_no_run_alt2": "1/5"
+    },
+    "MRO/2012/page_18.pdf-1": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "MRO/2012/page_18.pdf-2": {
+      "z0000": "1"
+    },
+    "MRO/2012/page_22.pdf-2": {
+      "z0000": "1"
+    },
+    "MRO/2012/page_22.pdf-3": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "MRO/2012/page_39.pdf-1": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "MRO/2012/page_39.pdf-2": {
+      "s1": "1"
+    },
+    "MRO/2012/page_39.pdf-3": {
+      "z0000": "1"
+    },
+    "MRO/2012/page_40.pdf-1": {
+      "s1": "1"
+    },
+    "MRO/2012/page_40.pdf-2": {
+      "s0": "1/5",
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5"
+    },
+    "MRO/2012/page_41.pdf-2": {
+      "singleton:4d7965a2e0c8b0482292d79cf6c2366e7a1eb413a052eedbcea8c8a01547f91f": "1"
+    },
+    "MRO/2012/page_41.pdf-3": {
+      "s0": "1"
+    },
+    "MRO/2012/page_41.pdf-4": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "MS/2012/page_150.pdf-1": {
+      "singleton:d4c5ae1a04935b98efdc83bcd60b3433efb8068f21304205535099d5f5fb9424": "1"
+    },
+    "MS/2015/page_200.pdf-2": {
+      "singleton:709cb28075f7ca841cb42d2f88b6abb85cb4af8635a51e5fba190cf5e7faaf40": "1"
+    },
+    "MSI/2005/page_43.pdf-2": {
+      "s1_direct_divide_no_verification": "1/4",
+      "s2_rowwide_ops_verified_revised": "1/4",
+      "s3_direct_divide_selfcheck": "1/4",
+      "s4_direct_divide_plain": "1/4"
+    },
+    "MSI/2005/page_43.pdf-3": {
+      "z0000": "1"
+    },
+    "MSI/2005/page_64.pdf-2": {
+      "z0000": "1"
+    },
+    "MSI/2005/page_64.pdf-3": {
+      "ratio_compute_submit": "1"
+    },
+    "MSI/2005/page_64.pdf-4": {
+      "z0000": "1"
+    },
+    "MSI/2005/page_64.pdf-5": {
+      "z0000": "1"
+    },
+    "MSI/2005/page_64.pdf-6": {
+      "s1_extract_divide_submit": "1"
+    },
+    "NCLH/2016/page_84.pdf-1": {
+      "s1": "1"
+    },
+    "NCLH/2016/page_84.pdf-2": {
+      "z0000": "1"
+    },
+    "NCLH/2016/page_84.pdf-3": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "NKE/2014/page_36.pdf-1": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "NKE/2014/page_36.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "NKE/2014/page_36.pdf-3": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "NKE/2014/page_36.pdf-4": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "NWS/2016/page_148.pdf-1": {
+      "z0000": "1"
+    },
+    "NWS/2016/page_148.pdf-2": {
+      "s0": "1"
+    },
+    "ORLY/2015/page_28.pdf-1": {
+      "s0": "1"
+    },
+    "ORLY/2015/page_28.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "ORLY/2015/page_28.pdf-3": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "ORLY/2015/page_28.pdf-4": {
+      "z0000": "5/6",
+      "z0001": "1/6"
+    },
+    "ORLY/2016/page_29.pdf-2": {
+      "s0": "1"
+    },
+    "PM/2014/page_112.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "PM/2014/page_112.pdf-2": {
+      "singleton:c926e7eb3ae65b4e5b0b1f417a6b80bade25d454b6c7e2dab21a42472fa09a04": "1"
+    },
+    "PM/2014/page_112.pdf-3": {
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4",
+      "s4": "1/4"
+    },
+    "PM/2014/page_112.pdf-4": {
+      "z0000": "1"
+    },
+    "PNC/2016/page_155.pdf-1": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "PNC/2016/page_155.pdf-2": {
+      "s1": "1"
+    },
+    "PNC/2016/page_44.pdf-1": {
+      "s1": "1"
+    },
+    "PNC/2016/page_44.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "PNC/2016/page_73.pdf-1": {
+      "z0000": "3/4",
+      "z0001": "1/4"
+    },
+    "PNC/2016/page_73.pdf-2": {
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5",
+      "s5": "1/5"
+    },
+    "PNC/2018/page_45.pdf-1": {
+      "s1": "1"
+    },
+    "PNC/2018/page_45.pdf-2": {
+      "direct_submit_no_execution": "1/4",
+      "execute_then_submit_confirmatory": "1/4",
+      "execute_confirm_then_submit": "1/4",
+      "execute_restate_then_submit": "1/4"
+    },
+    "PNC/2018/page_45.pdf-3": {
+      "s1_direct_table_ratio_compute_and_submit": "1"
+    },
+    "PNC/2018/page_45.pdf-5": {
+      "singleton:313a44c32b876e8275506a94b7d22f8471afd5817323c6013459208c5c9a6764": "1"
+    },
+    "PNC/2018/page_81.pdf-1": {
+      "singleton:04290529eb40958c5aae6285ddc8af2af69fd61f47c83a1e824bd13b9519c65d": "1"
+    },
+    "PNC/2018/page_81.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "PNC/2018/page_81.pdf-5": {
+      "s0": "1"
+    },
+    "PPG/2015/page_40.pdf-1": {
+      "s1": "1"
+    },
+    "PPG/2015/page_40.pdf-2": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "PPG/2015/page_40.pdf-3": {
+      "singleton:f3f05bf4e6583e2526fc9661a36197d550d5d4576c6b6ffef47d3848ed1c5666": "1"
+    },
+    "PPG/2015/page_40.pdf-4": {
+      "singleton:52eaed5f27b121c4e932ee89f2cce91afbba50bde899120cd788d496f93a41bf": "1"
+    },
+    "RCL/2009/page_13.pdf-1": {
+      "s1": "1"
+    },
+    "RCL/2009/page_90.pdf-1": {
+      "s0": "1"
+    },
+    "RCL/2009/page_90.pdf-2": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "RCL/2009/page_90.pdf-3": {
+      "s1": "1"
+    },
+    "RCL/2009/page_90.pdf-4": {
+      "s0": "1/5",
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5"
+    },
+    "RCL/2017/page_38.pdf-2": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "RCL/2017/page_38.pdf-3": {
+      "singleton:90bc8d6222a4f5726cb6b77e64f73b6bea8620fea508db255549ec1657e22a38": "1"
+    },
+    "RE/2013/page_109.pdf-1": {
+      "z0000": "1"
+    },
+    "RE/2013/page_109.pdf-2": {
+      "z0000": "1"
+    },
+    "RE/2013/page_109.pdf-3": {
+      "z0000": "1"
+    },
+    "RE/2013/page_109.pdf-4": {
+      "z0000": "1"
+    },
+    "RE/2013/page_40.pdf-2": {
+      "s1": "1"
+    },
+    "RE/2013/page_40.pdf-3": {
+      "singleton:e91e2ac81aa73010bcb85b18cd54a740554f23158d91c828b77029e195658531": "1"
+    },
+    "RE/2016/page_141.pdf-1": {
+      "s1": "1"
+    },
+    "RE/2016/page_40.pdf-1": {
+      "z0000": "1"
+    },
+    "RE/2016/page_40.pdf-2": {
+      "s0": "1"
+    },
+    "RE/2016/page_40.pdf-3": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "RE/2016/page_40.pdf-4": {
+      "s0": "1"
+    },
+    "RL/2012/page_13.pdf-1": {
+      "z0000": "1"
+    },
+    "RL/2012/page_13.pdf-2": {
+      "s0": "1"
+    },
+    "RSG/2013/page_137.pdf-1": {
+      "s0_execute_submit_no_revision": "1/5",
+      "s1_read_execute_submit_no_revision": "1/5",
+      "s2_execute_submit_no_revision": "1/5",
+      "s3_execute_submit_no_revision": "1/5",
+      "s4_execute_submit_no_revision": "1/5"
+    },
+    "RSG/2013/page_16.pdf-1": {
+      "singleton:a4fa3680e42efd82786d6b18366d038f94c50bcb391960cba27020408e995a19": "1"
+    },
+    "RSG/2013/page_16.pdf-2": {
+      "singleton:89aec610d682616fb24b1c5b99242a14f22332dd010330442e9ed402e0e9d07e": "1"
+    },
+    "RSG/2013/page_69.pdf-1": {
+      "z0000": "1"
+    },
+    "RSG/2013/page_69.pdf-2": {
+      "z0000": "1"
+    },
+    "RSG/2013/page_92.pdf-2": {
+      "s1": "1"
+    },
+    "RSG/2016/page_17.pdf-1": {
+      "ratio_from_fleet_table": "1"
+    },
+    "RSG/2016/page_17.pdf-2": {
+      "s1": "1"
+    },
+    "RSG/2016/page_50.pdf-1": {
+      "p0-direct-compute-submit": "1/2",
+      "p1-denominator-verification-submit": "1/2"
+    },
+    "RSG/2016/page_50.pdf-2": {
+      "s1": "1"
+    },
+    "RSG/2016/page_69.pdf-1": {
+      "singleton:172ef15120943a7f2fd25e29e1f600e140f97c8ff4290a3b3e059e33ceed86c6": "1"
+    },
+    "RSG/2016/page_69.pdf-2": {
+      "s1": "1"
+    },
+    "RSG/2016/page_98.pdf-1": {
+      "z0000": "1"
+    },
+    "RSG/2016/page_98.pdf-2": {
+      "s1": "1"
+    },
+    "SLG/2012/page_61.pdf-1": {
+      "z0000": "1/3",
+      "z0001": "1/3",
+      "z0002": "1/3"
+    },
+    "SLG/2012/page_61.pdf-2": {
+      "s0": "1"
+    },
+    "SLG/2012/page_87.pdf-1": {
+      "z0000": "1"
+    },
+    "SLG/2018/page_45.pdf-1": {
+      "z0000": "1/7",
+      "z0001": "1/7",
+      "z0002": "1/7",
+      "z0003": "1/7",
+      "z0004": "1/7",
+      "z0005": "1/7",
+      "z0006": "1/7"
+    },
+    "SNA/2013/page_111.pdf-1": {
+      "s1_table_read_compute_submit": "1"
+    },
+    "SNA/2013/page_111.pdf-2": {
+      "s0": "1/3",
+      "s1": "1/3",
+      "s2": "1/3"
+    },
+    "SNA/2013/page_33.pdf-2": {
+      "s0": "1"
+    },
+    "SNA/2013/page_56.pdf-1": {
+      "s1": "1"
+    },
+    "SNA/2013/page_56.pdf-2": {
+      "z0000": "1"
+    },
+    "SNA/2013/page_59.pdf-1": {
+      "z0000": "1"
+    },
+    "SNA/2013/page_93.pdf-2": {
+      "z0000": "1"
+    },
+    "SNA/2013/page_93.pdf-3": {
+      "s0": "1"
+    },
+    "SNPS/2003/page_39.pdf-2": {
+      "z0000": "1"
+    },
+    "STT/2007/page_65.pdf-1": {
+      "singleton:1f8208e83c25989edc3235c981ebfefecb8fc2049ace2a5b8e18018a4f20c0d2": "1"
+    },
+    "STT/2007/page_65.pdf-2": {
+      "derive_total_assets_2006": "1"
+    },
+    "STT/2007/page_65.pdf-3": {
+      "z0000": "1"
+    },
+    "STT/2007/page_65.pdf-4": {
+      "z0000": "2/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5"
+    },
+    "STT/2007/page_95.pdf-1": {
+      "s0": "1"
+    },
+    "STT/2007/page_95.pdf-2": {
+      "s0": "1"
+    },
+    "STT/2013/page_107.pdf-1": {
+      "z0000": "1"
+    },
+    "STT/2013/page_107.pdf-2": {
+      "singleton:fccf4c7494ef2d6991c2258f237bb56494827a6f1db6c62dba5ae25ab2ec7a24": "1"
+    },
+    "STT/2013/page_107.pdf-3": {
+      "z0000": "1/4",
+      "z0001": "1/4",
+      "z0002": "1/4",
+      "z0003": "1/4"
+    },
+    "STT/2013/page_107.pdf-4": {
+      "s1_ratio_compute_submit": "1"
+    },
+    "STT/2013/page_175.pdf-1": {
+      "z0000": "1"
+    },
+    "STT/2013/page_175.pdf-2": {
+      "z0000": "1/2",
+      "z0001": "1/2"
+    },
+    "STT/2013/page_54.pdf-1": {
+      "z0000": "1"
+    },
+    "STT/2013/page_54.pdf-2": {
+      "s0_run_then_submit_with_ratio_to_percent_interpretation": "1/4",
+      "s1_direct_submit_with_precomputed_percent": "1/4",
+      "s2_direct_submit_with_ratio_result": "1/4",
+      "s3_run_then_submit_with_ratio_to_percent_interpretation": "1/4"
+    },
+    "STT/2013/page_54.pdf-3": {
+      "p0_run_then_submit_same_program": "1/3",
+      "p1_direct_submit_roi_program": "1/3",
+      "p2_run_then_submit_same_program": "1/3"
+    },
+    "STT/2013/page_71.pdf-1": {
+      "z0000": "1"
+    },
+    "STT/2013/page_71.pdf-2": {
+      "z0000": "1"
+    },
+    "STT/2013/page_71.pdf-3": {
+      "direct_ratio_compute_and_submit": "1"
+    },
+    "STT/2013/page_71.pdf-4": {
+      "s1": "1"
+    },
+    "STZ/2010/page_51.pdf-1": {
+      "z0000": "1"
+    },
+    "STZ/2010/page_51.pdf-2": {
+      "z0000": "1"
+    },
+    "STZ/2010/page_51.pdf-3": {
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4",
+      "s4": "1/4"
+    },
+    "STZ/2010/page_51.pdf-4": {
+      "z0000": "1"
+    },
+    "TFX/2006/page_50.pdf-1": {
+      "singleton:ce622ad230e8253c823b3dd1621579b7ad1725b2aba259340b4f957a503ef21c": "1"
+    },
+    "TFX/2006/page_50.pdf-2": {
+      "p0-proportional-scaling-submit": "1/3",
+      "p1-halve-sensitivity-submit": "1/3",
+      "p2-syntax-revision-submit": "1/3"
+    },
+    "TFX/2015/page_42.pdf-1": {
+      "z0000": "1"
+    },
+    "TFX/2015/page_42.pdf-2": {
+      "s1": "1"
+    },
+    "TFX/2015/page_42.pdf-3": {
+      "s0_direct_compute_submit": "1/3",
+      "s1_direct_compute_submit": "1/3",
+      "s2_direct_compute_submit": "1/3"
+    },
+    "TROW/2011/page_13.pdf-1": {
+      "s0": "1/2",
+      "s1": "1/2"
+    },
+    "TROW/2011/page_13.pdf-2": {
+      "s1": "1"
+    },
+    "TSCO/2017/page_28.pdf-1": {
+      "s1": "1"
+    },
+    "TSCO/2017/page_28.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "TSCO/2017/page_68.pdf-1": {
+      "z0000": "1"
+    },
+    "TSCO/2017/page_68.pdf-2": {
+      "z0000": "2/3",
+      "z0001": "1/3"
+    },
+    "TSCO/2017/page_68.pdf-3": {
+      "s0": "1"
+    },
+    "TSCO/2017/page_73.pdf-2": {
+      "singleton:3111a5a728c89a3f25bb086913c2ff40ac1c431323c8266e7c814cdd379e4409": "1"
+    },
+    "UA/2009/page_63.pdf-1": {
+      "z0000": "1"
+    },
+    "UA/2009/page_63.pdf-2": {
+      "z0000": "1"
+    },
+    "UPS/2010/page_33.pdf-1": {
+      "singleton:9dab5255e1b4bdfeb16cb70ac0ddd4a8d5b501ec636dd11a654c992ebda3e844": "1"
+    },
+    "UPS/2013/page_34.pdf-1": {
+      "s1": "1"
+    },
+    "UPS/2013/page_34.pdf-3": {
+      "singleton:b2f10a00e2a966ebe36d3c89bf41d8f6b6bec0bfc31c1e4c06c55a7d779a1b95": "1"
+    },
+    "UPS/2013/page_56.pdf-1": {
+      "s1": "1"
+    },
+    "UPS/2013/page_56.pdf-2": {
+      "z0000": "1"
+    },
+    "UPS/2013/page_56.pdf-3": {
+      "s1": "1"
+    },
+    "UPS/2013/page_56.pdf-4": {
+      "z0000": "1"
+    },
+    "UPS/2016/page_34.pdf-2": {
+      "single_pass_table_lookup_and_percentage_computation": "1"
+    },
+    "UPS/2016/page_34.pdf-4": {
+      "singleton:03a059f9fe85f7a180d55993790fb2b6162770debe27cb18f75a8b281b0709be": "1"
+    },
+    "V/2009/page_88.pdf-1": {
+      "singleton:c029f08f35be0ad5d3a45e44dd375ff04b9a198ff0f42ad1dea7e950d33d1c83": "1"
+    },
+    "V/2009/page_89.pdf-1": {
+      "s0": "1"
+    },
+    "VLO/2012/page_130.pdf-1": {
+      "s0": "1"
+    },
+    "VLO/2012/page_27.pdf-1": {
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4",
+      "s4": "1/4"
+    },
+    "VLO/2012/page_27.pdf-3": {
+      "z0000": "1"
+    },
+    "VNO/2005/page_69.pdf-1": {
+      "s1": "1"
+    },
+    "VNO/2005/page_69.pdf-2": {
+      "z0000": "1"
+    },
+    "VNO/2011/page_177.pdf-1": {
+      "z0000": "1"
+    },
+    "VNO/2011/page_85.pdf-1": {
+      "z0000": "1"
+    },
+    "VNO/2011/page_85.pdf-2": {
+      "singleton:3db0d9b74fcc410b6fe13e20e3db897f68ca29c1bdf45ac08f92f7e0e807e634": "1"
+    },
+    "VTR/2003/page_39.pdf-2": {
+      "singleton:067cf1480f7f8fc6cb5fe030f4e696f35cef61613f68541c430575c600b7adba": "1"
+    },
+    "VTR/2003/page_39.pdf-3": {
+      "singleton:4b1e8ca667d11533a8462f75a322d794c0b87300c4a3b00aa766e028820cb3c1": "1"
+    },
+    "VTR/2007/page_106.pdf-1": {
+      "singleton:3d55d28fb6033852f32d938ad8b70339f3bde04d9519ce5811f8b762f4c698e5": "1"
+    },
+    "VTR/2007/page_48.pdf-1": {
+      "z0000": "1"
+    },
+    "VTR/2007/page_48.pdf-2": {
+      "s0": "1/4",
+      "s1": "1/4",
+      "s2": "1/4",
+      "s3": "1/4"
+    },
+    "VTR/2007/page_48.pdf-3": {
+      "s1_ventas_5yr_return_computed_and_submitted": "1"
+    },
+    "VTR/2007/page_48.pdf-4": {
+      "s1": "1/3",
+      "s2": "1/3",
+      "s3": "1/3"
+    },
+    "VTR/2007/page_97.pdf-2": {
+      "singleton:58ea45fabc09ede7149efa6d1e2caf03ba370d18643d29d87a7ba7212322121e": "1"
+    },
+    "VTR/2007/page_97.pdf-3": {
+      "s1": "1"
+    },
+    "VTR/2007/page_97.pdf-4": {
+      "s1": "1"
+    },
+    "WELL/2016/page_61.pdf-1": {
+      "s0": "1/5",
+      "s1": "1/5",
+      "s2": "1/5",
+      "s3": "1/5",
+      "s4": "1/5"
+    },
+    "WELL/2016/page_61.pdf-2": {
+      "z0000": "1/6",
+      "z0001": "1/6",
+      "z0002": "1/6",
+      "z0003": "1/6",
+      "z0004": "1/6",
+      "z0005": "1/6"
+    },
+    "WELL/2016/page_61.pdf-3": {
+      "singleton:dccc39d695002fbc0dbb575a021e904d424ad3e65fe62f8c4f7ede5a1993b9c9": "1"
+    },
+    "WELL/2016/page_61.pdf-4": {
+      "z0000": "1"
+    },
+    "WELL/2017/page_116.pdf-1": {
+      "z0000": "1"
+    },
+    "WELL/2017/page_116.pdf-2": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    },
+    "WELL/2017/page_116.pdf-3": {
+      "singleton:5cb932e1d023c6546cf164d07fb98c54c8d4dca996f912cf0ee3c4673ce706a7": "1"
+    },
+    "WELL/2017/page_116.pdf-4": {
+      "z0000": "1"
+    },
+    "WELL/2017/page_48.pdf-1": {
+      "s0": "1"
+    },
+    "WELL/2017/page_48.pdf-2": {
+      "s1": "1"
+    },
+    "WELL/2017/page_48.pdf-3": {
+      "z0000": "1"
+    },
+    "WELL/2017/page_48.pdf-4": {
+      "z0000": "1/5",
+      "z0001": "1/5",
+      "z0002": "1/5",
+      "z0003": "1/5",
+      "z0004": "1/5"
+    }
+  },
+  "mu": {
+    "AAL/2016/page_37.pdf-1": "1/744",
+    "AAL/2016/page_37.pdf-2": "1/744",
+    "AAP/2006/page_85.pdf-1": "1/744",
+    "AAP/2006/page_85.pdf-2": "1/744",
+    "AAP/2006/page_85.pdf-3": "1/744",
+    "AAP/2006/page_85.pdf-4": "1/744",
+    "AAPL/2010/page_42.pdf-1": "1/744",
+    "AAPL/2010/page_42.pdf-3": "1/744",
+    "AAPL/2010/page_43.pdf-2": "1/744",
+    "AAPL/2010/page_73.pdf-1": "1/744",
+    "AAPL/2013/page_27.pdf-1": "1/744",
+    "AAPL/2013/page_27.pdf-3": "1/744",
+    "AAPL/2013/page_27.pdf-4": "1/744",
+    "AAPL/2013/page_39.pdf-1": "1/744",
+    "AAPL/2013/page_39.pdf-2": "1/744",
+    "AAPL/2013/page_41.pdf-1": "1/744",
+    "AAPL/2013/page_41.pdf-2": "1/744",
+    "AAPL/2013/page_41.pdf-3": "1/744",
+    "AAPL/2013/page_72.pdf-1": "1/744",
+    "AAPL/2013/page_78.pdf-1": "1/744",
+    "AAPL/2013/page_78.pdf-3": "1/744",
+    "AAPL/2014/page_26.pdf-1": "1/744",
+    "AAPL/2014/page_26.pdf-2": "1/744",
+    "AAPL/2014/page_67.pdf-1": "1/744",
+    "AAPL/2014/page_67.pdf-2": "1/744",
+    "AAPL/2014/page_67.pdf-3": "1/744",
+    "AAPL/2014/page_67.pdf-4": "1/744",
+    "AAPL/2014/page_78.pdf-1": "1/744",
+    "AAPL/2014/page_78.pdf-2": "1/744",
+    "AAPL/2014/page_78.pdf-3": "1/744",
+    "AAPL/2014/page_78.pdf-4": "1/744",
+    "ABMD/2006/page_62.pdf-4": "1/744",
+    "ABMD/2006/page_65.pdf-2": "1/744",
+    "ABMD/2008/page_52.pdf-2": "1/744",
+    "ABMD/2008/page_52.pdf-3": "1/744",
+    "ABMD/2008/page_52.pdf-4": "1/744",
+    "ABMD/2008/page_87.pdf-1": "1/744",
+    "ABMD/2008/page_87.pdf-2": "1/744",
+    "ABMD/2008/page_87.pdf-3": "1/744",
+    "ADI/2012/page_65.pdf-2": "1/744",
+    "AES/2001/page_42.pdf-2": "1/744",
+    "AES/2001/page_45.pdf-1": "1/744",
+    "AES/2001/page_45.pdf-2": "1/744",
+    "AES/2001/page_48.pdf-1": "1/744",
+    "AES/2001/page_51.pdf-1": "1/744",
+    "AES/2001/page_77.pdf-1": "1/744",
+    "AES/2001/page_77.pdf-2": "1/744",
+    "AES/2017/page_110.pdf-1": "1/744",
+    "AES/2017/page_110.pdf-2": "1/744",
+    "AES/2017/page_110.pdf-3": "1/744",
+    "AES/2017/page_110.pdf-4": "1/744",
+    "AES/2017/page_168.pdf-2": "1/744",
+    "AES/2017/page_168.pdf-3": "1/744",
+    "AES/2017/page_168.pdf-4": "1/744",
+    "AES/2017/page_85.pdf-1": "1/744",
+    "AES/2017/page_85.pdf-2": "1/744",
+    "ALLE/2015/page_81.pdf-1": "1/744",
+    "ALLE/2015/page_81.pdf-2": "1/744",
+    "AMAT/2012/page_37.pdf-1": "1/744",
+    "AMAT/2012/page_37.pdf-2": "1/744",
+    "AMAT/2016/page_30.pdf-2": "1/744",
+    "AMAT/2016/page_30.pdf-3": "1/744",
+    "AMT/2004/page_102.pdf-1": "1/744",
+    "AMT/2004/page_102.pdf-4": "1/744",
+    "AMT/2004/page_28.pdf-1": "1/744",
+    "AMT/2004/page_28.pdf-2": "1/744",
+    "AMT/2004/page_28.pdf-3": "1/744",
+    "AMT/2004/page_46.pdf-1": "1/744",
+    "AMT/2004/page_46.pdf-2": "1/744",
+    "AMT/2004/page_76.pdf-1": "1/744",
+    "AMT/2004/page_76.pdf-2": "1/744",
+    "AMT/2004/page_76.pdf-3": "1/744",
+    "AMT/2004/page_76.pdf-4": "1/744",
+    "AMT/2004/page_90.pdf-1": "1/744",
+    "AMT/2004/page_90.pdf-2": "1/744",
+    "AMT/2004/page_91.pdf-1": "1/744",
+    "AMT/2004/page_91.pdf-2": "1/744",
+    "AMT/2004/page_91.pdf-3": "1/744",
+    "AMT/2004/page_91.pdf-4": "1/744",
+    "ANSS/2016/page_82.pdf-2": "1/744",
+    "ANSS/2016/page_85.pdf-1": "1/744",
+    "ANSS/2016/page_85.pdf-2": "1/744",
+    "ANSS/2016/page_85.pdf-3": "1/744",
+    "AON/2015/page_29.pdf-1": "1/744",
+    "AON/2015/page_29.pdf-2": "1/744",
+    "AON/2015/page_43.pdf-3": "1/744",
+    "AON/2015/page_43.pdf-4": "1/744",
+    "AON/2015/page_45.pdf-2": "1/744",
+    "AON/2015/page_45.pdf-4": "1/744",
+    "AON/2015/page_50.pdf-1": "1/744",
+    "AON/2015/page_50.pdf-3": "1/744",
+    "AON/2015/page_62.pdf-1": "1/744",
+    "AON/2015/page_62.pdf-2": "1/744",
+    "AON/2015/page_62.pdf-3": "1/744",
+    "AON/2015/page_62.pdf-4": "1/744",
+    "AON/2015/page_72.pdf-1": "1/744",
+    "AON/2015/page_72.pdf-2": "1/744",
+    "AON/2015/page_77.pdf-4": "1/744",
+    "APD/2019/page_100.pdf-1": "1/744",
+    "APD/2019/page_108.pdf-2": "1/744",
+    "APD/2019/page_39.pdf-2": "1/744",
+    "APD/2019/page_53.pdf-2": "1/744",
+    "APTV/2014/page_46.pdf-1": "1/744",
+    "APTV/2014/page_46.pdf-3": "1/744",
+    "APTV/2014/page_46.pdf-4": "1/744",
+    "AWK/2013/page_12.pdf-1": "1/744",
+    "AWK/2013/page_123.pdf-2": "1/744",
+    "AWK/2013/page_123.pdf-4": "1/744",
+    "BDX/2009/page_80.pdf-1": "1/744",
+    "BDX/2009/page_80.pdf-2": "1/744",
+    "BDX/2009/page_80.pdf-3": "1/744",
+    "BDX/2009/page_80.pdf-4": "1/744",
+    "BDX/2009/page_81.pdf-1": "1/744",
+    "BDX/2009/page_81.pdf-2": "1/744",
+    "BDX/2009/page_81.pdf-3": "1/744",
+    "BDX/2009/page_81.pdf-4": "1/744",
+    "BDX/2017/page_28.pdf-1": "1/744",
+    "BDX/2017/page_28.pdf-2": "1/744",
+    "BDX/2017/page_32.pdf-1": "1/744",
+    "BDX/2017/page_32.pdf-2": "1/744",
+    "BDX/2017/page_32.pdf-3": "1/744",
+    "BDX/2017/page_32.pdf-4": "1/744",
+    "BLK/2009/page_98.pdf-3": "1/744",
+    "BLK/2009/page_98.pdf-4": "1/744",
+    "BLK/2014/page_33.pdf-1": "1/744",
+    "BLK/2014/page_33.pdf-4": "1/744",
+    "BLK/2014/page_68.pdf-1": "1/744",
+    "BLK/2014/page_68.pdf-2": "1/744",
+    "BLK/2015/page_123.pdf-1": "1/744",
+    "BLK/2015/page_123.pdf-3": "1/744",
+    "BLK/2015/page_35.pdf-2": "1/744",
+    "BLK/2015/page_35.pdf-3": "1/744",
+    "BLK/2015/page_35.pdf-4": "1/744",
+    "BLK/2017/page_35.pdf-1": "1/744",
+    "BLK/2017/page_35.pdf-2": "1/744",
+    "BLK/2017/page_35.pdf-3": "1/744",
+    "BLK/2017/page_35.pdf-4": "1/744",
+    "BLK/2017/page_77.pdf-1": "1/744",
+    "BLK/2017/page_77.pdf-2": "1/744",
+    "BLK/2017/page_81.pdf-1": "1/744",
+    "BLK/2017/page_81.pdf-2": "1/744",
+    "BLK/2017/page_81.pdf-3": "1/744",
+    "BLK/2017/page_81.pdf-4": "1/744",
+    "BLK/2017/page_87.pdf-2": "1/744",
+    "BLK/2017/page_87.pdf-3": "1/744",
+    "BLK/2017/page_87.pdf-4": "1/744",
+    "C/2009/page_141.pdf-1": "1/744",
+    "C/2009/page_141.pdf-2": "1/744",
+    "C/2009/page_141.pdf-3": "1/744",
+    "C/2009/page_141.pdf-4": "1/744",
+    "C/2009/page_162.pdf-1": "1/744",
+    "C/2009/page_162.pdf-2": "1/744",
+    "C/2009/page_194.pdf-1": "1/744",
+    "C/2009/page_194.pdf-2": "1/744",
+    "C/2009/page_200.pdf-1": "1/744",
+    "C/2009/page_200.pdf-2": "1/744",
+    "C/2009/page_200.pdf-3": "1/744",
+    "C/2009/page_248.pdf-3": "1/744",
+    "C/2009/page_248.pdf-4": "1/744",
+    "C/2009/page_255.pdf-1": "1/744",
+    "C/2009/page_255.pdf-2": "1/744",
+    "C/2009/page_255.pdf-4": "1/744",
+    "C/2009/page_279.pdf-1": "1/744",
+    "C/2009/page_279.pdf-2": "1/744",
+    "C/2009/page_38.pdf-1": "1/744",
+    "C/2009/page_38.pdf-2": "1/744",
+    "C/2009/page_38.pdf-3": "1/744",
+    "C/2009/page_38.pdf-4": "1/744",
+    "C/2009/page_41.pdf-1": "1/744",
+    "C/2009/page_41.pdf-2": "1/744",
+    "C/2009/page_42.pdf-1": "1/744",
+    "C/2009/page_42.pdf-2": "1/744",
+    "C/2009/page_48.pdf-1": "1/744",
+    "C/2009/page_48.pdf-2": "1/744",
+    "C/2009/page_53.pdf-1": "1/744",
+    "C/2009/page_53.pdf-2": "1/744",
+    "C/2015/page_314.pdf-1": "1/744",
+    "C/2015/page_314.pdf-3": "1/744",
+    "C/2015/page_314.pdf-4": "1/744",
+    "C/2015/page_46.pdf-1": "1/744",
+    "C/2015/page_46.pdf-2": "1/744",
+    "C/2015/page_73.pdf-1": "1/744",
+    "C/2015/page_73.pdf-2": "1/744",
+    "C/2015/page_73.pdf-3": "1/744",
+    "CAG/2008/page_35.pdf-1": "1/744",
+    "CAG/2008/page_35.pdf-2": "1/744",
+    "CAG/2008/page_47.pdf-1": "1/744",
+    "CAG/2008/page_47.pdf-2": "1/744",
+    "CDNS/2007/page_30.pdf-1": "1/744",
+    "CDNS/2007/page_30.pdf-2": "1/744",
+    "CDNS/2007/page_30.pdf-4": "1/744",
+    "CDNS/2007/page_93.pdf-2": "1/744",
+    "CDNS/2007/page_93.pdf-3": "1/744",
+    "CDNS/2007/page_93.pdf-4": "1/744",
+    "CDNS/2012/page_31.pdf-1": "1/744",
+    "CDNS/2012/page_31.pdf-2": "1/744",
+    "CDNS/2012/page_41.pdf-1": "1/744",
+    "CDNS/2012/page_58.pdf-1": "1/744",
+    "CDNS/2012/page_58.pdf-2": "1/744",
+    "CDW/2015/page_34.pdf-1": "1/744",
+    "CDW/2015/page_34.pdf-2": "1/744",
+    "CDW/2015/page_35.pdf-1": "1/744",
+    "CDW/2015/page_53.pdf-1": "1/744",
+    "CDW/2015/page_53.pdf-4": "1/744",
+    "CDW/2015/page_54.pdf-1": "1/744",
+    "CDW/2015/page_54.pdf-2": "1/744",
+    "CDW/2015/page_54.pdf-3": "1/744",
+    "CDW/2015/page_54.pdf-4": "1/744",
+    "DG/2008/page_73.pdf-1": "1/744",
+    "DG/2008/page_73.pdf-2": "1/744",
+    "DG/2008/page_73.pdf-4": "1/744",
+    "DG/2008/page_86.pdf-1": "1/744",
+    "DG/2008/page_86.pdf-2": "1/744",
+    "DISCA/2011/page_35.pdf-2": "1/744",
+    "DISCA/2011/page_35.pdf-3": "1/744",
+    "DISCA/2011/page_35.pdf-4": "1/744",
+    "DISCA/2017/page_22.pdf-1": "1/744",
+    "DISCA/2017/page_22.pdf-2": "1/744",
+    "DISCA/2017/page_41.pdf-1": "1/744",
+    "DISCA/2017/page_41.pdf-2": "1/744",
+    "DISCA/2017/page_41.pdf-3": "1/744",
+    "DISH/2008/page_120.pdf-1": "1/744",
+    "DISH/2011/page_130.pdf-1": "1/744",
+    "DISH/2011/page_130.pdf-2": "1/744",
+    "DRE/2008/page_29.pdf-1": "1/744",
+    "DRE/2008/page_29.pdf-2": "1/744",
+    "DRE/2008/page_49.pdf-1": "1/744",
+    "DRE/2008/page_49.pdf-2": "1/744",
+    "DRE/2016/page_59.pdf-2": "1/744",
+    "DRE/2016/page_64.pdf-4": "1/744",
+    "DVN/2004/page_50.pdf-1": "1/744",
+    "EOG/2017/page_102.pdf-1": "1/744",
+    "EOG/2017/page_103.pdf-1": "1/744",
+    "EOG/2017/page_103.pdf-2": "1/744",
+    "EOG/2017/page_78.pdf-1": "1/744",
+    "EOG/2017/page_78.pdf-2": "1/744",
+    "EOG/2017/page_93.pdf-2": "1/744",
+    "FRT/2006/page_133.pdf-1": "1/744",
+    "FRT/2006/page_133.pdf-2": "1/744",
+    "FRT/2007/page_137.pdf-1": "1/744",
+    "FRT/2007/page_137.pdf-2": "1/744",
+    "FRT/2009/page_124.pdf-1": "1/744",
+    "GIS/2008/page_83.pdf-1": "1/744",
+    "GIS/2008/page_83.pdf-2": "1/744",
+    "GIS/2008/page_83.pdf-3": "1/744",
+    "GPN/2007/page_18.pdf-1": "1/744",
+    "GPN/2007/page_18.pdf-2": "1/744",
+    "GPN/2007/page_39.pdf-1": "1/744",
+    "GPN/2007/page_39.pdf-2": "1/744",
+    "GPN/2007/page_97.pdf-2": "1/744",
+    "GPN/2008/page_39.pdf-2": "1/744",
+    "GPN/2008/page_39.pdf-3": "1/744",
+    "GPN/2008/page_88.pdf-1": "1/744",
+    "GPN/2008/page_88.pdf-2": "1/744",
+    "GPN/2008/page_92.pdf-2": "1/744",
+    "GPN/2008/page_95.pdf-1": "1/744",
+    "GPN/2008/page_95.pdf-2": "1/744",
+    "GPN/2008/page_95.pdf-4": "1/744",
+    "GPN/2008/page_99.pdf-4": "1/744",
+    "GPN/2016/page_67.pdf-1": "1/744",
+    "GPN/2016/page_67.pdf-2": "1/744",
+    "GPN/2016/page_69.pdf-2": "1/744",
+    "GPN/2016/page_83.pdf-1": "1/744",
+    "GPN/2016/page_83.pdf-2": "1/744",
+    "GPN/2016/page_83.pdf-3": "1/744",
+    "GPN/2016/page_83.pdf-4": "1/744",
+    "GPN/2016/page_84.pdf-1": "1/744",
+    "GPN/2016/page_84.pdf-4": "1/744",
+    "GPN/2018/page_74.pdf-1": "1/744",
+    "GPN/2018/page_79.pdf-1": "1/744",
+    "GPN/2018/page_85.pdf-1": "1/744",
+    "GPN/2018/page_85.pdf-2": "1/744",
+    "GPN/2018/page_85.pdf-3": "1/744",
+    "GRMN/2004/page_91.pdf-1": "1/744",
+    "GRMN/2004/page_91.pdf-2": "1/744",
+    "HFC/2011/page_85.pdf-1": "1/744",
+    "HFC/2011/page_88.pdf-1": "1/744",
+    "HFC/2011/page_88.pdf-2": "1/744",
+    "HFC/2011/page_88.pdf-3": "1/744",
+    "HFC/2011/page_92.pdf-1": "1/744",
+    "HFC/2011/page_92.pdf-2": "1/744",
+    "HFC/2011/page_92.pdf-3": "1/744",
+    "HFC/2011/page_92.pdf-4": "1/744",
+    "HFC/2011/page_92.pdf-5": "1/744",
+    "HFC/2011/page_92.pdf-6": "1/744",
+    "HFC/2018/page_43.pdf-1": "1/744",
+    "HFC/2018/page_43.pdf-2": "1/744",
+    "HFC/2018/page_43.pdf-4": "1/744",
+    "HFC/2018/page_43.pdf-5": "1/744",
+    "HIG/2012/page_132.pdf-1": "1/744",
+    "HIG/2012/page_132.pdf-3": "1/744",
+    "HIG/2013/page_124.pdf-1": "1/744",
+    "HIG/2013/page_124.pdf-2": "1/744",
+    "HIG/2013/page_124.pdf-3": "1/744",
+    "HIG/2013/page_212.pdf-1": "1/744",
+    "HIG/2013/page_212.pdf-2": "1/744",
+    "HIG/2013/page_235.pdf-1": "1/744",
+    "HIG/2013/page_235.pdf-2": "1/744",
+    "HOLX/2009/page_133.pdf-1": "1/744",
+    "HOLX/2009/page_133.pdf-2": "1/744",
+    "HOLX/2009/page_141.pdf-1": "1/744",
+    "HOLX/2009/page_141.pdf-2": "1/744",
+    "HOLX/2009/page_153.pdf-1": "1/744",
+    "HOLX/2009/page_153.pdf-2": "1/744",
+    "HOLX/2009/page_153.pdf-4": "1/744",
+    "HUM/2005/page_18.pdf-2": "1/744",
+    "HUM/2005/page_18.pdf-3": "1/744",
+    "HUM/2005/page_80.pdf-1": "1/744",
+    "HUM/2005/page_80.pdf-2": "1/744",
+    "HUM/2005/page_80.pdf-3": "1/744",
+    "HUM/2005/page_80.pdf-4": "1/744",
+    "HUM/2012/page_109.pdf-2": "1/744",
+    "HUM/2016/page_133.pdf-1": "1/744",
+    "HUM/2016/page_133.pdf-3": "1/744",
+    "HWM/2016/page_119.pdf-2": "1/744",
+    "HWM/2016/page_50.pdf-1": "1/744",
+    "HWM/2016/page_52.pdf-1": "1/744",
+    "HWM/2016/page_52.pdf-2": "1/744",
+    "HWM/2016/page_79.pdf-2": "1/744",
+    "HWM/2017/page_75.pdf-2": "1/744",
+    "HWM/2017/page_77.pdf-2": "1/744",
+    "ILMN/2017/page_23.pdf-1": "1/744",
+    "ILMN/2017/page_23.pdf-2": "1/744",
+    "INTC/2015/page_122.pdf-1": "1/744",
+    "INTC/2015/page_122.pdf-2": "1/744",
+    "INTC/2015/page_122.pdf-3": "1/744",
+    "INTC/2015/page_122.pdf-4": "1/744",
+    "INTC/2018/page_105.pdf-1": "1/744",
+    "INTC/2018/page_105.pdf-2": "1/744",
+    "INTC/2018/page_48.pdf-1": "1/744",
+    "INTC/2018/page_48.pdf-2": "1/744",
+    "INTC/2018/page_48.pdf-3": "1/744",
+    "INTC/2018/page_50.pdf-1": "1/744",
+    "INTC/2018/page_50.pdf-2": "1/744",
+    "INTC/2018/page_50.pdf-3": "1/744",
+    "INTC/2018/page_50.pdf-4": "1/744",
+    "IP/2005/page_27.pdf-1": "1/744",
+    "IP/2005/page_27.pdf-4": "1/744",
+    "IP/2005/page_28.pdf-1": "1/744",
+    "IP/2005/page_28.pdf-2": "1/744",
+    "IP/2005/page_28.pdf-3": "1/744",
+    "IP/2005/page_29.pdf-2": "1/744",
+    "IP/2005/page_29.pdf-3": "1/744",
+    "IP/2005/page_31.pdf-1": "1/744",
+    "IP/2005/page_31.pdf-2": "1/744",
+    "IP/2005/page_31.pdf-3": "1/744",
+    "IP/2005/page_32.pdf-1": "1/744",
+    "IP/2005/page_32.pdf-2": "1/744",
+    "IP/2005/page_32.pdf-3": "1/744",
+    "IP/2005/page_32.pdf-4": "1/744",
+    "IP/2005/page_83.pdf-1": "1/744",
+    "IP/2006/page_19.pdf-1": "1/744",
+    "IP/2006/page_19.pdf-2": "1/744",
+    "IP/2006/page_19.pdf-4": "1/744",
+    "IP/2006/page_34.pdf-2": "1/744",
+    "IP/2006/page_34.pdf-3": "1/744",
+    "IP/2006/page_84.pdf-1": "1/744",
+    "IP/2006/page_84.pdf-2": "1/744",
+    "IP/2013/page_101.pdf-1": "1/744",
+    "IP/2013/page_101.pdf-2": "1/744",
+    "IP/2013/page_101.pdf-3": "1/744",
+    "IP/2013/page_105.pdf-1": "1/744",
+    "IP/2013/page_61.pdf-1": "1/744",
+    "IP/2013/page_61.pdf-2": "1/744",
+    "IP/2013/page_61.pdf-3": "1/744",
+    "IP/2013/page_62.pdf-1": "1/744",
+    "IP/2013/page_62.pdf-2": "1/744",
+    "IP/2013/page_62.pdf-3": "1/744",
+    "IP/2013/page_62.pdf-4": "1/744",
+    "IP/2013/page_64.pdf-1": "1/744",
+    "IP/2013/page_64.pdf-2": "1/744",
+    "IP/2013/page_65.pdf-2": "1/744",
+    "IP/2013/page_70.pdf-1": "1/744",
+    "IP/2013/page_70.pdf-2": "1/744",
+    "IP/2013/page_70.pdf-3": "1/744",
+    "IP/2018/page_45.pdf-1": "1/744",
+    "IP/2018/page_45.pdf-2": "1/744",
+    "IP/2018/page_50.pdf-1": "1/744",
+    "IP/2018/page_50.pdf-2": "1/744",
+    "IP/2018/page_50.pdf-4": "1/744",
+    "IP/2018/page_83.pdf-1": "1/744",
+    "IP/2018/page_83.pdf-2": "1/744",
+    "IP/2018/page_83.pdf-3": "1/744",
+    "IP/2018/page_83.pdf-4": "1/744",
+    "IPG/2018/page_100.pdf-1": "1/744",
+    "IPG/2018/page_100.pdf-4": "1/744",
+    "IPG/2018/page_104.pdf-2": "1/744",
+    "IPG/2018/page_26.pdf-1": "1/744",
+    "IPG/2018/page_26.pdf-3": "1/744",
+    "IPG/2018/page_39.pdf-1": "1/744",
+    "IPG/2018/page_39.pdf-2": "1/744",
+    "IPG/2018/page_39.pdf-3": "1/744",
+    "IPG/2018/page_52.pdf-1": "1/744",
+    "IPG/2018/page_52.pdf-2": "1/744",
+    "IPG/2018/page_78.pdf-1": "1/744",
+    "IPG/2018/page_78.pdf-2": "1/744",
+    "IPG/2018/page_78.pdf-3": "1/744",
+    "IQV/2016/page_57.pdf-1": "1/744",
+    "IQV/2016/page_57.pdf-2": "1/744",
+    "IQV/2016/page_65.pdf-1": "1/744",
+    "IQV/2016/page_65.pdf-2": "1/744",
+    "IQV/2016/page_65.pdf-3": "1/744",
+    "IQV/2016/page_79.pdf-1": "1/744",
+    "IQV/2016/page_79.pdf-2": "1/744",
+    "IQV/2016/page_79.pdf-3": "1/744",
+    "JKHY/2011/page_34.pdf-1": "1/744",
+    "JKHY/2011/page_34.pdf-2": "1/744",
+    "JKHY/2011/page_34.pdf-3": "1/744",
+    "JKHY/2011/page_55.pdf-2": "1/744",
+    "JKHY/2018/page_16.pdf-2": "1/744",
+    "JPM/2017/page_104.pdf-1": "1/744",
+    "JPM/2017/page_104.pdf-2": "1/744",
+    "JPM/2017/page_119.pdf-1": "1/744",
+    "JPM/2017/page_119.pdf-2": "1/744",
+    "JPM/2017/page_144.pdf-1": "1/744",
+    "JPM/2017/page_144.pdf-3": "1/744",
+    "JPM/2017/page_144.pdf-4": "1/744",
+    "JPM/2017/page_145.pdf-1": "1/744",
+    "JPM/2017/page_145.pdf-2": "1/744",
+    "JPM/2017/page_145.pdf-3": "1/744",
+    "JPM/2017/page_69.pdf-1": "1/744",
+    "JPM/2017/page_69.pdf-2": "1/744",
+    "JPM/2017/page_83.pdf-1": "1/744",
+    "JPM/2017/page_83.pdf-2": "1/744",
+    "KHC/2018/page_27.pdf-1": "1/744",
+    "KHC/2018/page_27.pdf-2": "1/744",
+    "KHC/2018/page_27.pdf-3": "1/744",
+    "KIM/2006/page_67.pdf-2": "1/744",
+    "KIM/2006/page_67.pdf-4": "1/744",
+    "KIM/2014/page_108.pdf-1": "1/744",
+    "KIM/2014/page_108.pdf-2": "1/744",
+    "KIM/2014/page_112.pdf-2": "1/744",
+    "KIM/2014/page_130.pdf-2": "1/744",
+    "KIM/2014/page_131.pdf-1": "1/744",
+    "KIM/2014/page_131.pdf-2": "1/744",
+    "KIM/2014/page_131.pdf-3": "1/744",
+    "KIM/2014/page_131.pdf-4": "1/744",
+    "KIM/2014/page_59.pdf-1": "1/744",
+    "KMI/2010/page_164.pdf-2": "1/744",
+    "KMI/2010/page_164.pdf-4": "1/744",
+    "KMI/2010/page_2.pdf-1": "1/744",
+    "KMI/2014/page_114.pdf-1": "1/744",
+    "KMI/2014/page_18.pdf-1": "1/744",
+    "KMI/2014/page_18.pdf-2": "1/744",
+    "L/2010/page_41.pdf-1": "1/744",
+    "LKQ/2016/page_48.pdf-1": "1/744",
+    "LKQ/2016/page_48.pdf-2": "1/744",
+    "LKQ/2016/page_48.pdf-4": "1/744",
+    "LMT/2007/page_37.pdf-3": "1/744",
+    "LMT/2007/page_37.pdf-4": "1/744",
+    "LMT/2007/page_39.pdf-1": "1/744",
+    "LMT/2007/page_39.pdf-2": "1/744",
+    "LMT/2007/page_39.pdf-3": "1/744",
+    "LMT/2007/page_55.pdf-1": "1/744",
+    "LMT/2007/page_55.pdf-2": "1/744",
+    "LMT/2007/page_55.pdf-3": "1/744",
+    "LMT/2007/page_55.pdf-4": "1/744",
+    "LMT/2013/page_26.pdf-1": "1/744",
+    "LMT/2013/page_26.pdf-2": "1/744",
+    "LMT/2013/page_26.pdf-3": "1/744",
+    "LMT/2013/page_44.pdf-1": "1/744",
+    "LMT/2013/page_44.pdf-3": "1/744",
+    "LMT/2013/page_45.pdf-1": "1/744",
+    "LMT/2013/page_45.pdf-2": "1/744",
+    "LMT/2013/page_45.pdf-4": "1/744",
+    "LMT/2013/page_47.pdf-1": "1/744",
+    "LMT/2013/page_47.pdf-2": "1/744",
+    "LMT/2013/page_47.pdf-4": "1/744",
+    "LMT/2013/page_49.pdf-1": "1/744",
+    "LMT/2013/page_49.pdf-2": "1/744",
+    "LMT/2013/page_81.pdf-1": "1/744",
+    "LMT/2013/page_81.pdf-2": "1/744",
+    "LMT/2013/page_87.pdf-1": "1/744",
+    "LMT/2013/page_87.pdf-2": "1/744",
+    "LMT/2013/page_87.pdf-4": "1/744",
+    "LMT/2013/page_89.pdf-1": "1/744",
+    "LMT/2013/page_89.pdf-2": "1/744",
+    "LMT/2013/page_89.pdf-3": "1/744",
+    "LMT/2013/page_89.pdf-4": "1/744",
+    "LMT/2014/page_31.pdf-1": "1/744",
+    "LMT/2014/page_31.pdf-2": "1/744",
+    "LMT/2014/page_45.pdf-3": "1/744",
+    "LMT/2014/page_45.pdf-4": "1/744",
+    "LMT/2014/page_46.pdf-1": "1/744",
+    "LMT/2014/page_46.pdf-2": "1/744",
+    "LMT/2014/page_46.pdf-3": "1/744",
+    "LMT/2014/page_47.pdf-1": "1/744",
+    "LMT/2014/page_47.pdf-2": "1/744",
+    "LMT/2014/page_47.pdf-3": "1/744",
+    "LMT/2014/page_49.pdf-1": "1/744",
+    "LMT/2014/page_49.pdf-2": "1/744",
+    "LMT/2014/page_49.pdf-3": "1/744",
+    "LMT/2014/page_49.pdf-4": "1/744",
+    "LMT/2014/page_85.pdf-2": "1/744",
+    "LMT/2014/page_85.pdf-3": "1/744",
+    "LMT/2014/page_93.pdf-1": "1/744",
+    "LMT/2014/page_93.pdf-2": "1/744",
+    "LMT/2015/page_106.pdf-1": "1/744",
+    "LMT/2015/page_106.pdf-2": "1/744",
+    "LMT/2015/page_106.pdf-3": "1/744",
+    "LMT/2015/page_52.pdf-1": "1/744",
+    "LMT/2015/page_52.pdf-2": "1/744",
+    "LMT/2015/page_52.pdf-4": "1/744",
+    "LMT/2015/page_53.pdf-2": "1/744",
+    "LMT/2015/page_55.pdf-2": "1/744",
+    "LMT/2015/page_55.pdf-3": "1/744",
+    "LMT/2015/page_55.pdf-4": "1/744",
+    "LMT/2015/page_86.pdf-1": "1/744",
+    "LMT/2015/page_86.pdf-2": "1/744",
+    "MA/2008/page_113.pdf-2": "1/744",
+    "MA/2008/page_113.pdf-3": "1/744",
+    "MA/2008/page_113.pdf-4": "1/744",
+    "MA/2008/page_116.pdf-2": "1/744",
+    "MA/2008/page_116.pdf-3": "1/744",
+    "MA/2008/page_125.pdf-1": "1/744",
+    "MA/2008/page_125.pdf-3": "1/744",
+    "MA/2008/page_125.pdf-4": "1/744",
+    "MA/2008/page_70.pdf-1": "1/744",
+    "MA/2008/page_70.pdf-2": "1/744",
+    "MAR/2018/page_42.pdf-1": "1/744",
+    "MAR/2018/page_42.pdf-2": "1/744",
+    "MAS/2010/page_29.pdf-1": "1/744",
+    "MAS/2010/page_29.pdf-2": "1/744",
+    "MAS/2010/page_29.pdf-3": "1/744",
+    "MAS/2010/page_29.pdf-4": "1/744",
+    "MAS/2010/page_86.pdf-1": "1/744",
+    "MAS/2010/page_86.pdf-2": "1/744",
+    "MAS/2010/page_89.pdf-2": "1/744",
+    "MAS/2010/page_89.pdf-3": "1/744",
+    "MAS/2017/page_37.pdf-1": "1/744",
+    "MAS/2017/page_37.pdf-2": "1/744",
+    "MAS/2017/page_37.pdf-4": "1/744",
+    "MRO/2008/page_119.pdf-1": "1/744",
+    "MRO/2008/page_119.pdf-2": "1/744",
+    "MRO/2008/page_119.pdf-3": "1/744",
+    "MRO/2008/page_119.pdf-4": "1/744",
+    "MRO/2008/page_130.pdf-1": "1/744",
+    "MRO/2008/page_130.pdf-3": "1/744",
+    "MRO/2008/page_135.pdf-3": "1/744",
+    "MRO/2008/page_142.pdf-1": "1/744",
+    "MRO/2008/page_142.pdf-2": "1/744",
+    "MRO/2008/page_145.pdf-1": "1/744",
+    "MRO/2008/page_145.pdf-2": "1/744",
+    "MRO/2008/page_146.pdf-1": "1/744",
+    "MRO/2008/page_146.pdf-3": "1/744",
+    "MRO/2008/page_41.pdf-2": "1/744",
+    "MRO/2008/page_41.pdf-3": "1/744",
+    "MRO/2008/page_41.pdf-4": "1/744",
+    "MRO/2008/page_42.pdf-1": "1/744",
+    "MRO/2008/page_42.pdf-3": "1/744",
+    "MRO/2008/page_42.pdf-4": "1/744",
+    "MRO/2008/page_44.pdf-1": "1/744",
+    "MRO/2008/page_44.pdf-3": "1/744",
+    "MRO/2008/page_44.pdf-4": "1/744",
+    "MRO/2008/page_70.pdf-1": "1/744",
+    "MRO/2008/page_70.pdf-2": "1/744",
+    "MRO/2008/page_70.pdf-3": "1/744",
+    "MRO/2008/page_70.pdf-4": "1/744",
+    "MRO/2008/page_99.pdf-1": "1/744",
+    "MRO/2008/page_99.pdf-2": "1/744",
+    "MRO/2008/page_99.pdf-3": "1/744",
+    "MRO/2008/page_99.pdf-4": "1/744",
+    "MRO/2012/page_18.pdf-1": "1/744",
+    "MRO/2012/page_18.pdf-2": "1/744",
+    "MRO/2012/page_22.pdf-2": "1/744",
+    "MRO/2012/page_22.pdf-3": "1/744",
+    "MRO/2012/page_39.pdf-1": "1/744",
+    "MRO/2012/page_39.pdf-2": "1/744",
+    "MRO/2012/page_39.pdf-3": "1/744",
+    "MRO/2012/page_40.pdf-1": "1/744",
+    "MRO/2012/page_40.pdf-2": "1/744",
+    "MRO/2012/page_41.pdf-2": "1/744",
+    "MRO/2012/page_41.pdf-3": "1/744",
+    "MRO/2012/page_41.pdf-4": "1/744",
+    "MS/2012/page_150.pdf-1": "1/744",
+    "MS/2015/page_200.pdf-2": "1/744",
+    "MSI/2005/page_43.pdf-2": "1/744",
+    "MSI/2005/page_43.pdf-3": "1/744",
+    "MSI/2005/page_64.pdf-2": "1/744",
+    "MSI/2005/page_64.pdf-3": "1/744",
+    "MSI/2005/page_64.pdf-4": "1/744",
+    "MSI/2005/page_64.pdf-5": "1/744",
+    "MSI/2005/page_64.pdf-6": "1/744",
+    "NCLH/2016/page_84.pdf-1": "1/744",
+    "NCLH/2016/page_84.pdf-2": "1/744",
+    "NCLH/2016/page_84.pdf-3": "1/744",
+    "NKE/2014/page_36.pdf-1": "1/744",
+    "NKE/2014/page_36.pdf-2": "1/744",
+    "NKE/2014/page_36.pdf-3": "1/744",
+    "NKE/2014/page_36.pdf-4": "1/744",
+    "NWS/2016/page_148.pdf-1": "1/744",
+    "NWS/2016/page_148.pdf-2": "1/744",
+    "ORLY/2015/page_28.pdf-1": "1/744",
+    "ORLY/2015/page_28.pdf-2": "1/744",
+    "ORLY/2015/page_28.pdf-3": "1/744",
+    "ORLY/2015/page_28.pdf-4": "1/744",
+    "ORLY/2016/page_29.pdf-2": "1/744",
+    "PM/2014/page_112.pdf-1": "1/744",
+    "PM/2014/page_112.pdf-2": "1/744",
+    "PM/2014/page_112.pdf-3": "1/744",
+    "PM/2014/page_112.pdf-4": "1/744",
+    "PNC/2016/page_155.pdf-1": "1/744",
+    "PNC/2016/page_155.pdf-2": "1/744",
+    "PNC/2016/page_44.pdf-1": "1/744",
+    "PNC/2016/page_44.pdf-2": "1/744",
+    "PNC/2016/page_73.pdf-1": "1/744",
+    "PNC/2016/page_73.pdf-2": "1/744",
+    "PNC/2018/page_45.pdf-1": "1/744",
+    "PNC/2018/page_45.pdf-2": "1/744",
+    "PNC/2018/page_45.pdf-3": "1/744",
+    "PNC/2018/page_45.pdf-5": "1/744",
+    "PNC/2018/page_81.pdf-1": "1/744",
+    "PNC/2018/page_81.pdf-2": "1/744",
+    "PNC/2018/page_81.pdf-5": "1/744",
+    "PPG/2015/page_40.pdf-1": "1/744",
+    "PPG/2015/page_40.pdf-2": "1/744",
+    "PPG/2015/page_40.pdf-3": "1/744",
+    "PPG/2015/page_40.pdf-4": "1/744",
+    "RCL/2009/page_13.pdf-1": "1/744",
+    "RCL/2009/page_90.pdf-1": "1/744",
+    "RCL/2009/page_90.pdf-2": "1/744",
+    "RCL/2009/page_90.pdf-3": "1/744",
+    "RCL/2009/page_90.pdf-4": "1/744",
+    "RCL/2017/page_38.pdf-2": "1/744",
+    "RCL/2017/page_38.pdf-3": "1/744",
+    "RE/2013/page_109.pdf-1": "1/744",
+    "RE/2013/page_109.pdf-2": "1/744",
+    "RE/2013/page_109.pdf-3": "1/744",
+    "RE/2013/page_109.pdf-4": "1/744",
+    "RE/2013/page_40.pdf-2": "1/744",
+    "RE/2013/page_40.pdf-3": "1/744",
+    "RE/2016/page_141.pdf-1": "1/744",
+    "RE/2016/page_40.pdf-1": "1/744",
+    "RE/2016/page_40.pdf-2": "1/744",
+    "RE/2016/page_40.pdf-3": "1/744",
+    "RE/2016/page_40.pdf-4": "1/744",
+    "RL/2012/page_13.pdf-1": "1/744",
+    "RL/2012/page_13.pdf-2": "1/744",
+    "RSG/2013/page_137.pdf-1": "1/744",
+    "RSG/2013/page_16.pdf-1": "1/744",
+    "RSG/2013/page_16.pdf-2": "1/744",
+    "RSG/2013/page_69.pdf-1": "1/744",
+    "RSG/2013/page_69.pdf-2": "1/744",
+    "RSG/2013/page_92.pdf-2": "1/744",
+    "RSG/2016/page_17.pdf-1": "1/744",
+    "RSG/2016/page_17.pdf-2": "1/744",
+    "RSG/2016/page_50.pdf-1": "1/744",
+    "RSG/2016/page_50.pdf-2": "1/744",
+    "RSG/2016/page_69.pdf-1": "1/744",
+    "RSG/2016/page_69.pdf-2": "1/744",
+    "RSG/2016/page_98.pdf-1": "1/744",
+    "RSG/2016/page_98.pdf-2": "1/744",
+    "SLG/2012/page_61.pdf-1": "1/744",
+    "SLG/2012/page_61.pdf-2": "1/744",
+    "SLG/2012/page_87.pdf-1": "1/744",
+    "SLG/2018/page_45.pdf-1": "1/744",
+    "SNA/2013/page_111.pdf-1": "1/744",
+    "SNA/2013/page_111.pdf-2": "1/744",
+    "SNA/2013/page_33.pdf-2": "1/744",
+    "SNA/2013/page_56.pdf-1": "1/744",
+    "SNA/2013/page_56.pdf-2": "1/744",
+    "SNA/2013/page_59.pdf-1": "1/744",
+    "SNA/2013/page_93.pdf-2": "1/744",
+    "SNA/2013/page_93.pdf-3": "1/744",
+    "SNPS/2003/page_39.pdf-2": "1/744",
+    "STT/2007/page_65.pdf-1": "1/744",
+    "STT/2007/page_65.pdf-2": "1/744",
+    "STT/2007/page_65.pdf-3": "1/744",
+    "STT/2007/page_65.pdf-4": "1/744",
+    "STT/2007/page_95.pdf-1": "1/744",
+    "STT/2007/page_95.pdf-2": "1/744",
+    "STT/2013/page_107.pdf-1": "1/744",
+    "STT/2013/page_107.pdf-2": "1/744",
+    "STT/2013/page_107.pdf-3": "1/744",
+    "STT/2013/page_107.pdf-4": "1/744",
+    "STT/2013/page_175.pdf-1": "1/744",
+    "STT/2013/page_175.pdf-2": "1/744",
+    "STT/2013/page_54.pdf-1": "1/744",
+    "STT/2013/page_54.pdf-2": "1/744",
+    "STT/2013/page_54.pdf-3": "1/744",
+    "STT/2013/page_71.pdf-1": "1/744",
+    "STT/2013/page_71.pdf-2": "1/744",
+    "STT/2013/page_71.pdf-3": "1/744",
+    "STT/2013/page_71.pdf-4": "1/744",
+    "STZ/2010/page_51.pdf-1": "1/744",
+    "STZ/2010/page_51.pdf-2": "1/744",
+    "STZ/2010/page_51.pdf-3": "1/744",
+    "STZ/2010/page_51.pdf-4": "1/744",
+    "TFX/2006/page_50.pdf-1": "1/744",
+    "TFX/2006/page_50.pdf-2": "1/744",
+    "TFX/2015/page_42.pdf-1": "1/744",
+    "TFX/2015/page_42.pdf-2": "1/744",
+    "TFX/2015/page_42.pdf-3": "1/744",
+    "TROW/2011/page_13.pdf-1": "1/744",
+    "TROW/2011/page_13.pdf-2": "1/744",
+    "TSCO/2017/page_28.pdf-1": "1/744",
+    "TSCO/2017/page_28.pdf-2": "1/744",
+    "TSCO/2017/page_68.pdf-1": "1/744",
+    "TSCO/2017/page_68.pdf-2": "1/744",
+    "TSCO/2017/page_68.pdf-3": "1/744",
+    "TSCO/2017/page_73.pdf-2": "1/744",
+    "UA/2009/page_63.pdf-1": "1/744",
+    "UA/2009/page_63.pdf-2": "1/744",
+    "UPS/2010/page_33.pdf-1": "1/744",
+    "UPS/2013/page_34.pdf-1": "1/744",
+    "UPS/2013/page_34.pdf-3": "1/744",
+    "UPS/2013/page_56.pdf-1": "1/744",
+    "UPS/2013/page_56.pdf-2": "1/744",
+    "UPS/2013/page_56.pdf-3": "1/744",
+    "UPS/2013/page_56.pdf-4": "1/744",
+    "UPS/2016/page_34.pdf-2": "1/744",
+    "UPS/2016/page_34.pdf-4": "1/744",
+    "V/2009/page_88.pdf-1": "1/744",
+    "V/2009/page_89.pdf-1": "1/744",
+    "VLO/2012/page_130.pdf-1": "1/744",
+    "VLO/2012/page_27.pdf-1": "1/744",
+    "VLO/2012/page_27.pdf-3": "1/744",
+    "VNO/2005/page_69.pdf-1": "1/744",
+    "VNO/2005/page_69.pdf-2": "1/744",
+    "VNO/2011/page_177.pdf-1": "1/744",
+    "VNO/2011/page_85.pdf-1": "1/744",
+    "VNO/2011/page_85.pdf-2": "1/744",
+    "VTR/2003/page_39.pdf-2": "1/744",
+    "VTR/2003/page_39.pdf-3": "1/744",
+    "VTR/2007/page_106.pdf-1": "1/744",
+    "VTR/2007/page_48.pdf-1": "1/744",
+    "VTR/2007/page_48.pdf-2": "1/744",
+    "VTR/2007/page_48.pdf-3": "1/744",
+    "VTR/2007/page_48.pdf-4": "1/744",
+    "VTR/2007/page_97.pdf-2": "1/744",
+    "VTR/2007/page_97.pdf-3": "1/744",
+    "VTR/2007/page_97.pdf-4": "1/744",
+    "WELL/2016/page_61.pdf-1": "1/744",
+    "WELL/2016/page_61.pdf-2": "1/744",
+    "WELL/2016/page_61.pdf-3": "1/744",
+    "WELL/2016/page_61.pdf-4": "1/744",
+    "WELL/2017/page_116.pdf-1": "1/744",
+    "WELL/2017/page_116.pdf-2": "1/744",
+    "WELL/2017/page_116.pdf-3": "1/744",
+    "WELL/2017/page_116.pdf-4": "1/744",
+    "WELL/2017/page_48.pdf-1": "1/744",
+    "WELL/2017/page_48.pdf-2": "1/744",
+    "WELL/2017/page_48.pdf-3": "1/744",
+    "WELL/2017/page_48.pdf-4": "1/744"
+  },
+  "pool_id": "4274b700270f2a3995e6ff84dbb6f4be4bd0b153f5e92361b9a43588c45c5dc6",
+  "training_protocol_id": "2f4ae04413376f0109e8f5f4f905a7fe69549ae4aea4686907ef917e1ca85649",
+  "training_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/registration/record.json",
+    "sha256": "c56bcf98afb6339e21cb31d25c8927dbe58d5a04439355758665ae00a4f73385"
+  },
+  "branch": {
+    "contribution_only": false,
+    "b_N": 0.2,
+    "parameters": {
+      "epsilon": 0.05,
+      "contribution_exponent": 0.8,
+      "novelty_exponent": 0.2,
+      "novelty_temperature": 1.0,
+      "lambda_current": 4.0,
+      "lambda_prior": 1.0,
+      "rms_floor": 1e-08
+    }
+  },
+  "sources": {
+    "original_training_module": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+      "sha256": "6be6b697e1517cb87ceb5fc8e33bad73d7affef6e9d9cc8685e88724f019fa05"
+    },
+    "original_class_source": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/v8_training_driver.py",
+      "sha256": "cc5d18faa9af8121926e684d5d8f6a0e6eecacb3b4e725441487f73230c87b4d"
+    },
+    "storage_source": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v34_tail_memory.py",
+      "sha256": "2dfeb805aee7abc5c5429dc85a4faf2648d584e44625d5a6476bebffb0c506d6"
+    },
+    "task_cache_source": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v35_task_cache.py",
+      "sha256": "3ed8bf3e45001beec6a2414b448fe2bf148d75f8fcec0d0edc298c9375b012c6"
+    },
+    "production_implementation": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/record.json",
+      "sha256": "c475031526950a75579985abab803880f7530e38553150cb31a6361c620fdd2c",
+      "id": "2446c3b89a5214245657e7fb4f90a42764c5378ff6193b6dfd6897a2e50354a7"
+    },
+    "frozen_training": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+      "sha256": "6be6b697e1517cb87ceb5fc8e33bad73d7affef6e9d9cc8685e88724f019fa05"
+    },
+    "frozen_v8": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/v8_training_driver.py",
+      "sha256": "cc5d18faa9af8121926e684d5d8f6a0e6eecacb3b4e725441487f73230c87b4d"
+    }
+  },
+  "execution_binding": {
+    "protocol": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/protocol/record.json",
+      "sha256": "366095e105c8683d833a8019911656b3bbe8c5d213bd3b223f3bfef5608717e7",
+      "id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462"
+    },
+    "implementation_id": "2446c3b89a5214245657e7fb4f90a42764c5378ff6193b6dfd6897a2e50354a7"
+  },
+  "no_reference_G_C_pi_required": true,
+  "cross_parameter_point_cache_reuse_allowed": false,
+  "original_checkpoint_or_feedback_rewritten": false,
+  "kind": "training",
+  "task_plan": null,
+  "task_binding": null,
+  "task_cache_root": null,
+  "feedback": null,
+  "id": "9804d6eaea19995c337b55ea1606d64f2fca5237cb3d7d0c22df8eb0659734e5"
+}

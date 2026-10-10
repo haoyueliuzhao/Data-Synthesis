@@ -1,10 +1,10 @@
 # FinQA V38：CUDA前准入修复与同点恢复说明
 
-日期：2026年10月10日。除明确标注UTC外，本文时间均为北京时间。
+修复登记跨2026年10月10日至11日，控制器于10月11日启动。除明确标注UTC外，本文时间均为北京时间。
 
 ## 当前状态与授权范围
 
-本说明编写时，V38尚未启动。新代码的CPU/mock验证不代表GPU生产恢复已经通过；首点的distribution、真实outer提交和SFT1193仍待执行。后续启动、资源等待和实际完成状态应另行补记，并以新运行目录的封存记录为准。
+V38控制器于**2026年10月11日00:11:09**启动。首点distribution于**00:15:33**完成并保存实际C、N、π，随后训练阶段真实提交一次outer1192并执行一次SFT至1193。训练worker于**00:18:09.598**以退出码0退出，**00:18:09.600的`pilot_acceptance`已实际封存，首点验收通过并允许继续派发原剩余矩阵**。该结论只涵盖首个生产接续点，九模型矩阵尚未完成；原V37失败记录不改写。distribution实际准入等待为0秒，全局等待143秒来自继承，立即READY不能作为真实外部占卡等待路径的生产验证。
 
 用户针对V37在distribution阶段的GPU准入失败明确要求“修复问题，继续实验”。本次恢复使用独立目录：
 
@@ -90,7 +90,7 @@ c07e70cc25add945f46a87646a237679d093ad26f15cd94a9efc4d0a2a2c402a
 
 744份梯度Tensor只做存在性、文件stat与对应元数据摘要检查，没有重新读取或计算全部大Tensor哈希。实际`cohort_seal` JSON为149,980,390字节，超过本次64MiB元数据解析界限；登记对其保留stat和原SHA绑定，通过`deferred_feedback_content_verification`明确列为延后内容验证。两个引用指向同一个实际文件，去重后为一项。实际worker在使用父材料和载荷前，仍须执行原内容哈希、Tensor摘要、完整反馈封存、当前状态及同点检查，不能用这次只读检查替代。
 
-首次恢复不重算744题的类梯度，不重放527个response，不生成或重新评分原700条反馈。`distribution`尚未产生成功载荷，因此应从保存的G、虚拟点和gJ执行一次原pullback、C及π复算。
+首次恢复不重算744题的类梯度，不重放527个response，不生成或重新评分原700条反馈。在V38派发之前，原V37的`distribution`没有成功载荷；本次新distribution直接从保存的G、虚拟点和gJ执行原pullback、C及π复算，实际完成情况见后文交接快照。
 
 ## 首点通过条件与剩余矩阵
 
@@ -107,7 +107,7 @@ c07e70cc25add945f46a87646a237679d093ad26f15cd94a9efc4d0a2a2c402a
 
 原`step1192_outer`和`step1193_step`在本次登记前均不得已存在；若核验发现状态已前进，不能继续套用本恢复计划重复提交。完成distribution不等于真实outer已提交，完成outer也不等于SFT1193已完成，结果封存不等于进程已经退出。
 
-原B剩余科学剂量保持：5810次optimizer更新、15次outer、8029条终点回答。三个旧反馈点仍是C-only137/1192、Full137/1192和C-only251/894，共2100条旧反馈，必须同点复用；后续12个新点各首次采样700条，共8400条。首点实际提交及SFT计入这些原定剂量，不另做一份重复“正式运行”。
+恢复登记时原B剩余科学剂量为5810次optimizer更新、15次outer、8029条终点回答。三个旧反馈点为C-only137/1192、Full137/1192和C-only251/894，共2100条旧反馈，必须同点复用；后续12个新点各首次采样700条，共8400条。首点实际提交及SFT计入这些原定剂量，不另做一份重复“正式运行”。截至本次首点验收，已实际消耗其中1次outer和1次optimizer更新，尚余5809次optimizer更新、14次outer、8029条终点回答；这是一项原定工作完成后的余额变化，没有减少或追加原科学预算。
 
 Static137/251原模型和回答继续只读复用。全部九模型回答封存、生成worker真实退出后，才允许原统一评分。后续统计仍区分原A与新B，不能用恢复工程完成替代训练效果或准确率结论。
 
@@ -115,7 +115,7 @@ Static137/251原模型和回答继续只读复用。全部九模型回答封存�
 
 原context的`compute_seconds=27045.04046258703`是distribution派发时保存的快照，未包含随后失败worker的142.37239307863638秒。恢复不能直接拿该旧快照作为最终已用时间，更不能从零开始累计。
 
-当前继承实现采用如下保守规则，正式初始化记录将保存输入时间和计算结果：
+本次初始化采用如下保守规则，已封存的继承记录保存输入时间和计算结果：
 
 ```text
 继承outer已用秒数 = ceil(max(
@@ -154,7 +154,72 @@ V38五模块最终联合验证为**76项CPU/mock测试全部通过，用时3.14�
 
 对应测试文件为`test_finance_v38_admission.py`、`test_finance_v38_inheritance.py`、`test_finance_v38_worker.py`、`test_finance_v38_evaluation.py`和`test_finance_v38_controller.py`。覆盖同点父阶段继承、原成功退出及资源边界、实际载荷消费、首点提交顺序、外部占卡后就地等待、完整等待区间并集计费、原deadline、停止请求、每轮CUDA未初始化检查、观测期间跨越deadline或收到停止后的READY拒绝、设备缺失/UUID变化、RSS和主存门、未知观测拒绝、同worker身份、禁止覆盖已有准入记录，以及原评价生成和评分函数的委托。Unicode进程名测试确认心跳和事件与控制器一致使用`ensure_ascii=False`的UTF-8规范JSON，避免合法非ASCII字段导致内容ID误拒绝。
 
-上述验证只使用CPU/mock，没有运行GPU、调用API或读取当前B的Static评分；临时产物使用已忽略的`trusted_data_synthesis/artifacts/test_tmp/`独立目录。冻结实施清单与正式启动应以随后实际记录为准。CPU测试通过不证明新的distribution、C/π、outer提交、SFT1193或其余矩阵已经完成；旧V37上游阶段的成功，也不追认旧失败attempt整轮通过。
+上述验证只使用CPU/mock，没有运行GPU、调用API或读取当前B的Static评分；临时产物使用已忽略的`trusted_data_synthesis/artifacts/test_tmp/`独立目录。冻结实施清单与控制器启动已按下一节封存；CPU测试本身不替代distribution、真实提交或退出验收。首点实际通过的生产证据另列于后文，旧V37上游阶段的成功和本次恢复通过均不追认旧失败attempt整轮通过。
+
+## 实际登记与控制器启动
+
+新运行根目录为`production_resume_01/recovery_01/`。正式执行源码提交为`ace664b2a36ba73368d8cb9a86ae0afabae38ac2`（短ID：`ace664b2a3`），已提交并推送；新implementation记录与protocol均绑定同一提交。原V37冻结实现和失败目录保持原样。
+
+| 记录 | 北京时间 | 内容ID |
+|---|---|---|
+| [新实施清单](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/record.json) | 10月11日00:09:58.241 | `2446c3b89a5214245657e7fb4f90a42764c5378ff6193b6dfd6897a2e50354a7` |
+| [六阶段继承登记](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/inheritance/record.json) | 10月11日00:09:58.762 | `69e47670e44fc85de1faadde071e8b8260377cecf5930d5914023a775ed11522` |
+| [V38恢复协议](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/protocol/record.json) | 10月11日00:10:33.596 | `28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462` |
+| [唯一控制器launch](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/launch_01/record.json) | 10月11日00:11:09.298 | `8dfc76d404a0f1672bc82e18d726465e8b36b93f53105ed67f3c61fc8ab18274` |
+
+launch记录的UTC时间为`2026-10-10T16:11:09.298355+00:00`，对应上述跨日北京时间。控制器PID为2710385，birth为`407306447`。继承记录中的outer、distribution、全局资源等待已用量分别为27219、143、143秒，与本文预算表一致。
+
+首个distribution worker于**00:11:11.785**派发，PID2710441、birth为`407306696`，绑定物理GPU4及`GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e`。其[新launch记录](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/distribution/launch/record.json)的内容ID为`0a70371b9ce8d422ed44097b3509ec5d92d0deee1600a679aeee81850b356413`，仍绑定原context。
+
+00:11:42的初期队列快照为RUNNING，只有上述一个child，`pilot_accepted=false`，新增outer与optimizer计数均为0，全局资源等待仍为继承的143秒。00:12:31左右的观察显示worker仍在CPU原载荷核验，尚未GPU准入或加载模型。本次只读核对到的[队列状态](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/queue/status.json)时间为00:13:13.917，上述单child、未验收和零更新字段保持一致。
+
+这些是明确时点的启动快照，尚未据此宣布首点验收或其余矩阵开放。后续交接需另外记录READY、同点实际载荷验证、模型加载及资源边界、distribution与训练结果和真实退出；不得把launch文件存在直接写成distribution或训练完成。
+
+## 实际distribution完成与训练派发快照
+
+截至2026年10月11日00:16:20封存的[handoff_01](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/handoff_01/record.json)，内容ID为`3210e027aa0b47caa221bb7fa889bc33bd6d25c851693c2125bbb55509518558`，已绑定新协议、实施清单、继承、控制器和worker派发、准入、九个资源记录及distribution的实际结果和退出。
+
+| 北京时间 | 实际状态与边界 |
+|---|---|
+| 00:13:26.184 | distribution准入记录为READY，CUDA尚未初始化，`wait_poll_count=0`、`waiting_seconds=0.0`。全局143秒等待是继承值。 |
+| 模型加载与distribution前 | `after_model_load`与`before_distribution`相关资源边界均通过，随后实际执行分布复算。 |
+| 00:15:33.644 | [distribution结果](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/distribution/result/record.json)为COMPLETE，内容ID为`94158881a3c887b6589a7211c6867077f9b2317f77734a5b30d389ced1ef9d45`。 |
+| 00:15:36.237 | [distribution真实退出](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/distribution/exit/record.json)为0，`stop_requested=false`。内容ID为`a86974eae11bfa4855d1dd3331e191dd9f6f188471af55acbd93888fbb9027d1`。 |
+| 00:15:36.589 | [train正式派发](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/train/launch/record.json)，PID2715552、birth为`407333176`，物理GPU4。launch内容ID为`45b1aa6369064912282b10a6685c3edb680885f81013eb29a62158a41e6ee19d`。 |
+| 00:16:17.366 | handoff内的不可变队列快照为RUNNING，唯一child为train；`pilot_accepted=false`，已接受的新增optimizer与outer计数均为0，全局等待仍为143秒。 |
+
+distribution结果记录`C_N_pi_saved=true`、`numerical_contract_checks_passed=true`，原point仍为`c07e70cc25add945f46a87646a237679d093ad26f15cd94a9efc4d0a2a2c402a`，反馈分母700、C-only的`b_N=0`保持不变。实际类梯度pass、response回放、新采样、评分、API、optimizer及outer提交计数均为0；本阶段保存分布载荷，真实Student参数、Adam、RNG和buffers未改变。此次未另做固定点参考对照，不能把资源及数值合同检查写成新的算法效果实验。
+
+九个已记录资源边界全部通过，包含加载前后、distribution前后和模型释放前后；`all_gates_passed=true`。历史allocated峰值为15,384,683,520字节，约14.33GiB；已观测最小边界free为69,213,290,496字节，约64.46GiB。模型加载后峰值重置次数为0。结果引用了新worker生成的`cache_tensor_verification/record.json`，原六阶段未被重新派发。
+
+00:16:37.756的后续队列观察仍为同一train worker，当时首点未验收、已接受更新计数为0。这里分别标明handoff内00:16:17快照和稍后的队列观察，不将后者伪装为该handoff的封存时刻。已接受计数只是控制器口径，不能替代真实checkpoint核验。当时尚待的真实outer1192提交、SFT1193、最终资源检查及退出，已由下一节更晚的结果和`pilot_acceptance`记录验收。
+
+本次实际READY说明空卡时的准入和后续distribution路径已运行；外部占卡后的同进程WAITING路径在本次distribution中没有触发，其等待区间和时限保护目前仍以CPU/mock测试为证据。该交接不改写原V37失败，也不宣布九模型矩阵完成。
+
+## 首点实际提交、退出与验收通过
+
+2026年10月11日**00:18:04.472**，[train实际结果](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/train/result/record.json)以COMPLETE封存，内容ID为`5a40d7fe23558b77e5f6eb6c1d4f6b660e3287721f13d0b6e516f48617dba68b`。该结果明确记录：
+
+- `initial_step=1192`、`committed_step=1193`、`actual_optimizer_steps=1`。
+- `outer_committed=true`，`outer_done=[298,596,894,1192]`，实际调用原step方法，没有调用旧单进程outer。
+- 原训练目录新增真实[outer1192保存点记录](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step1192_outer/record.json)和[step1193保存点记录](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step1193_step/record.json)。
+- API、新采样、评分、反馈生成和response重放计数均为0；原六个父阶段没有重新执行。
+- 全部资源门通过，模型已释放，模型加载后峰值重置次数为0；observed allocated峰值19,179,600,384字节，最小边界free为69,030,838,272字节，均满足原门槛。
+
+该训练worker在**00:18:09.597512**[真实退出](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/c_only/step1192_outer/train/exit/record.json)，退出码0、`stop_requested=false`；退出记录内容ID为`b8edcce38d94a611b18ab3e3ba1a12ae4840f3091ff437cd6fa63d026f5955d9`。
+
+随后在**00:18:09.599533**，[首点验收记录](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/pilot_acceptance/record.json)实际封存，内容ID为`a556a3935c7f74a0b227d335bdf5b2c95255678a013127490be172809fe6bf0a`。它绑定原context、新train结果和两个真实保存点，记录`remaining_matrix_dispatch_authorized=true`、`reference_step298_repeated=false`。因此首点已按“分布载荷、一次真实outer、一次真实SFT、资源检查及实际退出”的完整门通过，原剩余矩阵可以继续派发。
+
+首点验收后，控制器登记其余上下文期间，队列一度保留00:17:59.200的旧快照；其`pilot_accepted=false`早于不可变验收记录，不能据此否定已完成的验收。更晚的实际队列已更新如下。此次通过不是九模型全部完成、不是新的准确率结论，也不改变原V37的失败终态或V32至V36历史结果。
+
+## 后续矩阵实际派发与交接
+
+2026年10月11日00:23:12.898封存的[handoff_02](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/handoff_02/record.json)包含00:23:07.752的实际队列快照，内容ID为`1ff2b0404df1f8c550995c3f3ef3fb777ee804dc27defe1730d82b12c0797c69`。队列为RUNNING，`pilot_accepted=true`，已接受新增optimizer与outer更新各1次，累计外部资源等待仍为继承的143秒。
+
+- GPU4：seed137、C-only，从step1193开始继续原SFT段；train worker为PID2724270。
+- GPU5：seed137、Full，在其真实step1192点执行首个完整任务分片shard00；worker为PID2724279，不复用C-only137的梯度。
+
+两个worker的launch与队列身份一致，观察时PID/birth均匹配；各自实际context与launch均被交接记录引用。CPU初始化中的worker也计入总名额。其余上下文由同一控制器排队，仍只使用3、4、5、7白名单，不干预其他项目。此交接只确认原矩阵已经实际继续派发，不宣布上述新阶段完成或九模型全部完成；统一评分尚未启动。
 
 ## 关键原始证据
 

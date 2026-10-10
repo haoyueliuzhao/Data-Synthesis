@@ -1,0 +1,32 @@
+{
+  "schema": "v38_user_authorized_pre_cuda_recovery.v1",
+  "at": "2026-10-10T16:09:58.241774+00:00",
+  "user_instruction": "修复问题，继续实验",
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/failure/record.json",
+    "sha256": "38349721f65800091c6b37d2a020716344880f704486b8c0524828568902ac74",
+    "id": "9c3c071691670359a4a25e040ab5330768dc07c12783050b3d925105a241758e"
+  },
+  "diagnosis": "External GPU4 process arrived during CPU preparation; unchanged UUID",
+  "observed_parent_lifecycle": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/lifecycle/event002674/record.json",
+      "sha256": "2b21f6cc4f4b1131c5e1ab559172bee74b9ba6a7237321d4c331bfb9c8c3f3f8",
+      "id": "bdc9812d2ee3d92fd2663d0f007123d6aafa489ae836458f3e714f97c09b3553"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/lifecycle/event002678/record.json",
+      "sha256": "54c5ead0a9c020988c3a3093e33594ddde8cf88ed01933d261c76a645f45a2c6",
+      "id": "bf85249ff5a76b58ab45bcb78ef3db13e9d5c5bbde23b599372e59ff6b0419bd"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer/lifecycle/event002682/record.json",
+      "sha256": "28e4b3011e4a1e2900f0e3642d2f7fe043d172ea3e9b756c64b6834339755389",
+      "id": "e372442a99fd4139b3f73b591eb4495b59deecc52fc6887cfd2295acb48c66c0"
+    }
+  ],
+  "historical_failure_reclassified": false,
+  "explicit_single_recovery": true,
+  "automatic_retry": false,
+  "id": "678c986ab5964e9b916d113379eb0e2a4150e7274fa9c6b7ac29ea6ea8154b6d"
+}
