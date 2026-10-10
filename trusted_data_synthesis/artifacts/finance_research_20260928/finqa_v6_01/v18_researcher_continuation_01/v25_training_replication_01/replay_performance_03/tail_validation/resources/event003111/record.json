@@ -1,0 +1,32 @@
+{
+  "schema": "v34_exact_resource_observation.v1",
+  "at": "2026-10-09T20:00:38.849208+00:00",
+  "protocol_id": "480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46",
+  "observation": {
+    "event": "tail_memory_observation",
+    "sequence": 3112,
+    "label": "class_row_end",
+    "boundary": true,
+    "monotonic_seconds": 4000434.026087051,
+    "allocated_bytes": 15408274432,
+    "reserved_bytes": 24687673344,
+    "peak_allocated_bytes": 17366603776,
+    "peak_reserved_bytes": 24687673344,
+    "free_bytes": 59551711232,
+    "total_bytes": 85095874560,
+    "limits": {
+      "allocated_memory_limit_bytes": 81604378624,
+      "free_memory_reserve_bytes": 2147483648
+    },
+    "context": {
+      "package_id": "v10gen:6996ed7973a7e77b3c80482d7d36f22c146c067c4fa3fa4761ecb6d73487714d",
+      "package_row": 1,
+      "completed_rows": 3107
+    },
+    "allocated_pass": true,
+    "free_pass": true,
+    "stop_requested": true,
+    "passed": false
+  },
+  "id": "9be7f202b2723967d0ec9cd95c1c1a8e82ae9fe921e079b866f9eac6e6d3f995"
+}

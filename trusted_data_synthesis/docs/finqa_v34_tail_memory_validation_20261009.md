@@ -4,7 +4,7 @@
 
 本说明按授权日期命名；实际协议冻结、启动、观察和结果的时间以各封存记录为准，用户可见时间统一按北京时间解释。当前登记的是一次有界补验，不预先声称显存修订有效或CUDA数值验收通过。V33的 `STOPPED_FAILURE_NO_RETRY` 终态、原协议和失败记录始终保留。
 
-北京时间10月10日00:00启动独立控制器及GPU7 worker。00:03:39封存观察时为 `RUNNING`，已记录14个类梯度行完成后的资源门通过；尚无本轮最终G、C、π数值比较或完整资源验收结果。额外空闲GPU使用许可已记录，实际仍为GPU7单worker。
+当前终态为 `STOPPED_FAILURE_NO_RETRY`：北京时间10月10日04:00:38达到登记的4小时阶段上限，在第3107个类梯度训练行完成后响应停止，04:01:08进程退出。已执行部分的allocated和边界free门均通过，但完整4974行class pass尚未完成，未进入独立G、虚拟参数点及C、π比较。08:33:11收口核验确认控制器与worker均已退出，原B保持暂停；本次没有重试或新实验。下文保留原登记、启动观察和本轮实测收口。
 
 ## 前序事实与本轮问题
 
@@ -103,7 +103,7 @@ V34固定使用V33实际运行的同一物理GPU7，UUID为 `GPU-ab6e97cc-19e4-6
 
 ## 当前实现与验证状态
 
-本轮新增实现为[布局保持存储后端](../scripts/finqa_v34_tail_memory.py)、[单次补验控制器](../scripts/finqa_v34_tail_controller.py)和[末段worker](../scripts/finqa_v34_tail_worker.py)。联合CPU/mock测试163项通过，用时6.60秒，包括存储52项、控制器76项、worker35项；六个Python实现和测试文件的Ruff检查通过。检查覆盖非连续及带offset张量的值和布局、真实小型class pass逐位等价、保存对象和CPU副本释放、输入变异拒绝、资源实值与峰值不可清零、末门失败仍保留实际C与π，以及无回放或真实更新入口。这些检查不是V34 GPU通过结论；仍须冻结已提交源码并执行上述唯一GPU阶段。正式启动、资源等待和结果以V34根目录中的不可变协议、launch、阶段证据及结果记录为准，不把设计条款当成已经执行的事实。
+本轮新增实现为[布局保持存储后端](../scripts/finqa_v34_tail_memory.py)、[单次补验控制器](../scripts/finqa_v34_tail_controller.py)和[末段worker](../scripts/finqa_v34_tail_worker.py)。部署前联合CPU/mock测试163项通过，用时6.60秒，包括存储52项、控制器76项、worker35项；六个Python实现和测试文件的Ruff检查通过。检查覆盖非连续及带offset张量的值和布局、真实小型class pass逐位等价、保存对象和CPU副本释放、输入变异拒绝、资源实值与峰值不可清零、末门失败仍保留实际C与π，以及无回放或真实更新入口。这些检查不是V34 GPU通过结论；实际GPU运行在时间上限处结束，结果见下文。不可变协议和阶段证据保留原登记，不将CPU测试或设计条款当成GPU成功结果。
 
 本轮文档后续只追加其自身实施和实测状态；V33原终态与失败证据不回写。原B继续暂停。
 
@@ -115,4 +115,38 @@ V34固定使用V33实际运行的同一物理GPU7，UUID为 `GPU-ab6e97cc-19e4-6
 
 00:03:39核验控制器和worker的PID及birth仍存活，队列为 `RUNNING`。封存的 `event000018` 记录已完成14个类梯度行，历史allocated峰值约15.136GiB、设备空闲约61.507GiB，资源门通过。这只是早期固定时点的进展，不能外推后续最长输入峰值、完整耗时、最终数值相等或整轮成功。观察记录为 `observation_01/record.json`，ID为 `afd612e23fe97fb7bff52c69a84e467ef165a951ed392a9935b00bcfca66cad0`；包含当时队列及资源快照。
 
-目前本实验只有一个GPU worker，无新增response回放、API、采样、评分或真实optimizer更新。后续应查看新根的 `queue/status.json`、`tail_validation/resources/`、独立 `numeric_comparison/record.json` 和最终 `result/record.json`，不得以本次启动观察代替终态验收。
+上述启动观察时本实验有一个GPU worker，无新增response回放、API、采样、评分或真实optimizer更新。这是历史进度，不是当前状态；当前进程均已退出，且没有产生成功的独立数值比较或最终结果。
+
+## 四小时时限停止与训练行进度
+
+GPU7 worker于北京时间10月10日00:00:38.440964派发。阶段上限为14,400秒；04:00:38.851943在 `class_row_end` 响应停止并记录 `TailStopRequested`，04:01:08.614400退出，returncode为1，`timed_out=true`、`stop_requested=true`。从派发至停止边界记录为14,400.410979秒，至exit记录为14,430.173436秒，多出的约30秒属于退出收尾。控制器终态为 `STOPPED_FAILURE_NO_RETRY`，没有自动重试；这次停止不是CUDA OOM、数值比较失败或显存门超限。
+
+累计完成3107/4974个类梯度训练行，按行数为62.4648%，尚有1867行未执行；已进入class pass但没有完成一次完整pass。4974的分母来自原 `v15_prefix_completion_01/prefix_material/binding/record.json` 的 `forward_rows_per_epoch`，原始4978行中4条无target，冻结 `VerifiedPool.row_arrays` 不返回这些行。实际V25训练登记绑定V18 material，后者明确引用同一V15 prefix binding，且material_order_id相同；冻结class_gradients逐全部包和有效行遍历，因此该分母适用于本次原class pass，而不是借用别的训练日程。
+
+这里的3107行不是feedback回放response，更不是3107个类；573条response回放属于V33已完成的另一阶段。62.4648%是行数比例，不是时间比例或可以线性外推的剩余ETA，不同训练行长度和成本不等。
+
+本实现只对行边界保存资源与计数，没有将部分class梯度累计量和可恢复游标落盘。`storage_receipt`、`point_comparison`、`numeric_comparison`、`numeric_payload`及成功`result`均未产生，说明class_gradients没有正常返回；后续prepare和独立C、π计算尚未开始。因此不能从第3108行直接续跑，也不能声称已得到62.46%的耐久梯度结果。V33的最终gJ仍完整保留，其已完成573条response无需重放。
+
+## 已执行部分的资源实测
+
+| 指标 | 实测值 | 口径 |
+| --- | ---: | --- |
+| allocated历史峰值 | 16.173910GiB | 从模型加载前计入整个worker，未在阶段间重置 |
+| reserved历史峰值 | 22.992188GiB | PyTorch allocator峰值，不等于活跃张量量 |
+| 最小边界设备free | 55.461853GiB | 已记录的boundary观测，非连续最小值 |
+| 设备占用采样峰值 | 23.790039GiB | 1秒目标间隔采样，不是allocated峰值 |
+| 进程RSS峰值 | 137.558174GiB | 进程host内存高水位，不是纯pinned字节数 |
+| 资源观测记录数 | 3112 | 含模型和阶段边界及3107个训练行边界 |
+| 设备采样数 | 13155 | 无已记录sampler错误 |
+
+全部3112条观测的 `allocated_pass` 和 `free_pass` 均为true，未触发76GiB历史allocated门或2GiB边界free门。只有最后一条的 `stop_requested=true` 使其总 `passed=false`，因此失败记录中的 `resources.all_passed=false` 不能直接解释为显存失败；同样不能忽略超时而宣称所有验收通过。
+
+这证明已经执行的训练行在本次冷进程中满足所登记的显存条件，同时显示较高host内存占用与超过4小时预算仍未完成的执行成本。它不证明后续未执行输入的峰值、完整CUDA逐位等价或最终C、π验收；也不能拿16.17GiB allocated与V33的79.14GiB整卡采样值计算同口径的下降比例。现有数据没有把CPU复制、hook、固定顺序计算和记录I/O成本独立分离，不能把超时唯一归因于某一项。
+
+资源与错误的完整不可变证据为 `tail_validation/failure/record.json`；其中已经包含3112条精确资源观测，无需以末条截图代替全过程记录。退出证据为 `tail_validation/exit/record.json`，原阶段限时和输入预算不改写。
+
+## 收口与后续边界
+
+北京时间10月10日08:33:11按登记的PID及birth核验控制器和worker均已退出，GPU worker为0；原B队列仍是 `PAUSED_BY_USER_CHECKPOINT_SAVED`。本轮API、新采样、评分、optimizer step和response replay均为0，没有使用额外GPU。V33最终checkpoint文件仍通过本轮已登记的绑定与文件摘要检查；没有重新运行一遍573条数值回放。
+
+收口记录为 `closeout_01/record.json`，ID为 `e85e319a491a16833231cc881e8653bbdc93f74f0ef30683d695ad1acb1ce023`，绑定原协议、失败和退出记录、训练行分母证据、完整资源摘要以及仍保留的V33 gJ来源。整体状态见[2026年10月10日汇总报告](finqa_progress_summary_20261010.md)。本次仅更新报告和审计证据，没有修改实现、扩大时限、启动重试或恢复原B。

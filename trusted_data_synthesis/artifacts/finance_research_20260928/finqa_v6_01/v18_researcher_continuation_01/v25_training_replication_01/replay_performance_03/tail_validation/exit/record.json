@@ -1,0 +1,11 @@
+{
+  "schema": "v33_bounded_stage_exit.v1",
+  "at": "2026-10-09T20:01:08.614400+00:00",
+  "protocol_id": "480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46",
+  "stage": "tail_validation",
+  "returncode": 1,
+  "timed_out": true,
+  "stop_requested": true,
+  "no_retry": true,
+  "id": "27f3cd1c7e75bbb3b937452a31c01bae04923b3581e20d7b32acd0ba0e1feb80"
+}

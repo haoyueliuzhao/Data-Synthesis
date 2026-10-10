@@ -1,0 +1,11 @@
+{
+  "schema": "v34_bounded_tail_failure.v1",
+  "at": "2026-10-09T20:01:08.615656+00:00",
+  "protocol_id": "480be5d26130d0b869afa11c5b33cfbd138bcf2ca4be269a5805229351de7a46",
+  "error_type": "ValueError",
+  "error": "stage failed/stopped/timed out; no retry, fallback or further dispatch",
+  "no_automatic_retry": true,
+  "no_implicit_fallback": true,
+  "original_B_resume_authorized": false,
+  "id": "3dbee997220517d7b8e232c0c5b5dc8ac6ec66741612c403f959f215325893df"
+}
