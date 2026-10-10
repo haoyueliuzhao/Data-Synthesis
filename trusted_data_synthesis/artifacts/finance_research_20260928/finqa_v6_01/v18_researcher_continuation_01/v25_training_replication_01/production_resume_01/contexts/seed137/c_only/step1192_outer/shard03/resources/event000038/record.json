@@ -1,0 +1,46 @@
+{
+  "schema": "v37_exact_resource_observation.v1",
+  "at": "2026-10-10T07:19:30.141262+00:00",
+  "protocol_id": "9f0b0ad6450a8c0d4aec697901e6c28f5bca4d291c45942f3238ffecca14c255",
+  "context_id": "c5b4ff1eb6feba057306a243866a77a8b7ce5e7e11b22692c3bb59c1305bbe08",
+  "stage": "shard03",
+  "observation": {
+    "event": "tail_memory_observation",
+    "sequence": 39,
+    "label": "class_row_end",
+    "boundary": true,
+    "monotonic_seconds": 4041165.318081499,
+    "allocated_bytes": 15398775296,
+    "reserved_bytes": 17532190720,
+    "peak_allocated_bytes": 16213685248,
+    "peak_reserved_bytes": 18018729984,
+    "free_bytes": 66868674560,
+    "total_bytes": 85095874560,
+    "limits": {
+      "allocated_memory_limit_bytes": 81604378624,
+      "free_memory_reserve_bytes": 2147483648
+    },
+    "context": {
+      "package_id": "v10gen:3631a0e48f082ec74af0e005d30fbfff6e79ad8241591658e53ec0adf3e6eb3b",
+      "package_row": 1,
+      "completed_rows": 6
+    },
+    "allocated_pass": true,
+    "free_pass": true,
+    "stop_requested": false,
+    "passed": true,
+    "host": {
+      "rss_bytes": 51059671040,
+      "peak_rss_bytes": 51087818752,
+      "available_bytes": 665108561920,
+      "rss_limit_bytes": 171798691840,
+      "available_reserve_bytes": 103079215104,
+      "rss_pass": true,
+      "available_pass": true,
+      "passed": true
+    },
+    "deadline_epoch": 1791659687.3913517,
+    "deadline_pass": true
+  },
+  "id": "5d4bad8f7b304c8cda14234d6037fc214380ca897e34bdd28f95476fc068c73a"
+}
