@@ -1,0 +1,21 @@
+{
+  "schema": "v35_explicit_whole_task_supplement_authorization.v1",
+  "user_date": "2026-10-10",
+  "user_request": "参照审计修订并开展后续实验",
+  "previous_resource_permission": "本轮实验可以占用额外的空闲显卡",
+  "audit": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/audit/record.json",
+    "sha256": "411740777232a23536c7db9df1913a7851ba9c70d9427d76f58d6453256092b7",
+    "id": "ac952d4ba9896aa9fb65ed250e456ce4a265f6ecfb10f59456d8cbd3f9e73c5b"
+  },
+  "audited_repository_commit": "fbc23613fffd17fc56f7d242b27e00ad08eace8d",
+  "scope": "one complete-task class pass across four static shards, durable task caches, then one global recomputation from saved V33 gJ",
+  "original_B_resume_authorized": false,
+  "no_automatic_retry": true,
+  "previous_trial_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_03/closeout_01/record.json",
+    "sha256": "571f6ed33132baccb76fc37d930f8154164cdbec737828a2f31bf6751ecc03ac",
+    "id": "e85e319a491a16833231cc881e8653bbdc93f74f0ef30683d695ad1acb1ce023"
+  },
+  "id": "548381cd7446cd7eed8d68b1aee82ec21df5113f261e0cdb0a9d0c20c14ec413"
+}

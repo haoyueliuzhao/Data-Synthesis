@@ -1,0 +1,11 @@
+{
+  "schema": "v35_one_global_execution_window.v1",
+  "at": "2026-10-10T02:27:34.529002+00:00",
+  "protocol_id": "28baa409dc59e872df69da4950262fd9606140e3eeb8a8911c36429e350976a3",
+  "first_launch_epoch": 1791599254.528971,
+  "deadline_epoch": 1791613654.528971,
+  "duration_seconds": 14400,
+  "no_stage_deadline_reset": true,
+  "no_automatic_restart": true,
+  "id": "e51a53e42cdd5cc5c3104cdccf1b6b06f998321fa8e612a2458decab88011e03"
+}

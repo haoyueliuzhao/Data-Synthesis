@@ -1,0 +1,9 @@
+{
+  "schema": "v35_bounded_task_controller_intent.v1",
+  "at": "2026-10-10T02:27:34.005219+00:00",
+  "protocol_id": "28baa409dc59e872df69da4950262fd9606140e3eeb8a8911c36429e350976a3",
+  "pid": 1234799,
+  "birth": "402364902",
+  "no_automatic_controller_restart": true,
+  "id": "7252aa2649e422c9bf9be797ae8d1a1457161c803624c87b03c3eb9b63a5bd71"
+}

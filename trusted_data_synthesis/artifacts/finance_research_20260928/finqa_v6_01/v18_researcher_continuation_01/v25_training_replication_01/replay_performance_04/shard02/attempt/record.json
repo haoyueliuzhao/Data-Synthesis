@@ -1,0 +1,17 @@
+{
+  "schema": "v35_task_stage_attempt.v1",
+  "at": "2026-10-10T02:27:37.765038+00:00",
+  "protocol_id": "28baa409dc59e872df69da4950262fd9606140e3eeb8a8911c36429e350976a3",
+  "stage": "shard02",
+  "pid": 1234999,
+  "gpu_index": 5,
+  "deadline_epoch": 1791613654.528971,
+  "automatic_retry": false,
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "scoring_calls": 0,
+  "optimizer_steps": 0,
+  "replayed_responses": 0,
+  "original_B_resume_authorized": false,
+  "id": "6669063f0d56b09262e9961be35b8cd8f2a39b5932d352643069bfd53415f1c7"
+}

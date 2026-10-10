@@ -1,0 +1,76 @@
+{
+  "schema": "v35_frozen_CPU_integration_and_actual_task_plan.v1",
+  "at": "2026-10-10T02:26:55.416875+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/protocol/record.json",
+    "sha256": "b912297b08e2bada92b974d4e8739533bfa842e2be48212dac403f0dec74a2cb",
+    "id": "28baa409dc59e872df69da4950262fd9606140e3eeb8a8911c36429e350976a3"
+  },
+  "source_commit": "0f0bcf3c5e8984ed42df10dc193e8ebeafd670fe",
+  "test_counts": {
+    "controller": 78,
+    "task_cache": 27,
+    "worker": 24
+  },
+  "combined_pytest_passed": 129,
+  "combined_pytest_seconds": 8.37,
+  "ruff_six_new_files_passed": true,
+  "actual_four_independent_CPU_processes_test_included": true,
+  "four_process_test_is_not_production_GPU_evidence": true,
+  "task_plan": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/task_plan/record.json",
+    "sha256": "24371fe5f258eccbc6f5071365683c115c47cbe5bba423b0dd709e14dd38be9b",
+    "id": "9786e47eb18b5f1b881995d54a637e38edff706b6bc28969a2f8e34983ded700"
+  },
+  "actual_scope": {
+    "tasks": 744,
+    "states": 1360,
+    "packages": 2468,
+    "rows": 4974,
+    "parameters": 112
+  },
+  "frozen_module_origins": {
+    "finqa_v35_task_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v35_task_worker.py",
+    "finqa_v35_task_controller": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v35_task_controller.py",
+    "finqa_v34_tail_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v34_tail_worker.py",
+    "finqa_v35_task_cache": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v35_task_cache.py",
+    "finqa_v32_performance_worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v32_performance_worker.py",
+    "finqa_v32_same_point_guard": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v32_same_point_guard.py",
+    "finqa_v34_tail_memory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/implementation/finqa_v34_tail_memory.py"
+  },
+  "CUDA_initialized": false,
+  "prior_storage_bytes_unchanged": true,
+  "host_observation": {
+    "total_bytes": 1081790648320,
+    "available_bytes": 885875982336,
+    "physical_mem_available_bytes": 885875982336,
+    "cgroup_ancestors": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice/session-53283.scope",
+        "memory_max": "max",
+        "memory_current": 425371389952
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice",
+        "memory_max": "max",
+        "memory_current": 458565058560
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice",
+        "memory_max": "max",
+        "memory_current": 977725394944
+      }
+    ]
+  },
+  "disk_observation": {
+    "free_bytes": 441504268288,
+    "estimated_class_tensor_bytes": 13725859840,
+    "admission_bytes": 61811458048
+  },
+  "API_calls": 0,
+  "new_sampling_calls": 0,
+  "replayed_responses": 0,
+  "original_B_still_paused": true,
+  "GPU_numerical_resource_validation_complete": false,
+  "id": "d8063f33b2edaff465dbfb0d0b42adc775fbfa2d0c2e43db8d27cf83b2cd8f0d"
+}
