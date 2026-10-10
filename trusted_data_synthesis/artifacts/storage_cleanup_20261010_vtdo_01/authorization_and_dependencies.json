@@ -1,0 +1,27 @@
+{
+  "date_local": "2026-10-10",
+  "initial_user_request": "raw_financial_data_lake下的数据均不再使用，此外早期实验存档也可以考虑清理",
+  "confirmation_question": "早期VTDO存档中，约18.74 GiB是独有历史梯度；扩大到全部非adapter张量则约93.46 GiB。删除不可从Git恢复，将失去对应旧张量复算能力；最终adapter、报告和当前FinQA均保留。你希望清理哪个范围？数据湖清理会继续，不受这个选择影响。",
+  "explicit_user_answer": "清理全部93.46 GiB非adapter张量",
+  "source_root": "trusted_data_synthesis/artifacts/vtdo_experiment",
+  "authorized_regular_single_link_files": 1242,
+  "authorized_allocated_bytes": 100350738432,
+  "authorized_type": "Remaining .safetensors files except the sole final beneficiary adapter",
+  "explicit_adapter_exclusion": "finance_phase1_mvp_v1/beneficiary_adapter/adapter_model.safetensors",
+  "adapter_allocated_bytes": 80793600,
+  "scope_includes": ["state and token gradients", "task and mean gradients", "evaluation objective and global gradients", "AdamW-mapped local update directions and finite-target directions"],
+  "scope_excludes": ["all final adapters", "all non-target files including JSON JSONL reports original inputs and ledgers", "all QA artifacts", "all finance_research_20260928 artifacts", "all worktrees and model environments"],
+  "dependency_check": {
+    "checked_code_roots": ["V37 sealed implementation", "V25 training implementation", "V18 finance_research", "V10-proxy finance_research", "V15 finance_research", "V16 finance_research", "V17 finance_research"],
+    "candidate_path_or_beneficiary_adapter_reference_found": false,
+    "current_controller_and_worker_open_file_hit": false,
+    "nine_historical_QA_students_use_QA_updates_0240_not_VTDO": true,
+    "old_QA_calibration_still_referenced_by_current_financial_code_and_preserved": true,
+    "scope_limit": "Targeted source-path and process observations, not a guarantee about arbitrary future dependencies"
+  },
+  "generation_code_evidence": "trusted_data_synthesis/src/trusted_synthesis/experiments/vtdo_experiment/phase1_target_local_updates.py:282",
+  "not_claimed_duplicate_or_losslessly_regenerable": true,
+  "no_backup_and_no_git_recovery_explicitly_disclosed": true,
+  "old_failure_records_not_rewritten": true,
+  "QA_80_215912_GiB_candidates_not_authorized_or_deleted": true
+}

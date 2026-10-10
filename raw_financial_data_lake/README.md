@@ -1,11 +1,15 @@
 # Raw Financial Data Lake + Fact Build Pipeline
 
 Local data retirement on 2026-10-03: the user authorized removal of the old raw
-files, cold KG/QA archives, and generated exports. Code, configuration, audit
-records, and database files remain; historical database file references and
-archive-dependent workflows are no longer self-contained. The current FinQA
-experiment uses a separate snapshot and was not interrupted. See the
-[retirement record and recovery limits](docs/data_lake_retirement_20261003.md).
+files, cold KG/QA archives, and generated exports. On 2026-10-10, the remaining
+audit data and two SQLite files were archived, verified, and removed from
+`data/` after the user confirmed they were no longer needed. Code,
+configuration, documentation, and tracked benchmark assets remain. The local
+backup covers only the data still present on 2026-10-10, not the original files
+deleted on 2026-10-03. Historical workflows are no longer self-contained.
+Current FinQA uses separate snapshots and materials. See the
+[original retirement record](docs/data_lake_retirement_20261003.md) and
+[remaining-data cleanup and recovery limits](../trusted_data_synthesis/docs/storage_cleanup_20261010_retired_lake_and_vtdo.md).
 
 This repository started as a traceable **Raw Financial Data Lake** for SEC, FRED, World Bank, IMF, and CNInfo data. It now also contains downstream fact-building, validation, derived-fact, and document-candidate tooling.
 

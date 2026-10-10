@@ -1,0 +1,23 @@
+{
+  "date_local": "2026-10-10",
+  "user_instruction": "此外10月之前的数据也可以审查清理，后续实验主要建立在先前的15任务训练及测试基础上",
+  "baseline_resolution": "V18 seeds 11,29,47 crossed with static,manual_plus,manual_minus,c_only,full",
+  "all_15_models_have_dev883": true,
+  "test_scope": "V23 static/full six models plus V25 A c_only three models; not all fifteen models",
+  "no_deletion_by_mtime_or_directory_date": true,
+  "preserve_financial_snapshot_roles_assets_base_eval_and_fixed_model_tokenizer": true,
+  "preserve_source_chain": ["v10_new8000_01 referenced trajectories and registration", "v12_rereview_02", "v13_material_02", "v14_representation_01", "v15_prefix_completion_01", "v16_six_task_continuation_01", "v17_three_task_continuation_01", "v18_researcher_continuation_01"],
+  "v18_binding_path_occurrences": {"V13": 198, "V14": 6118, "V15": 99, "V16": 6, "V17": 7},
+  "v15_definition_path_occurrences": {"V12": 9872, "V10": 4936},
+  "v17_old_hold_and_revoked_binding_are_live_loader_dependencies": true,
+  "preserve_all_existing_main_training_and_evaluation_evidence": true,
+  "preserve_V23_V24_V25_and_V32_through_V37": true,
+  "preserve_absolute_frozen_worktree_paths": true,
+  "no_current_B_static_accuracy_inspected": true,
+  "not_yet_admitted_for_deletion": [
+    {"relative_to_finance_research_20260928": "finqa_v6_01/v10_wallet_prelaunch_AalG7W", "allocated_bytes": 1051803648, "reason": "Wallet/receipt recovery value and duplicate coverage not established"},
+    {"relative_to_finance_research_20260928": "finqa_v6_01/v10_funding_backup_2mcs6281", "allocated_bytes": 1632800768, "reason": "Wallet/receipt recovery value and duplicate coverage not established"},
+    {"relative_to_finance_research_20260928": "audit_followup_01/jobs", "allocated_bytes": 3169697792, "reason": "No direct reference in eight checked registrations is not a complete dependency proof"},
+    {"relative_to_finance_research_20260928": "reference_revision_01/jobs", "allocated_bytes": 2329858048, "reason": "No direct reference in eight checked registrations is not a complete dependency proof"}
+  ]
+}

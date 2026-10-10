@@ -1,0 +1,19 @@
+{
+  "date_local": "2026-10-10",
+  "first_apply_outcome": "Refused by unchanged process guard before execution_intent and before any unlink",
+  "error": "unknown inaccessible process; cannot safely clear tests",
+  "message_origin": "Shared helper from prior test cleanup; the actual current candidate is only the VTDO root",
+  "first_guard_did_not_report_unknown_pid": true,
+  "followup_read_only_proc_observation": [
+    {"pid": 6878, "comm": "systemd"},
+    {"pid": 6879, "comm": "(sd-pam)"},
+    {"pid": 559717, "comm": "sshd"},
+    {"pid": 2484012, "comm": "sshd"}
+  ],
+  "only_these_known_daemons_remained_permission_restricted_in_followup": true,
+  "unknown_original_process_identity_not_inferred": true,
+  "execution_intent_and_result_absent_after_first_refusal": true,
+  "no_source_deletion_occurred": true,
+  "next_step": "Re-run original preflight and fixed-plan apply once without changing or bypassing the process gate",
+  "script_plan_helper_authorization_unchanged": true
+}

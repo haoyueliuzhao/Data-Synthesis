@@ -1,0 +1,29 @@
+{
+  "scope": "raw_financial_data_lake/data only",
+  "date_local": "2026-10-10",
+  "user_authorization": "raw_financial_data_lake下的数据均不再使用，此外早期实验存档也可以考虑清理",
+  "decision": "Archive and verify the remaining data before removing source copies; retain code, configuration, tests, benchmarks and documentation",
+  "targets": [
+    {"path": "raw_financial_data_lake/data/audit", "regular_files": 1449, "allocated_bytes": 868036608},
+    {"path": "raw_financial_data_lake/data/metadata.sqlite3", "regular_files": 1, "allocated_bytes": 118784},
+    {"path": "raw_financial_data_lake/data/test_metadata.sqlite3", "regular_files": 1, "allocated_bytes": 479232}
+  ],
+  "git_tracked_target_files": 0,
+  "symlinks_special_files_or_multi_hardlinks_in_targets": 0,
+  "current_dependencies_checked": [
+    "V37 protocol and seed137 c_only step1192_outer context",
+    "Inherited training registration and experiment0 asset protocol",
+    "V18 material binding with 6435 absolute path occurrences",
+    "V37 sealed implementation and frozen finance_research Python source"
+  ],
+  "old_lake_references_found_in_checked_dependencies": false,
+  "independent_snapshot": "trusted_data_synthesis/artifacts/finance_research_20260928/snapshots/finqa",
+  "binding_input_paths_are_not_symlinks": true,
+  "readable_same_account_process_views_with_target_path_hits": 0,
+  "process_check_limit": "Some proc views of four same-account processes were permission-restricted; other accounts were not comprehensively audited. The execution plan separately records its fresh process guard.",
+  "earlier_retirement": "raw_financial_data_lake/docs/data_lake_retirement_20261003.md",
+  "earlier_deleted_bytes_not_counted_again": 46911791104,
+  "old_experiment_tensor_deletion_authorized_by_this_plan": false,
+  "no_gpu_api_signals_or_training_changes": true,
+  "static_accuracy_not_read": true
+}
