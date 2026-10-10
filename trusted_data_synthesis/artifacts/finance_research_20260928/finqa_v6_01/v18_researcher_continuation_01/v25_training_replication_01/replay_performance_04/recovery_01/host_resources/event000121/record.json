@@ -1,0 +1,50 @@
+{
+  "schema": "v35_observed_host_resource_gate.v1",
+  "at": "2026-10-10T04:49:07.118922+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "total_bytes": 1081790648320,
+  "available_bytes": 759267401728,
+  "physical_mem_available_bytes": 759267401728,
+  "cgroup_ancestors": [
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1004.slice/session-53283.scope",
+      "memory_max": "max",
+      "memory_current": 281691783168
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice/user-1004.slice",
+      "memory_max": "max",
+      "memory_current": 309479239680
+    },
+    {
+      "path": "/sys/fs/cgroup/user.slice",
+      "memory_max": "max",
+      "memory_current": 745919782912
+    }
+  ],
+  "reserve_bytes": 103079215104,
+  "processes": [
+    {
+      "stage": "shard01",
+      "pid": 1454076,
+      "birth": "403093143",
+      "rss_bytes": 63899742208,
+      "peak_rss_bytes": 63949541376,
+      "rss_limit_bytes": 171798691840,
+      "passed": true
+    },
+    {
+      "stage": "shard02",
+      "pid": 1454085,
+      "birth": "403093161",
+      "rss_bytes": 64156479488,
+      "peak_rss_bytes": 64185278464,
+      "rss_limit_bytes": 171798691840,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "observation_not_allocation_guarantee": true,
+  "independent_pinned_cap": false,
+  "id": "60f5487a5abf2c7b44368891b79854888b577ef1de523a6e3c3b37bdf6375e93"
+}

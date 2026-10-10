@@ -1,0 +1,41 @@
+{
+  "schema": "v35_exact_resource_observation.v1",
+  "at": "2026-10-10T04:29:37.725791+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "stage": "shard02",
+  "observation": {
+    "event": "tail_memory_observation",
+    "sequence": 1,
+    "label": "before_model_load",
+    "boundary": true,
+    "monotonic_seconds": 4030972.89241448,
+    "allocated_bytes": 0,
+    "reserved_bytes": 0,
+    "peak_allocated_bytes": 0,
+    "peak_reserved_bytes": 0,
+    "free_bytes": 84652523520,
+    "total_bytes": 85095874560,
+    "limits": {
+      "allocated_memory_limit_bytes": 81604378624,
+      "free_memory_reserve_bytes": 2147483648
+    },
+    "context": {},
+    "allocated_pass": true,
+    "free_pass": true,
+    "stop_requested": false,
+    "passed": true,
+    "host": {
+      "rss_bytes": 2299527168,
+      "peak_rss_bytes": 2299527168,
+      "available_bytes": 879810695168,
+      "rss_limit_bytes": 171798691840,
+      "available_reserve_bytes": 103079215104,
+      "rss_pass": true,
+      "available_pass": true,
+      "passed": true
+    },
+    "deadline_epoch": 1791613654.528971,
+    "deadline_pass": true
+  },
+  "id": "03b35c5bbdff2acf8ee9dd8bbd04713d89caf23bea518f5a874fdc33d261a81d"
+}

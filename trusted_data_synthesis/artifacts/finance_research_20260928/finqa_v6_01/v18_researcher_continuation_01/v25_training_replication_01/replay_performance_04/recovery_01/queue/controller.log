@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_task_controller.py", line 956, in recheck_exit
+    process.wait(timeout=EXIT_RECHECK_SECONDS)
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/lib/python3.12/subprocess.py", line 2045, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/usr/bin/taskset', '--cpu-list', '38-75,114-151', '/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python', '-u', '/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_worker.py', '--root', '/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01', '--stage', 'shard02', '--gpu-index', '5', '--deadline-epoch', '1791613654.528971']' timed out after 2.0 seconds
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_controller.py", line 508, in <module>
+    main()
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_controller.py", line 500, in main
+    RecoveryController(args.root).run()
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_recovery_controller.py", line 405, in run
+    self.run_group(RECOVERY_STAGES)
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_task_controller.py", line 1195, in run_group
+    self.observe_host()
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_task_controller.py", line 905, in observe_host
+    self.recheck_exit(item, "worker identity disappeared during host observation")
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_04/recovery_01/recovery_implementation/finqa_v35_task_controller.py", line 958, in recheck_exit
+    raise ValueError(reason + " after bounded exit recheck") from error
+ValueError: worker identity disappeared during host observation after bounded exit recheck

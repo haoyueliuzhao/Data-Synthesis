@@ -1,0 +1,15 @@
+{
+  "schema": "v35_bounded_task_stage_exit.v1",
+  "at": "2026-10-10T04:49:29.130324+00:00",
+  "protocol_id": "50390aa6458dec8bdbef161679c91f665ac42187a99ae0865096f763db564385",
+  "stage": "shard02",
+  "returncode": 0,
+  "stop_requested": true,
+  "global_deadline_epoch": 1791613654.528971,
+  "no_retry": true,
+  "observed_exit_epoch": 1791607769.1303577,
+  "elapsed_worker_wall_seconds": 1232.6910945181735,
+  "elapsed_worker_wall_seconds_basis": "Popen submission to observed exit; includes polling latency",
+  "includes_CPU_initialization_and_shutdown_grace": true,
+  "id": "8195a96c11622b86b99bf44a6207ebde617c9a4934fc485a75af586010ce3f4d"
+}
