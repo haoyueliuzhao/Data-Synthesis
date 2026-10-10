@@ -1,0 +1,23 @@
+{
+  "date_local": "2026-10-10",
+  "confirmation_question": "按15任务主实验的依赖核对后，另有约80.22 GiB旧QA中间张量可清理：64.41 GiB非epoch训练状态和15.81 GiB类梯度。它们不被当前主实验引用，但删除后旧QA无法按原连续断点直接续训，且无备份；会保留全部epoch、0240固定点、最终模型、反馈和报告。是否也清理这一组？",
+  "explicit_user_answer": "清理这80.22 GiB旧QA中间张量",
+  "authorized_file_count": 2263,
+  "authorized_allocated_bytes": 86131179520,
+  "scope": {
+    "B": "delayed_C_B_confirmation_cache_20260922/jobs/B_{prefix,static,delayed_c}_{11,29,47}/updates; four digit .pt names, not divisible by 40",
+    "A": "delayed_C_recovery_cache_20260921/A_delayed_c_{29,47}/updates; four digit .pt names, not divisible by 40",
+    "negative": "direction_calibration_cache_20260926/training_stage_20260926/jobs/B_negative_{11,29,47}/updates/0201.pt through 0239.pt",
+    "population": "delayed_C_recovery_cache_20260921/A_delayed_c_29/population.pt"
+  },
+  "preserve": ["all 40-step epoch checkpoints including 0200 0240 0400", "all nine Student point.json and adapter.safetensors", "entire cross_market_calibration_cache_20260926", "A29 feedback/0631.pt", "all other files including original materials responses ledgers reports and preservation copies", "entire finance_research_20260928 and its frozen source dependencies"],
+  "checked_dependencies": ["V37 sealed implementation and actual step1192 context", "V25 frozen training implementation and registration", "V18 frozen finance_research and five-arm registration", "V18 material binding", "experiment0 asset protocol"],
+  "candidate_paths_not_referenced_in_checked_dependencies": true,
+  "current_initialization": "Fixed Qwen base at /data1/zhuxinrui/models, then V25 seed137/c_only/step1192 checkpoint, not old QA tensors",
+  "current_feedback": "V25 replay_performance_01/manifests/seed137_c_only_outer1192",
+  "V37_reuses_QA_math_code_but_not_these_old_artifacts": true,
+  "not_a_claim_all_QA_artifacts_are_unused": true,
+  "irreversible_costs": ["Loss of unique intermediate parameters Adam and RNG", "Old QA controller requires continuous checkpoints; direct resume and full step-by-step verification will fail", "Loss of actual A29 class gradient matrix and G", "No content backup, no Git recovery, recomputation not guaranteed byte or numerically identical"],
+  "old_reports_and_failure_records_not_rewritten": true,
+  "current_B_static_accuracy_not_read": true
+}

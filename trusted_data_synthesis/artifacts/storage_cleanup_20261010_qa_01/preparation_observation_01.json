@@ -1,0 +1,11 @@
+{
+  "date_local": "2026-10-10",
+  "initial_prepare_result": "Stopped before plan creation because B_prefix_11/updates/0240.pt does not exist",
+  "cause": "The first protection list incorrectly assumed every prefix job had a 0240 checkpoint; prefix training ends at 0200",
+  "correction": "Protect every actual four-digit checkpoint at a 40-step epoch boundary, including prefix 0200 and all actual 0240 files",
+  "target_counts_and_allocated_bytes_already_matched_authorization": true,
+  "target_selection_unchanged": true,
+  "no_plan_or_execution_intent_existed_at_correction": true,
+  "no_files_deleted_by_failed_prepare": true,
+  "all_nine_Student_point_and_adapter_files_still_explicitly_protected": true
+}
