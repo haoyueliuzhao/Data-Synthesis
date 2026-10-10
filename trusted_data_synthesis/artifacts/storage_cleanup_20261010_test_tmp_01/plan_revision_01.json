@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-10T13:14:16.584480+00:00",
+  "prior_plan_id": "d4848fd4743329569c443ce8a22e30000e9ab9f3ef6dd8d85f7778ec1e48fb63",
+  "current_plan_id": "24449ff59da7642f3036bddd85a61d3b5b596efe5c410737406fc6313df77c18",
+  "prior_script_sha256": "650b47f6f16d9a102fe852fe6c27c3e3a6f1345c2a124f1732ed6bfb2f50d3a1",
+  "current_script_sha256": "00075258dca71ba946daeac8de641effebc01595a3e693b96e04f6566bf927d9",
+  "changes": [
+    "fsync output directory when publishing evidence before any source deletion",
+    "COMPLETE only after deletion and final protected-source check pass; record failures explicitly"
+  ],
+  "no_execution_under_prior_plan": true,
+  "prior_plan_preserved": true,
+  "prior_script_preserved": true,
+  "id": "5ea1b621858e1ddca3b90fd4d7e3943c170372a0fe2330c97ae591f761fc5c11"
+}

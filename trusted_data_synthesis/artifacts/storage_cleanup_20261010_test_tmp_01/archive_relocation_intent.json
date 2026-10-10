@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-10T13:20:24.228458+00:00",
+  "cleanup_result_id": "c330f42f875e96e112fbd96a42885a1dfa6f6aae47d9cb9690bd2bc0ee7bad06",
+  "files": [
+    {
+      "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261010_test_tmp_01/test_fixtures.tar.gz",
+      "destination": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261010_01/test_fixtures.tar.gz",
+      "sha256": "2e24bd434076f5505d0f365eb2b992309c314e7e16f1b31f4741977e94542279",
+      "identity_before": [
+        66304,
+        1511791271,
+        33204,
+        35648868,
+        1791638087143482841,
+        1791638093731663889,
+        1,
+        35651584
+      ]
+    },
+    {
+      "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261010_test_tmp_01/member_manifest.json.gz",
+      "destination": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261010_01/member_manifest.json.gz",
+      "sha256": "de11250e4b12f12487a2fc2b40e3b1d417244688b343115d949a703679ffbd0e",
+      "identity_before": [
+        66304,
+        1511791274,
+        33204,
+        2624160,
+        1791638094463683963,
+        1791638094463683963,
+        1,
+        2625536
+      ]
+    }
+  ],
+  "reason": "Keep fixture payloads in the AGENTS.md local_test_archive scope",
+  "preserves_original_cleanup_records": true,
+  "id": "19475f0ceae48bc1a08a6521af45cbcec1402616bbdf26056ac3e9c46edc7e53"
+}

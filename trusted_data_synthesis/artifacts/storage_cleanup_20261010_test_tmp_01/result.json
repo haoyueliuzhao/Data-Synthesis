@@ -1,0 +1,860 @@
+{
+  "at": "2026-10-10T13:15:02.299566+00:00",
+  "plan_id": "24449ff59da7642f3036bddd85a61d3b5b596efe5c410737406fc6313df77c18",
+  "status": "COMPLETE",
+  "failure": null,
+  "removed_roots": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v22-controller-tests.vHLFsl",
+      "allocated_bytes": 4096,
+      "entry_count": 14,
+      "metadata_sha256": "b81e788fbb4c190d8ac93bea300cc9b1013223b3006030dcdb590e7872c85fc8"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v22-eight-gpu-tests.Ww2kdE",
+      "allocated_bytes": 36864,
+      "entry_count": 43,
+      "metadata_sha256": "a04954e5c8d24d0961af446b1393bf649f33c897ed9fb4b8e2926b4136bd4e47"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v22-provider-y9qZYV",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "5fce4958215bcf013a943baf4f0c1a4c9d4751db5ff33988321f2ddafa6d7f99"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v22-source-evidence-tests.BUk4oG",
+      "allocated_bytes": 40960,
+      "entry_count": 47,
+      "metadata_sha256": "41691ad6fdfb4564256782554063749ce75fcd5ceaa647d755fb980253806927"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v22-source-proof-mb70j9",
+      "allocated_bytes": 24576,
+      "entry_count": 3,
+      "metadata_sha256": "a664cfeca7ee30cde1f163e4b59c55ad6e44def1000d44f9715468b14f777463"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-controller-C1xzf6",
+      "allocated_bytes": 712704,
+      "entry_count": 412,
+      "metadata_sha256": "548d5e6ee3790e0e2d220011c4a560307233d81dc05a95848c7d7a7211969ca1"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-controller-bjRSi6",
+      "allocated_bytes": 479232,
+      "entry_count": 270,
+      "metadata_sha256": "67b101d361fec0e6dc7b862be9287de78f29ae6428368ecbd0dd5e030873c05b"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-integrated-BPHFSE",
+      "allocated_bytes": 1728512,
+      "entry_count": 613,
+      "metadata_sha256": "4337a4ab33f8ae3cc6a6740fa42f273052683cc387f60547c663c77c1854d581"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-shrink-Jga462",
+      "allocated_bytes": 1007616,
+      "entry_count": 169,
+      "metadata_sha256": "81e2ef114c2aa385b326e794e85318bf2d182f6ac11325545ec03603a174d12a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-shrink-RHVzZM",
+      "allocated_bytes": 1007616,
+      "entry_count": 169,
+      "metadata_sha256": "9605a66d49b66757f1351f3c5c6093d9dda0b2aa57f7cfdf0d00669fdd955216"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-4ECLix",
+      "allocated_bytes": 4096,
+      "entry_count": 6,
+      "metadata_sha256": "84a9f5cbfa5de81d32c984ee3c66460f62f87cd081d9f461e654ce46e9294c9c"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-G2ZVTj",
+      "allocated_bytes": 12288,
+      "entry_count": 11,
+      "metadata_sha256": "95055ca7370fdeeddabad28ca593ea309da5997377605e3dd5f5b92dd8d9863a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-LlPdUL",
+      "allocated_bytes": 4096,
+      "entry_count": 6,
+      "metadata_sha256": "25e2cdbfedba570150343b021e851c430737ab9beb28fe0abdf230d9c893f0af"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-VzrzdR",
+      "allocated_bytes": 4096,
+      "entry_count": 6,
+      "metadata_sha256": "db29f414039bd734fdc54776e1601015c0ca1bd5841d2c93149a8d2c38b6d053"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-summary-KXyXPW",
+      "allocated_bytes": 12288,
+      "entry_count": 11,
+      "metadata_sha256": "95f7976297abd223975e45481c6337ce884aac591c0096ac078f524aa3ff899f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-submission-summary-NsvwSc",
+      "allocated_bytes": 12288,
+      "entry_count": 11,
+      "metadata_sha256": "57f9ee7cbc018c8958ff4bd65690b144fbbfcdcea6b48986cf1891c1c313d7c3"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-test-confirmation.UAQQ3i",
+      "allocated_bytes": 4096,
+      "entry_count": 24,
+      "metadata_sha256": "a9f978e85a7d584551286d17abce1673ba9fb79b55bfeba8ad5470022ee144eb"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v23-test-confirmation.yrMSWB",
+      "allocated_bytes": 0,
+      "entry_count": 8,
+      "metadata_sha256": "b5bc57799ba0f36fc65f198f3c3b2e190fb4409b764a6dfbaec3b97309392e72"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24-integration-dsWCwO",
+      "allocated_bytes": 12288,
+      "entry_count": 9,
+      "metadata_sha256": "9f90c8ca874dae6a80dc420c892e8ec6008c86c90c8a2ca28475edb1b4843b69"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24-integration-lmZHCr",
+      "allocated_bytes": 12288,
+      "entry_count": 9,
+      "metadata_sha256": "73324b440cd9b8fc2642dc0fbd034f9f3dd4f82cce935b42ee7f0205dbd20bea"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24-intervention-6auYXB",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "f739e4f60e7da87e6608eab4e994a96283eebecc74e31a484c878161c17b635a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24-public-population-O5GTXy",
+      "allocated_bytes": 8192,
+      "entry_count": 4,
+      "metadata_sha256": "072900ca31e1d1c4fd625169840759588868d702b1471404afb7208c816235fc"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24-public-population-X0CZWl",
+      "allocated_bytes": 8192,
+      "entry_count": 4,
+      "metadata_sha256": "e5b8de5d8a15dd7b84aa36c45b7bf48cc4b719357a993e4a60d5fcbd5a6b3cf2"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24_dev_groups.QSu2t9",
+      "allocated_bytes": 4096,
+      "entry_count": 4,
+      "metadata_sha256": "77cfa01634a4ac06bc880a84cc7cbee61b3a37d1f4473293b22efcee7a1e57aa"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v24_dev_groups.akL5SI",
+      "allocated_bytes": 4096,
+      "entry_count": 6,
+      "metadata_sha256": "19fa1e5f22e3e4cce5b40f1903e9c42228a9c555e2577f8e6a798f845806c993"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-controller-yWqzHC",
+      "allocated_bytes": 1323008,
+      "entry_count": 593,
+      "metadata_sha256": "2d1896429dcd009926d2bc68846b20cc4c85ed810747f9272cf34e0c018fbc6d"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-evaluation-5ORm8X",
+      "allocated_bytes": 12288,
+      "entry_count": 38,
+      "metadata_sha256": "361a873b54aeaac7abdb7934b975574ca5f487bbecab9dcaa80325d1694ae688"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-evaluation-C33LLv",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "069de099a1dbcfa8806bd56adfbbfe26758ebb38767f5feeab6864443052fda9"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-evaluation-nmavJj",
+      "allocated_bytes": 12288,
+      "entry_count": 42,
+      "metadata_sha256": "9b946223d53ccbed6af8b633894f24d6ecea8c6c2b224fb197652199960d6ba4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-evaluation-oGgBSM",
+      "allocated_bytes": 12288,
+      "entry_count": 42,
+      "metadata_sha256": "096179420e0cb37194f1f324df255fb23ecff8bffdc17d23df928ee9b61901bd"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-final-cpu-BjdiXN",
+      "allocated_bytes": 3305472,
+      "entry_count": 1019,
+      "metadata_sha256": "af48f61e22f3cd0cc144377f9d0ae18b56d3af4fd66d7507d878d8f8a3733361"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-integrated-3H6B7B",
+      "allocated_bytes": 3305472,
+      "entry_count": 1019,
+      "metadata_sha256": "7f89989eea92f9c5e7b2125e970abef59c648a4d08cf9f19de398ea4311cbf2a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-training-0UNMVs",
+      "allocated_bytes": 1867776,
+      "entry_count": 362,
+      "metadata_sha256": "ee596d55d5ab9310751ab408d9a4b62bfbaab89c2d686da835170d221613e2bb"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-training-VrsjC5",
+      "allocated_bytes": 1179648,
+      "entry_count": 176,
+      "metadata_sha256": "971b2ae79834cf6b0d17deb8a3edcd9a0342424d280f3e1ca9016d6cfd95a256"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v25-training-v95a2f",
+      "allocated_bytes": 0,
+      "entry_count": 5,
+      "metadata_sha256": "1bd11f9cdb0affa89f59f24dc1d8e7c8d039c293b987e7f03caa2df74322cc80"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26-admission-proof-WEFvUL",
+      "allocated_bytes": 3063808,
+      "entry_count": 895,
+      "metadata_sha256": "e2e2d5d0439b00a403e200c5ac45d6021e617a2cafc82aaa436acbd29ce8cf9d"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26-admission-proof-XJ11zB",
+      "allocated_bytes": 3063808,
+      "entry_count": 895,
+      "metadata_sha256": "d13c8a5d8af96be51ae4f6b57684814082cbea56fe91f42f16944474381949eb"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26-recovery-A1brLo",
+      "allocated_bytes": 4861952,
+      "entry_count": 1520,
+      "metadata_sha256": "146127b038dfaba0ce6860be3d9c67055e2ebfb103574dc19e667e23c828f005"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26_execution_6DTxOq",
+      "allocated_bytes": 1576960,
+      "entry_count": 539,
+      "metadata_sha256": "ddf1a2940a3865e3321ffdb08ea7293e1e26ecafe733a12949d9d86ffa200e76"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26_execution_adoption_xKuOvQ",
+      "allocated_bytes": 1794048,
+      "entry_count": 626,
+      "metadata_sha256": "9ddb6cf17d3023f96e328a7b59f3cac7b8a3e5a0a4a11ccff9698e55135ada5a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v26_execution_final_gqGRTj",
+      "allocated_bytes": 1576960,
+      "entry_count": 539,
+      "metadata_sha256": "b4b1a1d9728417efffdc8524b186e0b24e2c4d1e1a1fa6cfbace9b417edf1a89"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v27-handoff-zW0Wdh",
+      "allocated_bytes": 233472,
+      "entry_count": 245,
+      "metadata_sha256": "caad03853490991dcb40bb6fe553d99f6b1e3a2b2c4443067d79e3dfd6813f15"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v27-recovery-XYz3BX",
+      "allocated_bytes": 11497472,
+      "entry_count": 2919,
+      "metadata_sha256": "563879daf9e0096784aa147d5bd53162b710e32dcbd35ee8cefaaafa0405e3bb"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v27-resume-proof-MQuizT",
+      "allocated_bytes": 9039872,
+      "entry_count": 1567,
+      "metadata_sha256": "356430971a39147c0733bcd2002d953ee00ef0af93c87a00ed5273d86c0c4a46"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v27-resume-proof-QU4pZF",
+      "allocated_bytes": 9039872,
+      "entry_count": 1567,
+      "metadata_sha256": "96d7620bf663336a5e7e61d9b32c013b7d80a7443d73a4d668407a1dd5539330"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v27_recovery_gj1UZ3",
+      "allocated_bytes": 2224128,
+      "entry_count": 1109,
+      "metadata_sha256": "a198ff39e0d0d39f9c4789d050ea829ecb220bbef80344833d2c1cc952e6f112"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-auto-controller-sJQGzy",
+      "allocated_bytes": 3166208,
+      "entry_count": 1515,
+      "metadata_sha256": "97353dbe8e0a2cd371f81fd91bc12c46d5a0df62729ca846c99a88626a6c7db5"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-auto-faults-6s0knK",
+      "allocated_bytes": 4292608,
+      "entry_count": 2073,
+      "metadata_sha256": "bb80848f88fda7a2db09760dbfa7bc1bbd9521b96b8e21e777ce81aea5bbbad4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-auto-final-7B9wAP",
+      "allocated_bytes": 4526080,
+      "entry_count": 2191,
+      "metadata_sha256": "f56cb499f5157581832920bb54d84d6e4d4ea7f673161db7bd270f7189e25bfa"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-checkpoint-6Lh9Ni",
+      "allocated_bytes": 3710976,
+      "entry_count": 675,
+      "metadata_sha256": "05b1f4342eb0698a49faf44f130648b34ee06ad24ebe5692905117c814e3209f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-checkpoint-final-9xEFmQ",
+      "allocated_bytes": 9547776,
+      "entry_count": 1245,
+      "metadata_sha256": "007d7d70bb105b47a6f29006a1006afb58dea9dfb91faa9e20c2a8bbc8a085e8"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-controller-M0BEsG",
+      "allocated_bytes": 2433024,
+      "entry_count": 1215,
+      "metadata_sha256": "c584fb1461ffc30399541c7926fc4fd29eceaf6eb7798571a457590edf59cf5a"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-exclusive-controller-5Wt0Hk",
+      "allocated_bytes": 2932736,
+      "entry_count": 1424,
+      "metadata_sha256": "839f8bfd8683b6fbc53cef106fd094349d93b42d234ce23de7f916f59af0ac88"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-handoff-l1txUL",
+      "allocated_bytes": 487424,
+      "entry_count": 385,
+      "metadata_sha256": "f218e9242f57cb0557a11360d508872ae8ac5bb2e33f4bd860f215e26b711634"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-hybrid-controller-7TJcKC",
+      "allocated_bytes": 3047424,
+      "entry_count": 1486,
+      "metadata_sha256": "f05735d50dda4faf8cd1bdd3495c2bc760b69869ce16ddb99c06c53f584595a8"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-memory-UyySdH",
+      "allocated_bytes": 73728,
+      "entry_count": 40,
+      "metadata_sha256": "29933cb272d06c471e2931e0cb4c3e3fd6dbf5fee989c377f4f0656c1c96df26"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-memory-final-nsXCYE",
+      "allocated_bytes": 196608,
+      "entry_count": 92,
+      "metadata_sha256": "3d7db8b4d73b72d1a6067cd999a7bf9de6d3d4ed0e03a2538a64305775eff0e4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-memory-hybrid-DpX3Lt",
+      "allocated_bytes": 212992,
+      "entry_count": 105,
+      "metadata_sha256": "cbe97ced14aaa379b62320260598195206b2c2eb1f4943b42b92abf74890da17"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-proof-lgAlsP",
+      "allocated_bytes": 10022912,
+      "entry_count": 1752,
+      "metadata_sha256": "ec274a428fa6d84c61f04a64009a1c07288a33f69ba905cd7e662ed74e6997e0"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v28-recovery-eZJXx5",
+      "allocated_bytes": 24788992,
+      "entry_count": 5674,
+      "metadata_sha256": "855af68790b9e8d6f1c1a048a031862875cef5d9970e1bb034fd4300333aa279"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v29-checkpoint-eUlYDa",
+      "allocated_bytes": 18382848,
+      "entry_count": 2981,
+      "metadata_sha256": "2d29a5a03b077e2fff143f3718704cfadd8c2bd4d0165c503c480b7e5d37cf71"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v29-controller-regression-ayw4Oe",
+      "allocated_bytes": 4665344,
+      "entry_count": 2347,
+      "metadata_sha256": "0205a8f245309832ad8ecba19d59d55ed3c2115f9a62cd866a81f17c9b1447ce"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v29-controller-s6GPVq",
+      "allocated_bytes": 102400,
+      "entry_count": 157,
+      "metadata_sha256": "91aca70282c91da12e1ff69d5e0a5809a9d48c1205b69d8fa70a0620f2127d00"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v29-release-E3wZd9",
+      "allocated_bytes": 9039872,
+      "entry_count": 1982,
+      "metadata_sha256": "556f38b48f796e07ba5c410000b119b9f514995f8aa6864016570b061e1200cc"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v30_scope.mZvu34",
+      "allocated_bytes": 299008,
+      "entry_count": 352,
+      "metadata_sha256": "70c4972654556a490bd793da8885baeff38a816536f47bcd7c65616247979488"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v30_scope.tlGwul",
+      "allocated_bytes": 299008,
+      "entry_count": 352,
+      "metadata_sha256": "e2fcac01804edb969c5d4dfa0d758200bf71c4b096bbc3f9f0a134f02744cc72"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v30_scope.wa26w6",
+      "allocated_bytes": 28672,
+      "entry_count": 44,
+      "metadata_sha256": "6ad89b0209dcc622bd3a919be6e795d5e196767aa92aeca2d7aff1f0098a1337"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-env-WQFPPv",
+      "allocated_bytes": 4096,
+      "entry_count": 6,
+      "metadata_sha256": "352da07ef32c5ce03555225b922b6bb771661fab6c1e43255bb64a2a9f19067f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-goUfbg",
+      "allocated_bytes": 299008,
+      "entry_count": 92,
+      "metadata_sha256": "9ecba42a56d6cd86b55fe0cec860ef5880b742248e6636bf06df9151bd4430d9"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-iYh8tM",
+      "allocated_bytes": 151552,
+      "entry_count": 83,
+      "metadata_sha256": "8a896d5d8468afe4ff5fa51d2e0883b6599c7382b433c8f5b511cdcf29d17d94"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-leHZtF",
+      "allocated_bytes": 151552,
+      "entry_count": 83,
+      "metadata_sha256": "1421457a496145dfc39d11671b1d22e3fd9aa27827073d484e57f57d9609fe08"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-nRNKs9",
+      "allocated_bytes": 299008,
+      "entry_count": 92,
+      "metadata_sha256": "c68326b39b8bb43c4f0dcacefb138c615e75d85453bc236aa688ce3ccb10d935"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-controller-vPBT0V",
+      "allocated_bytes": 151552,
+      "entry_count": 83,
+      "metadata_sha256": "d0066cf7577b3865adfdb17b0a19bc2a611a1d89b86c8a923621b2baebd72838"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-integration-hft7oL",
+      "allocated_bytes": 2215936,
+      "entry_count": 741,
+      "metadata_sha256": "6ad5eb15ca83990a69948331ce24f65651aae77f2687f4238ca7be90c5a6ad8e"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-replay-SBzzaD",
+      "allocated_bytes": 176128,
+      "entry_count": 93,
+      "metadata_sha256": "8f77c4c5b6fbb14f01574f9c5f7a2ea24424b7e8785b39aa96b77d202f84ab43"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-replay-final-vPedYp",
+      "allocated_bytes": 90112,
+      "entry_count": 45,
+      "metadata_sha256": "0e57a4acc7c40a4f2073213b2bc0dae1b20fa1d3f4a78b4abefaaea93c52fef2"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-same-point-project.H9KQQl",
+      "allocated_bytes": 1810432,
+      "entry_count": 583,
+      "metadata_sha256": "78e187251fedc81218aac9731c5d46e6690506db4193127d61ab379c6b19cf7e"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-same-point.x5vHuA",
+      "allocated_bytes": 1810432,
+      "entry_count": 583,
+      "metadata_sha256": "f4e78b19c0b88e4418e8d478effbcf0f78c2fc80b7a9d7f4a820224bb9f89f41"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-worker-final-xdQM5g",
+      "allocated_bytes": 16384,
+      "entry_count": 19,
+      "metadata_sha256": "4e14b7927753fe7dc337ea8df687b53028da31e19af9dc1677e8f1d10b0cae72"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v32-worker-j6T8WM",
+      "allocated_bytes": 8192,
+      "entry_count": 14,
+      "metadata_sha256": "3a337d5b29345718486636311c36c0fcb72d1c9901dfd9403afa50e2621bd341"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-activation-Lyg35G",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "8b71fc511857ac567f42841ded72feade5f9b22a3903c8a8900f67fce1968adf"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-activation-X1LsnM",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "bc8903ce9a3f0514baa88fe32fe21aa7f1f21d97f804044a317b116a8f00e3a2"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-combined-rk4wJc",
+      "allocated_bytes": 5554176,
+      "entry_count": 548,
+      "metadata_sha256": "39b8e01bb3b33626897053c978c3c54b819cc7452931ffad4c8b7d4d633ac877"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-controller-duTrgV",
+      "allocated_bytes": 5255168,
+      "entry_count": 452,
+      "metadata_sha256": "1792878b8dbfa26c9873b76170abb0a81234500659cb74f6bbc03a8f9ccb2d41"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-controller-final-S1veOF",
+      "allocated_bytes": 5554176,
+      "entry_count": 548,
+      "metadata_sha256": "8b55fcc6ab64bd74fe5ac518f60a501c750ff656e48932808022ff2a62c767e0"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-integration-KUv2XZ",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "300d362cdca0c4afb0524f66b873ce95b913ad77af15943c76b0a88cce0e15d4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-integration-Nrheyv",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "c648912907d859a3e8d9bf2e7af301196313f48f3737f36bcc201758f5ca0ece"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v33-worker-k0SToi",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "47723779be0a29fb7aed8be12cc53e510125c64d78203f1fb7f0f666c1e165f4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-controller-EbLolS",
+      "allocated_bytes": 6959104,
+      "entry_count": 572,
+      "metadata_sha256": "81fa8a4d091fc9d0bc6b47e2c304ff7f3c28f2df87fe1731b72a375dc7888a9b"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-controller-final-narXul",
+      "allocated_bytes": 6959104,
+      "entry_count": 572,
+      "metadata_sha256": "91ecab6a74d0dd1e5d00f31e994e2dbb0b881b825a153f7acde347c53af8a53f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-final-dDxlp1",
+      "allocated_bytes": 7286784,
+      "entry_count": 766,
+      "metadata_sha256": "adab9a55cfccd008d9b073460b765d1a4bd01bd03e0bd741ad940e2a7f028e04"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-integration-9Vg6Zc",
+      "allocated_bytes": 327680,
+      "entry_count": 195,
+      "metadata_sha256": "ce1b62520cdd40956c5681d2d3064f298db3782c5d806c1d95f540d4a71345a0"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-tail-final-MIrnCE",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "d19b4afba3a0bfdb1fee2564edb65c46e07ee21389798fe20642f190b2db8b3b"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-tail-lifetimes-BXqTAU",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "f9b52fc75006106324102ddbeedb22776d5c23ee6d312ac8f9b81e8aca33cea1"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-tail-memory-9yXFYW",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "3072d4c1cb4111897b2a5a5389b021781a02f5daeb9f0654b1f6a43ea6229c09"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-worker-6YXwSY",
+      "allocated_bytes": 327680,
+      "entry_count": 195,
+      "metadata_sha256": "167a9a24a38b249e83e0361030f3939fad484e20a2e6b0990c0e31f2bc0ad025"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v34-worker-Qbrtgy",
+      "allocated_bytes": 0,
+      "entry_count": 1,
+      "metadata_sha256": "160557fa07b3fe018c581406d161c06997240d35ff8b783d4c14ac0aab210494"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-controller-RiFLXv",
+      "allocated_bytes": 102400,
+      "entry_count": 95,
+      "metadata_sha256": "af491a855776baf42c3d391c4eeb51a64664bca9b9ef52e0bfbd48b53ce26574"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-controller-bbEztz",
+      "allocated_bytes": 86016,
+      "entry_count": 79,
+      "metadata_sha256": "f9bdb520dcbc0da8401f0fe3d047bd8873cc496f0d5091e838c76a62aadce2bc"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-controller-cS8wO2",
+      "allocated_bytes": 139264,
+      "entry_count": 118,
+      "metadata_sha256": "26d4573688859560b75aa76482d1f5d45f1c1fd536bf7688dbe7d38b35c179e0"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-exit-race-uTwl40",
+      "allocated_bytes": 147456,
+      "entry_count": 132,
+      "metadata_sha256": "4ea9b932808f3ebada1e38b2ec3f114d91aa682c102cc766010f38ab71b6d2d4"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-final-JIBikX",
+      "allocated_bytes": 802816,
+      "entry_count": 421,
+      "metadata_sha256": "7bb2a343226f14c860d63f73cc0f9e9c14f642261bd5aeaf13b54f5ba39e994e"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-integration-MIcbP0",
+      "allocated_bytes": 663552,
+      "entry_count": 304,
+      "metadata_sha256": "090bc1e1d3f7248d770b7a4c3859a2c573ff905ba6ea6e60eb2b42903d9cb124"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-recovery-6S7raP",
+      "allocated_bytes": 5566464,
+      "entry_count": 2970,
+      "metadata_sha256": "68855a99ef76b4ef4798d62b1e625ef1e698a4aa7351a6d478a5b01fe071f843"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-recovery-cache-NPMfll",
+      "allocated_bytes": 3162112,
+      "entry_count": 1662,
+      "metadata_sha256": "602a53fc333dc533715e772fa47044ae38ffedcf2df1cfbfbc776fce8c98cd12"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-recovery-cache-rfqGyE",
+      "allocated_bytes": 2260992,
+      "entry_count": 1196,
+      "metadata_sha256": "cdb4a765e7f32b71bdbaa0cfcee5f1d328fcc56ca491261a4fb9e4123273a2fb"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-recovery-controller-cZXXRc",
+      "allocated_bytes": 1548288,
+      "entry_count": 820,
+      "metadata_sha256": "925c1eae686d716ed91112ebd97404531d9ceff4ae493784585b39c7682387cf"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-recovery-worker-lTPi0m",
+      "allocated_bytes": 53248,
+      "entry_count": 56,
+      "metadata_sha256": "8071e759220a8cd699d394bc4dd84af43e25f7eb1b00bcbb030dc28fdc654f21"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-task-cache-CYYPZL",
+      "allocated_bytes": 589824,
+      "entry_count": 241,
+      "metadata_sha256": "c0768f6dabf1009b49abb0f60af05f17da8404b91d75dcdf380d4a27c1c671e9"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-task-cache-TShuAO",
+      "allocated_bytes": 589824,
+      "entry_count": 241,
+      "metadata_sha256": "23abd8cd4f92e0c87648fb0344480725275522904adc2a24b2022d1aba14e1f1"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-task-cache-X9UnEk",
+      "allocated_bytes": 589824,
+      "entry_count": 241,
+      "metadata_sha256": "ba501ce7e8a41e39baa5303922ecc9b33f169112c98a65d998b9dfd98ebc0b61"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-worker-MTzgYe",
+      "allocated_bytes": 53248,
+      "entry_count": 47,
+      "metadata_sha256": "f12d67da2a2206859cd15e98751acf176e1f19aa6ba01158415a78d20b3554ff"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-worker-final-b1tw5l",
+      "allocated_bytes": 53248,
+      "entry_count": 47,
+      "metadata_sha256": "d24a05234ed11f2ebd326c3242d06c05035be0a08498463b936d64f281f29494"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v35-worker-point-gate-gk1E5q",
+      "allocated_bytes": 73728,
+      "entry_count": 64,
+      "metadata_sha256": "f6c1bf4687a8030c17725068a02b132a2212ffad81c5a5c63c7695349eb7f50f"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-cache-6Z1RF8",
+      "allocated_bytes": 44167168,
+      "entry_count": 13585,
+      "metadata_sha256": "38279db31ea601d94408eb7d63a0ae88a1b1487c847c96f33c8340f7a2c53903"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-controller-7HVPRV",
+      "allocated_bytes": 6098944,
+      "entry_count": 1918,
+      "metadata_sha256": "c8746e5ae8b21972a503bf142d09da5be64a40edf6f12361a005f251e7b281ff"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-focused-P1aHJf",
+      "allocated_bytes": 51703808,
+      "entry_count": 16148,
+      "metadata_sha256": "4fe617c9361bda05116ad021b0eb567773b2770d5e15dc9dd856c85ea8ad8a56"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-lifecycle-0KEViM",
+      "allocated_bytes": 712704,
+      "entry_count": 325,
+      "metadata_sha256": "dbeed31db9ad2fa92c72d1eb27780a18a1e5b4d5efd655f015280556179e2498"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-lifecycle-bd9Zpe",
+      "allocated_bytes": 659456,
+      "entry_count": 289,
+      "metadata_sha256": "bbc2930367ad95370246b06908bc3c605e83724a5564d870c9ff352f94aff89d"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-worker-K3vEgO",
+      "allocated_bytes": 86016,
+      "entry_count": 91,
+      "metadata_sha256": "9dacfb7e4b49caabc887a3c5cba92ae1c8152c131107a7ca82aa945ca02bf8c8"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v36-worker-verification-nQ8MNR",
+      "allocated_bytes": 6807552,
+      "entry_count": 2240,
+      "metadata_sha256": "3d61472d814b689937cec1843cee49835d05534671dd5d8190e62078d485e395"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-context-cache-YdmYC4",
+      "allocated_bytes": 790528,
+      "entry_count": 295,
+      "metadata_sha256": "4996a6a53bc4edbde89d9e13e0daf89821f1e09933b6d0877aaf3bc27309b9a0"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-context-cache-eM5E1t",
+      "allocated_bytes": 835584,
+      "entry_count": 311,
+      "metadata_sha256": "f3bdf4b10b7f1b994320c1d65d217cbc6453ad8255e3747692680b59d561ac05"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-controller-BHUuLK",
+      "allocated_bytes": 77824,
+      "entry_count": 93,
+      "metadata_sha256": "c6381f6b8983721f7fd987c95f5697f37e50c1f09387a1d9ed50157673c77c4d"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-controller-Y1T3pM",
+      "allocated_bytes": 77824,
+      "entry_count": 93,
+      "metadata_sha256": "63929aa838775e8a4141434bf47601bcf0199c3083875d356a3152c06b3792da"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-final-targeted-oVnWrx",
+      "allocated_bytes": 1097728,
+      "entry_count": 546,
+      "metadata_sha256": "e045de124682e2354201cd28e973be37fbd7e4740abc004bbff037eaf4010d20"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-integrated-cpu-1mLdac",
+      "allocated_bytes": 835584,
+      "entry_count": 337,
+      "metadata_sha256": "8a3f930be7b480fe04c2c7f9a7b2801e1c249955ff8c7510796c6a6f4b55c92e"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-root-tests-OlfcYb",
+      "allocated_bytes": 4096,
+      "entry_count": 27,
+      "metadata_sha256": "ca25fb4dae87b0362b2996fa80142459ae071e2c13753ae19848d5abbdd38e18"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-training-6fEtVP",
+      "allocated_bytes": 4096,
+      "entry_count": 27,
+      "metadata_sha256": "e814c260f0eb625abbcac4e4070a6dfb185ef82c80ce0be38afcd87fd2364dd1"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-training-final-5wdGXn",
+      "allocated_bytes": 4096,
+      "entry_count": 27,
+      "metadata_sha256": "646b40b9190640ff02a6e408a56c2844ad8a20d0a21602f4d99abac4a56f3866"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-worker-XXUX98",
+      "allocated_bytes": 188416,
+      "entry_count": 118,
+      "metadata_sha256": "91aae24c1c0548fc07ceaaef64362cc7b8e7eeb2d027c1b5eb66fd40d25754cc"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/test_tmp/v37-worker-check-gn409W",
+      "allocated_bytes": 188416,
+      "entry_count": 118,
+      "metadata_sha256": "24fc73eb45181552c0c7c0a261c5cc73ca664522b9421b0976d1b6d9f92866d7"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/.ruff_cache",
+      "allocated_bytes": 8192,
+      "entry_count": 5,
+      "metadata_sha256": "e944248542d721b7a9e1be57bc9e66e12531e6e47dc5e5f16afd0a0312425a67"
+    }
+  ],
+  "removed_source_allocated_bytes": 342630400,
+  "archive": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261010_test_tmp_01/test_fixtures.tar.gz",
+  "archive_sha256": "2e24bd434076f5505d0f365eb2b992309c314e7e16f1b31f4741977e94542279",
+  "archive_retained": true,
+  "evidence_and_backup_allocated_bytes": 38436864,
+  "estimated_net_reclaimed_bytes": 304193536,
+  "free_bytes_before": 386951012352,
+  "free_bytes_after": 387295510528,
+  "disk_free_delta_not_attributed_only_to_cleanup": true,
+  "protected_files_unchanged": true,
+  "final_process_guard": {
+    "inspected_same_account_processes": 25,
+    "hits": [],
+    "inaccessible_same_account_processes": [
+      {
+        "pid": 6878,
+        "comm": "systemd"
+      },
+      {
+        "pid": 6879,
+        "comm": "(sd-pam)"
+      },
+      {
+        "pid": 559717,
+        "comm": "sshd"
+      },
+      {
+        "pid": 560270,
+        "comm": "sshd"
+      }
+    ],
+    "other_accounts_not_claimed_audited": true
+  },
+  "runtime_after": {
+    "phase": "RUNNING",
+    "queue_at": "2026-10-10T13:15:01.874491+00:00",
+    "processes": [
+      {
+        "pid": 1662074,
+        "expected_birth": "404084608",
+        "observed_birth": "404084608"
+      },
+      {
+        "pid": 1868092,
+        "expected_birth": "404873110",
+        "observed_birth": "404873110"
+      }
+    ]
+  },
+  "no_process_signals": true,
+  "no_GPU_or_API_calls": true,
+  "backup_fixture_payload_not_for_git_commit": true,
+  "restore_requires_review_then_extraction_to_original_paths_without_overwriting_new_files": true,
+  "id": "c330f42f875e96e112fbd96a42885a1dfa6f6aae47d9cb9690bd2bc0ee7bad06"
+}

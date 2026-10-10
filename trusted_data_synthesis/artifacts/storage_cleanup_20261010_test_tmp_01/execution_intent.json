@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-10T13:14:30.828925+00:00",
+  "plan_id": "24449ff59da7642f3036bddd85a61d3b5b596efe5c410737406fc6313df77c18",
+  "process_guard": {
+    "inspected_same_account_processes": 25,
+    "hits": [],
+    "inaccessible_same_account_processes": [
+      {
+        "pid": 6878,
+        "comm": "systemd"
+      },
+      {
+        "pid": 6879,
+        "comm": "(sd-pam)"
+      },
+      {
+        "pid": 559717,
+        "comm": "sshd"
+      },
+      {
+        "pid": 560270,
+        "comm": "sshd"
+      }
+    ],
+    "other_accounts_not_claimed_audited": true
+  },
+  "runtime": {
+    "phase": "RUNNING",
+    "queue_at": "2026-10-10T13:14:21.116852+00:00",
+    "processes": [
+      {
+        "pid": 1662074,
+        "expected_birth": "404084608",
+        "observed_birth": "404084608"
+      },
+      {
+        "pid": 1868092,
+        "expected_birth": "404873110",
+        "observed_birth": "404873110"
+      }
+    ]
+  },
+  "free_bytes": 386951012352,
+  "id": "0a855f5b060616dfb39306db6a83beb39f6d68b940cc9fcf42e4a114b0028da9"
+}

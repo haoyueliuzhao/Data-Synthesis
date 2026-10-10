@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-10T13:14:54.501694+00:00",
+  "plan_id": "24449ff59da7642f3036bddd85a61d3b5b596efe5c410737406fc6313df77c18",
+  "archive": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261010_test_tmp_01/test_fixtures.tar.gz",
+  "archive_sha256": "2e24bd434076f5505d0f365eb2b992309c314e7e16f1b31f4741977e94542279",
+  "archive_bytes": 35648868,
+  "verified_members": 97367,
+  "all_regular_files_content_verified": true,
+  "member_manifest_sha256": "de11250e4b12f12487a2fc2b40e3b1d417244688b343115d949a703679ffbd0e",
+  "id": "8280dc208517e248554347c458f471d1d7b7369855172a2ada008018dbcc462e"
+}
