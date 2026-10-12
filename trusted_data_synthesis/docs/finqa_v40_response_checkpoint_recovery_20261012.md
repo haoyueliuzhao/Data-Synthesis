@@ -107,3 +107,15 @@ Full389实际断点的只读预检已通过。父五个成功阶段均有真实e
 合并默认CPU测试149项通过、1项按需真实父目录检查跳过，用时15.39秒；该真实只读检查此前已单独通过。交叉审阅随后发现并修正先导train结果的一个字段名错配：控制器现读取worker真实输出的 `execution_boundary_policy_protocol_id`。新增跨组件回归实际执行worker、原trainer和控制器验收，修正后controller与worker定向42项测试通过，耗时0.50秒。两组包含重复覆盖，不能把运行数简单相加为独立测试数。Ruff检查和格式整理通过。
 
 这些验证没有进行真实GPU训练、反馈采样或API调用。实际冻结、启动和恢复验收仍须另有记录，不能用CPU测试通过替代。
+
+## 实际冻结和启动状态
+
+源提交 `e0e964e286c3503001a0b0001895a7a73affc6c4` 已推送。23:32:47，独立 `recovery_02/` 协议登记成功，内容ID为 `8732c9297d5a08cda1cb3990622cc8ee1d0868714c4aaf4de2c252e4a0b97160`。实施目录冻结43个文件，其中8个为V40新增文件，35个为原V39实施包的未改字节，包含原V38文件；旧协议与停止记录未改。
+
+23:34:46的[冻结CPU依赖核验](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/cpu_validation/record.json)通过，内容ID为 `38cc7f190716d7ddea77297c64b88df072c677dab8a0d7e144fee59e47894d10`。实际导入的依赖来自新冻结目录；重新计算的R3后端版本及源文件绑定与原response261记录一致。CUDA未初始化、未构造模型、未做真实response forward或API调用。
+
+新控制器于23:40:15.985写入[实际启动记录](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/launch_01/record.json)，PID3447623、birth `424400891`。从恢复授权登记到此次run的整段墙钟为452.598860秒，包含CPU初始化、验证及操作间隔，保守计费后继承全局等待为28541秒；该数值不是重新发放的预算。
+
+23:43:23的[启动观察](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/launch_observation_01/record.json)确认控制器存活，状态为 `WAITING_FOR_REGISTERED_RESOURCES`，已派worker为0，八卡中满足GPU准入的设备为0。Full389首点验收未完成，C-only251补片的4小时窗口也尚未起算。此时只是恢复调度已启动，不是GPU梯度回放已经接续，更不是全九模型完成。
+
+后续状态以 `recovery_02/queue/status.json`、实际stage launch与 `replay_R3/inherited_prefix/record.json` 为准；首点生产通过必须另见 `pilot_acceptance/record.json` 及真实exit 0。资源等待不延长Full389原回放截止，也不允许第二次启动控制器、重采样或从头重放已继承261条。

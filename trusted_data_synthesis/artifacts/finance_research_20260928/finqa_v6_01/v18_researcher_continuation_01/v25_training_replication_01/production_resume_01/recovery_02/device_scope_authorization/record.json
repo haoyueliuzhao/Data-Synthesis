@@ -1,0 +1,55 @@
+{
+  "schema": "v40_explicit_whole_host_device_scope.v1",
+  "at": "2026-10-12T15:32:43.387104+00:00",
+  "user_instruction": "扩大范围，在满足显存要求的GPU上运行即可",
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "gpu_uuids": {
+    "0": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+    "1": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+    "2": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+    "3": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+    "4": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "6": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+  },
+  "cpu_affinity": {
+    "0": "0-37,76-113",
+    "1": "0-37,76-113",
+    "2": "0-37,76-113",
+    "3": "0-37,76-113",
+    "4": "38-75,114-151",
+    "5": "38-75,114-151",
+    "6": "38-75,114-151",
+    "7": "38-75,114-151"
+  },
+  "dispatch_priority": [
+    3,
+    4,
+    5,
+    7,
+    0,
+    1,
+    2,
+    6
+  ],
+  "max_total_gpu_workers": 4,
+  "max_workers_per_gpu": 1,
+  "minimum_idle_free_mib": 73728,
+  "fresh_idle_inventory_and_exclusive_current_uuid_lease_required": true,
+  "old_gpu6_handoff_is_current_execution_authority": false,
+  "existing_other_project_processes_may_be_interfered_with": false,
+  "mathematical_or_feedback_or_optimizer_dose_expanded": false,
+  "original_outer_and_global_wait_budgets_reset": false,
+  "gpu6_needed_only_after_other_eligible_priorities": true,
+  "id": "c8e125b32f535abb16e0110ccaa436ce06b58180c8585a95a5738759a89627d9"
+}

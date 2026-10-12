@@ -1,0 +1,32 @@
+{
+  "schema": "v40_explicit_bounded_partial_class_completion.v1",
+  "at": "2026-10-12T15:32:43.387104+00:00",
+  "user_instruction": "授权该有界补齐并继续原矩阵",
+  "scope": {
+    "seed": 251,
+    "arm": "C-only",
+    "step": 1192,
+    "inherited_shards": [
+      "shard02"
+    ],
+    "remaining_shards": [
+      "shard00",
+      "shard01",
+      "shard03"
+    ],
+    "inherited_task_count": 186,
+    "remaining_task_count": 558,
+    "window_seconds": 14400,
+    "starts_at_first_remaining_shard_dispatch": true,
+    "shared_deadline_not_per_shard": true,
+    "only_class_phase_deadline_exception": true,
+    "original_outer_and_global_wait_budgets_reset": false,
+    "inherited_tasks_recomputed": false
+  },
+  "original_parent_records_unchanged": true,
+  "original_class_deadline_not_rewritten": true,
+  "class_window_is_explicit_new_authorization": true,
+  "additional_optimizer_or_feedback_budget": 0,
+  "automatic_retry": false,
+  "id": "af5447eff7956e8ca4733a4217f66c8b8daccd276dfc53259c71bba77770e772"
+}

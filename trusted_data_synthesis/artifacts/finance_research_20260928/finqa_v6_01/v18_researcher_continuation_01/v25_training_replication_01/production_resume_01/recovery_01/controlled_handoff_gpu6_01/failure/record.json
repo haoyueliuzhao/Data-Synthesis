@@ -1,0 +1,14 @@
+{
+  "schema": "v39_natural_drain_handoff.v1.failure",
+  "at": "2026-10-12T13:52:17.732107+00:00",
+  "plan_id": "46ef538249a9ae1947447a45fb36c259d2d1a110194b7249f5a21a704c2beb39",
+  "status": "STOPPED_NO_MIGRATION",
+  "error_type": "HandoffError",
+  "error": "observed stage recorded failure",
+  "controller_signalled": false,
+  "workers_signalled": false,
+  "new_experiment_started_by_handoff": false,
+  "continuation_callback_invoked": false,
+  "automatic_retry": false,
+  "id": "f2525f1f7463dbb064c34f3f6fd72a76405053ccd53d37febfdf95c1c0580d2f"
+}

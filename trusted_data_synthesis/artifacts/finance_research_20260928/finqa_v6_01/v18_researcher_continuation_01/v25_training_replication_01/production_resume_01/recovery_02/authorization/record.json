@@ -1,0 +1,85 @@
+{
+  "schema": "v40_explicit_failed_episode_recovery_authority.v1",
+  "at": "2026-10-12T15:32:43.387104+00:00",
+  "user_instruction": "修复问题继续实验",
+  "source_commit": "e0e964e286c3503001a0b0001895a7a73affc6c4",
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/failure/record.json",
+    "sha256": "b67e90287066373d3d5876489ddda035557bf380c2e6a90eaed2c10f15a5cff6",
+    "id": "d3ab57ad9893f7247898426ff30e27955da9d94b895678776c2180711157173f"
+  },
+  "failed_handoff": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/controlled_handoff_gpu6_01/failure/record.json",
+    "sha256": "26fe24b1a79678d116330e236949180c974d7dcfc52863a14da06adb2361b1ec",
+    "id": "f2525f1f7463dbb064c34f3f6fd72a76405053ccd53d37febfdf95c1c0580d2f"
+  },
+  "resource_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/device_scope_authorization/record.json",
+    "sha256": "dd40812cc8ebdce308f46a7d64bee13d4f3c25d3d9b8e1e1cdf9a5ffa95f862f",
+    "id": "c8e125b32f535abb16e0110ccaa436ce06b58180c8585a95a5738759a89627d9"
+  },
+  "historical_gpu6_resource_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/resource_authorization_gpu6_20261012_01/record.json",
+    "sha256": "07f51ddf7652392b2f558d8af82f2b93c5d3844fbcc8bd1e36b37409c39fd09a",
+    "id": "09c3fe5c70147b52592d2d0b4b16d9eff66c8ea8e3e2264be24b7816c8d92efc"
+  },
+  "recovery_pilot": {
+    "seed": 389,
+    "arm": "Full",
+    "step": 298,
+    "training_stop_step": 299,
+    "inherited_response_count": 261,
+    "total_response_count": 447,
+    "actual_new_response_calls": 186,
+    "denominator": 700,
+    "new_sampling_calls": 0,
+    "API_calls": 0,
+    "outer_commits": 1,
+    "actual_optimizer_steps": 1,
+    "worker_actual_zero_exit_required": true,
+    "remaining_matrix_before_acceptance": false
+  },
+  "partial_class_recovery": {
+    "schema": "v40_explicit_C251_1192_class_completion_authorization.v1",
+    "seed": 251,
+    "arm": "C-only",
+    "step": 1192,
+    "inherited_shards": [
+      "shard02"
+    ],
+    "remaining_shards": [
+      "shard00",
+      "shard01",
+      "shard03"
+    ],
+    "inherited_task_count": 186,
+    "remaining_task_count": 558,
+    "window_seconds": 14400,
+    "deadline_rule": "first_remaining_shard_dispatch_plus_14400_seconds",
+    "original_phase_deadline_extended": true,
+    "outer_compute_budget_reset": false,
+    "global_resource_wait_budget_reset": false,
+    "completed_tasks_recomputed": false,
+    "parent_cache_modified": false,
+    "automatic_retry": false
+  },
+  "allowed_gpu_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_total_gpu_workers": 4,
+  "original_budgets_reset": false,
+  "outer_and_global_budgets_reset": false,
+  "only_explicitly_authorized_class_deadline_extended": true,
+  "no_claim_of_fixing_unknown_signal_sender": true,
+  "old_controllers_restarted": false,
+  "automatic_retry": false,
+  "clean_handoff_claimed": false,
+  "id": "87ab50ee41e09016172654415d4710e2cf5523d632ced87df862e8968fa08348"
+}

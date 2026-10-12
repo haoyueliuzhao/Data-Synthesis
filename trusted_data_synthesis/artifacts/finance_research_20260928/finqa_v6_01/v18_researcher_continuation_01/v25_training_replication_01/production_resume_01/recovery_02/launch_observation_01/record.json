@@ -1,0 +1,136 @@
+{
+  "schema": "v40_actual_launch_and_resource_wait_observation.v1",
+  "at": "2026-10-12T15:43:23.353987+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/protocol/record.json",
+    "sha256": "cb5c5d41662ed8a3ed0f70cdbe0ad497c2470e35a4cca5980cb413e2b2ea4e04",
+    "id": "8732c9297d5a08cda1cb3990622cc8ee1d0868714c4aaf4de2c252e4a0b97160"
+  },
+  "launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/launch_01/record.json",
+    "sha256": "90ea12297396d2e10461dbdedaaba9046f378edc2b3e3dab99e973b52360406b",
+    "id": "978d07435e301246aec553d9d500091908e894005f6aedcf0334b4036415d97a"
+  },
+  "operator_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/operator_launch_01/record.json",
+    "sha256": "df2ece7cf2add803c2bdcf98baa5a1e95a80958e76e03d77fd2208decb87954a",
+    "id": "01e16e464166117b95cc144fe2ac3ab51d505ddf1083a2327d5d64163df4b0ce"
+  },
+  "CPU_validation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/cpu_validation/record.json",
+    "sha256": "ea38f981f9019ee92ea03f2e6b98b1a9366dcc6d643fc99f2107f71df8efcb3f",
+    "id": "38cc7f190716d7ddea77297c64b88df072c677dab8a0d7e144fee59e47894d10"
+  },
+  "controller_identity_live": true,
+  "queue_snapshot": {
+    "at": "2026-10-12T15:43:19.483440+00:00",
+    "phase": "WAITING_FOR_REGISTERED_RESOURCES",
+    "protocol_id": "8732c9297d5a08cda1cb3990622cc8ee1d0868714c4aaf4de2c252e4a0b97160",
+    "active_children": [],
+    "pilot_accepted": false,
+    "accepted_new_optimizer_updates": 1667,
+    "global_external_resource_wait_seconds": 28724.33255122602,
+    "accepted_new_outer_updates": 4,
+    "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+    "completed_training_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "completed_evaluation_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "original_B_resume_authorized": true,
+    "pre_cuda_waiters": [],
+    "inherited_resource_wait_seconds": 28541,
+    "original_time_budgets_reset": false,
+    "stopped_admission_observation_errors": []
+  },
+  "gpu_inventory": [
+    {
+      "index": 0,
+      "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "free_mib": 66845,
+      "external_process_count": 1
+    },
+    {
+      "index": 1,
+      "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+      "free_mib": 65843,
+      "external_process_count": 1
+    },
+    {
+      "index": 2,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+      "free_mib": 67415,
+      "external_process_count": 1
+    },
+    {
+      "index": 3,
+      "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+      "free_mib": 48153,
+      "external_process_count": 1
+    },
+    {
+      "index": 4,
+      "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "free_mib": 48153,
+      "external_process_count": 1
+    },
+    {
+      "index": 5,
+      "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+      "free_mib": 38017,
+      "external_process_count": 1
+    },
+    {
+      "index": 6,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+      "free_mib": 65841,
+      "external_process_count": 1
+    },
+    {
+      "index": 7,
+      "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "free_mib": 38015,
+      "external_process_count": 1
+    }
+  ],
+  "GPU_gate_eligible_indices": [],
+  "dispatched_workers_observed": 0,
+  "initial_restored_responses_not_yet_claimed": true,
+  "pilot_acceptance_observed": false,
+  "class_completion_window_started": false,
+  "old_controller_or_handoff_restarted": false,
+  "other_project_processes_signalled": false,
+  "actual_GPURun_or_matrix_completion_claimed": false,
+  "id": "6055bcb844ad86fe93cadf4ea32e6e5128eff729c6ff84a68ed94e76648b6195"
+}
