@@ -1,0 +1,187 @@
+{
+  "schema": "v38_temporary_extra_gpu_authorization_not_activated.v1",
+  "at": "2026-10-12T06:36:50.510471+00:00",
+  "user_instruction": "可以临时占用GPU6",
+  "status": "AUTHORIZED_NOT_ACTIVATED",
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/protocol/record.json",
+    "sha256": "366095e105c8683d833a8019911656b3bbe8c5d213bd3b223f3bfef5608717e7",
+    "id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462"
+  },
+  "controller_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/launch_01/record.json",
+    "sha256": "010a50a5293c3dba57a686b42128ffeeb3e8fca0f60a93a142ee069c704fa73b",
+    "id": "8dfc76d404a0f1672bc82e18d726465e8b36b93f53105ed67f3c61fc8ab18274"
+  },
+  "queue_snapshot": {
+    "at": "2026-10-12T06:36:48.207792+00:00",
+    "phase": "RUNNING",
+    "protocol_id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462",
+    "active_children": [
+      {
+        "context_id": "c7a2d9ad8694254cd0ea8d34426b73f7be0fe3f0e6b19251392c40ea6cbbde79",
+        "stage": "train",
+        "pid": 2538773,
+        "birth": "420883564",
+        "gpu_index": 5,
+        "gpu_uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "bd5a193066c197262c3b89e63b24cd59edb450f271cf983ceb65461bf825c3bf",
+        "stage": "virtual_point",
+        "pid": 2451860,
+        "birth": "420421111",
+        "gpu_index": 7,
+        "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "489b3bdc8ed262fbab69a1a6d934a044e6d8049ed822ff3fd4caeb270437c9e7",
+        "stage": "shard03",
+        "pid": 2484834,
+        "birth": "420596803",
+        "gpu_index": 4,
+        "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "pilot_accepted": true,
+    "accepted_new_optimizer_updates": 1369,
+    "global_external_resource_wait_seconds": 4531.917209126055,
+    "accepted_new_outer_updates": 3,
+    "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+    "completed_training_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "completed_evaluation_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "original_B_resume_authorized": true,
+    "pre_cuda_waiters": [],
+    "inherited_resource_wait_seconds": 143,
+    "original_time_budgets_reset": false,
+    "stopped_admission_observation_errors": []
+  },
+  "gpu6_observation": {
+    "index": 6,
+    "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+    "total_mib": 81920,
+    "used_mib": 0,
+    "free_mib": 81154,
+    "processes": []
+  },
+  "scope": {
+    "temporary": true,
+    "only_current_remaining_matrix": true,
+    "additional_physical_gpu": 6,
+    "additional_gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+    "original_allowed_gpu_indices": [
+      3,
+      4,
+      5,
+      7
+    ],
+    "resource_permission_gpu_indices": [
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "active_frozen_protocol_gpu_indices": [
+      3,
+      4,
+      5,
+      7
+    ],
+    "max_total_gpu_workers": 4,
+    "max_workers_per_gpu": 1,
+    "CPU_initialization_and_draining_count_as_workers": true,
+    "excluded_gpu_indices": [
+      0,
+      1,
+      2
+    ],
+    "numeric_expiry_specified": false,
+    "recheck_idle_before_any_dispatch": true,
+    "safe_boundary_release_on_user_request": true,
+    "scientific_dose_or_time_budgets_extended": false
+  },
+  "activation": {
+    "GPU6_worker_dispatched": false,
+    "old_controller_stopped": false,
+    "existing_workers_signalled": false,
+    "frozen_protocol_modified": false,
+    "frozen_sources_modified": false,
+    "standalone_worker_launched": false,
+    "reason": "Frozen V38 has no hot GPU-scope reload or drain-only handoff; current first_sampling worker must not be interrupted by a resource-only permission",
+    "additional_decision_needed": "Explicit controlled scheduler migration scope, preserving sealed feedback, actual states, original remaining budgets and one total worker pool"
+  },
+  "source_evidence": [
+    {
+      "source": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v37_controller.py",
+        "sha256": "ee9316a2293927586a565862216a4128be6737155335cfbb79f17b0592759784"
+      },
+      "finding": "Fixed GPU lease pool; signals stop all workers; no natural-drain admission control"
+    },
+    {
+      "source": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v38_controller.py",
+        "sha256": "4086d427257f0ac1af2b3bfce3def6a67031d783edc6dec3c4c32765f6f5b240"
+      },
+      "finding": "Exact frozen protocol and implementation checks; first-point-only inheritance"
+    },
+    {
+      "source": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v38_admission.py",
+        "sha256": "dbd4540a615f98d1a6a10ada16e9c38e833e543d36df88dc331b4ec05e403f91"
+      },
+      "finding": "Fixed pre-CUDA GPU whitelist"
+    },
+    {
+      "source": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v38_worker.py",
+        "sha256": "43c7157ad988808202c8fe8450464d0aa0078a1edb3719ed4e739c9525634c39"
+      },
+      "finding": "Fixed worker GPU whitelist and no automatic retry"
+    },
+    {
+      "source": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/implementation/finqa_v37_worker.py",
+        "sha256": "51d76f3134c97550d53029764ca6c343ec04095357f095e88af3a3899be524f0"
+      },
+      "finding": "First-sampling refuses existing or partial feedback roots"
+    }
+  ],
+  "observation_and_registration_only": true,
+  "no_model_training_API_or_scoring_calls": true,
+  "id": "09c3fe5c70147b52592d2d0b4b16d9eff66c8ea8e3e2264be24b7816c8d92efc"
+}
