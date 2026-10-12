@@ -6,7 +6,7 @@
 
 用户先明确“可以临时占用GPU6”，随后对“让当前阶段完整封存后，换用支持GPU6的调度器，保留原状态、反馈和剩余预算”的受控切换回复“同意”。V39只扩展本轮剩余矩阵的可用设备，不增加实验、重试、采样、回放或优化预算。
 
-新代码已通过115项CPU/mock测试及Ruff。此处的测试结论不代表交接已经完成，也不代表GPU6已派发。实际状态分别由下列独立目录的记录确认：
+新代码已通过115项CPU/mock测试及Ruff，并完成冻结依赖的真实CPU导入检查。交接协调器于15:22:22启动；截至15:27:29，状态为`DRAINING_NATURALLY`，原三个worker仍在自然收口，旧控制器未暂停，新科学协议尚未初始化，GPU6尚未派发。实际状态分别由下列独立目录的记录确认：
 
 - 原V38：`production_resume_01/recovery_01/`。
 - 自然排空与旧控制器收口：`recovery_01/controlled_handoff_gpu6_01/`。
@@ -51,6 +51,8 @@ V38的租约池、worker、CUDA前准入和结果验收均有固定四卡校验�
 
 交接进程不是旧控制器的父进程，因此只记录已观察其真实退出，不伪造可获取的退出码。各科学worker仍必须有原控制器记录的真实exit 0。交接失败、超时、身份不符、资源预算耗尽或出现未封存阶段时，不启动新科学进程，也不自动重试。
 
+停止旧控制器前的交接失败会释放屏障；旧实验若仍正常运行，继续其原授权流程。旧控制器已经安全暂停后，如果新初始化或计费门未通过，则保留暂停状态及证据，不裸重启或自动重试。
+
 ## 可继承与不可继承的状态
 
 已完成训练以原实际checkpoint为准；已完成终点生成只读复用封存回答，不读取准确率，也不重新生成。原首点验收以引用方式继承，不再执行一次试运行。
@@ -89,3 +91,21 @@ V37登记的原剩余5810次optimizer更新、15次outer、8029条终点回答�
 115项CPU/mock联合测试通过，用时1.60秒，Ruff通过。覆盖自然排空、只有新鲜空队列才允许控制器信号、真实退出、禁止部分阶段切换、GPU6准入与其余禁卡、总worker上限4、预算继承、初始化耗尽时不启动、原反馈和父阶段只读、原评价准入适配与评分屏障。测试没有运行GPU或API，也不代表新增吞吐或准确率结果。
 
 后续实际登记、租约取得、父暂停及新派发状态需以对应不可变记录为准；本说明不把交接启动直接表述为GPU6已经投入计算。
+
+## 实际登记与等待收口
+
+源提交`3181d8b55c`已推送。新实施目录冻结了6个V39文件及29个原字节父实施文件；旧V38实施与协议保持原样。15:20:43的[冻结CPU依赖检查](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/cpu_validation/record.json)通过，CUDA未初始化，也没有模型构造、API或评分调用。
+
+[交接计划](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/controlled_handoff_gpu6_01/plan/record.json)于15:19:41封存，内容ID为`46ef538249a9ae1947447a45fb36c259d2d1a110194b7249f5a21a704c2beb39`。按登记时实际阶段期限与原等待余额计算，交接绝对上限为**10月13日02:50:19.905北京时间**；该上限不是新发放的训练时长，也不是预计完成时间。
+
+唯一协调进程于15:22:22.509[实际派发](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/supervisor_launch/record.json)，PID2647387、birth为`421413768`。协调进程与旧控制器不同；它目前只执行CPU租约交接，未另起科学worker池。
+
+15:27:29.788的[交接观察](../artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/handoff_observation_01/record.json)内容ID为`a691cc37ce244eb2286d8228bdec0dd2fa78c7aca15ad23eb1de0828fc007a0b`。其状态快照为`DRAINING_NATURALLY`：已持有GPU3的本项目租约锁，等待GPU4、5、7的旧租约自然释放。这里的锁不是GPU3显存占用，不影响该设备上的其他项目。
+
+| 原设备 | 原任务 | 交接时处理 |
+|---|---|---|
+| GPU4 | Full137终点回答生成，PID2590634 | 不中断，等完整封存与真实退出 |
+| GPU5 | C-only389从step298开始的SFT段，PID2538773 | 不中断，等该训练段自然结束 |
+| GPU7 | Full389 step298虚拟点及首次反馈，PID2451860 | 不中断，不丢弃或重采样反馈 |
+
+观察时旧控制器PID2710385仍存活，尚无新`protocol/record.json`或新科学控制器`launch_01/record.json`。因此当前准确结论是“已启动有界交接并等待自然收口”，不是“GPU6已使用”或“切换已成功”。后续应先查看旧目录`controlled_handoff_gpu6_01/status.json`及其closeout，再查看新目录的protocol、launch和queue。

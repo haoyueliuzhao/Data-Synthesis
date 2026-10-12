@@ -1,0 +1,22 @@
+{
+  "schema": "v39_natural_drain_handoff.v1.run",
+  "at": "2026-10-12T07:22:22.604218+00:00",
+  "plan_id": "46ef538249a9ae1947447a45fb36c259d2d1a110194b7249f5a21a704c2beb39",
+  "pid": 2647387,
+  "identity": {
+    "pid": 2647387,
+    "birth": "421413768",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "-B",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/implementation/finqa_v39_controller.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01"
+    ]
+  },
+  "automatic_retry": false,
+  "id": "57b4a9f8d3ebd19ff64a0219496af6b6feb0898e86cb04e7c867ec4b24077fcd"
+}

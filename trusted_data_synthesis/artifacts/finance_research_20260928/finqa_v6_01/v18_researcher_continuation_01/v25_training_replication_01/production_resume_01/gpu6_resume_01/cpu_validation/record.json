@@ -1,0 +1,31 @@
+{
+  "schema": "v39_frozen_CPU_dependency_validation.v1",
+  "at": "2026-10-12T07:20:43.686758+00:00",
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/implementation/record.json",
+    "sha256": "ad8b14ded22b347524f6d494445cb36588722f0eda78bbb39812fb6306fbff92",
+    "id": "342c590101b97b3cc0e84c5fa9341fe0562e9778e5d5a5d046b80e75a28a76a9"
+  },
+  "new_CPU_mock_tests": 115,
+  "new_CPU_mock_seconds": 1.6,
+  "ruff_passed": true,
+  "frozen_worker_dependencies_imported": true,
+  "CUDA_initialized": false,
+  "no_model_construction": true,
+  "no_GPU_API_or_scoring_calls": true,
+  "protocol_still_uninitialized": true,
+  "parent_runtime_scope": [
+    3,
+    4,
+    5,
+    7
+  ],
+  "new_runtime_scope": [
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "id": "adec53a7c19f3e1bb4a1957e6ca81f686a996e783f13040339fa4037d7264d6b"
+}

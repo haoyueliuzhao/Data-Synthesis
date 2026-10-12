@@ -1,0 +1,23 @@
+{
+  "schema": "v39_single_controlled_handoff_launch.v1",
+  "at": "2026-10-12T07:22:22.602171+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/preparation/record.json",
+    "sha256": "420cbe9e080090ae60fc28b2a7a82f56aea3858778e2b8e9fdc50c199b46a06b",
+    "id": "fb94ca074a9e23e4b67f9e74ae90bfcf29ff2ca3648f9d485172c9a89f593271"
+  },
+  "pid": 2647387,
+  "birth": "421413768",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-B",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/implementation/finqa_v39_controller.py",
+    "migrate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01"
+  ],
+  "automatic_retry": false,
+  "workers_signalled": false,
+  "id": "88fc5b2069079aebe445b4e9fbe8500445cca77c80c639f7da94158de874e32f"
+}

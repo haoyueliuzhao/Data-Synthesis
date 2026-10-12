@@ -1,0 +1,41 @@
+{
+  "schema": "v39_explicit_safe_handoff_preparation.v1",
+  "at": "2026-10-12T07:19:41.904360+00:00",
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/implementation/record.json",
+    "sha256": "ad8b14ded22b347524f6d494445cb36588722f0eda78bbb39812fb6306fbff92",
+    "id": "342c590101b97b3cc0e84c5fa9341fe0562e9778e5d5a5d046b80e75a28a76a9"
+  },
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/protocol/record.json",
+    "sha256": "366095e105c8683d833a8019911656b3bbe8c5d213bd3b223f3bfef5608717e7",
+    "id": "28a3d931f15acc5240a07da7c126c42418c4ed50ab665811d072d1d290706462"
+  },
+  "resource_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/resource_authorization_gpu6_20261012_01/record.json",
+    "sha256": "07f51ddf7652392b2f558d8af82f2b93c5d3844fbcc8bd1e36b37409c39fd09a",
+    "id": "09c3fe5c70147b52592d2d0b4b16d9eff66c8ea8e3e2264be24b7816c8d92efc"
+  },
+  "user_consent": "同意",
+  "accepted_question": "是否安排一次受控切换：让当前阶段完整封存后，换用支持GPU6的调度器，保留原状态、反馈和剩余预算？",
+  "source_commit": "3181d8b55c39906073f1bac599c69292aa67bfe2",
+  "allowed_gpu_indices": [
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "gpu_uuids": {
+    "3": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+    "4": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "6": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+  },
+  "max_total_gpu_workers": 4,
+  "scientific_dose_math_and_original_time_limits_unchanged": true,
+  "signal_live_worker_allowed": false,
+  "automatic_retry": false,
+  "id": "fb94ca074a9e23e4b67f9e74ae90bfcf29ff2ca3648f9d485172c9a89f593271"
+}

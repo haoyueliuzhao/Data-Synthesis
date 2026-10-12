@@ -1,0 +1,33 @@
+{
+  "schema": "v39_single_natural_handoff_supervisor_launch.v1",
+  "at": "2026-10-12T07:22:22.508935+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/preparation/record.json",
+    "sha256": "420cbe9e080090ae60fc28b2a7a82f56aea3858778e2b8e9fdc50c199b46a06b",
+    "id": "fb94ca074a9e23e4b67f9e74ae90bfcf29ff2ca3648f9d485172c9a89f593271"
+  },
+  "handoff_plan": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/controlled_handoff_gpu6_01/plan/record.json",
+    "sha256": "3c36c411e9d69a1f8d1cb8901151b730b8c577bb852925e1d717b3df2daeb920",
+    "id": "46ef538249a9ae1947447a45fb36c259d2d1a110194b7249f5a21a704c2beb39"
+  },
+  "CPU_validation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/cpu_validation/record.json",
+    "sha256": "b81f155f529680bededb9481feb60959eb45655d5487971848e40e99bd63db84",
+    "id": "adec53a7c19f3e1bb4a1957e6ca81f686a996e783f13040339fa4037d7264d6b"
+  },
+  "pid": 2647387,
+  "birth": "421413768",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-B",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/implementation/finqa_v39_controller.py",
+    "migrate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01"
+  ],
+  "automatic_restart": false,
+  "current_workers_not_interrupted": true,
+  "id": "6a2afb4eba74c730e99d65ccf15a28f762d3eb4807ce65a5e0b612380d74c93d"
+}

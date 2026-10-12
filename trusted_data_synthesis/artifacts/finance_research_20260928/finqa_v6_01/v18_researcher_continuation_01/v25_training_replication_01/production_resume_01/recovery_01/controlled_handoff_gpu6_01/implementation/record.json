@@ -1,0 +1,10 @@
+{
+  "schema": "v39_natural_drain_handoff.v1.implementation",
+  "source_commit": "3181d8b55c39906073f1bac599c69292aa67bfe2",
+  "source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/controlled_handoff_gpu6_01/implementation/finqa_v39_handoff.py",
+    "sha256": "40894260815e1709d03e31071156a68db661d4b5d49654082e27b74fdc37fe81"
+  },
+  "committed_source_verified": true,
+  "id": "dad968e5cc80824d58bfcccc8feccf14717f27d9f009f7a5339f137dca6e7a1e"
+}

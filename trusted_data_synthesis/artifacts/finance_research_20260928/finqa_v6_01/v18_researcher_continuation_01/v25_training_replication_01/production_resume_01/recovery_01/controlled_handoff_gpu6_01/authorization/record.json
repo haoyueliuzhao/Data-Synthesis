@@ -1,0 +1,18 @@
+{
+  "schema": "v39_natural_drain_handoff.v1.authorization",
+  "at": "2026-10-12T07:19:41.906093+00:00",
+  "user_consent": "同意",
+  "accepted_question": "是否安排一次受控切换：让当前阶段完整封存后，换用支持GPU6的调度器，保留原状态、反馈和剩余预算？",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/gpu6_resume_01/preparation/record.json",
+    "sha256": "420cbe9e080090ae60fc28b2a7a82f56aea3858778e2b8e9fdc50c199b46a06b",
+    "id": "fb94ca074a9e23e4b67f9e74ae90bfcf29ff2ca3648f9d485172c9a89f593271"
+  },
+  "resource_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/resource_authorization_gpu6_20261012_01/record.json",
+    "sha256": "07f51ddf7652392b2f558d8af82f2b93c5d3844fbcc8bd1e36b37409c39fd09a",
+    "id": "09c3fe5c70147b52592d2d0b4b16d9eff66c8ea8e3e2264be24b7816c8d92efc"
+  },
+  "max_total_gpu_workers": 4,
+  "id": "8597e195d339b35df6dd8e8bcbe3be767fe8c8ffbb3f1c98335e14ac86772056"
+}
