@@ -1,0 +1,15 @@
+{
+  "schema": "v41_nonstarving_resource_policy_handoff.v1.authorization",
+  "at": "2026-10-13T04:44:34.282224+00:00",
+  "user_consent": "保持满额，自然空队列时切换",
+  "mode": "passive_all_or_none",
+  "accepted_question": "保持当前满额计算，仅在自然空队列窗口接入新策略；不打断worker、不重采样、不重置预算",
+  "resource_policy_user_consent": "此条件是否过于严苛，根据实际需求放宽",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/preparation/record.json",
+    "sha256": "243968396db5c7bb79fe140190990a7766e2f940c723a4b4aa0cbf63ea743bc9",
+    "id": "2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0"
+  },
+  "max_total_gpu_workers": 4,
+  "id": "f581ba45625cd14e727750e28a403964585c26a9b42fe17b279a7910985be36c"
+}

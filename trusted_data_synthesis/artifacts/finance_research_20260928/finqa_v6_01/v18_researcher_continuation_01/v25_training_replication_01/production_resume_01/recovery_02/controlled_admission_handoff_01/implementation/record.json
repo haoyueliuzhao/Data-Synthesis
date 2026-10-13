@@ -1,0 +1,10 @@
+{
+  "schema": "v41_nonstarving_resource_policy_handoff.v1.implementation",
+  "source_commit": "31accb1dd11479baa2ae5c6959c8fbb8a76460bc",
+  "source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/controlled_admission_handoff_01/implementation/finqa_v41_handoff.py",
+    "sha256": "bfd0c688ac3fadcf9f70b0809e9c6e8ac65364ca3a9050af13b348d97ce085a0"
+  },
+  "committed_source_verified": true,
+  "id": "25c99227e0e1487e1d980ee2c90920d76646788cee40a794c4f7e069e09d2088"
+}

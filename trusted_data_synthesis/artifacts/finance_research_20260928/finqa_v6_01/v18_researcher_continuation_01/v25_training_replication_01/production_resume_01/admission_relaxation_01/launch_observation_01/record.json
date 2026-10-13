@@ -1,0 +1,136 @@
+{
+  "schema": "v41_passive_observer_initial_observation.v1",
+  "at": "2026-10-13T04:46:16.164287+00:00",
+  "observer": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/observer_spawn_01/record.json",
+    "sha256": "124401f54bc257f51a6044763d771a623b0ffc3ed577d812c0d13e37cf238245",
+    "id": "30ef00c261dadbd82358e9c97784d9489183db78afb976fc20bb7520d212a435"
+  },
+  "observer_identity_still_matches": true,
+  "parent_queue": {
+    "at": "2026-10-13T04:46:08.574105+00:00",
+    "phase": "RUNNING",
+    "protocol_id": "8732c9297d5a08cda1cb3990622cc8ee1d0868714c4aaf4de2c252e4a0b97160",
+    "active_children": [
+      {
+        "context_id": "32a477c33e4023a34fa715f184fe3d1c797f83c30d65070341c9e1b55c55c832",
+        "stage": "replay_R3",
+        "pid": 4098109,
+        "birth": "428101225",
+        "gpu_index": 6,
+        "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "489b3bdc8ed262fbab69a1a6d934a044e6d8049ed822ff3fd4caeb270437c9e7",
+        "stage": "replay_R3",
+        "pid": 4001582,
+        "birth": "427599049",
+        "gpu_index": 2,
+        "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "5e9d9fcd532c6a4560734b602c9c0ae11076b1319c551ecfa2f55b6761494f84",
+        "stage": "replay_R3",
+        "pid": 87678,
+        "birth": "429033751",
+        "gpu_index": 0,
+        "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "pilot_accepted": true,
+    "accepted_new_optimizer_updates": 1966,
+    "global_external_resource_wait_seconds": 34896.97386310063,
+    "accepted_new_outer_updates": 5,
+    "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+    "completed_training_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "completed_evaluation_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "original_B_resume_authorized": true,
+    "pre_cuda_waiters": [],
+    "inherited_resource_wait_seconds": 28541,
+    "original_time_budgets_reset": false,
+    "stopped_admission_observation_errors": []
+  },
+  "handoff_status": {
+    "at": "2026-10-13T04:46:15.264030+00:00",
+    "phase": "WAITING_FOR_SAFE_NATURAL_BOUNDARY",
+    "plan_id": "826a5aab49ddb8034c972ee48089b3330f2e0466eada103b9a746f5554e21cb5",
+    "mode": "passive_all_or_none",
+    "barrier_gpus": [],
+    "parent_queue_at": "2026-10-13T04:46:08.574105+00:00",
+    "parent_active": [
+      {
+        "context_id": "32a477c33e4023a34fa715f184fe3d1c797f83c30d65070341c9e1b55c55c832",
+        "stage": "replay_R3",
+        "pid": 4098109,
+        "birth": "428101225",
+        "gpu_index": 6,
+        "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "489b3bdc8ed262fbab69a1a6d934a044e6d8049ed822ff3fd4caeb270437c9e7",
+        "stage": "replay_R3",
+        "pid": 4001582,
+        "birth": "427599049",
+        "gpu_index": 2,
+        "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "5e9d9fcd532c6a4560734b602c9c0ae11076b1319c551ecfa2f55b6761494f84",
+        "stage": "replay_R3",
+        "pid": 87678,
+        "birth": "429033751",
+        "gpu_index": 0,
+        "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "blocked_class_frontiers": [],
+    "deadline_epoch": 1791918177.308361,
+    "workers_signalled": false,
+    "controller_signalled": false
+  },
+  "new_scientific_protocol_created": false,
+  "new_scientific_controller_launched": false,
+  "new_admission_used_for_dispatch": false,
+  "observation_is_not_scientific_completion": true,
+  "id": "9c9d32d2938115786b7247274e2135e77df6a9919d48dd1727a0082d507db4cf"
+}

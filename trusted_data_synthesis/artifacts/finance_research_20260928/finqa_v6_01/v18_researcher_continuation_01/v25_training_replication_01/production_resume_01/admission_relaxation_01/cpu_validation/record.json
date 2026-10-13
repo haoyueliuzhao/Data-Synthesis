@@ -1,0 +1,53 @@
+{
+  "schema": "v41_frozen_CPU_dependency_validation.v1",
+  "at": "2026-10-13T04:45:14.507760+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/preparation/record.json",
+    "sha256": "243968396db5c7bb79fe140190990a7766e2f940c723a4b4aa0cbf63ea743bc9",
+    "id": "2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0"
+  },
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/record.json",
+    "sha256": "67ce40ca5e7cd75e93203cf7797c42c031fc4accc5f2ce432b51b807e82586ed",
+    "id": "3b2fae948fe19714e4ca69a118de432d5a80f7868c69c2cda88362e91f5bf585"
+  },
+  "implementation_file_count": 51,
+  "modules": {
+    "controller": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_controller.py",
+    "worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_worker.py",
+    "evaluation": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_evaluation.py",
+    "admission": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_admission.py",
+    "handoff": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_handoff.py",
+    "inheritance": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_inheritance.py",
+    "memory_policy": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_memory_policy.py",
+    "task_view": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_task_view.py",
+    "unchanged_worker_shell": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v40_worker.py",
+    "unchanged_evaluation_shell": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v40_evaluation.py",
+    "unchanged_controller_shell": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v39_controller.py"
+  },
+  "historical_verifier": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/implementation/finqa_v40_controller.py",
+  "parent_protocol_id": "8732c9297d5a08cda1cb3990622cc8ee1d0868714c4aaf4de2c252e4a0b97160",
+  "real_inherited_class_shards": 9,
+  "pidfd_capability": {
+    "open_backend": "libc.pidfd_open",
+    "pidfd_sender_available": true,
+    "own_process_handle_opened_and_closed": true,
+    "signals_sent": 0,
+    "pid_only_fallback": false
+  },
+  "CUDA_initialized": false,
+  "models_constructed": 0,
+  "GPU_forward_calls": 0,
+  "API_calls": 0,
+  "worker_signals_sent": 0,
+  "controller_signals_sent": 0,
+  "handoff_plan": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/controlled_admission_handoff_01/plan/record.json",
+    "sha256": "c9034de33f8acb733f9b7ab426c4f3427880ae7e13fb836fa8cd9bb2b7fbdc79",
+    "id": "826a5aab49ddb8034c972ee48089b3330f2e0466eada103b9a746f5554e21cb5"
+  },
+  "handoff_deadline_epoch": 1791918177.308361,
+  "cpu_mock_tests": 208,
+  "all_checks_passed": true,
+  "id": "09fa17ef522e01343f4228ad18dc4e37bcc57bc8641f5a3912954872b41bb392"
+}

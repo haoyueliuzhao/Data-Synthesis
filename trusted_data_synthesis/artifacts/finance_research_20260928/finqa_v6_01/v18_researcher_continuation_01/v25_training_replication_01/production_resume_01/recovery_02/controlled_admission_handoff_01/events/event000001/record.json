@@ -1,0 +1,9 @@
+{
+  "schema": "v41_nonstarving_resource_policy_handoff.v1.event",
+  "at": "2026-10-13T04:45:57.443917+00:00",
+  "plan_id": "826a5aab49ddb8034c972ee48089b3330f2e0466eada103b9a746f5554e21cb5",
+  "mode": "passive_all_or_none",
+  "phase": "OBSERVING_PARENT_WITHOUT_WORKER_SIGNALS",
+  "barrier_gpus": [],
+  "id": "f41f088778a9bf6c02bc1538f01ebd5dddb5260fbf3ef4b6267cd5d08da43a3d"
+}

@@ -66,6 +66,8 @@ V40已于2026-10-12 23:32北京时间完成独立冻结登记，协议ID `8732c9
 
 V40首点恢复已于2026-10-13 03:42:41北京时间通过实际生产验收：Full389 step298继承261条实际response后仅新增186条、累计447条，outer仅提交一次，真实SFT推进到299，train真实exit 0；证据为 `recovery_02/pilot_acceptance/record.json`。原矩阵随后继续调度，不能再次执行该先导验收；这仍不代表全九模型完成。后续资源策略交接只继承该成功状态，任何新阶段实际失败仍按原规则停止，不借准入放宽授权自动重试。
 
+V41已以源提交 `31accb1dd1` 完成独立准备，51文件实施包ID `3b2fae948fe19714e4ca69a118de432d5a80f7868c69c2cda88362e91f5bf585`，准备ID `2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0`；最终208项CPU/mock测试和冻结CPU实际依赖核验通过。被动观察器PID107401、birth `429115174` 已启动，10月13日12:46观察为 `WAITING_FOR_SAFE_NATURAL_BOUNDARY`、barrier_gpus为空，未向worker或旧controller发信号；旧V40三R3 worker继续运行。交接绝对上限为10月14日03:02:57.308361北京时间。新科学协议和新科学launch当时尚未创建，不能称新准入已生效。不得重复启动 `migrate`；进度同时查看 `recovery_02/controlled_admission_handoff_01/` 与 `admission_relaxation_01/`。首次未启动准备因引用结构假设被拒绝，完整保留于 `admission_relaxation_preparation_rejected_01/`；它未注册handoff、未发信号或启动科学worker，不能改写为实验资源失败，也不能借此重试任何科学阶段。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

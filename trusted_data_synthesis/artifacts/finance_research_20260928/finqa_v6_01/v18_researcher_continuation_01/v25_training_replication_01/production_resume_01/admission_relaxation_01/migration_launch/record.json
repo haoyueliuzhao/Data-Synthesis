@@ -1,0 +1,25 @@
+{
+  "schema": "v41_single_passive_handoff_observer.v1",
+  "at": "2026-10-13T04:45:56.828316+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/preparation/record.json",
+    "sha256": "243968396db5c7bb79fe140190990a7766e2f940c723a4b4aa0cbf63ea743bc9",
+    "id": "2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0"
+  },
+  "pid": 107401,
+  "birth": "429115174",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-B",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_controller.py",
+    "migrate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01"
+  ],
+  "mode": "passive_all_or_none",
+  "automatic_retry": false,
+  "workers_signalled": false,
+  "scientific_controller_started": false,
+  "id": "36a0dbe7985acaa18a69c1116648becb5fa43e3d4509188525c928809259ac44"
+}

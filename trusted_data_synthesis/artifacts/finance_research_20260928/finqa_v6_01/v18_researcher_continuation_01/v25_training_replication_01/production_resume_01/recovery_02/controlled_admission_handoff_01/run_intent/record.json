@@ -1,0 +1,22 @@
+{
+  "schema": "v41_nonstarving_resource_policy_handoff.v1.run",
+  "at": "2026-10-13T04:45:57.443240+00:00",
+  "plan_id": "826a5aab49ddb8034c972ee48089b3330f2e0466eada103b9a746f5554e21cb5",
+  "mode": "passive_all_or_none",
+  "identity": {
+    "pid": 107401,
+    "birth": "429115174",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "-B",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/implementation/finqa_v41_controller.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01"
+    ]
+  },
+  "automatic_retry": false,
+  "id": "3761998af8c4f29c9dbfeb301413693e2976bae840da0abdb83dd95206d553b3"
+}

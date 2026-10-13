@@ -73,3 +73,15 @@ C-only251 step1192 的特殊 class 补齐由 V40 执行。继承时必须验证�
 此时仅写出新实施包和准备记录，handoff 目录、观察器、新科学控制器及 worker 均未创建，未发任何停止信号。该未启动准备的 51 个冻结文件保持原字节，可恢复归档至 `production_resume_01/admission_relaxation_preparation_rejected_01/`，失败和路径映射审计分别位于 `preparation_failure/record.json` 与 `archive_record/record.json`。归档内旧绝对引用是历史提出的路径，不作为新有效协议读取；不存在改写旧 V40 协议或重试科学计算。
 
 修订后只接受两种严格引用结构，均核验实际 SHA-256 和记录自身 ID，若引用携带 ID 还须逐项相符；结果与退出引用在核验后按路径及哈希比较。新增引用结构回归后，最终 208 项 CPU/mock 集成测试通过。另用真实 V40 只读核验三组共九个继承分片及登记前全部读取条件，成功到达首个 handoff 写入边界而不实际写入。重新准备将使用修订后的独立源提交及新实施包，旧未启动准备不会覆盖或伪装成成功。
+
+## 正式准备与观察器实际启动
+
+修订源码 `31accb1dd1` 已提交推送，正式准备成功。`admission_relaxation_01/implementation/` 冻结 51 个文件，内容 ID 为 `3b2fae948fe19714e4ca69a118de432d5a80f7868c69c2cda88362e91f5bf585`；其中 43 个历史文件与父实施包逐字相同。准备记录 ID 为 `2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0`，被动交接 plan ID 为 `826a5aab49ddb8034c972ee48089b3330f2e0466eada103b9a746f5554e21cb5`。这些是准备 / 交接登记，不是已经开始新科学计算的协议。
+
+冻结后 CPU 核验实际导入新目录中的控制器、worker、评价消费者及未改数学执行外壳；历史验证器保持独立。51 文件哈希、七份显存引用、九个真实继承分片、pidfd 自身无信号检查均通过，CUDA 未初始化、未构造模型或发送 GPU/API 计算。证据 `cpu_validation/record.json` 的 ID 为 `09fa17ef522e01343f4228ad18dc4e37bcc57bc8641f5a3912954872b41bb392`。
+
+实际被动观察器 PID **107401**、birth **429115174**，运行冻结入口 `finqa_v41_controller.py migrate`，不是旁路 GPU worker。启动证据位于 `observer_spawn_01/record.json` 与 `migration_launch/record.json`。北京时间 **2026-10-13 12:46** 的封存观察确认其身份仍匹配，状态为 `WAITING_FOR_SAFE_NATURAL_BOUNDARY`，`barrier_gpus=[]`，worker / controller 信号均未发送。父 V40 保持 `RUNNING`，GPU6、2、0 的三个 R3 worker 继续执行。
+
+该次交接绝对上限为北京时间 **2026-10-14 03:02:57.308361**，由父剩余等待预算及原阶段限制共同确定，不另发时间预算。观察时新 `protocol/record.json` 和新科学 `launch_01/record.json` 均不存在；新准入尚未用于任何实际派发，更没有共享 GPU 的新增吞吐或数值结论。只有全锁、新鲜零 worker、完整成功阶段及同点预检同时满足后，该同一进程才允许一次接续新控制器。不得重复启动观察器、直接运行旧控制器或在无窗口时改为主动排空。
+
+后续进度同时查看 `recovery_02/queue/status.json`、`recovery_02/controlled_admission_handoff_01/status.json` 和 `admission_relaxation_01/`；本次最终回答中的状态以 `launch_observation_01/record.json` 为准。旧失败记录及本次未启动准备拒绝记录均保持各自原义。
