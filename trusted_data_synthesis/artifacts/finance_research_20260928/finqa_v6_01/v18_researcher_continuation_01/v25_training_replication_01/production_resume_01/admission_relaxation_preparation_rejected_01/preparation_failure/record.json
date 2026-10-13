@@ -1,0 +1,24 @@
+{
+  "schema": "v41_unstarted_preparation_rejection.v1",
+  "at": "2026-10-13T04:40:24.063693+00:00",
+  "status": "PREPARATION_REJECTED_NO_HANDOFF_STARTED",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/preparation/record.json",
+    "sha256": "32d961615d61590dda2e90ba352fd3fd4e50b6927398ae1bcc24447927069d0c",
+    "id": "6e5641c43975ce324acd16513a9e8867a5022808d6f98f20fe135b2f0775fef9"
+  },
+  "source_commit": "6f581edb6890b0e55780289dcd9db843675cdeb9",
+  "command_exit_code": 1,
+  "error_type": "HandoffError",
+  "error": "historical V40 entry reference contains path, sha256, id; new check_ref accepted only path and sha256",
+  "parent_reference_actually_changed": false,
+  "handoff_directory_created": false,
+  "observer_started": false,
+  "scientific_controller_started": false,
+  "worker_signals_sent": 0,
+  "controller_signals_sent": 0,
+  "scientific_workers_launched": 0,
+  "remedy_scope": "repair metadata reader and preserve this unstarted preparation; no scientific retry",
+  "archive_destination": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01",
+  "id": "2197aff9000cf08a2d70a79e47d204ad37a0fd50c46871ae67f6cf7f95b3b1da"
+}

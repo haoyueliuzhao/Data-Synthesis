@@ -1,0 +1,35 @@
+{
+  "schema": "v41_rejected_preparation_preserved.v1",
+  "at": "2026-10-13T04:43:13.222370+00:00",
+  "status": "ARCHIVED_UNSTARTED_PREPARATION_ONLY",
+  "original_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01",
+  "archive_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01",
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01/implementation/record.json",
+    "sha256": "6540e61a09fc344ed9f5b5c7bca0e1155585ef5b9351cc2be4379a5782d600c8",
+    "id": "822ae823cb7f89a8910fe2021158c6e39b2d533df072cd760211b2aec653dddd"
+  },
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01/preparation/record.json",
+    "sha256": "32d961615d61590dda2e90ba352fd3fd4e50b6927398ae1bcc24447927069d0c",
+    "id": "6e5641c43975ce324acd16513a9e8867a5022808d6f98f20fe135b2f0775fef9"
+  },
+  "failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01/preparation_failure/record.json",
+    "sha256": "72d701ac588b8b0ed33aee10073762405623e39bae0289bef4744b0a8f5d60e0",
+    "id": "2197aff9000cf08a2d70a79e47d204ad37a0fd50c46871ae67f6cf7f95b3b1da"
+  },
+  "original_frozen_bytes_preserved": true,
+  "original_frozen_file_count": 51,
+  "old_internal_absolute_references_are_historical_not_active": true,
+  "reference_path_mapping": {
+    "original_prefix": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01",
+    "archive_prefix": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_preparation_rejected_01"
+  },
+  "handoff_registered": false,
+  "observer_started": false,
+  "science_retried": false,
+  "historical_V40_records_or_sources_modified": false,
+  "reason": "strict reference shape adapter corrected before first handoff registration",
+  "id": "e8763ea4d6d4e94458889293f28628ea1955606453db85f1b2bb73cdc23164e1"
+}

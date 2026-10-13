@@ -85,8 +85,21 @@ def ref(path):
 
 
 def check_ref(value):
-    require(ref(value["path"]) == value, "record reference changed: " + value["path"])
-    return checked(value["path"])
+    require(
+        isinstance(value, dict) and set(value) in ({"path", "sha256"}, {"path", "sha256", "id"}),
+        "record reference requires exactly path/sha256 and optional content id",
+    )
+    expected = {key: value[key] for key in ("path", "sha256")}
+    require(ref(value["path"]) == expected, "record reference changed: " + value["path"])
+    record = checked(value["path"])
+    require("id" not in value or value["id"] == record["id"], "record reference content id changed")
+    return record
+
+
+def record_file_ref(value):
+    """Normalize only after checking both the file digest and optional record ID."""
+    check_ref(value)
+    return {key: value[key] for key in ("path", "sha256")}
 
 
 def publish(path, body):
@@ -347,8 +360,8 @@ def inherited_class_shards(parent_root, protocol, identity=process_identity):
             )
             require(
                 evidence is not None
-                and evidence["result"] == binding["result"]
-                and evidence["exit"] == binding["exit"],
+                and evidence["result"] == record_file_ref(binding["result"])
+                and evidence["exit"] == record_file_ref(binding["exit"]),
                 "inherited class shard lacks actual complete zero exit",
             )
             stages[stage] = evidence

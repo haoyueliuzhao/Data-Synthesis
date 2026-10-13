@@ -15,6 +15,35 @@ sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
 subject = importlib.import_module("finqa_v41_handoff")
 
 
+@pytest.mark.parametrize("with_id", [False, True])
+def test_record_reference_checks_file_hash_and_optional_content_id(tmp_path, with_id):
+    path = tmp_path / "record.json"
+    record = subject.publish(path, dict(source="CPU fixture"))
+    reference = subject.ref(path)
+    if with_id:
+        reference["id"] = record["id"]
+    assert subject.check_ref(reference) == record
+    assert subject.record_file_ref(reference) == subject.ref(path)
+
+
+@pytest.mark.parametrize("corruption", ["sha256", "id", "extra", "missing", "record_id"])
+def test_record_reference_rejects_changed_digest_id_or_shape(tmp_path, corruption):
+    path = tmp_path / "record.json"
+    record = subject.publish(path, dict(source="CPU fixture"))
+    reference = dict(subject.ref(path), id=record["id"])
+    if corruption in ("sha256", "id"):
+        reference[corruption] = "0" * 64
+    elif corruption == "extra":
+        reference["unregistered"] = True
+    elif corruption == "missing":
+        reference.pop("sha256")
+    else:
+        path.write_text(json.dumps({**record, "id": "0" * 64}))
+        reference = dict(subject.ref(path), id="0" * 64)
+    with pytest.raises(subject.HandoffError):
+        subject.record_file_ref(reference)
+
+
 def test_pidfd_open_prefers_native_without_loading_libc(monkeypatch):
     calls = []
     monkeypatch.setattr(
@@ -418,7 +447,14 @@ def test_class_aware_releases_existing_barrier_when_partial_class_appears(scenar
     )
 
 
-def test_inherited_completed_shard_counts_without_parent_recomputation(tmp_path):
+@pytest.mark.parametrize("with_id", [False, True])
+def test_inherited_completed_shard_counts_without_parent_recomputation(tmp_path, with_id):
+    def reference(path):
+        value = subject.ref(path)
+        if with_id:
+            value["id"] = subject.checked(path)["id"]
+        return value
+
     parent = tmp_path / "parent"
     origin = tmp_path / "original"
     context = subject.publish(
@@ -448,21 +484,21 @@ def test_inherited_completed_shard_counts_without_parent_recomputation(tmp_path)
             context_inheritances=[
                 dict(
                     new_context_directory=str(target),
-                    original_context=subject.ref(origin / "context/record.json"),
+                    original_context=reference(origin / "context/record.json"),
                     stage_bindings=dict(
                         shard02=dict(
                             protocol_scope="parent",
                             protocol_id="old-protocol",
-                            launch=subject.ref(stage / "launch/record.json"),
-                            result=subject.ref(stage / "result/record.json"),
-                            exit=subject.ref(stage / "exit/record.json"),
+                            launch=reference(stage / "launch/record.json"),
+                            result=reference(stage / "result/record.json"),
+                            exit=reference(stage / "exit/record.json"),
                         )
                     ),
                 )
             ]
         ),
     )
-    protocol = dict(inheritance=subject.ref(parent / "inheritance/record.json"))
+    protocol = dict(inheritance=reference(parent / "inheritance/record.json"))
     inherited = subject.inherited_class_shards(parent, protocol, identity=lambda _: None)
     first = subject.class_frontiers(parent, inherited)[0]
     assert first["inherited_shards"] == ["shard02"]
