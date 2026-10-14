@@ -1,6 +1,7 @@
 """Explicit user-requested short GPU reservation; no model, sampling, or training."""
 
 import argparse
+import fcntl
 import json
 import multiprocessing
 import os
@@ -20,8 +21,12 @@ def write(path, value):
 
 
 def hold(args):
-    if not (0 < args.ttl <= 3600 and 0 < args.mib <= 61440):
+    if not (0 < args.ttl <= 3600 and 0 < args.mib <= 73728):
         raise ValueError("bounded reservation required")
+    lease = None
+    if getattr(args, "lease_path", None):
+        lease = args.lease_path.open("a")
+        fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
     current = subprocess.check_output(
         ["nvidia-smi", "--query-compute-apps=gpu_uuid,pid", "--format=csv,noheader,nounits"],
@@ -50,9 +55,13 @@ def hold(args):
         dict(
             at=datetime.now(timezone.utc).isoformat(),
             pid=os.getpid(),
+            birth=Path(f"/proc/{os.getpid()}/stat").read_text().rsplit(")", 1)[1].split()[19],
             gpu=args.gpu,
             MiB=args.mib,
             ttl_seconds=args.ttl,
+            lease_path=str(args.lease_path) if getattr(args, "lease_path", None) else None,
+            allocated_bytes=torch.cuda.memory_allocated(),
+            free_bytes=torch.cuda.mem_get_info()[0],
             model_calls=0,
             optimizer_steps=0,
             reason="user requested reserving idle GPUs for the pending audited experiment",
@@ -71,6 +80,8 @@ def hold(args):
             reason="handoff_signal" if stopped[0] else "bounded_lease_expired",
         ),
     )
+    if lease is not None:
+        lease.close()
 
 
 def watch(args):
@@ -148,9 +159,12 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--ttl", type=int, default=1800)
     parser.add_argument("--mib", type=int, default=49152)
+    parser.add_argument("--lease-path", type=Path)
     args = parser.parse_args()
-    if not (0 < args.ttl <= 3600 and 0 < args.mib <= 61440):
+    if not (0 < args.ttl <= 3600 and 0 < args.mib <= 73728):
         raise ValueError("bounded reservation required")
+    if args.watch and args.lease_path is not None:
+        parser.error("a single-device lease requires --gpu, not --watch")
     if args.watch:
         watch(args)
     elif args.gpu:
