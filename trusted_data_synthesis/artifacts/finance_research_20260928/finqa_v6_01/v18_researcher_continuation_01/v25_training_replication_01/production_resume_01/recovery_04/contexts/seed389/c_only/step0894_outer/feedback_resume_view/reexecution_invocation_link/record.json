@@ -1,0 +1,35 @@
+{
+  "schema": "v42_semantic_request_fresh_invocation_link.v1",
+  "at": "2026-10-14T07:20:22.698734+00:00",
+  "context_id": "fb2d04ed951f4500e4fd6f9efd5f42f860ad7a7b34fb570115c854f15ddc8e63",
+  "feedback_resume_binding_id": "628e7d4a8983dd7dfe5415cbfb8d1c8317e85467c294c4837ca278139ac1d6e0",
+  "episode_key": "1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f",
+  "original_intent": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/draw1/events/1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f/000001/event.json",
+    "sha256": "e4a7858af98b3322b9893935c362ad12359c4650547ed248959490252bc94528"
+  },
+  "scientific_request_sha256": "7c2508103df9e907d048a1e493d3ce6c9c147acd9c6fc88d8190be59cce68d4c",
+  "original_harness_invocation": {
+    "attempt_index": 0,
+    "episode_id": "ephemeral:b50a1afc6aea4a75a64ded394cc923dc",
+    "invocation_id": "invocation:3b1fc5b73dcc9980f280a402a5c7aaa26deaa9886e2829990d8f6b32db21fdca",
+    "parameter_digest": "40f8180d94d2ba74bce4e179890484fd00ccd707e1c702a1b807c01c656f9fc9",
+    "point_id": "f99047e7eb6575b171043f22fd534d7430a51ee635f3deef48a6903cd534ca32",
+    "run_id": "ephemeral:1f10d143c31f44d68a6d47eff1c8b314",
+    "turn_index": 0
+  },
+  "new_harness_invocation": {
+    "run_id": "ephemeral:fbb316fe2ae04bbdb2eabeb3de9cb3c1",
+    "episode_id": "ephemeral:e772b8a23dea401caffa0b5e3b9d9365",
+    "attempt_index": 0,
+    "turn_index": 0,
+    "invocation_id": "invocation:acb61c317df9f92fb70a0c4e33ecb631a36af7775a77bc7c9d44bbd469bb2d88",
+    "parameter_digest": "40f8180d94d2ba74bce4e179890484fd00ccd707e1c702a1b807c01c656f9fc9",
+    "point_id": "f99047e7eb6575b171043f22fd534d7430a51ee635f3deef48a6903cd534ca32"
+  },
+  "scientific_request_identical": true,
+  "old_invocation_identity_reused": false,
+  "old_unreturned_outcome_remains_unknown": true,
+  "provider_call_has_not_started": true,
+  "id": "8aee96a87a6063bf123c6ac4680d24a5c6451ddc849c2f4d431040c8fb7e2004"
+}

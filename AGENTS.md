@@ -82,6 +82,8 @@ V42停止后累计资源等待继承93720秒，上限仍129600秒；Full251894�
 
 用户随后补充“gpu4也可以占用”。V43优先派发顺序登记为GPU0、4、3、5、7、1、2、6，仍从原授权八卡中选择且总并发最多4，不扩大科学剂量。GPU0及GPU4准备期各72GiB占位分别写入独立资源记录；只对核验过PID/birth的本项目占位进程交接，不能干预其他项目，也不能将占位当作科学运行。实际worker资源门与未知反馈停止条件不变。
 
+V43于2026-10-14以源提交 `253602fd09a0d6dde04ae6308d2e21ab9066ded2` 冻结67文件，协议ID `93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60`，119项CPU用例及正式冻结依赖核验通过。监督器于15:18实际启动，PID2068024、birth `438667686`；科学控制器PID2068036、birth `438667781`。GPU0、4占位均已释放并真实退出；首次科学worker派发至GPU0、4、3。15:25时Full251 distribution已真实exit0并在GPU0派发train，C-only389原450题加11题新完成共461题，获批的唯一重新执行已实际返回并完整封存，Full389新增4份完整任务梯度；已观测资源门通过。监督器仍在第一attempt运行，自动后继尚未实际触发，整轮及统一准确率评分未完成。启动证据见 `recovery_04/startup_verification/record.json`；进度看 `recovery_04/supervisor/queue/status.json` 与当前attempt的 `queue/status.json`，不得重复启动监督器、旧controller或migrate入口。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

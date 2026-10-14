@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-14T07:18:02.211806+00:00",
+  "schema": "v43_single_persistent_supervisor.v1",
+  "pid": 2068024,
+  "birth": "438667686",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/protocol/record.json",
+    "sha256": "4c7012992bcf5b9c4bd77fb89835bc20afc38736f8e0eb3cf3d4191671b41f27",
+    "id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60"
+  },
+  "backoff_seconds": [
+    30,
+    60,
+    120,
+    300
+  ],
+  "explicit_stop_is_terminal": true,
+  "id": "ee2f86a402c1c4d3e218862a22a0156f085ebfec4faebdfb47d8ac87f41aa1f7"
+}

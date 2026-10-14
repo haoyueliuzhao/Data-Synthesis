@@ -1,0 +1,57 @@
+{
+  "schema": "v43_verified_reservation_to_scientific_handoff.v1",
+  "at": "2026-10-14T07:18:00.076284+00:00",
+  "protocol_id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60",
+  "holders": [
+    {
+      "gpu_index": 0,
+      "pid": 2038548,
+      "birth": "438521741",
+      "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "reserved_record": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_reservation_gpu0_20261014_02/reserved/record.json",
+        "sha256": "1f84992de39da79e4aadd377551e8be6ec18fd780d5434477b5ae8017d0adcf0"
+      }
+    },
+    {
+      "gpu_index": 4,
+      "pid": 2046059,
+      "birth": "438554214",
+      "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "reserved_record": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_reservation_gpu4_20261014_01/reserved/record.json",
+        "sha256": "9e959f21e88e417d051201bb529b15e175e3967e31f5f185698ae72db6f7b8a7"
+      }
+    }
+  ],
+  "verified_inventory": [
+    {
+      "index": 0,
+      "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "total_mib": 81920,
+      "used_mib": 74151,
+      "free_mib": 7003,
+      "processes": [
+        {
+          "pid": 2038548,
+          "used_memory_mib": "74142"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "total_mib": 81920,
+      "used_mib": 74151,
+      "free_mib": 7003,
+      "processes": [
+        {
+          "pid": 2046059,
+          "used_memory_mib": "74142"
+        }
+      ]
+    }
+  ],
+  "other_project_processes_signalled": false,
+  "id": "d579b1488e6a355d373d9dc33b39975e3524d80778058afd703b734cf045bf11"
+}

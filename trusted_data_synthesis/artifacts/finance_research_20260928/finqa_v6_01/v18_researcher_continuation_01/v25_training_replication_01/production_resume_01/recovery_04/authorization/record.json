@@ -1,0 +1,45 @@
+{
+  "schema": "v43_explicit_fixed_supervised_recovery_authority.v1",
+  "at": "2026-10-14T07:16:06.209928+00:00",
+  "user_instruction": "授权修复版运行，当前资源紧张，取消截止时间限制，设置自动恢复",
+  "user_consent": "授权修复版运行，当前资源紧张，取消截止时间限制，设置自动恢复",
+  "priority_resource_instructions": [
+    "迅速抢占0号显卡",
+    "gpu4也可以占用"
+  ],
+  "cancel_wallclock_deadlines": true,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "original_resource_safety_gates_unchanged": true,
+  "no_automatic_unknown_feedback_resampling": true,
+  "initial_unknown_request_reexecution_authorized": true,
+  "one_explicit_original_unreturned_request_reexecution": true,
+  "original_single_request_authority_carried": true,
+  "maximum_original_request_reexecutions_across_all_attempts": 1,
+  "unused_original_request_authority_requires_verified_zero_new_calls": true,
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_03/failure/record.json",
+    "sha256": "f09df9f32a72ec2b0a1e356a988907afec7fa4b2b021f828e9d382547e4c9ffa",
+    "id": "8e48a37353fa76fd7ee29d5de9a47c5e25af619df6bcfe23486a3adf6881978a"
+  },
+  "time_policy": {
+    "schema": "v43_explicit_no_wallclock_limits.v1",
+    "user_instruction": "授权修复版运行，当前资源紧张，取消截止时间限制，设置自动恢复",
+    "phase_deadline_epoch": null,
+    "outer_compute_limit_seconds": null,
+    "cumulative_resource_wait_limit_seconds": null,
+    "inherited_elapsed_accounting_retained": true,
+    "stage_and_outer_elapsed_accounting_continues": true,
+    "finite_far_future_deadline_substitution": false,
+    "runtime_memory_host_and_identity_gates_unchanged": true,
+    "explicit_stop_signals_remain_effective": true,
+    "draining_grace_seconds": 600,
+    "draining_is_shutdown_grace_not_run_deadline": true
+  },
+  "no_new_pilot": true,
+  "original_scientific_doses_unchanged": true,
+  "manual_stop_terminates_supervision": true,
+  "id": "2b49403ace03abac0049c8d08229716b4d6ffd4947d70cd32fbf09b9f9415079"
+}
