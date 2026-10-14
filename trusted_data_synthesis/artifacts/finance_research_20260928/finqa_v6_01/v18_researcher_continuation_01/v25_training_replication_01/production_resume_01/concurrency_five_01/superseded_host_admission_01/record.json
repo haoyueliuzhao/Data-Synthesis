@@ -1,0 +1,124 @@
+{
+  "schema": "v45_unactivated_v44_migration_superseded.v1",
+  "at": "2026-10-14T15:20:26.363247+00:00",
+  "intent": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/superseded_host_admission_01/intent/record.json",
+    "sha256": "0d9700820a8b80404d058e3e4c8253170cf5e55dfd07c9bead969b2450a6e5e8",
+    "id": "e3e8eda51957516b50475accbfa9a311c077b4f00204e56ba162ffdb2ec5889c"
+  },
+  "handoff_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/handoff_01/closeout/record.json",
+    "sha256": "d6714a50eb5149bd34beeb0e89f0551a262c83c693158d2fe16c26c1efa1bb41",
+    "id": "375aeaddaf2980af3110e2126544c34c8c2cca18ff3f908ce74420a1bb212459"
+  },
+  "target": {
+    "pid": 2823865,
+    "birth": "441367537",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/implementation/finqa_v44_supervisor.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01"
+    ]
+  },
+  "target_process_exited": true,
+  "target_os_exit_code_observed": false,
+  "migration_signals_sent": 1,
+  "worker_signals_sent": 0,
+  "scientific_supervisor_signals_sent": 0,
+  "scientific_controller_signals_sent": 0,
+  "scientific_protocol_created": false,
+  "original_scientific_queue": {
+    "at": "2026-10-14T15:20:23.777268+00:00",
+    "phase": "RUNNING",
+    "protocol_id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60",
+    "active_children": [
+      {
+        "context_id": "fb2d04ed951f4500e4fd6f9efd5f42f860ad7a7b34fb570115c854f15ddc8e63",
+        "stage": "replay_R3",
+        "pid": 2184572,
+        "birth": "439142670",
+        "gpu_index": 4,
+        "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "58773e2984b831f601aad695835897d8a321394179f55db24d52f5a186ea1950",
+        "stage": "replay_R3",
+        "pid": 2821241,
+        "birth": "441356255",
+        "gpu_index": 0,
+        "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "e4d30b088119e188fec2f3d8899cbc3daee0838e8a1de21557f355d84258e997",
+        "stage": "train",
+        "pid": 2433377,
+        "birth": "439920672",
+        "gpu_index": 3,
+        "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "pilot_accepted": true,
+    "accepted_new_optimizer_updates": 3753,
+    "global_external_resource_wait_seconds": 93870.00366967078,
+    "accepted_new_outer_updates": 9,
+    "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+    "completed_training_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "C-only"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "completed_evaluation_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "C-only"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "original_B_resume_authorized": true,
+    "pre_cuda_waiters": [],
+    "inherited_resource_wait_seconds": 93839,
+    "original_time_budgets_reset": false,
+    "stopped_admission_observation_errors": []
+  },
+  "original_science_continues": true,
+  "id": "ab3569b9334a623e6bf43224069c701f1031ad38ab39084d78700333282e1e66"
+}

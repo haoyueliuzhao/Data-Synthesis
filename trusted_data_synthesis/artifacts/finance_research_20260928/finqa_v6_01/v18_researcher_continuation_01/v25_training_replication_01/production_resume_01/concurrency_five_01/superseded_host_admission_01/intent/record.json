@@ -1,0 +1,154 @@
+{
+  "schema": "v45_supersede_unactivated_v44_migration.v1",
+  "at": "2026-10-14T15:20:24.360827+00:00",
+  "user_instruction": "修改此问题",
+  "target": {
+    "pid": 2823865,
+    "birth": "441367537",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/implementation/finqa_v44_supervisor.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01"
+    ]
+  },
+  "pending_handoff_snapshot": {
+    "phase": "DRAINING_NATURALLY",
+    "at": "2026-10-14T15:20:24.049232+00:00",
+    "barrier_gpus": [
+      1,
+      2,
+      5,
+      6,
+      7
+    ],
+    "active_children": [
+      {
+        "context_id": "fb2d04ed951f4500e4fd6f9efd5f42f860ad7a7b34fb570115c854f15ddc8e63",
+        "stage": "replay_R3",
+        "pid": 2184572,
+        "birth": "439142670",
+        "gpu_index": 4,
+        "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "58773e2984b831f601aad695835897d8a321394179f55db24d52f5a186ea1950",
+        "stage": "replay_R3",
+        "pid": 2821241,
+        "birth": "441356255",
+        "gpu_index": 0,
+        "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "e4d30b088119e188fec2f3d8899cbc3daee0838e8a1de21557f355d84258e997",
+        "stage": "train",
+        "pid": 2433377,
+        "birth": "439920672",
+        "gpu_index": 3,
+        "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "worker_signals_sent": 0,
+    "supervisor_signals_sent": 0,
+    "deadline_epoch": null
+  },
+  "parent_queue_snapshot": {
+    "at": "2026-10-14T15:20:23.777268+00:00",
+    "phase": "RUNNING",
+    "protocol_id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60",
+    "active_children": [
+      {
+        "context_id": "fb2d04ed951f4500e4fd6f9efd5f42f860ad7a7b34fb570115c854f15ddc8e63",
+        "stage": "replay_R3",
+        "pid": 2184572,
+        "birth": "439142670",
+        "gpu_index": 4,
+        "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "58773e2984b831f601aad695835897d8a321394179f55db24d52f5a186ea1950",
+        "stage": "replay_R3",
+        "pid": 2821241,
+        "birth": "441356255",
+        "gpu_index": 0,
+        "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "lifecycle_state": "RUNNING"
+      },
+      {
+        "context_id": "e4d30b088119e188fec2f3d8899cbc3daee0838e8a1de21557f355d84258e997",
+        "stage": "train",
+        "pid": 2433377,
+        "birth": "439920672",
+        "gpu_index": 3,
+        "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "pilot_accepted": true,
+    "accepted_new_optimizer_updates": 3753,
+    "global_external_resource_wait_seconds": 93870.00366967078,
+    "accepted_new_outer_updates": 9,
+    "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+    "completed_training_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "C-only"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "completed_evaluation_coordinates": [
+      {
+        "seed": 137,
+        "arm": "C-only"
+      },
+      {
+        "seed": 137,
+        "arm": "Full"
+      },
+      {
+        "seed": 137,
+        "arm": "Static"
+      },
+      {
+        "seed": 251,
+        "arm": "C-only"
+      },
+      {
+        "seed": 251,
+        "arm": "Static"
+      }
+    ],
+    "original_B_resume_authorized": true,
+    "pre_cuda_waiters": [],
+    "inherited_resource_wait_seconds": 93839,
+    "original_time_budgets_reset": false,
+    "stopped_admission_observation_errors": []
+  },
+  "purpose": "Replace pending full-RSS reservation version with separately frozen empirical host admission",
+  "signal_scope": "verified pending migration process only",
+  "scientific_worker_signals_allowed": false,
+  "scientific_supervisor_signals_allowed": false,
+  "id": "e3e8eda51957516b50475accbfa9a311c077b4f00204e56ba162ffdb2ec5889c"
+}

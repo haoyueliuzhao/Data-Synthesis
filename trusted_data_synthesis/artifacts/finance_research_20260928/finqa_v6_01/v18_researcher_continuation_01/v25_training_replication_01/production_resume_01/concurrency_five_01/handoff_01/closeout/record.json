@@ -1,0 +1,16 @@
+{
+  "schema": "v44_handoff_stopped_no_retry.v1",
+  "at": "2026-10-14T15:20:26.050147+00:00",
+  "status": "STOPPED_NO_MIGRATION",
+  "error_type": "HandoffError",
+  "error": "explicit stop requested before handoff",
+  "worker_signals_sent": 0,
+  "supervisor_signals_sent": 0,
+  "supervisor_signal_attempted": false,
+  "automatic_retry": false,
+  "handoff_itself_never_launches_scientific_workers": true,
+  "successor_started": false,
+  "successor_launch_evidence": {},
+  "successor_start_observation": "immutable_launch_or_dispatch_receipts_only",
+  "id": "375aeaddaf2980af3110e2126544c34c8c2cca18ff3f908ce74420a1bb212459"
+}

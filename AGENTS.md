@@ -90,6 +90,10 @@ V43于2026-10-14以源提交 `253602fd09a0d6dde04ae6308d2e21ab9066ded2` 冻结67
 
 V44已以源提交 `2c9d7a781149ef9e9c429e97b71e293b5a04d2c1` 冻结74文件，原V43的67文件逐字保留；实施包ID `91b1f5b0c5fb4e57e746f48128fdb67c0ddef5e30d84f41263d38505769a4256`，准备ID `218c1620fa3d0a5ac2ab547e95dad3ec36944eb455e110e933a7feef9a7eae87`。92项联合CPU/mock测试及正式冻结依赖核验通过。唯一 `finqa_v44_supervisor.py migrate` 入口于2026-10-14 22:48实际启动，PID2823865、birth `441367537`；成功交接后同进程转为V44监督器，不能再另启监督器。22:50:31观察为 `DRAINING_NATURALLY`，仅持GPU1、2、5、6、7的本项目租约锁，worker/旧监督器信号均0；旧GPU4 C389 R3、GPU0 Full389 R3、GPU3 Static389 train继续运行。新科学协议和launch尚未创建，五上限与GPU5新优先顺序尚未生效，不能称已运行五worker。进度看 `concurrency_five_01/handoff_01/status.json` 与旧 `recovery_04/queue/status.json`，实际后继运行以新supervisor/queue及launch为准；不得重复prepare/migrate或热改原冻结实现。启动证据见 `concurrency_five_01/handoff_started_verification/record.json`。
 
+用户于2026-10-14针对809GiB主存准入质疑并明确要求“修改此问题”。本次V45在独立 `production_resume_01/host_memory_admission_01/` 修订启动预算，与160/192GiB运行RSS硬限分离，96GiB全机有效可用RAM余量不变。历史91个成功阶段表明完整class峰值124.536GiB，不能用V43约60.9GiB补片峰值代表完整分片；冻结预算为class160GiB、train/R3/generate48GiB、virtual/distribution64GiB，由历史峰值乘1.125加16GiB再向上取整到16GiB倍数取得。每个活跃进程按固定预算与实际VmHWM同式上浮的较大值减当前RSS预留，缺失读数拒绝本次派发，不伪造0或因退出观测竞态停止全池。总worker仍最多5、每卡最多1，原显存、状态绑定、数学剂量和安全自动恢复不变；不允许热改任何历史冻结协议或源码。V44尚未生效的迁移PID2823865已于23:20:26经完整身份核验后单次停止并真实退出，封存STOPPED_NO_MIGRATION；没有向科学worker或科学监督器/控制器发信号，V43继续运行。证据见 `concurrency_five_01/superseded_host_admission_01/record.json`，不得再次运行旧migrate。V45直接从V43安全自然边界交接，不虚构V44科学协议；详细证据和实际生效状态见 `trusted_data_synthesis/docs/finqa_v45_empirical_host_admission_20261014.md`，准备与交接启动不等于已启用主存新策略。
+
+用户进一步要求“GPU2，5应当都可派发任务，此轮修订尽量将这两张显卡利用起来”。V45在冻结前将派发优先序调整为GPU5、2、0、4、3、7、1、6，优先让5与2承接原队列待执行阶段；仅在实时主存、显存、租约与原状态门通过时派发，不新加科学任务填卡、不迁移或中断现有worker。新优先序与主存修订均以V45实际启动为生效依据，不能把准备期显卡可用称为已经派发。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
