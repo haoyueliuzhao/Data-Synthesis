@@ -88,6 +88,8 @@ V43于2026-10-14以源提交 `253602fd09a0d6dde04ae6308d2e21ab9066ded2` 冻结67
 
 用户随后询问GPU5是否有待安排任务。V44将设备优先顺序登记为GPU0、4、5、2、3、7、1、6，优先使用当前显存余量较大的GPU5、2承接后续任务；不迁移正在运行的worker、不绕过主存门。22:27只读快照显示Full2511192四class分片未派发，GPU5空闲75.67GiB，但新增class需约808.99GiB有效RAM而当时仅约695.66GiB，因而没有侧路增派。新顺序只在新版本实际启动后生效，旧冻结V43顺序不回写。
 
+V44已以源提交 `2c9d7a781149ef9e9c429e97b71e293b5a04d2c1` 冻结74文件，原V43的67文件逐字保留；实施包ID `91b1f5b0c5fb4e57e746f48128fdb67c0ddef5e30d84f41263d38505769a4256`，准备ID `218c1620fa3d0a5ac2ab547e95dad3ec36944eb455e110e933a7feef9a7eae87`。92项联合CPU/mock测试及正式冻结依赖核验通过。唯一 `finqa_v44_supervisor.py migrate` 入口于2026-10-14 22:48实际启动，PID2823865、birth `441367537`；成功交接后同进程转为V44监督器，不能再另启监督器。22:50:31观察为 `DRAINING_NATURALLY`，仅持GPU1、2、5、6、7的本项目租约锁，worker/旧监督器信号均0；旧GPU4 C389 R3、GPU0 Full389 R3、GPU3 Static389 train继续运行。新科学协议和launch尚未创建，五上限与GPU5新优先顺序尚未生效，不能称已运行五worker。进度看 `concurrency_five_01/handoff_01/status.json` 与旧 `recovery_04/queue/status.json`，实际后继运行以新supervisor/queue及launch为准；不得重复prepare/migrate或热改原冻结实现。启动证据见 `concurrency_five_01/handoff_started_verification/record.json`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

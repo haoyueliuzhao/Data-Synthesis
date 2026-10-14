@@ -1,0 +1,46 @@
+{
+  "schema": "v44_actual_frozen_cpu_dependency_acceptance.v1",
+  "at": "2026-10-14T14:46:45.654920+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/preparation/record.json",
+    "sha256": "a7fe535aa026f34fc603f522c0e3784ec2534486cb3f593f48608c3faede2b3a",
+    "id": "218c1620fa3d0a5ac2ab547e95dad3ec36944eb455e110e933a7feef9a7eae87"
+  },
+  "handoff_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/handoff_01/protocol/record.json",
+    "sha256": "19e5cee7290fc532f594d471a124b53de22e4a7700deb78dd41b3b039f82e908",
+    "id": "155b0deceeee5e7d9148520079404622b5732679cf872cf8be5809289d2b7cd4"
+  },
+  "implementation_id": "91b1f5b0c5fb4e57e746f48128fdb67c0ddef5e30d84f41263d38505769a4256",
+  "source_commit": "2c9d7a781149ef9e9c429e97b71e293b5a04d2c1",
+  "frozen_source_files": 74,
+  "original_67_files_byte_unchanged": true,
+  "worker_dependency_paths_verified": true,
+  "endpoint_dependency_paths_verified": true,
+  "handoff_adjacent_primitive_paths_verified": true,
+  "integrated_cpu_mock_tests_passed": 92,
+  "integrated_seconds": 36.86,
+  "max_gpu_workers": 5,
+  "logical_class_shards": 4,
+  "gpu_priority": [
+    0,
+    4,
+    5,
+    2,
+    3,
+    7,
+    1,
+    6
+  ],
+  "host_ram_admission_unchanged": true,
+  "cuda_initialized": false,
+  "model_constructions": 0,
+  "provider_calls": 0,
+  "API_calls": 0,
+  "optimizer_updates": 0,
+  "scientific_protocol_created": false,
+  "scientific_controller_started": false,
+  "worker_signals_sent": 0,
+  "controller_signals_sent": 0,
+  "id": "d7f369dd2b8b2ac8008861edbc8b8dcbc95f6a618749971efa9ba89a2d0b6c09"
+}

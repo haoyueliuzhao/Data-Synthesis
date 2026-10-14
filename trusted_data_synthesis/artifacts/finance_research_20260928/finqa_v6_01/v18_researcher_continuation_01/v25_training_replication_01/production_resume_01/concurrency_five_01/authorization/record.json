@@ -1,0 +1,23 @@
+{
+  "schema": "v44_explicit_five_worker_authority.v1",
+  "at": "2026-10-14T14:45:56.594817+00:00",
+  "user_instruction": "暂时增至五个",
+  "user_consent": "暂时增至五个",
+  "max_gpu_workers": 5,
+  "max_workers_per_gpu": 1,
+  "host_ram_admission_unchanged": true,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "prior_time_and_safe_recovery_authority_inherited": true,
+  "new_sampling_or_optimizer_dose_authorized": false,
+  "logical_class_shards": 4,
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/protocol/record.json",
+    "sha256": "4c7012992bcf5b9c4bd77fb89835bc20afc38736f8e0eb3cf3d4191671b41f27",
+    "id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60"
+  },
+  "manual_stop_terminates_supervision": true,
+  "id": "cd81177ae62d203bad399f3511b0b7e9443bbaf6492a084e682d07547cb58c62"
+}

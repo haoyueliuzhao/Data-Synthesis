@@ -1,0 +1,46 @@
+{
+  "schema": "v44_actual_prepared_handoff_dispatch.v1",
+  "at": "2026-10-14T14:48:00.200020+00:00",
+  "pid": 2823865,
+  "birth": "441367537",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/implementation/finqa_v44_supervisor.py",
+    "migrate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01"
+  ],
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/preparation/record.json",
+    "sha256": "a7fe535aa026f34fc603f522c0e3784ec2534486cb3f593f48608c3faede2b3a",
+    "id": "218c1620fa3d0a5ac2ab547e95dad3ec36944eb455e110e933a7feef9a7eae87"
+  },
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/implementation/record.json",
+    "sha256": "2db8571222819583a4923be65599c3c3aa9d41390aa68222264ed30d08f1bbb5",
+    "id": "91b1f5b0c5fb4e57e746f48128fdb67c0ddef5e30d84f41263d38505769a4256"
+  },
+  "cpu_validation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_five_01/cpu_validation/record.json",
+    "sha256": "01657a68f05740e53198788e678499e28a1c2ebffa8072e610bf9e1ef5837421",
+    "id": "d7f369dd2b8b2ac8008861edbc8b8dcbc95f6a618749971efa9ba89a2d0b6c09"
+  },
+  "source_commit": "2c9d7a781149ef9e9c429e97b71e293b5a04d2c1",
+  "new_max_gpu_workers": 5,
+  "original_ram_admission_unchanged": true,
+  "target_device_priority": [
+    0,
+    4,
+    5,
+    2,
+    3,
+    7,
+    1,
+    6
+  ],
+  "handoff_only_at_dispatch": true,
+  "scientific_controller_started_at_dispatch": false,
+  "worker_signals_sent_by_launcher": 0,
+  "id": "433f6ffa2ced1126c6ba98256531598e9d9b5db733988b9bc7593113f6db38ee"
+}
