@@ -1,0 +1,13 @@
+{
+  "schema": "v45_natural_handoff_launch.v1",
+  "at": "2026-10-14T15:41:10.801134+00:00",
+  "pid": 2911728,
+  "birth": "441686539",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/handoff_01/protocol/record.json",
+    "sha256": "009c6b0af60f21533d687bfc6cedc7b289bf484ca42eb71ffcd16f8fbd68b9b0",
+    "id": "2781d00a0d20ddf181336307d5acaf98da789cfbbb5e170e58ca11ec10dded2a"
+  },
+  "worker_signals_sent": 0,
+  "id": "3c97f175159b3862518b37b4187b078fb9b49a3a99e06c93f3b6221711208099"
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "v45_explicit_five_worker_authority.v1",
+  "at": "2026-10-14T15:40:24.484363+00:00",
+  "user_instruction": "修改此问题",
+  "user_consent": "修改此问题",
+  "five_worker_authorization": "暂时增至五个",
+  "dispatch_priority_authorization": "GPU2，5应当都可派发任务，此轮修订尽量将这两张显卡利用起来",
+  "dispatch_priority": [
+    5,
+    2,
+    0,
+    4,
+    3,
+    7,
+    1,
+    6
+  ],
+  "max_gpu_workers": 5,
+  "max_workers_per_gpu": 1,
+  "host_ram_admission_changed": true,
+  "host_ram_runtime_hard_gates_unchanged": true,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "prior_time_and_safe_recovery_authority_inherited": true,
+  "new_sampling_or_optimizer_dose_authorized": false,
+  "logical_class_shards": 4,
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/protocol/record.json",
+    "sha256": "4c7012992bcf5b9c4bd77fb89835bc20afc38736f8e0eb3cf3d4191671b41f27",
+    "id": "93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60"
+  },
+  "manual_stop_terminates_supervision": true,
+  "id": "2c681273dca621667a632cb9f405ac4d13ee14908754af3392dacba89a8a2531"
+}

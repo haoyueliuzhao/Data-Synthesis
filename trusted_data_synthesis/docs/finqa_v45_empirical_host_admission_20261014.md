@@ -54,3 +54,15 @@ CPU核验重点覆盖预算映射、上取整与安全余量、实时RSS与历�
 本次100项不同CPU/mock用例通过：controller、supervisor和inheritance共69项，用时20.71秒；admission、消费者路由与handoff共31项，用时3.09秒。相关脚本和测试静态检查通过，重跑的中间调试用例不重复计数。缺失观测、进程退出竞态、第五槽位、GPU5优先及GPU5不满足时选择GPU2均有覆盖。
 
 81文件候选包的实际CPU依赖核验通过，加载新入口、原V43和cold worker、原V37评价及交接原语，逐一确认来自同一候选封存路径。历史证据绑定和新计划校验通过，23:11样例的新class准入结果为389.29GiB；CUDA未初始化、模型未构造、API及科学阶段派发均为0。正式封存后的核验和启动状态另列如下。
+
+## 正式冻结与交接启动
+
+源提交 `bdcad252f583e56e9a873503bc6b6d280a985531` 已推送。81文件实施包ID为 `c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d`，准备ID为 `a027dd7eddd35524a3ed548d5c649e97ec1016b7bc69c94b23f4374a6af9ebd2`。正式包CPU依赖与主存策略核验通过，记录ID `10b3a36d0098d0bc9319657ed0507e13466c5721e5213ca82b07d720c68e5609`，仍未初始化CUDA或执行科学阶段。
+
+唯一冻结 `finqa_v45_supervisor.py migrate` 入口于23:41:10实际启动，PID2911728、birth `441686539`。该进程在自然交接通过后转为V45监督器，不另起第二个迁移或监督入口。23:42:20核验为DRAINING_NATURALLY，持有GPU1、2、5、6、7的项目租约；这些租约不独占物理显卡、不占用显存，也不是GPU2或GPU5已被科学派发的证据。向科学worker和旧监督器发送的信号均为0。
+
+此时V43实际worker为GPU4 C-only389 step894 distribution、GPU0 Full389 step596 R3回放、GPU3 Static389训练。C-only389的R3已自然结束并进入distribution，不再沿用先前“两R3加一训练”的描述。新V45科学protocol和launch均尚未创建，当前旧科学调度仍按V43规则运行；五worker新上限、主存预算和GPU5/2优先序尚未生效。
+
+同一23:42快照的有效可用RAM为733.07GiB，新增class按原公式需要820.05GiB，按新预算则为404.05GiB。该对照明确以“假设新策略已启用”记录，没有旁路派发任务。GPU2与GPU5分别空闲60979MiB和77487MiB，约59.55GiB和75.67GiB，均满足目前最严格48GiB阶段GPU准入；实际派发仍须在交接后重新观测。
+
+启动证据见 `host_memory_admission_01/handoff_started_verification/record.json`，ID `4bd9925c2c4121b1195db74102a09659031c2f29b86257b5048ee311b67cc346`。交接期间查看新 `handoff_01/status.json` 及旧 `recovery_04/queue/status.json`；新科学运行以 `host_memory_admission_01/supervisor/queue/status.json`、当前attempt队列和真实launch回执为准。不得重复运行prepare、migrate或旧V44入口，不以准备完成代替实际生效证据。

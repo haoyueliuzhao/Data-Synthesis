@@ -1,0 +1,15 @@
+{
+  "schema": "v45_single_natural_drain_then_supervise_entry.v1",
+  "at": "2026-10-14T15:41:10.799618+00:00",
+  "pid": 2911728,
+  "birth": "441686539",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/preparation/record.json",
+    "sha256": "3610e63efecadb47000a0bdd8dede7c865fe3930b4fda6b7a20daa9829d88fbd",
+    "id": "a027dd7eddd35524a3ed548d5c649e97ec1016b7bc69c94b23f4374a6af9ebd2"
+  },
+  "handoff_mode": "pinned_natural_lease_drain",
+  "worker_signals_allowed": false,
+  "scientific_controller_started": false,
+  "id": "9830306345a35a92c8dfa38438d293a2013276518fb849594c5c9911d4054573"
+}

@@ -94,6 +94,8 @@ V44已以源提交 `2c9d7a781149ef9e9c429e97b71e293b5a04d2c1` 冻结74文件，�
 
 用户进一步要求“GPU2，5应当都可派发任务，此轮修订尽量将这两张显卡利用起来”。V45在冻结前将派发优先序调整为GPU5、2、0、4、3、7、1、6，优先让5与2承接原队列待执行阶段；仅在实时主存、显存、租约与原状态门通过时派发，不新加科学任务填卡、不迁移或中断现有worker。新优先序与主存修订均以V45实际启动为生效依据，不能把准备期显卡可用称为已经派发。
 
+V45已以源提交 `bdcad252f583e56e9a873503bc6b6d280a985531` 冻结81文件，原V44全部74文件逐字保留；实施包ID `c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d`，准备ID `a027dd7eddd35524a3ed548d5c649e97ec1016b7bc69c94b23f4374a6af9ebd2`。100项不同CPU/mock用例、相关静态检查与正式冻结CPU依赖核验通过。唯一新migrate于2026-10-14 23:41:10启动，PID2911728、birth `441686539`；23:42为DRAINING_NATURALLY，持GPU1、2、5、6、7项目租约，worker及旧监督器信号均0。旧V43仍有GPU4 distribution、GPU0 R3、GPU3 train三个worker，V45科学protocol/launch尚未创建；新主存预算、五上限和GPU5/2优先序此时尚未生效。23:42快照中新class准入由旧820.05GiB降为假设新策略下404.05GiB，有效可用733.07GiB；这是公式对照，不是实际派发。启动证据在 `host_memory_admission_01/handoff_started_verification/record.json`。不得重复启动migrate或监督器，交接成功由同进程单次接续；进度查看新handoff及旧recovery_04队列，真实生效查看新supervisor/queue与launch。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
