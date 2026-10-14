@@ -84,6 +84,10 @@ V42停止后累计资源等待继承93720秒，上限仍129600秒；Full251894�
 
 V43于2026-10-14以源提交 `253602fd09a0d6dde04ae6308d2e21ab9066ded2` 冻结67文件，协议ID `93d74f870865e1ecd40b93c77155d8a2fb00d33ef47960cd33c99847af731d60`，119项CPU用例及正式冻结依赖核验通过。监督器于15:18实际启动，PID2068024、birth `438667686`；科学控制器PID2068036、birth `438667781`。GPU0、4占位均已释放并真实退出；首次科学worker派发至GPU0、4、3。15:25时Full251 distribution已真实exit0并在GPU0派发train，C-only389原450题加11题新完成共461题，获批的唯一重新执行已实际返回并完整封存，Full389新增4份完整任务梯度；已观测资源门通过。监督器仍在第一attempt运行，自动后继尚未实际触发，整轮及统一准确率评分未完成。启动证据见 `recovery_04/startup_verification/record.json`；进度看 `recovery_04/supervisor/queue/status.json` 与当前attempt的 `queue/status.json`，不得重复启动监督器、旧controller或migrate入口。
 
+用户于2026-10-14在了解六worker的主存预留限制后明确选择“暂时增至五个”。V44独立登记在 `production_resume_01/concurrency_five_01/`，仅把本轮原九模型剩余工作的总worker上限改为5；每卡最多1、初始化与draining计入名额、原四个逻辑class分片、分阶段显存门、160/192GiB RSS上限、全机96GiB有效RAM余量及按RSS上限全额预留的启动主存公式均不变，不自动采用实测峰值准入，不以五并发为由扩展数学或采样剂量。新交接逐步取得自然释放的八卡项目GPU租约，不信号worker；全部已派worker成功封存并真实退出、全锁和新鲜空队列及同点预检通过后，才停止核验身份的旧监督器并确认监督器/控制器退出，单次启动新版本。未派发class分片可留到新目录，但原完整任务缓存只读复用。交接绑定的旧attempt/身份变化或旧失败即释放锁并停止，不自动追随。V43冻结源码和历史停止不回写，无截止与安全断点自动恢复继续，但明确停止不自动拉起。文档与实际生效状态见 `trusted_data_synthesis/docs/finqa_v44_five_worker_handoff_20261014.md`；准备或交接启动不能称五worker已经运行。
+
+用户随后询问GPU5是否有待安排任务。V44将设备优先顺序登记为GPU0、4、5、2、3、7、1、6，优先使用当前显存余量较大的GPU5、2承接后续任务；不迁移正在运行的worker、不绕过主存门。22:27只读快照显示Full2511192四class分片未派发，GPU5空闲75.67GiB，但新增class需约808.99GiB有效RAM而当时仅约695.66GiB，因而没有侧路增派。新顺序只在新版本实际启动后生效，旧冻结V43顺序不回写。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
