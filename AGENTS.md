@@ -68,6 +68,12 @@ V40首点恢复已于2026-10-13 03:42:41北京时间通过实际生产验收：F
 
 V41已以源提交 `31accb1dd1` 完成独立准备，51文件实施包ID `3b2fae948fe19714e4ca69a118de432d5a80f7868c69c2cda88362e91f5bf585`，准备ID `2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0`；最终208项CPU/mock测试和冻结CPU实际依赖核验通过。被动观察器PID107401、birth `429115174` 已启动，10月13日12:46观察为 `WAITING_FOR_SAFE_NATURAL_BOUNDARY`、barrier_gpus为空，未向worker或旧controller发信号；旧V40三R3 worker继续运行。交接绝对上限为10月14日03:02:57.308361北京时间。新科学协议和新科学launch当时尚未创建，不能称新准入已生效。不得重复启动 `migrate`；进度同时查看 `recovery_02/controlled_admission_handoff_01/` 与 `admission_relaxation_01/`。首次未启动准备因引用结构假设被拒绝，完整保留于 `admission_relaxation_preparation_rejected_01/`；它未注册handoff、未发信号或启动科学worker，不能改写为实验资源失败，也不能借此重试任何科学阶段。
 
+V41被动观察器已于2026-10-14 03:02:57北京时间以 `STOPPED_NO_MIGRATION` 到期退出，没有发送worker/controller信号或启动新科学控制器。旧V40随后因Full251 step894 distribution在CUDA前等待原准入超过两小时阶段期限，于10:08触发全池停止，10:19以 `PAUSED_DURABLE_BOUNDARY_NO_AUTO_RESUME` 收口，所有旧进程已退出。五个模型及终点回答已封存，实际剩2355次optimizer更新、7次outer和四模型4588题终点回答。C-only389 step894的virtual退出码为-9且无完整result；不能称全部反馈无损可续，也不能将V41已登记策略称为已生效。
+
+用户2026-10-14明确“重启实验”，并对两项有界例外回复“批准”。V42仅在独立 `production_resume_01/recovery_03/` 恢复原矩阵，直接使用已授权的V41分阶段共享GPU准入，不能重启旧handoff/migrate或修改历史冻结文件。累计资源等待上限获准由24小时增至36小时，保守合并旧已用93466秒不归零，新初始化继续计费；Full251 step894 distribution另登记一次首次新派发起最多2小时窗口，只读继承完整class、700题反馈和474条已完成回放。其余阶段期限与24小时outer累计不变：C-only389 step894 virtual原截止为10月14日20:03:26.573293，Full389 step596 class原截止为10月14日18:25:29.408443，未授权自动延长。三个未提交outer分别继承45784、29611、10541秒已用计算时间。
+
+本次批准的唯一反馈重新执行限C-only389 step894：draw0完整350题、draw1前100题合计450题及旧记录只读保留；draw1第101题只有step0调用意图、无返回断点，获准按原point/config/seed重新执行该请求一次，再首次执行余249题。旧未返回意图不能删除或伪装成从未调用，本次不能称零重采样；700题齐全后才首次执行原反馈评分。原已保存G/theta_bar只读恢复，不重做class或虚拟点数学。Full389 step596仅补未封存467题，父277份完整任务梯度（包括失败分片内已封存91题）只读复用；旧中断题未封存5行不算断点。已接受pilot与五个终点不重跑，全九模型后统一评分，失败停止不自动重试。细节和实际启动状态见 `trusted_data_synthesis/docs/finqa_v42_partial_feedback_recovery_20261014.md`；新授权或实现完成不等于已经实际派发。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
