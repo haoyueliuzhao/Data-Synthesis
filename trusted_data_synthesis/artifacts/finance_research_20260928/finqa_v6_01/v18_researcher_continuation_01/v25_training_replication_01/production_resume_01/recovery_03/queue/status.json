@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-14T04:29:45.203659+00:00",
+  "phase": "STOPPED_FAILURE_NO_RETRY",
+  "protocol_id": "a3dadb9bae17148fc65527e06875dcafa42ad4d5886e1e340d95cc3b514ad352",
+  "active_children": [],
+  "pilot_accepted": true,
+  "accepted_new_optimizer_updates": 3455,
+  "global_external_resource_wait_seconds": 93719.79614323378,
+  "accepted_new_outer_updates": 8,
+  "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+  "completed_training_coordinates": [
+    {
+      "seed": 137,
+      "arm": "C-only"
+    },
+    {
+      "seed": 137,
+      "arm": "Full"
+    },
+    {
+      "seed": 137,
+      "arm": "Static"
+    },
+    {
+      "seed": 251,
+      "arm": "C-only"
+    },
+    {
+      "seed": 251,
+      "arm": "Static"
+    }
+  ],
+  "completed_evaluation_coordinates": [
+    {
+      "seed": 137,
+      "arm": "C-only"
+    },
+    {
+      "seed": 137,
+      "arm": "Full"
+    },
+    {
+      "seed": 137,
+      "arm": "Static"
+    },
+    {
+      "seed": 251,
+      "arm": "C-only"
+    },
+    {
+      "seed": 251,
+      "arm": "Static"
+    }
+  ],
+  "original_B_resume_authorized": true,
+  "pre_cuda_waiters": [],
+  "inherited_resource_wait_seconds": 93689,
+  "original_time_budgets_reset": false,
+  "stopped_admission_observation_errors": [],
+  "error_type": "ValueError",
+  "error": "worker reported failure: virtual_point",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true
+}

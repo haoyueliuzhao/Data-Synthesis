@@ -1,0 +1,24 @@
+{
+  "schema": "v42_single_bounded_recovery_launch.v1",
+  "at": "2026-10-14T04:26:14.041876+00:00",
+  "protocol_id": "a3dadb9bae17148fc65527e06875dcafa42ad4d5886e1e340d95cc3b514ad352",
+  "pid": 1881109,
+  "birth": "437636685",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "-B",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_03/implementation/finqa_v42_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_03"
+  ],
+  "inherited_resource_wait_before_initialization": 93466,
+  "initialization_wall_seconds": 222.12826585769653,
+  "inherited_global_wait_at_dispatch": 93689,
+  "cumulative_resource_wait_limit_seconds": 129600,
+  "accepted_pilot_repeated": false,
+  "independent_recovery_not_clean_handoff": true,
+  "automatic_restart": false,
+  "id": "4514993f749a416594bdf3287a42256f6b65844b3ef413e5e6773aad79407c9e"
+}

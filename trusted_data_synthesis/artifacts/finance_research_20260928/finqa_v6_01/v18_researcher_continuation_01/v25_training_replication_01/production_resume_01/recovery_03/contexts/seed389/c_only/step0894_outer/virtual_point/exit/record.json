@@ -1,0 +1,12 @@
+{
+  "schema": "v37_actual_stage_exit.v1",
+  "at": "2026-10-14T04:28:42.105759+00:00",
+  "protocol_id": "a3dadb9bae17148fc65527e06875dcafa42ad4d5886e1e340d95cc3b514ad352",
+  "context_id": "fb2d04ed951f4500e4fd6f9efd5f42f860ad7a7b34fb570115c854f15ddc8e63",
+  "stage": "virtual_point",
+  "returncode": 1,
+  "stop_requested": true,
+  "no_retry": true,
+  "elapsed_worker_wall_seconds": 116.49815131723881,
+  "id": "56696d1e568c5754ca6d18a56b11bf9b1164da1d8155f5f3caf10c9699c54676"
+}

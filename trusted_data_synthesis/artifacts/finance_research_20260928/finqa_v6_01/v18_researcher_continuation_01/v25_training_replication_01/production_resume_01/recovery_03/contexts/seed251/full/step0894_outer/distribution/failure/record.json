@@ -1,0 +1,45 @@
+{
+  "schema": "v42_stage_failure_no_retry.v1",
+  "at": "2026-10-14T04:29:08.221821+00:00",
+  "protocol_id": "a3dadb9bae17148fc65527e06875dcafa42ad4d5886e1e340d95cc3b514ad352",
+  "context_id": "f64c4562a052e9ee3f67d3f05f7e2872a2c01ccbabb3790b7130c6c4fef15c3d",
+  "stage": "distribution",
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed251/full/step0894_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_03/contexts/seed251/full/step0894_outer",
+  "error_type": "AdmissionStopped",
+  "error": "safe stop requested before CUDA admission",
+  "failure_classification": "STAGE_FAILURE_NO_RETRY",
+  "stop_evidence": {
+    "received_signals": [
+      {
+        "signal_number": 15,
+        "signal_name": "SIGTERM",
+        "received_epoch": 1791952122.0877354,
+        "received_monotonic": 4376517.265157352,
+        "sender_identity_available": false,
+        "sender_pid": null,
+        "source": "python_signal_handler_receipt"
+      }
+    ],
+    "sender_attribution": "unknown",
+    "signals_ignored": false,
+    "automatic_restart": false,
+    "signal_handler_performed_IO": false,
+    "stop_requested": true,
+    "stop_reason": "signal:15"
+  },
+  "response_pause_report": null,
+  "automatic_retry": false,
+  "durable_replay_checkpoint": null,
+  "resources": null,
+  "telemetry": null,
+  "complete_task_caches_preserved": true,
+  "API_calls": 0,
+  "memory_phase": "distribution",
+  "minimum_free_mib": 24576,
+  "gpu_admission_policy_schema": "v41_phase_specific_shared_gpu_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "3ac142df8bd953f525fbb79a98c8ef6cf8bd89522f51ba79df224ad07b903e01"
+}

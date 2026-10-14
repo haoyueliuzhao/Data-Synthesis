@@ -1,0 +1,281 @@
+{
+  "schema": "v42_stage_failure_no_retry.v1",
+  "at": "2026-10-14T04:28:56.228270+00:00",
+  "protocol_id": "a3dadb9bae17148fc65527e06875dcafa42ad4d5886e1e340d95cc3b514ad352",
+  "context_id": "58773e2984b831f601aad695835897d8a321394179f55db24d52f5a186ea1950",
+  "stage": "shard01",
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed389/full/step0596_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_03/contexts/seed389/full/step0596_outer",
+  "error_type": "TailStopRequested",
+  "error": "stop requested at class_row_end",
+  "failure_classification": "STAGE_FAILURE_NO_RETRY",
+  "stop_evidence": {
+    "received_signals": [
+      {
+        "signal_number": 15,
+        "signal_name": "SIGTERM",
+        "received_epoch": 1791952122.1020644,
+        "received_monotonic": 4376517.279486624,
+        "sender_identity_available": false,
+        "sender_pid": null,
+        "source": "python_signal_handler_receipt"
+      }
+    ],
+    "sender_attribution": "unknown",
+    "signals_ignored": false,
+    "automatic_restart": false,
+    "signal_handler_performed_IO": false,
+    "stop_requested": true,
+    "stop_reason": "signal:15"
+  },
+  "response_pause_report": null,
+  "automatic_retry": false,
+  "durable_replay_checkpoint": null,
+  "resources": {
+    "all_gates_passed": false,
+    "observations": [
+      {
+        "event": "tail_memory_observation",
+        "sequence": 1,
+        "label": "before_model_load",
+        "boundary": true,
+        "monotonic_seconds": 4376440.248867305,
+        "allocated_bytes": 0,
+        "reserved_bytes": 0,
+        "peak_allocated_bytes": 0,
+        "peak_reserved_bytes": 0,
+        "free_bytes": 32180142080,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 1974894592,
+          "peak_rss_bytes": 1974894592,
+          "available_bytes": 781949050880,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 2,
+        "label": "after_model_load.before_cleanup",
+        "boundary": false,
+        "monotonic_seconds": 4376494.695171667,
+        "allocated_bytes": 15262560256,
+        "reserved_bytes": 15284043776,
+        "peak_allocated_bytes": 15282745856,
+        "peak_reserved_bytes": 15284043776,
+        "free_bytes": 16816406528,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2334588928,
+          "peak_rss_bytes": 17476501504,
+          "available_bytes": 771713921024,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 3,
+        "label": "after_model_load.after_cleanup",
+        "boundary": true,
+        "monotonic_seconds": 4376494.994061591,
+        "allocated_bytes": 15262560256,
+        "reserved_bytes": 15263072256,
+        "peak_allocated_bytes": 15282745856,
+        "peak_reserved_bytes": 15284043776,
+        "free_bytes": 16837378048,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2334588928,
+          "peak_rss_bytes": 17476501504,
+          "available_bytes": 771000565760,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 4,
+        "label": "before_task_class_gradients.before_cleanup",
+        "boundary": false,
+        "monotonic_seconds": 4376506.965906318,
+        "allocated_bytes": 15262560256,
+        "reserved_bytes": 15263072256,
+        "peak_allocated_bytes": 15282745856,
+        "peak_reserved_bytes": 15284043776,
+        "free_bytes": 16837378048,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3891724288,
+          "peak_rss_bytes": 17476501504,
+          "available_bytes": 771223625728,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 5,
+        "label": "before_task_class_gradients.after_cleanup",
+        "boundary": true,
+        "monotonic_seconds": 4376507.301354839,
+        "allocated_bytes": 15262560256,
+        "reserved_bytes": 15263072256,
+        "peak_allocated_bytes": 15282745856,
+        "peak_reserved_bytes": 15284043776,
+        "free_bytes": 16837378048,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3891724288,
+          "peak_rss_bytes": 17476501504,
+          "available_bytes": 773517565952,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 6,
+        "label": "class_row_end",
+        "boundary": true,
+        "monotonic_seconds": 4376531.402900884,
+        "allocated_bytes": 15409509376,
+        "reserved_bytes": 16934502400,
+        "peak_allocated_bytes": 16344979968,
+        "peak_reserved_bytes": 16934502400,
+        "free_bytes": 14989787136,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "package_id": "v10gen:5cac528452202cc522b35217e763c41e1c5fc1dcdc3c9497a460298e4e7db368",
+          "package_row": 0,
+          "completed_rows": 1
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": true,
+        "passed": false,
+        "host": {
+          "rss_bytes": 54737760256,
+          "peak_rss_bytes": 54737760256,
+          "available_bytes": 722369622016,
+          "rss_limit_bytes": 171798691840,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": 1791973529.4084427,
+        "deadline_pass": true
+      }
+    ],
+    "limits_unchanged": true,
+    "peak_resets_before_model_load": 1,
+    "peak_resets_after_model_loading_begins": 0,
+    "helper_peak_reset_calls": 0,
+    "maximum_allocated_bytes": 81604378624,
+    "minimum_device_free_bytes": 2147483648,
+    "observed_peak_allocated_bytes": 16344979968,
+    "observed_minimum_boundary_free_bytes": 14989787136,
+    "host": {
+      "rss_limit_bytes": 171798691840,
+      "available_reserve_bytes": 103079215104,
+      "all_passed": true,
+      "max_observed_peak_rss_bytes": 54737760256,
+      "min_observed_available_bytes": 722369622016
+    }
+  },
+  "telemetry": {
+    "sampling_interval_seconds": 1,
+    "sample_count": 82,
+    "sampled_max_device_used_bytes": 70106742784,
+    "sampled_max_GPU_utilization_percent": 100,
+    "sampled_mean_GPU_utilization_percent": 44.03658536585366,
+    "process_peak_RSS_bytes": 54737760256,
+    "device_peak_is_sampled_not_continuous": true,
+    "sampler_errors": []
+  },
+  "complete_task_caches_preserved": true,
+  "API_calls": 0,
+  "memory_phase": "class",
+  "minimum_free_mib": 28672,
+  "gpu_admission_policy_schema": "v41_phase_specific_shared_gpu_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "e5de895cb656f4ab1f046d17dd7987da8211ccacd40bf363bb846c54a58f0743"
+}

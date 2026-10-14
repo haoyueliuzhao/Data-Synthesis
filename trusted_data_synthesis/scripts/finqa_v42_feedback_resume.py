@@ -12,6 +12,7 @@ import copy
 import hashlib
 import importlib
 import json
+import re
 from pathlib import Path
 from types import FunctionType
 
@@ -347,9 +348,109 @@ def prepare_feedback_overlay(binding, context, *, immutable):
     return target
 
 
-async def execute_remaining_draw(root, provider, binding, *, storage, stop_requested, boundary):
+def validate_reexecution_intent(old_event, new_event, *, contracts, registered_provider=None):
+    """Match the scientific request, verifying fresh audit-only UUID scope.
+
+    The original V7 executor does not supply invocation_context: its harness
+    mints fresh ephemeral run/episode IDs. These are not provider input and must
+    not be forged to impersonate the unresolved old invocation. Every scientific
+    request, actual point and turn field remains exact.
+    """
+    require(
+        old_event["kind"] == new_event["kind"] == "model_call_intent"
+        and old_event["step"] == new_event["step"] == 0,
+        "reexecution must target the original step0 model-call intent",
+    )
+    old, new = old_event["payload"], new_event["payload"]
+    fields = {
+        "messages",
+        "tools",
+        "config",
+        "request_sha256",
+        "harness_invocation",
+        "invocation_id",
+    }
+    require(set(old) == set(new) == fields, "reexecution intent fields changed")
+    request_keys = ("messages", "tools", "config")
+    old_request = {key: old[key] for key in request_keys}
+    new_request = {key: new[key] for key in request_keys}
+    require(
+        old_request == new_request
+        and old["request_sha256"] == digest(old_request)
+        and new["request_sha256"] == digest(new_request)
+        and old["request_sha256"] == new["request_sha256"],
+        "explicit reexecution must use the exact original request and request digest",
+    )
+    invocations = []
+    for payload in (old, new):
+        value = payload["harness_invocation"]
+        require(
+            set(value)
+            == {
+                "run_id",
+                "episode_id",
+                "attempt_index",
+                "turn_index",
+                "invocation_id",
+                "point_id",
+                "parameter_digest",
+            }
+            and type(value["attempt_index"]) is int
+            and value["attempt_index"] == 0
+            and type(value["turn_index"]) is int
+            and value["turn_index"] == 0
+            and all(
+                isinstance(value[key], str) and re.fullmatch(r"ephemeral:[0-9a-f]{32}", value[key])
+                for key in ("run_id", "episode_id")
+            ),
+            "reexecution requires the original V7 ephemeral step0 audit-scope contract",
+        )
+        expected = contracts.invocation_identity(value, turn_index=0)
+        expected.update(point_id=value["point_id"], parameter_digest=value["parameter_digest"])
+        require(
+            value == expected and payload["invocation_id"] == value["invocation_id"],
+            "reexecution invocation identity is not internally consistent",
+        )
+        if registered_provider is not None:
+            require(
+                all(
+                    value[key] == registered_provider[key]
+                    for key in ("point_id", "parameter_digest")
+                ),
+                "reexecution invocation does not match the registered actual model point",
+            )
+        invocations.append(value)
+    old_invocation, new_invocation = invocations
+    require(
+        all(
+            old_invocation[key] == new_invocation[key]
+            for key in ("point_id", "parameter_digest", "attempt_index", "turn_index")
+        ),
+        "reexecution point, parameter or turn coordinates changed",
+    )
+    require(
+        old_invocation["run_id"] != new_invocation["run_id"]
+        and old_invocation["episode_id"] != new_invocation["episode_id"]
+        and old_invocation["invocation_id"] != new_invocation["invocation_id"],
+        "reexecution must retain fresh audit identity, not impersonate the old invocation",
+    )
+    return dict(
+        scientific_request_sha256=new["request_sha256"],
+        original_harness_invocation=copy.deepcopy(old_invocation),
+        new_harness_invocation=copy.deepcopy(new_invocation),
+        scientific_request_identical=True,
+        old_invocation_identity_reused=False,
+        old_unreturned_outcome_remains_unknown=True,
+        provider_call_has_not_started=True,
+    )
+
+
+async def execute_remaining_draw(
+    root, provider, binding, *, storage, stop_requested, boundary, record_reexecution=None
+):
     """Original executor/harness with an episode-boundary stop and intent guard."""
     original_sink = storage.EventSink
+    contracts = importlib.import_module(storage.__name__.rsplit(".", 1)[0] + ".contracts")
     old_intent = json.loads(read_ref(binding["unknown_request"]["old_intent"]))
     allowed = [binding["unknown_request"]["episode_key"], *binding["first_time_episode_keys"]]
     started = []
@@ -373,10 +474,14 @@ async def execute_remaining_draw(root, provider, binding, *, storage, stop_reque
                 and event["kind"] == "model_call_intent"
                 and event["step"] == 0
             ):
-                require(
-                    event["payload"] == old_intent["payload"],
-                    "explicit reexecution must use the exact original request and invocation",
+                mapping = validate_reexecution_intent(
+                    old_intent,
+                    event,
+                    contracts=contracts,
+                    registered_provider=binding.get("registered_provider"),
                 )
+                if record_reexecution is not None:
+                    record_reexecution(mapping)
             return super().__call__(event)
 
     namespace = dict(storage.execute_run.__globals__, EventSink=BoundarySink)
@@ -435,6 +540,28 @@ def execute_virtual(
         provider = rt.v8.LocalTorchProvider(
             driver.model, driver.tokenizer, identity, parameter_tensors=installed
         )
+
+        def record_reexecution(mapping):
+            # Sealed after semantic validation, before the original intent write
+            # and provider.chat. This does not claim a model call occurred.
+            require(
+                root
+                == Path(binding["new_feedback_base_root"]).resolve() / digest(binding["point_id"]),
+                "reexecution audit escaped the registered fresh feedback view",
+            )
+            control.publish(
+                root.parent / "reexecution_invocation_link/record.json",
+                dict(
+                    schema="v42_semantic_request_fresh_invocation_link.v1",
+                    at=control.now(),
+                    context_id=context["id"],
+                    feedback_resume_binding_id=binding["id"],
+                    episode_key=binding["unknown_request"]["episode_key"],
+                    original_intent=binding["unknown_request"]["old_intent"],
+                    **mapping,
+                ),
+            )
+
         asyncio.run(
             execute_remaining_draw(
                 root / "draw1",
@@ -445,6 +572,7 @@ def execute_virtual(
                 boundary=lambda: monitor.snapshot(
                     "feedback_resume_episode_boundary", boundary=True
                 ),
+                record_reexecution=record_reexecution,
             )
         )
         new_calls = provider.actual_model_calls

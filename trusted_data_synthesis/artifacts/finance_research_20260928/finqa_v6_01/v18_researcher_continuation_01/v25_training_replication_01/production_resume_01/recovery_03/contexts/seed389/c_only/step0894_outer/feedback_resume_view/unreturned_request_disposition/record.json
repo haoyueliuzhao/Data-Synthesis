@@ -1,0 +1,33 @@
+{
+  "binding_id": "628e7d4a8983dd7dfe5415cbfb8d1c8317e85467c294c4837ca278139ac1d6e0",
+  "complete_episodes_reexecuted": 0,
+  "disposition": "one_explicit_same_request_reexecution",
+  "maximum_reexecutions": 1,
+  "original_intent_deleted": false,
+  "previous": {
+    "draw": 1,
+    "episode_key": "1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f",
+    "index": 100,
+    "maximum_reexecutions": 1,
+    "old_events": [
+      {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/draw1/events/1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f/000000/event.json",
+        "sha256": "7e6b668492bf9e4e6364606cac39b761099e87d97bbe24e33c0ff0136206e469"
+      },
+      {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/draw1/events/1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f/000001/event.json",
+        "sha256": "e4a7858af98b3322b9893935c362ad12359c4650547ed248959490252bc94528"
+      }
+    ],
+    "old_intent": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/draw1/events/1570f71edeaaf4b5481cf32de1b8e4b856d17c0f2bd2f8c966a7f7a113d8409f/000001/event.json",
+      "sha256": "e4a7858af98b3322b9893935c362ad12359c4650547ed248959490252bc94528"
+    },
+    "previous_actual_call_outcome": "unknown_no_token_receipt",
+    "request_sha256": "7c2508103df9e907d048a1e493d3ce6c9c147acd9c6fc88d8190be59cce68d4c",
+    "step": 0,
+    "task": "finqa/AES/2003/page_168.pdf-3"
+  },
+  "previous_outcome_remains_unknown": true,
+  "schema": "v42_explicit_unknown_request_disposition.v1"
+}

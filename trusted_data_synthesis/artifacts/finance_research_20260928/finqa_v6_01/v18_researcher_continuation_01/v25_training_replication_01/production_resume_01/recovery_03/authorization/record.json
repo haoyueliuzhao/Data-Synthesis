@@ -1,0 +1,57 @@
+{
+  "schema": "v42_explicit_bounded_restart_authority.v1",
+  "at": "2026-10-14T04:22:31.913597+00:00",
+  "user_instruction": "重启实验",
+  "bounded_exception_answer": "批准",
+  "user_consent": "批准",
+  "global_resource_wait_budget_seconds": 129600,
+  "distribution_window_seconds": 7200,
+  "unknown_request_reexecution_authorized": true,
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/failure/record.json",
+    "sha256": "81f1b5850356b7b368d7038cc2093afa717134db44bdbe373f92af6a03059376",
+    "id": "195d7d9aede61da0e297f3baa6d3b00f23b162d3087412b5db7f004c37afd1d1"
+  },
+  "source_commit": "ddf893a4bc77d88062b456a078ee0c5df14b0963",
+  "bounded_exceptions": {
+    "global_resource_wait": {
+      "previous_limit_seconds": 86400,
+      "new_cumulative_limit_seconds": 129600,
+      "inherited_used_seconds": 93466,
+      "initialization_wall_charged": true,
+      "counter_reset": false
+    },
+    "distribution": {
+      "coordinate": [
+        251,
+        "Full",
+        894
+      ],
+      "window_seconds": 7200,
+      "starts_at_first_dispatch": true,
+      "automatic_retry": false
+    },
+    "feedback": {
+      "coordinate": [
+        389,
+        "C-only",
+        894
+      ],
+      "read_only_complete_episodes": 450,
+      "one_unreturned_request_reexecution": 1,
+      "never_dispatched_episodes": 249,
+      "original_episode_budget": 700,
+      "automatic_retry": false
+    }
+  },
+  "prior_memory_policy": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/admission_relaxation_01/preparation/record.json",
+    "sha256": "243968396db5c7bb79fe140190990a7766e2f940c723a4b4aa0cbf63ea743bc9",
+    "id": "2b0e6e060794b6801cf8ed2581f67cc9e6de94cb6fb35bf7cef136f2708576b0"
+  },
+  "original_outer_compute_budget_seconds": 86400,
+  "no_new_pilot": true,
+  "automatic_retry": false,
+  "old_records_modified": false,
+  "id": "79ff1a530fbf01efb6b04dee26ea642ff7876a2ed023ff9450d1be49b6496c7d"
+}
