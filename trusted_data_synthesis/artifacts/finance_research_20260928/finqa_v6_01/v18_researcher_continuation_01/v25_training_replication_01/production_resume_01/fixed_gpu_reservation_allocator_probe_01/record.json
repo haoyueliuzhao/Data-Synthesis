@@ -1,0 +1,91 @@
+{
+  "allocator_backend": "native",
+  "allocator_configuration": "backend:native,expandable_segments:False",
+  "anchor_bytes": 2097152,
+  "at": "2026-10-15T13:39:04.507116+00:00",
+  "before": {
+    "free": 38727450624,
+    "reserved": 0
+  },
+  "cpu_and_cuda_rng_unchanged": true,
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+  "lifetime_allocated_peak_bytes": 2147483648,
+  "minimum_observed_free_bytes": 36579966976,
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "pid": 1574358,
+  "probe_bytes": 2147483648,
+  "provider_calls": 0,
+  "reserved_after_release_bytes": 0,
+  "schema": "v47_native_allocator_anchor_probe.v1",
+  "scientific_responses_replayed": 0,
+  "scope": "allocator behavior only; not a scientific-stage or full-size memory acceptance",
+  "segment_after_empty_cache": {
+    "active_size": 2097152,
+    "address": 125677185531904,
+    "allocated_size": 2097152,
+    "blocks": [
+      {
+        "address": 125677185531904,
+        "frames": [],
+        "requested_size": 2097152,
+        "size": 2097152,
+        "state": "active_allocated"
+      },
+      {
+        "address": 125677187629056,
+        "frames": [],
+        "requested_size": 2147483648,
+        "size": 2145386496,
+        "state": "inactive"
+      }
+    ],
+    "device": 0,
+    "frames": [],
+    "is_expandable": false,
+    "requested_size": 2097152,
+    "segment_pool_id": [
+      0,
+      0
+    ],
+    "segment_type": "large",
+    "stream": 0,
+    "total_size": 2147483648
+  },
+  "segment_after_reuse_and_empty_cache": {
+    "active_size": 2097152,
+    "address": 125677185531904,
+    "allocated_size": 2097152,
+    "blocks": [
+      {
+        "address": 125677185531904,
+        "frames": [],
+        "requested_size": 2097152,
+        "size": 2097152,
+        "state": "active_allocated"
+      },
+      {
+        "address": 125677187629056,
+        "frames": [],
+        "requested_size": 1073741824,
+        "size": 2145386496,
+        "state": "inactive"
+      }
+    ],
+    "device": 0,
+    "frames": [],
+    "is_expandable": false,
+    "requested_size": 2097152,
+    "segment_pool_id": [
+      0,
+      0
+    ],
+    "segment_type": "large",
+    "stream": 0,
+    "total_size": 2147483648
+  },
+  "source_sha256": "44cff8c0ae963b754fd3fe4d654d82ee8464d1dae2f15f28b5757da71d0f6916",
+  "status": "COMPLETE",
+  "torch_version": "2.7.1+cu128"
+}

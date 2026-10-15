@@ -106,6 +106,12 @@ V46独立三文件补丁已以提交 `13ea08271cd47bae8170034e8a1a786a4bc6c23f` 
 
 V46于2026-10-15 09:27:50以CLEAN_NATURAL_HANDOFF实际收口，ID `948c04f498038b9a1d34be54dbcb9cb1e278b507fa6367ed65ca07881565d345`。最后Full2511192 shard03于09:26:40真实exit0，随后新GPU3锚点取得、旧V45迁移09:26:43真实退出、八锁09:26:45齐全；29个已派阶段成功退出预检后仅停止旧V43监督器，科学worker信号0。09:27:59新V45科学协议创建，ID `920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf`；09:28:04控制器PID3752585、birth `445207631`启动，监督器仍为V46入口PID3726919。09:29已真实派发5个worker：GPU2 Full2511192 virtual、GPU4 Static389 generate、GPU0/3/6 C-only3891192 shard00/01/02，五份派发RAM/GPU准入通过。V45的原81文件、主存预算和数学不变，新预算/五上限已生效，不再描述为等待切换；GPU5/7本次因外部占用未派发。激活证据见 `queued_handoff_01/activation_verification/record.json`。原矩阵仍未全部完成或统一评分；新监督器已运行，禁止再启动任何旧migrate、queued run或重复新监督器。
 
+V45于2026-10-15 21:21:50以 `STOPPED_FAILURE_NO_RETRY` 停止，监督器随后以 `STOPPED_UNSAFE_FOR_AUTOMATIC_RECOVERY` 退出。触发项为C-only389 step1192 R3内部KV及非KV驻留预算不足，不是已记录的CUDA OOM；已观测外层显存与主存硬门通过，旧分类未识别该内部资源错误。该点日志观察到251/419，但实际可恢复前缀仅240；Full389 step894于全池停止时封存133/540。Full251 step1192的outer已真实提交一次，SFT断点已到1213，不能因train整体失败而重复outer。父 `actual_final_progress/record.json` 记载实际剩1171次optimizer更新、3次outer和三个模型3441条终点回答，六个终点已封存。旧controller和supervisor均已退出，旧失败及冻结包不得回写。
+
+用户于2026-10-15明确要求“恢复任务，后续设置更安全的占用策略保证任务运行，申请固定高显存占用”，随后补充“资源紧张，开放限制，采取更激进的任务分配占用策略”和“取消任务并发数限制”。V47独立目录为 `production_resume_01/fixed_gpu_reservation_01/`：不要求整卡空闲或每卡固定72GiB，按阶段真实需求共享GPU，并在科学worker同进程尽早建立可复用显存预留；取消独立总worker上限，保留已授权GPU0至7及每卡最多一个本实验worker，初始化与draining仍占该卡租约，四个逻辑class分片不变。设备数、任务依赖和实时资源决定实际并发；不得把取消总上限解释为可绕过物理显存、主存或状态门，也不得干预其他项目。
+
+V47初始恢复只读继承上述两个真实R3前缀240/133、同点class及反馈，Full251从step1213后继续；C-only389未封存的11条观测须重算，不能称零重放。两个旧未提交outer共1400题反馈复用，未来Full389 step1192原剂量内首次700题采样保留，六个终点不重跑，仍全九模型后统一评分。原76GiB allocated历史峰值、2GiB规定边界free、160/192GiB RSS硬限和全机96GiB有效主存余量不变；V45经验主存准入继续使用。无截止和安全断点自动恢复继续，但未知反馈、状态绑定或数值错误不得盲目重试，明确停止不自动拉起。新准备、预留小试和源码完成不等于科学任务已实际派发；真实状态以新目录协议、launch、supervisor及worker记录为准，禁止重复启动任何旧入口。详细合同和实际启动结果见 `trusted_data_synthesis/docs/finqa_v47_shared_gpu_reservation_recovery_20261015.md`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
