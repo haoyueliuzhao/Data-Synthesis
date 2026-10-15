@@ -1,0 +1,234 @@
+{
+  "schema": "v36_result_aware_process_lifecycle.v1",
+  "at": "2026-10-15T15:18:09.411463+00:00",
+  "protocol_id": "fd4ceaee6bfa18e1e96d236ee073dc71977ee558ecbb9812eeb65fecf7d15d71",
+  "kind": "host_gpu_process_observation",
+  "host": {
+    "total_bytes": 1081790648320,
+    "available_bytes": 765190193152,
+    "physical_mem_available_bytes": 765190193152,
+    "cgroup_ancestors": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice/session-57541.scope",
+        "memory_max": "max",
+        "memory_current": 18546139136
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice",
+        "memory_max": "max",
+        "memory_current": 139424948224
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice",
+        "memory_max": "max",
+        "memory_current": 778337890304
+      }
+    ]
+  },
+  "gpu_observation": [
+    {
+      "index": 0,
+      "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "total_mib": 81920,
+      "used_mib": 73059,
+      "free_mib": 8096,
+      "processes": [
+        {
+          "pid": 1252427,
+          "used_memory_mib": "29568"
+        },
+        {
+          "pid": 1591745,
+          "used_memory_mib": "43472"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+      "total_mib": 81920,
+      "used_mib": 76517,
+      "free_mib": 4637,
+      "processes": [
+        {
+          "pid": 3737285,
+          "used_memory_mib": "76508"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+      "total_mib": 81920,
+      "used_mib": 74151,
+      "free_mib": 7003,
+      "processes": [
+        {
+          "pid": 2111917,
+          "used_memory_mib": "74142"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+      "total_mib": 81920,
+      "used_mib": 58623,
+      "free_mib": 22532,
+      "processes": [
+        {
+          "pid": 1252579,
+          "used_memory_mib": "798"
+        },
+        {
+          "pid": 1591746,
+          "used_memory_mib": "57810"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "total_mib": 81920,
+      "used_mib": 78874,
+      "free_mib": 2280,
+      "processes": [
+        {
+          "pid": 1252704,
+          "used_memory_mib": "798"
+        },
+        {
+          "pid": 1591747,
+          "used_memory_mib": "48774"
+        },
+        {
+          "pid": 2163413,
+          "used_memory_mib": "29280"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+      "total_mib": 81920,
+      "used_mib": 76521,
+      "free_mib": 4633,
+      "processes": [
+        {
+          "pid": 3737288,
+          "used_memory_mib": "76512"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+      "total_mib": 81920,
+      "used_mib": 73026,
+      "free_mib": 8128,
+      "processes": [
+        {
+          "pid": 1203257,
+          "used_memory_mib": "4056"
+        },
+        {
+          "pid": 1282397,
+          "used_memory_mib": "26782"
+        },
+        {
+          "pid": 1591748,
+          "used_memory_mib": "42166"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "total_mib": 81920,
+      "used_mib": 76521,
+      "free_mib": 4633,
+      "processes": [
+        {
+          "pid": 3737291,
+          "used_memory_mib": "76512"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "stage": "train",
+      "state": "RUNNING",
+      "proc": {
+        "pid": 2163413,
+        "read_errors": {},
+        "stat_before_raw": "2163413 (python) S 2158156 2163413 2163413 0 -1 4194304 11899557 1398661 0 0 27303 18213 123 1484 20 0 15 0 450144285 43988320256 766935 18446744073709551615 100094146420736 100094148847461 140727165432432 0 0 0 0 16781312 16386 0 0 0 17 44 0 0 0 0 0 100094150277776 100094152259760 100094175543296 140727165434498 140727165435413 140727165435413 140727165439911 0\n",
+        "status_raw": "Name:\tpython\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t2163413\nNgid:\t0\nPid:\t2163413\nPPid:\t2158156\nTracerPid:\t0\nUid:\t1004\t1004\t1004\t1004\nGid:\t1004\t1004\t1004\t1004\nFDSize:\t128\nGroups:\t27 1004 \nNStgid:\t2163413\nNSpid:\t2163413\nNSpgid:\t2163413\nNSsid:\t2163413\nKthread:\t0\nVmPeak:\t59683992 kB\nVmSize:\t42957344 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t17071084 kB\nVmRSS:\t 3067740 kB\nRssAnon:\t 2574084 kB\nRssFile:\t  475416 kB\nRssShmem:\t   18240 kB\nVmData:\t 3633380 kB\nVmStk:\t     136 kB\nVmExe:\t    2372 kB\nVmLib:\t 2454344 kB\nVmPTE:\t    8428 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/4126420\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff,fffc0000,00000fff,ffffffc0,00000000\nCpus_allowed_list:\t38-75,114-151\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t2592\nnonvoluntary_ctxt_switches:\t593\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "command": [
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+          "-u",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0002/implementation/finqa_v47_worker.py",
+          "--root",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0002",
+          "--context",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0002/contexts/seed251/full/step1215_train",
+          "--stage",
+          "train",
+          "--gpu-index",
+          "4"
+        ],
+        "stat_after_raw": "2163413 (python) S 2158156 2163413 2163413 0 -1 4194304 11899557 1398661 0 0 27303 18213 123 1484 20 0 15 0 450144285 43988320256 766935 18446744073709551615 100094146420736 100094148847461 140727165432432 0 0 0 0 16781312 16386 0 0 0 17 44 0 0 0 0 0 100094150277776 100094152259760 100094175543296 140727165434498 140727165435413 140727165435413 140727165439911 0\n",
+        "state": "S",
+        "flags": 4194304,
+        "birth_observations": [
+          "450144285",
+          "450144285"
+        ],
+        "stat_before": {
+          "state": "S",
+          "birth": "450144285",
+          "flags": 4194304
+        },
+        "stat_after": {
+          "state": "S",
+          "birth": "450144285",
+          "flags": 4194304
+        },
+        "rss_bytes": 3141365760,
+        "peak_rss_bytes": 17480790016
+      },
+      "worker_slot_retained": true,
+      "gpu_lock_retained": true,
+      "rss_limit_bytes": 206158430208,
+      "observation_gaps": [],
+      "missing_values_are_not_zero": true,
+      "previously_validated_result_required": false,
+      "gpu": {
+        "index": 4,
+        "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "total_mib": 81920,
+        "used_mib": 78874,
+        "free_mib": 2280,
+        "processes": [
+          {
+            "pid": 1252704,
+            "used_memory_mib": "798"
+          },
+          {
+            "pid": 1591747,
+            "used_memory_mib": "48774"
+          },
+          {
+            "pid": 2163413,
+            "used_memory_mib": "29280"
+          }
+        ]
+      },
+      "external_free_boundary_gate_applied": false
+    }
+  ],
+  "all_observable_resource_gates_passed": true,
+  "unobservable_draining_RSS_is_not_a_measurement": true,
+  "error": null,
+  "id": "21d9d740a20f79801e6437b7b1cae0a459fcb440698f43815a79a062067db785"
+}

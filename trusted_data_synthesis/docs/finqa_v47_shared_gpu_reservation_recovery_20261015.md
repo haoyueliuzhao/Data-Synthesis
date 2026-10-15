@@ -103,3 +103,17 @@ R3的新资源外壳在下一条response尚未forward前读取真实allocated、
 重新登记还须核验两次已知心跳失败、助手停止记录、监督器收口和全部注册进程退出，绑定新的用户授权，并证明科学前沿没有变化。C-only389可以只读使用第二attempt实际重存的response240；它与原Tensor相同，但记录ID不同，不伪造为原记录。Full389的response133和Full251的step1213仍保留，原九模型剂量、共享资源策略和无独立总并发上限不变。
 
 修复后的实际元数据预检通过，继承累计资源等待94114秒、C-only389 step1192 outer已用42784秒、Full389 step894 outer已用36192秒，均不设新截止。修复版173项不同CPU/mock用例联合通过，用时15.26秒，相关静态检查通过；该总数包含前述用例及新增真实故障回归，不与首次130项相加。新回归覆盖真实心跳生产与消费、未知控制器根因拒绝、合法停止不能冒充资源主因、新授权与最新父状态及计时绑定。正式启动结果另行记录。
+
+## 修复版启动与实际资源自动恢复
+
+修复源提交 `f4c57232bdf39bb9a32ac9e4142d476aa75d81a6` 已推送。新89文件实施包ID为 `d8313eee822ba047c1feb6cd34b88defd88e498021516ada7413468ad2725fb5`，协议ID为 `fcd1b4b5cfb2dab3a9a758c377cc4334fe3e2bd9dd23473a50777a5c4b9131f3`；正式CPU依赖核验ID为 `3900afd874ac2db3fa2a91eca888fad74870cbdeb7b5fb9b8b1e75c8ab2485b5`，确认实际新控制器拥有修正后的心跳捕获函数。
+
+唯一新监督器于23:01:39启动，PID2143408、birth450089459。最初设备容量不足，控制器正常等待；GPU3随后出现可用容量，23:03:26左右实际派发Full251 train，PID2146839、birth450100133。23:03:32同一worker真实预留26GiB，继承step1213，并实际提交1214、1215两次训练更新。新心跳已被正确消费，没有重复第一次的编排错误。
+
+第一attempt随后在 `after_real_optimizer_step.after_cleanup` 边界观察到物理free为1734148096字节，约1.615GiB，低于原2GiB门。allocated约14.287GiB、历史峰值26GiB，allocated及主存门通过；这不是已记录的CUDA OOM或76GiB峰值超限。不能从此记录推断具体外部进程的归因，实际原因按“规定边界物理free不足”登记。step1215已提交保留，worker真实退出后控制器以原失败终态收口。
+
+本次自动恢复与前一次错误放行不同：新的审计核对控制器确实报告train失败，并绑定这个没有停止信号、实际free_pass=false的worker资源主因。监督器实际创建第二attempt，继承step1215，不重复1214或1215，也不重复outer1192。23:10:47，新train worker PID2163413、birth450144285被派往GPU4；23:10:54真实预留28GiB，继续从1215训练。23:14的观察为RUNNING，实际训练目录已出现完整step1216记录；当前观察到的资源门通过，尚未完成整个训练段。
+
+启动证据见 `fixed_gpu_reservation_02/startup_verification/record.json`，ID `f3408d76c1cf900702a549547dace472822e2c282188d19e5f7542b10ea74303`。实际资源恢复证据见 `fixed_gpu_reservation_02/resource_recovery_verification/record.json`，ID `d7d9a49b289ca7e0c8e75c63f51dd84de499bc1b5a90e267e500051efbc9874b`。固定显存预留不能替代共享设备的物理free门；此次真实停止与跨卡接续表明该安全门和实际断点自动恢复已经执行，不能宣称共享GPU从此不会再受容量变化影响。
+
+最新进度应先看 `fixed_gpu_reservation_02/supervisor/queue/status.json` 指向的当前attempt，再看该attempt的 `queue/status.json`。根目录第一次attempt的失败记录继续保留，不代表监督器停止；23:14时当前为 `attempts/attempt0002/`、GPU4一个训练worker，两个R3阶段仍等待容量。总worker上限已经取消，但并发仍由八卡独立租约、实际显存与主存及任务依赖决定。原九模型和统一评分尚未完成，禁止重复启动监督器或旧入口。

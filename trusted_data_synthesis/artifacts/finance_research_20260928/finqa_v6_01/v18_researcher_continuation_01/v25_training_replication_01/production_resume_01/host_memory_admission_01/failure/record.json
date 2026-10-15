@@ -1,0 +1,13 @@
+{
+  "schema": "v37_production_stop.v1",
+  "at": "2026-10-15T13:21:50.989899+00:00",
+  "protocol_id": "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf",
+  "phase": "STOPPED_FAILURE_NO_RETRY",
+  "error_type": "ValueError",
+  "error": "worker reported failure: replay_R3",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true,
+  "id": "3708de990d31da5098f28436f908a4c840cc43364ecf58c0bdffb9b195820bc1"
+}

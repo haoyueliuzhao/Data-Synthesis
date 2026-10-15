@@ -116,6 +116,8 @@ V47首次以源提交 `8b24d9e09c` 冻结89文件并实际启动，但于2026-10
 
 用户获知上述两项实现错误后明确回复“授权修复后重新启动”。仅在独立 `production_resume_01/fixed_gpu_reservation_02/` 重新登记修复版；新的心跳捕获器保持所有身份、阈值及时间检查，自动恢复必须先确认控制器根因和实际资源主失败，合法停止后果不能单独放行。原V45数学81文件不改，旧fixed01冻结和失败不改；实际父为fixed01的attempt0002，继承其最新真实断点与累计phase、outer及资源等待，不重置计时。C-only389实际重存的response240与原Tensor逐字相同但record ID不同，不伪造旧记录；Full389133、Full2511213及原剩余剂量不变。继续取消独立总worker上限，保留八卡每卡一个本实验worker、共享分阶段准入、预留与原硬门；新登记和代码修复不等于已经启动，新科学launch和验收另行记录。禁止重启任何fixed01入口或把旧错误自动恢复决定作为新授权。
 
+V47修复版已以源提交 `f4c57232bdf39bb9a32ac9e4142d476aa75d81a6` 冻结89文件，实施包ID `d8313eee822ba047c1feb6cd34b88defd88e498021516ada7413468ad2725fb5`，协议ID `fcd1b4b5cfb2dab3a9a758c377cc4334fe3e2bd9dd23473a50777a5c4b9131f3`；173项联合CPU/mock与正式冻结依赖核验通过。唯一监督器于2026-10-15 23:01:39启动，PID2143408、birth450089459。GPU3第一train实际预留26GiB并从1213提交到1215；随后规定边界物理free跌至1.615GiB，原2GiB门正确停止该worker。其资源主因及实际退出被新版分类核验后，监督器已经自动创建 `fixed_gpu_reservation_02/attempts/attempt0002/`，没有重启旧attempt。23:10:47在GPU4派发train PID2163413、birth450144285，真实预留28GiB并从1215接续；23:14已观察到step1216保存，资源子门通过，整段及全矩阵尚未完成。真实自动恢复证据见 `fixed_gpu_reservation_02/resource_recovery_verification/record.json`。查看进度先读该根的supervisor/queue指向当前attempt，不能只看初始根的已封存失败；不得重复启动监督器。共享GPU的物理free仍可能变化，不能把预留或这次成功接续表述为今后不会发生资源中断。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
