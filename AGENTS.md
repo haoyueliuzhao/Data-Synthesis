@@ -98,6 +98,8 @@ V45已以源提交 `bdcad252f583e56e9a873503bc6b6d280a985531` 冻结81文件，�
 
 用户于2026-10-15检查GPU4、5、7空闲仍有待派任务后明确要求“处理此问题”。V46仅在 `host_memory_admission_01/queued_handoff_01/` 独立登记交接补丁，复用V45未激活准备和81文件科学包，不热改、不复制新科学版本、不扩展数学或剂量。新协调器使用原项目锁inode及同一打开文件描述的CPU辅助进程持续阻塞等待；只有真实取得且辅助进程exit0后计为持锁，kernelqueued与held严格分开，不宣称flock严格FIFO。新协调器须先实际持有GPU3并核验另外七卡等待，才能单次pidfd停止身份核验的旧V45迁移PID2911728、birth `441686539`；若旧V45已先完成切换则退出补丁，不停止新科学监督器。旧迁移STOPPED_NO_MIGRATION记录保留，新替换和closeout写独立目录。仍须全八租约、取得后新鲜空队列、所有已派worker真实成功退出与原同点预检通过，才单次停止原V43监督器并验证真实退出，再以新真实receipt调用原冻结V45.initialize和Supervisor.run，不重跑旧migrate。科学worker不收信号，不SIGSTOP控制器，助手锁进程可取消且须回收，明确停止禁止自动继续科学启动。五worker、GPU5/2优先、实测主存预算及原硬门均不变。详细合同与实际状态见 `trusted_data_synthesis/docs/finqa_v46_queued_lease_handoff_20261015.md`。
 
+V46独立三文件补丁已以提交 `13ea08271cd47bae8170034e8a1a786a4bc6c23f` 冻结并推送，实施包ID `15d54ff6e68f74db0f931be6a41c26ff06cf1f57b0608041e45e72d6eaf3113a`，协议ID `02792d37e10c3c33fa981a60824cb693dead1ebbac2b55b8c46d59112c124a69`。62项联合CPU测试和正式路径核验通过。唯一 `queued_handoff_01/implementation/finqa_v46_supervisor.py run` 于2026-10-15 09:07:52启动，PID3726919、birth `445086816`；09:09确认八个helper均真实kernelqueued，但新anchor尚未取得、旧迁移尚未信号，最后Full2511192 shard03已159/186任务。此入口成功交接后同进程调用原冻结V45监督器，不得重复run或migrate；状态看 `host_memory_admission_01/queued_handoff_01/status.json`，启动证据 `queued_startup_verification/record.json`。排队不是持锁，准备不是科学策略已生效。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

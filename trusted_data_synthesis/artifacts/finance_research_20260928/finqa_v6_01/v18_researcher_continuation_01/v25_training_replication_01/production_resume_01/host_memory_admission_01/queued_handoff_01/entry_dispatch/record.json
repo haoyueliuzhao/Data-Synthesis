@@ -1,0 +1,31 @@
+{
+  "schema": "v46_single_frozen_queued_handoff_dispatch.v1",
+  "at": "2026-10-15T01:07:52.984904+00:00",
+  "pid": 3726919,
+  "birth": "445086816",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/implementation/finqa_v46_supervisor.py",
+    "run"
+  ],
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/implementation/record.json",
+    "sha256": "40c8718c645f5a6c651365b8c245128d21abddef055067c205d1e50db9c727a2",
+    "id": "15d54ff6e68f74db0f931be6a41c26ff06cf1f57b0608041e45e72d6eaf3113a"
+  },
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/protocol/record.json",
+    "sha256": "3042c753a1aab27ba344f5eb4d2edccc1004ef7a50de8c4836b20f5500a1ece2",
+    "id": "02792d37e10c3c33fa981a60824cb693dead1ebbac2b55b8c46d59112c124a69"
+  },
+  "cpu_acceptance": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/cpu_acceptance/record.json",
+    "sha256": "8ee65fc81ebaaafcb805bf5ade2b8d63754b58e71fd2e4261e226f006ec18fb3",
+    "id": "a7aad6e0d7816f535c92af8e606aa9a0f759a16c9609c52a66d91d9996a2dbfe"
+  },
+  "scientific_workers_not_signalled": true,
+  "science_not_yet_started": true,
+  "same_entry_process_continues_as_original_V45_supervisor_after_verified_handoff": true,
+  "id": "d8668f7ab29c0da93b4252b6f660d91a77f046dcaab4990e92cdb45ab2051739"
+}

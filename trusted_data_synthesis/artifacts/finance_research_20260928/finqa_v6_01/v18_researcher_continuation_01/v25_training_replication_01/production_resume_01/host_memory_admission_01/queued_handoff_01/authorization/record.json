@@ -1,0 +1,75 @@
+{
+  "schema": "v46_explicit_pending_handoff_correction_authority.v1",
+  "at": "2026-10-15T01:07:21.107190+00:00",
+  "user_instruction": "处理此问题",
+  "user_consent": "处理此问题",
+  "original_problem": "two-second nonblocking polling misses sub-second lease release and reuse",
+  "scientific_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01",
+  "pending_migration_identity": {
+    "pid": 2911728,
+    "birth": "441686539",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/implementation/finqa_v45_supervisor.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01"
+    ]
+  },
+  "pending_migration_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/migration_launch/record.json",
+    "sha256": "45a0405e5faaa3903bbc496896ab4ccce692d7774af0900fbbf4b0a8d231cae5",
+    "id": "9830306345a35a92c8dfa38438d293a2013276518fb849594c5c9911d4054573"
+  },
+  "original_handoff_snapshot": {
+    "phase": "DRAINING_NATURALLY",
+    "at": "2026-10-15T01:07:19.549766+00:00",
+    "barrier_gpus": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "active_children": [
+      {
+        "context_id": "c668b6cd96ac72b559a253e31cbcb18e93d1a9c2299f32ce2f6920d9532aa693",
+        "stage": "shard03",
+        "pid": 3571767,
+        "birth": "444416151",
+        "gpu_index": 3,
+        "gpu_uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "lifecycle_state": "RUNNING"
+      }
+    ],
+    "worker_signals_sent": 0,
+    "supervisor_signals_sent": 0,
+    "deadline_epoch": null
+  },
+  "anchor_gpu": 3,
+  "anchor_must_be_actually_held_before_replacing_old_migration": true,
+  "worker_signals_allowed": false,
+  "temporary_controller_freeze_allowed": false,
+  "scientific_source_or_protocol_hot_edit_allowed": false,
+  "max_gpu_workers": 5,
+  "dispatch_priority": [
+    5,
+    2,
+    0,
+    4,
+    3,
+    7,
+    1,
+    6
+  ],
+  "scientific_budget_and_resource_gates_unchanged": true,
+  "new_scientific_replay_sampling_or_optimizer_budget": 0,
+  "only_original_V45_initialize_and_supervisor_may_continue": true,
+  "manual_stop_is_terminal": true,
+  "strict_fifo_or_next_release_guaranteed": false,
+  "id": "0a8d347e84e24081653bd5e48db57d71c6acb63d0e1b648753be5aaf9199a853"
+}
