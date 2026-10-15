@@ -100,6 +100,8 @@ V45已以源提交 `bdcad252f583e56e9a873503bc6b6d280a985531` 冻结81文件，�
 
 V46独立三文件补丁已以提交 `13ea08271cd47bae8170034e8a1a786a4bc6c23f` 冻结并推送，实施包ID `15d54ff6e68f74db0f931be6a41c26ff06cf1f57b0608041e45e72d6eaf3113a`，协议ID `02792d37e10c3c33fa981a60824cb693dead1ebbac2b55b8c46d59112c124a69`。62项联合CPU测试和正式路径核验通过。唯一 `queued_handoff_01/implementation/finqa_v46_supervisor.py run` 于2026-10-15 09:07:52启动，PID3726919、birth `445086816`；09:09确认八个helper均真实kernelqueued，但新anchor尚未取得、旧迁移尚未信号，最后Full2511192 shard03已159/186任务。此入口成功交接后同进程调用原冻结V45监督器，不得重复run或migrate；状态看 `host_memory_admission_01/queued_handoff_01/status.json`，启动证据 `queued_startup_verification/record.json`。排队不是持锁，准备不是科学策略已生效。
 
+用户随后明确“先占用空闲显卡等待交接”。本次只对复查完全空闲的GPU5、7各登记72GiB有界显存占位，GPU4有其他项目进程，不做大额占位或干预。资源根为 `host_memory_admission_01/queued_handoff_01/resource_reservation_01/`，最多15分钟；最后Full2511192 shard03达到183/186完整任务即提前释放，交接锚点/关闭记录、原worker或交接入口退出、明确停止也触发清理。占位不取得项目GPU租约、不构造模型、不增加科学worker或实验剂量；原holder的双空闲检查保持，失败不自动再抢。独立watcher仅信号自己创建且身份绑定的holder并核验实际退出，不更改已冻结的交接或科学源文件。实际占位与释放看reserved/released/actual_exit，不把资源保留称作训练恢复。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

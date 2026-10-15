@@ -53,3 +53,9 @@ GPU3此前的连续接续有真实launch和exit记录：
 唯一新入口于09:07:52启动，PID3726919、birth `445086816`。09:09:06实际核验八个辅助进程均在原GPU租约inode的内核等待队列中，包含等待最后GPU3释放的进程；新协调器当时尚未持有GPU3，旧V45迁移没有被发送停止信号。最后分片的最新封存进度为159/186个完整任务，科学worker继续正常运行。
 
 启动证据在 `queued_startup_verification/record.json`，ID `8274ae8351e0dcc0b47f205a5bdcf7c5302e556550b351d9d84362b3cf2b952e`。进度看 `queued_handoff_01/status.json`；真实接管须看anchor、supersession、全锁、closeout及V45科学protocol/launch，不把内核排队等同于已经持锁或GPU4、5、7已派发。不得重跑新run入口或旧migrate。
+
+## 等待期间的有界显存占位
+
+用户随后要求“先占用空闲显卡等待交接”。复查GPU5、7完全空闲，GPU4仍有其他项目进程，因此本次只对GPU5、7各登记72GiB临时占位，不对GPU4做大额预留或干预其进程。独立资源记录位于 `queued_handoff_01/resource_reservation_01/`，不修改正在运行的三文件交接包或科学81文件。
+
+占位复用原单卡holder的两次完全空闲检查，绑定UUID、PID和birth，最多15分钟，不重复抢占失败设备。资源监督器不获取项目GPU租约，以免与已有交接锁死锁；这些CUDA显存占位不是科学worker、模型调用或实验进度。原最后分片达到183/186个完整任务时即提前释放；交接锚点登记、原GPU3 worker退出、交接失败或退出、明确停止以及TTL到期也会触发释放，仅停止自己创建的子进程并记录真实退出。占位是否实际取得与是否已释放以各卡reserved、released和actual_exit回执为准。
