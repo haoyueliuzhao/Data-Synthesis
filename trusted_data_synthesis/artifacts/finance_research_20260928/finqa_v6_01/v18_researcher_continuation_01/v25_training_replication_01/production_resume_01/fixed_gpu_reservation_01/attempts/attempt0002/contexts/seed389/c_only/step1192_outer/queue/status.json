@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-15T14:31:39.734484+00:00",
+  "phase": "RUNNING",
+  "protocol_id": "3a0875f2bf448e27b8d82e3c20991d82432fed5bca2aeda6681604054abf0dbd",
+  "context_id": "4ffac84ac48ccf05375767dadb498eab93ef23029fa87490d2a9d669e00234ce",
+  "active_children": [
+    {
+      "stage": "replay_R3",
+      "pid": 2087244,
+      "birth": "449909490",
+      "gpu_index": 2,
+      "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102"
+    }
+  ],
+  "completed_stages": [
+    "shard00",
+    "shard01",
+    "shard02",
+    "shard03",
+    "virtual_point"
+  ],
+  "compute_seconds": 42676,
+  "unowned_wall_queue_seconds": 32.15652002301067,
+  "global_external_resource_wait_seconds": 94113.37169413455,
+  "original_B_resume_authorized": true
+}

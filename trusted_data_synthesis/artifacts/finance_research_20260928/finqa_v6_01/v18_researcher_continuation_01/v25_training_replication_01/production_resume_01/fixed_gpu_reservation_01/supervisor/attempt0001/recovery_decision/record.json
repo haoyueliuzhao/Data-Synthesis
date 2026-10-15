@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-15T14:30:22.466662+00:00",
+  "schema": "v43_explicit_safe_boundary_recovery_decision.v1",
+  "allowed": true,
+  "reason": "resource_failure_with_verified_exits_and_durable_boundary_consumers",
+  "evidence_refs": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/protocol/record.json",
+      "sha256": "a1d6ed6c7158777b6acf34d9e6a6b3f103ab4e43b1a100189abd3ab82f28d8c9",
+      "id": "6330364ea55d14a37aee89bd3a954397bb166dd52cdd711197eda4013834ab84"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/failure/record.json",
+      "sha256": "d093281a4e8ddc2346600d51dcb8767f4ab650b9482bf25b44f42811e1009148",
+      "id": "c8f9cdfc55c376c80bbb840d9eb1648b32b4e7e59bc4b6f3f781c5a35d4bbd32"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/launch_01/record.json",
+      "sha256": "8c8b0fe88d86e5173becb28e131aad6cf06b420cc1957063c4602e17087851a6",
+      "id": "0ec27741f8783c298cdb2764f029f49897068b79c1d4b45abca9118bda4c07c5"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/actual_final_progress/record.json",
+      "sha256": "f3bc0ee7373b0b76ed34daa6aaefddaad77328d8746f787097402d415c182441",
+      "id": "d35e8e01a7b4476a0dd829cf9ca3437e2416f1299cab472430d54feb2e72f7c9"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train/train/launch/record.json",
+      "sha256": "a2f0d96b2eb0abbf8dbb99b5dc4af5a94a3353b6d682f5f50c4aa2dd1466ab90",
+      "id": "388afa159c6900ff51f98e6280237174ca8c2e04162f1bacb58b54c3512aa564"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train/train/exit/record.json",
+      "sha256": "413dd652b9b01313a1aad523ae5856e6cd85a551dfc9b98c16396b02940037b2",
+      "id": "4c47fff1ef863f4d4f4362f850d29b19b1c6a2d1d3115b0bd2072a2ed90775a8"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train/train/failure/record.json",
+      "sha256": "2ff446bb3d955ee323ba3d5ab1fe76676d1715de08ce7b93541ce3c782a8e133",
+      "id": "39379529000c3f62b16bd2dc522ca5647a4af417f00b48fac37d8010ba2df071"
+    }
+  ],
+  "interrupted_stages": [
+    {
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train/train",
+      "stage": "train",
+      "pre_cuda": false,
+      "recovery_kind": "actual_committed_training_state"
+    }
+  ],
+  "unknown_feedback_retry": false,
+  "numerical_failures_retried": false,
+  "retry_capacity_conditions": [],
+  "retry_capacity_evidence_refs": [],
+  "id": "06e92354a70e736ebb3d59e61140b7b6be5465ddf43b89ffcc0949d8883817d8"
+}

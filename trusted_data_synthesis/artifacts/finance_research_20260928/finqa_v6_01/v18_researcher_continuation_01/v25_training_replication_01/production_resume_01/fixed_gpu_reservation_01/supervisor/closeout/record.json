@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-15T14:34:01.700361+00:00",
+  "status": "STOPPED_BY_EXPLICIT_REQUEST",
+  "final_attempt": 2,
+  "received_signals": [
+    15
+  ],
+  "automatic_recovery_after_manual_stop": false,
+  "id": "4f6461e11ff46dc4b11becb760b0c3a075c16cd97b45b32354e36af621b5f2fb"
+}

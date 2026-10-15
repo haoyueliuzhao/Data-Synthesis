@@ -1,0 +1,13 @@
+{
+  "schema": "v37_production_stop.v1",
+  "at": "2026-10-15T14:34:00.525302+00:00",
+  "protocol_id": "3a0875f2bf448e27b8d82e3c20991d82432fed5bca2aeda6681604054abf0dbd",
+  "phase": "STOPPED_FAILURE_NO_RETRY",
+  "error_type": "ValueError",
+  "error": "admission heartbeat does not belong to the actual worker/phase policy",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true,
+  "id": "9d7da5ac015e0a15b4b093ce694bd3f838747891e4ed3a11f9b7cafb1568697d"
+}

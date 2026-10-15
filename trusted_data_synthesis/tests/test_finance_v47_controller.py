@@ -69,6 +69,7 @@ def test_conflicting_allocator_environment_fails_before_spawn(monkeypatch, bad):
 def plan(tmp_path):
     return dict(
         id="new",
+        schema=subject.PROTOCOL_SCHEMA,
         output_root=str(tmp_path),
         allowed_gpu_indices=list(subject.ALLOWED_GPUS),
         gpu_uuids=subject.admission.GPU_UUIDS,
@@ -493,7 +494,7 @@ def wait_state(tmp_path, monkeypatch, plan):
 
     def write(where, start, end, **extra):
         body = dict(
-            schema="v39_pre_cuda_admission.v1",
+            schema="v47_shared_pre_cuda_admission.v1",
             protocol_id="new",
             context_id="endpoint",
             **launch,
@@ -507,6 +508,7 @@ def wait_state(tmp_path, monkeypatch, plan):
             memory_phase="generate",
             minimum_free_mib=subject.memory_policy.minimum_free_mib("generate", None),
             gpu_admission_policy_schema=subject.admission.POLICY_SCHEMA,
+            gpu_reservation_policy_schema=plan["gpu_reservation_policy"]["schema"],
         )
         body.update(extra)
         path = tmp_path / "generate" / where / "pre_cuda_wait/status.json"
@@ -546,6 +548,78 @@ def test_admission_heartbeat_identity_policy_deadline_fail_closed(wait_state, ex
         f.control.capture_wait(f.runner, "generate", f.item)
 
 
+@pytest.fixture
+def actual_first_v47_heartbeat(monkeypatch):
+    """Read the failed first launch; no copied tensor, GPU access or artifact write."""
+    directory = subject.FAILED_REGISTRATION_ROOT / "contexts/seed251/full/step1213_train/train"
+    launch_path = directory / "launch/record.json"
+    heartbeat_path = directory / "pre_cuda_wait/status.json"
+    launch, heartbeat = subject.checked(launch_path), subject.checked(heartbeat_path)
+    control = subject.Controller.__new__(subject.Controller)
+    control.protocol = subject.checked(subject.FAILED_REGISTRATION_ROOT / "protocol/record.json")
+    control._last_wait_sequences = {}
+    control._worker_wait_intervals = {}
+    control._pre_cuda_waiters = {}
+    runner = SimpleNamespace(root=directory.parent, context=dict(id=launch["context_id"]))
+    # The persisted admission-start clock is a stricter lower bound than the
+    # earlier controller spawn; do not invent a persisted controller clock.
+    item = dict(
+        launch=launch,
+        started_monotonic=heartbeat["observed_monotonic"] - heartbeat["elapsed_seconds"],
+        process=SimpleNamespace(poll=lambda: 0),
+    )
+    monkeypatch.setattr(subject.time, "monotonic", lambda: heartbeat["observed_monotonic"] + 1)
+    original_refs = {path: subject.file_ref(path) for path in (launch_path, heartbeat_path)}
+    return SimpleNamespace(
+        control=control,
+        runner=runner,
+        item=item,
+        heartbeat=heartbeat,
+        path=heartbeat_path,
+        original_refs=original_refs,
+    )
+
+
+def test_real_first_launch_heartbeat_exposes_old_mismatch_and_passes_narrow_fix(
+    actual_first_v47_heartbeat,
+):
+    f = actual_first_v47_heartbeat
+    assert f.heartbeat["schema"] == "v47_shared_pre_cuda_admission.v1"
+    assert f.heartbeat["phase"] == "READY" and f.heartbeat["minimum_free_mib"] == 26 * 1024
+    assert f.item["launch"]["gpu_index"] == 2
+    with pytest.raises(ValueError, match="actual worker/phase policy"):
+        subject.runtime.Controller._capture_wait_path(
+            f.control, f.runner, "train", f.item, f.path, strict_freshness=True
+        )
+    f.control._capture_wait_path(f.runner, "train", f.item, f.path, strict_freshness=True)
+    assert list(f.control._last_wait_sequences.values()) == [f.heartbeat["sequence"]]
+    assert f.control._worker_wait_intervals == {} and f.control._pre_cuda_waiters == {}
+    assert all(subject.file_ref(path) == reference for path, reference in f.original_refs.items())
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        dict(schema="v39_pre_cuda_admission.v1"),
+        dict(schema="unregistered_future_schema"),
+        dict(protocol_id="foreign"),
+        dict(birth="wrong-process"),
+        dict(gpu_uuid="GPU-wrong"),
+        dict(minimum_free_mib=48 * 1024),
+        dict(gpu_reservation_policy_schema="foreign-reservation"),
+        dict(observed_monotonic=-1),
+    ],
+)
+def test_real_heartbeat_binding_policy_and_clock_remain_strict(
+    actual_first_v47_heartbeat, tmp_path, change
+):
+    f = actual_first_v47_heartbeat
+    path = tmp_path / "mutated_heartbeat/record.json"
+    subject.publish(path, {**{k: v for k, v in f.heartbeat.items() if k != "id"}, **change})
+    with pytest.raises(ValueError, match="actual worker/phase policy|clock binding"):
+        f.control._capture_wait_path(f.runner, "train", f.item, path, strict_freshness=True)
+
+
 def test_unregistered_third_endpoint_recheck_forbidden(wait_state):
     wait_state.write("pre_cuda_rechecks/check0003", 2, 5)
     with pytest.raises(ValueError, match="unregistered endpoint"):
@@ -565,6 +639,8 @@ def test_fresh_attempt_paths_do_not_admit_parent_or_broad_paths():
     assert subject.allowed_root(subject.ROOT)
     assert subject.allowed_root(subject.ROOT / "attempts/attempt0002")
     assert not subject.allowed_root(subject.PARENT_ROOT)
+    assert not subject.allowed_root(subject.FAILED_REGISTRATION_ROOT)
+    assert not subject.allowed_root(subject.RECOVERY_PARENT_ROOT)
     assert not subject.allowed_root(subject.ROOT / "attempts/attempt0001")
     assert not subject.allowed_root(subject.ROOT / "unexpected")
 

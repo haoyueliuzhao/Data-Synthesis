@@ -1,0 +1,49 @@
+{
+  "schema": "v47_explicit_durable_recovery_and_shared_reservation_authority.v1",
+  "at": "2026-10-15T14:26:28.611392+00:00",
+  "user_instruction": "恢复任务，后续设置更安全的占用策略保证任务运行，申请固定高显存占用",
+  "user_consent": "恢复任务；资源紧张，开放限制，采取更激进的任务分配占用策略；取消任务并发数限制",
+  "latest_shared_resource_authorization": "资源紧张，开放限制，采取更激进的任务分配占用策略",
+  "total_worker_limit_removed": true,
+  "independent_total_worker_limit": null,
+  "max_gpu_workers": null,
+  "max_workers_per_gpu": 1,
+  "effective_device_capacity": 8,
+  "dispatch_priority": [
+    5,
+    2,
+    0,
+    4,
+    3,
+    7,
+    1,
+    6
+  ],
+  "dispatch_poll_seconds": 2,
+  "fixed_gpu_reservation_authorized": true,
+  "phase_sized_shared_reservation_authorized": true,
+  "whole_device_exclusivity_required": false,
+  "mandatory_fixed_72GiB_pool": false,
+  "host_ram_runtime_hard_gates_unchanged": true,
+  "host_ram_admission_changed_from_parent": false,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "known_failure_recovery_authorized": true,
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/failure/record.json",
+    "sha256": "626c89f7b0fd67020459322d401cb0fc2fd481335563557f352c61019558035b",
+    "id": "3708de990d31da5098f28436f908a4c840cc43364ecf58c0bdffb9b195820bc1"
+  },
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/protocol/record.json",
+    "sha256": "98a364c3fcb601d23c650bbdc5c72b571148e05da398154a9c890d760ebfd5ec",
+    "id": "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf"
+  },
+  "supervisor_capacity_wait": null,
+  "new_sampling_or_optimizer_dose_authorized": false,
+  "logical_class_shards": 4,
+  "manual_stop_terminates_supervision": true,
+  "id": "7599551c5408d08ad2124618ee575c69ca610b0205f7477044ad13481d0617f7"
+}

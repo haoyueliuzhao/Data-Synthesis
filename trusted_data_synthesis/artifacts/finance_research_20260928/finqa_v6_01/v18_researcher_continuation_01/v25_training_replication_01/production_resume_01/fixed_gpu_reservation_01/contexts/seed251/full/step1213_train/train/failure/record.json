@@ -1,0 +1,109 @@
+{
+  "schema": "v43_stage_failure_no_retry.v1",
+  "at": "2026-10-15T14:29:47.719908+00:00",
+  "protocol_id": "6330364ea55d14a37aee89bd3a954397bb166dd52cdd711197eda4013834ab84",
+  "context_id": "c1be32b2aaf6b36d313caf4266cf501184e39d3e6152c916c2fbad48922480d6",
+  "stage": "train",
+  "inherited_context": false,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/contexts/seed251/full/step1213_train",
+  "error_type": "TailStopRequested",
+  "error": "stop requested at before_model_load",
+  "failure_classification": "STAGE_FAILURE_NO_RETRY",
+  "stop_evidence": {
+    "received_signals": [
+      {
+        "signal_number": 15,
+        "signal_name": "SIGTERM",
+        "received_epoch": 1792074557.061134,
+        "received_monotonic": 4498952.238556102,
+        "sender_identity_available": false,
+        "sender_pid": null,
+        "source": "python_signal_handler_receipt"
+      }
+    ],
+    "sender_attribution": "unknown",
+    "signals_ignored": false,
+    "automatic_restart": false,
+    "signal_handler_performed_IO": false,
+    "stop_requested": true,
+    "stop_reason": "signal:15"
+  },
+  "response_pause_report": null,
+  "automatic_retry": false,
+  "durable_replay_checkpoint": null,
+  "resources": {
+    "all_gates_passed": false,
+    "observations": [
+      {
+        "event": "tail_memory_observation",
+        "sequence": 1,
+        "label": "before_model_load",
+        "boundary": true,
+        "monotonic_seconds": 4498982.802390205,
+        "allocated_bytes": 2097152,
+        "reserved_bytes": 33285996544,
+        "peak_allocated_bytes": 33285996544,
+        "peak_reserved_bytes": 33285996544,
+        "free_bytes": 51280543744,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": true,
+        "passed": false,
+        "host": {
+          "rss_bytes": 2005409792,
+          "peak_rss_bytes": 2030215168,
+          "available_bytes": 769537277952,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      }
+    ],
+    "limits_unchanged": true,
+    "peak_resets_before_model_load": 1,
+    "peak_resets_after_model_loading_begins": 0,
+    "helper_peak_reset_calls": 0,
+    "maximum_allocated_bytes": 81604378624,
+    "minimum_device_free_bytes": 2147483648,
+    "observed_peak_allocated_bytes": 33285996544,
+    "observed_minimum_boundary_free_bytes": 51280543744,
+    "host": {
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "all_passed": true,
+      "max_observed_peak_rss_bytes": 2030215168,
+      "min_observed_available_bytes": 769537277952
+    }
+  },
+  "telemetry": {
+    "sampling_interval_seconds": 1,
+    "sample_count": 1,
+    "sampled_max_device_used_bytes": 33815527424,
+    "sampled_max_GPU_utilization_percent": 0,
+    "sampled_mean_GPU_utilization_percent": 0.0,
+    "process_peak_RSS_bytes": 2030215168,
+    "device_peak_is_sampled_not_continuous": true,
+    "sampler_errors": []
+  },
+  "complete_task_caches_preserved": true,
+  "API_calls": 0,
+  "memory_phase": "train",
+  "minimum_free_mib": 26624,
+  "gpu_admission_policy_schema": "v47_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "39379529000c3f62b16bd2dc522ca5647a4af417f00b48fac37d8010ba2df071"
+}

@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-15T14:34:00.524825+00:00",
+  "phase": "STOPPED_FAILURE_NO_RETRY",
+  "protocol_id": "3a0875f2bf448e27b8d82e3c20991d82432fed5bca2aeda6681604054abf0dbd",
+  "active_children": [],
+  "pilot_accepted": true,
+  "accepted_new_optimizer_updates": 4639,
+  "accepted_new_outer_updates": 12,
+  "global_external_resource_wait_seconds": 94113.37169413455,
+  "accepted_result_counters_not_a_substitute_for_actual_checkpoint_audit": true,
+  "completed_training_coordinates": [
+    {
+      "seed": 137,
+      "arm": "C-only"
+    },
+    {
+      "seed": 137,
+      "arm": "Full"
+    },
+    {
+      "seed": 137,
+      "arm": "Static"
+    },
+    {
+      "seed": 251,
+      "arm": "C-only"
+    },
+    {
+      "seed": 251,
+      "arm": "Static"
+    },
+    {
+      "seed": 389,
+      "arm": "Static"
+    }
+  ],
+  "completed_evaluation_coordinates": [
+    {
+      "seed": 137,
+      "arm": "C-only"
+    },
+    {
+      "seed": 137,
+      "arm": "Full"
+    },
+    {
+      "seed": 137,
+      "arm": "Static"
+    },
+    {
+      "seed": 251,
+      "arm": "C-only"
+    },
+    {
+      "seed": 251,
+      "arm": "Static"
+    },
+    {
+      "seed": 389,
+      "arm": "Static"
+    }
+  ],
+  "pre_cuda_waiters": [],
+  "inherited_resource_wait_seconds": 94081,
+  "stopped_admission_observation_errors": [
+    "admission heartbeat does not belong to the actual worker/phase policy"
+  ],
+  "original_B_resume_authorized": true,
+  "max_gpu_workers": null,
+  "independent_total_worker_limit": null,
+  "total_worker_limit_removed": true,
+  "effective_device_capacity": 8,
+  "host_ram_admission_changed": true,
+  "host_ram_runtime_hard_gates_unchanged": true,
+  "last_host_admission": {
+    "at": "2026-10-15T14:31:45.224872+00:00",
+    "stage": "train",
+    "available_bytes": 770328072192,
+    "needed_bytes": 205563039744,
+    "active": [
+      {
+        "stage": "replay_R3",
+        "gpu_index": 2,
+        "pid": 2087244,
+        "birth": "449909490",
+        "observed": true,
+        "rss_bytes": 595390464,
+        "peak_rss_bytes": 595390464
+      }
+    ],
+    "host_admission_policy": {
+      "schema": "v45_empirical_phase_specific_host_admission.v1",
+      "evidence_refs": [
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_evidence_01/record.json",
+          "sha256": "7a8fa852f8650d1b26161b83bd9c04413383ea26f7d48ba2a1ab209f2a6b7246",
+          "id": "5e87ca240e266595c3dbf34bd9013cf61db961232209b5d94b34903447970ad0"
+        }
+      ],
+      "historical_summary_sha256": "7d9581c3ec7392a772debca512f9d3a5f5ab4038559ced6d9416cf2af934e87b",
+      "historical_successful_process_count": 91,
+      "historical_peak_bytes_by_phase": {
+        "replay_R3": 17644838912,
+        "generate": 16537333760,
+        "virtual_point": 31447461888,
+        "distribution": 31753560064,
+        "train": 17538539520,
+        "class": 133719773184
+      },
+      "startup_budget_bytes_by_phase": {
+        "train": 51539607552,
+        "replay_R3": 51539607552,
+        "generate": 51539607552,
+        "virtual_point": 68719476736,
+        "distribution": 68719476736,
+        "class": 171798691840
+      },
+      "host_reserve_bytes": 103079215104,
+      "runtime_rss_limit_bytes": {
+        "class": 171798691840,
+        "other": 206158430208
+      },
+      "padding": {
+        "peak_multiplier_numerator": 9,
+        "peak_multiplier_denominator": 8,
+        "additive_margin_bytes": 17179869184,
+        "round_up_multiple_bytes": 17179869184
+      },
+      "dynamic_unconsumed_reservation": "max(0,max(startup_budget,padded_lifetime_peak)-current_RSS)",
+      "current_RSS_alone_is_not_future_peak_estimate": true,
+      "missing_or_invalid_live_memory": "defer_dispatch_without_zero_fallback_or_pool_stop",
+      "unknown_stage_or_policy": "hard_error",
+      "historical_peaks_are_not_future_upper_bounds": true,
+      "host_runtime_hard_gates_unchanged": true,
+      "GPU_admission_and_runtime_memory_gates_unchanged": true
+    },
+    "decision": "ADMIT_HOST_MEMORY"
+  },
+  "error_type": "ValueError",
+  "error": "admission heartbeat does not belong to the actual worker/phase policy",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true
+}

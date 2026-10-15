@@ -33,7 +33,9 @@ PRODUCTION_ROOT = Path(
     "v25_training_replication_01/production_resume_01"
 )
 PARENT_ROOT = PRODUCTION_ROOT / "host_memory_admission_01"
-ROOT = PRODUCTION_ROOT / "fixed_gpu_reservation_01"
+FAILED_REGISTRATION_ROOT = PRODUCTION_ROOT / "fixed_gpu_reservation_01"
+RECOVERY_PARENT_ROOT = FAILED_REGISTRATION_ROOT / "attempts/attempt0002"
+ROOT = PRODUCTION_ROOT / "fixed_gpu_reservation_02"
 PROTOCOL_SCHEMA = "v47_fixed_gpu_reservation_supervised_protocol.v1"
 PARENT_SCHEMA = "v45_verified_five_worker_handoff_inheritance.v1"
 PARENT_PROTOCOL_ID = "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf"
@@ -94,6 +96,17 @@ R3_MATH_FILES = {
     "fixed_kernel_anchored_segmented_replay_20260916.py",
     "fixed_kernel_anchored_sources_gpu_gate_20260916.py",
 }
+FAILED_REGISTRATION_CLOSEOUT_ID = (
+    "1d721b807e8bbaa94cdb5347b00328ee081be80a4563cd29f4d1fc5b9a6828ba"
+)
+FAILED_REGISTRATION_PROTOCOL_IDS = (
+    "6330364ea55d14a37aee89bd3a954397bb166dd52cdd711197eda4013834ab84",
+    "3a0875f2bf448e27b8d82e3c20991d82432fed5bca2aeda6681604054abf0dbd",
+)
+FAILED_REGISTRATION_FAILURE_IDS = (
+    "c8f9cdfc55c376c80bbb840d9eb1648b32b4e7e59bc4b6f3f781c5a35d4bbd32",
+    "9d7da5ac015e0a15b4b093ce694bd3f838747891e4ed3a11f9b7cafb1568697d",
+)
 
 
 def _verify_replay_backend(binding, context):
@@ -317,14 +330,27 @@ def _require_initial_frontier(value):
     for coordinate, expected in EXPECTED_REPLAYS.items():
         row = inherited[coordinate]
         replay = row["replay_resume"]
+        original_path = (
+            R3_REFERENCE
+            if coordinate[1] == "C-only"
+            else PARENT_ROOT
+            / "contexts/seed389/full/step0894_outer/replay_R3"
+            / "checkpoints/response000133/record.json"
+        )
+        original = checked(original_path)
+        current = read_ref(replay["checkpoint"])
+        _, context, _ = _actual_context(row["original_context"])
+        _verify_replay_backend(replay["binding"], context)
         require(
-            replay["checkpoint"]["id"] == expected["checkpoint_id"]
+            original["id"] == expected["checkpoint_id"]
+            and current["binding"] == original["binding"] == replay["binding"]
+            and current["state_sha256"] == original["state_sha256"] == replay["state"]["sha256"]
+            and current["state_digest"] == original["state_digest"]
             and replay["inherited_response_count"] == expected["cursor"]
             and replay["total_response_count"] == expected["total"]
             and replay["remaining_response_count"] == expected["total"] - expected["cursor"]
-            and replay["observed_response_count"] == expected["observed"]
-            and replay["observed_unpersisted_response_count"]
-            == expected["observed"] - expected["cursor"]
+            and replay["observed_response_count"] == expected["cursor"]
+            and replay["observed_unpersisted_response_count"] == 0
             and all(
                 row["stage_bindings"][stage]["protocol_scope"] == "parent"
                 for stage in (*SHARDS, "virtual_point")
@@ -333,11 +359,14 @@ def _require_initial_frontier(value):
             "actual saved R3 prefix or complete same-point upstream stages changed",
         )
     latest = {(row["seed"], row["arm"]): row for row in value["latest_checkpoints"]}
+    actual = {
+        (row["seed"], row["arm"]): row
+        for row in read_ref(value["actual_final_progress"])["arms"]
+    }
     require(latest[(251, "Full")]["step"] == 1213, "Full251 must restart from actual SFT1213")
-    superseded = value["superseded_interrupted_training_contexts"]
     require(
-        len(superseded) == 1
-        and superseded[0]["actual_checkpoint"] == latest[(251, "Full")]["reference"],
+        all(row["seed"] != 251 for row in inherited.values())
+        and actual[(251, "Full")]["outer_done"] == [298, 596, 894, 1192],
         "committed Full251 outer/SFT must not be replayed as the old training context",
     )
     preserved = {binding["directory"] for binding in value["all_parent_stage_bindings"]}
@@ -350,30 +379,236 @@ def _require_initial_frontier(value):
     )
 
 
+def _reregistered_failure_audit(parent, authority):
+    """A new user restart, not an automatic exception for the failed registration."""
+    failed = FAILED_REGISTRATION_ROOT
+    closeout_ref = entry(failed / "closeout_01/record.json")
+    operator_ref = entry(failed / "operator_guard_stop/record.json")
+    require(
+        parent == RECOVERY_PARENT_ROOT
+        and authority.get("failed_registration_recovery_authorized") is True
+        and authority.get("known_failure_recovery_authorized") is True
+        and authority.get("failed_registration_root") == str(failed)
+        and authority.get("failed_registration_closeout") == closeout_ref
+        and authority.get("failed_registration_operator_stop") == operator_ref
+        and authority.get("parent_failure") == entry(parent / "failure/record.json")
+        and authority.get("original_mathematical_parent_protocol")
+        == entry(PARENT_ROOT / "protocol/record.json")
+        and authority.get("original_mathematical_parent_failure")
+        == entry(PARENT_ROOT / "failure/record.json"),
+        "new explicit corrected-registration restart authority required",
+    )
+    closeout, operator = read_ref(closeout_ref), read_ref(operator_ref)
+    initial_ref = entry(failed / "initial_state/record.json")
+    baseline = read_ref(initial_ref)
+    require(
+        closeout["id"] == FAILED_REGISTRATION_CLOSEOUT_ID
+        and closeout["status"] == "STOPPED_IMPLEMENTATION_FAILURE_NO_SCIENTIFIC_PROGRESS"
+        and closeout["operator_guard_stop"] == operator_ref
+        and closeout["initial_state"] == initial_ref
+        and closeout["actual_final_progress"] == entry(parent / "actual_final_progress/record.json")
+        and closeout["all_registered_processes_exited"] is True
+        and closeout["attempts_launched"] == 2
+        and closeout["attempt3_created"] is False
+        and all(
+            closeout[key] == 0
+            for key in (
+                "new_response_forward_calls",
+                "new_feedback_episodes",
+                "provider_API_calls",
+                "optimizer_updates",
+                "outer_updates",
+                "new_endpoint_answers",
+            )
+        ),
+        "the exact two-attempt zero-scientific-progress closeout changed",
+    )
+    require(
+        sorted(path.name for path in (failed / "attempts").iterdir()) == ["attempt0002"],
+        "unregistered later attempts cannot use the explicit restart exception",
+    )
+    supervisor = checked(failed / "supervisor/launch/record.json")
+    old._stopped(supervisor)
+    stopped_supervisor = read_ref(closeout["supervisor_closeout"])
+    require(
+        operator["id"] == "ec4a79aa455e5a8a8816c6a8ce3bda1dc1f8df7be2a1f872a6ed47aae36bf0ec"
+        and operator["pid"] == supervisor["pid"]
+        and str(operator["birth"]) == str(supervisor["birth"])
+        and operator["signal_number"] == 15
+        and operator["pidfd_used"] is True
+        and operator["new_scientific_restart_authorized_by_this_record"] is False
+        and stopped_supervisor["status"] == "STOPPED_BY_EXPLICIT_REQUEST"
+        and stopped_supervisor["final_attempt"] == 2
+        and stopped_supervisor["automatic_recovery_after_manual_stop"] is False,
+        "operator stop must remain terminal until this new explicit user authority",
+    )
+    decision_ref = entry(failed / "supervisor/attempt0001/recovery_decision/record.json")
+    decision = read_ref(decision_ref)
+    require(
+        decision["id"] == "06e92354a70e736ebb3d59e61140b7b6be5465ddf43b89ffcc0949d8883817d8"
+        and decision["allowed"] is True
+        and closeout["invalid_automatic_recovery_decision"] == decision_ref
+        and operator["invalid_automatic_recovery_decision"] == decision_ref,
+        "the historical invalid automatic-recovery decision must remain unchanged",
+    )
+    evidence = [
+        closeout_ref, operator_ref, initial_ref, decision_ref, closeout["supervisor_closeout"]
+    ]
+    phase_history = []
+    for number, attempt in enumerate((failed, parent), start=1):
+        plan = checked(attempt / "protocol/record.json")
+        failure = checked(attempt / "failure/record.json")
+        queue_ref = file_ref(attempt / "queue/status.json")
+        queue = read_ref(queue_ref)
+        launch = checked(attempt / "launch_01/record.json")
+        old._stopped(launch)
+        exit_ref = entry(failed / f"supervisor/attempt{number:04d}/actual_exit/record.json")
+        exited = read_ref(exit_ref)
+        progress_ref = entry(attempt / "actual_final_progress/record.json")
+        progress = read_ref(progress_ref)
+        require(
+            plan["id"] == FAILED_REGISTRATION_PROTOCOL_IDS[number - 1]
+            and plan["supervision_root"] == str(failed)
+            and plan["output_root"] == str(attempt)
+            and failure["id"] == FAILED_REGISTRATION_FAILURE_IDS[number - 1]
+            and failure["error_type"] == "ValueError"
+            and failure["error"]
+            == "admission heartbeat does not belong to the actual worker/phase policy"
+            and queue["protocol_id"] == failure["protocol_id"]
+            == launch["protocol_id"] == plan["id"]
+            and queue["active_children"] == []
+            and queue["phase"] == failure["phase"] == "STOPPED_FAILURE_NO_RETRY"
+            and failure["stop_error"] is None
+            and failure["actual_progress_audit_error"] is None
+            and exited["pid"] == launch["pid"]
+            and str(exited["birth"]) == str(launch["birth"])
+            and exited["attempt_root"] == str(attempt)
+            and exited["returncode"] == 1
+            and exited["manual_stop_requested"] is (number == 2)
+            and exited["stop_forwarded"] is (number == 2)
+            and progress["arms"] == baseline["arms"]
+            and progress["remaining_physical_updates"] == 1171
+            and progress["remaining_outers"] == 3
+            and progress["endpoint_scores_or_answers_read"] is False
+            and progress["original_state_or_feedback_modified"] is False,
+            "known failed-registration identity, actual exits or unchanged state changed",
+        )
+        evidence.extend(
+            [
+                entry(attempt / "protocol/record.json"), entry(attempt / "failure/record.json"),
+                entry(attempt / "launch_01/record.json"), exit_ref, progress_ref, queue_ref,
+            ]
+        )
+        launches = sorted(attempt.glob("contexts/seed*/*/step*/*/launch/record.json"))
+        require(
+            len(launches) == 1
+            and not list(attempt.glob("evaluations/*/generate/launch/record.json")),
+            "explicit restart permits only the two registered zero-progress workers",
+        )
+        worker_path = launches[0]
+        directory = worker_path.parent.parent
+        worker, worker_exit, stopped = (
+            checked(directory / name / "record.json") for name in ("launch", "exit", "failure")
+        )
+        old._stopped(worker)
+        expected_type = "TailStopRequested" if number == 1 else "ReplayPaused"
+        reservation = closeout["reservations"][number - 1]
+        require(
+            all(
+                record["protocol_id"] == plan["id"]
+                and record["context_id"] == worker["context_id"]
+                and record["stage"] == worker["stage"]
+                for record in (worker_exit, stopped)
+            )
+            and stopped["error_type"] == expected_type
+            and worker["stage"] == ("train" if number == 1 else "replay_R3")
+            and reservation["failure"] == entry(directory / "failure/record.json")
+            and reservation["actual_exit"] == entry(directory / "exit/record.json")
+            and worker_exit["returncode"] == 1
+            and worker_exit["stop_requested"] is True
+            and stopped["stop_evidence"]["stop_requested"] is True
+            and stopped["API_calls"] == 0
+            and stopped["original_mathematical_functions_unchanged"] is True
+            and not _observed_physical_resource_failure(stopped),
+            "registered child stop or zero-scientific-progress evidence changed",
+        )
+        phase_history.append(
+            dict(
+                attempt_root=str(attempt),
+                context_id=worker["context_id"],
+                stage=worker["stage"],
+                launch=entry(worker_path),
+                actual_exit=entry(directory / "exit/record.json"),
+                failure=entry(directory / "failure/record.json"),
+                elapsed_worker_wall_seconds=worker_exit["elapsed_worker_wall_seconds"],
+                new_scientific_progress=False,
+            )
+        )
+    replay = closeout["response_checkpoint"]
+    original, copied = read_ref(replay["original"]), read_ref(replay["latest"])
+    require(
+        replay["original"] == entry(R3_REFERENCE)
+        and replay["same_actual_tensor_bytes_and_state_digest"] is True
+        and replay["latest_tensor_sha256"] == copied["state_sha256"] == original["state_sha256"]
+        and copied["state_digest"] == original["state_digest"]
+        and copied["binding"] == original["binding"]
+        and copied["cursor"] == original["cursor"] == 240,
+        "latest copied response240 is not the unchanged original saved scientific state",
+    )
+    return dict(
+        allowed=True,
+        reason="new_explicit_user_restart_after_two_known_registration_failures_and_operator_stop",
+        previous_automatic_recovery_decision_invalid=True,
+        previous_invalid_automatic_recovery_decision=decision_ref,
+        original_V45_unsafe_decision=entry(
+            PARENT_ROOT / "supervisor/attempt0001/recovery_decision/record.json"
+        ),
+        historical_failures_reclassified=False,
+        explicit_restart_does_not_authorize_unknown_future_failures=True,
+        old_unsafe_failure_relabelled=False,
+        failed_registration_closeout=closeout_ref,
+        operator_stop=operator_ref,
+        actual_training_state_unchanged=True,
+        new_scientific_calls_in_failed_registration=0,
+        phase_history=phase_history,
+        latest_resource_wait_snapshot=file_ref(parent / "queue/status.json"),
+        evidence_refs=evidence,
+        unknown_feedback_retry=False,
+        numerical_failures_retried=False,
+        additional_scientific_sampling_budget=0,
+    )
+
+
 def inspect_initial_recovery(
     newroot, parentroot, *, authorization_record=None, authorization_body=None
 ):
     root, parent = Path(newroot).resolve(), Path(parentroot).resolve()
     require(
-        root == ROOT and parent == PARENT_ROOT and not (root / "inheritance/record.json").exists(),
+        root == ROOT
+        and parent == RECOVERY_PARENT_ROOT
+        and not (root / "inheritance/record.json").exists(),
         "one fresh explicitly authorized V47 root required",
     )
     authority_ref = _authorization(root, authorization_record, authorization_body)
     authority = authorization_body if authorization_body is not None else read_ref(authority_ref)
-    audit = _initial_failure_audit(parent, authority)
+    audit = _reregistered_failure_audit(parent, authority)
     protocol = checked(parent / "protocol/record.json")
     value = _build_frontier(
-        root, parent, protocol, authority_ref, audit, allowed_parent_schemas=(PARENT_SCHEMA,)
+        root, parent, protocol, authority_ref, audit, allowed_parent_schemas=(SCHEMA,)
     )
     _require_initial_frontier(value)
     value.update(
         initial_known_failure_exception_applied=True,
         previous_unsafe_recovery_decision_preserved=True,
+        failed_registration_phase_history=audit["phase_history"],
+        failed_registration_accounting_inherited_from_latest_attempt=True,
+        historical_max_observed_C_only389_response_count=251,
+        historical_C_only389_observed_but_unpersisted_responses=11,
         previously_committed_Full251_outer1192_repeated=False,
         Full251_actual_training_restart_step=1213,
         C_only389_saved_response_prefix=240,
-        C_only389_observed_response_count=251,
-        C_only389_observed_but_unpersisted_responses=11,
+        C_only389_observed_response_count=240,
+        C_only389_observed_but_unpersisted_responses=0,
         C_only389_remaining_ordered_response_calls=179,
         Full389_saved_response_prefix=133,
         Full389_remaining_ordered_response_calls=407,
@@ -475,7 +710,7 @@ def _charged_time(prior, directory, interrupted):
 def inspect_parent_recovery(
     newroot, parentroot, *, authorization_record=None, authorization_body=None
 ):
-    if Path(parentroot).resolve() == PARENT_ROOT:
+    if Path(parentroot).resolve() == RECOVERY_PARENT_ROOT:
         return inspect_initial_recovery(
             newroot,
             parentroot,
@@ -1052,10 +1287,12 @@ def _verified_r3_capacity_failure(directory, protocol, launch, stopped):
 
 
 def validate_safe_recovery(parentroot):
-    """Only documented resource/stop failures with actual exit may be continued.
+    """Only an identified resource-failed worker may trigger automatic recovery.
 
     Native feedback or endpoint generation interrupted after CUDA is deliberately
     unsupported: no generic consumer may silently retry an unknown response.
+    A lawful child stop is only a consequence, never evidence that an unknown
+    controller failure was a recoverable resource failure.
     """
     parent = Path(parentroot).resolve()
     evidence = []
@@ -1078,6 +1315,7 @@ def validate_safe_recovery(parentroot):
         failure = checked(parent / "failure/record.json")
         require(
             queue["active_children"] == []
+            and queue["protocol_id"] == failure["protocol_id"] == protocol["id"]
             and queue["phase"] == failure["phase"]
             and failure["phase"]
             in ("STOPPED_FAILURE_NO_RETRY", "PAUSED_DURABLE_BOUNDARY_NO_AUTO_RESUME")
@@ -1103,8 +1341,24 @@ def validate_safe_recovery(parentroot):
             or "manual stop" in trigger
         ):
             return dict(allowed=False, reason="manual_stop_is_terminal", evidence_refs=evidence)
+        # These are the two exact worker-failure propagation sites in the frozen
+        # lifecycle. All direct controller failures (including identity/policy,
+        # binding, unknown memory observations, and numerical guards) fail closed.
+        # Do this BEFORE considering any child: pool shutdown can itself create
+        # a perfectly durable TailStopRequested/ReplayPaused record.
+        worker_trigger = re.fullmatch(
+            r"worker (?:reported failure|exited unsuccessfully): ([A-Za-z0-9_]+)",
+            failure.get("error", ""),
+        )
+        require(
+            failure.get("error_type") == "ValueError"
+            and worker_trigger is not None
+            and worker_trigger[1] in (*SHARDS, *STAGES, "generate"),
+            "unsupported_controller_root_failure_requires_user",
+        )
+        trigger_stage = worker_trigger[1]
         classes, retry_capacity_conditions, retry_capacity_evidence_refs = [], [], []
-        failures = 0
+        trigger_workers = []
         for path in sorted(parent.glob("contexts/seed*/*/step*/*/launch/record.json")) + sorted(
             parent.glob("evaluations/*/generate/launch/record.json")
         ):
@@ -1124,7 +1378,6 @@ def validate_safe_recovery(parentroot):
                 and exited["stop_requested"] is False
             ):
                 continue
-            failures += 1
             failure_path = directory / "failure/record.json"
             require(failure_path.exists(), "unsupported_unexplained_worker_exit")
             stopped = checked(failure_path)
@@ -1155,24 +1408,18 @@ def validate_safe_recovery(parentroot):
                     reason="numerical_or_binding_failure_requires_user",
                     evidence_refs=evidence,
                 )
-            resource = stopped.get("error_type") in (
-                "OutOfMemoryError",
+            stop_consequence = stopped.get("error_type") in (
                 "AdmissionStopped",
                 "TailStopRequested",
                 "ReplayPaused",
-            ) or any(
-                word in cause
-                for word in (
-                    "out of memory",
-                    "memory limit",
-                    "memory reserve",
-                    "rss limit",
-                    "host memory",
-                    "safe stop",
-                    "resource wait",
-                    "disk space",
-                )
             )
+            stop_evidence = stopped.get("stop_evidence") or {}
+            if stop_consequence:
+                require(
+                    stop_evidence.get("stop_requested") is True,
+                    "unverified_child_stop_cannot_explain_controller_failure",
+                )
+            resource = stopped.get("error_type") == "OutOfMemoryError"
             if (
                 stopped.get("error_type") == "TailMemoryError"
                 or cause == "production host ram envelope failed"
@@ -1198,7 +1445,14 @@ def validate_safe_recovery(parentroot):
                 resource = True
                 retry_capacity_conditions.append(capacity["condition"])
                 retry_capacity_evidence_refs.extend(capacity["evidence_refs"])
-            require(resource, "unsupported_nonresource_failure_requires_user")
+            require(resource or stop_consequence, "unsupported_nonresource_failure_requires_user")
+            if resource and launch["stage"] == trigger_stage and not stop_consequence:
+                require(
+                    stop_evidence.get("stop_requested") is False
+                    and stop_evidence.get("received_signals") == [],
+                    "resource_trigger_worker_has_prior_stop_or_unknown_stop_evidence",
+                )
+                trigger_workers.append(entry(failure_path))
             heartbeat = directory / "pre_cuda_wait/status.json"
             pre_cuda = False
             if heartbeat.exists():
@@ -1232,12 +1486,16 @@ def validate_safe_recovery(parentroot):
                 )
             )
         require(
-            failures or any(word in trigger for word in ("resource", "memory", "disk")),
-            "unsupported_controller_failure_without_safe_worker_boundary",
+            len(trigger_workers) == 1,
+            "controller_failure_requires_one_matching_resource_worker_not_stop_consequences",
         )
         return dict(
             allowed=True,
             reason="resource_failure_with_verified_exits_and_durable_boundary_consumers",
+            controller_root_failure=entry(parent / "failure/record.json"),
+            controller_trigger_stage=trigger_stage,
+            controller_trigger_worker_failure=trigger_workers[0],
+            child_stop_consequences_not_used_as_root_cause=True,
             evidence_refs=evidence,
             interrupted_stages=classes,
             unknown_feedback_retry=False,
@@ -1465,7 +1723,7 @@ def inspect_automatic_recovery(
     protocol = checked(parent / "protocol/record.json")
     supervision = Path(protocol["supervision_root"]).resolve()
     require(
-        supervision.name == "fixed_gpu_reservation_01"
+        supervision == ROOT
         and (parent == supervision or parent.parent == supervision / "attempts")
         and root.parent == supervision / "attempts"
         and re.fullmatch(r"attempt\d{4,}", root.name),

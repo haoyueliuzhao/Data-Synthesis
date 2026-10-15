@@ -112,6 +112,10 @@ V45于2026-10-15 21:21:50以 `STOPPED_FAILURE_NO_RETRY` 停止，监督器随后
 
 V47初始恢复只读继承上述两个真实R3前缀240/133、同点class及反馈，Full251从step1213后继续；C-only389未封存的11条观测须重算，不能称零重放。两个旧未提交outer共1400题反馈复用，未来Full389 step1192原剂量内首次700题采样保留，六个终点不重跑，仍全九模型后统一评分。原76GiB allocated历史峰值、2GiB规定边界free、160/192GiB RSS硬限和全机96GiB有效主存余量不变；V45经验主存准入继续使用。无截止和安全断点自动恢复继续，但未知反馈、状态绑定或数值错误不得盲目重试，明确停止不自动拉起。新准备、预留小试和源码完成不等于科学任务已实际派发；真实状态以新目录协议、launch、supervisor及worker记录为准，禁止重复启动任何旧入口。详细合同和实际启动结果见 `trusted_data_synthesis/docs/finqa_v47_shared_gpu_reservation_recovery_20261015.md`。
 
+V47首次以源提交 `8b24d9e09c` 冻结89文件并实际启动，但于2026-10-15 22:29因新准入心跳schema与继承控制器仍要求的旧schema不一致而停止。GPU2 Full251 train已真实预留31GiB，但在模型加载前因合法停止标记退出；不是OOM。自动分类还漏审控制器根因，误放行第二attempt；它在GPU2为C-only389 R3预留70GiB，加载模型并实际恢复父response240，随后仍在240暂停，没有新增response。助手于22:32:33身份核验后pidfd停止监督器以阻断attempt3；第二worker自己的SIGTERM记录早于此操作，发送者不作伪造归因。监督器、两个控制器及两个worker均已退出。九arm实际checkpoint完全不变，新增API、反馈、response forward、optimizer、outer及终点回答均为0，剩余仍1171次更新、3次outer、3441条回答。第一轮失败、错误allowed=true判断和89文件冻结包保持原样；收口见 `fixed_gpu_reservation_01/closeout_01/record.json`，终态 `STOPPED_IMPLEMENTATION_FAILURE_NO_SCIENTIFIC_PROGRESS`，不称整轮或数学验收完成。
+
+用户获知上述两项实现错误后明确回复“授权修复后重新启动”。仅在独立 `production_resume_01/fixed_gpu_reservation_02/` 重新登记修复版；新的心跳捕获器保持所有身份、阈值及时间检查，自动恢复必须先确认控制器根因和实际资源主失败，合法停止后果不能单独放行。原V45数学81文件不改，旧fixed01冻结和失败不改；实际父为fixed01的attempt0002，继承其最新真实断点与累计phase、outer及资源等待，不重置计时。C-only389实际重存的response240与原Tensor逐字相同但record ID不同，不伪造旧记录；Full389133、Full2511213及原剩余剂量不变。继续取消独立总worker上限，保留八卡每卡一个本实验worker、共享分阶段准入、预留与原硬门；新登记和代码修复不等于已经启动，新科学launch和验收另行记录。禁止重启任何fixed01入口或把旧错误自动恢复决定作为新授权。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

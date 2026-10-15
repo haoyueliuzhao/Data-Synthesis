@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-15T14:34:01.701610+00:00",
+  "phase": "STOPPED_BY_EXPLICIT_REQUEST",
+  "supervisor_pid": 2080363,
+  "manual_stop_requested": true,
+  "received_signals": [
+    15
+  ],
+  "attempt_number": 2
+}

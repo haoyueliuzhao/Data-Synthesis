@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-15T14:28:37.873342+00:00",
+  "phase": "INHERITED_COMPLETED_PHASES_READY",
+  "protocol_id": "6330364ea55d14a37aee89bd3a954397bb166dd52cdd711197eda4013834ab84",
+  "context_id": "4ffac84ac48ccf05375767dadb498eab93ef23029fa87490d2a9d669e00234ce",
+  "active_children": [],
+  "completed_stages": [
+    "shard00",
+    "shard01",
+    "shard02",
+    "shard03",
+    "virtual_point"
+  ],
+  "compute_seconds": 42676,
+  "unowned_wall_queue_seconds": 0.0,
+  "global_external_resource_wait_seconds": 94034,
+  "original_B_resume_authorized": true
+}

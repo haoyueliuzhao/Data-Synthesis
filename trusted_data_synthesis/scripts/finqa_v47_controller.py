@@ -34,7 +34,12 @@ SOURCE_ROOT = REPO / (
 )
 PARENT_ROOT = SOURCE_ROOT / "production_resume_01/host_memory_admission_01"
 SOURCE_BUNDLE = PARENT_ROOT / "implementation"
-ROOT = SOURCE_ROOT / "production_resume_01/fixed_gpu_reservation_01"
+FAILED_REGISTRATION_ROOT = SOURCE_ROOT / "production_resume_01/fixed_gpu_reservation_01"
+RECOVERY_PARENT_ROOT = FAILED_REGISTRATION_ROOT / "attempts/attempt0002"
+ROOT = SOURCE_ROOT / "production_resume_01/fixed_gpu_reservation_02"
+FAILED_REGISTRATION_CLOSEOUT_ID = "1d721b807e8bbaa94cdb5347b00328ee081be80a4563cd29f4d1fc5b9a6828ba"
+FAILED_REGISTRATION_STOP_ID = "ec4a79aa455e5a8a8816c6a8ce3bda1dc1f8df7be2a1f872a6ed47aae36bf0ec"
+RECOVERY_REVISION = "heartbeat_schema_and_controller_failure_provenance_repair_r2"
 SOURCE_PROTOCOL_ID = "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf"
 SOURCE_IMPLEMENTATION_ID = "c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d"
 PROTOCOL_SCHEMA = "v47_fixed_gpu_reservation_supervised_protocol.v1"
@@ -224,6 +229,107 @@ def verify_parent_stopped():
         and closeout["final_attempt"] == 1,
         "initial V47 recovery requires the original stopped unsafe parent",
     )
+    verify_failed_registration_stopped()
+
+
+def failed_registration_references():
+    return dict(
+        failed_registration_root=str(FAILED_REGISTRATION_ROOT),
+        failed_registration_closeout=entry(FAILED_REGISTRATION_ROOT / "closeout_01/record.json"),
+        failed_registration_operator_stop=entry(
+            FAILED_REGISTRATION_ROOT / "operator_guard_stop/record.json"
+        ),
+        failed_registration_first_failure=entry(FAILED_REGISTRATION_ROOT / "failure/record.json"),
+        failed_registration_second_failure=entry(RECOVERY_PARENT_ROOT / "failure/record.json"),
+        failed_registration_supervisor_closeout=entry(
+            FAILED_REGISTRATION_ROOT / "supervisor/closeout/record.json"
+        ),
+    )
+
+
+def verify_failed_registration_stopped():
+    references = failed_registration_references()
+    closed = read_ref(references["failed_registration_closeout"])
+    stopped = read_ref(references["failed_registration_operator_stop"])
+    require(
+        closed["id"] == FAILED_REGISTRATION_CLOSEOUT_ID
+        and stopped["id"] == FAILED_REGISTRATION_STOP_ID
+        and closed["status"] == "STOPPED_IMPLEMENTATION_FAILURE_NO_SCIENTIFIC_PROGRESS"
+        and closed["all_registered_processes_exited"] is True
+        and closed["attempts_launched"] == 2
+        and closed["attempt3_created"] is False
+        and not (FAILED_REGISTRATION_ROOT / "attempts/attempt0003").exists()
+        and closed["operator_guard_stop"] == references["failed_registration_operator_stop"]
+        and closed["first_failure"] == references["failed_registration_first_failure"]
+        and closed["second_failure"] == references["failed_registration_second_failure"]
+        and closed["supervisor_closeout"] == references["failed_registration_supervisor_closeout"]
+        and closed["actual_final_progress"]
+        == entry(RECOVERY_PARENT_ROOT / "actual_final_progress/record.json"),
+        "failed V47 registration closeout or stop authority changed",
+    )
+    for key in (
+        "failed_registration_first_failure",
+        "failed_registration_second_failure",
+        "failed_registration_supervisor_closeout",
+    ):
+        read_ref(references[key])
+    expected_launches = {
+        str(FAILED_REGISTRATION_ROOT / "supervisor/launch/record.json"),
+        str(FAILED_REGISTRATION_ROOT / "launch_01/record.json"),
+        str(RECOVERY_PARENT_ROOT / "launch_01/record.json"),
+    }
+    for attempt in (FAILED_REGISTRATION_ROOT, RECOVERY_PARENT_ROOT):
+        expected_launches.update(
+            str(path) for path in attempt.glob("contexts/seed*/*/step*/*/launch/record.json")
+        )
+        expected_launches.update(
+            str(path) for path in attempt.glob("evaluations/*/generate/launch/record.json")
+        )
+    rows = closed["process_identities"]
+    require(
+        len(rows) == len(expected_launches)
+        and {row["reference"]["path"] for row in rows} == expected_launches,
+        "closeout must cover every registered failed-run process",
+    )
+    for row in rows:
+        launch = read_ref(row["reference"])
+        require(
+            launch["pid"] == row["pid"]
+            and str(launch["birth"]) == str(row["registered_birth"])
+            and row["registered_identity_exited"] is True
+            and birth(launch["pid"]) != str(launch["birth"]),
+            "a registered failed-run process is still alive or its binding changed",
+        )
+    original = checked(PARENT_ROOT / "actual_final_progress/record.json")
+    current = read_ref(closed["actual_final_progress"])
+    old_states = {
+        (row["seed"], row["arm"]): (row["step"], row["checkpoint"]) for row in original["arms"]
+    }
+    new_states = {
+        (row["seed"], row["arm"]): (row["step"], row["checkpoint"]) for row in current["arms"]
+    }
+    require(
+        len(old_states) == len(new_states) == 9
+        and old_states == new_states
+        and current["remaining_physical_updates"] == 1171
+        and current["remaining_outers"] == 3,
+        "failed registration changed the original actual scientific frontier",
+    )
+    require(
+        all(
+            closed[key] == 0
+            for key in (
+                "new_response_forward_calls",
+                "new_feedback_episodes",
+                "provider_API_calls",
+                "optimizer_updates",
+                "outer_updates",
+                "new_endpoint_answers",
+            )
+        ),
+        "failed registration has new science requiring a different recovery contract",
+    )
+    return closed
 
 
 def _capacity_wait_reference(parentroot):
@@ -293,8 +399,12 @@ def authorization_body(*, parentroot, automatic):
     return dict(
         schema="v47_explicit_durable_recovery_and_shared_reservation_authority.v1",
         at=now(),
-        user_instruction="恢复任务，后续设置更安全的占用策略保证任务运行，申请固定高显存占用",
-        user_consent="恢复任务；资源紧张，开放限制，采取更激进的任务分配占用策略；取消任务并发数限制",
+        user_instruction="授权修复后重新启动",
+        user_consent="授权修复后重新启动；此前共享GPU、取消任务并发数限制及安全自动恢复授权继续",
+        recovery_revision=RECOVERY_REVISION,
+        failed_registration_recovery_authorized=not automatic,
+        failed_registration_restarted_in_place=False,
+        **failed_registration_references(),
         latest_shared_resource_authorization="资源紧张，开放限制，采取更激进的任务分配占用策略",
         total_worker_limit_removed=True,
         independent_total_worker_limit=None,
@@ -316,6 +426,8 @@ def authorization_body(*, parentroot, automatic):
         known_failure_recovery_authorized=not automatic,
         parent_failure=entry(Path(parentroot) / "failure/record.json"),
         parent_protocol=entry(Path(parentroot) / "protocol/record.json"),
+        original_mathematical_parent_protocol=entry(PARENT_ROOT / "protocol/record.json"),
+        original_mathematical_parent_failure=entry(PARENT_ROOT / "failure/record.json"),
         supervisor_capacity_wait=_capacity_wait_reference(parentroot) if automatic else None,
         new_sampling_or_optimizer_dose_authorized=False,
         logical_class_shards=4,
@@ -323,10 +435,10 @@ def authorization_body(*, parentroot, automatic):
     )
 
 
-def prepare(root=ROOT, *, source_commit, parentroot=PARENT_ROOT):
+def prepare(root=ROOT, *, source_commit, parentroot=RECOVERY_PARENT_ROOT):
     root, parentroot = Path(root).resolve(), Path(parentroot).resolve()
     require(
-        root == ROOT and parentroot == PARENT_ROOT and not root.exists(),
+        root == ROOT and parentroot == RECOVERY_PARENT_ROOT and not root.exists(),
         "one fresh explicit V47 stopped-parent recovery",
     )
     verify_parent_stopped()
@@ -351,7 +463,11 @@ def prepare(root=ROOT, *, source_commit, parentroot=PARENT_ROOT):
             parent_root=str(parentroot),
             parent_protocol=entry(parentroot / "protocol/record.json"),
             parent_failure=entry(parentroot / "failure/record.json"),
-            parent_supervisor_closeout=entry(parentroot / "supervisor/closeout/record.json"),
+            parent_supervisor_closeout=entry(
+                FAILED_REGISTRATION_ROOT / "supervisor/closeout/record.json"
+            ),
+            recovery_revision=RECOVERY_REVISION,
+            **failed_registration_references(),
             recovery_preflight=entry(root / "preflight/record.json"),
             gpu_admission_policy=gpu_policy,
             host_admission_policy=host_policy,
@@ -373,10 +489,14 @@ def checked_preparation():
         value["schema"] == "v47_explicit_stopped_parent_recovery_preparation.v1"
         and value["implementation"] == entry(ROOT / "implementation/record.json")
         and value["authorization"] == entry(ROOT / "authorization/record.json")
-        and value["parent_protocol"] == entry(PARENT_ROOT / "protocol/record.json")
-        and value["parent_failure"] == entry(PARENT_ROOT / "failure/record.json")
+        and value["parent_protocol"] == entry(RECOVERY_PARENT_ROOT / "protocol/record.json")
+        and value["parent_failure"] == entry(RECOVERY_PARENT_ROOT / "failure/record.json")
         and value["parent_supervisor_closeout"]
-        == entry(PARENT_ROOT / "supervisor/closeout/record.json")
+        == entry(FAILED_REGISTRATION_ROOT / "supervisor/closeout/record.json")
+        and value["recovery_revision"] == RECOVERY_REVISION
+        and all(
+            value[key] == reference for key, reference in failed_registration_references().items()
+        )
         and value["gpu_admission_policy"] == policy_record()
         and value["host_admission_policy"] == host_policy_record()
         and value["gpu_reservation_policy"] == reservation_policy_record()
@@ -405,6 +525,9 @@ def protocol_body(root, implementation, initial, *, at):
         supervision_root=str(ROOT),
         implementation_id=implementation["id"],
         source_commit=implementation["source_commit"],
+        recovery_revision=RECOVERY_REVISION,
+        failed_registration_restarted_in_place=False,
+        **failed_registration_references(),
         authority="显式恢复实际断点；共享GPU按阶段预留；取消独立总worker限制；科学剂量与硬门不变",
         authorization=entry(root / "authorization/record.json"),
         audit=entry(root / "activation_registration/record.json"),
@@ -515,7 +638,7 @@ def initialize(root=ROOT):
         ),
     )
     inherited = inheritance.initialize_parent_recovery(
-        root, PARENT_ROOT, authorization_record=entry(root / "authorization/record.json")
+        root, RECOVERY_PARENT_ROOT, authorization_record=entry(root / "authorization/record.json")
     )
     return _finish_initialization(root, implementation, inherited)
 
@@ -884,6 +1007,87 @@ class Controller(runtime.Controller):
             checked(self.root / "activation_registration/record.json")["at"]
         ).timestamp()
 
+    def _capture_wait_path(self, runner, stage, item, path, *, strict_freshness):
+        # V47 has its own producer schema. Keep every original identity, phase,
+        # monotonic-clock, sequence and interval check; never relabel old records.
+        heartbeat, launch = checked(path), item["launch"]
+        key = (runner.context["id"], stage, launch["pid"], str(launch["birth"]), str(path))
+        require(
+            self.protocol.get("schema") == PROTOCOL_SCHEMA
+            and heartbeat["schema"] == "v47_shared_pre_cuda_admission.v1"
+            and heartbeat["protocol_id"] == self.protocol["id"]
+            and heartbeat["context_id"] == runner.context["id"]
+            and all(heartbeat[k] == launch[k] for k in ("stage", "pid", "gpu_index", "gpu_uuid"))
+            and str(heartbeat["birth"]) == str(launch["birth"])
+            and heartbeat["deadline_epoch"] == launch["deadline_epoch"]
+            and heartbeat["cuda_initialized"] is False
+            and heartbeat["memory_phase"] == memory_policy.phase_key(stage, runner.context)
+            and heartbeat["minimum_free_mib"]
+            == memory_policy.minimum_free_mib(stage, runner.context)
+            and heartbeat["gpu_admission_policy_schema"] == admission.POLICY_SCHEMA
+            and heartbeat["gpu_reservation_policy_schema"]
+            == self.protocol["gpu_reservation_policy"]["schema"],
+            "admission heartbeat does not belong to the actual worker/phase policy",
+        )
+        sequence = heartbeat["sequence"]
+        require(
+            type(sequence) is int and sequence >= self._last_wait_sequences.get(key, -1),
+            "admission heartbeat sequence reversed",
+        )
+        self._last_wait_sequences[key] = sequence
+        phase = heartbeat["phase"]
+        require(
+            phase in {"WAITING", "READY", "FAILED", "STOPPED", "TIMED_OUT"},
+            "unknown admission state",
+        )
+        current, observed = time.monotonic(), heartbeat["observed_monotonic"]
+        require(
+            type(observed) in (int, float)
+            and math.isfinite(observed)
+            and item["started_monotonic"] <= observed <= current + 1,
+            "invalid admission clock binding",
+        )
+        start, end = heartbeat["waiting_started_monotonic"], heartbeat["waiting_finished_monotonic"]
+        if start is not None:
+            require(
+                type(start) in (int, float)
+                and math.isfinite(start)
+                and item["started_monotonic"] <= start <= observed,
+                "wait outside worker lifetime",
+            )
+            if phase == "WAITING":
+                require(end is None, "open wait already closed")
+                if strict_freshness and item["process"].poll() is None:
+                    require(current - observed <= 60, "pre-CUDA admission heartbeat stale")
+                end = observed
+            else:
+                require(
+                    type(end) in (int, float) and math.isfinite(end) and start <= end <= observed,
+                    "closed wait interval missing or reversed",
+                )
+            previous = self._worker_wait_intervals.get(key)
+            require(
+                previous is None or (previous[0] == start and previous[1] <= end),
+                "worker resource wait decreased",
+            )
+            self._worker_wait_intervals[key] = (start, end)
+        else:
+            require(
+                phase != "WAITING" and end is None and heartbeat["waiting_seconds"] == 0,
+                "unbound waiting duration",
+            )
+        if phase == "WAITING" and item["process"].poll() is None:
+            self._pre_cuda_waiters[key] = dict(
+                context_id=runner.context["id"],
+                stage=stage,
+                pid=launch["pid"],
+                gpu_index=launch["gpu_index"],
+                waiting_seconds=heartbeat["waiting_seconds"],
+                admission_path=str(path),
+            )
+        else:
+            self._pre_cuda_waiters.pop(key, None)
+
     def update(self, phase, **extra):
         active = [
             dict(
@@ -1012,7 +1216,7 @@ def main():
     parser.add_argument("action", choices=("prepare", "initialize", "run", "inspect"))
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--source-commit")
-    parser.add_argument("--parent-root", type=Path, default=PARENT_ROOT)
+    parser.add_argument("--parent-root", type=Path, default=RECOVERY_PARENT_ROOT)
     args = parser.parse_args()
     if args.action == "prepare":
         require(args.source_commit is not None, "committed source required")

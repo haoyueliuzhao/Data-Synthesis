@@ -1,0 +1,39 @@
+{
+  "schema": "v47_operator_stop_after_invalid_automatic_recovery.v1",
+  "at": "2026-10-15T14:35:59.965983+00:00",
+  "signal_sent_at": "2026-10-15T14:32:33.311487+00:00",
+  "pid": 2080363,
+  "birth": "449890817",
+  "signal_number": 15,
+  "pidfd_used": true,
+  "identity_checks": [
+    "registered owner pid and birth",
+    "current /proc birth",
+    "UID equals operator",
+    "exact frozen supervisor command",
+    "identity rechecked after pidfd open"
+  ],
+  "owner_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/owner_launch/record.json",
+    "sha256": "d6d495eb07cf0e675629c67d6d2d4927509e793ba9969067337e07ec5f3b5b96",
+    "id": "5ff75d730cb62f91a5622e67d88b3943e4465b2df032ffac29f045080b3cac27"
+  },
+  "first_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/failure/record.json",
+    "sha256": "d093281a4e8ddc2346600d51dcb8767f4ab650b9482bf25b44f42811e1009148",
+    "id": "c8f9cdfc55c376c80bbb840d9eb1648b32b4e7e59bc4b6f3f781c5a35d4bbd32"
+  },
+  "invalid_automatic_recovery_decision": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/supervisor/attempt0001/recovery_decision/record.json",
+    "sha256": "4baf7112a3388ee34a5e16fb5effa3c839d321f3959628f15615e6a7381ca46a",
+    "id": "06e92354a70e736ebb3d59e61140b7b6be5465ddf43b89ffcc0949d8883817d8"
+  },
+  "reason": "Controller heartbeat schema mismatch is a binding-policy implementation failure, not a resource failure; stop further automatic attempts",
+  "operator": "assistant",
+  "user_explicit_stop_claimed": false,
+  "first_venv_pidfd_attempt_sent_signal": false,
+  "successful_signal_interpreter": "/usr/bin/python3",
+  "historical_failure_and_frozen_source_written": false,
+  "new_scientific_restart_authorized_by_this_record": false,
+  "id": "ec4a79aa455e5a8a8816c6a8ce3bda1dc1f8df7be2a1f872a6ed47aae36bf0ec"
+}

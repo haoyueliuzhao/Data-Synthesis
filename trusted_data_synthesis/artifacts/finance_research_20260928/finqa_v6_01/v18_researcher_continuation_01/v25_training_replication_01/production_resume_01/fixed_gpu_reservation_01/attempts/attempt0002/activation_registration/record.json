@@ -1,0 +1,11 @@
+{
+  "schema": "v47_automatic_activation.v1",
+  "at": "2026-10-15T14:30:52.987895+00:00",
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_01/failure/record.json",
+    "sha256": "d093281a4e8ddc2346600d51dcb8767f4ab650b9482bf25b44f42811e1009148",
+    "id": "c8f9cdfc55c376c80bbb840d9eb1648b32b4e7e59bc4b6f3f781c5a35d4bbd32"
+  },
+  "scientific_controller_started": false,
+  "id": "01fb96cf77371a5c0381c8f8ae180bc3022472e5a42d8df55ddedfbf85b7c0a8"
+}
