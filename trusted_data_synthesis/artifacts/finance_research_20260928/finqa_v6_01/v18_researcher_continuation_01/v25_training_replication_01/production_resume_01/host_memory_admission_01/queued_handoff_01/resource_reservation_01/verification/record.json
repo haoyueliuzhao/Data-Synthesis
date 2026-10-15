@@ -1,0 +1,61 @@
+{
+  "schema": "v46_reservation_rejected_before_GPU_allocation.v1",
+  "at": "2026-10-15T01:22:41.818441+00:00",
+  "status": "NO_RESERVATION_EXTERNAL_DEVICES_OCCUPIED",
+  "owner_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/owner_launch/record.json",
+    "sha256": "04fd8ee39e0e723dc8c6ab256c57869fd7c107c5a9c63c7be084fa85f654efd4",
+    "id": "81e52cbea1de1dfaf8f9da6f4c1b8814d1233ee88b8c2bf2ee3d70b113ca7354"
+  },
+  "owner_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/closeout/record.json",
+    "sha256": "277e2b4620ac2ae994dc6f5b310c386daef51ccce8225b468983ecb6f8779b1f",
+    "id": "d36aff168328908922484822f9107830accccaaf26735533a0df3c342fe2e32e"
+  },
+  "owner_process_exited": true,
+  "owner_os_exit_code_observed": false,
+  "actual_GPU_holders_launched": 0,
+  "actual_reserved_bytes": 0,
+  "science_or_queued_handoff_stopped": false,
+  "external_processes_signalled": false,
+  "automatic_retry": false,
+  "observed_devices": [
+    {
+      "gpu_index": 4,
+      "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "free_mib": 76711,
+      "used_mib": 4443,
+      "processes": [
+        {
+          "pid": 3709308,
+          "used_memory_mib": "4432"
+        }
+      ]
+    },
+    {
+      "gpu_index": 5,
+      "gpu_uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+      "free_mib": 4773,
+      "used_mib": 76381,
+      "processes": [
+        {
+          "pid": 3737288,
+          "used_memory_mib": "76372"
+        }
+      ]
+    },
+    {
+      "gpu_index": 7,
+      "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "free_mib": 4773,
+      "used_mib": 76381,
+      "processes": [
+        {
+          "pid": 3737291,
+          "used_memory_mib": "76372"
+        }
+      ]
+    }
+  ],
+  "id": "c25e61d47444d6b89fae8714fcf49f1534118bdb555cd1ca172061753f100d67"
+}

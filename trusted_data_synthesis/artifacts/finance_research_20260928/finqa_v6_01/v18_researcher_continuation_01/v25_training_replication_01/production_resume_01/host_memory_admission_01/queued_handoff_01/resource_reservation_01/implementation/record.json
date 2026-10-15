@@ -1,0 +1,11 @@
+{
+  "schema": "v46_independent_bounded_resource_hold_sources.v1",
+  "at": "2026-10-15T01:20:29.968672+00:00",
+  "source_commit": "d07e82f5bfe5e34321be26f67e492feca127dbd1",
+  "sha256": {
+    "finqa_v46_reservation_watch.py": "9402e77a3723f36d9ef1646e08975ef4f3cae0760b511757d7e002805b5a14d5",
+    "reserve_finance_research_gpu_20260928.py": "6f16dba63062f42fe4fa0a348de8dd1975d070e123690635092eb968f3b73a16"
+  },
+  "science_and_queued_handoff_implementation_unchanged": true,
+  "id": "1257c3d2af1be7ed6ce0f9219ae08f4e1ebb55bc52e2624fcb3211ab075f84a4"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "v46_bounded_idle_gpu_reservation_owner.v1",
+  "at": "2026-10-15T01:20:30.011744+00:00",
+  "pid": 3744036,
+  "birth": "445162514",
+  "gpu_uuids": {
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+  },
+  "MiB_per_gpu": 73728,
+  "ttl_seconds": 900,
+  "holder_script": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/implementation/reserve_finance_research_gpu_20260928.py",
+  "holder_sha256": "6f16dba63062f42fe4fa0a348de8dd1975d070e123690635092eb968f3b73a16",
+  "watcher_script": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/implementation/finqa_v46_reservation_watch.py",
+  "watcher_sha256": "9402e77a3723f36d9ef1646e08975ef4f3cae0760b511757d7e002805b5a14d5",
+  "project_gpu_leases_acquired": false,
+  "scientific_progress": false,
+  "model_calls": 0,
+  "original_worker": {
+    "pid": 3571767,
+    "birth": "444416151"
+  },
+  "complete_task_release_threshold": 183,
+  "id": "81e52cbea1de1dfaf8f9da6f4c1b8814d1233ee88b8c2bf2ee3d70b113ca7354"
+}

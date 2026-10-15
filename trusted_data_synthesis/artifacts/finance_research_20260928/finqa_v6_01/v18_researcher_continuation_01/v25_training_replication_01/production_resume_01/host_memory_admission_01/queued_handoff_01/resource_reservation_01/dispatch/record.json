@@ -1,0 +1,30 @@
+{
+  "schema": "v46_bounded_resource_owner_dispatch.v1",
+  "at": "2026-10-15T01:20:29.970610+00:00",
+  "pid": 3744036,
+  "birth": "445162514",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/implementation/finqa_v46_reservation_watch.py",
+    "--output",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01",
+    "--holder-script",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/implementation/reserve_finance_research_gpu_20260928.py",
+    "--ttl",
+    "900"
+  ],
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/implementation/record.json",
+    "sha256": "364be5c2ecde82d32427a40e8ae6d9d12c99a0336ce04b40beeb8436cd78a2df",
+    "id": "1257c3d2af1be7ed6ce0f9219ae08f4e1ebb55bc52e2624fcb3211ab075f84a4"
+  },
+  "authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/resource_reservation_01/authorization/record.json",
+    "sha256": "e6f85e381be5434e78d641a8befa6316d04a08ae1c3f231ba7a98cc12154e039",
+    "id": "906ae278dc2131cc16d7a3fcb43f7227d010ccfd7267f395f2572e021f035921"
+  },
+  "scientific_worker": false,
+  "CUDA_allocation_not_yet_verified": true,
+  "id": "155418e5d2a33e5ae24210de4e2a40d9ccc811aa5571c4d5a18045c9d40a85ba"
+}

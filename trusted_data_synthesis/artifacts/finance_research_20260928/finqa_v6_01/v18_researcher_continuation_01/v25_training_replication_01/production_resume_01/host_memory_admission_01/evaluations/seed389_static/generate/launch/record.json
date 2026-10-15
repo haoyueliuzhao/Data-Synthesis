@@ -1,0 +1,117 @@
+{
+  "schema": "v45_five_worker_stage_launch.v1",
+  "at": "2026-10-15T01:29:11.859038+00:00",
+  "protocol_id": "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf",
+  "context_id": "evaluation:389:static",
+  "stage": "generate",
+  "pid": 3754673,
+  "birth": "445214703",
+  "worker": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/implementation/finqa_v45_evaluation.py",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/implementation/finqa_v45_evaluation.py",
+    "generate",
+    "--stage",
+    "generate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01",
+    "--seed",
+    "389",
+    "--arm",
+    "static",
+    "--gpu-index",
+    "4"
+  ],
+  "gpu_index": 4,
+  "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+  "deadline_epoch": null,
+  "source_checkpoint": null,
+  "no_automatic_retry": true,
+  "inherited_completed_stages_not_dispatched": true,
+  "memory_phase": "generate",
+  "minimum_free_mib": 49152,
+  "gpu_admission_policy_schema": "v41_phase_specific_shared_gpu_admission.v1",
+  "actual_dispatch_inventory": {
+    "index": 4,
+    "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "total_mib": 81920,
+    "used_mib": 4443,
+    "free_mib": 76711,
+    "processes": [
+      {
+        "pid": 3709308,
+        "used_memory_mib": "4432"
+      }
+    ]
+  },
+  "actual_host_admission": {
+    "at": "2026-10-15T01:29:11.455029+00:00",
+    "stage": "generate",
+    "available_bytes": 764495007744,
+    "needed_bytes": 223333273600,
+    "active": [
+      {
+        "stage": "virtual_point",
+        "gpu_index": 2,
+        "pid": 3754659,
+        "birth": "445214662",
+        "observed": true,
+        "rss_bytes": 5025792,
+        "peak_rss_bytes": 5025792
+      }
+    ],
+    "host_admission_policy": {
+      "schema": "v45_empirical_phase_specific_host_admission.v1",
+      "evidence_refs": [
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_evidence_01/record.json",
+          "sha256": "7a8fa852f8650d1b26161b83bd9c04413383ea26f7d48ba2a1ab209f2a6b7246",
+          "id": "5e87ca240e266595c3dbf34bd9013cf61db961232209b5d94b34903447970ad0"
+        }
+      ],
+      "historical_summary_sha256": "7d9581c3ec7392a772debca512f9d3a5f5ab4038559ced6d9416cf2af934e87b",
+      "historical_successful_process_count": 91,
+      "historical_peak_bytes_by_phase": {
+        "replay_R3": 17644838912,
+        "generate": 16537333760,
+        "virtual_point": 31447461888,
+        "distribution": 31753560064,
+        "train": 17538539520,
+        "class": 133719773184
+      },
+      "startup_budget_bytes_by_phase": {
+        "train": 51539607552,
+        "replay_R3": 51539607552,
+        "generate": 51539607552,
+        "virtual_point": 68719476736,
+        "distribution": 68719476736,
+        "class": 171798691840
+      },
+      "host_reserve_bytes": 103079215104,
+      "runtime_rss_limit_bytes": {
+        "class": 171798691840,
+        "other": 206158430208
+      },
+      "padding": {
+        "peak_multiplier_numerator": 9,
+        "peak_multiplier_denominator": 8,
+        "additive_margin_bytes": 17179869184,
+        "round_up_multiple_bytes": 17179869184
+      },
+      "dynamic_unconsumed_reservation": "max(0,max(startup_budget,padded_lifetime_peak)-current_RSS)",
+      "current_RSS_alone_is_not_future_peak_estimate": true,
+      "missing_or_invalid_live_memory": "defer_dispatch_without_zero_fallback_or_pool_stop",
+      "unknown_stage_or_policy": "hard_error",
+      "historical_peaks_are_not_future_upper_bounds": true,
+      "host_runtime_hard_gates_unchanged": true,
+      "GPU_admission_and_runtime_memory_gates_unchanged": true
+    },
+    "decision": "ADMIT_HOST_MEMORY"
+  },
+  "accepted_V40_pilot_repeated": false,
+  "id": "4f99fdc5127c0a1180a842dcd2bd23958e9cac7f4b2f2c1085af50c26ecee81a"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "v46_explicit_idle_GPU_hold_authority.v1",
+  "at": "2026-10-15T01:20:29.969203+00:00",
+  "user_instruction": "先占用空闲显卡等待交接",
+  "gpu_indices": [
+    5,
+    7
+  ],
+  "MiB_each": 73728,
+  "maximum_seconds": 900,
+  "release_at_complete_task_count": 183,
+  "assigned_tasks": 186,
+  "gpu4_not_reserved_because_external_process_present": true,
+  "project_GPU_leases_acquired": false,
+  "scientific_worker": false,
+  "new_scientific_budget": 0,
+  "early_release_before_final_scientific_handoff": true,
+  "id": "906ae278dc2131cc16d7a3fcb43f7227d010ccfd7267f395f2572e021f035921"
+}

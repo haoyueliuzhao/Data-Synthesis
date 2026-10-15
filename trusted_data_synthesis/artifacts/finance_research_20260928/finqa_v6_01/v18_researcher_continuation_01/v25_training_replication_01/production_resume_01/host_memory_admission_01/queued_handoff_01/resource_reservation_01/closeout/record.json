@@ -1,0 +1,17 @@
+{
+  "schema": "v46_bounded_idle_gpu_reservation_closeout.v1",
+  "at": "2026-10-15T01:20:30.222575+00:00",
+  "status": "RESERVATION_FAILURE",
+  "reason": "FAIL_CLOSED_RELEASE",
+  "error": "ValueError('GPU5 is not the bound fully idle device with 76GiB free')",
+  "elapsed_owner_seconds": 0.21088912151753902,
+  "actual_child_exits": [],
+  "children_launched": 0,
+  "automatic_retry": false,
+  "project_gpu_leases_acquired": false,
+  "scientific_progress": false,
+  "model_calls": 0,
+  "optimizer_steps": 0,
+  "sampling_calls": 0,
+  "id": "d36aff168328908922484822f9107830accccaaf26735533a0df3c342fe2e32e"
+}

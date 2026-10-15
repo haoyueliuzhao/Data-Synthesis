@@ -1,0 +1,24 @@
+{
+  "schema": "v46_single_successor_barrier_release.v1",
+  "at": "2026-10-15T01:28:00.165979+00:00",
+  "release_started_at": "2026-10-15T01:28:00.165860+00:00",
+  "released_gpu_locks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/closeout/record.json",
+    "sha256": "fc143a77a4139c3aff35e18756eb30520ea34decf93b20fd0ad2b753d72ae207",
+    "id": "948c04f498038b9a1d34be54dbcb9cb1e278b507fa6367ed65ca07881565d345"
+  },
+  "release_count": 1,
+  "stop_requested_after_release": false,
+  "scientific_worker_dispatched_by_handoff": false,
+  "id": "1f3d14c984d9fd260f62c9797decb44c39e84289ba7f736a519c742d2fe7d9c6"
+}

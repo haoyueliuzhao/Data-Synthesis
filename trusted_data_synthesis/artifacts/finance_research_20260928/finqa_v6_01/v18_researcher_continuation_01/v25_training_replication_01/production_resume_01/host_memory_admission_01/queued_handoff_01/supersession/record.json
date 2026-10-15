@@ -1,0 +1,36 @@
+{
+  "schema": "v46_unactivated_V45_handoff_replaced.v1",
+  "at": "2026-10-15T01:26:43.490450+00:00",
+  "intent": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/queued_handoff_01/supersession_intent/record.json",
+    "sha256": "46f02ad30a5d13a4f6c320f322058e7ee77198e82e83403a4d4dac9b675715a3",
+    "id": "5d7bdb569b07729bea2c9e23d6ab9fb6399253c6ab9ba95fca5c0cbb1841117a"
+  },
+  "old_handoff_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/handoff_01/closeout/record.json",
+    "sha256": "7e58e4b60a49111ce07fc4ac3f9ee876ae3c9e9e198bdd3a1a83b756e8b66e64",
+    "id": "e817694a418bfc317cf556604151e6f8854f624bd0219748612e7ddc27deb904"
+  },
+  "target": {
+    "pid": 2911728,
+    "birth": "441686539",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/implementation/finqa_v45_supervisor.py",
+      "migrate",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01"
+    ]
+  },
+  "target_process_exited": true,
+  "target_os_exit_code_observed": false,
+  "pending_migration_signals_sent": 1,
+  "worker_signals_sent": 0,
+  "scientific_controller_signals_sent": 0,
+  "scientific_supervisor_signals_sent": 0,
+  "anchor_retained_until_old_migration_exit": true,
+  "scientific_source_or_feedback_changed": false,
+  "id": "ccafb47a058b32b0fe1fc4b47e3083aaa023c2827e1fa0b2319c8672ded7815b"
+}

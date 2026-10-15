@@ -102,6 +102,10 @@ V46独立三文件补丁已以提交 `13ea08271cd47bae8170034e8a1a786a4bc6c23f` 
 
 用户随后明确“先占用空闲显卡等待交接”。本次只对复查完全空闲的GPU5、7各登记72GiB有界显存占位，GPU4有其他项目进程，不做大额占位或干预。资源根为 `host_memory_admission_01/queued_handoff_01/resource_reservation_01/`，最多15分钟；最后Full2511192 shard03达到183/186完整任务即提前释放，交接锚点/关闭记录、原worker或交接入口退出、明确停止也触发清理。占位不取得项目GPU租约、不构造模型、不增加科学worker或实验剂量；原holder的双空闲检查保持，失败不自动再抢。独立watcher仅信号自己创建且身份绑定的holder并核验实际退出，不更改已冻结的交接或科学源文件。实际占位与释放看reserved/released/actual_exit，不把资源保留称作训练恢复。
 
+上述GPU5、7占位监督器于09:20:29以PID3744036、birth `445162514`启动后，在空闲检查处拒绝：两卡已被另一账户09:15:46启动的进程占用，各仅余4773MiB。资源记录为RESERVATION_FAILURE，children_launched=0、实际保留显存0，监督器已退出；没有干预外部进程或停止科学/交接进程。不把本次描述为占位成功或已释放占位，不自动重试。证据见 `queued_handoff_01/resource_reservation_01/closeout/record.json` 与 `verification/record.json`；后续派发必须重新观察GPU资源。
+
+V46于2026-10-15 09:27:50以CLEAN_NATURAL_HANDOFF实际收口，ID `948c04f498038b9a1d34be54dbcb9cb1e278b507fa6367ed65ca07881565d345`。最后Full2511192 shard03于09:26:40真实exit0，随后新GPU3锚点取得、旧V45迁移09:26:43真实退出、八锁09:26:45齐全；29个已派阶段成功退出预检后仅停止旧V43监督器，科学worker信号0。09:27:59新V45科学协议创建，ID `920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf`；09:28:04控制器PID3752585、birth `445207631`启动，监督器仍为V46入口PID3726919。09:29已真实派发5个worker：GPU2 Full2511192 virtual、GPU4 Static389 generate、GPU0/3/6 C-only3891192 shard00/01/02，五份派发RAM/GPU准入通过。V45的原81文件、主存预算和数学不变，新预算/五上限已生效，不再描述为等待切换；GPU5/7本次因外部占用未派发。激活证据见 `queued_handoff_01/activation_verification/record.json`。原矩阵仍未全部完成或统一评分；新监督器已运行，禁止再启动任何旧migrate、queued run或重复新监督器。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

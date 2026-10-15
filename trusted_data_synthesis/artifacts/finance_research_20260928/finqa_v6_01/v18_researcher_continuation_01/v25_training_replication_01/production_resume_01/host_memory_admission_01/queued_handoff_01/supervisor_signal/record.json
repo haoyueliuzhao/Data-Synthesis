@@ -1,0 +1,31 @@
+{
+  "schema": "v46_verified_supervisor_pidfd_stop.v1",
+  "at": "2026-10-15T01:27:08.552508+00:00",
+  "target": {
+    "pid": 2068024,
+    "birth": "438667686",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/implementation/finqa_v43_supervisor.py",
+      "run",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04"
+    ]
+  },
+  "signals_sent": 1,
+  "worker_signals_sent": 0,
+  "all_gpu_locks_held": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "pidfd_only": true,
+  "id": "ecaa1978c97426e4e1f5ab00062f30355a5dcab7155a7ce87edd162a821653cd"
+}

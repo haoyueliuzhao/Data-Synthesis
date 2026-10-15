@@ -59,3 +59,29 @@ GPU3此前的连续接续有真实launch和exit记录：
 用户随后要求“先占用空闲显卡等待交接”。复查GPU5、7完全空闲，GPU4仍有其他项目进程，因此本次只对GPU5、7各登记72GiB临时占位，不对GPU4做大额预留或干预其进程。独立资源记录位于 `queued_handoff_01/resource_reservation_01/`，不修改正在运行的三文件交接包或科学81文件。
 
 占位复用原单卡holder的两次完全空闲检查，绑定UUID、PID和birth，最多15分钟，不重复抢占失败设备。资源监督器不获取项目GPU租约，以免与已有交接锁死锁；这些CUDA显存占位不是科学worker、模型调用或实验进度。原最后分片达到183/186个完整任务时即提前释放；交接锚点登记、原GPU3 worker退出、交接失败或退出、明确停止以及TTL到期也会触发释放，仅停止自己创建的子进程并记录真实退出。占位是否实际取得与是否已释放以各卡reserved、released和actual_exit回执为准。
+
+占位监督器13项CPU模拟用例及静态检查通过，源码提交 `d07e82f5bf` 已推送。09:20:29监督器PID3744036、birth `445162514`实际启动，但启动前空闲检查发现GPU5、7已被另一账户09:15:46启动的进程占用，两卡各仅剩4773MiB。因此以RESERVATION_FAILURE拒绝，holder子进程启动数为0，实际保留显存为0；监督器已退出，未向外部进程发送信号，没有停止科学实验或排队交接。
+
+拒绝证据在 `resource_reservation_01/closeout/record.json` 及 `verification/record.json`，后者ID `c25e61d47444d6b89fae8714fcf49f1534118bdb555cd1ca172061753f100d67`。这是资源占位未取得，不是已占位后释放，也不是科学阶段失败；不自动重试或清理对方任务。后续科学派发按当时实际可用资源选择，不能沿用早先GPU5、7空闲的快照。
+
+## 真实接管与五worker派发
+
+最后Full251 step1192 shard03于09:26:40真实exit0，186题、1234个有效行完整封存，stop_requested为false。新排队等待者随后实际取得GPU3，09:26:43旧V45迁移真实退出并保留STOPPED_NO_MIGRATION，09:26:45新协调器拿齐八卡租约。09:27:08独立预检确认29个已派科学阶段均完整成功退出，之后才向原V43监督器单次发送pidfd停止请求；科学worker信号为0。
+
+09:27:50新交接以CLEAN_NATURAL_HANDOFF收口，ID `948c04f498038b9a1d34be54dbcb9cb1e278b507fa6367ed65ca07881565d345`。原V43监督器和控制器均实际退出并保存合法停止证据，原参数和完整任务缓存只读继承，没有为资源切换重算已完成分片或重采反馈。
+
+09:27:59原冻结V45初始化器接受独立新凭据并创建科学协议，ID `920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf`。09:28:04新控制器PID3752585、birth `445207631`实际启动；新入口PID3726919继续作为原V45监督器，不另起重复监督器。V45的81文件实施包仍为原 `c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d`，没有热改数学实现。
+
+09:29首批实际派发五个worker，GPU5、7因其他账户占用未入选：
+
+| GPU | 真实阶段 | PID | 派发时可用RAM GiB | 本次准入要求 GiB |
+| --- | --- | ---: | ---: | ---: |
+| 2 | Full251 step1192 virtual_point | 3754659 | 712.382 | 160.000 |
+| 4 | Static389终点generate | 3754673 | 711.991 | 207.995 |
+| 0 | C-only389 step1192 shard00 | 3754682 | 712.447 | 367.918 |
+| 3 | C-only389 step1192 shard01 | 3754692 | 712.067 | 527.860 |
+| 6 | C-only389 step1192 shard02 | 3754701 | 711.813 | 687.780 |
+
+五份launch中的actual_host_admission均为ADMIT_HOST_MEMORY，设备UUID、实际free与各阶段阈值也通过派发检查。09:31:09队列为RUNNING、max_gpu_workers=5，五个PID/birth均与实际进程匹配；Static生成与三个class已记录pre-CUDA READY，virtual当时仍可能在CPU初始化。派发和初始化计入并发，不能把launch单独当作模型已计算或整轮实验已完成。完整准入记录与设备快照在 `queued_handoff_01/activation_verification/record.json`，ID `00a2a249404acabf9040fe1551174fca512ac43c1a400d6f869fe49c2c696750`。
+
+至此交接饥饿问题已实际解除，实测主存策略与五worker上限已经启用；原九模型矩阵继续运行，尚未宣称完成或统一评分。后续查看 `host_memory_admission_01/supervisor/queue/status.json` 与当前attempt队列；旧V43、旧V45迁移和新V46入口均不得重复启动。
