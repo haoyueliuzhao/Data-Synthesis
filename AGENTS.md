@@ -96,6 +96,8 @@ V44已以源提交 `2c9d7a781149ef9e9c429e97b71e293b5a04d2c1` 冻结74文件，�
 
 V45已以源提交 `bdcad252f583e56e9a873503bc6b6d280a985531` 冻结81文件，原V44全部74文件逐字保留；实施包ID `c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d`，准备ID `a027dd7eddd35524a3ed548d5c649e97ec1016b7bc69c94b23f4374a6af9ebd2`。100项不同CPU/mock用例、相关静态检查与正式冻结CPU依赖核验通过。唯一新migrate于2026-10-14 23:41:10启动，PID2911728、birth `441686539`；23:42为DRAINING_NATURALLY，持GPU1、2、5、6、7项目租约，worker及旧监督器信号均0。旧V43仍有GPU4 distribution、GPU0 R3、GPU3 train三个worker，V45科学protocol/launch尚未创建；新主存预算、五上限和GPU5/2优先序此时尚未生效。23:42快照中新class准入由旧820.05GiB降为假设新策略下404.05GiB，有效可用733.07GiB；这是公式对照，不是实际派发。启动证据在 `host_memory_admission_01/handoff_started_verification/record.json`。不得重复启动migrate或监督器，交接成功由同进程单次接续；进度查看新handoff及旧recovery_04队列，真实生效查看新supervisor/queue与launch。
 
+用户于2026-10-15检查GPU4、5、7空闲仍有待派任务后明确要求“处理此问题”。V46仅在 `host_memory_admission_01/queued_handoff_01/` 独立登记交接补丁，复用V45未激活准备和81文件科学包，不热改、不复制新科学版本、不扩展数学或剂量。新协调器使用原项目锁inode及同一打开文件描述的CPU辅助进程持续阻塞等待；只有真实取得且辅助进程exit0后计为持锁，kernelqueued与held严格分开，不宣称flock严格FIFO。新协调器须先实际持有GPU3并核验另外七卡等待，才能单次pidfd停止身份核验的旧V45迁移PID2911728、birth `441686539`；若旧V45已先完成切换则退出补丁，不停止新科学监督器。旧迁移STOPPED_NO_MIGRATION记录保留，新替换和closeout写独立目录。仍须全八租约、取得后新鲜空队列、所有已派worker真实成功退出与原同点预检通过，才单次停止原V43监督器并验证真实退出，再以新真实receipt调用原冻结V45.initialize和Supervisor.run，不重跑旧migrate。科学worker不收信号，不SIGSTOP控制器，助手锁进程可取消且须回收，明确停止禁止自动继续科学启动。五worker、GPU5/2优先、实测主存预算及原硬门均不变。详细合同与实际状态见 `trusted_data_synthesis/docs/finqa_v46_queued_lease_handoff_20261015.md`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
