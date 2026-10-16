@@ -1,0 +1,12 @@
+{
+  "schema": "v51_CPU_verifier_predicate_correction.v1",
+  "at": "2026-10-16T14:23:50.744626+00:00",
+  "prior_assertion": "cold.control._module is controller._module",
+  "corrected_assertion": "cold.control._module is controller",
+  "reason": "Proxy._module is the wrapped module, not the loader function",
+  "frozen_implementation_modified": false,
+  "scientific_worker_started": false,
+  "scientific_failure": false,
+  "scientific_retry": false,
+  "id": "2e508be9ffd8c4541cb2533db113aaeb829ce8ac7190f3b31905e7ad420bde68"
+}

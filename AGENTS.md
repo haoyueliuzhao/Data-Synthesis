@@ -136,6 +136,8 @@ V50 GPU0单卡版已以源提交 `fc7b0729c1ac961a1f6c7a2c50814d860a8d09c8` 冻�
 
 用户于2026-10-16要求“提高并发上限至2”，并明确选择“允许新增第二张GPU，每卡最多1个worker”。本次V51独立登记于 `production_resume_01/dual_gpu0_gpu6_01/`，设备限定GPU0和GPU6（新增GPU6 UUID `GPU-6cf85ebf-ae89-905b-5d97-46f83b295526`），总worker最多2、每卡最多1，初始化、资源等待和draining均占名额；不采用同卡双worker，不恢复其他六卡范围。旧V50冻结实现不热改，交接仅等待旧GPU0租约自然释放，不信号科学worker；持锁后新鲜空队列、全部已派发阶段真实成功退出及同点预检通过，才停止身份核验的旧监督器，确认监督器与控制器真实退出后单次启动新版本。停止旧运行前取消或检查失败仅释放交接租约，不沿用V49的取消停全池行为；不得重复交接、追随旧新attempt或启动科学旁路。当前已完成的Full251及C-only389训练不重复，科学剂量、原81数学文件、显存主存硬门、无截止、安全断点自动恢复和全九模型后统一评分不变。GPU显存仍按实际空余选择同进程预留、最高72GiB，不强制达到72GiB。准备或交接观察启动不等于双并发已实际生效；实际状态见 `trusted_data_synthesis/docs/finqa_v51_two_gpu_concurrency_20261016.md` 及新根launch/queue，旧V50在安全切换前继续运行。
 
+V51已以源提交 `48c0593acb701d89b6240d98cfdb3f9ced1b1394` 冻结90文件，原81数学文件逐字不变；实施包ID `d3c37529146a5109abbfb5a1d0505d433bece4fa6d0911d6b04fe6e4c4e1f952`，交接协议ID `7eb8feba7049df375ba4979df75d768a5fb4da69083ada066da137ba375cf0f0`。157项CPU/mock联合测试及正式冻结CPU依赖核验通过。唯一交接观察器于2026-10-16 22:24:27北京时间启动，PID3592725、birth458506298；22:25:12状态 `DRAINING_NATURALLY`，barrier为空，未向科学worker或旧监督器发信号。旧V50仍是GPU0单worker，Full389回放已保存至256/540；Full251与C-only389训练均已达1490。新科学protocol、新监督器和GPU6科学worker尚未创建，不能称双并发已经实际生效。核验见 `dual_gpu0_gpu6_01/handoff_startup_verification/record.json`；进度先看该根 `handoff_01/status.json`，交接成功后再看新supervisor/queue。禁止重复prepare/migrate或旁路派发；等待期间旧attempt改变或失败则本次交接停止、不自动追随，不能因此干预仍合法的旧V50运行。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

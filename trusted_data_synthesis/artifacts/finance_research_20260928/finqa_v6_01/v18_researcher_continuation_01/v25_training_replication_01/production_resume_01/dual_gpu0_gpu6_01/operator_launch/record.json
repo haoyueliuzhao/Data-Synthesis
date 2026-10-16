@@ -1,0 +1,33 @@
+{
+  "schema": "v51_authorized_single_migration_entry_operator_launch.v1",
+  "at": "2026-10-16T14:24:27.809806+00:00",
+  "pid": 3592725,
+  "birth": "458506298",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/implementation/finqa_v51_supervisor.py",
+    "migrate",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01"
+  ],
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/preparation/record.json",
+    "sha256": "9b0caf8e29395f324f295fae4c6f511c3a9e0f92af35e980ff4006556c8f7213",
+    "id": "4632c40834d7416afdc068ed99fa2226b303c9bad27fafb362e331237b842f70"
+  },
+  "handoff_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/handoff_01/protocol/record.json",
+    "sha256": "ef7c68bb9a301f9c1321550ed9b0002d999fa6f0261f44504bc535788a9ffbb0",
+    "id": "7eb8feba7049df375ba4979df75d768a5fb4da69083ada066da137ba375cf0f0"
+  },
+  "cpu_verification": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/cpu_dependency_verification/record.json",
+    "sha256": "bef196c250ec0b5206e49264a0bcc97b5d8d422867cdae20e54245b14502ab7c",
+    "id": "0d0abe0998169a151f1edb6c16483ae4e0924ee62c968fdd144902953d747332"
+  },
+  "new_scientific_controller_started_by_operator": false,
+  "worker_signals_sent": 0,
+  "other_project_processes_touched": false,
+  "id": "ea9982a3c54ed980a70862e640c1927ab4a1bf29ad341341cd9c8437db4dd489"
+}

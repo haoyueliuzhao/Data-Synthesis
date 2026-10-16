@@ -1,0 +1,96 @@
+{
+  "schema": "v51_dual_gpu_two_worker_live_handoff_authority.v1",
+  "at": "2026-10-16T14:20:45.142211+00:00",
+  "user_instruction": "提高并发上限至2",
+  "user_consent": "允许新增第二张GPU，每卡最多1个worker",
+  "clean_handoff_authorized": true,
+  "dual_gpu_two_worker_authorized": true,
+  "allowed_gpu_indices": [
+    0,
+    6
+  ],
+  "steady_gpu_indices": [
+    0,
+    6
+  ],
+  "steady_max_gpu_workers": 2,
+  "gpu_execution_policy": {
+    "schema": "v51_dual_gpu_two_worker_execution_policy.v1",
+    "allowed_gpu_indices": [
+      0,
+      6
+    ],
+    "steady_gpu_indices": [
+      0,
+      6
+    ],
+    "max_gpu_workers": 2,
+    "steady_max_gpu_workers": 2,
+    "maximum_project_workers_per_gpu": 1,
+    "only_gpu0_and_gpu6_authorized": true,
+    "initializing_waiting_and_draining_count_as_workers": true,
+    "bootstrap_training_coordinate": {
+      "seed": 251,
+      "arm": "Full"
+    },
+    "bootstrap_training_stop_step": 1490,
+    "completed_bootstrap_is_read_only": true,
+    "completed_bootstrap_not_repeated_after_automatic_recovery": true,
+    "complete_logical_class_shards": 4,
+    "complete_task_shards_not_repartitioned": true,
+    "no_sampling_or_optimizer_dose_change": true
+  },
+  "source_supervision_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01",
+  "pre_scientific_resource_wait_authorized": true,
+  "pre_model_resource_recovery_authorized": false,
+  "pre_scientific_wait_is_same_process": true,
+  "waiting_worker_retains_gpu_lease_and_slot": true,
+  "capacity_wait_does_not_stop_healthy_workers": true,
+  "no_scientific_operation_retried_during_resource_wait": true,
+  "recovery_revision": "dual_gpu0_gpu6_two_worker_natural_handoff_r1",
+  "failed_registration_recovery_authorized": false,
+  "failed_registration_restarted_in_place": false,
+  "latest_shared_resource_authorization": "GPU0与GPU6共享准入，总并发上限2，每卡最多1个worker",
+  "total_worker_limit_removed": false,
+  "independent_total_worker_limit": 2,
+  "max_gpu_workers": 2,
+  "max_workers_per_gpu": 1,
+  "effective_device_capacity": 2,
+  "dispatch_priority": [
+    0,
+    6
+  ],
+  "dispatch_poll_seconds": 2,
+  "fixed_gpu_reservation_authorized": true,
+  "phase_sized_shared_reservation_authorized": true,
+  "whole_device_exclusivity_required": false,
+  "mandatory_fixed_72GiB_pool": false,
+  "host_ram_runtime_hard_gates_unchanged": true,
+  "host_ram_admission_changed_from_parent": false,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "known_failure_recovery_authorized": false,
+  "parent_failure": null,
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/protocol/record.json",
+    "sha256": "70bd9447c24248bb475f80101e825e176ef1c0b0acd482110a836c9e032c61c0",
+    "id": "bd19014d33e034cc7b64b25bd919f9e332dadff65b934b2e89b70aaae300c912"
+  },
+  "original_mathematical_parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/protocol/record.json",
+    "sha256": "98a364c3fcb601d23c650bbdc5c72b571148e05da398154a9c890d760ebfd5ec",
+    "id": "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf"
+  },
+  "original_mathematical_parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/failure/record.json",
+    "sha256": "626c89f7b0fd67020459322d401cb0fc2fd481335563557f352c61019558035b",
+    "id": "3708de990d31da5098f28436f908a4c840cc43364ecf58c0bdffb9b195820bc1"
+  },
+  "supervisor_capacity_wait": null,
+  "new_sampling_or_optimizer_dose_authorized": false,
+  "logical_class_shards": 4,
+  "manual_stop_terminates_supervision": true,
+  "id": "1795e7e3f0c9f83cefe0d72c741723a07b3ff2b2beaed30123701c411ccbace9"
+}

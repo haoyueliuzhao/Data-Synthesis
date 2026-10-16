@@ -47,4 +47,14 @@ C-only389此前未提交的outer1192及末段训练已经完成，不再次执�
 
 终点生成原入口中残留的GPU0单卡判断已在新V51文件内改为登记的GPU0/GPU6范围，并覆盖两卡的实际CUDA后检查逻辑mock；旧V50源码不修改，科学生成数学不变。
 
-当前代码验证已完成，尚未启动新交接器或GPU6科学worker，旧V50仍按单GPU单worker继续运行。后续冻结与交接启动另记实际证据，不能用代码完成替代实际launch和队列状态。
+### 正式冻结与观察器实际启动
+
+源提交 `48c0593acb701d89b6240d98cfdb3f9ced1b1394` 已推送。新实施包共90文件，包含原81文件与9个新调度、继承和资源入口；实施包ID为 `d3c37529146a5109abbfb5a1d0505d433bece4fa6d0911d6b04fe6e4c4e1f952`，准备ID为 `4632c40834d7416afdc068ed99fa2226b303c9bad27fafb362e331237b842f70`，交接协议ID为 `7eb8feba7049df375ba4979df75d768a5fb4da69083ada066da137ba375cf0f0`。
+
+22:23:50完成正式冻结路径的CPU依赖核验，记录ID为 `0d0abe0998169a151f1edb6c16483ae4e0924ee62c968fdd144902953d747332`。验证实际worker、cold worker、原数学依赖、R3及终点生成依赖均来自登记实施包，原81文件逐字不变，父进程身份仍匹配，未初始化CUDA或调用科学模型。一次辅助核验脚本把代理内部的模块对象与加载函数作了错误比较；修正自检条件后通过，修正记录单独保留于 `cpu_dependency_verification/verifier_correction/record.json`，没有修改冻结包或触发科学重试。
+
+唯一交接观察器于2026年10月16日22:24:27北京时间实际启动，PID3592725、birth458506298，命令为新冻结 `finqa_v51_supervisor.py migrate`。22:25:12核验它仍为 `DRAINING_NATURALLY`，`barrier_gpus=[]`，科学worker和旧监督器信号数均为0。原GPU0回放worker PID3513593仍在运行，实际累计梯度已保存至response256/540。
+
+该时刻新科学protocol、新监督器launch及GPU6科学worker均尚未创建；实际科学并发仍为1，双并发仅完成登记并进入自然交接等待，不能称已经同时运行两个worker。实际启动核验见 `dual_gpu0_gpu6_01/handoff_startup_verification/record.json`，ID `11be090688fab7ef33e9951a335b5090607073940aa819bd421d8caf8e3f0385`。
+
+后续先查看 `dual_gpu0_gpu6_01/handoff_01/status.json`；安全交接完成后再查看新根的 `supervisor/queue/status.json` 及其指向attempt的队列。观察器会在条件满足后单次接续，不得重复prepare、migrate或人工启动第二个监督器。若等待期间旧attempt改变或出现失败，本次交接停止而不自动追随，旧V50是否继续或安全自动恢复按其原冻结合同判定。
