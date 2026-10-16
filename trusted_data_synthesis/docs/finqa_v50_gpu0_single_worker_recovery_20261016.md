@@ -47,3 +47,15 @@ Full389已观测资源门通过。Full251历史 `resources.all_gates_passed=fals
 真实停止收口和GPU0最新授权的只读预检已通过。代码完成、准备冻结、正式CPU依赖核验、监督器启动及实际训练推进分别记录，不把准备工作当成科学任务已恢复。新根只允许一次正式初始启动，此后由该根的监督器生成安全后继attempt；不得再运行旧V48、V49入口或尚未登记的GPU5方案。
 
 最终154项不同CPU/mock用例联合通过，用时14.82秒，相关源码与测试的Ruff及差异格式检查通过。覆盖单设备UUID与唯一名额、Full251优先门、等待与draining计数、真实1334/240/210前沿、历史停止与最新GPU0授权分离、未知错误拒绝以及原同进程显存等待。测试没有调用GPU模型、API或读取终点答案。
+
+### 正式冻结与GPU0实际接续
+
+源提交 `fc7b0729c1ac961a1f6c7a2c50814d860a8d09c8` 已推送。新包共89文件，实施包ID `e97ed4ebd71dd562fbbe68e5c107ef355c9a79ab5e47ec3b25093e5bbbfcd103`，准备ID `0926e512faff565f60f79b3ac02e94a61d55c0791b1711c974b0f8df4795fa7d`，科学协议ID `bd19014d33e034cc7b64b25bd919f9e332dadff65b934b2e89b70aaae300c912`。正式冻结CPU依赖核验ID `4277a053e01c63f471670c7b97edd9e29ad3cd5e041635d67fe1ad0ef16cb1a4`，验证新入口及原R3实际依赖路径、原81文件、GPU0唯一UUID和单worker合同；核验进程未初始化CUDA或调用模型。
+
+唯一新监督器于2026年10月16日13:27:51北京时间启动，PID1782886、birth455286621；控制器PID1782931、birth455286765。首个科学worker为GPU0上的Full251 train，PID1786749、birth455290296，实际context ID为 `a2c3043900174e035d5337570d6a7603cbdc09426e43f76dbca96fcbbc3d35fb`。13:28:35建立50GiB同进程可复用预留，记录ID `76902b5186305bbcf9992713bddc5f66f6bbf6bd196ceef32a6365a80b6b0828`；13:29:05开始模型加载，13:30:09后的加载资源边界通过。
+
+13:38:10实际启动核验确认Full251已经从1334提交至1335，保存实际模型、Adam、RNG和π；当前仅一个GPU0 worker，五条已观测资源事件均通过，无新采样或评分。核验记录为 `single_gpu0_01/startup_verification/record.json`，ID `cdca62651b94f1f312bdff84ceb3a9f78d21229fe862545387e9a378921f93a2`。这证实新科学训练已实际接续，而不只是监督器或CUDA预留启动；尚不表示该156步训练段或全九模型已完成。
+
+首步期间GPU0同时存在其他项目计算进程。一次进程级利用率观察显示本worker也在实际执行GPU计算，因此不能把“显存达到准入”表述为“获得整卡独占算力”。首步耗时偏长，后续吞吐需持续观察；不因共享算力竞争自动改用其他设备或干预其他项目。
+
+后续进度先读新根 `supervisor/queue/status.json` 指向的当前attempt，再读对应 `queue/status.json` 和真实训练checkpoint。Full251达到1490后，新调度继续只用GPU0完成其余原矩阵任务，包括Full251自身的终点生成；GPU0不会按已被替代的旧提案自动退役。禁止再次运行prepare、initialize或启动第二个监督器。

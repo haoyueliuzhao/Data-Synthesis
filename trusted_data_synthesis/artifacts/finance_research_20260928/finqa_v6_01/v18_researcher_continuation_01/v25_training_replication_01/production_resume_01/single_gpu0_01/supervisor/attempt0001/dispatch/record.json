@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-16T05:27:52.479300+00:00",
+  "schema": "v50_supervised_fresh_attempt_dispatch.v1",
+  "attempt_number": 1,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/implementation/finqa_v50_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01"
+  ],
+  "pid": 1782931,
+  "birth": "455286765",
+  "previous_attempt_relaunched": false,
+  "id": "55069a684703f40317511960bbc6fe4e785005d2a646e82957904a633f93e3a6"
+}

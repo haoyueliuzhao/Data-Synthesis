@@ -132,6 +132,8 @@ V49已以源提交 `fdc4ffe3f17325b2928b18d22bc3d1bd408303d8` 冻结90文件（�
 
 用户随后询问GPU5余量并明确选择“改为GPU0单卡完成全部”。此最新选择取代先前GPU5最终保留及Full251训完归还GPU0的安排：新V50只在独立 `production_resume_01/single_gpu0_01/` 运行，物理范围仅GPU0（UUID `GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5`），全程最多一个worker，初始化、资源等待和draining计入，不允许GPU1至7或双卡过渡。首先从实际1334完成Full251至1490，再在GPU0串行执行其余原矩阵训练、回放、四个逻辑class分片及全部终点生成；已经完成的训练或outer不重复。最新授权独立保存在上述历史停止目录的 `final_device_authorization/record.json`，ID `ec4fb262d47a06d5ba0fe0b1bd677d2dbc4ed219224c104f167870ce8d17683c`，不回写原停止时的GPU5授权。剩1050更新、3outer、3441终点回答，1400旧反馈只读复用、未来首次采样仅700条，全九模型后评分不变。原显存主存硬门、无截止、同点断点恢复与明确停止终止自动拉起保持；资源不足只能等GPU0，不借此前八卡许可使用其他卡。当前GPU0准备是否实际生效须看新protocol、唯一supervisor及worker记录，禁止重启V48/V49或原GPU5提案。完整报告见 `trusted_data_synthesis/docs/finqa_v50_gpu0_single_worker_recovery_20261016.md`。
 
+V50 GPU0单卡版已以源提交 `fc7b0729c1ac961a1f6c7a2c50814d860a8d09c8` 冻结89文件，原81数学文件不变，实施包ID `e97ed4ebd71dd562fbbe68e5c107ef355c9a79ab5e47ec3b25093e5bbbfcd103`，科学协议ID `bd19014d33e034cc7b64b25bd919f9e332dadff65b934b2e89b70aaae300c912`；154项CPU/mock联合测试和正式冻结依赖核验通过。唯一新监督器于2026-10-16 13:27:51北京时间启动，PID1782886、birth455286621，控制器PID1782931、birth455286765。GPU0 Full251 train worker PID1786749、birth455290296已建立50GiB同进程预留，并于13:38:10核验实际由step1334提交至1335；仅一个GPU0 worker，已观测五个资源事件通过，GPU1至7没有新增本实验科学worker。首段尚未结束，全矩阵及统一评分未完成。启动证据见 `single_gpu0_01/startup_verification/record.json`，ID `cdca62651b94f1f312bdff84ceb3a9f78d21229fe862545387e9a378921f93a2`；状态先看新supervisor/queue指向当前attempt，禁止重复prepare/initialize/run或恢复任何旧入口。Full251达到1490后仍在GPU0串行完成其余任务及终点生成，先前“训完归还GPU0”的提案已由用户明确替代。共享GPU0算力不等于整卡独占，不得因速度或资源竞争改用其他GPU或干预其他项目。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

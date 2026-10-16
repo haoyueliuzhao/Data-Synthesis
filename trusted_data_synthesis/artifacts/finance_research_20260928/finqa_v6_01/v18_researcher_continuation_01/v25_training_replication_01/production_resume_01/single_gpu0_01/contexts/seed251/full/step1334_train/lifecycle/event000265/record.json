@@ -1,0 +1,294 @@
+{
+  "schema": "v36_result_aware_process_lifecycle.v1",
+  "at": "2026-10-16T05:38:17.229350+00:00",
+  "protocol_id": "bd19014d33e034cc7b64b25bd919f9e332dadff65b934b2e89b70aaae300c912",
+  "kind": "host_gpu_process_observation",
+  "host": {
+    "total_bytes": 1081790648320,
+    "available_bytes": 774156144640,
+    "physical_mem_available_bytes": 774156144640,
+    "cgroup_ancestors": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice/session-61899.scope",
+        "memory_max": "max",
+        "memory_current": 27773513728
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1004.slice",
+        "memory_max": "max",
+        "memory_current": 157446815744
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice",
+        "memory_max": "max",
+        "memory_current": 818913951744
+      }
+    ]
+  },
+  "gpu_observation": [
+    {
+      "index": 0,
+      "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "total_mib": 81920,
+      "used_mib": 72390,
+      "free_mib": 8764,
+      "processes": [
+        {
+          "pid": 1716090,
+          "used_memory_mib": "3440"
+        },
+        {
+          "pid": 1743085,
+          "used_memory_mib": "3116"
+        },
+        {
+          "pid": 1744690,
+          "used_memory_mib": "3116"
+        },
+        {
+          "pid": 1748734,
+          "used_memory_mib": "2768"
+        },
+        {
+          "pid": 1754047,
+          "used_memory_mib": "2842"
+        },
+        {
+          "pid": 1754767,
+          "used_memory_mib": "2842"
+        },
+        {
+          "pid": 1773019,
+          "used_memory_mib": "2408"
+        },
+        {
+          "pid": 1786749,
+          "used_memory_mib": "51808"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+      "total_mib": 81920,
+      "used_mib": 76209,
+      "free_mib": 4945,
+      "processes": [
+        {
+          "pid": 1316934,
+          "used_memory_mib": "76200"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+      "total_mib": 81920,
+      "used_mib": 76333,
+      "free_mib": 4821,
+      "processes": [
+        {
+          "pid": 2111917,
+          "used_memory_mib": "76324"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+      "total_mib": 81920,
+      "used_mib": 71505,
+      "free_mib": 9649,
+      "processes": [
+        {
+          "pid": 1372795,
+          "used_memory_mib": "71494"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+      "total_mib": 81920,
+      "used_mib": 76381,
+      "free_mib": 4773,
+      "processes": [
+        {
+          "pid": 1347352,
+          "used_memory_mib": "76372"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+      "total_mib": 81920,
+      "used_mib": 26587,
+      "free_mib": 54567,
+      "processes": [
+        {
+          "pid": 1703338,
+          "used_memory_mib": "3776"
+        },
+        {
+          "pid": 1759429,
+          "used_memory_mib": "2842"
+        },
+        {
+          "pid": 1776532,
+          "used_memory_mib": "2880"
+        },
+        {
+          "pid": 1777624,
+          "used_memory_mib": "2406"
+        },
+        {
+          "pid": 1777898,
+          "used_memory_mib": "2406"
+        },
+        {
+          "pid": 1802030,
+          "used_memory_mib": "2466"
+        },
+        {
+          "pid": 1810528,
+          "used_memory_mib": "2530"
+        },
+        {
+          "pid": 1814714,
+          "used_memory_mib": "2406"
+        },
+        {
+          "pid": 1819376,
+          "used_memory_mib": "2406"
+        },
+        {
+          "pid": 1819375,
+          "used_memory_mib": "2406"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+      "total_mib": 81920,
+      "used_mib": 72317,
+      "free_mib": 8837,
+      "processes": [
+        {
+          "pid": 585662,
+          "used_memory_mib": "72306"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "total_mib": 81920,
+      "used_mib": 76381,
+      "free_mib": 4773,
+      "processes": [
+        {
+          "pid": 1347355,
+          "used_memory_mib": "76372"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "stage": "train",
+      "state": "RUNNING",
+      "proc": {
+        "pid": 1786749,
+        "read_errors": {},
+        "stat_before_raw": "1786749 (python) S 1782931 1786749 1786749 0 -1 4194304 11638646 1889994 0 0 34395 25979 168 2468 20 0 15 0 455290296 67537625088 760151 18446744073709551615 108998265143296 108998267570021 140728919271696 0 0 0 0 16781312 16386 0 0 0 17 108 0 0 0 0 0 108998269000336 108998270982320 108998272315392 140728919276255 140728919277077 140728919277077 140728919281575 0\n",
+        "status_raw": "Name:\tpython\nUmask:\t0002\nState:\tS (sleeping)\nTgid:\t1786749\nNgid:\t0\nPid:\t1786749\nPPid:\t1782931\nTracerPid:\t0\nUid:\t1004\t1004\t1004\t1004\nGid:\t1004\t1004\t1004\t1004\nFDSize:\t128\nGroups:\t27 1004 \nNStgid:\t1786749\nNSpid:\t1786749\nNSpgid:\t1786749\nNSsid:\t1786749\nKthread:\t0\nVmPeak:\t82746388 kB\nVmSize:\t65954712 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t17095352 kB\nVmRSS:\t 3040604 kB\nRssAnon:\t 2543276 kB\nRssFile:\t  479088 kB\nRssShmem:\t   18240 kB\nVmData:\t 3583308 kB\nVmStk:\t     136 kB\nVmExe:\t    2372 kB\nVmLib:\t 2454344 kB\nVmPTE:\t    8324 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t15\nSigQ:\t0/4126420\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000100004002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\t000000,0003ffff,fffff000,0000003f,ffffffff\nCpus_allowed_list:\t0-37,76-113\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t2097\nnonvoluntary_ctxt_switches:\t522\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "command": [
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+          "-u",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/implementation/finqa_v50_worker.py",
+          "--root",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01",
+          "--context",
+          "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/contexts/seed251/full/step1334_train",
+          "--stage",
+          "train",
+          "--gpu-index",
+          "0"
+        ],
+        "stat_after_raw": "1786749 (python) S 1782931 1786749 1786749 0 -1 4194304 11638646 1889994 0 0 34395 25979 168 2468 20 0 15 0 455290296 67537625088 760151 18446744073709551615 108998265143296 108998267570021 140728919271696 0 0 0 0 16781312 16386 0 0 0 17 108 0 0 0 0 0 108998269000336 108998270982320 108998272315392 140728919276255 140728919277077 140728919277077 140728919281575 0\n",
+        "state": "S",
+        "flags": 4194304,
+        "birth_observations": [
+          "455290296",
+          "455290296"
+        ],
+        "stat_before": {
+          "state": "S",
+          "birth": "455290296",
+          "flags": 4194304
+        },
+        "stat_after": {
+          "state": "S",
+          "birth": "455290296",
+          "flags": 4194304
+        },
+        "rss_bytes": 3113578496,
+        "peak_rss_bytes": 17505640448
+      },
+      "worker_slot_retained": true,
+      "gpu_lock_retained": true,
+      "rss_limit_bytes": 206158430208,
+      "observation_gaps": [],
+      "missing_values_are_not_zero": true,
+      "previously_validated_result_required": false,
+      "gpu": {
+        "index": 0,
+        "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "total_mib": 81920,
+        "used_mib": 72390,
+        "free_mib": 8764,
+        "processes": [
+          {
+            "pid": 1716090,
+            "used_memory_mib": "3440"
+          },
+          {
+            "pid": 1743085,
+            "used_memory_mib": "3116"
+          },
+          {
+            "pid": 1744690,
+            "used_memory_mib": "3116"
+          },
+          {
+            "pid": 1748734,
+            "used_memory_mib": "2768"
+          },
+          {
+            "pid": 1754047,
+            "used_memory_mib": "2842"
+          },
+          {
+            "pid": 1754767,
+            "used_memory_mib": "2842"
+          },
+          {
+            "pid": 1773019,
+            "used_memory_mib": "2408"
+          },
+          {
+            "pid": 1786749,
+            "used_memory_mib": "51808"
+          }
+        ]
+      },
+      "external_free_boundary_gate_applied": false
+    }
+  ],
+  "all_observable_resource_gates_passed": true,
+  "unobservable_draining_RSS_is_not_a_measurement": true,
+  "error": null,
+  "id": "b8ce0ebcb80dced391ba9d4a8e155a054f69a4cb94394bcea39b518c2888606a"
+}

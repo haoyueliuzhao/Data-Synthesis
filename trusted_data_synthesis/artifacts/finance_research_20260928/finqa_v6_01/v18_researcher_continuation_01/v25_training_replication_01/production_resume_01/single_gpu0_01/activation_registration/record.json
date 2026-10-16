@@ -1,0 +1,27 @@
+{
+  "schema": "v50_explicit_gpu_retirement_activation.v1",
+  "at": "2026-10-16T05:26:31.082627+00:00",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/preparation/record.json",
+    "sha256": "7b752e9996f235339066750f73ba9211d2a3e245828e913c3e1f44c4c744745e",
+    "id": "0926e512faff565f60f79b3ac02e94a61d55c0791b1711c974b0f8df4795fa7d"
+  },
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_deferral_recovery_01/protocol/record.json",
+    "sha256": "7741834a0778d7962978e38ba0fb0c1d7ab81237b4e5fad4ec406867414b90b8",
+    "id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e"
+  },
+  "parent_pause": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_deferral_recovery_01/failure/record.json",
+    "sha256": "51410b1f04abd1754563e09704bb31b2856614cbd6dae5561b40ac4b336af460",
+    "id": "4b4eb6fcff91d0824ab7c4c96fc59fec0a3d42f73763d670acb5a751fa63d8a2"
+  },
+  "resource_retirement_receipt": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01/superseded_single_gpu5_01/closeout/record.json",
+    "sha256": "02adedaeab67f37e3777206a1c3152cdf212d47c46810caed702136a7911b429",
+    "id": "a89441545c8b975f2ae6f3a1eec896cba740f9d0bc67bbace64d7614443b516c"
+  },
+  "clean_handoff_claimed": false,
+  "scientific_controller_started": false,
+  "id": "dc64252b46dc76ed15c4ba6ef1010ec2d7653c6a30d92a468b20b2779ca4c659"
+}
