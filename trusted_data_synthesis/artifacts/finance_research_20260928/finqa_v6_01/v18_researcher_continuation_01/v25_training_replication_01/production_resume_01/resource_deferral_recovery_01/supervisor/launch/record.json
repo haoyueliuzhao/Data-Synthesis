@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-16T01:41:42.537691+00:00",
+  "schema": "v43_single_persistent_supervisor.v1",
+  "pid": 712457,
+  "birth": "453929692",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_deferral_recovery_01/protocol/record.json",
+    "sha256": "7741834a0778d7962978e38ba0fb0c1d7ab81237b4e5fad4ec406867414b90b8",
+    "id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e"
+  },
+  "backoff_seconds": [
+    30,
+    60,
+    120,
+    300
+  ],
+  "explicit_stop_is_terminal": true,
+  "id": "a4b3e6e4eae7415c4aff0903da3e56e3eef44cd85fda78496f6ae7416ce57e95"
+}

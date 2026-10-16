@@ -1,0 +1,94 @@
+{
+  "schema": "v48_explicit_durable_recovery_and_shared_reservation_authority.v1",
+  "at": "2026-10-16T01:40:00.539270+00:00",
+  "user_instruction": "修复问题，自动恢复应当覆盖此类问题，或者此类问题不应该阻塞任务池的派发",
+  "user_consent": "修复预科学资源竞争等待，保留已授权共享GPU、无独立总worker限制与安全自动恢复",
+  "pre_scientific_resource_wait_authorized": true,
+  "pre_model_resource_recovery_authorized": true,
+  "parent_closed_episode": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/closeout_01/record.json",
+    "sha256": "ce6e9961d7e916b0c16bf7c1ef431257b3d3d34fdccca7892b69b2067d36aeb2",
+    "id": "890e5d7fe58867406ee6ae0a3ee61758e206a4bf4bf2e5f37e0bf294f242aebf"
+  },
+  "parent_supervisor_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/supervisor/closeout/record.json",
+    "sha256": "310b0dcc58d88323fe3f3517c87d2020dafe17edae76218b6ea4ded23effc653",
+    "id": "0c01e55d50ac378d95b445caaba79f8e2dbd7cf4a9844395ebbf28d134e3b4e3"
+  },
+  "pre_scientific_wait_is_same_process": true,
+  "waiting_worker_retains_gpu_lease_and_slot": true,
+  "capacity_wait_does_not_stop_healthy_workers": true,
+  "no_scientific_operation_retried_during_resource_wait": true,
+  "recovery_revision": "same_process_pre_scientific_resource_wait_no_pool_stop_r1",
+  "failed_registration_recovery_authorized": true,
+  "failed_registration_restarted_in_place": false,
+  "failed_registration_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02",
+  "failed_registration_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/closeout_01/record.json",
+    "sha256": "ce6e9961d7e916b0c16bf7c1ef431257b3d3d34fdccca7892b69b2067d36aeb2",
+    "id": "890e5d7fe58867406ee6ae0a3ee61758e206a4bf4bf2e5f37e0bf294f242aebf"
+  },
+  "failed_registration_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004/failure/record.json",
+    "sha256": "2e31eda3df6f0cbf4266aace16135cfc22f74975aa8d39be93de503b2b4f6b0f",
+    "id": "a6bb13c5fa82016dc07784a2baf08d95ab0669ad460af6235d079e54ee3c6c02"
+  },
+  "failed_registration_supervisor_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/supervisor/closeout/record.json",
+    "sha256": "310b0dcc58d88323fe3f3517c87d2020dafe17edae76218b6ea4ded23effc653",
+    "id": "0c01e55d50ac378d95b445caaba79f8e2dbd7cf4a9844395ebbf28d134e3b4e3"
+  },
+  "latest_shared_resource_authorization": "资源紧张，开放限制，采取更激进的任务分配占用策略",
+  "total_worker_limit_removed": true,
+  "independent_total_worker_limit": null,
+  "max_gpu_workers": null,
+  "max_workers_per_gpu": 1,
+  "effective_device_capacity": 8,
+  "dispatch_priority": [
+    5,
+    2,
+    0,
+    4,
+    3,
+    7,
+    1,
+    6
+  ],
+  "dispatch_poll_seconds": 2,
+  "fixed_gpu_reservation_authorized": true,
+  "phase_sized_shared_reservation_authorized": true,
+  "whole_device_exclusivity_required": false,
+  "mandatory_fixed_72GiB_pool": false,
+  "host_ram_runtime_hard_gates_unchanged": true,
+  "host_ram_admission_changed_from_parent": false,
+  "time_limits_removed": true,
+  "automatic_recovery_authorized": true,
+  "unknown_feedback_retry_allowed": false,
+  "automatic_attempt": false,
+  "known_failure_recovery_authorized": true,
+  "parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004/failure/record.json",
+    "sha256": "2e31eda3df6f0cbf4266aace16135cfc22f74975aa8d39be93de503b2b4f6b0f",
+    "id": "a6bb13c5fa82016dc07784a2baf08d95ab0669ad460af6235d079e54ee3c6c02"
+  },
+  "parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004/protocol/record.json",
+    "sha256": "0178828f08245dc4b9be6f9de5b33454218d9230f2f061e8066dbfb5b6831399",
+    "id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784"
+  },
+  "original_mathematical_parent_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/protocol/record.json",
+    "sha256": "98a364c3fcb601d23c650bbdc5c72b571148e05da398154a9c890d760ebfd5ec",
+    "id": "920ff2da160a3bbf055c6c3a5b0e9b3a080ca421deb90efce950959f17f735bf"
+  },
+  "original_mathematical_parent_failure": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/failure/record.json",
+    "sha256": "626c89f7b0fd67020459322d401cb0fc2fd481335563557f352c61019558035b",
+    "id": "3708de990d31da5098f28436f908a4c840cc43364ecf58c0bdffb9b195820bc1"
+  },
+  "supervisor_capacity_wait": null,
+  "new_sampling_or_optimizer_dose_authorized": false,
+  "logical_class_shards": 4,
+  "manual_stop_terminates_supervision": true,
+  "id": "3f84e58e06b614ceb6b04f7eeb90f4b0b5a2496cfc0db056a3a5d8b3f6a1652a"
+}

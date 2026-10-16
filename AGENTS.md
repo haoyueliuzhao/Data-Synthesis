@@ -122,6 +122,8 @@ V47修复版于2026-10-16 02:45:20北京时间结束attempt0004，监督器为 `
 
 用户于2026-10-16明确要求“修复问题，自动恢复应当覆盖此类问题，或者此类问题不应该阻塞任务池的派发”。V48仅在独立 `production_resume_01/resource_deferral_recovery_01/` 登记修复与继续运行。模型加载前有真实观测的显存不足转为同进程等待，保留该worker预留和GPU租约，控制器仍可派发其他GPU；等待不称为科学阶段通过，也不允许在资源门未恢复时加载模型。原GPU0至7每卡一个本实验worker、无独立总并发上限、无截止、安全断点自动恢复及显存主存硬门保持；状态、数值、未知反馈或非法allocator错误不作资源不足放行。后模型资源失败仍依实际断点恢复，不回滚或重试已提交训练与完整反馈。旧V47所有入口不得重启，实际新启动须看新协议、唯一监督器launch和队列，不把修订准备称作已经派发。详细合同与验证见 `trusted_data_synthesis/docs/finqa_v48_pre_model_resource_wait_20261016.md`。
 
+V48已以源提交 `b4c66b1f141fd68e81c99d8debca1d17f584a701` 冻结89文件，原81数学文件逐字不变，实施包ID `759e627fdebf81711ecc3b969742fe99128726b9d2bd90f34615d7a5413597ed`，协议ID `7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e`；167项CPU/mock联合测试和正式冻结CPU依赖核验通过。唯一新监督器于2026-10-16 09:41:42北京时间启动，PID712457、birth453929692，控制器PID712490、birth453929831。09:43:08实际核验为监督器RUNNING、attempt1，控制器 `WAITING_FOR_REGISTERED_RESOURCES`、0个worker；GPU6 free约8.73GiB及其他设备当时均不满足待执行train/R3准入，新增训练、回放及API调用均为0。自动等待与调度已运行，不称科学训练已推进；后续资源满足由现有监督器/控制器接续，不需也不得重复run、initialize或旧入口。证据见 `resource_deferral_recovery_01/startup_verification/record.json`；进度先读新supervisor/queue指向当前attempt。剩余1147更新、3outer和3441终点回答及全九模型后评分不变。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

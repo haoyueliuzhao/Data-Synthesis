@@ -48,3 +48,13 @@ allocated生命周期峰值仍不超过76GiB，预留warm allocation和模型加
 心跳集成使用实际预留器配合模拟CUDA生成记录，再交给真实控制器读取，覆盖两个等待episode与原pre-CUDA区间的独立统计和并集。调度循环测试验证等待worker存在时，健康worker仍被轮询，其他设备仍可派发，且等待worker不会提前释放租约。这些CPU/mock结果不作为真实GPU阶段成功的证据。
 
 实际父元数据预检通过：累计资源等待105003秒，C-only389 step1192 outer已用42894秒，Full389 step894 outer已用36303秒；用时继承，不设置新截止。原实际断点与反馈预算见前表。新冻结路径依赖、监督器启动、资源等待及实际科学执行另行记录，不把源码检查通过称为已派发。
+
+### 正式冻结与启动
+
+源提交 `b4c66b1f141fd68e81c99d8debca1d17f584a701` 已推送。新实施包共89文件，其中原数学81文件逐字不变；实施包ID为 `759e627fdebf81711ecc3b969742fe99128726b9d2bd90f34615d7a5413597ed`，准备ID为 `e7357e5becf2b711b0d368a8e5d1a37f4726df5a977f24ddfa509e8c338019e6`，协议ID为 `7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e`。
+
+正式冻结目录的CPU依赖核验通过，ID `008757dce875bd2c740fee10dbb76242d52dcdc307b9e7bc46f6367fad301c15`。核验实际控制器、worker、cold worker、评价入口及原R3后端均来自新冻结目录，并验证新控制器拥有两条等待心跳消费路径；CUDA未初始化，模型、API及optimizer调用均为0。此检查不以工作区源码代替正式执行文件。
+
+唯一新监督器于2026年10月16日09:41:42北京时间启动，PID712457、birth453929692；初始控制器PID712490、birth453929831。09:43:08启动核验时两者身份均存活，监督器为 `RUNNING`、attempt1，控制器为 `WAITING_FOR_REGISTERED_RESOURCES`，active children为空，尚无科学worker派发或新增训练、回放与API调用。GPU6当时free为8939MiB，约8.73GiB，仍低于train的26GiB及R3的56GiB准入；其余设备也未满足当前阶段要求。监督器已恢复运行，但不能把此时的等待状态称为训练已推进。
+
+启动证据为 `resource_deferral_recovery_01/startup_verification/record.json`，ID `a859cf467c5e0427b1f99527dd7bf7c51d699f0ef89567220de02f4c4d53ec21`。观察时间后的进度以该根 `supervisor/queue/status.json` 指向的当前attempt为准，再读取对应 `queue/status.json`。资源满足后由现有控制器派发，无需人工再次运行入口；不得重复启动监督器、初始化或历史恢复程序。当前仍剩1147次更新、3次outer和3441条终点回答，全矩阵及统一准确率评分尚未完成。
