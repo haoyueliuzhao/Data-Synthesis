@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-16T05:10:02.392487+00:00",
+  "status": "STOPPED_FAIL_CLOSED_NO_AUTOMATIC_HANDOFF_RETRY",
+  "error_type": "HandoffError",
+  "error": "explicit stop during cap handoff",
+  "old_execution_absent": true,
+  "explicit_stop": true,
+  "automatic_restart": false,
+  "id": "75fe742ced1af49b5e22a193dba2b63b6efef0d5eb1269c7b2748b4257661502"
+}

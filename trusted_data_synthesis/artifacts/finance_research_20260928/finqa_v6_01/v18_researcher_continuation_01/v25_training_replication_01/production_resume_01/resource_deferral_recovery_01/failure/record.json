@@ -1,0 +1,13 @@
+{
+  "schema": "v37_production_stop.v1",
+  "at": "2026-10-16T05:10:01.430989+00:00",
+  "protocol_id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e",
+  "phase": "PAUSED_DURABLE_BOUNDARY_NO_AUTO_RESUME",
+  "error_type": "DurablePause",
+  "error": "explicit safe stop requested",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true,
+  "id": "4b4eb6fcff91d0824ab7c4c96fc59fec0a3d42f73763d670acb5a751fa63d8a2"
+}

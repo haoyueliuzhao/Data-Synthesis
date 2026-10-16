@@ -1,0 +1,45 @@
+{
+  "schema": "v43_stage_failure_no_retry.v1",
+  "at": "2026-10-16T05:08:44.860628+00:00",
+  "protocol_id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e",
+  "context_id": "4ffac84ac48ccf05375767dadb498eab93ef23029fa87490d2a9d669e00234ce",
+  "stage": "replay_R3",
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/contexts/seed389/c_only/step1192_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/resource_deferral_recovery_01/contexts/seed389/c_only/step1192_outer",
+  "error_type": "AdmissionStopped",
+  "error": "safe stop requested before CUDA admission",
+  "failure_classification": "STAGE_FAILURE_NO_RETRY",
+  "stop_evidence": {
+    "received_signals": [
+      {
+        "signal_number": 15,
+        "signal_name": "SIGTERM",
+        "received_epoch": 1792127324.333456,
+        "received_monotonic": 4551719.510878902,
+        "sender_identity_available": false,
+        "sender_pid": null,
+        "source": "python_signal_handler_receipt"
+      }
+    ],
+    "sender_attribution": "unknown",
+    "signals_ignored": false,
+    "automatic_restart": false,
+    "signal_handler_performed_IO": false,
+    "stop_requested": true,
+    "stop_reason": "signal:15"
+  },
+  "response_pause_report": null,
+  "automatic_retry": false,
+  "durable_replay_checkpoint": null,
+  "resources": null,
+  "telemetry": null,
+  "complete_task_caches_preserved": true,
+  "API_calls": 0,
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v48_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "d7971b0b215d8421d41c9116c05dbb8f9bb1223923ef3033efcdd9ecf4f9581e"
+}

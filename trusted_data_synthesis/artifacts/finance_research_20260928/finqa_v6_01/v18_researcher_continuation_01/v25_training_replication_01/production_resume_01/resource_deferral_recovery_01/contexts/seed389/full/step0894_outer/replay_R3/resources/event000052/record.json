@@ -1,0 +1,62 @@
+{
+  "schema": "v43_exact_resource_observation.v1",
+  "at": "2026-10-16T04:15:55.652913+00:00",
+  "protocol_id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e",
+  "context_id": "a9285e089e3952a9873d38ffc098d07a66f3eb1d85eb9146918752709f0b7e04",
+  "stage": "replay_R3",
+  "observation": {
+    "event": "tail_memory_observation",
+    "sequence": 53,
+    "label": "replay.after_response",
+    "boundary": true,
+    "monotonic_seconds": 4548550.829754899,
+    "allocated_bytes": 30628942848,
+    "reserved_bytes": 75375837184,
+    "peak_allocated_bytes": 75161927680,
+    "peak_reserved_bytes": 75612815360,
+    "free_bytes": 9117302784,
+    "total_bytes": 85095874560,
+    "limits": {
+      "allocated_memory_limit_bytes": 81604378624,
+      "free_memory_reserve_bytes": 2147483648
+    },
+    "context": {
+      "response_backend_observation": {
+        "phase": "after_response",
+        "variant": "R3",
+        "torch_allocated_bytes": 30628942848,
+        "torch_reserved_bytes": 75375837184,
+        "torch_peak_allocated_bytes": 75161927680,
+        "torch_peak_reserved_bytes": 75612815360,
+        "device_used_bytes_at_response_boundary": 75978571776,
+        "device_free_bytes_at_response_boundary": 9117302784,
+        "device_total_bytes": 85095874560
+      },
+      "cooperative_stop_pending": false
+    },
+    "allocated_pass": true,
+    "free_pass": true,
+    "stop_requested": false,
+    "passed": true,
+    "host": {
+      "rss_bytes": 3861344256,
+      "peak_rss_bytes": 17651191808,
+      "available_bytes": 801144012800,
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "rss_pass": true,
+      "available_pass": true,
+      "passed": true
+    },
+    "deadline_epoch": null,
+    "deadline_pass": true,
+    "deadline_limit_enforced": false,
+    "wallclock_limits_removed": true
+  },
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v48_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "48b6e97d57ebca9a911bfcd8aca8da7aea0b2434b442f4c5f3ce8ef69bc94883"
+}

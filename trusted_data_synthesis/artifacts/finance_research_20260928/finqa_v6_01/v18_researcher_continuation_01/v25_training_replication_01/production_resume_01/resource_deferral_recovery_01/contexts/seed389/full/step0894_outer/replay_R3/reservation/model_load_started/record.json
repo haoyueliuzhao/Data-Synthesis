@@ -1,0 +1,19 @@
+{
+  "schema": "v48_reserved_model_load_started.v1",
+  "protocol_id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e",
+  "context_id": "a9285e089e3952a9873d38ffc098d07a66f3eb1d85eb9146918752709f0b7e04",
+  "stage": "replay_R3",
+  "gpu_index": 5,
+  "gpu_uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+  "pid": 1317027,
+  "birth": "454714073",
+  "at": "2026-10-16T03:53:12.560063+00:00",
+  "model_load_started": true,
+  "lifetime_peak_reset_calls": 1,
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v48_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "939c0fe9111f258b74ca5a7263656c6acd821cef987cd9074486451f44ca3ca3"
+}

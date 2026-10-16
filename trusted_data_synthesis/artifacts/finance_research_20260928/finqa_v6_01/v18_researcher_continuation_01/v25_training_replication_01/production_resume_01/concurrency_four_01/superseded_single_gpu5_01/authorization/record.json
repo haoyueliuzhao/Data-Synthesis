@@ -1,0 +1,36 @@
+{
+  "schema": "v50_explicit_single_gpu5_retirement_authority.v1",
+  "at": "2026-10-16T05:08:42.207964+00:00",
+  "user_instruction": "约束只在当前显卡上运行任务，且后续只使用一张，Full251训完后不再占用",
+  "user_confirmation": "是，之后只保留GPU5（推荐）",
+  "temporary_gpu0_only_for_seed251_full_training_until_step1490": true,
+  "gpu0_endpoint_generation_allowed": false,
+  "gpu1_further_dispatch_allowed": false,
+  "steady_gpu_indices": [
+    5
+  ],
+  "steady_maximum_workers": 1,
+  "other_devices_allowed": false,
+  "old_v49_native_successor_cancelled_before_activation": true,
+  "old_guard_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01/handoff/launch/record.json",
+    "sha256": "565644e3324b6b53eb2139dae8cbf8bd678e70a48297b31488342e41aa150f27",
+    "id": "44f5c6a124941e0c45f7d9802d22ca1b197728623e9040896ff7b27242b36044"
+  },
+  "old_guard_identity": {
+    "pid": 1451212,
+    "birth": "454871719",
+    "uid": 1004,
+    "argv": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01/implementation/finqa_v49_handoff.py",
+      "run",
+      "--root",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01"
+    ]
+  },
+  "cooperative_actual_boundary_pause_of_owned_project": true,
+  "new_sampling_or_optimizer_dose": 0,
+  "id": "afea8db39702beeb1ec69a8bf2db0c85895ea8d367c6497fce0c4fe8a97b5a28"
+}

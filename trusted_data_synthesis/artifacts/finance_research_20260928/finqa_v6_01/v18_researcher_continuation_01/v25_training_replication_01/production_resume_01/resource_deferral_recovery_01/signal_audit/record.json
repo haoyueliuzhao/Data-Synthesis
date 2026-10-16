@@ -1,0 +1,32 @@
+{
+  "schema": "v42_controller_stop_signal_audit.v1",
+  "at": "2026-10-16T05:10:01.431379+00:00",
+  "protocol_id": "7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e",
+  "received_signals": [
+    {
+      "signal_number": 15,
+      "signal_name": "SIGTERM",
+      "received_epoch": 1792127324.0765674,
+      "received_monotonic": 4551719.253989682,
+      "sender_identity_available": false,
+      "sender_pid": null,
+      "source": "python_signal_handler_receipt"
+    },
+    {
+      "signal_number": 15,
+      "signal_name": "SIGTERM",
+      "received_epoch": 1792127324.1222444,
+      "received_monotonic": 4551719.29966627,
+      "sender_identity_available": false,
+      "sender_pid": null,
+      "source": "python_signal_handler_receipt"
+    }
+  ],
+  "sender_attribution": "unknown",
+  "signals_ignored": false,
+  "automatic_restart": false,
+  "signal_handler_performed_IO": false,
+  "original_stop_handlers_preserved": true,
+  "automatic_retry": false,
+  "id": "e7a89be6990eec54fad44c242421086c3a6f6c9c9dc26d2773e33161ffb3215c"
+}

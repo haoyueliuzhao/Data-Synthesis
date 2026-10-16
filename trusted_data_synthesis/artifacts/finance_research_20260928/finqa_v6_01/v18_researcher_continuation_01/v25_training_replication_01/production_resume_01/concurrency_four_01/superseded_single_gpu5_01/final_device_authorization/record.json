@@ -1,0 +1,36 @@
+{
+  "schema": "v50_confirmed_gpu0_only_final_device_authority.v1",
+  "at": "2026-10-16T05:17:21.233395+00:00",
+  "user_question": "GPU5余量是否充足？考虑在GPU0运行后续程序",
+  "user_confirmation": "改为GPU0单卡完成全部（推荐）",
+  "supersedes_gpu5_final_choice": true,
+  "supersedes_gpu0_retire_after_Full251": true,
+  "allowed_gpu_indices": [
+    0
+  ],
+  "gpu_uuids": {
+    "0": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5"
+  },
+  "maximum_total_workers_including_initializing_and_draining": 1,
+  "maximum_project_workers_per_gpu": 1,
+  "first_pending_scientific_job": "seed251 Full train from actual saved step1334 to1490",
+  "first_job_repeated_if_already_committed": false,
+  "after_first_job": "all remaining original training, replay, class shards, feedback and endpoint generation serially on GPU0",
+  "GPU1_allowed": false,
+  "GPU5_allowed": false,
+  "other_GPUs_allowed": false,
+  "original_stop_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01/superseded_single_gpu5_01/authorization/record.json",
+    "sha256": "571ff9488623887c6547eb4ca8e37a4ae40e487a1863f762f368c7ecf60cb1f3",
+    "id": "afea8db39702beeb1ec69a8bf2db0c85895ea8d367c6497fce0c4fe8a97b5a28"
+  },
+  "actual_retirement_handoff": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/concurrency_four_01/superseded_single_gpu5_01/closeout/record.json",
+    "sha256": "02adedaeab67f37e3777206a1c3152cdf212d47c46810caed702136a7911b429",
+    "id": "a89441545c8b975f2ae6f3a1eec896cba740f9d0bc67bbace64d7614443b516c"
+  },
+  "historical_stop_records_rewritten": false,
+  "new_sampling_or_optimizer_dose": 0,
+  "resource_hard_gates_unchanged": true,
+  "id": "ec4fb262d47a06d5ba0fe0b1bd677d2dbc4ed219224c104f167870ce8d17683c"
+}
