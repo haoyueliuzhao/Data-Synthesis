@@ -1,0 +1,11 @@
+{
+  "schema": "v47_read_only_inherited_pilot.v1",
+  "at": "2026-10-15T15:20:58.703781+00:00",
+  "original": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/pilot_acceptance/record.json",
+    "sha256": "f8f041957d831eda5554c89310c3c610749c3400e2ea71b4f7959b1db30c587e",
+    "id": "5d326692df5d12659b5d7c0dcc8b443b77db8df0165f2b4163fbcc86452c0519"
+  },
+  "newly_repeated_pilot": false,
+  "id": "5948f0b378e01ffd612457010659fc5e539cfb0231c7c57f018bc23b68cf2f78"
+}

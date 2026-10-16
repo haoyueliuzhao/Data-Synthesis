@@ -1,0 +1,13 @@
+{
+  "schema": "v37_production_stop.v1",
+  "at": "2026-10-15T15:45:04.670012+00:00",
+  "protocol_id": "abc2693744f008262da7ad411c56115e01e04d493144f80253ebc75b177c14d9",
+  "phase": "STOPPED_FAILURE_NO_RETRY",
+  "error_type": "ValueError",
+  "error": "worker reported failure: train",
+  "stop_error": null,
+  "actual_progress_audit_error": null,
+  "automatic_retry": false,
+  "completed_task_response_and_step_artifacts_preserved": true,
+  "id": "28aabcf6b1784b073cdb0403d19c5a0d28bb39dfb46ec46ed4cc29ac0528e0a0"
+}

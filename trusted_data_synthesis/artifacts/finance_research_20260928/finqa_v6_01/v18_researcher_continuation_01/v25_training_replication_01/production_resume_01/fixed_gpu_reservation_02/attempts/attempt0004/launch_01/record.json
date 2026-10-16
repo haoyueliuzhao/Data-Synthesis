@@ -1,0 +1,28 @@
+{
+  "schema": "v47_single_device_leased_controller_launch.v1",
+  "at": "2026-10-15T15:47:20.023466+00:00",
+  "protocol_id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784",
+  "pid": 2552050,
+  "birth": "450363188",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004/implementation/finqa_v47_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004"
+  ],
+  "max_gpu_workers": null,
+  "independent_total_worker_limit": null,
+  "total_worker_limit_removed": true,
+  "effective_device_capacity": 8,
+  "inherited_resource_wait_before_initialization": 94455,
+  "additional_supervisor_resource_wait_seconds": 0,
+  "initialization_wall_seconds": 13.59056544303894,
+  "inherited_global_wait_at_dispatch": 94469,
+  "preparation_wait_excluded_from_initialization_seconds": true,
+  "cumulative_resource_wait_limit_seconds": null,
+  "accepted_pilot_repeated": false,
+  "automatic_restart": false,
+  "id": "025a762522a9e876ea407f4c34ebcd646fcd95ced3ef402d78799d9a042a02e5"
+}

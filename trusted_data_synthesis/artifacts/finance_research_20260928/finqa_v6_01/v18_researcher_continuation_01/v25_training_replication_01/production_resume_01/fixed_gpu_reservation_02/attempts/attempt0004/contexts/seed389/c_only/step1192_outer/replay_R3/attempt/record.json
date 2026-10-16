@@ -1,0 +1,37 @@
+{
+  "schema": "v43_actual_point_stage_attempt.v1",
+  "at": "2026-10-15T18:43:36.384774+00:00",
+  "protocol_id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784",
+  "context_id": "4ffac84ac48ccf05375767dadb498eab93ef23029fa87490d2a9d669e00234ce",
+  "stage": "replay_R3",
+  "gpu_index": 0,
+  "pid": 4057805,
+  "deadline_epoch": null,
+  "automatic_retry": false,
+  "current_checkpoint": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step1192_step",
+    "record": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step1192_step/record.json",
+      "sha256": "a5c4bb150a112746fee26b9f770678451ece9a96f4944f4f1fc6dfe574c62ad9"
+    },
+    "state": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step1192_step/state.pt",
+      "sha256": "4a7a85650c648f910832265b383cca7b8f8a162885250df91cf1b35ca4a56a92"
+    },
+    "actual_state_digest": "147a56e7bfd574c71b72e5d5a60e02ffdc7acd6a48da9897adbe233c0c557ecb",
+    "phase": "step"
+  },
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/contexts/seed389/c_only/step1192_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0004/contexts/seed389/c_only/step1192_outer",
+  "API_calls": 0,
+  "registered_training_stop_step": null,
+  "execution_boundary_policy_protocol_id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784",
+  "original_context_record_unchanged": true,
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v47_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "e576e8da0a4594adfc4a68f0e7fd8546108c6fb20dc584b6e8a30e563d012f16"
+}

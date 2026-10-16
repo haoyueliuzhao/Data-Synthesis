@@ -1,0 +1,117 @@
+{
+  "schema": "v47_adaptive_same_process_native_segment_reservation.v1",
+  "protocol_id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784",
+  "context_id": "4ffac84ac48ccf05375767dadb498eab93ef23029fa87490d2a9d669e00234ce",
+  "stage": "replay_R3",
+  "gpu_index": 0,
+  "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+  "pid": 4057805,
+  "birth": "451416939",
+  "at": "2026-10-15T18:43:01.075504+00:00",
+  "target_bytes": 70866960384,
+  "minimum_dispatch_free_bytes": 60129542144,
+  "anchor_bytes": 2097152,
+  "before": {
+    "label": "before_reservation",
+    "allocated_bytes": 0,
+    "reserved_bytes": 0,
+    "peak_allocated_bytes": 0,
+    "peak_reserved_bytes": 0,
+    "physical_free_bytes": 79469281280,
+    "device_total_bytes": 85095874560
+  },
+  "after": {
+    "label": "reservation_held_after_original_empty_cache",
+    "allocated_bytes": 2097152,
+    "reserved_bytes": 70866960384,
+    "peak_allocated_bytes": 70866960384,
+    "peak_reserved_bytes": 70866960384,
+    "physical_free_bytes": 8522629120,
+    "device_total_bytes": 85095874560
+  },
+  "segment": {
+    "address": 131286949691392,
+    "total_size": 70866960384,
+    "allocated_size": 2097152,
+    "active_size": 2097152,
+    "stream": 0,
+    "segment_type": "large"
+  },
+  "cuda_initialized": true,
+  "before_CPU_state_and_model_load": true,
+  "scientific_model_calls": 0,
+  "cpu_and_cuda_rng_unchanged": true,
+  "original_empty_cache_called": true,
+  "lifetime_peak_reset_calls": 1,
+  "policy": {
+    "schema": "v47_adaptive_same_process_native_segment_reservation.v1",
+    "evidence_refs": [
+      {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_evidence_01/record.json",
+        "sha256": "b6acf416294b4ec793d6e3d8b29cf92d9176c4dddca3c870fd4d8bb4ab2e1d64",
+        "id": "a5c0dc5a23df30bf8c7b2922fc3ca02cd4c67c3a347c0261380e521fa25f307d"
+      },
+      {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_evidence_01/record.json",
+        "sha256": "7a8fa852f8650d1b26161b83bd9c04413383ea26f7d48ba2a1ab209f2a6b7246",
+        "id": "5e87ca240e266595c3dbf34bd9013cf61db961232209b5d94b34903447970ad0"
+      }
+    ],
+    "allocator_backend": "native",
+    "allocator_configuration": "backend:native,expandable_segments:False",
+    "torch_version": "2.7.1+cu128",
+    "anchor_bytes": 2097152,
+    "target_cap_bytes": 77309411328,
+    "reservation_target": "floor_GiB(min(72GiB,actual_post_CUDA_free-stage_headroom))",
+    "headroom_bytes_by_stage": {
+      "replay_R3": 8589934592,
+      "other": 4294967296
+    },
+    "minimum_free_gib_by_phase": {
+      "class": 24,
+      "train": 26,
+      "replay_R3": 56,
+      "virtual_existing": 22,
+      "virtual_first_sampling": 22,
+      "distribution": 22,
+      "generate": 24
+    },
+    "post_CUDA_admission_allowance_bytes": 3221225472,
+    "native_empty_cache_preserved": true,
+    "live_anchor_same_segment_proof_required": true,
+    "lifetime_allocated_limit_bytes": 81604378624,
+    "actual_boundary_free_reserve_bytes": 2147483648,
+    "warm_allocation_in_lifetime_peak": true,
+    "peak_reset_calls_before_first_allocation": 1,
+    "subsequent_peak_resets_allowed": false,
+    "reserve_before_CPU_state_and_model_loading": true,
+    "R3_original_backend_source_and_hash_unchanged": true,
+    "R3_original_admission_predicates_unchanged": true,
+    "R3_before_each_response_empty_cache": true,
+    "R3_expected_full_KV_bytes": 2147483648,
+    "R3_original_full_KV_limit_bytes": 8589934592,
+    "R3_historical_before_response_allocated_upper_bytes": 30665053696,
+    "R3_config_bound_KV_bytes": 1526726656,
+    "R3_minimum_basis": "historical before-response allocated + 20GiB + config KV + allowance",
+    "phase_peak_allocated_bytes": {
+      "class_": 17356511232,
+      "train": 20384589312,
+      "replay_R3": 36125065728,
+      "virtual_point": 17140014080,
+      "distribution": 15384683520,
+      "generate": 17723328512
+    },
+    "historical_observations_are_not_guaranteed_upper_bounds": true,
+    "shared_external_growth_can_still_violate_physical_free": true,
+    "retained_only_within_one_cold_worker_lifetime": true,
+    "cross_stage_or_recovery_permanent_exclusivity_claimed": false,
+    "standalone_placeholder_process": false,
+    "total_worker_limit_removed": true
+  },
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v47_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "4a503d04de19780e8989448c5bf64a3cc27f8ff17991e321e0ebd1343f6b4d90"
+}

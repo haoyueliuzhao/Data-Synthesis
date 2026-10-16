@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-15T15:19:48.648909+00:00",
+  "schema": "v43_supervised_controller_actual_exit.v1",
+  "attempt_number": 2,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/attempts/attempt0002",
+  "returncode": 1,
+  "pid": 2158156,
+  "birth": "450130865",
+  "manual_stop_requested": false,
+  "stop_forwarded": false,
+  "id": "e042c7a0d915f50fb3d70b7e9c70d0545c312147ff024d56df8ea1fe18769224"
+}

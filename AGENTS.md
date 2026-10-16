@@ -118,6 +118,10 @@ V47首次以源提交 `8b24d9e09c` 冻结89文件并实际启动，但于2026-10
 
 V47修复版已以源提交 `f4c57232bdf39bb9a32ac9e4142d476aa75d81a6` 冻结89文件，实施包ID `d8313eee822ba047c1feb6cd34b88defd88e498021516ada7413468ad2725fb5`，协议ID `fcd1b4b5cfb2dab3a9a758c377cc4334fe3e2bd9dd23473a50777a5c4b9131f3`；173项联合CPU/mock与正式冻结依赖核验通过。唯一监督器于2026-10-15 23:01:39启动，PID2143408、birth450089459。GPU3第一train实际预留26GiB并从1213提交到1215；随后规定边界物理free跌至1.615GiB，原2GiB门正确停止该worker。其资源主因及实际退出被新版分类核验后，监督器已经自动创建 `fixed_gpu_reservation_02/attempts/attempt0002/`，没有重启旧attempt。23:10:47在GPU4派发train PID2163413、birth450144285，真实预留28GiB并从1215接续；23:14已观察到step1216保存，资源子门通过，整段及全矩阵尚未完成。真实自动恢复证据见 `fixed_gpu_reservation_02/resource_recovery_verification/record.json`。查看进度先读该根的supervisor/queue指向当前attempt，不能只看初始根的已封存失败；不得重复启动监督器。共享GPU的物理free仍可能变化，不能把预留或这次成功接续表述为今后不会发生资源中断。
 
+V47修复版于2026-10-16 02:45:20北京时间结束attempt0004，监督器为 `STOPPED_UNSAFE_FOR_AUTOMATIC_RECOVERY`。触发项是Full251 step1237 train在模型加载前的 `ReservationAdmissionError: physical boundary reserve exhausted`；常规资源monitor尚未构造，旧分类没有资源观测而拒绝自动恢复，不是已记录的CUDA OOM。该检查没有保存当时free字节数，不得补造。旧监督器、控制器和三个worker均已退出；实际Full251已提交至1237，C-only389与Full389回放前缀仍240/419及133/540。剩1147次optimizer更新、3次outer和三个模型3441条终点回答，六个终点已封存；1400条旧待提交反馈只读复用，原未来首次采样仅700条，不能沿用通用进度快照的2100条推测重新发预算。父收口见 `fixed_gpu_reservation_02/closeout_01/record.json`，历史失败和冻结源码不改写。
+
+用户于2026-10-16明确要求“修复问题，自动恢复应当覆盖此类问题，或者此类问题不应该阻塞任务池的派发”。V48仅在独立 `production_resume_01/resource_deferral_recovery_01/` 登记修复与继续运行。模型加载前有真实观测的显存不足转为同进程等待，保留该worker预留和GPU租约，控制器仍可派发其他GPU；等待不称为科学阶段通过，也不允许在资源门未恢复时加载模型。原GPU0至7每卡一个本实验worker、无独立总并发上限、无截止、安全断点自动恢复及显存主存硬门保持；状态、数值、未知反馈或非法allocator错误不作资源不足放行。后模型资源失败仍依实际断点恢复，不回滚或重试已提交训练与完整反馈。旧V47所有入口不得重启，实际新启动须看新协议、唯一监督器launch和队列，不把修订准备称作已经派发。详细合同与验证见 `trusted_data_synthesis/docs/finqa_v48_pre_model_resource_wait_20261016.md`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-15T18:45:20.511312+00:00",
+  "phase": "STOPPED_UNSAFE_FOR_AUTOMATIC_RECOVERY",
+  "supervisor_pid": 2143408,
+  "manual_stop_requested": false,
+  "received_signals": [],
+  "attempt_number": 4
+}

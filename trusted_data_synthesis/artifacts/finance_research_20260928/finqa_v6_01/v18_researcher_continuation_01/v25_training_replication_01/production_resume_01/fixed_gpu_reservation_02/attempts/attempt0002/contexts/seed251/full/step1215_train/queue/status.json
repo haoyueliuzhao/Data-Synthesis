@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-15T15:10:47.683797+00:00",
+  "phase": "RUNNING",
+  "protocol_id": "fd4ceaee6bfa18e1e96d236ee073dc71977ee558ecbb9812eeb65fecf7d15d71",
+  "context_id": "7c6afdb4f28f6e20d83a36ef2dda354ebdd4978ccbab6abd1d7f1b128f8e5719",
+  "active_children": [
+    {
+      "stage": "train",
+      "pid": 2163413,
+      "birth": "450144285",
+      "gpu_index": 4,
+      "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e"
+    }
+  ],
+  "completed_stages": [],
+  "compute_seconds": 0.0,
+  "unowned_wall_queue_seconds": 98.45411550160497,
+  "global_external_resource_wait_seconds": 94408.23563386127,
+  "original_B_resume_authorized": true
+}

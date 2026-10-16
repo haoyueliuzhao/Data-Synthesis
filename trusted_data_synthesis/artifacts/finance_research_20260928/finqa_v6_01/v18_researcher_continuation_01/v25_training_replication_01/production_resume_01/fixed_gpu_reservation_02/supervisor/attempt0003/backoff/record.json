@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-15T15:47:05.849165+00:00",
+  "schema": "v43_inter_attempt_backoff_accounting.v1",
+  "requested_seconds": 120,
+  "actual_elapsed_seconds": 120.0001115789637,
+  "separate_from_parent_worker_compute_and_resource_wait_accounting": true,
+  "manual_stop_requested": false,
+  "id": "77c73725ca6152b8ea2ac28e704f49c7bce6dcab0100930fc7a6a86ce588d2f1"
+}

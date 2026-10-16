@@ -1,0 +1,12 @@
+{
+  "schema": "v37_actual_stage_exit.v1",
+  "at": "2026-10-15T18:43:35.694480+00:00",
+  "protocol_id": "baf6f149330c873618918ba5ff38d2b59a4db891a80d7455c39892233d8c3784",
+  "context_id": "9a4500f98bb437c56ef915bf5b606b510a409476a6f3125a0c0a99eb52b94dcb",
+  "stage": "train",
+  "returncode": -15,
+  "stop_requested": true,
+  "no_retry": true,
+  "elapsed_worker_wall_seconds": 40.56610024254769,
+  "id": "9fd850cdd6fe05880ebfea23dfd5bb5fff5dd7f5954e8b3da17e356f4afedfb9"
+}
