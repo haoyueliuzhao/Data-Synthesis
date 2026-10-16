@@ -134,6 +134,8 @@ V49已以源提交 `fdc4ffe3f17325b2928b18d22bc3d1bd408303d8` 冻结90文件（�
 
 V50 GPU0单卡版已以源提交 `fc7b0729c1ac961a1f6c7a2c50814d860a8d09c8` 冻结89文件，原81数学文件不变，实施包ID `e97ed4ebd71dd562fbbe68e5c107ef355c9a79ab5e47ec3b25093e5bbbfcd103`，科学协议ID `bd19014d33e034cc7b64b25bd919f9e332dadff65b934b2e89b70aaae300c912`；154项CPU/mock联合测试和正式冻结依赖核验通过。唯一新监督器于2026-10-16 13:27:51北京时间启动，PID1782886、birth455286621，控制器PID1782931、birth455286765。GPU0 Full251 train worker PID1786749、birth455290296已建立50GiB同进程预留，并于13:38:10核验实际由step1334提交至1335；仅一个GPU0 worker，已观测五个资源事件通过，GPU1至7没有新增本实验科学worker。首段尚未结束，全矩阵及统一评分未完成。启动证据见 `single_gpu0_01/startup_verification/record.json`，ID `cdca62651b94f1f312bdff84ceb3a9f78d21229fe862545387e9a378921f93a2`；状态先看新supervisor/queue指向当前attempt，禁止重复prepare/initialize/run或恢复任何旧入口。Full251达到1490后仍在GPU0串行完成其余任务及终点生成，先前“训完归还GPU0”的提案已由用户明确替代。共享GPU0算力不等于整卡独占，不得因速度或资源竞争改用其他GPU或干预其他项目。
 
+用户于2026-10-16要求“提高并发上限至2”，并明确选择“允许新增第二张GPU，每卡最多1个worker”。本次V51独立登记于 `production_resume_01/dual_gpu0_gpu6_01/`，设备限定GPU0和GPU6（新增GPU6 UUID `GPU-6cf85ebf-ae89-905b-5d97-46f83b295526`），总worker最多2、每卡最多1，初始化、资源等待和draining均占名额；不采用同卡双worker，不恢复其他六卡范围。旧V50冻结实现不热改，交接仅等待旧GPU0租约自然释放，不信号科学worker；持锁后新鲜空队列、全部已派发阶段真实成功退出及同点预检通过，才停止身份核验的旧监督器，确认监督器与控制器真实退出后单次启动新版本。停止旧运行前取消或检查失败仅释放交接租约，不沿用V49的取消停全池行为；不得重复交接、追随旧新attempt或启动科学旁路。当前已完成的Full251及C-only389训练不重复，科学剂量、原81数学文件、显存主存硬门、无截止、安全断点自动恢复和全九模型后统一评分不变。GPU显存仍按实际空余选择同进程预留、最高72GiB，不强制达到72GiB。准备或交接观察启动不等于双并发已实际生效；实际状态见 `trusted_data_synthesis/docs/finqa_v51_two_gpu_concurrency_20261016.md` 及新根launch/queue，旧V50在安全切换前继续运行。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
