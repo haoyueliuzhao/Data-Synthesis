@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-16T04:18:44.769502+00:00",
+  "actual_acquired_lease_evidence": {
+    "held_gpus": [
+      2,
+      3,
+      4,
+      6,
+      7
+    ],
+    "held_lease_count": 5,
+    "enforced_maximum_old_workers": 3,
+    "requested_four_cap_active": true,
+    "helpers": [
+      {
+        "gpu": 0,
+        "pid": 1451249,
+        "returncode": null,
+        "acquired": false
+      },
+      {
+        "gpu": 1,
+        "pid": 1451250,
+        "returncode": null,
+        "acquired": false
+      },
+      {
+        "gpu": 2,
+        "pid": 1451251,
+        "returncode": 0,
+        "acquired": true
+      },
+      {
+        "gpu": 3,
+        "pid": 1451252,
+        "returncode": 0,
+        "acquired": true
+      },
+      {
+        "gpu": 4,
+        "pid": 1451253,
+        "returncode": 0,
+        "acquired": true
+      },
+      {
+        "gpu": 5,
+        "pid": 1451254,
+        "returncode": null,
+        "acquired": false
+      },
+      {
+        "gpu": 6,
+        "pid": 1451255,
+        "returncode": 0,
+        "acquired": true
+      },
+      {
+        "gpu": 7,
+        "pid": 1451256,
+        "returncode": 0,
+        "acquired": true
+      }
+    ],
+    "sentinel_pid": 1451246,
+    "queued_helpers_are_not_claimed_as_held": true,
+    "CUDA_initialized": false
+  },
+  "cap4_enforced_by_real_project_leases": true,
+  "initializing_and_draining_included": true,
+  "kernel_queue_is_not_ownership": true,
+  "id": "ffb4a2b35d1d4fc446575919afaae491bdfff8215902749a15c522e5dd8ba289"
+}

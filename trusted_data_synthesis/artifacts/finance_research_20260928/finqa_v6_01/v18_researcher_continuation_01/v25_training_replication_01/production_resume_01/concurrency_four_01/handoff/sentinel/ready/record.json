@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-16T04:18:42.746439+00:00",
+  "pid": 1451246,
+  "birth": "454871787",
+  "inherited_lease_count": 8,
+  "lease_inodes": [
+    {
+      "gpu": 0,
+      "device": 66304,
+      "inode": 5290289920
+    },
+    {
+      "gpu": 1,
+      "device": 66304,
+      "inode": 5290289922
+    },
+    {
+      "gpu": 2,
+      "device": 66304,
+      "inode": 5290287281
+    },
+    {
+      "gpu": 3,
+      "device": 66304,
+      "inode": 5135755160
+    },
+    {
+      "gpu": 4,
+      "device": 66304,
+      "inode": 5326296109
+    },
+    {
+      "gpu": 5,
+      "device": 66304,
+      "inode": 5326296110
+    },
+    {
+      "gpu": 6,
+      "device": 66304,
+      "inode": 5290289924
+    },
+    {
+      "gpu": 7,
+      "device": 66304,
+      "inode": 5280236274
+    }
+  ],
+  "CUDA_initialized": false,
+  "id": "4cb77c17791efa8dc64c756fbbc77d732aa4bb5e3132a6c707529fd03cc38604"
+}
