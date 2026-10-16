@@ -124,6 +124,8 @@ V47修复版于2026-10-16 02:45:20北京时间结束attempt0004，监督器为 `
 
 V48已以源提交 `b4c66b1f141fd68e81c99d8debca1d17f584a701` 冻结89文件，原81数学文件逐字不变，实施包ID `759e627fdebf81711ecc3b969742fe99128726b9d2bd90f34615d7a5413597ed`，协议ID `7a297ae7f2436393aaa929427f0f950995f5d27631111bd8b963e07be1da714e`；167项CPU/mock联合测试和正式冻结CPU依赖核验通过。唯一新监督器于2026-10-16 09:41:42北京时间启动，PID712457、birth453929692，控制器PID712490、birth453929831。09:43:08实际核验为监督器RUNNING、attempt1，控制器 `WAITING_FOR_REGISTERED_RESOURCES`、0个worker；GPU6 free约8.73GiB及其他设备当时均不满足待执行train/R3准入，新增训练、回放及API调用均为0。自动等待与调度已运行，不称科学训练已推进；后续资源满足由现有监督器/控制器接续，不需也不得重复run、initialize或旧入口。证据见 `resource_deferral_recovery_01/startup_verification/record.json`；进度先读新supervisor/queue指向当前attempt。剩余1147更新、3outer和3441终点回答及全九模型后评分不变。
 
+用户于2026-10-16明确要求“当前进度，此外约束并发上限为4”。本次V49独立登记于 `production_resume_01/concurrency_four_01/`，仅将本轮原矩阵总worker硬上限设为4，包含CPU初始化、CUDA前等待、模型加载前资源等待及draining，每卡仍最多一个本实验worker。GPU0至7范围、原数学、剂量及显存主存硬门不变。旧V48冻结源码不热改；交接先在八个原项目GPU租约排队，实际持有至少四锁后才可称旧运行已受≤4约束，排队不等于持锁。正常科学worker不信号；全部八锁、新鲜空队列和实际成功退出等条件通过后，才停止身份核验的旧监督器并确认控制器退出，按届时真实保存点一次接续新内置四上限版本。管理与监护进程共同保锁，单个管理进程失效不能先放锁使旧无上限运行继续；异常保护只处理核验身份的本项目进程，不干预其他项目。无截止与安全断点自动恢复继续，自动后继也受四上限约束。不得把新代码、准备或排队当成限制已经生效，也不得重复启动任何旧、新入口。细节和实际生效证据见 `trusted_data_synthesis/docs/finqa_v49_four_worker_limit_20261016.md`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
