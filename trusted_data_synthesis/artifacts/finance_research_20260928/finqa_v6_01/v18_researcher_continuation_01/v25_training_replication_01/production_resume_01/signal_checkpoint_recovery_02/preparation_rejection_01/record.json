@@ -1,0 +1,37 @@
+{
+  "schema": "v52_unlaunched_preparation_rejection.v1",
+  "at": "2026-10-17T11:54:16.143726+00:00",
+  "status": "REJECTED_BEFORE_SCIENTIFIC_LAUNCH",
+  "preparation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_02/preparation/record.json",
+    "sha256": "5aa62c05535448066111807c6160acbdc6936bebf357cdce211e509cb7d11c86",
+    "id": "f537ee74d8b4abe5a9d982344e876a839d2a7757fad4031cc30b761a041fb974"
+  },
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_02/implementation/record.json",
+    "sha256": "dfa7b3c21d94918473d70c40ac33680da62624d08f58411c50b912d6249692e4",
+    "id": "a5cc959a40f351d59d18e4a9e1c7f786f62ec22f0e4aa7fc355a3bbd6116295b"
+  },
+  "authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_02/authorization/record.json",
+    "sha256": "6ac068b52195c78f3e8e390d5c34ed9dcf9357aeee79d29fe21d0e8e61082332",
+    "id": "b8cb03fd16b30ea45befa1cbd3c506fab9d083dc54b2b493aaf63f562e8af7ef"
+  },
+  "activation_authorization": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_02/activation_authorization/record.json",
+    "sha256": "aa71af2c0cac5a5fbca43fddfed43b3c48d26a110739a49d3eaaf5272fa52e03",
+    "id": "c4e93972383da5d83487f4b4c6fa57397af7435ec3f7627ce5fc77a260d71c20"
+  },
+  "error_type": "ValueError",
+  "error": "explicit one-time authority must bind the exact signal stop and response121 checkpoint",
+  "cause": "initial-only guard still required obsolete conditional_four_worker_authorization_activated=False after authority changed to prior_conditional_four_worker_ceiling_superseded=True",
+  "scientific_controller_started": false,
+  "scientific_workers_started": 0,
+  "new_replay_responses": 0,
+  "new_provider_calls": 0,
+  "new_optimizer_updates": 0,
+  "original_source_unchanged": true,
+  "new_preparation_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03",
+  "scientific_retry_claimed": false,
+  "id": "34d9746e4f0e874f4b1be9199c8cde4cbc0e22dee33dc0d1d9a3fc1fd9d3fc88"
+}

@@ -36,8 +36,8 @@ SOURCE_ROOT = REPO / (
 PARENT_ROOT = SOURCE_ROOT / "production_resume_01/host_memory_admission_01"
 SOURCE_BUNDLE = PARENT_ROOT / "implementation"
 STOPPED_PARENT_ROOT = SOURCE_ROOT / "production_resume_01/dual_gpu0_gpu6_01"
-ROOT = SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_02"
-RECOVERY_REVISION = "explicit_v51_response121_seven_gpu_no_independent_cap_r2"
+ROOT = SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_03"
+RECOVERY_REVISION = "explicit_v51_response121_seven_gpu_no_independent_cap_r3"
 STOPPED_PARENT_PROTOCOL_ID = "6a0c83d2af5bd2d65a4635ab6fe494be83f45b488eaed6f7cd156c3daf724055"
 INITIAL_RESPONSE_CHECKPOINT = STOPPED_PARENT_ROOT / (
     "contexts/seed389/full/step1192_outer/replay_R3/checkpoints/response000121/record.json"
@@ -313,6 +313,10 @@ def authorization_body(*, parentroot, automatic):
         superseded_unstarted_preparation=entry(
             SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_01/"
             "resource_scope_supersession_01/record.json"
+        ),
+        rejected_unstarted_preparation=entry(
+            SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_02/"
+            "preparation_rejection_01/record.json"
         ),
         clean_handoff_authorized=False,
         explicit_signal_checkpoint_recovery_authorized=not automatic,

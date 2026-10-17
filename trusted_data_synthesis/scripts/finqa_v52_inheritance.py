@@ -35,7 +35,7 @@ PRODUCTION_ROOT = Path(
 )
 PARENT_ROOT = PRODUCTION_ROOT / "host_memory_admission_01"
 SOURCE_ROOT = PRODUCTION_ROOT / "dual_gpu0_gpu6_01"
-ROOT = PRODUCTION_ROOT / "signal_checkpoint_recovery_02"
+ROOT = PRODUCTION_ROOT / "signal_checkpoint_recovery_03"
 ALLOWED_GPU_INDICES = (0, 1, 3, 4, 5, 6, 7)
 PARENT_IMPLEMENTATION_ID = "c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d"
 SOURCE_PROTOCOL_SCHEMA = "v51_dual_gpu_two_worker_supervised_protocol.v1"
@@ -450,7 +450,7 @@ def inspect_authorized_recovery(
         and body.get("initial_inherited_response_count") == 121
         and body.get("initial_remaining_response_count") == 310
         and body.get("initial_total_response_count") == 431
-        and body.get("conditional_four_worker_authorization_activated") is False
+        and body.get("prior_conditional_four_worker_ceiling_superseded") is True
         and body.get("new_sampling_or_optimizer_dose_authorized") is False,
         "explicit one-time authority must bind the exact signal stop and response121 checkpoint",
     )
@@ -510,7 +510,7 @@ def inspect_authorized_recovery(
         initial_authorized_signal_stop=audit,
         clean_handoff_from_successful_workers=False,
         unknown_signal_automatic_retry_allowed=False,
-        conditional_four_worker_authorization_activated=False,
+        prior_conditional_four_worker_ceiling_superseded=True,
     )
     return value
 

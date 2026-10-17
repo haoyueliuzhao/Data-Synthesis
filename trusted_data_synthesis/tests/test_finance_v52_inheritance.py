@@ -46,7 +46,7 @@ def authority():
         initial_inherited_response_count=121,
         initial_remaining_response_count=310,
         initial_total_response_count=431,
-        conditional_four_worker_authorization_activated=False,
+        prior_conditional_four_worker_ceiling_superseded=True,
         new_sampling_or_optimizer_dose_authorized=False,
     )
 
@@ -89,10 +89,53 @@ def test_resource_scope_nullcap_authority_excludes_gpu2_without_independent_cap(
         body["max_workers_per_gpu"] = 2
     if mutation is None:
         assert subject._authorization(subject.ROOT, body=body)["preview_only"] is True
-        assert subject.ROOT.name == "signal_checkpoint_recovery_02"
+        assert subject.ROOT.name == "signal_checkpoint_recovery_03"
     else:
         with pytest.raises(ValueError):
             subject._authorization(subject.ROOT, body=body)
+
+
+@pytest.mark.parametrize(
+    "mutation", [None, "missing_supersession", "false_supersession", "old_field_only"]
+)
+def test_controller_authorization_contract_reaches_source_validation_only_with_superseded_cap(
+    tmp_path, monkeypatch, mutation
+):
+    """Consume the real producer body, not a separately hand-built authority fixture."""
+    controller = importlib.import_module("finqa_v52_controller")
+    root = tmp_path / "signal_checkpoint_recovery_03"
+
+    def reference(path):
+        return dict(path=str(path))
+
+    monkeypatch.setattr(controller, "entry", reference)
+    monkeypatch.setattr(subject, "entry", reference)
+    monkeypatch.setattr(subject, "ROOT", root)
+    body = controller.authorization_body(parentroot=subject.SOURCE_ROOT, automatic=False)
+    assert body["prior_conditional_four_worker_ceiling_superseded"] is True
+    assert body["total_worker_limit_removed"] is True
+    assert body["max_gpu_workers"] is body["independent_total_worker_limit"] is None
+    assert body["allowed_gpu_indices"] == [0, 1, 3, 4, 5, 6, 7]
+    if mutation in ("missing_supersession", "old_field_only"):
+        body.pop("prior_conditional_four_worker_ceiling_superseded")
+    elif mutation == "false_supersession":
+        body["prior_conditional_four_worker_ceiling_superseded"] = False
+    if mutation == "old_field_only":
+        body["conditional_four_worker_authorization_activated"] = False
+
+    class SourceValidationReached(RuntimeError):
+        pass
+
+    monkeypatch.setattr(subject, "checked", lambda path: dict(test_only=True))
+
+    def reached_source(parent, protocol):
+        assert parent == subject.SOURCE_ROOT
+        raise SourceValidationReached("scope passed; no actual parent metadata read")
+
+    monkeypatch.setattr(subject, "_inspect_explicit_source_stop", reached_source)
+    expected = SourceValidationReached if mutation is None else ValueError
+    with pytest.raises(expected):
+        subject.inspect_authorized_recovery(root, subject.SOURCE_ROOT, authorization_body=body)
 
 
 @pytest.fixture(scope="module")
@@ -159,7 +202,7 @@ def test_actual_initial_scientific_dose_and_elapsed_accounting_are_inherited(rea
     assert value["effective_device_capacity"] == 7
     assert value["max_workers_per_gpu"] == 1
     assert value["time_limits_removed"] is True
-    assert value["conditional_four_worker_authorization_activated"] is False
+    assert value["prior_conditional_four_worker_ceiling_superseded"] is True
 
 
 def test_explicit_new_authority_does_not_reclassify_old_unsafe_stop(real_initial):
@@ -191,7 +234,7 @@ def test_explicit_new_authority_does_not_reclassify_old_unsafe_stop(real_initial
         ("initial_response_checkpoint_id", "other"),
         ("initial_inherited_response_count", 120),
         ("initial_remaining_response_count", 311),
-        ("conditional_four_worker_authorization_activated", True),
+        ("prior_conditional_four_worker_ceiling_superseded", False),
         ("new_sampling_or_optimizer_dose_authorized", True),
         ("allowed_gpu_indices", [0, 6, 7]),
         ("max_gpu_workers", 4),

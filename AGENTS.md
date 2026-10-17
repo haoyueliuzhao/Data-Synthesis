@@ -148,7 +148,9 @@ V51于2026-10-17 19:18北京时间停止：Full389 step1192的GPU0 R3 worker在1
 
 用户在V52首次科学启动前进一步明确“尽快恢复任务，开放上限，后续除GPU2外均可使用”，随后明确“取消并发上限限制”。本次最终恢复入口改为独立 `production_resume_01/signal_checkpoint_recovery_02/`：允许GPU0、1、3、4、5、6、7，禁止GPU2；取消独立总worker上限，每卡仍最多1，初始化、资源等待及draining继续占对应设备名额，物理容量最多7。此许可覆盖先前本次GPU0/GPU6上限2及按需上限4的资源安排，但不扩大剩余310条回放、298次optimizer更新、1次outer、1147终点回答的科学剂量，原资源数值门与同点反馈/梯度合同不变。当前单模型依赖链不为增加并发而拆改数学或启动旁路。
 
-`signal_checkpoint_recovery_01/` 已准备并生成协议 `73e3d31bda3e0d95eb602d7b9a57cc8cf463a0162e586c1cabe5c5a56fbfbb17`，但没有任何监督器、控制器或科学worker启动；新授权是在首次派发前到达，不是科学失败重试。该目录及89文件冻结包保留不改，已由 `resource_scope_supersession_01/record.json`（ID `22c85224a0c775e150869b4005b29c30e84bd69eeb653b591abe3f48a3c2ac0d`）登记为 `SUPERSEDED_BEFORE_SCIENTIFIC_LAUNCH`，禁止启动该旧准备入口。最终实际启动以 `signal_checkpoint_recovery_02/` 的新冻结协议与唯一监督器launch为准。已通过的134项用例不重复全量运行，只做新设备/无总上限改动及正式启动必需核验。
+`signal_checkpoint_recovery_01/` 已准备并生成协议 `73e3d31bda3e0d95eb602d7b9a57cc8cf463a0162e586c1cabe5c5a56fbfbb17`，但没有任何监督器、控制器或科学worker启动；新授权是在首次派发前到达，不是科学失败重试。该目录及89文件冻结包保留不改，已由 `resource_scope_supersession_01/record.json`（ID `22c85224a0c775e150869b4005b29c30e84bd69eeb653b591abe3f48a3c2ac0d`）登记为 `SUPERSEDED_BEFORE_SCIENTIFIC_LAUNCH`，禁止启动该旧准备入口。已通过的134项用例不重复全量运行，只做新设备/无总上限改动及正式启动必需核验。
+
+V52第二准备目录 `signal_checkpoint_recovery_02/` 于2026-10-17 19:54在任何科学进程启动前因旧并发字段检查被拒绝，无protocol、controller或worker，无新增科学工作；冻结包及拒绝记录 `preparation_rejection_01/record.json`（ID `34d9746e4f0e874f4b1be9199c8cde4cbc0e22dee33dc0d1d9a3fc1fd9d3fc88`）保留不改。修正版独立登记在 `signal_checkpoint_recovery_03/`，仍直接从V51实际response121恢复；只修初始授权字段一致性，不把未启动准备视为科学重试，不放宽原科学绑定、资源门或剂量。最终实际生效以 `_03` 新冻结协议和唯一监督器launch为准，不能启动 `_01` 或 `_02`。
 
 # 本地测试临时文件
 

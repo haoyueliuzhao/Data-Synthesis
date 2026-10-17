@@ -2,7 +2,7 @@
 
 用户于2026年10月17日明确要求“恢复实验”。本次仅恢复V51已停止的Full389 step1192参数点，从实际保存的response121累计梯度继续剩余310条R3回放，总量仍为431条。完整类梯度、虚拟点、700条反馈和冻结奖励只读继承，不重新计算类梯度、不重做虚拟点、不重新采样，也不重放前121条。
 
-最终启动目录为 `production_resume_01/signal_checkpoint_recovery_02/`。此前较窄资源范围的 `signal_checkpoint_recovery_01/` 已完成准备但没有启动任何监督器、控制器或科学worker；用户在启动前补充了新的设备及并发许可，该准备包保留并标记为被新授权替代，不是科学失败或重试。旧V51目录 `dual_gpu0_gpu6_01/` 的失败、退出、自动恢复拒绝及90文件冻结包同样保持原样。
+最终启动目录为 `production_resume_01/signal_checkpoint_recovery_03/`。此前较窄资源范围的 `signal_checkpoint_recovery_01/` 已完成准备但没有启动任何监督器、控制器或科学worker；用户在启动前补充了新的设备及并发许可，该准备包保留并标记为被新授权替代。随后 `_02` 在科学启动前因一处旧并发字段检查被拒绝，记录与冻结文件保留；修正版 `_03` 直接继承原V51实际断点，不把两个未启动准备目录视为科学父运行。旧V51目录 `dual_gpu0_gpu6_01/` 的失败、退出、自动恢复拒绝及90文件冻结包同样保持原样。
 
 ## V51停止事实
 
@@ -64,3 +64,5 @@
 按照用户最新“严禁冗余校验，只做必要核验”的要求，已通过的用例不整套重跑。新增资源许可只针对排除GPU2、取消独立总上限及每卡唯一worker进行必要增量检查：运行入口17项、继承15项，共32项定点测试通过。后续执行正式冻结版本启动所必需的依赖与状态检查，并核验真实断点接续及新增回放进度。
 
 第一准备包使用源提交 `dc6fae2ab654743b8d1b5fbef64e7332b0687bed`，实施包ID为 `17263afbbc50820a452612ad0a67d1434431ae0ce739aaf3672802deff67db93`，准备协议ID为 `73e3d31bda3e0d95eb602d7b9a57cc8cf463a0162e586c1cabe5c5a56fbfbb17`。它没有启动任何科学进程。独立记录 `signal_checkpoint_recovery_01/resource_scope_supersession_01/record.json`（ID `22c85224a0c775e150869b4005b29c30e84bd69eeb653b591abe3f48a3c2ac0d`）保留此次启动前授权变更；旧准备协议与冻结文件没有覆盖。最终实际冻结与启动记录另行追加，禁止启动已被替代的第一准备包。
+
+第二准备包源提交为 `96229d6039`。19:54的初始化拒绝发生在协议、继承及进程创建之前：新授权已明确取代原按需四worker条件上限，但初始检查仍要求旧字段 `conditional_four_worker_authorization_activated=False`。修订为检查新授权字段 `prior_conditional_four_worker_ceiling_superseded=True`，同点、实际response121及剂量条件不变。直接使用控制器真实授权body的4项新增定点测试通过：真实新授权通过，缺失、False或仅有旧字段均拒绝。拒绝证据ID为 `34d9746e4f0e874f4b1be9199c8cde4cbc0e22dee33dc0d1d9a3fc1fd9d3fc88`，位于 `_02/preparation_rejection_01/record.json`；新增科学worker、response、API及optimizer更新均为0，不归类为资源故障或科学实验重试。
