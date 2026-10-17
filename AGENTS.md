@@ -158,6 +158,8 @@ V52于2026-10-17 20:12:34在GPU4的下一条R3响应forward之前触发 `R3Capac
 
 上述修复开始前，已于20:20:07核验身份后安全停止仅在等待的旧监督器PID1595842/birth466258973；旧控制器和科学worker已退出，未信号科学worker，未创建新父attempt。交接证据 `r3_native_recovery_transition_01/completed/record.json` ID `09bcd04cddeec0e5be231ade5d324ec172984968784eb7e605d159f04c6cf4dc`，旧容量等待386.993653秒继续继承。旧监督器明确停止不授权重启；新V53依赖本次用户明确修复恢复授权。从128执行剩303条，其中129至137共9条属未封存工作的重新计算；完整类梯度、虚拟点、700反馈及奖励只读复用，余298次optimizer更新、1次outer、1147条终点回答和8个既有终点不变。GPU2禁止、其余七卡无独立总上限/每卡1，无截止但历史统计不归零，原主存硬门保持。新实现或登记完成不能称已运行，实际启动以新目录唯一监督器及真实断点恢复证据为准；文档见 `trusted_data_synthesis/docs/finqa_v53_native_r3_recovery_20261017.md`。
 
+V53已以源提交 `ca4c8c5a3930c57d51c6ba8ae2d1993d3cd3ce79` 冻结89文件，实施包 `6ee1598c71b2d9f912811e2f681d8c01de2d0bdfab6c2ca47a1a9392ff3a91b4`、协议 `440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73`；27项必要CPU定点测试分别通过，正式冻结依赖核验通过，未重跑历史全套。2026-10-17 20:52:43唯一监督器PID1727798/birth466595869启动，控制器PID1727812/birth466596009，GPU5的R3 worker PID1728026/birth466596427。真实CUDA记录确认暖分配0、锚点0、无人工预留segment；20:54:32实际恢复128断点，20:56:18完成129/431，余302条，129属于原未封存部分重新计算，最新持久梯度仍128。8项已观测GPU与主存门均通过，allocated峰值约31.30GiB、边界free最低约23.07GiB；不据此保证未来资源或整轮成功。启动证据 `r3_native_recovery_01/startup_verification/record.json` ID `5c03c37e488ff1ba52e1945a94037f054ea78a097732eb9020c2c8b7867ec4b8`。监督器仍attempt1运行，未触发后继，原剩余optimizer/outer/终点剂量未完成；以后从此新目录的监督器和当前attempt查看，禁止重复启动新监督器或旧V52入口。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

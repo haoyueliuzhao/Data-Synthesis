@@ -1,0 +1,37 @@
+{
+  "schema": "v53_frozen_cpu_dependency_verification.v1",
+  "at": "2026-10-17T12:52:43.519103+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/protocol/record.json",
+    "sha256": "5f571ec76e82dc2b28e7766a73cebc17193d7b0d001301519e8c6fc6961d49e2",
+    "id": "440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73"
+  },
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/implementation/record.json",
+    "sha256": "f3fcaf23c4cfe8028567a4726bf3ef12338de5ee2525ee2bcf617ddbe0b27188",
+    "id": "6ee1598c71b2d9f912811e2f681d8c01de2d0bdfab6c2ca47a1a9392ff3a91b4"
+  },
+  "worker_entry": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/implementation/finqa_v53_worker.py",
+  "evaluation_entry": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/implementation/finqa_v53_evaluation.py",
+  "supervisor_entry": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/implementation/finqa_v53_supervisor.py",
+  "training_entry": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/implementation/finqa_v25_training_replication.py",
+  "actual_runtime_imports_passed": true,
+  "actual_cold_base_controller_bound": true,
+  "cuda_initialized": false,
+  "allowed_gpu_indices": [
+    0,
+    1,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_gpu_workers": null,
+  "max_workers_per_gpu": 1,
+  "R3_warm_allocation_bytes": 0,
+  "R3_anchor_bytes": 0,
+  "original_math_and_resource_gates_unchanged": true,
+  "scientific_work_started": false,
+  "id": "a13e263ce06e02b0a0bdd1e8a1b7621f9f0ee1c3450d828debac50c9227f16f2"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "v43_actual_point_stage_attempt.v1",
+  "at": "2026-10-17T12:53:31.283779+00:00",
+  "protocol_id": "440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73",
+  "context_id": "fc5e65c75ae05e1a0edede9b9e78aa73a5a8fe66e2d7c57d88a0edb03ff195fa",
+  "stage": "replay_R3",
+  "gpu_index": 5,
+  "pid": 1728026,
+  "deadline_epoch": null,
+  "automatic_retry": false,
+  "current_checkpoint": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step1192_step",
+    "record": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step1192_step/record.json",
+      "sha256": "2687e971f672b8cb6477f19260f2c8fd82286e1e27a38b00062f829f8f386dc5"
+    },
+    "state": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step1192_step/state.pt",
+      "sha256": "e74bcaeab6f5fde2f025f615af94be00dadd9a094ee0d169fdcd07c8b8e30193"
+    },
+    "actual_state_digest": "75bd15b2fe010207a135c38804d146494adb2d506f7e2c9ec6b81a8e74d06939",
+    "phase": "step"
+  },
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/contexts/seed389/full/step1192_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/contexts/seed389/full/step1192_outer",
+  "API_calls": 0,
+  "registered_training_stop_step": null,
+  "execution_boundary_policy_protocol_id": "440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73",
+  "original_context_record_unchanged": true,
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v53_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "e6afd6b77dbf22ec67822fa03a835d89d23151f40a336286932d0afaf9dc1120"
+}

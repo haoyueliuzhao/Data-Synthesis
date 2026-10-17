@@ -1,0 +1,31 @@
+{
+  "schema": "v53_explicit_single_supervisor_spawn.v1",
+  "at": "2026-10-17T12:52:43.522181+00:00",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/implementation/finqa_v53_supervisor.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01"
+  ],
+  "pid": 1727798,
+  "birth": "466595869",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/protocol/record.json",
+    "sha256": "5f571ec76e82dc2b28e7766a73cebc17193d7b0d001301519e8c6fc6961d49e2",
+    "id": "440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73"
+  },
+  "cpu_dependency_verification": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/cpu_dependency_verification/record.json",
+    "sha256": "cf8029d0e8d3645bfa07c328f85115d891baf04af2aafd6234c38a28c9d060ab",
+    "id": "a13e263ce06e02b0a0bdd1e8a1b7621f9f0ee1c3450d828debac50c9227f16f2"
+  },
+  "controlled_parent_stop": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_transition_01/completed/record.json",
+    "sha256": "c5b83924379f0a5843bbde2b254174aef5d67e933b062496e1e204fd8029a637",
+    "id": "09bcd04cddeec0e5be231ade5d324ec172984968784eb7e605d159f04c6cf4dc"
+  },
+  "duplicate_launch_attempted": false,
+  "id": "d6e3c047a880ec0d8d4f30ae94d23b2c72b7a657d8d01f40f9ad6c6727e1f43a"
+}

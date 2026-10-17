@@ -52,3 +52,19 @@ R3无预留路径10项CPU定点测试通过，覆盖零暖分配、零锚点、�
 继承入口另7项定点测试通过，合计27项不同的CPU测试分别验证，未额外重复联合全套。使用控制器实际生成授权的唯一父状态预检通过，确认实际128断点及Tensor字节摘要、303条剩余响应、8份已完成终点，以及298次optimizer更新和1次outer的剩余量。继承累计资源等待118117秒，包含父监督器386.993653秒的实际容量等待并保守向上取整。
 
 正式冻结依赖、派发、response128恢复和新增回放进度在各事件发生后分别记录；代码准备完成不代表GPU实验已经恢复。
+
+## 实际冻结与启动
+
+修订版已以源提交 `ca4c8c5a3930c57d51c6ba8ae2d1993d3cd3ce79` 冻结89文件，原81个科学实现文件逐字保留。实施包ID为 `6ee1598c71b2d9f912811e2f681d8c01de2d0bdfab6c2ca47a1a9392ff3a91b4`，协议ID为 `440bf6aede2e956c286b539de1c2220612589ded2a4dd19388ed83d4d44f9b73`。正式冻结CPU依赖和冷worker实际控制器绑定检查通过，没有初始化CUDA或执行科学计算。
+
+20:52:43北京时间，唯一监督器实际启动，PID1727798、birth `466595869`；控制器PID1727812、birth `466596009`，20:52:48开始运行并派发GPU5上的R3 worker，PID1728026、birth `466596427`。GPU5 UUID为 `GPU-f731a280-01e3-2359-ace9-aa2ad2112f55`，GPU2未派发。
+
+20:52:55的真实CUDA准入记录显示 `allocation_mode=native_demand`、`target_bytes=0`、`warm_allocation_bytes=0`、`anchor_bytes=0`、`segment=null`。初始化前后allocated和reserved均为0，物理free均为62481891328字节；本进程没有进行大块暖分配，也没有人为锚定缓存池。该记录证明修订资源策略已经实际执行，但不替代后续模型加载、响应回放及整轮资源验收。
+
+20:54:32，实际恢复记录 `replay_R3/inherited_prefix/record.json`（ID `0eea0fdc7d63ba46426d53dc5cabf24ce8948f244f6bf6a6ef0a2874c9aa4950`）确认父response128的完整参数点、Tensor字节与状态摘要及运行时RNG均通过原检查，下一条为129。第一条回放开始前allocated为14.243GiB、reserved为14.244GiB，物理free为43.872GiB，资源门通过。
+
+20:56:18完成第129条响应，累计129/431，余302条。该条属于父进程129至137未封存部分的重新计算，并非首次执行超出父137的新响应。此时最新持久梯度断点仍为128，129只是已完成的运行中游标。
+
+20:56:22的 `startup_verification/record.json`（ID `5c03c37e488ff1ba52e1945a94037f054ea78a097732eb9020c2c8b7867ec4b8`）封存8项实际资源观察，GPU与主存检查均通过：allocated生命周期峰值33608669696字节，约31.30GiB；规定边界物理free最低24770904064字节，约23.07GiB；进程RSS峰值约16.42GiB，有效可用RAM最低约775.3GiB。第129条结束时allocated为30672456704字节、reserved为37553700864字节，没有旧61GiB人工锚定池。上述为此启动阶段的实际观察，不是不同GPU负载条件下的速度或显存收益对照实验，也不保证未来共享资源不会变化。
+
+该快照监督器、控制器和worker的实际PID/birth均匹配，监督器处于第一次attempt的 `RUNNING`，尚未触发新自动后继。新增API、采样、类梯度任务、虚拟点、outer及optimizer提交均为0。原8个完整模型和终点只读复用；尚余298次optimizer更新、1次outer和1147条终点回答，全九模型完成及统一评分仍未发生。正式进度从新目录的 `supervisor/queue/status.json`、`queue/status.json` 及当前attempt查看，禁止重复启动监督器或旧V52入口。
