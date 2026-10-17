@@ -138,6 +138,10 @@ V50 GPU0单卡版已以源提交 `fc7b0729c1ac961a1f6c7a2c50814d860a8d09c8` 冻�
 
 V51已以源提交 `48c0593acb701d89b6240d98cfdb3f9ced1b1394` 冻结90文件，原81数学文件逐字不变；实施包ID `d3c37529146a5109abbfb5a1d0505d433bece4fa6d0911d6b04fe6e4c4e1f952`，交接协议ID `7eb8feba7049df375ba4979df75d768a5fb4da69083ada066da137ba375cf0f0`。157项CPU/mock联合测试及正式冻结CPU依赖核验通过。唯一交接观察器于2026-10-16 22:24:27北京时间启动，PID3592725、birth458506298；22:25:12状态 `DRAINING_NATURALLY`，barrier为空，未向科学worker或旧监督器发信号。旧V50仍是GPU0单worker，Full389回放已保存至256/540；Full251与C-only389训练均已达1490。新科学protocol、新监督器和GPU6科学worker尚未创建，不能称双并发已经实际生效。核验见 `dual_gpu0_gpu6_01/handoff_startup_verification/record.json`；进度先看该根 `handoff_01/status.json`，交接成功后再看新supervisor/queue。禁止重复prepare/migrate或旁路派发；等待期间旧attempt改变或失败则本次交接停止、不自动追随，不能因此干预仍合法的旧V50运行。
 
+V51于2026-10-17 05:07:20北京时间实际完成自然交接，科学协议ID `6a0c83d2af5bd2d65a4635ab6fe494be83f45b488eaed6f7cd156c3daf724055`；PID3592725已进入新监督器角色，新控制器PID54311、birth460924335，GPU0/GPU6总上限2已生效。10月17日17:03快照为attempt1运行、8模型训练及终点回答完成；Full389实际step1192，最后class的744题4974行已全部完整成功，当前GPU0首次反馈已落盘590/700条，剩余同一模型阶段按依赖顺序执行。交接目录的旧barrier状态不代表仍持锁，应查看已保存的barrier_release及新supervisor/queue；禁止重复启动交接或旧V50。
+
+用户2026-10-17补充“若后续有需要可以开放上限，并发度提高到4”。该条件许可已独立登记于 `dual_gpu0_gpu6_01/concurrency_four_authorization_20261017_01/record.json`，ID `4a5907b98fd377860f18785dfaa56d2cb5e0236e0bd4423fec4212ca6cdc9e70`；仅在本轮原剩余工作确有独立并行需求时考虑另行启用总上限4，每卡仍最多1，初始化、等待和draining仍占名额。当前单模型关键路径没有额外独立GPU任务，因此未激活四并发，现有冻结上限2和GPU0/GPU6范围不变，不为提高并发中断反馈、重采样、重放、扩展剂量或启动旁路。未指定的额外物理GPU范围不能自动推定为旧八卡许可恢复；确需扩卡时先明确范围与UUID并独立登记安全切换。原数值/显存/主存硬门、无截止、安全断点自动恢复和全部九模型封存后评分的合同不变。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

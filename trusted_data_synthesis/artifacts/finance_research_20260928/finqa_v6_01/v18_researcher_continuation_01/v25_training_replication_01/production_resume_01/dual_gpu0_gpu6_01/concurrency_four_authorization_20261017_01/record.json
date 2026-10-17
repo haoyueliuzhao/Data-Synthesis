@@ -1,0 +1,62 @@
+{
+  "schema": "v51_conditional_four_worker_resource_authority.v1",
+  "at": "2026-10-17T09:05:10.871089+00:00",
+  "status": "REGISTERED_NOT_ACTIVATED_NO_INDEPENDENT_GPU_WORK",
+  "user_instruction": "当前进度，若后续有需要可以开放上限，并发度提高到4",
+  "scope": "original_nine_model_remaining_experiment_only",
+  "conditional_max_gpu_workers": 4,
+  "condition": "actual_need_for_independent_parallel_GPU_work",
+  "initializing_waiting_and_draining_count_as_workers": true,
+  "max_workers_per_gpu": 1,
+  "current_supervision_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01",
+  "current_protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/protocol/record.json",
+    "sha256": "94aca81ea5d218f2fc81b4c43e6b7bc94f7254daa01f74e06f87c70216eac488",
+    "id": "6a0c83d2af5bd2d65a4635ab6fe494be83f45b488eaed6f7cd156c3daf724055"
+  },
+  "current_runtime_max_gpu_workers": 2,
+  "current_allowed_gpu_indices": [
+    0,
+    6
+  ],
+  "additional_gpu_indices_not_specified": true,
+  "device_expansion_inferred": false,
+  "additional_device_scope_requires_confirmation_before_activation": true,
+  "activation_requires_separate_frozen_execution_registration": true,
+  "active_frozen_protocol_hot_modified": false,
+  "current_worker_interrupted": false,
+  "controller_or_supervisor_restarted": false,
+  "new_scientific_workers_started": 0,
+  "scientific_dose_expanded": false,
+  "original_numerical_and_resource_gates_unchanged": true,
+  "no_extra_replay_sampling_or_training": true,
+  "current_parallel_work_assessment": {
+    "last_outer_step": 1192,
+    "final_training_step": 1490,
+    "class_tasks_completed": 744,
+    "class_rows_completed": 4974,
+    "completed_training_models": 8,
+    "completed_endpoint_models": 8,
+    "current_stage": "virtual_point",
+    "remaining_chain": [
+      "first_sampling_700",
+      "replay_R3",
+      "distribution",
+      "train_to_1490",
+      "endpoint_1147",
+      "unified_scoring_after_nine_seals"
+    ],
+    "independent_GPU_tasks_ready": 1
+  },
+  "progress_snapshot": {
+    "at": "2026-10-17T17:03:18.763215+08:00",
+    "feedback_persisted": 590,
+    "feedback_denominator": 700,
+    "draw0_persisted": 350,
+    "draw1_persisted": 240,
+    "persisted_episodes_with_unsettled_provider_calls": 0,
+    "cohort_complete_or_scored": false
+  },
+  "endpoint_answers_or_scores_read": false,
+  "id": "4a5907b98fd377860f18785dfaa56d2cb5e0236e0bd4423fec4212ca6cdc9e70"
+}
