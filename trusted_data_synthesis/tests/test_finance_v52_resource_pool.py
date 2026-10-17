@@ -67,7 +67,7 @@ def test_initial_and_auto_authority_keep_new_scope_without_expanding_science(mon
     assert value["explicit_signal_checkpoint_recovery_authorized"] is (not automatic)
     assert "取消并发上限限制" in value["user_instruction"]
     assert "除GPU2外均可使用" in value["user_consent"]
-    assert control.ROOT.name == "signal_checkpoint_recovery_02"
+    assert control.ROOT.name == "signal_checkpoint_recovery_03"
     assert control.STOPPED_PARENT_ROOT.name == "dual_gpu0_gpu6_01"
 
 

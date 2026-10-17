@@ -66,3 +66,17 @@
 第一准备包使用源提交 `dc6fae2ab654743b8d1b5fbef64e7332b0687bed`，实施包ID为 `17263afbbc50820a452612ad0a67d1434431ae0ce739aaf3672802deff67db93`，准备协议ID为 `73e3d31bda3e0d95eb602d7b9a57cc8cf463a0162e586c1cabe5c5a56fbfbb17`。它没有启动任何科学进程。独立记录 `signal_checkpoint_recovery_01/resource_scope_supersession_01/record.json`（ID `22c85224a0c775e150869b4005b29c30e84bd69eeb653b591abe3f48a3c2ac0d`）保留此次启动前授权变更；旧准备协议与冻结文件没有覆盖。最终实际冻结与启动记录另行追加，禁止启动已被替代的第一准备包。
 
 第二准备包源提交为 `96229d6039`。19:54的初始化拒绝发生在协议、继承及进程创建之前：新授权已明确取代原按需四worker条件上限，但初始检查仍要求旧字段 `conditional_four_worker_authorization_activated=False`。修订为检查新授权字段 `prior_conditional_four_worker_ceiling_superseded=True`，同点、实际response121及剂量条件不变。直接使用控制器真实授权body的4项新增定点测试通过：真实新授权通过，缺失、False或仅有旧字段均拒绝。拒绝证据ID为 `34d9746e4f0e874f4b1be9199c8cde4cbc0e22dee33dc0d1d9a3fc1fd9d3fc88`，位于 `_02/preparation_rejection_01/record.json`；新增科学worker、response、API及optimizer更新均为0，不归类为资源故障或科学实验重试。
+
+## 最终实际启动
+
+`signal_checkpoint_recovery_03/` 已以源提交 `c7a9f843ce28355a8c677f85059aaa078101dc32` 冻结89文件，实施包ID为 `8efd9d73d1c7020c42310be7f6070943bd7d1ff5ab19d79127627bd6c9493730`，协议ID为 `77e0e5421af8042c7334cde643eb19ca0c6145bf8238c7d5a6b6762cc192e616`。正式冻结依赖及冷worker实际控制器绑定核验通过，检查过程没有初始化CUDA。
+
+2026年10月17日19:56:34北京时间，唯一监督器实际启动，PID1595842、birth `466258973`；控制器PID1595871、birth `466259103`。19:56:39实际派发GPU4的R3 worker，PID1596079、birth `466259491`，其实际UUID为 `GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e`。派发时GPU4物理free为71301MiB，高于R3准入57344MiB；同卡已有其他项目进程，依既定共享准入允许使用，没有干预该进程。GPU2未派发。
+
+这是七卡许可实际生效后的首次科学worker启动，不是七worker同时运行；当前只有最后一个模型的串行依赖链。监督器仍为第1次attempt，资源故障自动后继尚未触发。历史累计资源等待继承117692秒，初始化36.249秒继续累计，无阶段、outer或资源等待截止时间；原数值和资源硬门保持。监督器启动、模型装载、实际恢复response121和完成新response分别报告，不能把派发记录当作新增回放完成。
+
+19:58:24，`replay_R3/inherited_prefix/record.json`（ID `30cebc036e856af702ed4ed2e593cde912ddfad6da6332e4b5077cd4416ea916`）证明实际载入父response121：原完整绑定、Tensor字节及状态摘要、参数坐标和运行时RNG均已验证，父文件没有写入；下一条严格为122。19:59:06完成第122条，20:00:25累计完成123/431，即本次新增2条、余308条。此时最新持久梯度断点仍为父121，123只是实际完成的运行中游标，不能称为已保存123断点。
+
+20:00:34的启动快照 `startup_verification/record.json`，ID `3603baeb05b2f57a470e1b6322e5453ea3dd1bb711f056944dd9afbb23b98a5a`，封存10项已发生资源观察，GPU及主存检查均通过：已观测allocated历史峰值61GiB，边界free最低约7.81GiB，进程RSS峰值约16.43GiB，有效可用RAM最低约774.9GiB。模型加载及预留暖分配包含在同一生命周期峰值内；这些是启动阶段的实际观察，不保证未来资源或整轮验收通过。监督器、控制器和worker三者PID/birth均仍匹配。
+
+该快照新增API、采样、类梯度任务、虚拟点、outer和optimizer提交均为0。原8个完整模型和终点继续只读复用；尚余298次optimizer更新、1次outer及1147条终点回答，全九模型完成和统一评分均未发生。后续进度从本目录的 `supervisor/queue/status.json`、`queue/status.json` 及当前attempt读取，禁止重复启动监督器或旧准备目录。

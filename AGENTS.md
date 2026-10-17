@@ -152,6 +152,8 @@ V51于2026-10-17 19:18北京时间停止：Full389 step1192的GPU0 R3 worker在1
 
 V52第二准备目录 `signal_checkpoint_recovery_02/` 于2026-10-17 19:54在任何科学进程启动前因旧并发字段检查被拒绝，无protocol、controller或worker，无新增科学工作；冻结包及拒绝记录 `preparation_rejection_01/record.json`（ID `34d9746e4f0e874f4b1be9199c8cde4cbc0e22dee33dc0d1d9a3fc1fd9d3fc88`）保留不改。修正版独立登记在 `signal_checkpoint_recovery_03/`，仍直接从V51实际response121恢复；只修初始授权字段一致性，不把未启动准备视为科学重试，不放宽原科学绑定、资源门或剂量。最终实际生效以 `_03` 新冻结协议和唯一监督器launch为准，不能启动 `_01` 或 `_02`。
 
+V52修正版已于2026-10-17 19:56:34实际启动，源提交 `c7a9f843ce28355a8c677f85059aaa078101dc32`、89文件实施包 `8efd9d73d1c7020c42310be7f6070943bd7d1ff5ab19d79127627bd6c9493730`、协议 `77e0e5421af8042c7334cde643eb19ca0c6145bf8238c7d5a6b6762cc192e616`。唯一监督器PID1595842/birth466258973、控制器PID1595871/birth466259103；GPU4的R3 worker PID1596079/birth466259491已于19:58:24真实恢复父response121，20:00:25完成123/431（本次新增2条、余308），当时最新持久梯度断点仍121，不把实时游标称为已保存断点。10项已观测资源门通过，整轮和统一评分未完成；资源自动后继尚未触发。启动证据为 `_03/startup_verification/record.json`（ID `3603baeb05b2f57a470e1b6322e5453ea3dd1bb711f056944dd9afbb23b98a5a`）。GPU2未派发，七卡无独立总上限/每卡1已实际生效；当前单模型依赖链仅1个科学worker。禁止重复启动已有监督器，后续从 `_03/supervisor/queue/status.json` 和当前attempt查看；旧未知信号来源不伪造，未来未知SIGTERM不能仅凭本次初始授权自动重试。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

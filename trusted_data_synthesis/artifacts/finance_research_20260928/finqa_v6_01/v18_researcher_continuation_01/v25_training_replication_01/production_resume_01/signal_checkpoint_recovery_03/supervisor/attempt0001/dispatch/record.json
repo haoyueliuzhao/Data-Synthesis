@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-17T11:56:35.858753+00:00",
+  "schema": "v52_supervised_fresh_attempt_dispatch.v1",
+  "attempt_number": 1,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/implementation/finqa_v52_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03"
+  ],
+  "pid": 1595871,
+  "birth": "466259103",
+  "previous_attempt_relaunched": false,
+  "id": "28e4b2de20fa959849c4bc7ba99ab1584d67f2e265c8508252f69610f8c50daf"
+}
