@@ -117,8 +117,8 @@ def policy_record():
         retained_only_within_one_cold_worker_lifetime=True,
         cross_stage_or_recovery_permanent_exclusivity_claimed=False,
         standalone_placeholder_process=False,
-        total_worker_limit_removed=False,
-        independent_total_worker_limit=2,
+        total_worker_limit_removed=True,
+        independent_total_worker_limit=None,
         pre_scientific_resource_wait=dict(
             schema=WAIT_SCHEMA,
             reasons=sorted(WAIT_REASONS),

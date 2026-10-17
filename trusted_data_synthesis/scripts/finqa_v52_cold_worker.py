@@ -134,7 +134,7 @@ def _run(root, context_directory, stage, gpu_index, deadline_epoch):
                 metadata = bundle.context.peek_context(origin_context)
                 control.require(
                     admission.device_scope_allows(gpu_index, stage, metadata),
-                    "only physical GPU0 and GPU6 are authorized for remaining scientific work",
+                    "only the seven registered physical GPUs excluding GPU2 are authorized",
                 )
                 original_ownership.enter_context(base.training_point_locks(metadata, stage))
                 # Register the original context before the V43 routing bridge

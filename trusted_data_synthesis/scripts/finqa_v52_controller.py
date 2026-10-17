@@ -1,7 +1,7 @@
 """Explicitly authorized response121 continuation from the stopped V51 attempt.
 
 The original 81 scientific files remain byte-identical. Initialization, waiting,
-execution and draining retain one of two slots, with one worker per device.
+execution and draining retain their device slot, with one worker per device.
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ SOURCE_ROOT = REPO / (
 PARENT_ROOT = SOURCE_ROOT / "production_resume_01/host_memory_admission_01"
 SOURCE_BUNDLE = PARENT_ROOT / "implementation"
 STOPPED_PARENT_ROOT = SOURCE_ROOT / "production_resume_01/dual_gpu0_gpu6_01"
-ROOT = SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_01"
-RECOVERY_REVISION = "explicit_v51_signal_response121_checkpoint_recovery_r1"
+ROOT = SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_02"
+RECOVERY_REVISION = "explicit_v51_response121_seven_gpu_no_independent_cap_r2"
 STOPPED_PARENT_PROTOCOL_ID = "6a0c83d2af5bd2d65a4635ab6fe494be83f45b488eaed6f7cd156c3daf724055"
 INITIAL_RESPONSE_CHECKPOINT = STOPPED_PARENT_ROOT / (
     "contexts/seed389/full/step1192_outer/replay_R3/checkpoints/response000121/record.json"
@@ -56,9 +56,9 @@ FILES = (
     "finqa_v52_evaluation.py",
     "finqa_v52_admission.py",
 )
-ALLOWED_GPUS = (0, 6)
-MAX_GPU_WORKERS = 2
-DISPATCH_ORDER = (0, 6)
+ALLOWED_GPUS = (0, 1, 3, 4, 5, 6, 7)
+MAX_GPU_WORKERS = None
+DISPATCH_ORDER = (0, 6, 3, 4, 5, 1, 7)
 DISPATCH_POLL_SECONDS = 2
 
 
@@ -190,9 +190,9 @@ def checked_implementation(root=ROOT):
 def policy_record():
     value = admission.gpu_policy_record()
     require(
-        value["admission"]["maximum_total_workers_including_initializing_and_draining"] == 2
+        value["admission"]["maximum_total_workers_including_initializing_and_draining"] is None
         and value["admission"]["maximum_project_workers_per_gpu"] == 1,
-        "two total workers on GPU0/GPU6, including initialization and draining",
+        "one slot per authorized GPU, including initialization and draining; no independent cap",
     )
     return value
 
@@ -308,8 +308,12 @@ def authorization_body(*, parentroot, automatic):
     return dict(
         schema="v52_response121_authorized_recovery_authority.v1",
         at=now(),
-        user_instruction="恢复实验",
-        user_consent="从已保存的实际完整断点继续原实验；不重复已完成科学工作",
+        user_instruction="恢复实验；尽快恢复任务，开放上限，后续除GPU2外均可使用；取消并发上限限制",
+        user_consent="尽快恢复任务，开放上限，后续除GPU2外均可使用；取消并发上限限制",
+        superseded_unstarted_preparation=entry(
+            SOURCE_ROOT / "production_resume_01/signal_checkpoint_recovery_01/"
+            "resource_scope_supersession_01/record.json"
+        ),
         clean_handoff_authorized=False,
         explicit_signal_checkpoint_recovery_authorized=not automatic,
         unknown_signal_automatic_retry_allowed=False,
@@ -319,8 +323,8 @@ def authorization_body(*, parentroot, automatic):
         initial_inherited_response_count=121,
         initial_remaining_response_count=310,
         initial_total_response_count=431,
-        conditional_four_worker_authorization_activated=False,
-        dual_gpu_two_worker_authorized=True,
+        prior_conditional_four_worker_ceiling_superseded=True,
+        resource_pool_without_independent_cap_authorized=True,
         allowed_gpu_indices=list(ALLOWED_GPUS),
         steady_gpu_indices=list(ALLOWED_GPUS),
         steady_max_gpu_workers=MAX_GPU_WORKERS,
@@ -335,8 +339,8 @@ def authorization_body(*, parentroot, automatic):
         recovery_revision=RECOVERY_REVISION,
         failed_registration_recovery_authorized=False,
         failed_registration_restarted_in_place=False,
-        latest_shared_resource_authorization="GPU0与GPU6共享准入，总并发上限2，每卡最多1个worker",
-        total_worker_limit_removed=False,
+        latest_shared_resource_authorization="除GPU2外均可使用，取消独立并发上限；每卡最多1个worker",
+        total_worker_limit_removed=True,
         independent_total_worker_limit=MAX_GPU_WORKERS,
         max_gpu_workers=MAX_GPU_WORKERS,
         max_workers_per_gpu=1,
@@ -399,7 +403,7 @@ def prepare(root=ROOT, *, source_commit, parentroot=STOPPED_PARENT_ROOT):
             gpu_reservation_policy=reservation_policy,
             max_gpu_workers=MAX_GPU_WORKERS,
             independent_total_worker_limit=MAX_GPU_WORKERS,
-            total_worker_limit_removed=False,
+            total_worker_limit_removed=True,
             effective_device_capacity=device_capacity(),
             max_workers_per_gpu=1,
             scientific_controller_started=False,
@@ -430,7 +434,7 @@ def checked_preparation():
         and value["gpu_reservation_policy"] == reservation_policy_record()
         and value["max_gpu_workers"] == MAX_GPU_WORKERS
         and value["independent_total_worker_limit"] == MAX_GPU_WORKERS
-        and value["total_worker_limit_removed"] is False
+        and value["total_worker_limit_removed"] is True
         and value["effective_device_capacity"] == device_capacity()
         and value["max_workers_per_gpu"] == 1
         and value["handoff_required"] is False
@@ -464,7 +468,7 @@ def protocol_body(root, implementation, initial, *, at):
         source_commit=implementation["source_commit"],
         recovery_revision=RECOVERY_REVISION,
         failed_registration_restarted_in_place=False,
-        authority="本轮初始明确授权从V51 response121接续；后继只用最新实际断点和剩余剂量，GPU0与GPU6各最多1个worker、总上限2，科学与资源硬门不变",
+        authority="本轮初始明确授权从V51 response121接续；后继只用最新断点和剩余剂量，除GPU2外均可使用、无独立并发上限、每卡最多1个worker，科学与资源硬门不变",
         pre_scientific_resource_wait=dict(
             schema="v52_pre_scientific_resource_wait_policy.v1",
             same_process_only=True,
@@ -505,7 +509,7 @@ def protocol_body(root, implementation, initial, *, at):
         temporary_gpu0_full251_train_only=False,
         max_gpu_workers=MAX_GPU_WORKERS,
         independent_total_worker_limit=MAX_GPU_WORKERS,
-        total_worker_limit_removed=False,
+        total_worker_limit_removed=True,
         max_workers_per_gpu=1,
         effective_device_capacity=device_capacity(),
         dispatch_priority=list(DISPATCH_ORDER),
@@ -532,7 +536,7 @@ def protocol_body(root, implementation, initial, *, at):
         initial_inherited_response_count=121,
         initial_remaining_response_count=310,
         initial_total_response_count=431,
-        conditional_four_worker_authorization_activated=False,
+        prior_conditional_four_worker_ceiling_superseded=True,
         historical_failures_unchanged=True,
         automatic_recovery=dict(
             fresh_independent_attempt_only=True,
@@ -580,7 +584,7 @@ def _finish_initialization(root, implementation, inherited):
             pilot_accepted=True,
             max_gpu_workers=MAX_GPU_WORKERS,
             independent_total_worker_limit=MAX_GPU_WORKERS,
-            total_worker_limit_removed=False,
+            total_worker_limit_removed=True,
             effective_device_capacity=device_capacity(plan),
         ),
     )
@@ -754,7 +758,7 @@ def worker_environment(row):
 
 
 class LeasePool(parent.LeasePool):
-    """Two lifetime slots, unique device leases and unchanged measured startup RAM."""
+    """One lifetime slot per allowed GPU and unchanged measured startup RAM."""
 
     def __init__(self, controller):
         super().__init__(controller)
@@ -846,12 +850,12 @@ class LeasePool(parent.LeasePool):
         allowed = set(self.controller.protocol["allowed_gpu_indices"])
         require(set(self.leases) <= allowed, "GPU lease escaped its registered device set")
         require(
-            self.controller.protocol["max_gpu_workers"] == MAX_GPU_WORKERS,
-            "GPU0/GPU6 two-worker cap missing from current protocol",
+            self.controller.protocol["max_gpu_workers"] is None
+            and self.controller.protocol["independent_total_worker_limit"] is None
+            and self.controller.protocol["total_worker_limit_removed"] is True,
+            "the explicit no-independent-cap authorization must remain active",
         )
-        require(len(self.leases) <= MAX_GPU_WORKERS, "worker lifetime slot cap exceeded")
-        if len(self.leases) >= MAX_GPU_WORKERS:
-            return None
+        require(len(self.leases) <= device_capacity(self.controller.protocol), "device capacity exceeded")
         if not (allowed - set(self.leases)):
             return None
         if not self._host_admission(stage):
@@ -890,7 +894,7 @@ class LeasePool(parent.LeasePool):
                 raise
             lease = parent.Lease(self, gpu, lock, runner, stage, projection)
             self.leases[gpu] = lease
-            require(len(self.leases) <= MAX_GPU_WORKERS, "worker lifetime slot cap exceeded")
+            require(len(self.leases) <= device_capacity(self.controller.protocol), "device capacity exceeded")
             return fresh, lease
         return None
 
@@ -900,7 +904,7 @@ class ContextRunner(runtime.ContextRunner):
         self._lifecycle_launch_gate()
         require(
             admission.device_scope_allows(row["index"], stage, self.context),
-            "only GPU0 and GPU6 are authorized",
+            "only the seven registered GPUs excluding GPU2 are authorized",
         )
         require(
             stage in self.pending() and stage not in self.dispatched, "unregistered next V52 stage"
@@ -1272,7 +1276,7 @@ class Controller(runtime.Controller):
                 for runner in self.runs
                 for stage, item in runner.active.items()
             ),
-            "an active worker escaped the GPU0/GPU6 device scope",
+            "an active worker escaped the seven-device scope or used GPU2",
         )
         active = [
             dict(
@@ -1289,9 +1293,9 @@ class Controller(runtime.Controller):
         require(
             {row["gpu_index"] for row in active} <= set(self.protocol["allowed_gpu_indices"])
             and len({row["gpu_index"] for row in active}) == len(active)
-            and len(active) <= MAX_GPU_WORKERS
-            and len(self.pool.leases) <= MAX_GPU_WORKERS,
-            "at most two unique-device workers, including initializing, waiting and draining",
+            and len(active) <= device_capacity(self.protocol)
+            and len(self.pool.leases) <= device_capacity(self.protocol),
+            "one unique-device slot per worker, including initializing, waiting and draining",
         )
         waiters = list(self._pre_cuda_waiters.values())
         reservation_waiters = [
@@ -1328,10 +1332,10 @@ class Controller(runtime.Controller):
                 original_B_resume_authorized=True,
                 max_gpu_workers=MAX_GPU_WORKERS,
                 independent_total_worker_limit=MAX_GPU_WORKERS,
-                total_worker_limit_removed=False,
+                total_worker_limit_removed=True,
                 effective_device_capacity=len(self.protocol["allowed_gpu_indices"]),
                 currently_usable_gpu_indices=list(ALLOWED_GPUS),
-                effective_max_gpu_workers=MAX_GPU_WORKERS,
+                effective_max_gpu_workers=device_capacity(self.protocol),
                 full251_bootstrap_complete=(251, "Full") in self.completed_arms,
                 steady_gpu_indices=list(ALLOWED_GPUS),
                 steady_max_gpu_workers=MAX_GPU_WORKERS,
@@ -1366,7 +1370,7 @@ class Controller(runtime.Controller):
                 command=runtime.own_command(),
                 max_gpu_workers=MAX_GPU_WORKERS,
                 independent_total_worker_limit=MAX_GPU_WORKERS,
-                total_worker_limit_removed=False,
+                total_worker_limit_removed=True,
                 effective_device_capacity=len(self.protocol["allowed_gpu_indices"]),
                 inherited_resource_wait_before_initialization=self._original_inherited_wait,
                 additional_supervisor_resource_wait_seconds=self._additional_supervisor_wait,

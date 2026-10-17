@@ -146,6 +146,10 @@ V51于2026-10-17 19:18北京时间停止：Full389 step1192的GPU0 R3 worker在1
 
 用户随后于2026-10-17明确“恢复实验”。本次V52仅在独立 `production_resume_01/signal_checkpoint_recovery_01/` 接续该参数点：只读继承744题4974行class、虚拟点、700条反馈及冻结奖励，从真实response121继续剩余310条，总431，分母700；不回到周期112、不重放前121、不重采样或重做class/虚拟点。断点记录ID `e93a031a2b53597c8916065505841b423686a218978075f3194bfcbf6f8a9000`，实际Tensor SHA256 `d928c206c36c2ae7e7fc206f80785ead590ba1f3f7f319407045c3dd12c876d9`已只读匹配，实际消费仍须原完整绑定检查。余298次optimizer更新、1次outer、1147条终点回答不变，8个既有终点只读复用，未来新反馈额度0，全九模型封存后评分。初始仅为本次明确授权的停止点建立窄恢复例外，不全局放宽未来未知SIGTERM或其他非资源错误的自动恢复。GPU0/GPU6、总上限2和每卡1、原显存主存硬门、无截止及历史已用统计保持；按需4并发不激活，不扩卡。旧V51冻结与停止记录不动，禁止重新启动旧监督器；新准备不等于已运行，实际启动见 `trusted_data_synthesis/docs/finqa_v52_response121_recovery_20261017.md` 和新protocol/唯一supervisor/queue。
 
+用户在V52首次科学启动前进一步明确“尽快恢复任务，开放上限，后续除GPU2外均可使用”，随后明确“取消并发上限限制”。本次最终恢复入口改为独立 `production_resume_01/signal_checkpoint_recovery_02/`：允许GPU0、1、3、4、5、6、7，禁止GPU2；取消独立总worker上限，每卡仍最多1，初始化、资源等待及draining继续占对应设备名额，物理容量最多7。此许可覆盖先前本次GPU0/GPU6上限2及按需上限4的资源安排，但不扩大剩余310条回放、298次optimizer更新、1次outer、1147终点回答的科学剂量，原资源数值门与同点反馈/梯度合同不变。当前单模型依赖链不为增加并发而拆改数学或启动旁路。
+
+`signal_checkpoint_recovery_01/` 已准备并生成协议 `73e3d31bda3e0d95eb602d7b9a57cc8cf463a0162e586c1cabe5c5a56fbfbb17`，但没有任何监督器、控制器或科学worker启动；新授权是在首次派发前到达，不是科学失败重试。该目录及89文件冻结包保留不改，已由 `resource_scope_supersession_01/record.json`（ID `22c85224a0c775e150869b4005b29c30e84bd69eeb653b591abe3f48a3c2ac0d`）登记为 `SUPERSEDED_BEFORE_SCIENTIFIC_LAUNCH`，禁止启动该旧准备入口。最终实际启动以 `signal_checkpoint_recovery_02/` 的新冻结协议与唯一监督器launch为准。已通过的134项用例不重复全量运行，只做新设备/无总上限改动及正式启动必需核验。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

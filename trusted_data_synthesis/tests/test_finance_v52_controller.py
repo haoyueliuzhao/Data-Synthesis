@@ -19,14 +19,15 @@ def plan(tmp_path):
         id="v52",
         output_root=str(tmp_path),
         schema=subject.PROTOCOL_SCHEMA,
-        allowed_gpu_indices=[0, 6],
+        allowed_gpu_indices=list(a.ALLOWED_GPUS),
         gpu_uuids=dict(a.GPU_UUIDS),
-        max_gpu_workers=2,
-        independent_total_worker_limit=2,
-        total_worker_limit_removed=False,
+        max_gpu_workers=None,
+        independent_total_worker_limit=None,
+        total_worker_limit_removed=True,
         max_workers_per_gpu=1,
-        steady_gpu_indices=[0, 6],
-        steady_max_gpu_workers=2,
+        steady_gpu_indices=list(a.ALLOWED_GPUS),
+        steady_max_gpu_workers=None,
+        effective_device_capacity=7,
         gpu_execution_policy=a.execution_policy_record(),
         host_admission_policy=subject.host_policy_record(),
         gpu_admission_policy=subject.policy_record(),
@@ -56,36 +57,36 @@ def test_both_registered_devices_accept_all_original_stages(plan, gpu, stage):
     assert a.eligible_gpu(row(gpu), plan, stage, context())
 
 
-@pytest.mark.parametrize("gpu", [True, 0.0, 1, 2, 3, 4, 5, 7])
+@pytest.mark.parametrize("gpu", [True, 0.0, 2, 8])
 def test_every_other_device_or_ambiguous_index_is_rejected(plan, gpu):
     assert not a.device_scope_allows(gpu, "train", context())
     assert not a.eligible_gpu(row(gpu), plan, "train", context())
 
 
 @pytest.mark.parametrize("state", ["INITIALIZING", "WAITING", "RUNNING", "DRAINING"])
-def test_two_slots_count_every_lifecycle_state(plan, monkeypatch, state):
+def test_device_slots_count_every_lifecycle_state(plan, monkeypatch, state):
     pool = subject.LeasePool(SimpleNamespace(protocol=plan))
-    pool.leases = {gpu: SimpleNamespace(lifecycle_state=state) for gpu in (0, 6)}
+    pool.leases = {gpu: SimpleNamespace(lifecycle_state=state) for gpu in a.ALLOWED_GPUS}
     monkeypatch.setattr(pool, "_host_admission", lambda _: pytest.fail("cap before RAM"))
     assert pool.try_acquire(object(), "train") is None
 
 
-def test_gpu0_then_gpu6_and_never_a_third_worker(plan, tmp_path, monkeypatch):
+def test_seven_unique_device_slots_gpu0_then_gpu6_without_independent_cap(plan, tmp_path, monkeypatch):
     control = SimpleNamespace(protocol=plan, disk_gate=lambda _: None)
     pool = subject.LeasePool(control)
     monkeypatch.setattr(pool, "_host_admission", lambda _: True)
-    monkeypatch.setattr(subject.parent, "inventory", lambda: [row(5), row(6), row(0)])
+    monkeypatch.setattr(subject.parent, "inventory", lambda: [row(gpu) for gpu in range(8)])
     monkeypatch.setattr(subject.parent, "TRAINING_ROOT", tmp_path / "training")
     runner = SimpleNamespace(context=context(), disk_projection=lambda _: 0)
-    _, first = pool.try_acquire(runner, "shard00")
-    _, second = pool.try_acquire(runner, "shard01")
-    assert (first.gpu, second.gpu) == (0, 6)
-    assert pool.try_acquire(runner, "shard02") is None
-    first.close()
-    _, third = pool.try_acquire(runner, "shard02")
-    assert third.gpu == 0 and set(pool.leases) == {0, 6}
-    second.close()
-    third.close()
+    leases = [pool.try_acquire(runner, "shard00")[1] for _ in range(7)]
+    assert tuple(lease.gpu for lease in leases) == subject.DISPATCH_ORDER
+    assert pool.try_acquire(runner, "shard00") is None
+    leases[0].close()
+    _, replacement = pool.try_acquire(runner, "shard00")
+    assert replacement.gpu == 0 and set(pool.leases) == set(a.ALLOWED_GPUS)
+    for lease in leases[1:]:
+        lease.close()
+    replacement.close()
     assert not pool.leases
 
 
@@ -99,12 +100,12 @@ def test_shared_device_competition_requires_threshold_and_exact_uuid(plan):
 @pytest.mark.parametrize(
     "field,value",
     [
-        ("max_gpu_workers", None),
+        ("max_gpu_workers", 2),
         ("max_gpu_workers", 1),
         ("max_gpu_workers", 3),
         ("max_gpu_workers", 2.0),
-        ("independent_total_worker_limit", None),
-        ("total_worker_limit_removed", True),
+        ("independent_total_worker_limit", 2),
+        ("total_worker_limit_removed", False),
         ("steady_gpu_indices", [0]),
         ("steady_max_gpu_workers", 1),
         ("max_workers_per_gpu", 2),
@@ -113,7 +114,7 @@ def test_shared_device_competition_requires_threshold_and_exact_uuid(plan):
 def test_protocol_rejects_broad_or_untyped_contract(plan, monkeypatch, field, value):
     monkeypatch.setattr(a.time_policy, "validate", lambda _: None)
     plan[field] = value
-    with pytest.raises(a.AdmissionError, match="GPU0/GPU6 two-worker"):
+    with pytest.raises(a.AdmissionError, match="seven GPU slots"):
         a.validate_plan(plan)
 
 
@@ -122,7 +123,7 @@ def test_frozen_ownership_and_resource_math_do_not_change(plan, monkeypatch):
     assert a.validate_plan(plan) is plan
     assert len(subject.FILES) == 8 and "finqa_v52_handoff.py" not in subject.FILES
     assert subject.PROTOCOL_SCHEMA == "v52_response121_supervised_protocol.v1"
-    assert subject.ALLOWED_GPUS == (0, 6) and subject.MAX_GPU_WORKERS == 2
+    assert subject.ALLOWED_GPUS == (0, 1, 3, 4, 5, 6, 7) and subject.MAX_GPU_WORKERS is None
     assert subject.runtime.LeasePool is subject.LeasePool
     assert subject.parent is not subject.verifier.parent
     assert subject.verifier.ROOT == subject.PARENT_ROOT
@@ -144,8 +145,10 @@ def test_authority_and_auto_recovery_keep_scope_and_scientific_dose(
     monkeypatch.setattr(subject, "entry", lambda p: dict(path=str(p), id="sealed"))
     monkeypatch.setattr(subject, "_capacity_wait_reference", lambda _: None)
     value = subject.authorization_body(parentroot=tmp_path, automatic=automatic)
-    assert value["allowed_gpu_indices"] == value["steady_gpu_indices"] == [0, 6]
-    assert value["max_gpu_workers"] == value["independent_total_worker_limit"] == 2
+    assert value["allowed_gpu_indices"] == value["steady_gpu_indices"] == list(a.ALLOWED_GPUS)
+    assert value["max_gpu_workers"] is value["independent_total_worker_limit"] is None
+    assert value["total_worker_limit_removed"] is True
+    assert value["resource_pool_without_independent_cap_authorized"] is True
     assert value["max_workers_per_gpu"] == 1
     assert value["automatic_recovery_authorized"] is True
     assert value["time_limits_removed"] is True
@@ -155,7 +158,7 @@ def test_authority_and_auto_recovery_keep_scope_and_scientific_dose(
     assert value["explicit_signal_checkpoint_recovery_authorized"] is (not automatic)
     assert value["known_failure_recovery_authorized"] is (not automatic)
     assert value["unknown_signal_automatic_retry_allowed"] is False
-    assert value["conditional_four_worker_authorization_activated"] is False
+    assert value["prior_conditional_four_worker_ceiling_superseded"] is True
     assert value["initial_inherited_response_count"] == 121
     assert value["initial_remaining_response_count"] == 310
     assert value["initial_total_response_count"] == 431

@@ -22,15 +22,15 @@ def authority():
         automatic_recovery_authorized=True,
         unknown_feedback_retry_allowed=False,
         unknown_signal_automatic_retry_allowed=False,
-        total_worker_limit_removed=False,
-        independent_total_worker_limit=2,
-        max_gpu_workers=2,
+        total_worker_limit_removed=True,
+        independent_total_worker_limit=None,
+        max_gpu_workers=None,
         max_workers_per_gpu=1,
-        effective_device_capacity=2,
-        allowed_gpu_indices=[0, 6],
-        steady_gpu_indices=[0, 6],
-        steady_max_gpu_workers=2,
-        dual_gpu_two_worker_authorized=True,
+        effective_device_capacity=7,
+        allowed_gpu_indices=list(subject.ALLOWED_GPU_INDICES),
+        steady_gpu_indices=list(subject.ALLOWED_GPU_INDICES),
+        steady_max_gpu_workers=None,
+        resource_pool_without_independent_cap_authorized=True,
         host_ram_runtime_hard_gates_unchanged=True,
         fixed_gpu_reservation_authorized=True,
         explicit_signal_checkpoint_recovery_authorized=True,
@@ -49,6 +49,50 @@ def authority():
         conditional_four_worker_authorization_activated=False,
         new_sampling_or_optimizer_dose_authorized=False,
     )
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [None, "include_gpu2", "old_dual_pool", "fixed_cap2", "fixed_cap7", "missing_cap", "per_gpu2"],
+)
+def test_resource_scope_nullcap_authority_excludes_gpu2_without_independent_cap(mutation):
+    """New resource scope only; no real checkpoint, feedback or parent metadata reads."""
+    body = dict(
+        user_consent="取消并发上限限制；除GPU2外均可使用",
+        time_limits_removed=True,
+        automatic_recovery_authorized=True,
+        unknown_feedback_retry_allowed=False,
+        unknown_signal_automatic_retry_allowed=False,
+        total_worker_limit_removed=True,
+        max_gpu_workers=None,
+        independent_total_worker_limit=None,
+        max_workers_per_gpu=1,
+        effective_device_capacity=7,
+        allowed_gpu_indices=[0, 1, 3, 4, 5, 6, 7],
+        steady_gpu_indices=[0, 1, 3, 4, 5, 6, 7],
+        steady_max_gpu_workers=None,
+        resource_pool_without_independent_cap_authorized=True,
+        host_ram_runtime_hard_gates_unchanged=True,
+        fixed_gpu_reservation_authorized=True,
+    )
+    if mutation == "include_gpu2":
+        body["allowed_gpu_indices"] = list(range(8))
+    elif mutation == "old_dual_pool":
+        body["allowed_gpu_indices"] = [0, 6]
+    elif mutation == "fixed_cap2":
+        body["max_gpu_workers"] = body["independent_total_worker_limit"] = 2
+    elif mutation == "fixed_cap7":
+        body["max_gpu_workers"] = body["independent_total_worker_limit"] = 7
+    elif mutation == "missing_cap":
+        body.pop("max_gpu_workers")
+    elif mutation == "per_gpu2":
+        body["max_workers_per_gpu"] = 2
+    if mutation is None:
+        assert subject._authorization(subject.ROOT, body=body)["preview_only"] is True
+        assert subject.ROOT.name == "signal_checkpoint_recovery_02"
+    else:
+        with pytest.raises(ValueError):
+            subject._authorization(subject.ROOT, body=body)
 
 
 @pytest.fixture(scope="module")
@@ -109,8 +153,10 @@ def test_actual_initial_scientific_dose_and_elapsed_accounting_are_inherited(rea
     assert budget["remaining_endpoint_answers"] == 1147
     assert value["inherited_resource_wait_seconds"] == 117692
     assert value["original_accounting_reset"] is False
-    assert value["allowed_gpu_indices"] == [0, 6]
-    assert value["max_gpu_workers"] == value["independent_total_worker_limit"] == 2
+    assert value["allowed_gpu_indices"] == [0, 1, 3, 4, 5, 6, 7]
+    assert value["max_gpu_workers"] is value["independent_total_worker_limit"] is None
+    assert value["total_worker_limit_removed"] is True
+    assert value["effective_device_capacity"] == 7
     assert value["max_workers_per_gpu"] == 1
     assert value["time_limits_removed"] is True
     assert value["conditional_four_worker_authorization_activated"] is False
@@ -225,7 +271,7 @@ def test_future_resource_recovery_uses_latest_prefix_or_completed_replay_not_ini
     real_initial, tmp_path, monkeypatch, replay_complete
 ):
     """Actual frontier machinery; only temporary process/resource plumbing is mocked."""
-    parent = tmp_path / "signal_checkpoint_recovery_01"
+    parent = tmp_path / "signal_checkpoint_recovery_02"
     target = parent / "attempts/attempt0002"
     directory = parent / subject.SOURCE_CONTEXT_RELATIVE
     context_path = directory / "context/record.json"
@@ -440,7 +486,7 @@ def test_typed_physical_failure_cannot_hide_unrelated_or_inconsistent_error(muta
 
 @pytest.fixture
 def recovery_pool(tmp_path, monkeypatch):
-    root = tmp_path / "signal_checkpoint_recovery_01"
+    root = tmp_path / "signal_checkpoint_recovery_02"
     directory = root / "contexts/seed251/full/step1237_train/train"
     monkeypatch.setattr(subject, "ROOT", root)
     owner = dict(
@@ -462,14 +508,14 @@ def recovery_pool(tmp_path, monkeypatch):
     proof["reservation_admission"] = dict(path=str(admission_path))
     protocol = dict(
         schema=subject.PROTOCOL_SCHEMA,
-        max_gpu_workers=2,
-        independent_total_worker_limit=2,
-        total_worker_limit_removed=False,
+        max_gpu_workers=None,
+        independent_total_worker_limit=None,
+        total_worker_limit_removed=True,
         max_workers_per_gpu=1,
         output_root=str(root),
         supervision_root=str(root),
         id="p",
-        allowed_gpu_indices=[0, 6],
+        allowed_gpu_indices=list(subject.ALLOWED_GPU_INDICES),
         gpu_uuids={"6": "g6"},
         implementation_id="impl",
         gpu_reservation_policy=dict(schema="policy"),
@@ -558,11 +604,11 @@ def test_future_unknown_sigterm_is_not_covered_by_initial_explicit_exception(rec
         ("allowed_gpu_indices", [0, 5]),
         ("max_gpu_workers", 3),
         ("independent_total_worker_limit", 3),
-        ("total_worker_limit_removed", True),
+        ("total_worker_limit_removed", False),
         ("max_workers_per_gpu", 2),
     ],
 )
-def test_automatic_recovery_cannot_reclassify_parent_or_expand_dual_gpu_scope(
+def test_automatic_recovery_cannot_reclassify_parent_or_expand_seven_gpu_scope(
     recovery_pool, key, value
 ):
     recovery_pool.records[recovery_pool.root / "protocol/record.json"][key] = value

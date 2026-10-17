@@ -122,7 +122,7 @@ def endpoint_gpu_policy(
     admission.validate_plan(protocol)
     control.require(
         admission.device_scope_allows(gpu_index, "generate"),
-        "endpoint generation must use registered GPU0 or GPU6",
+        "endpoint generation must use a registered GPU other than GPU2",
     )
     time_policy.require_no_deadline(deadline_epoch)
     original, count = final.eligible_gpu, 0

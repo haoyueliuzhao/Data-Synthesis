@@ -35,7 +35,8 @@ PRODUCTION_ROOT = Path(
 )
 PARENT_ROOT = PRODUCTION_ROOT / "host_memory_admission_01"
 SOURCE_ROOT = PRODUCTION_ROOT / "dual_gpu0_gpu6_01"
-ROOT = PRODUCTION_ROOT / "signal_checkpoint_recovery_01"
+ROOT = PRODUCTION_ROOT / "signal_checkpoint_recovery_02"
+ALLOWED_GPU_INDICES = (0, 1, 3, 4, 5, 6, 7)
 PARENT_IMPLEMENTATION_ID = "c32c3a60ec4b3fa5c943bfa740cf53bdf985d7da7587f664c068ea8058857a6d"
 SOURCE_PROTOCOL_SCHEMA = "v51_dual_gpu_two_worker_supervised_protocol.v1"
 SOURCE_INHERITANCE_SCHEMA = "v51_dual_gpu_two_worker_inheritance.v1"
@@ -531,16 +532,18 @@ def _authorization(root, reference=None, body=None):
         and value.get("automatic_recovery_authorized") is True
         and value.get("unknown_feedback_retry_allowed") is False
         and value.get("unknown_signal_automatic_retry_allowed") is False
-        and value.get("total_worker_limit_removed") is False
-        and value.get("max_gpu_workers") == 2
+        and value.get("total_worker_limit_removed") is True
+        and "max_gpu_workers" in value
+        and value["max_gpu_workers"] is None
         and "independent_total_worker_limit" in value
-        and value["independent_total_worker_limit"] == 2
+        and value["independent_total_worker_limit"] is None
         and value.get("max_workers_per_gpu") == 1
-        and value.get("effective_device_capacity") == 2
-        and value.get("allowed_gpu_indices") == [0, 6]
-        and value.get("steady_gpu_indices") == [0, 6]
-        and value.get("steady_max_gpu_workers") == 2
-        and value.get("dual_gpu_two_worker_authorized") is True
+        and value.get("effective_device_capacity") == 7
+        and value.get("allowed_gpu_indices") == list(ALLOWED_GPU_INDICES)
+        and value.get("steady_gpu_indices") == list(ALLOWED_GPU_INDICES)
+        and "steady_max_gpu_workers" in value
+        and value["steady_max_gpu_workers"] is None
+        and value.get("resource_pool_without_independent_cap_authorized") is True
         and value.get("host_ram_runtime_hard_gates_unchanged") is True
         and value.get("fixed_gpu_reservation_authorized") is True,
         "explicit time-waiver and safe-only automatic-recovery authority required",
@@ -1343,10 +1346,10 @@ def validate_safe_recovery(parentroot):
         require(
             protocol["schema"] == PROTOCOL_SCHEMA
             and protocol["output_root"] == str(parent)
-            and protocol["allowed_gpu_indices"] == [0, 6]
-            and protocol["max_gpu_workers"] == 2
-            and protocol["independent_total_worker_limit"] == 2
-            and protocol["total_worker_limit_removed"] is False
+            and protocol["allowed_gpu_indices"] == list(ALLOWED_GPU_INDICES)
+            and protocol["max_gpu_workers"] is None
+            and protocol["independent_total_worker_limit"] is None
+            and protocol["total_worker_limit_removed"] is True
             and protocol["max_workers_per_gpu"] == 1
             and Path(protocol["supervision_root"]).resolve() == ROOT
             and (
@@ -2076,6 +2079,7 @@ def _build_frontier(root, parent, protocol, authority, audit, *, allowed_parent_
         "Full251_actual_training_checkpoint",
         "Full251_training_first_if_incomplete",
         "single_gpu0_authorized",
+        "dual_gpu_two_worker_authorized",
         "resource_retirement_handoff",
         "explicit_manual_retirement_not_automatic_failure_retry",
         "final_device_authorization",
@@ -2092,16 +2096,16 @@ def _build_frontier(root, parent, protocol, authority, audit, *, allowed_parent_
     value.update(
         schema=SCHEMA,
         at=_stamp(),
-        max_gpu_workers=2,
-        independent_total_worker_limit=2,
-        total_worker_limit_removed=False,
+        max_gpu_workers=None,
+        independent_total_worker_limit=None,
+        total_worker_limit_removed=True,
         max_workers_per_gpu=1,
-        effective_device_capacity=2,
-        allowed_gpu_indices=[0, 6],
-        steady_gpu_indices=[0, 6],
-        steady_max_gpu_workers=2,
+        effective_device_capacity=7,
+        allowed_gpu_indices=list(ALLOWED_GPU_INDICES),
+        steady_gpu_indices=list(ALLOWED_GPU_INDICES),
+        steady_max_gpu_workers=None,
         temporary_gpu0_full251_train_only=False,
-        dual_gpu_two_worker_authorized=True,
+        resource_pool_without_independent_cap_authorized=True,
         fixed_gpu_reservation_authorized=True,
         host_ram_runtime_hard_gates_unchanged=True,
         clean_handoff_from_successful_workers=False,

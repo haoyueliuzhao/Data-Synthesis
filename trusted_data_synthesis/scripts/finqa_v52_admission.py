@@ -25,11 +25,16 @@ import finqa_v52_reservation as reservation
 policy = sys.modules[__name__]
 
 GIB = 1024**3
-ALLOWED_GPUS = (0, 6)
-DISPATCH_ORDER = (0, 6)
+ALLOWED_GPUS = (0, 1, 3, 4, 5, 6, 7)
+DISPATCH_ORDER = (0, 6, 3, 4, 5, 1, 7)
 GPU_UUIDS = {
     "0": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+    "1": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+    "3": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+    "4": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+    "5": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
     "6": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+    "7": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
 }
 SHARDS = tuple(f"shard{index:02d}" for index in range(4))
 STAGES = (*SHARDS, "virtual_point", "replay_R3", "distribution", "train", "generate")
@@ -68,13 +73,16 @@ def minimum_free_mib(stage, context=None):
 
 def execution_policy_record():
     return dict(
-        schema="v52_dual_gpu_two_worker_execution_policy.v1",
+        schema="v52_seven_gpu_no_independent_worker_cap_execution_policy.v1",
         allowed_gpu_indices=list(ALLOWED_GPUS),
         steady_gpu_indices=list(ALLOWED_GPUS),
-        max_gpu_workers=2,
-        steady_max_gpu_workers=2,
+        max_gpu_workers=None,
+        steady_max_gpu_workers=None,
+        independent_total_worker_limit=None,
+        total_worker_limit_removed=True,
+        effective_device_capacity=7,
         maximum_project_workers_per_gpu=1,
-        only_gpu0_and_gpu6_authorized=True,
+        gpu2_explicitly_excluded=True,
         initializing_waiting_and_draining_count_as_workers=True,
         bootstrap_training_coordinate=dict(seed=251, arm="Full"),
         bootstrap_training_stop_step=1490,
@@ -146,9 +154,10 @@ def gpu_policy_record():
         ),
     )
     result["admission"].update(
-        maximum_total_workers_including_initializing_and_draining=2,
-        independent_total_worker_limit=2,
-        total_worker_limit_removed=False,
+        maximum_total_workers_including_initializing_and_draining=None,
+        independent_total_worker_limit=None,
+        total_worker_limit_removed=True,
+        effective_device_capacity=7,
         maximum_project_workers_per_gpu=1,
     )
     result["gpu_execution_policy"] = execution_policy_record()
@@ -163,7 +172,7 @@ def validate_plan(plan):
     _require(
         plan.get("allowed_gpu_indices") == list(ALLOWED_GPUS)
         and plan.get("gpu_uuids") == GPU_UUIDS,
-        "V52 requires only the registered physical GPU0/GPU6 UUIDs",
+        "V52 requires the seven registered physical GPUs and excludes GPU2",
     )
     _require(
         plan.get("gpu_admission_policy") == gpu_policy_record()
@@ -171,16 +180,16 @@ def validate_plan(plan):
         "V52 shared-memory and same-process reservation policy differs",
     )
     _require(
-        type(plan.get("max_gpu_workers")) is int
-        and plan["max_gpu_workers"] == 2
-        and type(plan.get("independent_total_worker_limit")) is int
-        and plan["independent_total_worker_limit"] == 2
-        and plan.get("total_worker_limit_removed") is False
+        "max_gpu_workers" in plan and plan["max_gpu_workers"] is None
+        and "independent_total_worker_limit" in plan
+        and plan["independent_total_worker_limit"] is None
+        and plan.get("total_worker_limit_removed") is True
         and plan.get("max_workers_per_gpu") == 1
-        and plan.get("steady_gpu_indices") == [0, 6]
-        and plan.get("steady_max_gpu_workers") == 2
+        and plan.get("steady_gpu_indices") == list(ALLOWED_GPUS)
+        and "steady_max_gpu_workers" in plan and plan["steady_max_gpu_workers"] is None
+        and plan.get("effective_device_capacity") == 7
         and plan.get("gpu_execution_policy") == execution_policy_record(),
-        "V52 requires GPU0/GPU6 two-worker scope",
+        "V52 requires seven GPU slots without an independent total-worker cap",
     )
     _require(
         plan.get("host_admission_policy") == host_policy_record()
