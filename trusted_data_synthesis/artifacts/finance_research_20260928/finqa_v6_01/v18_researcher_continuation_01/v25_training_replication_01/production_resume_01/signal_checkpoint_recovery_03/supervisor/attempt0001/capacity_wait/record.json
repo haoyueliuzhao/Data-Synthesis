@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-17T12:20:07.328462+00:00",
+  "schema": "v52_supervisor_capacity_change_wait.v1",
+  "parent_attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03",
+  "retry_capacity_conditions": [
+    {
+      "schema": "v52_r3_changed_capacity_required.v1",
+      "stage": "replay_R3",
+      "required_dispatch_free_bytes": 60129542144,
+      "failed_available_capacity_bytes": 68163076096,
+      "self_context_reclaim_allowance_bytes": 3221225472,
+      "minimum_capacity_increase_bytes": 4294967296,
+      "required_allocated_budget_bytes": 50212779008,
+      "device_total_bytes": 85095874560,
+      "recoverable_when_capacity_changes": true
+    }
+  ],
+  "retry_capacity_evidence_refs": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/contexts/seed389/full/step1192_outer/replay_R3/reservation/r3_capacity_failure/record.json",
+      "sha256": "b39d2e3ee6c0eeb4277417ab4e635d829a7392b7810a4977ee37d58de5bb7d95",
+      "id": "6b30629d832de475558de6f0908f27952a60936087a2f2a82c58bdaaeff6cf90"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/implementation/finqa_v52_reservation.py",
+      "sha256": "7bb6185fc090f19afb11537fe2131adcb2773cbb72927d01c1e81114196dc873"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/contexts/seed389/full/step1192_outer/replay_R3/reservation/admission/record.json",
+      "sha256": "d576a138a7ec29cdcf1655094576a19a62e6df90ab1ad6e130b1a189052fb9a2",
+      "id": "5c3ec901eed4ba1bf95f1c4baaf063210b34ac049f24fbaa136b032f555a924d"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/contexts/seed389/full/step1192_outer/replay_R3/checkpoints/response000128/record.json",
+      "sha256": "489301b11306a4c0eda917295a6c171fcdfeb7a01c440323d0f1944a2b981c78",
+      "id": "94dbec3c99469a1f1fc172789f8f692e47f166b1848d8be2ca7324414fb07068"
+    }
+  ],
+  "actual_elapsed_seconds": 386.9936527200043,
+  "capacity_ready": false,
+  "manual_stop_requested": true,
+  "final_capacity_observation": {
+    "ready": false,
+    "condition_ready": [
+      false
+    ],
+    "inventory": [
+      {
+        "index": 0,
+        "uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+        "free_mib": 44087
+      },
+      {
+        "index": 1,
+        "uuid": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
+        "free_mib": 472
+      },
+      {
+        "index": 2,
+        "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "free_mib": 10488
+      },
+      {
+        "index": 3,
+        "uuid": "GPU-004a2d75-6298-df4d-7b95-103bc6c1b02a",
+        "free_mib": 9649
+      },
+      {
+        "index": 4,
+        "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+        "free_mib": 62113
+      },
+      {
+        "index": 5,
+        "uuid": "GPU-f731a280-01e3-2359-ace9-aa2ad2112f55",
+        "free_mib": 462
+      },
+      {
+        "index": 6,
+        "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+        "free_mib": 462
+      },
+      {
+        "index": 7,
+        "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+        "free_mib": 1872
+      }
+    ]
+  },
+  "charge_as_additional_next_attempt_resource_wait": true,
+  "mathematical_work_or_CUDA_started_by_supervisor": false,
+  "id": "d4892b63a8cab3a0c87a0033460976e7458066bd357d4211f6e2b68473991482"
+}

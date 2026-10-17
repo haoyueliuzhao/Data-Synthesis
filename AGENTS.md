@@ -154,6 +154,10 @@ V52第二准备目录 `signal_checkpoint_recovery_02/` 于2026-10-17 19:54在任
 
 V52修正版已于2026-10-17 19:56:34实际启动，源提交 `c7a9f843ce28355a8c677f85059aaa078101dc32`、89文件实施包 `8efd9d73d1c7020c42310be7f6070943bd7d1ff5ab19d79127627bd6c9493730`、协议 `77e0e5421af8042c7334cde643eb19ca0c6145bf8238c7d5a6b6762cc192e616`。唯一监督器PID1595842/birth466258973、控制器PID1595871/birth466259103；GPU4的R3 worker PID1596079/birth466259491已于19:58:24真实恢复父response121，20:00:25完成123/431（本次新增2条、余308），当时最新持久梯度断点仍121，不把实时游标称为已保存断点。10项已观测资源门通过，整轮和统一评分未完成；资源自动后继尚未触发。启动证据为 `_03/startup_verification/record.json`（ID `3603baeb05b2f57a470e1b6322e5453ea3dd1bb711f056944dd9afbb23b98a5a`）。GPU2未派发，七卡无独立总上限/每卡1已实际生效；当前单模型依赖链仅1个科学worker。禁止重复启动已有监督器，后续从 `_03/supervisor/queue/status.json` 和当前attempt查看；旧未知信号来源不伪造，未来未知SIGTERM不能仅凭本次初始授权自动重试。
 
+V52于2026-10-17 20:12:34在GPU4的下一条R3响应forward之前触发 `R3CapacityError`：物理free2.415GiB低于原始4GiB加KV的4.272GiB要求；内部可复用缓存32.574GiB、allocated历史峰值61GiB，其他已观测资源门通过。实际计算到137/431，但最新持久梯度断点是128（ID `94dbec3c99469a1f1fc172789f8f692e47f166b1848d8be2ca7324414fb07068`），不能从137直接恢复。旧监督器允许资源恢复但等待空闲至少67.482GiB，未启动第二attempt。用户随后明确“尽快恢复任务，同时修复此问题”，授权独立V53 `production_resume_01/r3_native_recovery_01/`：仅对R3取消暖大块预留和人工锚点，使用原native按需分配；原81科学文件、original empty_cache、原始R3全部显存检查和76GiB/2GiB硬门不变，其他阶段预留策略不变。新首次准入仍56GiB，不套用旧锚定策略的67.482GiB等待条件，不把缓存冒充物理free。
+
+上述修复开始前，已于20:20:07核验身份后安全停止仅在等待的旧监督器PID1595842/birth466258973；旧控制器和科学worker已退出，未信号科学worker，未创建新父attempt。交接证据 `r3_native_recovery_transition_01/completed/record.json` ID `09bcd04cddeec0e5be231ade5d324ec172984968784eb7e605d159f04c6cf4dc`，旧容量等待386.993653秒继续继承。旧监督器明确停止不授权重启；新V53依赖本次用户明确修复恢复授权。从128执行剩303条，其中129至137共9条属未封存工作的重新计算；完整类梯度、虚拟点、700反馈及奖励只读复用，余298次optimizer更新、1次outer、1147条终点回答和8个既有终点不变。GPU2禁止、其余七卡无独立总上限/每卡1，无截止但历史统计不归零，原主存硬门保持。新实现或登记完成不能称已运行，实际启动以新目录唯一监督器及真实断点恢复证据为准；文档见 `trusted_data_synthesis/docs/finqa_v53_native_r3_recovery_20261017.md`。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

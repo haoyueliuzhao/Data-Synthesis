@@ -1,0 +1,1811 @@
+{
+  "schema": "v43_stage_failure_no_retry.v1",
+  "at": "2026-10-17T12:12:34.303657+00:00",
+  "protocol_id": "77e0e5421af8042c7334cde643eb19ca0c6145bf8238c7d5a6b6762cc192e616",
+  "context_id": "fc5e65c75ae05e1a0edede9b9e78aa73a5a8fe66e2d7c57d88a0edb03ff195fa",
+  "stage": "replay_R3",
+  "inherited_context": true,
+  "origin_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/contexts/seed389/full/step1192_outer",
+  "output_context_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/signal_checkpoint_recovery_03/contexts/seed389/full/step1192_outer",
+  "error_type": "R3CapacityError",
+  "error": "R3 resource capacity is insufficient before the next response",
+  "failure_classification": "STAGE_FAILURE_NO_RETRY",
+  "stop_evidence": {
+    "received_signals": [],
+    "sender_attribution": "not_observed",
+    "signals_ignored": false,
+    "automatic_restart": false,
+    "signal_handler_performed_IO": false,
+    "stop_requested": false,
+    "stop_reason": null
+  },
+  "response_pause_report": null,
+  "automatic_retry": false,
+  "durable_replay_checkpoint": null,
+  "resources": {
+    "all_gates_passed": true,
+    "observations": [
+      {
+        "event": "tail_memory_observation",
+        "sequence": 1,
+        "label": "before_model_load",
+        "boundary": true,
+        "monotonic_seconds": 4662641.427724523,
+        "allocated_bytes": 2097152,
+        "reserved_bytes": 65498251264,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65498251264,
+        "free_bytes": 8746565632,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2085359616,
+          "peak_rss_bytes": 2652221440,
+          "available_bytes": 832753401856,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 2,
+        "label": "after_model_load.before_cleanup",
+        "boundary": false,
+        "monotonic_seconds": 4662696.937089016,
+        "allocated_bytes": 15263608832,
+        "reserved_bytes": 65550680064,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65550680064,
+        "free_bytes": 8694136832,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2484772864,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832320823296,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 3,
+        "label": "after_model_load.after_cleanup",
+        "boundary": true,
+        "monotonic_seconds": 4662697.546514433,
+        "allocated_bytes": 15263608832,
+        "reserved_bytes": 65529708544,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65550680064,
+        "free_bytes": 8715108352,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2484772864,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832323149824,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 4,
+        "label": "before_complete_R3_replay.before_cleanup",
+        "boundary": false,
+        "monotonic_seconds": 4662697.766048057,
+        "allocated_bytes": 15273701376,
+        "reserved_bytes": 65540194304,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65550680064,
+        "free_bytes": 8704622592,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2490998784,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832335761408,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 5,
+        "label": "before_complete_R3_replay.after_cleanup",
+        "boundary": true,
+        "monotonic_seconds": 4662698.159034736,
+        "allocated_bytes": 15273701376,
+        "reserved_bytes": 65540194304,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65550680064,
+        "free_bytes": 8704622592,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {},
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2490998784,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832341602304,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 6,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662699.754864799,
+        "allocated_bytes": 15293886464,
+        "reserved_bytes": 65561165824,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65561165824,
+        "free_bytes": 8683651072,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 15293886464,
+            "torch_reserved_bytes": 65561165824,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65561165824,
+            "device_used_bytes_at_response_boundary": 76412223488,
+            "device_free_bytes_at_response_boundary": 8683651072,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 2490998784,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832423759872,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 7,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662741.649473736,
+        "allocated_bytes": 30604533248,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65712160768,
+        "free_bytes": 8452964352,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604533248,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65712160768,
+            "device_used_bytes_at_response_boundary": 76642910208,
+            "device_free_bytes_at_response_boundary": 8452964352,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832137953280,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 8,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662741.738907225,
+        "allocated_bytes": 30594457088,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65712160768,
+        "free_bytes": 8599764992,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594457088,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65712160768,
+            "device_used_bytes_at_response_boundary": 76496109568,
+            "device_free_bytes_at_response_boundary": 8599764992,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832113438720,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 9,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662821.043095983,
+        "allocated_bytes": 30603443712,
+        "reserved_bytes": 65770881024,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8394244096,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603443712,
+            "torch_reserved_bytes": 65770881024,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76701630464,
+            "device_free_bytes_at_response_boundary": 8394244096,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832221409280,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 10,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662821.116106512,
+        "allocated_bytes": 30593350144,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8597667840,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593350144,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76498206720,
+            "device_free_bytes_at_response_boundary": 8597667840,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832169107456,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 11,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662850.85235922,
+        "allocated_bytes": 30604685824,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8452964352,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604685824,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76642910208,
+            "device_free_bytes_at_response_boundary": 8452964352,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832215912448,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 12,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662850.902954258,
+        "allocated_bytes": 30594591744,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8599764992,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594591744,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76496109568,
+            "device_free_bytes_at_response_boundary": 8599764992,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 832221696000,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 13,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662882.139632272,
+        "allocated_bytes": 30604209152,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8452964352,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604209152,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76642910208,
+            "device_free_bytes_at_response_boundary": 8452964352,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 831062425600,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 14,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662882.196877642,
+        "allocated_bytes": 30594116096,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8599764992,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594116096,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 76496109568,
+            "device_free_bytes_at_response_boundary": 8599764992,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 831091699712,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 15,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662929.916772193,
+        "allocated_bytes": 30603716096,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603716096,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 831766888448,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 16,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662929.991998563,
+        "allocated_bytes": 30593623040,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593623040,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 831778570240,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 17,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4662975.708488424,
+        "allocated_bytes": 30604336640,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604336640,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825373114368,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 18,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4662975.755286494,
+        "allocated_bytes": 30594243072,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594243072,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825374945280,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 19,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663039.892765744,
+        "allocated_bytes": 30604289024,
+        "reserved_bytes": 65724743680,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 7842693120,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604289024,
+            "torch_reserved_bytes": 65724743680,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77253181440,
+            "device_free_bytes_at_response_boundary": 7842693120,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3763810304,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825350045696,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 20,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663039.999227457,
+        "allocated_bytes": 30594195456,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65770881024,
+        "free_bytes": 8002076672,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594195456,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65770881024,
+            "device_used_bytes_at_response_boundary": 77093797888,
+            "device_free_bytes_at_response_boundary": 8002076672,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825338302464,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 21,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663147.236586827,
+        "allocated_bytes": 30603717632,
+        "reserved_bytes": 65840087040,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7727349760,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603717632,
+            "torch_reserved_bytes": 65840087040,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77368524800,
+            "device_free_bytes_at_response_boundary": 7727349760,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825638518784,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 22,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663147.308868399,
+        "allocated_bytes": 30593624064,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593624064,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825650143232,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 23,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663188.511710222,
+        "allocated_bytes": 30603573248,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603573248,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825252384768,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 24,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663188.580601388,
+        "allocated_bytes": 30593478656,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593478656,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825244405760,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 25,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663253.553297341,
+        "allocated_bytes": 30603718656,
+        "reserved_bytes": 65726840832,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7840595968,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603718656,
+            "torch_reserved_bytes": 65726840832,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77255278592,
+            "device_free_bytes_at_response_boundary": 7840595968,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825505988608,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 26,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663253.624811063,
+        "allocated_bytes": 30593625088,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593625088,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825486561280,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 27,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663286.584977149,
+        "allocated_bytes": 30603558912,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603558912,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825510232064,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 28,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663286.636236412,
+        "allocated_bytes": 30593465344,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593465344,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825511276544,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 29,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663314.28628476,
+        "allocated_bytes": 30603687424,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603687424,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825596157952,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 30,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663314.353516861,
+        "allocated_bytes": 30593594368,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7999979520,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593594368,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77095895040,
+            "device_free_bytes_at_response_boundary": 7999979520,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825580650496,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 31,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663348.370833035,
+        "allocated_bytes": 30604606976,
+        "reserved_bytes": 65714257920,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7853178880,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604606976,
+            "torch_reserved_bytes": 65714257920,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77242695680,
+            "device_free_bytes_at_response_boundary": 7853178880,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825315102720,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 32,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663348.438209416,
+        "allocated_bytes": 30594513920,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 8002076672,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594513920,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77093797888,
+            "device_free_bytes_at_response_boundary": 8002076672,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825340076032,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 33,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663380.192833474,
+        "allocated_bytes": 30604129792,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 7855276032,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30604129792,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77240598528,
+            "device_free_bytes_at_response_boundary": 7855276032,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825298579456,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 34,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663380.221351536,
+        "allocated_bytes": 30594036736,
+        "reserved_bytes": 65565360128,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 8002076672,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30594036736,
+            "torch_reserved_bytes": 65565360128,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 77093797888,
+            "device_free_bytes_at_response_boundary": 8002076672,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825300389888,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 35,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663430.92177839,
+        "allocated_bytes": 30603422720,
+        "reserved_bytes": 65712160768,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 5842010112,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603422720,
+            "torch_reserved_bytes": 65712160768,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 79253864448,
+            "device_free_bytes_at_response_boundary": 5842010112,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 824777793536,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 36,
+        "label": "replay.before_response",
+        "boundary": true,
+        "monotonic_seconds": 4663430.985245526,
+        "allocated_bytes": 30593329664,
+        "reserved_bytes": 65567457280,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65840087040,
+        "free_bytes": 5986713600,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "before_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30593329664,
+            "torch_reserved_bytes": 65567457280,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65840087040,
+            "device_used_bytes_at_response_boundary": 79109160960,
+            "device_free_bytes_at_response_boundary": 5986713600,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 824783482880,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      },
+      {
+        "event": "tail_memory_observation",
+        "sequence": 37,
+        "label": "replay.after_response",
+        "boundary": true,
+        "monotonic_seconds": 4663549.402234416,
+        "allocated_bytes": 30603581440,
+        "reserved_bytes": 65882030080,
+        "peak_allocated_bytes": 65498251264,
+        "peak_reserved_bytes": 65882030080,
+        "free_bytes": 2281046016,
+        "total_bytes": 85095874560,
+        "limits": {
+          "allocated_memory_limit_bytes": 81604378624,
+          "free_memory_reserve_bytes": 2147483648
+        },
+        "context": {
+          "response_backend_observation": {
+            "phase": "after_response",
+            "variant": "R3",
+            "torch_allocated_bytes": 30603581440,
+            "torch_reserved_bytes": 65882030080,
+            "torch_peak_allocated_bytes": 65498251264,
+            "torch_peak_reserved_bytes": 65882030080,
+            "device_used_bytes_at_response_boundary": 82814828544,
+            "device_free_bytes_at_response_boundary": 2281046016,
+            "device_total_bytes": 85095874560
+          },
+          "cooperative_stop_pending": false
+        },
+        "allocated_pass": true,
+        "free_pass": true,
+        "stop_requested": false,
+        "passed": true,
+        "host": {
+          "rss_bytes": 3776262144,
+          "peak_rss_bytes": 17636003840,
+          "available_bytes": 825655283712,
+          "rss_limit_bytes": 206158430208,
+          "available_reserve_bytes": 103079215104,
+          "rss_pass": true,
+          "available_pass": true,
+          "passed": true
+        },
+        "deadline_epoch": null,
+        "deadline_pass": true,
+        "deadline_limit_enforced": false,
+        "wallclock_limits_removed": true
+      }
+    ],
+    "limits_unchanged": true,
+    "peak_resets_before_model_load": 1,
+    "peak_resets_after_model_loading_begins": 0,
+    "helper_peak_reset_calls": 0,
+    "maximum_allocated_bytes": 81604378624,
+    "minimum_device_free_bytes": 2147483648,
+    "observed_peak_allocated_bytes": 65498251264,
+    "observed_minimum_boundary_free_bytes": 2281046016,
+    "host": {
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "all_passed": true,
+      "max_observed_peak_rss_bytes": 17636003840,
+      "min_observed_available_bytes": 824777793536
+    }
+  },
+  "telemetry": {
+    "sampling_interval_seconds": 1,
+    "sample_count": 815,
+    "sampled_max_device_used_bytes": 82815483904,
+    "sampled_max_GPU_utilization_percent": 100,
+    "sampled_mean_GPU_utilization_percent": 87.08098159509203,
+    "process_peak_RSS_bytes": 17636003840,
+    "device_peak_is_sampled_not_continuous": true,
+    "sampler_errors": []
+  },
+  "complete_task_caches_preserved": true,
+  "API_calls": 0,
+  "memory_phase": "replay_R3",
+  "minimum_free_mib": 57344,
+  "gpu_admission_policy_schema": "v52_empirical_shared_gpu_reserved_admission.v1",
+  "original_mathematical_functions_unchanged": true,
+  "accepted_V40_pilot_repeated": false,
+  "id": "1f8732e717b49c7573117fdebccbcd2a2a3bc7020eaa2c04a7a84a88d51b561c"
+}
