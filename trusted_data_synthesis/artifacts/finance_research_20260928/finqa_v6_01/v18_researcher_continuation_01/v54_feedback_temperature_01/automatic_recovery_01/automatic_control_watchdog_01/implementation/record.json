@@ -1,0 +1,31 @@
+{
+  "files": {
+    "finqa_v59_controller.py": "5bdd6649404343597f726b16d9f2355e46f28e85c709d19983a530732e109b6a",
+    "finqa_v59_gpu_isolation.py": "4e059fa3ca2648e735aeadfd18cfc5694129fea8f6e8ec92c583ba613722ff48",
+    "finqa_v59_observer.py": "6c5f8128eef31b3c131fce2aeaac82d8d7362400b05ad4a1b0483b474e4deae6",
+    "finqa_v59_registration.py": "c522b239e24d449277d317c876c5c6e76920aeb6b64094544f0700af4a4e21fb",
+    "finqa_v59_signals.py": "679dc618490f4645a25dc0ca0d89d353f295861bcd32dd6226b886ea6d58d4d1",
+    "finqa_v59_worker.py": "668fdcc4427c13bf6936e54b40952a606540b559a11829bad08ff1670f49ca34",
+    "finqa_v60_backend.py": "9260b690387e30b3cb1ed1b9c1710c839667cc291107569afc0094f2dd331984",
+    "finqa_v60_binding.py": "3ff10c0c76c188618e5d0b238a62470e7bbdfa3d5a0b9359d5fe4439482304d1",
+    "finqa_v60_controller.py": "f5fb07a048272ebea9898f5fe07fc1981263bc727010879bbb7a62a3f94851c2",
+    "finqa_v60_cron.py": "eb64ecfd81b3fd7483bef672451bbdab42cb45512c9a43e01b433e31958a58c7",
+    "finqa_v60_observer.py": "f22637411db5a8edc82065e00ae518b54b186708b06d4e4aa5d084863fd80233",
+    "finqa_v60_registration.py": "a640a3b12c7ef8df5d9ee0692f3ff238fb572cee9c0fe0663382838df3e4c4f5",
+    "finqa_v60_watchdog.py": "55ef72a19b6b8446ae6240f2fe4d1b88a99af66e34b51c70a8a8a92ea097527d"
+  },
+  "id": "341cc51eadf55b3fb390ac1285de78c1d937c86b532660ecff8f1dbceb35df3f",
+  "initial_control_implementation": {
+    "id": "21ed26b65a2aa3d7fddc93a970a7f1af5f3ac3683fd30972bd824cbed7eacd4d",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04/implementation/record.json",
+    "sha256": "67681e9cb685f628fae678d71653ab76226167b372e0f932f5be3a2020d54e3d"
+  },
+  "old_files_modified": false,
+  "original_scientific_implementation": {
+    "id": "e415b937f644b2afde65c1940ef0d0a7f9c0dca03d58d1079ab1e7253132e5e7",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/record.json",
+    "sha256": "084bbe69bd9531c037ba6e18597eb4c4b26464ab9930cea2673718ef9886f050"
+  },
+  "schema": "v60_frozen_account_watchdog_implementation.v1",
+  "source_commit": "72d4259d514b04fd46f6bdad5682eb088db2c6b4"
+}

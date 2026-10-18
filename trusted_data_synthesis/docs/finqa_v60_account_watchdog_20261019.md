@@ -60,4 +60,54 @@ V59已过滤其他UID的SI_USER SIGTERM，但保留UID1004的SIGTERM、所有SIG
 
 另一次真实只读healthy observe识别出4个活跃身份，无终止理由，没有导入Torch或创建master；pidfd兼容实现仅对测试自身进程执行open/close，未发送信号。没有实际中断科学进程验证恢复，不将CPU/mock通过等同于真实故障后的端到端恢复成功。
 
-源版本提交时尚未安装cron，没有创建新的科学episode或启动runner。V59原任务继续运行，不因为准备外层守护而暂停。状态机测试不能替代一次真实定时触发；安装后必须验证真实crontab、自动心跳及其只观察活池而未重复派发，才能称为守护已生效。不会通过杀死正在运行的科学任务来测试自动恢复。
+源版本提交时尚未安装cron，没有创建新的科学episode或启动runner。随后按以下顺序完成正式冻结与实际激活，V59原任务没有因准备守护而暂停。未通过杀死正在运行的科学任务来测试自动恢复。
+
+### 正式冻结与真实激活（北京时间2026-10-19）
+
+- 源提交：`72d4259d514b04fd46f6bdad5682eb088db2c6b4`。
+- 13文件实施包：`341cc51eadf55b3fb390ac1285de78c1d937c86b532660ecff8f1dbceb35df3f`；原V59六文件逐字保留。
+- 主协议：`3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b`；prepared：`536aafbaba2b63433ba5e85164fa2105da32e4f7be3cf38d9931d97cbd0e6925`。
+- 冻结入口实际执行 `check-imports` 返回exit 0、`CPU_IMPORTS_VERIFIED`，原科学导入闭包通过且CUDA未初始化。核验回执 `cpu_verification/record.json` ID `4bc4af9c6d0b356fd5a89db3bbc11100caa4508653bb64b88fdee73fdff0cdf7`。完整导入结果只在内存返回，入口stdout只含结果ID；回执如实记录该限制，不虚构完整原始报告。
+- 00:35:09手动巡检为 `WATCHING_LIVE_EPISODE`，未创建新episode或恢复请求。
+- 00:35:31安装账户cron并逐字核验配置；00:36:01已观察到首次真实自动触发。00:37:01的后续自动触发被封存，实际进程祖父为 `cron`、父进程为 `sh`，执行UID/eUID均1004，不是由手动调用冒充定时激活。
+- 00:37:04激活证据为 `activation_verification/record.json`，ID `0fc69d0e608509b561bca7ea61004a1b1b3a79a435297eb65396eba1f1aea14e`，状态 `ACTIVE_WATCHING_EXISTING_POOL`。真实cron心跳、当前轻量队列和最近完整资源边界一起封存；本地crontab原文备份、候选进程日志、Tensor和反馈不提交。其中installation是省略本地备份字段的摘录，其id标识原安装记录，不应把该摘录当成另一份完整安装记录单独重算id；完整安装记录仍仅在本地cron目录。
+
+激活快照时原supervisor/controller仍为3878725/3878874，科学worker如下。它们由原V59控制器正常派发，不是V60新池：
+
+| GPU | 作业 | attempt | PID |
+| --- | --- | --- | --- |
+| 2 | seed137.shard01 | 6 | 3879170 |
+| 1 | seed137.shard03 | 4 | 3942008 |
+| 0 | seed251.shard01 | 2 | 3973689 |
+
+三worker最近完整资源边界均通过，yyy UID1000排除和归属可判定条件均通过。此为观测时刻证据，不是整台GPU永久独占承诺；外部项目之后自行进入同卡的瞬时窗口不能由本账户彻底消除，运行中检测到冲突后只让本实验按原安全边界退出/等待，不干预对方。
+
+原队列此时有5个accepted job，包括三组已完成反馈和seed137的shard00、shard02；其余任务继续，评价尚未登记。V60未创建恢复请求、后继episode或runner，未退休原observer，未发送科学进程信号。**每分钟定时观察已经实际生效；真实异常后的冷恢复仍未发生，也未做破坏性端到端演练。** 不据此宣称已完成实验、已得到准确率、已防住SIGKILL或已解决未知信号来源。
+
+## 查看、停止和移除
+
+以下命令从仓库根目录执行，变量只用于缩短固定冻结路径：
+
+```bash
+FINQA_V60_ROOT=trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/automatic_control_watchdog_01
+```
+
+只读查看账户任务是否安装（不启动恢复）：
+
+```bash
+trusted_data_synthesis/.venv/bin/python "$FINQA_V60_ROOT/implementation/finqa_v60_cron.py" check
+```
+
+真正需要停止实验及自动恢复时，使用下列命令；它先持久禁止未来恢复，再向当前及待接管的已绑定episode写STOP。命令返回不代表worker已经全部退出，仍应查看原队列安全收口：
+
+```bash
+trusted_data_synthesis/.venv/bin/python "$FINQA_V60_ROOT/implementation/finqa_v60_cron.py" stop
+```
+
+仅关闭外层定时检查、但保留当前科学任务及其原监督器时，使用 `remove`；它只移除本实验精确任务行，保留本账户其他cron行：
+
+```bash
+trusted_data_synthesis/.venv/bin/python "$FINQA_V60_ROOT/implementation/finqa_v60_cron.py" remove
+```
+
+活跃守护状态在master的 `cron/status.json` 与 `queue/status.json`；当前科学状态仍在 `signal_recovery_04/queue/status.json`。只有将来真的发生合格冷恢复，master的 `state.json` 才会保存新episode事务，不能把初始健康阶段没有此文件当成异常。禁止重复运行旧04一次性入口；不要自行删除STOP或terminal来绕过新授权要求。

@@ -1,0 +1,13 @@
+{
+  "cron_installed": false,
+  "id": "536aafbaba2b63433ba5e85164fa2105da32e4f7be3cf38d9931d97cbd0e6925",
+  "initial_action": "observe_only_no_takeover",
+  "initial_episode": {
+    "protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+    "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04"
+  },
+  "observer_retired": false,
+  "protocol_id": "3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b",
+  "schema": "v60_initial_observation_ready.v1",
+  "scientific_workers_started": 0
+}

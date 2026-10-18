@@ -210,6 +210,8 @@ V59已以源提交 `d6c44f436d466adbbcf42bfa6f1ec0baafc03cab` 冻结六文件，
 
 用户随后要求自动恢复或定时检查。V60计划独立 `automatic_recovery_01/automatic_control_watchdog_01/` 账户级每分钟cron，初始只监视已运行04，不停止/接管或热改04。只有控制/runner/全部科学worker身份gone、原science锁和八GPU租约（原inode）可all-or-none取得并立即释放、无ownerTERM/任何INT/STOP/UNKNOWN反馈/源码状态数值或已知实现异常、原逐job持久断点审计通过时，才登记新 `episodes/episodeNNNNNN/` 单次派发。退出码缺失可在新授权下作为ALL_IDENTITIES_GONE_EXIT_UNKNOWN冷恢复，必须保留None和未知原因，不伪称SIGKILL/exit0，不扩采样或重复已提交工作。明确STOP持久禁止拉起；用户单独kill -9可能因无法留发送者意图而被恢复，需使用登记STOP入口。只退休已核验的本实验旧纯CPUobserver，科学活跃时不操作；最多1observer和1非科学runner，科学并发仍4及yyy隔离不变。不得把代码/CPU测试称为cron已安装；实际状态以 `trusted_data_synthesis/docs/finqa_v60_account_watchdog_20261019.md`、master协议及定时触发证据为准，禁止裸重启04或其他旧入口。
 
+V60已于2026-10-19以源提交 `72d4259d514b04fd46f6bdad5682eb088db2c6b4` 冻结13文件，实施包ID `341cc51eadf55b3fb390ac1285de78c1d937c86b532660ecff8f1dbceb35df3f`、协议ID `3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b`。55项不同CPU用例及真实冻结CPU导入通过，CUDA未初始化。00:35:31账户每分钟cron实际安装，00:36:01首次自动触发，00:37:01的真实cron祖先/UID及WATCHING_LIVE_EPISODE心跳封存于master `activation_verification/record.json`，ID `0fc69d0e608509b561bca7ea61004a1b1b3a79a435297eb65396eba1f1aea14e`。快照中旧04继续3worker/GPU2、1、0且最近资源/yyy隔离边界通过，没有新episode/request/runner或科学信号；没有实际冷故障恢复测试，不能称强杀已被防住。查看master `cron/status.json`、`queue/status.json`；初始健康阶段没有state.json属正常。明确停止用冻结 `finqa_v60_cron.py stop`，先持久禁止恢复并给当前/待接管episode写STOP；`remove`仅关闭外层巡检而不停止科学。不得删除STOP/terminal、重复安装第二条任务或裸重启04，详细命令见V60报告。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

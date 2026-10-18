@@ -1,0 +1,39 @@
+{
+  "CUDA_initialized": false,
+  "actual_returncode": 0,
+  "actual_stdout": {
+    "id": "9a042e0a7df975f11655af58107e7f919ca83b77c0a64df532c6c24fc7714c49",
+    "status": "CPU_IMPORTS_VERIFIED"
+  },
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/automatic_control_watchdog_01/implementation/finqa_v60_controller.py",
+    "check-imports",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/automatic_control_watchdog_01"
+  ],
+  "distinct_CPU_mock_tests": {
+    "backend": 17,
+    "cron": 12,
+    "total": 55,
+    "watchdog": 21,
+    "wrappers": 5
+  },
+  "full_import_result_was_returned_in_memory_not_persisted": true,
+  "id": "4bc4af9c6d0b356fd5a89db3bbc11100caa4508653bb64b88fdee73fdff0cdf7",
+  "implementation": {
+    "id": "341cc51eadf55b3fb390ac1285de78c1d937c86b532660ecff8f1dbceb35df3f",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/automatic_control_watchdog_01/implementation/record.json",
+    "sha256": "2290041c67af3363b02379c85b6843ef932993234e35abae841003d882038f28"
+  },
+  "no_repeat_scientific_audit": true,
+  "original_frozen_scientific_import_closure_checked": true,
+  "protocol": {
+    "id": "3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/automatic_control_watchdog_01/protocol/record.json",
+    "sha256": "8f83773070a4b03de143d88d1abcde9b82faf14207e19c74b892ca5db188f43d"
+  },
+  "recovered_scientific_pool_crash_test_performed": false,
+  "schema": "v60_actual_frozen_CPU_verification_receipt.v1",
+  "scientific_workers_started": 0
+}
