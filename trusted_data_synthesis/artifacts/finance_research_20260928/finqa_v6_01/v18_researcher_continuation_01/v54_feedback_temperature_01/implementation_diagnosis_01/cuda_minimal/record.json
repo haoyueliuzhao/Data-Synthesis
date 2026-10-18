@@ -1,0 +1,49 @@
+{
+  "schema": "v54_minimal_deterministic_CUDA_environment_diagnosis.v1",
+  "at": "2026-10-18T08:00:12.232750+00:00",
+  "status": "CONFIRMED_MISSING_ENVIRONMENT_FAILURE_PATH",
+  "historical_scientific_exception_text_unavailable": true,
+  "historical_exact_causality_not_claimed": true,
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+  "shared_project_lease": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+  "maximum_simultaneous_GPU_processes": 1,
+  "child_exitcodes": [
+    0,
+    0
+  ],
+  "cases": [
+    {
+      "CUBLAS_WORKSPACE_CONFIG": null,
+      "CUDA_VISIBLE_DEVICES": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+      "model_calls": 0,
+      "feedback_samples": 0,
+      "optimizer_updates": 0,
+      "free_before_bytes": 52673511424,
+      "status": "ERROR",
+      "error_type": "RuntimeError",
+      "error": "Deterministic behavior was enabled with either `torch.use_deterministic_algorithms(True)` or `at::Context::setDeterministicAlgorithms(true)`, but this operation is not deterministic because it uses CuBLAS and you have CUDA >= 10.2. To enable deterministic behavior in this case, you must set an environment variable before running your PyTorch application: CUBLAS_WORKSPACE_CONFIG=:4096:8 or CUBLAS_WORKSPACE_CONFIG=:16:8. For more information, go to https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility",
+      "peak_allocated_bytes": 2048,
+      "free_after_bytes": 52591722496
+    },
+    {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "CUDA_VISIBLE_DEVICES": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+      "model_calls": 0,
+      "feedback_samples": 0,
+      "optimizer_updates": 0,
+      "free_before_bytes": 52673511424,
+      "status": "PASS",
+      "exact_all_elements_16": true,
+      "peak_allocated_bytes": 33557504,
+      "free_after_bytes": 52522516480
+    }
+  ],
+  "probe_code": "import json, os, torch\nresult=dict(CUBLAS_WORKSPACE_CONFIG=os.environ.get(\"CUBLAS_WORKSPACE_CONFIG\"), CUDA_VISIBLE_DEVICES=os.environ.get(\"CUDA_VISIBLE_DEVICES\"), model_calls=0, feedback_samples=0, optimizer_updates=0)\ntorch.use_deterministic_algorithms(True)\ntorch.cuda.set_device(0)\nresult[\"free_before_bytes\"]=torch.cuda.mem_get_info()[0]\ntry:\n    x=torch.ones((16,16),device=\"cuda\",dtype=torch.float32)\n    y=x@x\n    torch.cuda.synchronize()\n    result.update(status=\"PASS\", exact_all_elements_16=bool(torch.all(y==16).item()))\nexcept Exception as error:\n    result.update(status=\"ERROR\", error_type=type(error).__name__, error=str(error))\nresult[\"peak_allocated_bytes\"]=torch.cuda.max_memory_allocated()\nresult[\"free_after_bytes\"]=torch.cuda.mem_get_info()[0]\nprint(json.dumps(result))\n",
+  "probe_code_sha256": "b44341146986bba8c1efdc7c31e9944bbbfb61602b71ca7aaea70794d949354b",
+  "scientific_worker_restart": false,
+  "model_calls": 0,
+  "feedback_samples": 0,
+  "optimizer_updates": 0,
+  "id": "5d2734583bca2f12c7bffe71519f0ab0e2e6574c57fe7ff8b6a4cc50811cf91c"
+}

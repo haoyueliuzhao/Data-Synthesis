@@ -1,0 +1,16 @@
+{
+  "schema": "v54_scientific_worker_start.v1",
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "job": {
+    "id": "seed251.feedback_C05",
+    "seed": 251,
+    "stage": "feedback_C05",
+    "kind": "feedback",
+    "arm": null
+  },
+  "gpu_index": 1,
+  "pid": 3037362,
+  "started_epoch": 1792310087.5526187,
+  "automatic_retry_in_worker": false,
+  "id": "068ffd905c2462d6bec8f13b21238e6455b01d72394b1aee05734c95619c2ca8"
+}

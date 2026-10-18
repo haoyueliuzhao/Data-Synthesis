@@ -1,0 +1,41 @@
+{
+  "schema": "v54_fixed_q_branch_complete.v1",
+  "status": "COMPLETE",
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "seed": 251,
+  "arm": "C1",
+  "logical_optimizer_updates": 298,
+  "optimizer_updates": 298,
+  "new_optimizer_updates": 0,
+  "start_step": 596,
+  "end_step": 894,
+  "parent_state_digest": "9e98ca99db318e0e76f197d9947369e9d83ff0340f1b35b67580279388522f3f",
+  "distribution_digest": "0c3025f043ed8683330624f529ed1c98a683ee0bd6dafc72d4ce524d5ae437a1",
+  "snapshots": {
+    "745": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step0745_step",
+      "record_sha256": "5d0da234402a6f610f50a1fbc846ffd25e263184356d729b24461884e607d968",
+      "state_sha256": "0287c28cce848d3a282234cd719d570b98c89838e788659bd5bb348c3c53d8ac",
+      "actual_state_digest": "ee6783256afa095d0fe04e631c4a98303de71a6b263189b2b4e81d5c07ea840a",
+      "step": 745,
+      "phase": "step"
+    },
+    "894": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step0894_step",
+      "record_sha256": "56c6b0d971bdce98c2417547aeddffdc00587de057e88719af091f36e78a210d",
+      "state_sha256": "17b4a463c655533858f3f7cfd87edfdce15fda1121b810ff9016c48a87b1c340",
+      "actual_state_digest": "54d8252d1583f49507e5c9800141e5e40d1cd14684d2c00d2f7ad29e92c39b52",
+      "step": 894,
+      "phase": "step"
+    }
+  },
+  "training_binding": {
+    "parent_id": "44c4f40dc32ae30accd3f097c02bfb1ed2107f029f7e2464a242eae4ff8412bd",
+    "c1_proof_digest": "6ecdf1e3adf03c618adafa7933afeac0408f8224cefb3cf3ce6547b6f010aee6",
+    "source": "read_only_original_path"
+  },
+  "next_outer894_executed": false,
+  "real_training_dropout": 0.05,
+  "resources": null,
+  "id": "bcf59cdfb6aa345f59d446e8c48d0907b9547f42a6f200e025aeba560bf34685"
+}

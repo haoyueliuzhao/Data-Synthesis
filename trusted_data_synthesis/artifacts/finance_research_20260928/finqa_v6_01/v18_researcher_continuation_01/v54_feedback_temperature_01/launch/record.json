@@ -1,0 +1,296 @@
+{
+  "automatic_retry": false,
+  "birth": "473448114",
+  "core_jobs": {
+    "seed137.distribution_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed137.replay_C05",
+        "seed137.shard00",
+        "seed137.shard01",
+        "seed137.shard02",
+        "seed137.shard03"
+      ],
+      "id": "seed137.distribution_C05",
+      "job_id": "seed137.distribution_C05",
+      "kind": "distribution",
+      "memory_phase": "distribution",
+      "priority": 2,
+      "seed": 137,
+      "stage": "distribution_C05"
+    },
+    "seed137.feedback_C05": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed137.feedback_C05",
+      "job_id": "seed137.feedback_C05",
+      "kind": "feedback",
+      "memory_phase": "feedback",
+      "priority": 0,
+      "seed": 137,
+      "stage": "feedback_C05"
+    },
+    "seed137.replay_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed137.feedback_C05"
+      ],
+      "id": "seed137.replay_C05",
+      "job_id": "seed137.replay_C05",
+      "kind": "replay",
+      "memory_phase": "replay",
+      "priority": 1,
+      "seed": 137,
+      "stage": "replay_C05"
+    },
+    "seed137.shard00": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed137.shard00",
+      "job_id": "seed137.shard00",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 137,
+      "stage": "shard00"
+    },
+    "seed137.shard01": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed137.shard01",
+      "job_id": "seed137.shard01",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 137,
+      "stage": "shard01"
+    },
+    "seed137.shard02": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed137.shard02",
+      "job_id": "seed137.shard02",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 137,
+      "stage": "shard02"
+    },
+    "seed137.shard03": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed137.shard03",
+      "job_id": "seed137.shard03",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 137,
+      "stage": "shard03"
+    },
+    "seed137.train_C05": {
+      "arm": "C05",
+      "dependencies": [
+        "seed137.distribution_C05"
+      ],
+      "id": "seed137.train_C05",
+      "job_id": "seed137.train_C05",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 3,
+      "seed": 137,
+      "stage": "train_C05"
+    },
+    "seed137.train_Hold": {
+      "arm": "Hold",
+      "dependencies": [],
+      "id": "seed137.train_Hold",
+      "job_id": "seed137.train_Hold",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 5,
+      "seed": 137,
+      "stage": "train_Hold"
+    },
+    "seed251.distribution_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed251.replay_C05",
+        "seed251.shard00",
+        "seed251.shard01",
+        "seed251.shard02",
+        "seed251.shard03"
+      ],
+      "id": "seed251.distribution_C05",
+      "job_id": "seed251.distribution_C05",
+      "kind": "distribution",
+      "memory_phase": "distribution",
+      "priority": 2,
+      "seed": 251,
+      "stage": "distribution_C05"
+    },
+    "seed251.feedback_C05": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed251.feedback_C05",
+      "job_id": "seed251.feedback_C05",
+      "kind": "feedback",
+      "memory_phase": "feedback",
+      "priority": 0,
+      "seed": 251,
+      "stage": "feedback_C05"
+    },
+    "seed251.replay_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed251.feedback_C05"
+      ],
+      "id": "seed251.replay_C05",
+      "job_id": "seed251.replay_C05",
+      "kind": "replay",
+      "memory_phase": "replay",
+      "priority": 1,
+      "seed": 251,
+      "stage": "replay_C05"
+    },
+    "seed251.shard00": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed251.shard00",
+      "job_id": "seed251.shard00",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 251,
+      "stage": "shard00"
+    },
+    "seed251.shard01": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed251.shard01",
+      "job_id": "seed251.shard01",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 251,
+      "stage": "shard01"
+    },
+    "seed251.shard02": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed251.shard02",
+      "job_id": "seed251.shard02",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 251,
+      "stage": "shard02"
+    },
+    "seed251.shard03": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed251.shard03",
+      "job_id": "seed251.shard03",
+      "kind": "class",
+      "memory_phase": "class",
+      "priority": 4,
+      "seed": 251,
+      "stage": "shard03"
+    },
+    "seed251.train_C05": {
+      "arm": "C05",
+      "dependencies": [
+        "seed251.distribution_C05"
+      ],
+      "id": "seed251.train_C05",
+      "job_id": "seed251.train_C05",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 3,
+      "seed": 251,
+      "stage": "train_C05"
+    },
+    "seed251.train_Hold": {
+      "arm": "Hold",
+      "dependencies": [],
+      "id": "seed251.train_Hold",
+      "job_id": "seed251.train_Hold",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 5,
+      "seed": 251,
+      "stage": "train_Hold"
+    },
+    "seed389.distribution_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed389.replay_C05"
+      ],
+      "id": "seed389.distribution_C05",
+      "job_id": "seed389.distribution_C05",
+      "kind": "distribution",
+      "memory_phase": "distribution",
+      "priority": 2,
+      "seed": 389,
+      "stage": "distribution_C05"
+    },
+    "seed389.feedback_C05": {
+      "arm": null,
+      "dependencies": [],
+      "id": "seed389.feedback_C05",
+      "job_id": "seed389.feedback_C05",
+      "kind": "feedback",
+      "memory_phase": "feedback",
+      "priority": 0,
+      "seed": 389,
+      "stage": "feedback_C05"
+    },
+    "seed389.replay_C05": {
+      "arm": null,
+      "dependencies": [
+        "seed389.feedback_C05"
+      ],
+      "id": "seed389.replay_C05",
+      "job_id": "seed389.replay_C05",
+      "kind": "replay",
+      "memory_phase": "replay",
+      "priority": 1,
+      "seed": 389,
+      "stage": "replay_C05"
+    },
+    "seed389.train_C05": {
+      "arm": "C05",
+      "dependencies": [
+        "seed389.distribution_C05"
+      ],
+      "id": "seed389.train_C05",
+      "job_id": "seed389.train_C05",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 3,
+      "seed": 389,
+      "stage": "train_C05"
+    },
+    "seed389.train_Hold": {
+      "arm": "Hold",
+      "dependencies": [],
+      "id": "seed389.train_Hold",
+      "job_id": "seed389.train_Hold",
+      "kind": "train",
+      "memory_phase": "train",
+      "priority": 5,
+      "seed": 389,
+      "stage": "train_Hold"
+    }
+  },
+  "id": "592f5527ffc4285b93fa67ff3ec55310fb146d03bd8d62dd91f63f09bc654f27",
+  "max_gpu_workers": 4,
+  "pid": 3037192,
+  "prepared": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/prepared/record.json",
+    "sha256": "aac01c31373a1f8c542c0a05ae5188dd38ced913832bdbfbed543c4e914c03ef"
+  },
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "schema": "v54_controller_launch.v1",
+  "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_controller.py",
+  "started_epoch": 1792310086.7819724
+}

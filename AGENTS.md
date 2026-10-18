@@ -168,6 +168,10 @@ V53随后前三次attempt均在下一响应forward之前遇到R3可用容量不�
 
 本轮新硬件许可为物理GPU0至7（包括GPU2），总worker最多4、每卡最多1，CPU初始化、等待与draining计入；该许可取代已收口旧B的GPU2禁令及无独立总上限，仅适用于V54。八卡UUID、原GPU租约inode及CPU亲和须绑定，不干预其他项目。native按需分配、不做人为暖大块或锚点；首次free门为class/feedback/distribution/generate24GiB、train26GiB、R3 replay56GiB，经验门不是峰值保证。76GiB allocated历史峰值、2GiB规定边界free、RSS class160/其余192GiB、全机96GiB有效可用RAM余量保持。无任意阶段或等待截止，但本轮入口只允许一次新鲜启动，科学失败停全池、不盲目重试，不完整未知反馈不重采样；已完整任务、response累计梯度、逐步训练提交可保留供明确登记的冷恢复。启动前准备不等于已运行，实际状态见新根及 `trusted_data_synthesis/docs/finqa_v54_feedback_temperature_20261018.md`，不得重复启动任何旧监督器或本轮入口。
 
+V54已以源提交 `58240ac877` 冻结89文件，实施包 `d3ffbe95fa28c5881c44b6e225af2e7e6dc9d9e5fdb70c793720ac6dc27eaebf`，协议 `0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4`。三个真实父点和C1完整旧路径均验收通过，实际新增更新1788，三份C1逻辑结果及六个旧快照保留。唯一控制器于2026-10-18 15:54:46北京启动，GPU2/1/6分别派发seed137/251/389 feedback；15:56:37以 `STOPPED_FAILURE_NO_RETRY` 收口。137与389各首题draw0/seed11/step0一次本地调用未返回token receipt，均为UNKNOWN、0完整反馈；251一直CUDA前等待，未加载Student或发模型调用。三个worker实际waitpid exit1，controller及worker PID均已不存在；新增完整类梯度、response梯度断点、optimizer、评价和评分全部0。不能把失败episode文件当作完整反馈，两个未知调用不得自动删除或重采样。收口见新根 `closeout_verification_01/record.json` 及 `waiting_supplement/record.json`。
+
+离线检查发现V54新worker遗漏原 `CUBLAS_WORKSPACE_CONFIG=:4096:8`，而模型启用确定性算法；工作区已补环境和CUDA前核验，并让新provider保存底层异常文本/traceback而不改UNKNOWN语义，环境3项及异常3项针对性CPU检查通过。独立GPU2最小16×16矩阵运算确认缺失环境时报确定性错误、设置后通过，无Student/反馈/反传/optimizer；证据 `implementation_diagnosis_01/cuda_minimal/record.json`。旧科学失败只保存RuntimeError类型，底层文本丢失，不能据新诊断伪造旧异常或宣称已证实完整因果。原89文件冻结、协议与失败不回写；修复版尚未进行新科学冻结或重启。后续需用户明确批准独立恢复及两个未返回请求各一次的有界重新执行，保留原意图、父点/config/seed与其余剂量，不得重启旧入口或自动重采样。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

@@ -1,0 +1,19 @@
+{
+  "schema": "v54_scientific_worker_failure.v1",
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "job": {
+    "id": "seed137.feedback_C05",
+    "seed": 137,
+    "stage": "feedback_C05",
+    "kind": "feedback",
+    "arm": null
+  },
+  "gpu_index": 2,
+  "exception_type": "UnsettledExecution",
+  "error": "incomplete provider execution retained: 53c30485743331fd7b737728d2ea72f0ba56d6d0718a38c1de97744baf86fa98",
+  "started_epoch": 1792310087.16533,
+  "finished_epoch": 1792310184.778539,
+  "automatic_retry_in_worker": false,
+  "actual_durable_boundaries_only": true,
+  "id": "168b5643df886186318ff01fc048afb04f9ff9f60a2d9ebb5710f758ab0f4a17"
+}

@@ -1,0 +1,24 @@
+{
+  "accepted_jobs": [],
+  "active_workers": 0,
+  "automatic_retry": false,
+  "finished_epoch": 1792310197.166912,
+  "historical_evidence_unchanged": true,
+  "id": "b25b5424c176637d3f87d9bfb054c7c6ac58add587514328fa38b8c7db593c13",
+  "launched_jobs": [
+    "seed137.feedback_C05",
+    "seed251.feedback_C05",
+    "seed389.feedback_C05"
+  ],
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "reason": {
+    "error": "worker seed137.feedback_C05 exited with returncode 1",
+    "error_type": "ValueError",
+    "job_id": "seed137.feedback_C05",
+    "kind": "SCIENTIFIC_OR_PROCESS_FAILURE"
+  },
+  "resource_wait_seconds": 89.84583379887044,
+  "schema": "v54_fixed_experiment_closeout.v1",
+  "shared_shutdown_grace_seconds": 600,
+  "status": "STOPPED_FAILURE_NO_RETRY"
+}

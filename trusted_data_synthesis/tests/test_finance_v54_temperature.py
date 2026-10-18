@@ -286,3 +286,64 @@ def test_read_complete_reuses_exact_seals_and_rewards_without_scoring(tmp_path, 
     monkeypatch.setattr(v6_task, "score_public_reasoning_program", forbidden_score)
     actual, frozen_rewards = temperature.read_complete(root, bound)
     assert actual == cohort and frozen_rewards == rewards
+
+
+def test_generate_exception_cause_reaches_durable_harness_event_without_retry():
+    from trusted_synthesis.finance_research.contracts import PublicTask
+    from trusted_synthesis.finance_research.harness import run_episode
+    from trusted_synthesis.finance_research.settlement import episode_is_complete
+
+    class FailingModel(Model):
+        def generate(self, **kwargs):
+            self.calls += 1
+            raise RuntimeError("CPU simulated deterministic CUDA matmul workspace failure")
+
+    model, tokenizer = FailingModel(), Tokenizer()
+    identity = local_model_identity(model, tokenizer, model_id="cpu-failure-fixture",
+                                    point_id="cpu-point")
+    bound = condition(identity)
+    provider = temperature.LocalTorchProvider(model, tokenizer, identity, condition=bound)
+    config = feedback_config(temperature=0.5, seed=11)
+    task = PublicTask(dataset="finqa", task_id="q0", version="cpu-fixture",
+                      question="CPU fault injection only", sources=())
+    events = []
+    result = asyncio.run(run_episode(task, provider, config, sink=events.append))
+    assert [event["kind"] for event in events] == [
+        "episode_started", "model_call_intent", "model_call_failed", "episode_completed",
+    ]
+    assert provider.actual_model_calls == model.calls == result.actual_model_calls == 1
+    assert result.turns == () and result.all_provider_calls_settled is False
+    assert not episode_is_complete(result)
+    settlement = events[2]["payload"]["settlement"]
+    assert settlement["state"] == "unknown" and settlement["actual_model_calls"] == 1
+    evidence = settlement["evidence"]
+    assert evidence["underlying_cause_available"] is True
+    assert evidence["underlying_exception_type"] == "RuntimeError"
+    assert evidence["underlying_exception_message"] == (
+        "CPU simulated deterministic CUDA matmul workspace failure")
+    assert "FailingModel" not in evidence["underlying_exception_message"]
+    assert "test_finance_v54_temperature.py" in evidence["underlying_exception_traceback"]
+    assert evidence["token_receipt_available"] is False
+    assert evidence["feedback_condition_id"] == bound["id"]
+
+
+def test_unavailable_provider_cause_is_not_invented():
+    model, tokenizer = Model(), Tokenizer()
+    identity = local_model_identity(model, tokenizer, model_id="cpu-failure-fixture",
+                                    point_id="cpu-point")
+    bound = condition(identity)
+    provider = temperature.LocalTorchProvider(model, tokenizer, identity, condition=bound)
+
+    async def failure_without_cause(*args):
+        raise temperature.providers.ProviderCallError(
+            "registered CPU fixture rejection", settlement="pre_call_rejected",
+            actual_model_calls=0, evidence={"fixture": True})
+
+    provider._temperature_chat = failure_without_cause
+    with pytest.raises(temperature.providers.ProviderCallError) as caught:
+        asyncio.run(provider.chat([], [], feedback_config(temperature=0.5, seed=11)))
+    error = caught.value
+    assert error.settlement == "pre_call_rejected" and error.actual_model_calls == 0
+    assert error.evidence["underlying_cause_available"] is False
+    assert "underlying_exception_message" not in error.evidence
+    assert provider.actual_model_calls == model.calls == 0

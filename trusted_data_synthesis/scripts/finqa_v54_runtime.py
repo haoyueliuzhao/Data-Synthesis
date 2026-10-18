@@ -24,6 +24,7 @@ REPO = Path("/data1/zhuxinrui/projects/Data-Synthesis")
 V18 = REPO / "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01"
 ROOT = V18 / "v54_feedback_temperature_01"
 GIB = 1024**3
+CUBLAS_WORKSPACE_CONFIG = ":4096:8"
 GPU_UUIDS = {
     "0": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
     "1": "GPU-0a62363e-fb3c-74fd-c5fe-1a2720c7e66a",
@@ -106,6 +107,7 @@ def resource_policy():
                 class_rss_limit_bytes=160*GIB, other_rss_limit_bytes=192*GIB,
                 effective_host_available_reserve_bytes=96*GIB,
                 allocator_backend="native", warm_allocation_bytes=0, anchor_bytes=0,
+                deterministic_cublas_workspace_config=CUBLAS_WORKSPACE_CONFIG,
                 only_one_peak_reset_before_scientific_allocation=True,
                 later_peak_resets_allowed=False, other_project_processes_untouched=True,
                 pre_cuda_and_pre_model_resource_wait_same_process=True,
@@ -115,6 +117,7 @@ def resource_policy():
 def worker_environment(row):
     env = dict(os.environ)
     env.update(CUDA_VISIBLE_DEVICES=row["uuid"], CUDA_DEVICE_ORDER="PCI_BUS_ID",
+               CUBLAS_WORKSPACE_CONFIG=CUBLAS_WORKSPACE_CONFIG,
                OMP_NUM_THREADS="8", MKL_NUM_THREADS="8", OPENBLAS_NUM_THREADS="1",
                TOKENIZERS_PARALLELISM="false", PYTHONUNBUFFERED="1",
                PYTORCH_CUDA_ALLOC_CONF="backend:native,expandable_segments:False")
@@ -232,6 +235,8 @@ class ResourceGuard:
         try:
             require(os.environ.get("CUDA_VISIBLE_DEVICES") in (str(self.gpu), GPU_UUIDS[str(self.gpu)]),
                     "worker visibility differs from registered physical GPU")
+            require(os.environ.get("CUBLAS_WORKSPACE_CONFIG") == CUBLAS_WORKSPACE_CONFIG,
+                    "fixed deterministic CUBLAS_WORKSPACE_CONFIG=:4096:8 required before CUDA")
             require(os.environ.get("V54_JOB_ID") == self.job_id, "worker job/dispatch mismatch")
             lease = int(os.environ["V54_GPU_LEASE_FD"])
             expected = Path(self.protocol["gpu_lease_root"]) / ("gpu-" + digest(GPU_UUIDS[str(self.gpu)]) + ".lock")

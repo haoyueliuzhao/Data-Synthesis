@@ -15,6 +15,7 @@ import hashlib
 import inspect
 import json
 import textwrap
+import traceback
 from pathlib import Path
 
 import finqa_v19_optimized_replay as optimized
@@ -175,7 +176,29 @@ class LocalTorchProvider(providers.LocalTorchProvider):
             self.before_call(dict(phase="before_actual_feedback_call",
                                   feedback_condition_id=self.condition["id"],
                                   draw_seed=config.seed, temperature=config.temperature))
-        turn = await self._temperature_chat(self, messages, tools, config)
+        try:
+            turn = await self._temperature_chat(self, messages, tools, config)
+        except providers.ProviderCallError as exception:
+            # The historical provider preserves a Python exception cause but
+            # its durable evidence stores only that cause's type. Once the
+            # harness catches the wrapper, the actual message/trace are lost.
+            # Preserve them in the new version without inferring settlement,
+            # retrying a call, changing its count, or inventing a token receipt.
+            cause = exception.__cause__
+            evidence = dict(exception.evidence,
+                            underlying_cause_available=cause is not None,
+                            feedback_condition_id=self.condition["id"],
+                            probability_contract_id=PROBABILITY_CONTRACT_ID)
+            if cause is not None:
+                evidence.update(
+                    underlying_exception_type=type(cause).__name__,
+                    underlying_exception_message=str(cause),
+                    underlying_exception_traceback="".join(traceback.format_exception(cause)),
+                )
+            raise providers.ProviderCallError(
+                str(exception), settlement=exception.settlement,
+                actual_model_calls=exception.actual_model_calls, evidence=evidence,
+            ) from exception
         sampling = dict(turn.receipt.sampling,
                         feedback_condition_id=self.condition["id"],
                         probability_contract_id=PROBABILITY_CONTRACT_ID)

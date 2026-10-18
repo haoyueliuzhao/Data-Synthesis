@@ -69,6 +69,7 @@ def environment(tmp_path, monkeypatch):
     monkeypatch.setattr(runtime, "process_memory", lambda pid: dict(process))
     monkeypatch.setattr(runtime, "birth", lambda pid: "test-birth")
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", runtime.GPU_UUIDS["0"])
+    monkeypatch.setenv("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     monkeypatch.setenv("V54_GPU_LEASE_FD", str(lease.fileno()))
 
     def make(stage="train_Hold", kind="train"):
@@ -93,6 +94,29 @@ def test_phase_classification_matches_worker_and_eval_and_rejects_wrong_threshol
         runtime.kind(dict(stage="replay_C05", kind="train"))
     with pytest.raises(ValueError, match="unregistered"):
         runtime.kind(dict(stage="unknown", kind="train"))
+
+
+def test_worker_environment_keeps_original_deterministic_cublas_contract(monkeypatch):
+    monkeypatch.setenv("CUBLAS_WORKSPACE_CONFIG", ":16:8")
+    environment = runtime.worker_environment(dict(uuid=runtime.GPU_UUIDS["0"]))
+    assert environment["CUBLAS_WORKSPACE_CONFIG"] == ":4096:8"
+    assert runtime.resource_policy()["deterministic_cublas_workspace_config"] == ":4096:8"
+
+
+@pytest.mark.parametrize("configured", [None, ":16:8"])
+def test_missing_or_wrong_deterministic_environment_rejected_before_cuda(environment, monkeypatch, configured):
+    f = environment
+    if configured is None:
+        monkeypatch.delenv("CUBLAS_WORKSPACE_CONFIG")
+    else:
+        monkeypatch.setenv("CUBLAS_WORKSPACE_CONFIG", configured)
+    guard = f.make()
+    with pytest.raises(ValueError, match="CUBLAS_WORKSPACE_CONFIG=:4096:8"):
+        with guard:
+            pytest.fail("invalid deterministic environment cannot initialize CUDA")
+    assert not f.cuda.initialized and f.cuda.resets == 0
+    closeout = runtime.checked(guard.directory / "closeout/record.json")
+    assert closeout["status"] == "FAILED_OR_STOPPED"
 
 
 def test_native_lifetime_resets_once_restores_hooks_and_retains_lease_until_exit(environment):

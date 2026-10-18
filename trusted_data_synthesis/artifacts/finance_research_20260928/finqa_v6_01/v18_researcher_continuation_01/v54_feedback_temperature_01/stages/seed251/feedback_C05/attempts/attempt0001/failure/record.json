@@ -1,0 +1,19 @@
+{
+  "schema": "v54_scientific_worker_failure.v1",
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "job": {
+    "id": "seed251.feedback_C05",
+    "seed": 251,
+    "stage": "feedback_C05",
+    "kind": "feedback",
+    "arm": null
+  },
+  "gpu_index": 1,
+  "exception_type": "ExplicitStop",
+  "error": "explicit stop during pre-scientific resource wait",
+  "started_epoch": 1792310087.5526187,
+  "finished_epoch": 1792310192.8542116,
+  "automatic_retry_in_worker": false,
+  "actual_durable_boundaries_only": true,
+  "id": "754a24e6e7c89cd96b8160a89083929a5a812d73da03dbed7c57f1b22992f135"
+}

@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_worker.py", line 467, in <module>
+    result = run(args.root, args.seed, args.stage, args.gpu_index)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_worker.py", line 385, in run
+    with guard_module.execution_context(root, job, gpu_index) as guard:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_runtime.py", line 393, in execution_context
+    with ResourceGuard(root, job, gpu_index) as guard:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_runtime.py", line 253, in __enter__
+    self._wait(cuda_initialized=False)
+  File "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/implementation/finqa_v54_runtime.py", line 200, in _wait
+    raise ExplicitStop("explicit stop during pre-scientific resource wait")
+finqa_v54_runtime.ExplicitStop: explicit stop during pre-scientific resource wait

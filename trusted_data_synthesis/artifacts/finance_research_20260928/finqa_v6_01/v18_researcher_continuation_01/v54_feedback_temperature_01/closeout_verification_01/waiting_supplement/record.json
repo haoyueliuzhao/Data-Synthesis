@@ -1,0 +1,59 @@
+{
+  "schema": "v54_actual_pre_cuda_waiting_summary.v1",
+  "at": "2026-10-18T08:03:09.351744+00:00",
+  "parent_audit": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/closeout_verification_01/record.json",
+    "sha256": "85f6dc816782fd7a634fbfcb200009c3556e32ab4ad9fe11a44f861543955ebb",
+    "id": "f462756743de7d02cd8f55e31a3175ae9c02e649b18e6cac49cd31380f2835a8"
+  },
+  "correction": "Parent audit waiting_observations queried a nonexistent event label; its empty arrays are not evidence of no wait. Actual raw observation bindings remain correct.",
+  "actual_event_label": "waiting_for_capacity",
+  "source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/resources/seed251.feedback_C05/pid3037362/observations.jsonl",
+    "sha256": "ef9d192318d7254192182d721a3cb124e734323a70bf7157b3870684fd1d361a"
+  },
+  "seed": 251,
+  "gpu_index": 1,
+  "waiting_observations": 33,
+  "first": {
+    "at": "2026-10-18T07:55:20.722225+00:00",
+    "event": "waiting_for_capacity",
+    "gpu_index": 1,
+    "free_bytes": 21309161472,
+    "required_bytes": 25769803776,
+    "host": {
+      "rss_bytes": 1951424512,
+      "peak_rss_bytes": 1969115136,
+      "available_bytes": 832221134848,
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "passed": true
+    },
+    "cuda_initialized": false,
+    "no_scientific_work_retried": true
+  },
+  "last": {
+    "at": "2026-10-18T07:56:30.851613+00:00",
+    "event": "waiting_for_capacity",
+    "gpu_index": 1,
+    "free_bytes": 21221081088,
+    "required_bytes": 25769803776,
+    "host": {
+      "rss_bytes": 1951424512,
+      "peak_rss_bytes": 1969115136,
+      "available_bytes": 837530800128,
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "passed": true
+    },
+    "cuda_initialized": false,
+    "no_scientific_work_retried": true
+  },
+  "minimum_free_bytes": 21221081088,
+  "maximum_free_bytes": 21309161472,
+  "all_before_CUDA": true,
+  "all_observed_host_gates_passed": true,
+  "resource_wait_seconds_zero_is_not_elapsed_wait": true,
+  "historical_records_unmodified": true,
+  "id": "c89f256370dafc54bcd0833aca4ff67f461cbafc64259de926b3c7f336419071"
+}

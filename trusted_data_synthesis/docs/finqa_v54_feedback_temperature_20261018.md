@@ -75,7 +75,7 @@ I、W、R 分别表示 invalid、可执行但错误、正确。按 baseline→ca
 | train | 26 | 48 | 192 |
 | generate | 24 | 48 | 192 |
 
-feedback 的 24GiB 准入依据是原同模型同上下文/token 上限过程观测到约 15.96GiB reserved 峰值，加登记余量；T0.5 不增加原 KV 尺寸，但不保证所有实际轨迹都具有相同峰值。主存启动公式保留新作业预算、活跃 worker 预算与 VmHWM 上浮需求尚未实际占用的部分，以及 96GiB 全机有效可用 RAM 余量。进程退出观测竞态只延后准入，不能伪造 RSS=0。
+feedback 的 24GiB 准入依据是原同模型同上下文/token 上限过程观测到约 15.96GiB allocated 峰值，加登记余量；T0.5 不增加原 KV 尺寸，但不保证所有实际轨迹都具有相同峰值。主存启动公式保留新作业预算、活跃 worker 预算与 VmHWM 上浮需求尚未实际占用的部分，以及 96GiB 全机有效可用 RAM 余量。进程退出观测竞态只延后准入，不能伪造 RSS=0。
 
 所有阶段仍要求整个冷进程 allocated 历史峰值最多 76GiB，规定边界物理 free 至少 2GiB，主存按 RSS 硬限及全机有效可用 RAM 至少 96GiB 检查。模型加载计入峰值；CUDA 初始化后、模型前仅一次清零初始峰值，后续不重置。R3 自身原始容量检查同样保留。资源检查保存实际观测和最终边界，只有资源 closeout、结果绑定及真实 exit0 全部一致才验收。
 
@@ -95,6 +95,36 @@ feedback 的 24GiB 准入依据是原同模型同上下文/token 上限过程观
 
 ## 实际执行状态
 
-当前为启动前实现与必要 CPU 核验阶段，尚未把新协议准备或代码完成称为 GPU 已启动。正式冻结后记录源提交、实施包、协议和 prepared 身份；真实启动后追加唯一控制器及 worker 的 PID/birth、物理 GPU、首次实际科学产物和已观测资源门。整个实验尚无新的低温效果结果。
+本轮已实际启动，但于 2026-10-18 15:56:37 北京时间以 `STOPPED_FAILURE_NO_RETRY` 停止，当前没有科学进程运行，也没有新的低温效果结果。两条首请求只有 UNKNOWN 结算而无返回 token 回执，不能把磁盘上存在的失败 `episode.json` 算作完整反馈。
+
+首次冻结源提交为 `58240ac877`，原 81 文件逐字保留，新增 8 文件组成 89 文件实施包 `d3ffbe95fa28c5881c44b6e225af2e7e6dc9d9e5fdb70c793720ac6dc27eaebf`；协议为 `0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4`。正式 prepared `32de8dbfcf97acb7ffd487312f8ad62878ced8e9b2b76ba193b3aa4f8708865f` 验收了全部三个真实父点及三个旧 C1 路径，确认新增训练预算 1788、只读复用 894、需新类梯度任务 1488。三个 C1 逻辑分支和六个旧快照已登记，不需要重做。
+
+正式冻结 CPU 入口核验通过，CUDA 未初始化，23 个训练侧作业及父点/复用绑定一致。唯一控制器于 15:54:46 启动，PID3037192、birth473448114，实际派发三个 worker，未因上限为四而绕过资源门补第四个。
+
+| seed | GPU | worker PID | 实际本地调用计数 | 完整反馈与返回回执 | 结算及真实退出 |
+|---|---:|---:|---:|---|---|
+| 137 | 2 | 3037201 | 1 | 均为 0 | 首请求 UNKNOWN，waitpid exit1 |
+| 251 | 1 | 3037362 | 0 | 均为 0 | CUDA 前等待中停止，waitpid exit1 |
+| 389 | 6 | 3037377 | 1 | 均为 0 | 首请求 UNKNOWN，waitpid exit1 |
+
+137 和 389 均停于首题 `AMT/2012/page_121.pdf-1`、draw0/seed11、step0，保存了原请求及未结算事实；没有 generation seal、700 条 cohort、冻结奖励或可恢复完整反馈。两者各六项已观测资源检查通过，allocated 历史观测峰值约 14.233GiB，规定边界 free 最低分别约 34.747 和 25.136GiB。日志只有底层 `RuntimeError` 类型和外层 `UnsettledExecution`，没有原异常文本，不能把失败归因为已证实的 OOM、截止或温度梯度错误。
+
+251 在派发之后显存余量下降，33 条 CUDA 前等待观测中 free 为 19.764 至 19.846GiB，低于 24GiB 准入；主存观测通过，未加载 Student、未创建 condition 或调用意图。它在全池停止期间记录收到 SIGTERM。其旧 `resource_wait_seconds=0` 字段只在成功准入时累计，不能解释为没有等待；控制器累计等待为 89.845834 秒。三 worker 均有真实 exit1 回执，控制器和 worker 的登记 PID 已确认不存在；控制器的 OS 退出码没有被独立 waitpid 观测。
+
+本次新增完整类梯度任务、response 累计梯度断点、optimizer 更新、评估会话和评分均为零。新预算仍须完成 1788 次更新、2100 条完整低温反馈、12267 条评估；但已经发生的两次未知本地调用必须另外保留，不能称零调用或直接恢复成“从未采样”。旧 B 和本轮冻结包未回写。
+
+详细收口为 `closeout/record.json`，ID `b25b5424c176637d3f87d9bfb054c7c6ac58add587514328fa38b8c7db593c13`；实际剂量与退出核验为 `closeout_verification_01/record.json`，ID `f462756743de7d02cd8f55e31a3175ae9c02e649b18e6cac49cd31380f2835a8`。其中等待列表初次查询用了错误事件标签，随后在 `closeout_verification_01/waiting_supplement/record.json` 追加正确的 33 条 `waiting_for_capacity` 汇总；原始资源日志和首次审计均保留。
+
+## 失败后的离线修复与恢复边界
+
+源码检查发现确定的启动环境遗漏：原模型开启 `torch.use_deterministic_algorithms(True)`，旧 worker 在模型加载前设置 `CUBLAS_WORKSPACE_CONFIG=:4096:8`，新 worker 环境没有设置该值。工作区修复已显式传入并在 CUDA 初始化前核对精确值，缺失或错误立即拒绝，防止把配置问题拖到已登记模型调用中。3 项环境 CPU 回归通过。
+
+另修复了新 provider 的异常记录：未来保留 Python cause 的类型、完整文本与 traceback，以及 condition/概率合同身份；不改变 UNKNOWN 结算、实际调用计数，不伪造 token 回执或发起重试。3 项针对性 CPU 检查通过，覆盖异常落盘、缺少 cause 时不虚构以及调用前停止仍零调用。
+
+在科学进程全部退出后，独立持有原 GPU2 项目租约，串行执行两次 16×16 矩阵乘法作最小 CUDA 诊断：未设置该环境时实际报 CuBLAS 确定性 `RuntimeError`，设置 `:4096:8` 时运算通过，结果全部为 16。该诊断无 Student、生成、反馈、反传或 optimizer 更新，同时最多一个 GPU 子进程；allocated 峰值分别为 2048 和 33557504 字节，边界 free 均超过 48GiB。证据为 `implementation_diagnosis_01/cuda_minimal/record.json`，ID `5d2734583bca2f12c7bffe71519f0ab0e2e6574c57fe7ff8b6a4cc50811cf91c`。
+
+该诊断确认缺失环境能够触发失败，并验证修复的矩阵运算路径；由于旧科学异常文本已经丢失，它不能恢复或证明当时两次调用的完整因果，也不等于修复版 Student 已通过实际采样。
+
+修复只在工作区新版本，原 89 文件冻结包、协议和两条 UNKNOWN 未修改，科学实验没有再次启动。后续需要明确登记：保留两个旧未返回意图，在新目录中按原父点/config/seed 各重新执行一次，再首次执行其余原反馈；seed251 从未调用部分首次执行。该有界例外不能自动延伸为未知反馈重试，不能覆盖旧失败，不能增加已通过 C1 的训练。新冻结、正式依赖验证和实际模型首请求验收都需在恢复授权后完成。
 
 运行中查看新根 `queue/status.json`、各 `stages/seed*/`、`branches/seed*/`、`resources/` 和最终 `closeout/record.json`；禁止启动旧 B 监督器、重复本轮入口或把资源等待误报为完成。评估及最终结论查看 `evaluations/` 和 `promotion/record.json`，不得从中间反馈成功率先行得出后继准确率收益。

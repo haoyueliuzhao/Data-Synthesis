@@ -1,0 +1,48 @@
+{
+  "schema": "v54_actual_native_cuda_admission.v1",
+  "at": "2026-10-18T07:55:22.260704+00:00",
+  "protocol_id": "0df7315a5443623a705e96ca9371f28fe9470e86b30b16820f6ae583373724f4",
+  "job_id": "seed389.feedback_C05",
+  "gpu_index": 6,
+  "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+  "pid": 3037377,
+  "birth": "473448261",
+  "minimum_dispatch_free_bytes": 25769803776,
+  "warm_allocation_bytes": 0,
+  "anchor_bytes": 0,
+  "peak_resets_before_loading": 1,
+  "later_peak_resets_allowed": false,
+  "resource_wait_seconds": 0.7043907660990953,
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-06a72e8c72bc84fed61017dde1354a5d859725e982c7efc0de6a264470a09910.lock",
+    "descriptor": 6,
+    "device": 66304,
+    "inode": 5290289924,
+    "held_exclusive_flock": true
+  },
+  "before_model_load": {
+    "at": "2026-10-18T07:55:22.259893+00:00",
+    "label": "before_model_load",
+    "boundary": true,
+    "allocated_bytes": 0,
+    "reserved_bytes": 0,
+    "peak_allocated_bytes": 0,
+    "peak_reserved_bytes": 0,
+    "free_bytes": 26989690880,
+    "total_bytes": 85095874560,
+    "host": {
+      "rss_bytes": 2055569408,
+      "peak_rss_bytes": 2055569408,
+      "available_bytes": 831998418944,
+      "rss_limit_bytes": 206158430208,
+      "available_reserve_bytes": 103079215104,
+      "passed": true
+    },
+    "stop_requested": false,
+    "context": {},
+    "allocated_pass": true,
+    "free_pass": true,
+    "passed": true
+  },
+  "id": "6db99a54365a29effd6b5da172fc5a26b5a83cb80096381cc39151ae2a8878c8"
+}
