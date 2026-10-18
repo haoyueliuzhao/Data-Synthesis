@@ -12,6 +12,8 @@ def test_recovery_contract_preserves_science_stop_history_and_remaining_dose():
     assert contract["scientific_root"] == str(registration.SCIENCE_ROOT)
     assert contract["independent_control_root"] == str(registration.ROOT)
     assert registration.ROOT.parent == registration.SCIENCE_ROOT
+    assert registration.ROOT != registration.PREVIOUS_CONTROL_ROOT
+    assert contract["previous_control_root"] == str(registration.PREVIOUS_CONTROL_ROOT)
     assert contract["unchanged_scientific_protocol_id"] == registration.SCIENTIFIC_PROTOCOL_ID
     assert contract["no_scientific_parent_or_feedback_ID_rebinding"] is True
     assert contract["old_stop_marker_and_failed_controller_history_immutable"] is True
@@ -22,6 +24,8 @@ def test_recovery_contract_preserves_science_stop_history_and_remaining_dose():
     assert contract["inherited_partial_returned_turns"] == 1
     assert contract["UNKNOWN_feedback_reexecution"] is False
     assert contract["old_single_request_quota_remaining"] == 0
+    assert contract["original_accepted_jobs_reused"] == len(registration.ACCEPTED_JOBS) == 3
+    assert contract["successful_previous_CPU_finalizer_not_repeated"] is True
     assert contract["remaining_new_class_tasks"] == 1280
     assert contract["remaining_new_optimizer_updates"] == 1788
     assert contract["evaluation_sessions"] == 12267
@@ -90,6 +94,23 @@ def test_initial_states_reject_durable_progress_regression():
         registration.initial_job_states(old, audits, attempt_counts=counts)
 
 
+def test_successful_seed389_finalizer_is_never_redispatched_or_given_new_feedback_budget():
+    old, audits, counts = stopped_jobs()
+    key = "seed389.feedback_C05"
+    accepted = dict(status="COMPLETE", attempts=2, no_progress_failures=0,
+                    next_eligible_epoch=0.0, progress_units=2008,
+                    durable_progress_digest="accepted-389-complete-feedback")
+    old["accepted"][key] = dict(path="actual-attempt2-exit-zero-accepted")
+    old["job_states"][key] = accepted
+    counts[key] = 2
+    assert set(old["accepted"]) == registration.ACCEPTED_JOBS
+    states = registration.initial_job_states(old, audits, attempt_counts=counts)
+    assert states[key] == accepted and states[key] is not accepted
+    assert states[key]["status"] == "COMPLETE" and states[key]["attempts"] == 2
+    assert "initial_authorized_signal_recovery" not in states[key]
+    assert registration.recovery_contract()["remaining_feedback_episodes"] == 46
+
+
 def prepared_fixture(tmp_path, monkeypatch, **changes):
     root = tmp_path / "control"
     protocol_path = root / "protocol/record.json"
@@ -104,8 +125,8 @@ def prepared_fixture(tmp_path, monkeypatch, **changes):
         remaining_new_optimizer_updates=1788, evaluation_sessions=12267,
         old_single_request_quota_remaining=0, old_missing_returncode=None,
         complete_unaccepted_stage_requires_new_finalizer=True,
-        accepted={"seed137.feedback_C05": {}, "seed137.shard00": {}},
-        attempt_history=[dict(attempt=i + 1) for i in range(7)],
+        accepted={key: {} for key in registration.ACCEPTED_JOBS},
+        attempt_history=[dict(attempt=i + 1) for i in range(registration.PRIOR_ATTEMPT_COUNT)],
         known_unobserved_attempts=[dict(attempt=i + 1, old_returncode=None) for i in range(3)],
         evaluation_registered=False,
     )

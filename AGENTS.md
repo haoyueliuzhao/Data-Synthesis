@@ -190,6 +190,8 @@ V56随后于2026-10-18 19:45:58在137 shard02收到SIGTERM，19:46:13控制器�
 
 用户随后明确“尽快恢复任务，同时排查异常信号来源”，授权V57独立控制目录 `automatic_recovery_01/signal_recovery_01/` 接续，科学ROOT、协议及全部绑定仍为原V56，旧停止marker/冻结包/未知exit不回写。已保留2054完整反馈、251下一题turn0已返回、UNKNOWN0，余46题；208完整class任务1421行，余1280题；1788新optimizer及12267评价剂量不变。137 feedback和shard00原accepted只读复用；389反馈完整结果缺旧waitpid，只允许新CPU收尾验证并真实exit0后开放依赖，不能补写旧exit0。251反馈、389反馈、137 shard01 attempt2三项旧缺失waitpid例外仅限本次精确身份，不扩成新未知退出通用自动接管。四并发/八卡、资源硬门及自动资源退避不变。新SIGTERM/SIGINT或STOP仍终止自动拉起，增加sender PID/UID/si_code观测而非忽略信号。实际启动状态见 `trusted_data_synthesis/docs/finqa_v57_signal_recovery_20261018.md`，准备/CPU通过不代表已恢复。
 
+V57首个control01于20:11:47实际启动，但包装入口遗漏原辅助脚本路径，12新attempt中389反馈CPU收尾真实exit0并accepted，其余11项均在CUDA前报 `ModuleNotFoundError: finqa_v25_training_replication`、真实exit1，新增科学采样/梯度/训练均0。用户本次“尽快恢复”请求的实现修正继续在独立 `signal_recovery_02/` 登记，01失败/冻结/stop不回写。01已由核验身份的维护命令于20:14:04停止，20:14:10所有进程退出；sender PID3552678/UID1004被新观测器真实捕获，此为已知维护停止，不解释此前未知信号。02恢复原辅助脚本目录且核对与原登记字节相同，新增真实worker导入链预检；保留19旧attempt、3accepted，不重复389收尾，仅重接11项确定CUDA前失败及未开始队列。2054完整反馈/46剩、208完整class/1280剩及原数值资源剂量不变；旧3未知waitpid例外不扩展。实际状态以02目录与V57说明为准。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

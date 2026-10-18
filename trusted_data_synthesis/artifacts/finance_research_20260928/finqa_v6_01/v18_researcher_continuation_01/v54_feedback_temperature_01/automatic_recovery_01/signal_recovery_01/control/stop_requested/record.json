@@ -1,0 +1,11 @@
+{
+  "at_epoch": 1792325645.5315812,
+  "automatic_restart_allowed": false,
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "id": "1d5e4969041ee1531922a442771021fe67dd3e4ca1f3f370b8542e420f56d3fc",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_terminal_explicit_stop.v1",
+  "signals": [
+    15
+  ]
+}

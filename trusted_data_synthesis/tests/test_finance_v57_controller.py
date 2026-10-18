@@ -166,9 +166,18 @@ def test_signal_wrapper_preserves_science_root_attempts_and_gpu_lease(tmp_path, 
     assert kwargs["env"]["V56_ATTEMPT_ID"] == "attempt0003"
     assert kwargs["env"]["V57_SIGNAL_LOG_DIR"].endswith("attempt0003/signals")
     assert kwargs["env"]["V57_CONTROL_ROOT"] == str(control.control_root)
+    assert str(controller.base.REPO / "trusted_data_synthesis/scripts") in kwargs["env"]["PYTHONPATH"].split(controller.os.pathsep)
     assert control.active[key].lease is lease
     launch = evaluation.checked(control.active[key].attempt_dir / "launch/record.json")
     assert launch["protocol_id"] == "science" and launch["control_protocol_id"] == "control"
+
+
+def test_original_auxiliary_scripts_directory_remains_after_frozen_implementations(tmp_path):
+    control_root, scientific_root = tmp_path / "control", tmp_path / "science"
+    assert controller.execution_pythonpath(control_root, scientific_root).split(controller.os.pathsep) == [
+        str(control_root / "implementation"), str(scientific_root / "implementation"),
+        str(controller.base.REPO / "trusted_data_synthesis/scripts"), str(controller.evaluation.FROZEN_SOURCE)]
+    assert controller.ROOT == controller.SCIENTIFIC_ROOT / "signal_recovery_02"
 
 
 def test_retry_restore_retains_original_transient_audit_behavior(tmp_path):

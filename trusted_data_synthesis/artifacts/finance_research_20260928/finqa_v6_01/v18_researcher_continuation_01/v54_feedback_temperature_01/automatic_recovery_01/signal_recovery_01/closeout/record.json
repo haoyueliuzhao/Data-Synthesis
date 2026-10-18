@@ -1,0 +1,307 @@
+{
+  "accepted_jobs": [
+    "seed137.feedback_C05",
+    "seed137.shard00",
+    "seed389.feedback_C05"
+  ],
+  "active_workers": 0,
+  "attempt_count": 19,
+  "automatic_restart_allowed": false,
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "finished_epoch": 1792325647.6714845,
+  "id": "c73eb4f60cab7392899377527bcb79ce939f8995a28f60cccc21f548f9362906",
+  "job_states": {
+    "seed137.distribution_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed137.shard01"
+      ],
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed137.feedback_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "473936454",
+      "durable_progress_digest": "b78c0f4b99e3231e688188f8ba270247c827fd07a3d9813ec12e988801dc3049",
+      "gpu_index": 2,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3302575,
+      "progress_units": 71,
+      "status": "COMPLETE"
+    },
+    "seed137.replay_C05": {
+      "attempts": 0,
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed137.shard00": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "473936626",
+      "durable_progress_digest": "d1d87ffc28b0cd130b4cf688cfd1ff38bb82fafa46b43098e069ff87dc7ce214",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3302616,
+      "progress_units": 9,
+      "status": "COMPLETE"
+    },
+    "seed137.shard01": {
+      "attempts": 3,
+      "birth": "474994073",
+      "durable_progress_digest": "3beb0d0e96ea3f9e77dd6188ee380b0ee3e708b07e5766ab7d6cebcb6c33d463",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 2,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 1,
+      "pid": 3550089,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed137.shard02": {
+      "attempts": 2,
+      "birth": "474994164",
+      "durable_progress_digest": "98dad26f8c34dc575352f5bad997950a9d3f3d68571ad8f3a04c8705321ae700",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550124,
+      "progress_units": 22,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed137.shard03": {
+      "attempts": 1,
+      "birth": "474994252",
+      "durable_progress_digest": "3beb0d0e96ea3f9e77dd6188ee380b0ee3e708b07e5766ab7d6cebcb6c33d463",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 4,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550134,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed137.train_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed137.distribution_C05"
+      ],
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed137.train_Hold": {
+      "attempts": 1,
+      "birth": "474995401",
+      "durable_progress_digest": "3beb0d0e96ea3f9e77dd6188ee380b0ee3e708b07e5766ab7d6cebcb6c33d463",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 6,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550476,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.distribution_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed251.replay_C05"
+      ],
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed251.feedback_C05": {
+      "attempts": 2,
+      "birth": "474991507",
+      "durable_progress_digest": "dfa6042742db516fcdcef5b420197dad8eb271d8206c7fec6294e3983b1441d2",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 2,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3549452,
+      "progress_units": 1963,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.replay_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed251.feedback_C05"
+      ],
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed251.shard00": {
+      "attempts": 1,
+      "birth": "474994314",
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 6,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550150,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.shard01": {
+      "attempts": 1,
+      "birth": "474995222",
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 2,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550431,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.shard02": {
+      "attempts": 1,
+      "birth": "474995290",
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550442,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.shard03": {
+      "attempts": 1,
+      "birth": "474995354",
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 4,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550466,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed251.train_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed251.distribution_C05"
+      ],
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed251.train_Hold": {
+      "attempts": 1,
+      "birth": "474996136",
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 2,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550591,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed389.distribution_C05": {
+      "attempts": 0,
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.feedback_C05": {
+      "accepted_attempt": 2,
+      "attempts": 2,
+      "birth": "474992155",
+      "durable_progress_digest": "a2f837ca89e38a7cb6b43662a46d5debcb63e37b7033754cfd375028f5b5d595",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3549529,
+      "progress_units": 2008,
+      "status": "COMPLETE"
+    },
+    "seed389.replay_C05": {
+      "attempts": 0,
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.train_C05": {
+      "attempts": 0,
+      "durable_progress_digest": null,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.train_Hold": {
+      "attempts": 1,
+      "birth": "474996184",
+      "durable_progress_digest": "fd8f855e881d5024ba0c9712bc4b406384b05101b58767645180b01ab540b2e7",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3550611,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    }
+  },
+  "old_unobserved_exits_not_reclassified": true,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "resource_wait_seconds": 159.7080834461376,
+  "schema": "v57_per_job_recovery_closeout.v1",
+  "status": "STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME"
+}

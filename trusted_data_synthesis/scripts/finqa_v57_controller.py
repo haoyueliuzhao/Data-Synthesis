@@ -20,7 +20,7 @@ from pathlib import Path
 
 REPO = Path("/data1/zhuxinrui/projects/Data-Synthesis")
 SCIENTIFIC_ROOT = REPO / "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01"
-ROOT = SCIENTIFIC_ROOT / "signal_recovery_01"
+ROOT = SCIENTIFIC_ROOT / "signal_recovery_02"
 
 # Capture signal sender metadata before any scientific import or library thread
 # exists. The installed relay still invokes the ordinary main-thread handlers.
@@ -56,6 +56,15 @@ if __name__ == "__main__":
 
 def stop_requested(control_root):
     return inherited.stop_requested(control_root)
+
+
+def execution_pythonpath(control_root, scientific_root=SCIENTIFIC_ROOT):
+    # Preserve V56's registered auxiliary lookup directory. The frozen package
+    # remains first; some original worker-only historical imports are helpers
+    # in REPO/scripts rather than members of the 96-file copied package.
+    return os.pathsep.join((str(Path(control_root) / "implementation"),
+        str(Path(scientific_root) / "implementation"),
+        str(base.REPO / "trusted_data_synthesis/scripts"), str(evaluation.FROZEN_SOURCE)))
 
 
 def initialize_science():
@@ -284,8 +293,7 @@ class Controller(inherited.Controller):
         environment.update(CUDA_VISIBLE_DEVICES=row["uuid"], V54_GPU_LEASE_FD=str(lease.fileno()),
             V54_JOB_ID=key, V56_ATTEMPT_ID=f"attempt{attempt:04d}", V56_ATTEMPT_DIR=str(directory),
             V57_CONTROL_ROOT=str(self.control_root), V57_SIGNAL_LOG_DIR=str(directory / "signals"),
-            PYTHONPATH=os.pathsep.join((str(self.control_root / "implementation"),
-                str(self.root / "implementation"), str(evaluation.FROZEN_SOURCE))))
+            PYTHONPATH=execution_pythonpath(self.control_root, self.root))
         try:
             with (directory / "worker.log").open("xb") as stream:
                 process = subprocess.Popen(command, cwd=base.REPO, env=environment, stdout=stream,
@@ -576,8 +584,8 @@ def supervise(root=ROOT):
                 attempt += 1
                 command = [str(base.PYTHON), "-u", str(root / "implementation/finqa_v57_controller.py"),
                            "run", "--root", str(root), "--controller-attempt", str(attempt)]
-                env = dict(os.environ, V57_CONTROL_ROOT=str(root), PYTHONPATH=os.pathsep.join((
-                    str(root / "implementation"), str(SCIENTIFIC_ROOT / "implementation"), str(evaluation.FROZEN_SOURCE))))
+                env = dict(os.environ, V57_CONTROL_ROOT=str(root),
+                           PYTHONPATH=execution_pythonpath(root))
                 attempt_dir = directory / "attempts" / f"attempt{attempt:04d}"
                 attempt_dir.mkdir(parents=True, exist_ok=False)
                 with (attempt_dir / "controller.log").open("xb") as log:

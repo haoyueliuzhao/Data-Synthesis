@@ -140,3 +140,29 @@ def test_missing_sender_identity_is_explicit_unknown():
     assert value["status"] == "PARTIAL_OR_UNKNOWN"
     assert value["executable"] is None and value["ppid"] is None and value["cgroup"] is None
     assert set(value["read_errors"]) == {"executable", "process_identity", "cgroup"}
+
+
+def test_frozen_wrapper_restores_original_auxiliary_script_directory(tmp_path):
+    # Reproduce the real control bundle: the wrapper is NOT launched from the
+    # repository scripts directory, and PYTHONPATH does not supply that path.
+    control = tmp_path / "control" / "implementation"
+    control.mkdir(parents=True)
+    for name in ("finqa_v57_worker.py", "finqa_v57_signals.py"):
+        (control / name).write_bytes((SCRIPTS / name).read_bytes())
+    science = tmp_path / "science"
+    implementation = science / "implementation"
+    implementation.mkdir(parents=True)
+    (implementation / "finqa_v56_worker.py").write_text("\n".join((
+        "import json, sys",
+        "import finqa_v25_training_replication as auxiliary",
+        "print(json.dumps({'auxiliary': auxiliary.__file__, 'paths': sys.path[:2]}))",
+    )))
+    environment = dict(os.environ, PYTHONPATH=str(control),
+                       V57_SIGNAL_LOG_DIR=str(tmp_path / "signals"))
+    result = subprocess.run([sys.executable, str(control / "finqa_v57_worker.py"),
+        "--mode", "science", "--root", str(science)], env=environment,
+        capture_output=True, text=True, timeout=5)
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["auxiliary"] == str(SCRIPTS / "finqa_v25_training_replication.py")
+    assert payload["paths"] == [str(implementation), str(SCRIPTS)]

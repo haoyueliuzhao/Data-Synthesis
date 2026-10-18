@@ -18,7 +18,8 @@ import finqa_v56_registration as scientific
 
 REPO = scientific.REPO
 SCIENCE_ROOT = scientific.ROOT
-ROOT = SCIENCE_ROOT / "signal_recovery_01"
+PREVIOUS_CONTROL_ROOT = SCIENCE_ROOT / "signal_recovery_01"
+ROOT = SCIENCE_ROOT / "signal_recovery_02"
 PREPARATION_ROOT = SCIENCE_ROOT / "signal_recovery_preparation_01"
 FILES = tuple("finqa_v57_" + name + ".py" for name in
               ("registration", "controller", "signals", "worker"))
@@ -26,6 +27,9 @@ SCIENTIFIC_PROTOCOL_ID = "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87
 SCIENTIFIC_IMPLEMENTATION_ID = "e415b937f644b2afde65c1940ef0d0a7f9c0dca03d58d1079ab1e7253132e5e7"
 OLD_STOP_ID = "3340c7030479e01366329159fab412523827c1496d4c2938247c1c0819dca610"
 OLD_SUPERVISOR_CLOSEOUT_ID = "45381008ad8fa847fc174ea2abaf1583a74376781992601591ba32f20b545b7c"
+PREVIOUS_CONTROL_PROTOCOL_ID = "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a"
+PRIOR_ATTEMPT_COUNT = 19
+ACCEPTED_JOBS = {"seed137.feedback_C05", "seed137.shard00", "seed389.feedback_C05"}
 SCHEMA = "v57_authorized_signal_recovery_control_protocol.v1"
 PREPARED_SCHEMA = "v57_same_science_control_episode_ready.v1"
 require, checked, publish, entry, file_ref, read_ref, sha = (
@@ -43,7 +47,11 @@ def recovery_contract():
         old_all_worker_identities_must_be_gone=True,
         user_authorized_initial_attempts_only=True,
         new_attempts_append_original_scientific_stage=True,
-        original_accepted_jobs_reused=2,
+        original_accepted_jobs_reused=3,
+        previous_control_root=str(PREVIOUS_CONTROL_ROOT),
+        authorized_same_request_pre_CUDA_import_defect_correction=True,
+        restored_auxiliary_import_bytes_must_equal_original_registered_dependency=True,
+        successful_previous_CPU_finalizer_not_repeated=True,
         complete_unaccepted_stage_requires_new_CPU_finalization_and_actual_exit_zero=True,
         inherited_complete_feedback_episodes=2054,
         remaining_feedback_episodes=46, inherited_partial_returned_turns=1,
@@ -108,15 +116,20 @@ def collect_evidence():
     require(protocol["id"] == SCIENTIFIC_PROTOCOL_ID, "wrong V56 scientific protocol")
     implementation = checked(SCIENCE_ROOT / "implementation/record.json")
     require(implementation["id"] == SCIENTIFIC_IMPLEMENTATION_ID, "wrong frozen V56 code")
-    old = checked(SCIENCE_ROOT / "journal/state.json")
+    old = checked(PREVIOUS_CONTROL_ROOT / "journal/state.json")
     old_stop = checked(SCIENCE_ROOT / "control/stop_requested/record.json")
     old_closeout = checked(SCIENCE_ROOT / "supervisor/closeout/record.json")
     require(old_stop["id"] == OLD_STOP_ID
             and old_closeout["id"] == OLD_SUPERVISOR_CLOSEOUT_ID
             and old_closeout["status"] == "STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME",
             "this authorization is tied to the actual V56 signal stop")
-    require(not old["evaluation_registered"] and set(old["accepted"]) == {
-        "seed137.feedback_C05", "seed137.shard00"}, "initial accepted scientific scope changed")
+    previous_closed = checked(PREVIOUS_CONTROL_ROOT / "supervisor/closeout/record.json")
+    require(previous_closed["control_protocol_id"] == PREVIOUS_CONTROL_PROTOCOL_ID
+            and previous_closed["status"] == "STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME"
+            and checked(PREVIOUS_CONTROL_ROOT / "closeout/record.json")["active_workers"] == 0,
+            "the defective prior control episode is not durably stopped")
+    require(not old["evaluation_registered"] and set(old["accepted"]) == ACCEPTED_JOBS,
+            "initial accepted scientific scope changed")
     feedback_path = PREPARATION_ROOT / "feedback_audit/record.json"
     lifecycle_path = PREPARATION_ROOT / "lifecycle_audit/record.json"
     feedback, lifecycle = checked(feedback_path), checked(lifecycle_path)
@@ -145,7 +158,8 @@ def collect_evidence():
                         observed_epoch=time.time(), observed_exit_code=None)
         identities.append(identity)
         attempt = dict(job_id=job, attempt=number, directory=str(directory), launch=entry(launched),
-                       pid=row["pid"], birth=row["birth"], identity_observation=identity)
+                       pid=row["pid"], birth=row["birth"], identity_observation=identity,
+                       control_protocol_id=row.get("control_protocol_id"))
         exit_path = directory / "actual_exit/record.json"
         if exit_path.exists():
             exited = checked(exit_path)
@@ -157,12 +171,36 @@ def collect_evidence():
             attempt.update(actual_exit=None, old_returncode=None,
                            missing_exit_zero_not_fabricated=True)
             unobserved.append(attempt)
+        if row.get("control_protocol_id") == PREVIOUS_CONTROL_PROTOCOL_ID:
+            require(attempt["actual_exit"] is not None,
+                    "every previous control-episode worker requires actual exit evidence")
+            if attempt["old_returncode"] != 0:
+                failure = checked(directory / "failure/record.json")
+                require(failure["CUDA_initialized"] is False
+                        and failure["exception_type"] == "ModuleNotFoundError"
+                        and failure["error"] == "No module named 'finqa_v25_training_replication'",
+                        "this correction cannot retry a different scientific failure")
+                attempt["corrected_pre_CUDA_import_failure"] = entry(directory / "failure/record.json")
         attempts.append(attempt)
-    require(len(attempts) == 7 and {item["job_id"] for item in unobserved} == {
+    require(len(attempts) == PRIOR_ATTEMPT_COUNT and {item["job_id"] for item in unobserved} == {
         "seed251.feedback_C05", "seed389.feedback_C05", "seed137.shard01"},
         "one-time missing-waitpid exception scope changed")
+    require({(row["job_id"], row["attempt"]) for row in unobserved} == {
+        ("seed251.feedback_C05", 1), ("seed389.feedback_C05", 1), ("seed137.shard01", 2)}
+        and len(unobserved) == 3, "historical unknown-exit exception cannot expand")
+    prior_new = [row for row in attempts if row["control_protocol_id"] == PREVIOUS_CONTROL_PROTOCOL_ID]
+    require(len(prior_new) == 12
+            and sum("corrected_pre_CUDA_import_failure" in row for row in prior_new) == 11
+            and [(row["job_id"], row["attempt"]) for row in prior_new if row["old_returncode"] == 0]
+                == [("seed389.feedback_C05", 2)],
+            "the auxiliary-import repair cannot retry a different prior execution scope")
+    finalized = checked(SCIENCE_ROOT / "stages/seed389/feedback_C05/attempts/attempt0002/reused_result/record.json")
+    require(finalized["scientific_calls"] == 0 and finalized["verified_durable_result"] is True,
+            "successful CPU finalization must not have repeated scientific work")
     for path in (SCIENCE_ROOT / "supervisor/launch/record.json",
-                 SCIENCE_ROOT / "controllers/attempt0001/launch/record.json"):
+                 SCIENCE_ROOT / "controllers/attempt0001/launch/record.json",
+                 PREVIOUS_CONTROL_ROOT / "supervisor/launch/record.json",
+                 PREVIOUS_CONTROL_ROOT / "controllers/attempt0001/launch/record.json"):
         launch = checked(path)
         require(process_identity_gone(launch["pid"], launch["birth"]), "old control identity still alive")
         identities.append(dict(pid=launch["pid"], birth=launch["birth"], gone=True,
@@ -182,7 +220,20 @@ def collect_evidence():
     # cold consumers validate tensor bytes/numerical bindings before actual use.
     for key in counts:
         if key not in audits:
-            audits[key] = lifecycle["resume_audits"][key]
+            if key in lifecycle["resume_audits"]:
+                audits[key] = lifecycle["resume_audits"][key]
+            else:
+                related = [row for row in attempts if row["job_id"] == key]
+                require(related and all("corrected_pre_CUDA_import_failure" in row for row in related)
+                        and old["job_states"][key]["progress_units"] == 0,
+                        "zero scientific progress requires actual pre-CUDA failure evidence")
+                intent = checked(Path(related[-1]["directory"]) / "dispatch_intent/record.json")
+                audit = intent["durable_before"]
+                require(audit["resume_allowed"] is True and audit["unknown_calls"] == 0
+                        and audit["progress_units"] == 0,
+                        "actual pre-CUDA attempt had nonempty or uncertain scientific state")
+                audits[key] = copy.deepcopy(audit)
+                audits[key]["no_model_call_or_CUDA_initialization"] = True
     states = initial_job_states(old, audits, attempt_counts=counts)
     require(audits["seed137.shard00"]["progress_units"] == 186
             and audits["seed137.shard01"]["progress_units"] == 0
@@ -190,12 +241,15 @@ def collect_evidence():
             "complete task cursor changed from stopped V56 audit")
     return dict(old=old, attempts=attempts, identities=identities,
         known_unobserved_attempts=unobserved, initial_job_states=states, audits=audits,
-        references=dict(old_journal=entry(SCIENCE_ROOT / "journal/state.json"),
+        references=dict(old_journal=entry(PREVIOUS_CONTROL_ROOT / "journal/state.json"),
             old_stop=entry(SCIENCE_ROOT / "control/stop_requested/record.json"),
             old_supervisor_closeout=entry(SCIENCE_ROOT / "supervisor/closeout/record.json"),
             old_controller_exit=entry(SCIENCE_ROOT / "supervisor/attempts/attempt0001/actual_exit/record.json"),
             feedback_audit=entry(feedback_path), lifecycle_audit=entry(lifecycle_path),
             incident_trace=entry(PREPARATION_ROOT / "incident_trace/record.json"),
+            previous_control_protocol=entry(PREVIOUS_CONTROL_ROOT / "protocol/record.json"),
+            previous_control_closeout=entry(PREVIOUS_CONTROL_ROOT / "supervisor/closeout/record.json"),
+            previous_control_stop=entry(PREVIOUS_CONTROL_ROOT / "control/stop_requested/record.json"),
             scientific_protocol=entry(SCIENCE_ROOT / "protocol/record.json"),
             scientific_implementation=entry(SCIENCE_ROOT / "implementation/record.json"),
             scientific_prepared=entry(SCIENCE_ROOT / "prepared/record.json")))
@@ -299,8 +353,8 @@ def checked_prepared(root=ROOT):
             and value["old_missing_returncode"] is None
             and value["complete_unaccepted_stage_requires_new_finalizer"] is True,
             "prepared scientific scope or unknown historical exit changed")
-    require(set(value["accepted"]) == {"seed137.feedback_C05", "seed137.shard00"}
-            and len(value["attempt_history"]) == 7
+    require(set(value["accepted"]) == ACCEPTED_JOBS
+            and len(value["attempt_history"]) == PRIOR_ATTEMPT_COUNT
             and len(value["known_unobserved_attempts"]) == 3
             and value["evaluation_registered"] is False,
             "initial stopped-attempt exception changed")

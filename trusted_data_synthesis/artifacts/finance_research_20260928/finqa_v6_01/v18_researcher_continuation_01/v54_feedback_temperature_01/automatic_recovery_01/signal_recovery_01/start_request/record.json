@@ -1,0 +1,27 @@
+{
+  "schema": "v57_actual_single_supervisor_start.v1",
+  "at": "2026-10-18T12:11:47.478276+00:00",
+  "source_commit": "085098d11427f48a82888cff265afcf6c6ffcd61",
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "scientific_protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "explicit_user_request": "尽快恢复任务，同时排查异常信号来源",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01/implementation/finqa_v57_controller.py",
+    "supervise",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01"
+  ],
+  "pid": 3549209,
+  "birth": "474990212",
+  "frozen_CPU_verification_id": "1736df1f54ad12c7df8eab6bdb6ac2248ed0bc84f979d8946aaa22fe4e951a88",
+  "scientific_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+  "control_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01",
+  "max_GPU_workers": 4,
+  "old_stop_marker_deleted": false,
+  "old_controller_restarted": false,
+  "old_unknown_exit_code_rewritten": false,
+  "old_sampling_quota_reset": false,
+  "id": "d738e0db741afee8e91950d2aeddbea8139b337800710f7b8923b314e2bbeec3"
+}

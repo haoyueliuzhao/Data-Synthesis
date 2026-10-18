@@ -1,0 +1,80 @@
+{
+  "schema": "v57_authorized_old_identity_exit_observation.v1",
+  "observed_epoch": 1792325434.2697625,
+  "identities": [
+    {
+      "pid": 3302575,
+      "birth": "473936454",
+      "gone": true,
+      "observed_epoch": 1792325434.2221944,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302616,
+      "birth": "473936626",
+      "gone": true,
+      "observed_epoch": 1792325434.2226813,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3475048,
+      "birth": "474710315",
+      "gone": true,
+      "observed_epoch": 1792325434.223115,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3498140,
+      "birth": "474832273",
+      "gone": true,
+      "observed_epoch": 1792325434.2235425,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3476612,
+      "birth": "474719994",
+      "gone": true,
+      "observed_epoch": 1792325434.2237928,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302587,
+      "birth": "473936505",
+      "gone": true,
+      "observed_epoch": 1792325434.2242115,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302607,
+      "birth": "473936562",
+      "gone": true,
+      "observed_epoch": 1792325434.2244613,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302553,
+      "birth": "473936250",
+      "gone": true,
+      "observed_epoch": 1792325434.2246945,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/supervisor/launch/record.json",
+        "sha256": "ced8d2b6698743beba58ffe89d2412fe9f5797d84401f93de6d4888c130aa893",
+        "id": "1c2734dc00f97837c9b7b9e1860553896d979f92926c50c81066d99a4b8ac24c"
+      }
+    },
+    {
+      "pid": 3302555,
+      "birth": "473936326",
+      "gone": true,
+      "observed_epoch": 1792325434.224867,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/controllers/attempt0001/launch/record.json",
+        "sha256": "05a39c565f0e3f5ec53666d1904f34b0eac9b57d0f09b95c7426e9b4bc649830",
+        "id": "14be855b078cb2f5468bec52cb17f88625872a75bcf9a4329f49e225b5087b6a"
+      }
+    }
+  ],
+  "all_observed_gone": true,
+  "old_missing_returncodes_not_inferred": true,
+  "id": "83c052c5458019df52d8d1014efdc6e45a8fc79666c4687a4c48e7c6df4f5132"
+}
