@@ -189,6 +189,27 @@ def test_pre_cuda_capacity_wait_does_no_model_work_or_extra_peak_reset(environme
     assert guard.report()["all_gates_passed"]
 
 
+def test_interrupted_resource_wait_accounts_its_elapsed_interval_exactly_once(environment, monkeypatch):
+    f = environment
+    clock = {"now": 100.0}
+    monkeypatch.setattr(runtime.time, "monotonic", lambda: clock["now"])
+    f.row["free_mib"] = (runtime.MINIMUM_FREE_GIB["train"] - 1) * 1024
+    guard = f.make()
+
+    def stop_during_wait(seconds):
+        clock["now"] += seconds
+        guard._signal(signal.SIGTERM, None)
+
+    monkeypatch.setattr(runtime.time, "sleep", stop_during_wait)
+    with pytest.raises(runtime.ExplicitStop, match="resource wait"):
+        with guard:
+            pytest.fail("a stopped pre-CUDA wait cannot reach scientific work")
+    closeout = runtime.checked(guard.directory / "closeout/record.json")
+    assert closeout["resources"]["resource_wait_seconds"] == 2.0
+    assert guard.wait_seconds == 2.0
+    assert not f.cuda.initialized and f.cuda.resets == 0
+
+
 def test_hard_host_peak_fails_instead_of_waiting_forever_before_cuda(environment, monkeypatch):
     f = environment
     f.process["peak_rss_bytes"] = 193 * runtime.GIB

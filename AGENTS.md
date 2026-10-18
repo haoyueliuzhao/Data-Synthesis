@@ -172,6 +172,8 @@ V54已以源提交 `58240ac877` 冻结89文件，实施包 `d3ffbe95fa28c5881c44
 
 离线检查发现V54新worker遗漏原 `CUBLAS_WORKSPACE_CONFIG=:4096:8`，而模型启用确定性算法；工作区已补环境和CUDA前核验，并让新provider保存底层异常文本/traceback而不改UNKNOWN语义，环境3项及异常3项针对性CPU检查通过。独立GPU2最小16×16矩阵运算确认缺失环境时报确定性错误、设置后通过，无Student/反馈/反传/optimizer；证据 `implementation_diagnosis_01/cuda_minimal/record.json`。旧科学失败只保存RuntimeError类型，底层文本丢失，不能据新诊断伪造旧异常或宣称已证实完整因果。原89文件冻结、协议与失败不回写；修复版尚未进行新科学冻结或重启。后续需用户明确批准独立恢复及两个未返回请求各一次的有界重新执行，保留原意图、父点/config/seed与其余剂量，不得重启旧入口或自动重采样。
 
+用户于2026-10-18对“在新目录中保留旧失败，将seed137、389的两条未返回请求各重新执行一次，然后继续原实验预算”明确回复“同意请求”。V55仅在V54下独立 `recovery_01/` 接续：两条都是首题AMT/2012/page_121.pdf-1、draw0/seed11/step0，按原point/参数/config/condition各允许一次重新执行，模型调用前原子claim，实际返回后独立resolution，旧UNKNOWN/意图/失败不回写。seed251旧零调用，原队列首次执行；两条额度不能自动扩展至其他未知调用或下一次启动。已验收父点和C1路径只读继承，剩1788次optimizer更新、2100条完整低温反馈、12267条评价不变；不重训C1、不重新开展B。新版本包含确定性CuBLAS环境校验、异常原文记录及中断等待计时修复，原科学数学、GPU0至7、最多4worker及硬资源门保持；原控制器等待89.84583379887044秒继承，不把并行worker等待再加一次。新冻结/准备不等于实际启动，实际状态见 `trusted_data_synthesis/docs/finqa_v55_bounded_feedback_recovery_20261018.md` 和新根唯一launch/queue；禁止重启旧V54入口。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

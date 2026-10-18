@@ -126,6 +126,14 @@ def process_state(process, result_exists):
     return ("EXITED_SUCCESS" if code == 0 else "EXITED_FAILURE"), code
 
 
+def registration_module_name(root):
+    root = Path(root).resolve()
+    if root == DEFAULT_ROOT:
+        return "finqa_v54_registration"
+    require(root == DEFAULT_ROOT / "recovery_01", "unregistered experiment/recovery controller root")
+    return "finqa_v55_registration"
+
+
 def _status(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -160,7 +168,7 @@ class Controller:
     def __init__(self, root, *, runtime=None, registration=None):
         self.root = Path(root).resolve()
         self.runtime = runtime or importlib.import_module("finqa_v54_runtime")
-        self.registration = registration or importlib.import_module("finqa_v54_registration")
+        self.registration = registration or importlib.import_module(registration_module_name(self.root))
         self.protocol = self.registration.checked_protocol(self.root)
         self.registration.checked_implementation(self.root)
         prepared = self.registration.checked_prepared(self.root)
@@ -187,7 +195,9 @@ class Controller:
         self.stop_reason = None
         self.evaluation_registered = False
         self.wait_started = None
-        self.resource_wait_seconds = 0.0
+        self.resource_wait_seconds = float(self.protocol.get("inherited_resource_wait_seconds", 0.0))
+        require(math.isfinite(self.resource_wait_seconds) and self.resource_wait_seconds >= 0,
+                "invalid inherited resource-wait accounting")
 
     def job_directory(self, job):
         if job["kind"] == "generate":
@@ -428,6 +438,7 @@ class Controller:
         complete = all(all(row["status"] == "COMPLETE" for row in summary["comparisons"].values())
                        for summary in panels.values())
         primary = panels[evaluation.PRIMARY_PANEL]
+        recovery_accounting = self.feedback_recovery_accounting(require_complete=True)
         promotion = stats.advancement(primary, contracts_complete=complete)
         evaluation.publish(self.root / "promotion/record.json", dict(
             schema="v54_directional_development_decision.v1", protocol_id=self.protocol["id"],
@@ -442,12 +453,46 @@ class Controller:
             new_API_calls=0, old_test1147_new_generation=0,
             actual_new_optimizer_budget=self.prepared["actual_new_optimizer_budget"],
             resource_wait_seconds=self.resource_wait_seconds,
+            feedback_request_recovery=recovery_accounting,
             panel_summaries={panel: evaluation.file_binding(self.root / "evaluations/panels" /
                 panel / "summary/record.json") for panel in panels},
             promotion=evaluation.file_binding(self.root / "promotion/record.json"),
             automatic_followup_started=False, finished_epoch=time.time()))
         self.status(value["status"])
         return value
+
+    def feedback_recovery_accounting(self, *, require_complete=False):
+        authority = self.protocol.get("feedback_recovery")
+        if authority is None:
+            return None
+        claims, resolutions = {}, {}
+        for seed in (137, 389):
+            directory = self.root / "feedback_recovery" / f"seed{seed}"
+            claim_path, resolution_path = directory / "claim/record.json", directory / "resolution/record.json"
+            if claim_path.exists():
+                claim = evaluation.checked(claim_path)
+                require(claim["protocol_id"] == self.protocol["id"]
+                        and claim["authorization_id"] == authority["id"]
+                        and claim["seed"] == seed and claim["authorized_reexecution_ordinal"] == 1,
+                        "reexecution claim escaped the two registered one-shot requests")
+                claims[str(seed)] = evaluation.file_binding(claim_path)
+            if resolution_path.exists():
+                resolution = evaluation.checked(resolution_path)
+                require(str(seed) in claims and resolution["claim_id"] == claim["id"]
+                        and resolution["protocol_id"] == self.protocol["id"]
+                        and resolution["authorization_id"] == authority["id"]
+                        and resolution["seed"] == seed and resolution["new_actual_model_calls"] == 1
+                        and resolution["old_unknown_record_preserved"] is True
+                        and resolution["old_unknown_reclassified"] is False,
+                        "actual returned receipt must resolve the same independent claim")
+                resolutions[str(seed)] = evaluation.file_binding(resolution_path)
+        if require_complete:
+            require(len(claims) == len(resolutions) == 2, "both authorized requests need actual returned receipts")
+        return dict(authorization_id=authority["id"], old_unknown_calls=2,
+            authorized_single_request_reexecutions=2, actual_claims=claims,
+            actual_returned_receipts=resolutions, actual_returned_reexecution_calls=len(resolutions),
+            old_unknowns_reclassified=False, logical_complete_feedback_budget=2100,
+            old_failed_calls_are_additional_historical_attempts=True)
 
     def status(self, status):
         _status(self.root / "queue/status.json", dict(schema="v54_controller_queue.v1",
@@ -494,10 +539,15 @@ class Controller:
                 time.sleep(0.2)
         status = ("STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME" if self.stop_reason["kind"] == "EXPLICIT_STOP"
                   else "STOPPED_FAILURE_NO_RETRY")
+        try:
+            recovery_accounting = self.feedback_recovery_accounting()
+        except (ValueError, KeyError, OSError) as error:
+            recovery_accounting = dict(status="UNVERIFIED", error_type=type(error).__name__, error=str(error))
         value = evaluation.publish(self.root / "closeout/record.json", dict(
             schema="v54_fixed_experiment_closeout.v1", protocol_id=self.protocol["id"], status=status,
             reason=self.stop_reason, active_workers=0, accepted_jobs=list(self.accepted),
             launched_jobs=sorted(self.launched), resource_wait_seconds=self.resource_wait_seconds,
+            feedback_request_recovery=recovery_accounting,
             shared_shutdown_grace_seconds=STOP_GRACE_SECONDS, automatic_retry=False,
             historical_evidence_unchanged=True, finished_epoch=time.time()))
         self.status(status)

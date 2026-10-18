@@ -175,7 +175,8 @@ def checked_old_point(parent, state, outer, rt):
             "persisted G/theta_bar is not the original complete parent point")
 
 
-def execute_feedback(directory, parent, state, outer, driver, assets, science, rt, monitor):
+def execute_feedback(directory, parent, state, outer, driver, assets, science, rt, monitor,
+                     *, recovery_root=None):
     temperature = importlib.import_module("finqa_v54_temperature")
     checked_old_point(parent, state, outer, rt)
     if (Path(directory) / "payload/record.json").exists():
@@ -190,10 +191,18 @@ def execute_feedback(directory, parent, state, outer, driver, assets, science, r
     theta = {name: value.to(driver.parameters[name].device)
              for name, value in outer["theta_bar"].items()}
     cfg = temperature.RunConfig.model_validate(science["feedback_config"])
+    recovery_factory = None
+    if recovery_root is not None:
+        protocol = checked(Path(recovery_root) / "protocol/record.json")
+        if "feedback_recovery" in protocol:
+            recovery = importlib.import_module("finqa_v55_feedback_recovery")
+            recovery_factory = lambda condition: recovery.registered_guard(
+                recovery_root, parent["seed"], condition)
     collector = temperature.LocalFeedbackCollector(
         snapshot=assets["snapshot"], role_plan=assets["role_plan"],
         root=Path(directory) / "feedback", config=cfg.model_copy(update={"temperature": 0.5}),
-        model_id=assets["assets"]["base_binding"]["id"], seeds=(11, 29))
+        model_id=assets["assets"]["base_binding"]["id"], seeds=(11, 29),
+        recovery_guard_factory=recovery_factory)
 
     def event(value):
         monitor.snapshot("feedback." + value["phase"], boundary=True,
@@ -399,7 +408,7 @@ def run(root, seed, stage, gpu_index):
                     body = execute_shard(directory, parent, stage, driver, pool, cache, rt, monitor)
                 elif stage == "feedback_C05":
                     body = execute_feedback(directory, parent, state, outer, driver,
-                                            assets, science, rt, monitor)
+                                            assets, science, rt, monitor, recovery_root=root)
                 elif stage == "replay_C05":
                     body = execute_replay(root, directory, parent, state, outer, driver, rt, monitor)
                 elif stage == "distribution_C05":

@@ -115,7 +115,8 @@ def checked_condition(condition):
     return condition
 
 
-def _adapt_temperature_guard(function, temperature, *, receipt_guard=False):
+def _adapt_temperature_guard(function, temperature, *, receipt_guard=False,
+                             before_generate_hook=False):
     """Copy only two explicit old T1 checks; never mutate the old module.
 
     Generation, parsing, actual-token receipts and all other admission checks
@@ -123,9 +124,23 @@ def _adapt_temperature_guard(function, temperature, *, receipt_guard=False):
     """
     source = textwrap.dedent(inspect.getsource(function))
     tree = ast.parse(source)
-    matched = {"config": 0, "receipt": 0}
+    matched = {"config": 0, "receipt": 0, "generation_hook": 0}
 
     class Guards(ast.NodeTransformer):
+        def visit_AugAssign(self, node):
+            self.generic_visit(node)
+            if before_generate_hook and ast.unparse(node.target) == "self.actual_model_calls":
+                require(isinstance(node.op, ast.Add) and isinstance(node.value, ast.Constant)
+                        and node.value.value == 1, "original actual generate-call counter changed")
+                matched["generation_hook"] += 1
+                call = ast.Expr(value=ast.Call(
+                    func=ast.Attribute(value=ast.Name(id="self", ctx=ast.Load()),
+                                       attr="_before_generate", ctx=ast.Load()),
+                    args=[ast.Name(id="request", ctx=ast.Load()),
+                          ast.Name(id="request_hash", ctx=ast.Load())], keywords=[]))
+                return [ast.copy_location(call, node), node]
+            return node
+
         def visit_Compare(self, node):
             self.generic_visit(node)
             if (ast.unparse(node.left) == "(config.temperature, config.top_p, config.top_k)"
@@ -145,7 +160,8 @@ def _adapt_temperature_guard(function, temperature, *, receipt_guard=False):
             return node
 
     tree = Guards().visit(tree)
-    require(matched == {"config": 1, "receipt": int(receipt_guard)},
+    require(matched == {"config": 1, "receipt": int(receipt_guard),
+                        "generation_hook": int(before_generate_hook)},
             "historical temperature guard structure changed")
     ast.fix_missing_locations(tree)
     namespace = dict(function.__globals__)
@@ -156,15 +172,23 @@ def _adapt_temperature_guard(function, temperature, *, receipt_guard=False):
 class LocalTorchProvider(providers.LocalTorchProvider):
     """Actual HF temperature sampling, with a pre-registered condition per call."""
 
-    def __init__(self, *args, condition, before_call=None, **kwargs):
+    def __init__(self, *args, condition, before_call=None, recovery_guard=None, **kwargs):
         self.condition = copy.deepcopy(checked_condition(condition))
         self.before_call = before_call
+        self.recovery_guard = recovery_guard
+        require(recovery_guard is None or recovery_guard.condition == self.condition,
+                "recovery guard must retain the exact scientific feedback condition")
         super().__init__(*args, **kwargs)
         require(self.identity.model_dump(mode="json") == self.condition["identity"],
                 "provider belongs to another parameter point")
         self._temperature_chat = _adapt_temperature_guard(
-            providers.LocalTorchProvider.chat, self.condition["temperature"]
+            providers.LocalTorchProvider.chat, self.condition["temperature"],
+            before_generate_hook=True,
         )
+
+    def _before_generate(self, request, request_sha256):
+        if self.recovery_guard is not None:
+            self.recovery_guard.before_generate(request, request_sha256)
 
     async def chat(self, messages, tools, config):
         require(config.model_dump(mode="json") in self.condition["configs"],
@@ -202,11 +226,14 @@ class LocalTorchProvider(providers.LocalTorchProvider):
         sampling = dict(turn.receipt.sampling,
                         feedback_condition_id=self.condition["id"],
                         probability_contract_id=PROBABILITY_CONTRACT_ID)
-        return turn.model_copy(update={
+        bound_turn = turn.model_copy(update={
             "receipt": turn.receipt.model_copy(update={"sampling": sampling}),
             "provider_metadata": dict(turn.provider_metadata,
                                       feedback_condition_id=self.condition["id"]),
         })
+        if self.recovery_guard is not None:
+            self.recovery_guard.returned(bound_turn)
+        return bound_turn
 
 
 def seal_feedback_cohort(episodes, *, condition, denominator, identity,
@@ -360,7 +387,7 @@ def feedback_gradient(cohort, rewards, model, theta, *, condition,
 class LocalFeedbackCollector(HistoricalCollector):
     """New C05 queue: point plus probability plus roster, before any model call."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, *, recovery_guard_factory=None, **kwargs):
         config = RunConfig.model_validate(kwargs["config"])
         require(config.temperature == 0.5, "new generation is authorized only for C05")
         # Reuse the old material/harness checks with their admitted T1 field,
@@ -369,6 +396,7 @@ class LocalFeedbackCollector(HistoricalCollector):
         require(self.seeds == (11, 29), "only registered draw seeds 11,29")
         self.config = config
         self.condition = self.feedback_root = None
+        self.recovery_guard_factory = recovery_guard_factory
 
     def collect(self, model, tokenizer, theta, *, point_id, event_sink=None):
         from trusted_synthesis.finance_research.planning import task_key
@@ -390,6 +418,10 @@ class LocalFeedbackCollector(HistoricalCollector):
                                         role_plan_id=self.role_plan["id"])
             root = self.root / condition["id"]
             self.condition, self.feedback_root = condition, root
+            # One instance spans every turn/task in both draws. A new provider
+            # in draw1 must not reset the consumed/resolved draw0 allowance.
+            recovery_guard = (self.recovery_guard_factory(condition)
+                              if self.recovery_guard_factory is not None else None)
             emit(dict(phase="feedback_condition_registration", feedback_root=str(root),
                       feedback_condition_id=condition["id"], temperature=0.5))
             if root.exists():
@@ -416,7 +448,8 @@ class LocalFeedbackCollector(HistoricalCollector):
                                 task_keys=[task_key(t) for t in self.tasks])
                     provider = LocalTorchProvider(model, tokenizer, identity,
                                                   parameter_tensors=installed,
-                                                  condition=condition, before_call=emit)
+                                                  condition=condition, before_call=emit,
+                                                  recovery_guard=recovery_guard)
                     asyncio.run(execute_run(directory, provider))
             episodes, generation_seals = [], []
             for index in range(2):

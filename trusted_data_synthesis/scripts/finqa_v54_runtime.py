@@ -197,6 +197,16 @@ class ResourceGuard:
 
     def _wait(self, *, cuda_initialized):
         start = time.monotonic()
+        try:
+            return self._wait_until_capacity(cuda_initialized=cuda_initialized)
+        finally:
+            # A stopped wait still consumed this worker's slot and wall time.
+            # Count each invocation once, without mixing concurrent worker
+            # seconds into the controller's separately recorded queue clock.
+            self.wait_seconds += time.monotonic() - start
+
+    def _wait_until_capacity(self, *, cuda_initialized):
+        start = time.monotonic()
         minimum = MINIMUM_FREE_GIB[self.kind] * GIB
         while True:
             if self.stop.requested:
@@ -220,7 +230,6 @@ class ResourceGuard:
                 free, required = int(rows[self.gpu]["free_mib"] * 1024**2), minimum
             if host["passed"] and free >= required:
                 elapsed = time.monotonic() - start
-                self.wait_seconds += elapsed
                 self._record(dict(at=now(), event="resource_admitted", gpu_index=self.gpu,
                                   free_bytes=free, required_bytes=required, host=host,
                                   cuda_initialized=cuda_initialized, elapsed_seconds=elapsed))
