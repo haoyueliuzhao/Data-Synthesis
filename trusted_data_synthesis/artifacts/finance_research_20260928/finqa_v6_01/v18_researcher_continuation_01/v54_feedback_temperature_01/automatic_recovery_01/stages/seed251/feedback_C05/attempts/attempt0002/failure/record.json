@@ -1,0 +1,29 @@
+{
+  "schema": "v56_actual_attempt_failure.v1",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job": {
+    "id": "seed251.feedback_C05",
+    "seed": 251,
+    "stage": "feedback_C05",
+    "kind": "feedback",
+    "arm": null
+  },
+  "pid": 3549452,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/feedback_C05/attempts/attempt0002",
+  "exception_chain": [
+    {
+      "type": "ModuleNotFoundError",
+      "module": "builtins",
+      "actual_errno": null,
+      "message": "No module named 'finqa_v25_training_replication'"
+    }
+  ],
+  "exception_type": "ModuleNotFoundError",
+  "error": "No module named 'finqa_v25_training_replication'",
+  "finished_epoch": 1792325523.1480029,
+  "resource_closeout": null,
+  "resources": null,
+  "automatic_retry_in_worker": false,
+  "CUDA_initialized": false,
+  "id": "87c03c78c8a64963696fd910092300f1a6ec65165209b59dbac9f9062f642947"
+}

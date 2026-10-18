@@ -1,0 +1,9 @@
+{
+  "birth": "474990212",
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "id": "d1638e656fa771cf04543c8c5f7c01a5200f4a3ac6fe87cbfea0385000dd8244",
+  "pid": 3549209,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_supervisor_launch.v1",
+  "started_epoch": 1792325510.4800253
+}

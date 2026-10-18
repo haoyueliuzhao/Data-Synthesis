@@ -192,6 +192,8 @@ V56随后于2026-10-18 19:45:58在137 shard02收到SIGTERM，19:46:13控制器�
 
 V57首个control01于20:11:47实际启动，但包装入口遗漏原辅助脚本路径，12新attempt中389反馈CPU收尾真实exit0并accepted，其余11项均在CUDA前报 `ModuleNotFoundError: finqa_v25_training_replication`、真实exit1，新增科学采样/梯度/训练均0。用户本次“尽快恢复”请求的实现修正继续在独立 `signal_recovery_02/` 登记，01失败/冻结/stop不回写。01已由核验身份的维护命令于20:14:04停止，20:14:10所有进程退出；sender PID3552678/UID1004被新观测器真实捕获，此为已知维护停止，不解释此前未知信号。02恢复原辅助脚本目录且核对与原登记字节相同，新增真实worker导入链预检；保留19旧attempt、3accepted，不重复389收尾，仅重接11项确定CUDA前失败及未开始队列。2054完整反馈/46剩、208完整class/1280剩及原数值资源剂量不变；旧3未知waitpid例外不扩展。实际状态以02目录与V57说明为准。
 
+V57修正版02已于2026-10-18 20:25:31北京时间以源提交 `ac5792edeb` 正式启动，控制协议ID `0c67ed425dec0c64a6fdcb6b9e72625d70db2e15611029b10c54c416551ca920`、准备ID `aac854d97f3841a67e6feee72c41e51f02129ce91e096df910d4f1c155357fce`。28项不同CPU用例通过，正式冻结worker原序导入287项依赖匹配且无CUDA/model/parent加载；新监督器PID3565039/birth475072652，controller3565117/birth475072962。四worker分别为251feedback attempt3/GPU1，137shard01 attempt4/GPU4、shard02 attempt3/GPU6、shard03 attempt2/GPU7。20:28:18反馈251由654至659、实际returned1309至1318，旧turn0不重调、新turn1真实封存；389已accepted不重派。20:29:28新增5完整class任务31行，四worker科学资源边界通过；证据 `signal_recovery_02/startup_verification/record.json`。整轮、optimizer及评价尚未完成，不能把启动通过当实验通过。当前只查02控制目录，原V56/01停止和冻结不回写，不得重复启动任何已有入口；历史未知SIGTERM/SIGKILL发送者仍未确定。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

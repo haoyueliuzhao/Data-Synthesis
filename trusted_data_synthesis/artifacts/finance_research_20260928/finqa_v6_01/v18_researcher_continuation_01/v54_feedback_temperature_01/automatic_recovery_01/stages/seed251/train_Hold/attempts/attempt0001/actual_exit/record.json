@@ -1,0 +1,13 @@
+{
+  "actual_waitpid_observed": true,
+  "attempt": 1,
+  "birth": "474996136",
+  "gpu_index": 2,
+  "id": "e79816d5c68374c26df083bfabf5748c50a753ece156394a575faf720ead78e1",
+  "job_id": "seed251.train_Hold",
+  "observed_epoch": 1792325572.2087777,
+  "pid": 3550591,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "returncode": 1,
+  "schema": "v56_actual_attempt_worker_exit.v1"
+}

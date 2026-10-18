@@ -1,0 +1,186 @@
+{
+  "schema": "v57_authorized_old_identity_exit_observation.v1",
+  "observed_epoch": 1792326253.5340226,
+  "identities": [
+    {
+      "pid": 3302575,
+      "birth": "473936454",
+      "gone": true,
+      "observed_epoch": 1792326253.4809318,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302616,
+      "birth": "473936626",
+      "gone": true,
+      "observed_epoch": 1792326253.4814372,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3475048,
+      "birth": "474710315",
+      "gone": true,
+      "observed_epoch": 1792326253.4818876,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3498140,
+      "birth": "474832273",
+      "gone": true,
+      "observed_epoch": 1792326253.4823198,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550089,
+      "birth": "474994073",
+      "gone": true,
+      "observed_epoch": 1792326253.4825761,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3476612,
+      "birth": "474719994",
+      "gone": true,
+      "observed_epoch": 1792326253.483207,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550124,
+      "birth": "474994164",
+      "gone": true,
+      "observed_epoch": 1792326253.4836257,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550134,
+      "birth": "474994252",
+      "gone": true,
+      "observed_epoch": 1792326253.484246,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550476,
+      "birth": "474995401",
+      "gone": true,
+      "observed_epoch": 1792326253.4848654,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302587,
+      "birth": "473936505",
+      "gone": true,
+      "observed_epoch": 1792326253.4854918,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3549452,
+      "birth": "474991507",
+      "gone": true,
+      "observed_epoch": 1792326253.4857457,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550150,
+      "birth": "474994314",
+      "gone": true,
+      "observed_epoch": 1792326253.486371,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550431,
+      "birth": "474995222",
+      "gone": true,
+      "observed_epoch": 1792326253.4869862,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550442,
+      "birth": "474995290",
+      "gone": true,
+      "observed_epoch": 1792326253.4876018,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550466,
+      "birth": "474995354",
+      "gone": true,
+      "observed_epoch": 1792326253.4882255,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550591,
+      "birth": "474996136",
+      "gone": true,
+      "observed_epoch": 1792326253.488834,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302607,
+      "birth": "473936562",
+      "gone": true,
+      "observed_epoch": 1792326253.48947,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3549529,
+      "birth": "474992155",
+      "gone": true,
+      "observed_epoch": 1792326253.4897385,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3550611,
+      "birth": "474996184",
+      "gone": true,
+      "observed_epoch": 1792326253.4901638,
+      "observed_exit_code": null
+    },
+    {
+      "pid": 3302553,
+      "birth": "473936250",
+      "gone": true,
+      "observed_epoch": 1792326253.4908366,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/supervisor/launch/record.json",
+        "sha256": "ced8d2b6698743beba58ffe89d2412fe9f5797d84401f93de6d4888c130aa893",
+        "id": "1c2734dc00f97837c9b7b9e1860553896d979f92926c50c81066d99a4b8ac24c"
+      }
+    },
+    {
+      "pid": 3302555,
+      "birth": "473936326",
+      "gone": true,
+      "observed_epoch": 1792326253.491008,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/controllers/attempt0001/launch/record.json",
+        "sha256": "05a39c565f0e3f5ec53666d1904f34b0eac9b57d0f09b95c7426e9b4bc649830",
+        "id": "14be855b078cb2f5468bec52cb17f88625872a75bcf9a4329f49e225b5087b6a"
+      }
+    },
+    {
+      "pid": 3549209,
+      "birth": "474990212",
+      "gone": true,
+      "observed_epoch": 1792326253.491188,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01/supervisor/launch/record.json",
+        "sha256": "420136e6c1ad636e1f3abf43956a0914e6bda54de7ee71e133287f856f17861e",
+        "id": "d1638e656fa771cf04543c8c5f7c01a5200f4a3ac6fe87cbfea0385000dd8244"
+      }
+    },
+    {
+      "pid": 3549280,
+      "birth": "474990512",
+      "gone": true,
+      "observed_epoch": 1792326253.4913778,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01/controllers/attempt0001/launch/record.json",
+        "sha256": "114dc95a4df5fe294329a478b75bb7956ff08b7f027879b4a6d05f6e2359589e",
+        "id": "2b488d7033887739a7b693ccb239db7f825c06193082be289753e1b7523ab8aa"
+      }
+    }
+  ],
+  "all_observed_gone": true,
+  "old_missing_returncodes_not_inferred": true,
+  "id": "79f900cbf3bff3678a1059534368df591f001d80ef54d61c854c53309f73d1f5"
+}

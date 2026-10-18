@@ -1,0 +1,68 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 50653,
+      "index": 2,
+      "memory_free_mib": 50653,
+      "processes": [
+        {
+          "pid": 2447819,
+          "used_memory_mib": "30492"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 30501,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102"
+    },
+    "host": {
+      "available_bytes": 831206879232,
+      "live_worker_count": 0,
+      "required_bytes": 154618822656,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290287281,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+    "minimum_free_mib": 26624
+  },
+  "attempt": 1,
+  "birth": "474996136",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "0-37,76-113",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01/implementation/finqa_v57_worker.py",
+    "--mode",
+    "science",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "251",
+    "--stage",
+    "train_Hold",
+    "--gpu-index",
+    "2"
+  ],
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+  "id": "1491176f42045d4d38e26200c0ef6442c5feb021d4a15dfcb46680945cc360f7",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": "Hold",
+    "dependencies": [],
+    "id": "seed251.train_Hold",
+    "job_id": "seed251.train_Hold",
+    "kind": "train",
+    "memory_phase": "train",
+    "priority": 5,
+    "seed": 251,
+    "stage": "train_Hold"
+  },
+  "original_frozen_scientific_entrypoint": true,
+  "pid": 3550591,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_actual_attempt_launch.v1",
+  "started_epoch": 1792325566.7225997
+}

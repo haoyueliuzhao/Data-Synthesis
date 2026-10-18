@@ -1,0 +1,72 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 37240,
+      "index": 6,
+      "memory_free_mib": 37240,
+      "processes": [
+        {
+          "pid": 3509639,
+          "used_memory_mib": "26604"
+        },
+        {
+          "pid": 3545715,
+          "used_memory_mib": "17296"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 43915,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526"
+    },
+    "host": {
+      "available_bytes": 830626656256,
+      "live_worker_count": 3,
+      "required_bytes": 668703952896,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290289924,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-06a72e8c72bc84fed61017dde1354a5d859725e982c7efc0de6a264470a09910.lock",
+    "minimum_free_mib": 26624
+  },
+  "attempt": 1,
+  "birth": "474995401",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_01/implementation/finqa_v57_worker.py",
+    "--mode",
+    "science",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "train_Hold",
+    "--gpu-index",
+    "6"
+  ],
+  "control_protocol_id": "52e142e71d8344f78c42cd228bf7a1d9865b219362d210d2df4f40361a3ff81a",
+  "gpu_index": 6,
+  "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+  "id": "ec43b46e1982cc24729b3c482f98ea9a48986ee19682d357d920a015516bca14",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": "Hold",
+    "dependencies": [],
+    "id": "seed137.train_Hold",
+    "job_id": "seed137.train_Hold",
+    "kind": "train",
+    "memory_phase": "train",
+    "priority": 5,
+    "seed": 137,
+    "stage": "train_Hold"
+  },
+  "original_frozen_scientific_entrypoint": true,
+  "pid": 3550476,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_actual_attempt_launch.v1",
+  "started_epoch": 1792325559.3690867
+}
