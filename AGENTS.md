@@ -174,6 +174,8 @@ V54已以源提交 `58240ac877` 冻结89文件，实施包 `d3ffbe95fa28c5881c44
 
 用户于2026-10-18对“在新目录中保留旧失败，将seed137、389的两条未返回请求各重新执行一次，然后继续原实验预算”明确回复“同意请求”。V55仅在V54下独立 `recovery_01/` 接续：两条都是首题AMT/2012/page_121.pdf-1、draw0/seed11/step0，按原point/参数/config/condition各允许一次重新执行，模型调用前原子claim，实际返回后独立resolution，旧UNKNOWN/意图/失败不回写。seed251旧零调用，原队列首次执行；两条额度不能自动扩展至其他未知调用或下一次启动。已验收父点和C1路径只读继承，剩1788次optimizer更新、2100条完整低温反馈、12267条评价不变；不重训C1、不重新开展B。新版本包含确定性CuBLAS环境校验、异常原文记录及中断等待计时修复，原科学数学、GPU0至7、最多4worker及硬资源门保持；原控制器等待89.84583379887044秒继承，不把并行worker等待再加一次。新冻结/准备不等于实际启动，实际状态见 `trusted_data_synthesis/docs/finqa_v55_bounded_feedback_recovery_20261018.md` 和新根唯一launch/queue；禁止重启旧V54入口。
 
+V55首次准备以提交 `b812c803f6` 在创建 `recovery_01` 前被依赖SHA门拒绝：生命周期身份读取引入历史控制器别名，与原81包的同名文件产生扫描冲突。已修正为先完整科学加载和依赖绑定，再读取原进程身份，不放宽源码hash；精确CLI顺序CPU核验通过，CUDA未初始化。该准备没有新protocol/worker/claim/模型调用，不消耗两条授权额度，拒绝证据在 `recovery_preparation_01/rejection/record.json`。原科学失败不改写，尚未创建的新恢复目录仍可按本次明确授权首次冻结和启动。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

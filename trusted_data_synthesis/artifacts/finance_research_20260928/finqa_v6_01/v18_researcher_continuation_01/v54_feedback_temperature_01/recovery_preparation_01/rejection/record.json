@@ -1,0 +1,22 @@
+{
+  "schema": "v55_pre_scientific_preparation_rejection.v1",
+  "at": "2026-10-18T08:22:12.872081+00:00",
+  "source_commit": "b812c803f6",
+  "requested_output_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01",
+  "status": "REJECTED_BEFORE_OUTPUT_ROOT_CREATION",
+  "error_type": "ValueError",
+  "error": "preparation imported a different original helper: v25_training_replication_01/replay_performance_04/recovery_02/recovery_implementation/finqa_v35_task_controller.py",
+  "stage": "freeze.dependency_sources",
+  "context": "lifecycle identity reader imported a separately manifest-verified historical controller alias before scientific dependency collection; basename collided with original81 binding",
+  "source_hash_guard_not_relaxed": true,
+  "recovery_output_root_created": false,
+  "controller_started": false,
+  "GPU_worker_started": false,
+  "authorized_request_claims": 0,
+  "actual_model_calls": 0,
+  "feedback_returns": 0,
+  "new_scientific_results": 0,
+  "old_scientific_failure_unmodified": true,
+  "not_a_scientific_retry": true,
+  "id": "448bb388847226b45aa90f7885d3365bbc24cbd56a8f87be481aa27c661573f3"
+}

@@ -177,6 +177,11 @@ def dependency_sources():
 def freeze(root, source_commit):
     root = Path(root).resolve()
     require(root == ROOT and not root.exists(), "V55 requires the single fresh recovery_01 directory")
+    # Freeze the selected scientific imports before CPU-only lifecycle helpers
+    # load historical controllers under aliases with the same source basename.
+    # Every scientific SHA check remains exact; lifecycle helpers retain their
+    # own original sealed manifests and are not relabeled as this math runtime.
+    dependencies = dependency_sources()
     evidence = original_evidence(verify_exited=True)
     commit = subprocess.check_output(["git", "rev-parse", source_commit + "^{commit}"], cwd=REPO, text=True).strip()
     original = checked(base.SOURCE_BUNDLE / "record.json")
@@ -192,7 +197,6 @@ def freeze(root, source_commit):
         raw = subprocess.check_output(["git", "show", commit + ":" + relative], cwd=REPO)
         require(hashlib.sha256(raw).hexdigest() == sha(REPO / relative), "uncommitted recovery source: " + name)
         sources[name] = raw
-    dependencies = dependency_sources()
     require(len(sources) == 91, "recovery implementation must contain original81 + V54eight + V55two")
     destination = root / "implementation"
     destination.mkdir(parents=True, exist_ok=False)

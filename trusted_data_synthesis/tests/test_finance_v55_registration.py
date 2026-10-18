@@ -50,6 +50,22 @@ def test_only_explicit_recovery_root_selects_new_registration():
     assert 81 + len(registration.FILES) == 91
 
 
+def test_scientific_dependency_selection_precedes_legacy_process_observation(tmp_path, monkeypatch):
+    root = tmp_path / "uncreated_recovery"
+    monkeypatch.setattr(registration, "ROOT", root)
+    observed = []
+    monkeypatch.setattr(registration, "dependency_sources", lambda: observed.append("science") or {})
+    def stop_before_any_write(*, verify_exited):
+        assert verify_exited is True
+        observed.append("process_observation")
+        raise RuntimeError("mock boundary before git or filesystem publication")
+    monkeypatch.setattr(registration, "original_evidence", stop_before_any_write)
+    with pytest.raises(RuntimeError, match="mock boundary"):
+        registration.freeze(root, "unused-mock-commit")
+    assert observed == ["science", "process_observation"]
+    assert not root.exists()
+
+
 def test_controller_inherits_old_wait_without_worker_double_counting(tmp_path):
     parents = {}
     for seed in (137, 251, 389):
@@ -165,15 +181,16 @@ def test_inherited_prepared_accepts_real_C1_publication_and_rejects_old_parent_i
         path = root / f"parents/seed{seed}/record.json"
         evaluation.publish(path, body)
         parents[str(seed)] = registration.entry(path)
-        result = training.publish_c1_reuse(root, seed, protocol["id"])
         branch_path = root / f"branches/seed{seed}/C1/completed/record.json"
         if changed_c1_parent and seed == 137:
-            # Publish a separately bound mock record with the forbidden old
-            # parent identity, without overwriting the original fixture record.
-            result.pop("id")
-            result["training_binding"]["parent_id"] = source["id"]
-            branch_path = root / "invalid_branch/record.json"
+            proof = source["c1_reuse"]
+            result = training._result_body(root, seed, "C1", protocol["id"],
+                snapshots=proof["snapshots"], q_digest=proof["q_digest"], new_updates=0,
+                binding=dict(parent_id=source["id"], c1_proof_digest=registration.runtime.digest(proof),
+                             source="read_only_original_path"))
             evaluation.publish(branch_path, result)
+        else:
+            training.publish_c1_reuse(root, seed, protocol["id"])
         branches[f"seed{seed}/C1"] = registration.entry(branch_path)
     evaluation.publish(root / "prepared/record.json", dict(schema=registration.PREPARED_SCHEMA,
         protocol=registration.entry(root / "protocol/record.json"), original_prepared=old_prepared_ref,
