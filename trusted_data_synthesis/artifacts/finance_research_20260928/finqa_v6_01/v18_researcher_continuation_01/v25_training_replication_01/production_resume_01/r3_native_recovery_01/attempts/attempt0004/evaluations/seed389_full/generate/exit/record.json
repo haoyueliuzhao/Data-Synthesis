@@ -1,0 +1,12 @@
+{
+  "schema": "v37_actual_stage_exit.v1",
+  "at": "2026-10-18T02:33:58.573799+00:00",
+  "protocol_id": "0a6177dac05462af444b5fc6ed032b1b902cfe8fcae3de190f38222697558050",
+  "context_id": "evaluation:389:full",
+  "stage": "generate",
+  "returncode": 0,
+  "stop_requested": false,
+  "no_retry": true,
+  "elapsed_worker_wall_seconds": 15951.859125684015,
+  "id": "9ab0e1d9d4e413edb5d993e4738a83fa22001662a5157c9a1240e1d881631f4a"
+}

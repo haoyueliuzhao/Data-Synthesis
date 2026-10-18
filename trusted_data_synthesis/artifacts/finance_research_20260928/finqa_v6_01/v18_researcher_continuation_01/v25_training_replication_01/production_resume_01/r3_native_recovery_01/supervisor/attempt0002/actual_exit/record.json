@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-17T15:42:31.497840+00:00",
+  "schema": "v43_supervised_controller_actual_exit.v1",
+  "attempt_number": 2,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/attempts/attempt0002",
+  "returncode": 1,
+  "pid": 1929678,
+  "birth": "467502539",
+  "manual_stop_requested": false,
+  "stop_forwarded": false,
+  "id": "e60b50b847dc2a1ecdd30a15f2fc60754b2347e1723b2bc5b59d4eef3c7fc0f5"
+}

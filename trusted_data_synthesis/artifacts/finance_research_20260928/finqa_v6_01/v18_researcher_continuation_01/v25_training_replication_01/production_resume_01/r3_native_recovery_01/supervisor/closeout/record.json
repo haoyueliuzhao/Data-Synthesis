@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-18T02:37:57.521664+00:00",
+  "status": "COMPLETE",
+  "actual_result": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/attempts/attempt0004/result/record.json",
+    "sha256": "a889926d57e786fb880f4340290e945fcc8dc99ede8b3ed23a923f4e1546eca4",
+    "id": "ede7282da4e8793debd45be1f6f48c6e46c87c2ba0ee66acc545b08420d4390a"
+  },
+  "final_attempt": 4,
+  "automatic_attempts": 3,
+  "id": "ca2b9d9854dea4ac006b37552546ba056c2ff622505e1b08c62daa40672eb658"
+}

@@ -1,0 +1,1707 @@
+{
+  "schema": "finqa_v25_final_metrics_attachment.v1",
+  "report_date": "2026-10-18",
+  "official_scoring_complete_at_utc": "2026-10-18T02:37:56.755021+00:00",
+  "scope": "Original FinQA V25 nine-model B replication and predefined descriptive comparison with A; fixed known 1147-task test benchmark.",
+  "no_new_scoring": true,
+  "new_significance_tests_performed": false,
+  "extraction_method": "Transcription of sealed score summaries and model reports; deterministic aggregation only. No model generation, API calls, GPU work, rescoring, bootstrap, or p-value calculation.",
+  "conclusions": {
+    "primary_not_confirmed": true,
+    "primary": "B Full-Static native execution accuracy: positive mean difference, but the predefined seed-level 95% interval includes zero; superiority is not confirmed.",
+    "key_secondary": "B Full-C-only native execution accuracy: negative mean difference and interval includes zero; no confirmed positive incremental benefit of Full over C-only.",
+    "pooled_descriptive_only": true,
+    "no_independent_new_test_holdout": true,
+    "no_equivalence_or_no_effect_claim": true,
+    "no_power_or_stability_confirmation": true,
+    "task_pair_counts_are_not_p_values": true
+  },
+  "units_and_definitions": {
+    "accuracy_and_contrast_unit": "fraction; multiply by 100 for percent accuracy or percentage-point difference",
+    "sample_sd_unit": "same as corresponding accuracy or difference; sample SD uses ddof=1",
+    "each_model_denominator": 1147,
+    "repeated_task_denominator": "3441 = 3 seeds x the same 1147 tasks; 6882 = 6 seeds x the same tasks. These are repeated model-task observations, not independent new tasks.",
+    "invalid_prediction": "Native evaluator invalid_prediction status, comprising missing_or_invalid_submission and nonexecutable_submission; do not label every invalid prediction as a pure formatting error.",
+    "unknown": "Missing/unknown native metric outcomes are reported separately; invalid predictions are explicit native zero scores, not unknown outcomes silently converted to zero.",
+    "native_status_scored_vs_metric_scored": "native_status_counts.scored excludes invalid_prediction; metrics.*.scored includes determinate invalid-prediction zero scores.",
+    "native_metric_scope": "Native execution/program accuracy does not measure reasoning-trace or process reliability.",
+    "source_checksums": "Official summary/model SHA-256 values are transcribed from their sealed references, not rehashed as a redundant integrity check; scoring_result SHA-256 is computed from the bytes read for this extraction."
+  },
+  "deterministic_formulas": {
+    "arm_correct_total": "sum over included seeds of model.metrics[metric].correct",
+    "arm_mean": "arithmetic mean of per-seed complete_dataset_mean; equal seed weights",
+    "arm_sample_sd": "sqrt(sum((seed_accuracy - arithmetic_mean)^2) / (n_seeds - 1))",
+    "arm_minimum_maximum": "min/max of included per-seed accuracy values",
+    "arm_invalid_count_fraction": "sum model native invalid_prediction counts; divide by n_seeds * 1147",
+    "invalid_prediction_reason_counts": "count each stored result native.reason conditional on native.status == invalid_prediction; no re-evaluation",
+    "paired_difference": "Reported official within-seed positive-arm minus negative-arm accuracy; paired wins-losses divided by 1147",
+    "paired_counts": "Transcribed official wins/ties/losses; no new paired-task significance test",
+    "reported_seed_t95": "Transcribed official B interval only: mean_difference +/- 4.3026527299 * sample_sd / sqrt(3), df=2; no new interval calculated"
+  },
+  "sources": {
+    "scoring_result": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/attempts/attempt0004/scoring/result/record.json",
+      "id": "6bf7eb71324f649e0fed01898421cb6d1f084d49705f3f9739a64f5a2bf4486d",
+      "sha256": "d6b5ecf18b6e4ffae0cb4ae14d46941d190d60763ca24e2d100cf01430c20a77",
+      "protocol_id": "0a6177dac05462af444b5fc6ed032b1b902cfe8fcae3de190f38222697558050"
+    },
+    "official_B_summary": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/summary/record.json",
+      "id": "5202ec5f8e20a36c7a1b4de1b5577a4d8357a623bd11dc987ef4a94dee255ca1",
+      "sha256": "08b4d74aca232ab148edcdea920b41514f77b937076bb56a48f2a388abb18709",
+      "protocol_id": "8deb6f7f44f8112a3b4c421f8490817eb140197c141b064e3776a9868e65a279"
+    },
+    "official_A_extension_summary": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/c_only_test_extension/summary/record.json",
+      "id": "900a473f0ee8ad1fe55e5d141f4caa1ad8c3374a3e56596e2c29d520ce8ea0a3",
+      "sha256": "cd6cd67a6340db72916657e4bee9acc8f84a5f6bcadc69962931b6a361e32568",
+      "protocol_id": "a037690f1e076f5758f4803759d0072d30097e3a0dc3097a1292e9567caddac0"
+    },
+    "official_six_seed_descriptive_summary": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/descriptive_six_seed_summary/record.json",
+      "id": "0280941c4cf73cb42e4b4ab2e23f7256e2fc1ba9d922a9930609a93e1fd965d8",
+      "sha256": "a25673fa9154c97ecff433ee098b074ce9c1719fddca01ddcb8fb15fe9438338"
+    }
+  },
+  "report_order": [
+    "A_prior_descriptive",
+    "B_prospectively_locked_new_training_seeds",
+    "six_seed_descriptive"
+  ],
+  "blocks": {
+    "A": {
+      "statistics": {
+        "arms": [
+          "Static",
+          "C-only",
+          "Full"
+        ],
+        "block": "A",
+        "combined_six_seeds": "predefined descriptive equal weighting only; report old/new blocks first; no pooled CI",
+        "confidence_interval_is_not_power_or_stability_confirmation": true,
+        "design": "post-hoc original-model C-only extension",
+        "eighty_percent_power_claimed": false,
+        "estimate": "equal-weight mean of the three within-seed paired accuracy differences",
+        "execution_interval": null,
+        "extension_comparisons": [
+          "C-only-Static",
+          "Full-C-only"
+        ],
+        "fixed_known_benchmark_not_unseen_source_generalization": true,
+        "key_secondary": null,
+        "multiplicity_adjusted": false,
+        "no_best_seed_checkpoint_or_block_selection": true,
+        "no_optional_stopping": true,
+        "no_p_values": true,
+        "old_source_cluster_interval_reused": false,
+        "original_six_model_preregistered_confirmation": false,
+        "other_descriptive": "C-only-Static native execution accuracy",
+        "paired_within_seed_same1147_tasks": true,
+        "primary": null,
+        "program_accuracy": "descriptive only; no confidence interval",
+        "reused_Full_minus_Static_reference_only": true,
+        "seed_dispersion": [
+          "sample SD (ddof=1)",
+          "minimum",
+          "maximum",
+          "positive/zero/negative counts"
+        ],
+        "seeds": [
+          11,
+          29,
+          47
+        ],
+        "source_cluster_bootstrap": false,
+        "stable_training_reproducibility_claimed": false,
+        "statistical_power_claimed": false,
+        "task_denominator": 1147,
+        "unknown_as_zero": false
+      },
+      "reported_models": 9,
+      "global_generation_seal_id": "d328c0dea01690f8f8a6755daa4e16d9fdbecebc9eeb502d2a17216eab227cb4",
+      "model_metrics": [
+        {
+          "model_key": "seed11/static",
+          "seed": 11,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed11/static/scores/record.json",
+            "id": "a5366444980b9f2507e136a2a4e8ecf068077263ac1f9b43ee214d96f5610b04",
+            "sha256": "89ea354e7d7dbca7a9f95c20715d8940fb3ec3a09b354b7a8807ae2596262ac2"
+          },
+          "checkpoint_sha256": "29e2df2468d43b430a15f21c5720068e431267ad6dc5adedd98bfef9f8fdca42",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.43679163034001744,
+            "correct": 501.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.38796861377506536,
+            "correct": 445.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 392,
+            "scored": 755
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 381,
+            "nonexecutable_submission": 11
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed11/c_only",
+          "seed": 11,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/c_only_test_extension/models/seed11/c_only/scores/record.json",
+            "id": "badf712dc7a96ca9a1d4d31aef46e77bd07df7197c875e6cfa67c7b8bc2b5898",
+            "sha256": "f8d8e0290aab50f94f145812eb146f00e3a50c1f5223114de3be9ded1ac59560"
+          },
+          "checkpoint_sha256": "47c9ec13be7e6b9856fe221957ac3f929376a587d0ee7a326764236089ec2a02",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.5605928509154315,
+            "correct": 643.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.5021795989537925,
+            "correct": 576.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 179,
+            "scored": 968
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 169,
+            "nonexecutable_submission": 10
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed11/full",
+          "seed": 11,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed11/full/scores/record.json",
+            "id": "3e49e28f99b55a728f02a0dcf657dc0587c5312e3743bcc23f94cf215c44ea0b",
+            "sha256": "ffb9f44619e4cf8fe0335e79c901a77abe7bff9e85590ed79c7cf63c16db3b5c"
+          },
+          "checkpoint_sha256": "2af842d40b20a5e8924ad6d8059a1d0c8dad26ed648f0e48b9344db44a6b44f0",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.5013077593722755,
+            "correct": 575.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.4489973844812554,
+            "correct": 515.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 287,
+            "scored": 860
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 275,
+            "nonexecutable_submission": 12
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed29/static",
+          "seed": 29,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed29/static/scores/record.json",
+            "id": "18e29bd743c5731431b6e6b1b06943b157e5a128cb6d9bf47ce0af94f4a33a17",
+            "sha256": "e8eaf363be0600c2759ef9efd971d32fd77eecbe3cecc03ca0a9154468eb8d1e"
+          },
+          "checkpoint_sha256": "e00c3e3b26f5e9159e81426c7c759aede5c424729473b8e3ff8a5a9a15b4cb8f",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.5204882301656495,
+            "correct": 597.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.46556233653007845,
+            "correct": 534.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 275,
+            "scored": 872
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 269,
+            "nonexecutable_submission": 6
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed29/c_only",
+          "seed": 29,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/c_only_test_extension/models/seed29/c_only/scores/record.json",
+            "id": "65cc7a822d823d509878566d1675ccd345969c633722a797c3762550a5c20c30",
+            "sha256": "2e9aad70c61475f1555566ca5aac144162507e23cbf5274c749cf2305e81dbda"
+          },
+          "checkpoint_sha256": "80decfa647f8d9c71dbd66d3ff13b4f30925f4661af6de86cbd284fa569812b5",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.4803836094158675,
+            "correct": 551.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.43330427201394944,
+            "correct": 497.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 336,
+            "scored": 811
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 330,
+            "nonexecutable_submission": 6
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed29/full",
+          "seed": 29,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed29/full/scores/record.json",
+            "id": "2bc627536df5f09b3761652531c2cd7dd7f29d1474ab2c5c2b7330c3b1e1c35b",
+            "sha256": "7455f9ea8b18af502ec4f3ecef0ad99bef5d64eeca9967e75b6878d2b95f6ad8"
+          },
+          "checkpoint_sha256": "5e8b479215613b332586e2385bcf46a3e5e70d60b62ea2637c3371c5941b8622",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.4306887532693984,
+            "correct": 494.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.3801220575414124,
+            "correct": 436.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 410,
+            "scored": 737
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 407,
+            "nonexecutable_submission": 3
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed47/static",
+          "seed": 47,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed47/static/scores/record.json",
+            "id": "1a8439156ce3587dddf429962b22eb85dba6751eedffab2b2ed113eff5ea9bcf",
+            "sha256": "b7a01e29cc90e15ba89209518c85225a00095463a857e4a0c2985782c3f97680"
+          },
+          "checkpoint_sha256": "eed0af3a34c5847c016589e54e8ac2755a48250fec3819b5d1822a74b22483ce",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.25108979947689625,
+            "correct": 288.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.22319093286835223,
+            "correct": 256.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 696,
+            "scored": 451
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 695,
+            "nonexecutable_submission": 1
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed47/c_only",
+          "seed": 47,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/c_only_test_extension/models/seed47/c_only/scores/record.json",
+            "id": "82923b12891c0adafa3145f8e5322733ea2ba7fd6c6289cfe7e0e6c9e4585f48",
+            "sha256": "b64746457f91335ed018b1fb02b902417e1c9b9b49fa06ad188423508d4acecb"
+          },
+          "checkpoint_sha256": "5d2a412c846cf9f59ca9d15d07ab2fb1a021caf6aad52d2cbaa7569f0acc50a0",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.3862249346120314,
+            "correct": 443.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.35135135135135137,
+            "correct": 403.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 479,
+            "scored": 668
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 476,
+            "nonexecutable_submission": 3
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed47/full",
+          "seed": 47,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v23_confirmation_shrink_01/test_confirmation/models/seed47/full/scores/record.json",
+            "id": "850222459b43cc9091861741650cfa56b1b9026b7578f23981b89846b8aef8a0",
+            "sha256": "3164640b108e5522d4902753201ce610bd0f6b8a2665b536a607157fc6a6db5d"
+          },
+          "checkpoint_sha256": "ce7efeb7595c071d7ae0821426d96dafb8d1bda4417f3373b18e725e57f730c7",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.3801220575414124,
+            "correct": 436.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.33391455972101136,
+            "correct": 383.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 524,
+            "scored": 623
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 519,
+            "nonexecutable_submission": 5
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        }
+      ],
+      "arms_derived": {
+        "Static": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 1363,
+          "native_invalid_prediction_fraction": 0.3961057832025574,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 1345,
+            "nonexecutable_submission": 18
+          },
+          "execution_accuracy": {
+            "correct_total": 1386,
+            "mean": 0.4027898866608544,
+            "sample_sd": 0.13788026524600383,
+            "minimum": 0.25108979947689625,
+            "maximum": 0.5204882301656495
+          },
+          "program_accuracy": {
+            "correct_total": 1235,
+            "mean": 0.35890729439116537,
+            "sample_sd": 0.12377154172704095,
+            "minimum": 0.22319093286835223,
+            "maximum": 0.46556233653007845
+          }
+        },
+        "C-only": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 994,
+          "native_invalid_prediction_fraction": 0.2888695146759663,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 975,
+            "nonexecutable_submission": 19
+          },
+          "execution_accuracy": {
+            "correct_total": 1637,
+            "mean": 0.47573379831444346,
+            "sample_sd": 0.08727690482857756,
+            "minimum": 0.3862249346120314,
+            "maximum": 0.5605928509154315
+          },
+          "program_accuracy": {
+            "correct_total": 1476,
+            "mean": 0.42894507410636445,
+            "sample_sd": 0.07550855596224802,
+            "minimum": 0.35135135135135137,
+            "maximum": 0.5021795989537925
+          }
+        },
+        "Full": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 1221,
+          "native_invalid_prediction_fraction": 0.3548387096774194,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 1201,
+            "nonexecutable_submission": 20
+          },
+          "execution_accuracy": {
+            "correct_total": 1505,
+            "mean": 0.43737285672769544,
+            "sample_sd": 0.060868723588889444,
+            "minimum": 0.3801220575414124,
+            "maximum": 0.5013077593722755
+          },
+          "program_accuracy": {
+            "correct_total": 1334,
+            "mean": 0.38767800058122637,
+            "sample_sd": 0.05791229010421662,
+            "minimum": 0.33391455972101136,
+            "maximum": 0.4489973844812554
+          }
+        }
+      },
+      "comparisons_reported": {
+        "C-only-Static": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": 0.07294391165358907,
+            "sample_sd": 0.09806677527954512,
+            "minimum": -0.04010462074978204,
+            "maximum": 0.13513513513513514,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 94,
+                "mean_difference": 0.12380122057541412,
+                "negative_arm_accuracy": 0.43679163034001744,
+                "positive_arm_accuracy": 0.5605928509154315,
+                "ties": 817,
+                "wins": 236
+              },
+              "29": {
+                "losses": 170,
+                "mean_difference": -0.04010462074978204,
+                "negative_arm_accuracy": 0.5204882301656495,
+                "positive_arm_accuracy": 0.4803836094158675,
+                "ties": 853,
+                "wins": 124
+              },
+              "47": {
+                "losses": 82,
+                "mean_difference": 0.13513513513513514,
+                "negative_arm_accuracy": 0.25108979947689625,
+                "positive_arm_accuracy": 0.3862249346120314,
+                "ties": 828,
+                "wins": 237
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": 0.07003777971519907,
+            "sample_sd": 0.08886493393137526,
+            "minimum": -0.03225806451612903,
+            "maximum": 0.12816041848299914,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 82,
+                "mean_difference": 0.11421098517872712,
+                "negative_arm_accuracy": 0.38796861377506536,
+                "positive_arm_accuracy": 0.5021795989537925,
+                "ties": 852,
+                "wins": 213
+              },
+              "29": {
+                "losses": 151,
+                "mean_difference": -0.03225806451612903,
+                "negative_arm_accuracy": 0.46556233653007845,
+                "positive_arm_accuracy": 0.43330427201394944,
+                "ties": 882,
+                "wins": 114
+              },
+              "47": {
+                "losses": 71,
+                "mean_difference": 0.12816041848299914,
+                "negative_arm_accuracy": 0.22319093286835223,
+                "positive_arm_accuracy": 0.35135135135135137,
+                "ties": 858,
+                "wins": 218
+              }
+            }
+          }
+        },
+        "Full-C-only": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": -0.038360941586748035,
+            "sample_sd": 0.028344844301671942,
+            "minimum": -0.05928509154315606,
+            "maximum": -0.006102877070619006,
+            "signs": {
+              "negative": 3,
+              "positive": 0,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 174,
+                "mean_difference": -0.05928509154315606,
+                "negative_arm_accuracy": 0.5605928509154315,
+                "positive_arm_accuracy": 0.5013077593722755,
+                "ties": 867,
+                "wins": 106
+              },
+              "29": {
+                "losses": 184,
+                "mean_difference": -0.04969485614646905,
+                "negative_arm_accuracy": 0.4803836094158675,
+                "positive_arm_accuracy": 0.4306887532693984,
+                "ties": 836,
+                "wins": 127
+              },
+              "47": {
+                "losses": 158,
+                "mean_difference": -0.006102877070619006,
+                "negative_arm_accuracy": 0.3862249346120314,
+                "positive_arm_accuracy": 0.3801220575414124,
+                "ties": 838,
+                "wins": 151
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": -0.04126707352513804,
+            "sample_sd": 0.02063762950023946,
+            "minimum": -0.05318221447253706,
+            "maximum": -0.017436791630340016,
+            "signs": {
+              "negative": 3,
+              "positive": 0,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 150,
+                "mean_difference": -0.05318221447253706,
+                "negative_arm_accuracy": 0.5021795989537925,
+                "positive_arm_accuracy": 0.4489973844812554,
+                "ties": 908,
+                "wins": 89
+              },
+              "29": {
+                "losses": 170,
+                "mean_difference": -0.05318221447253706,
+                "negative_arm_accuracy": 0.43330427201394944,
+                "positive_arm_accuracy": 0.3801220575414124,
+                "ties": 868,
+                "wins": 109
+              },
+              "47": {
+                "losses": 150,
+                "mean_difference": -0.017436791630340016,
+                "negative_arm_accuracy": 0.35135135135135137,
+                "positive_arm_accuracy": 0.33391455972101136,
+                "ties": 867,
+                "wins": 130
+              }
+            }
+          }
+        },
+        "Full-Static": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": 0.03458297006684103,
+            "sample_sd": 0.11244477560438973,
+            "minimum": -0.08979947689625109,
+            "maximum": 0.12903225806451613,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 118,
+                "mean_difference": 0.06451612903225806,
+                "negative_arm_accuracy": 0.43679163034001744,
+                "positive_arm_accuracy": 0.5013077593722755,
+                "ties": 837,
+                "wins": 192
+              },
+              "29": {
+                "losses": 221,
+                "mean_difference": -0.08979947689625109,
+                "negative_arm_accuracy": 0.5204882301656495,
+                "positive_arm_accuracy": 0.4306887532693984,
+                "ties": 808,
+                "wins": 118
+              },
+              "47": {
+                "losses": 94,
+                "mean_difference": 0.12903225806451613,
+                "negative_arm_accuracy": 0.25108979947689625,
+                "positive_arm_accuracy": 0.3801220575414124,
+                "ties": 811,
+                "wins": 242
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": 0.02877070619006103,
+            "sample_sd": 0.10198287372630824,
+            "minimum": -0.08544027898866609,
+            "maximum": 0.11072362685265912,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "11": {
+                "losses": 101,
+                "mean_difference": 0.06102877070619006,
+                "negative_arm_accuracy": 0.38796861377506536,
+                "positive_arm_accuracy": 0.4489973844812554,
+                "ties": 875,
+                "wins": 171
+              },
+              "29": {
+                "losses": 204,
+                "mean_difference": -0.08544027898866609,
+                "negative_arm_accuracy": 0.46556233653007845,
+                "positive_arm_accuracy": 0.3801220575414124,
+                "ties": 837,
+                "wins": 106
+              },
+              "47": {
+                "losses": 85,
+                "mean_difference": 0.11072362685265912,
+                "negative_arm_accuracy": 0.22319093286835223,
+                "positive_arm_accuracy": 0.33391455972101136,
+                "ties": 850,
+                "wins": 212
+              }
+            }
+          }
+        }
+      }
+    },
+    "B": {
+      "statistics": {
+        "arms": [
+          "Static",
+          "C-only",
+          "Full"
+        ],
+        "block": "B",
+        "combined_six_seeds": "predefined descriptive equal weighting only; report old/new blocks first; no pooled CI",
+        "confidence_interval_is_not_power_or_stability_confirmation": true,
+        "design": "prospectively locked new training-seed replication on known benchmark",
+        "eighty_percent_power_claimed": false,
+        "estimate": "equal-weight mean of the three within-seed paired accuracy differences",
+        "execution_interval": {
+          "applies_to": [
+            "Full-Static",
+            "Full-C-only"
+          ],
+          "assumption": "independent identically distributed approximately normal seed effects; strong untestable assumption at n=3",
+          "clip_to_accuracy_bounds": false,
+          "critical_value": 4.3026527299,
+          "df": 2,
+          "formula": "mean +/- 4.3026527299 * sample_SD / sqrt(3)",
+          "key_secondary_is_unadjusted": true,
+          "level": 0.95,
+          "multiplicity_adjusted": false,
+          "n": 3,
+          "small_sample_warning": true,
+          "unit": "independent training seed; fixed known test benchmark"
+        },
+        "extension_comparisons": [],
+        "fixed_known_benchmark_not_unseen_source_generalization": true,
+        "key_secondary": "Full-C-only native execution accuracy",
+        "multiplicity_adjusted": false,
+        "no_best_seed_checkpoint_or_block_selection": true,
+        "no_optional_stopping": true,
+        "no_p_values": true,
+        "old_source_cluster_interval_reused": false,
+        "original_six_model_preregistered_confirmation": false,
+        "other_descriptive": "C-only-Static native execution accuracy",
+        "paired_within_seed_same1147_tasks": true,
+        "primary": "Full-Static native execution accuracy",
+        "program_accuracy": "descriptive only; no confidence interval",
+        "reused_Full_minus_Static_reference_only": false,
+        "seed_dispersion": [
+          "sample SD (ddof=1)",
+          "minimum",
+          "maximum",
+          "positive/zero/negative counts"
+        ],
+        "seeds": [
+          137,
+          251,
+          389
+        ],
+        "source_cluster_bootstrap": false,
+        "stable_training_reproducibility_claimed": false,
+        "statistical_power_claimed": false,
+        "task_denominator": 1147,
+        "unknown_as_zero": false
+      },
+      "reported_models": 9,
+      "global_generation_seal_id": "d4229cf0ed25f3b048572dbcb25422d573f70459d2f414e1c17c0a40845dc331",
+      "model_metrics": [
+        {
+          "model_key": "seed137/static",
+          "seed": 137,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/static/scores/record.json",
+            "id": "395289e903fedcc9d5c740414aac4cd0caa7f156755b026dbd4d480dc61a84f0",
+            "sha256": "6912ffaad897d1a2d66e9fff731f0de1f821e52fd0d8f43cd0fe1f78f96b4c85"
+          },
+          "checkpoint_sha256": "62e4fc82c3716271c9a0b133c518f2b0505241395dbe3245bd308d3f4d9a7ad5",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.4638186573670445,
+            "correct": 532.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.4176111595466434,
+            "correct": 479.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 347,
+            "scored": 800
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 342,
+            "nonexecutable_submission": 5
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed137/c_only",
+          "seed": 137,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/c_only/scores/record.json",
+            "id": "837a4bd17a8c138010ca4f1a1ac2b8ffc9149a43e8616e72fdb2bef396a73e06",
+            "sha256": "25e65aa0674927a9053993c48749846a306a1d20256e39f21c3a4a5542378cac"
+          },
+          "checkpoint_sha256": "ddb33fdf568ab789baa977deb4c8b54793769d9134439aaa92f2bcc04be1f3b3",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.4115082824760244,
+            "correct": 472.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.3687881429816914,
+            "correct": 423.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 440,
+            "scored": 707
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 435,
+            "nonexecutable_submission": 5
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed137/full",
+          "seed": 137,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/full/scores/record.json",
+            "id": "57352d5d395c4d0350c04a160e5ad4e577329dde162a69ce900579272f2ba02f",
+            "sha256": "41bfb10b207f370b052f921490cf7161a1c147c798235ed95094815312037d96"
+          },
+          "checkpoint_sha256": "4c6bc220acfce69282c625653dc2befc876cbb1beee67a3017240bbb423faedf",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.35571054925893636,
+            "correct": 408.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.3156059285091543,
+            "correct": 362.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 527,
+            "scored": 620
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 523,
+            "nonexecutable_submission": 4
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed251/static",
+          "seed": 251,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/static/scores/record.json",
+            "id": "84e76fd195502b27dc7a3b7ec6614b5196672ff221bded95318048cd41b216d5",
+            "sha256": "d14954e609ef286dff76243fe744e94741ab5a68cbece8ccddfac098debda78c"
+          },
+          "checkpoint_sha256": "acf46594461d2ea93694bd56bc1158374b73df399a591cf579bd3cac4896789f",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.27550130775937226,
+            "correct": 316.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.24149956408020923,
+            "correct": 277.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 676,
+            "scored": 471
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 669,
+            "nonexecutable_submission": 7
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed251/c_only",
+          "seed": 251,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/c_only/scores/record.json",
+            "id": "6e9146bb180b0679d0de8ae458a59a475594a5d7d85c549d3a6ecd24ebf4c462",
+            "sha256": "056af9a5713a1740b2874b8c75b61f2c173610e1617a270048be136a8c1bba02"
+          },
+          "checkpoint_sha256": "b84cc3f477092c05de78a21d5714fda6292bf7208592e38107af9961edbd177b",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.48561464690496947,
+            "correct": 557.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.42632955536181344,
+            "correct": 489.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 322,
+            "scored": 825
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 313,
+            "nonexecutable_submission": 9
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed251/full",
+          "seed": 251,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/full/scores/record.json",
+            "id": "2166df9db0a29e9417daba4fc99d953252836b3363c0ba6243bccf60c60e31fc",
+            "sha256": "4896e6ab4f882a0ed8aa6893112deaa23c263393b94ca6a4e0bbc1f5e7c18819"
+          },
+          "checkpoint_sha256": "42dc8cdc7233e5d32ba62a711f1cffad258854d80c4fea9d6cbf6bf7f8bacd5a",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.48299912816041846,
+            "correct": 554.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.4315605928509154,
+            "correct": 495.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 312,
+            "scored": 835
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 307,
+            "nonexecutable_submission": 5
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed389/static",
+          "seed": 389,
+          "arm": "Static",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/static/scores/record.json",
+            "id": "3caaa60c0fb51e27a0b00d4c9c1faa27ef192305ca5f6d6d31150a39e7428fb4",
+            "sha256": "c997c9fa95aa5092bb96b0809d58b507f6395ac28acc6b47e072957c13dbe7ae"
+          },
+          "checkpoint_sha256": "b7d01e2ddf8a4b8032f6970ab9c162c9213cb77ad1fb3dd3674d1081c998fd61",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.5736704446381866,
+            "correct": 658.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.5074106364428945,
+            "correct": 582.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 151,
+            "scored": 996
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 150,
+            "nonexecutable_submission": 1
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed389/c_only",
+          "seed": 389,
+          "arm": "C-only",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/c_only/scores/record.json",
+            "id": "8ee86c7dc3729aa5ce87cc334cc0bfcf0f56b0696b0a57e31b6559c8fa8dca50",
+            "sha256": "89b5031fa8355f4a33035d9b98a58da47570ac05267fada8a82bc3b1fb7820ab"
+          },
+          "checkpoint_sha256": "f1276fec2473b01005973eaee10f8117d8d430e2635912a38d6df8583b3c2d2a",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.5980819529206626,
+            "correct": 686.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.5248474280732345,
+            "correct": 602.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 115,
+            "scored": 1032
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 111,
+            "nonexecutable_submission": 4
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        },
+        {
+          "model_key": "seed389/full",
+          "seed": 389,
+          "arm": "Full",
+          "source": {
+            "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/full/scores/record.json",
+            "id": "ffc14dcc3bed12f31063aa87f08c0cd2cfefc147478429f27bdb794daf60278f",
+            "sha256": "f57db02062614b353f235137472497d7bbd8ae0caa7e6e072c71cbee92cf0850"
+          },
+          "checkpoint_sha256": "b2e2e4f2dea4dd73202e5b79f7730fa7a74f44d3ff702ae82570fee73a5f1752",
+          "denominator": 1147,
+          "execution_accuracy": {
+            "complete_dataset_mean": 0.6146469049694856,
+            "correct": 705.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "program_accuracy": {
+            "complete_dataset_mean": 0.5483870967741935,
+            "correct": 629.0,
+            "denominator": 1147,
+            "scored": 1147,
+            "unknown": 0
+          },
+          "native_status_counts": {
+            "invalid_prediction": 89,
+            "scored": 1058
+          },
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 84,
+            "nonexecutable_submission": 5
+          },
+          "unknown_as_zero": false,
+          "native_execution_is_not_process_reliability": true
+        }
+      ],
+      "arms_derived": {
+        "Static": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 1174,
+          "native_invalid_prediction_fraction": 0.34117988956698636,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 1161,
+            "nonexecutable_submission": 13
+          },
+          "execution_accuracy": {
+            "correct_total": 1506,
+            "mean": 0.43766346992153443,
+            "sample_sd": 0.150795487066081,
+            "minimum": 0.27550130775937226,
+            "maximum": 0.5736704446381866
+          },
+          "program_accuracy": {
+            "correct_total": 1338,
+            "mean": 0.3888404533565824,
+            "sample_sd": 0.13527006229123437,
+            "minimum": 0.24149956408020923,
+            "maximum": 0.5074106364428945
+          }
+        },
+        "C-only": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 877,
+          "native_invalid_prediction_fraction": 0.25486777099680324,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 859,
+            "nonexecutable_submission": 18
+          },
+          "execution_accuracy": {
+            "correct_total": 1715,
+            "mean": 0.4984016274338855,
+            "sample_sd": 0.09394181060146367,
+            "minimum": 0.4115082824760244,
+            "maximum": 0.5980819529206626
+          },
+          "program_accuracy": {
+            "correct_total": 1514,
+            "mean": 0.43998837547224645,
+            "sample_sd": 0.07892114824891841,
+            "minimum": 0.3687881429816914,
+            "maximum": 0.5248474280732345
+          }
+        },
+        "Full": {
+          "n_seeds": 3,
+          "repeated_task_denominator": 3441,
+          "native_invalid_prediction_count": 928,
+          "native_invalid_prediction_fraction": 0.2696890438825923,
+          "invalid_prediction_reason_counts": {
+            "missing_or_invalid_submission": 914,
+            "nonexecutable_submission": 14
+          },
+          "execution_accuracy": {
+            "correct_total": 1667,
+            "mean": 0.4844521941296135,
+            "sample_sd": 0.1294742933083558,
+            "minimum": 0.35571054925893636,
+            "maximum": 0.6146469049694856
+          },
+          "program_accuracy": {
+            "correct_total": 1486,
+            "mean": 0.4318512060447544,
+            "sample_sd": 0.11639085624193357,
+            "minimum": 0.3156059285091543,
+            "maximum": 0.5483870967741935
+          }
+        }
+      },
+      "comparisons_reported": {
+        "C-only-Static": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": 0.06073815751235106,
+            "sample_sd": 0.13493061367012252,
+            "minimum": -0.05231037489102005,
+            "maximum": 0.2101133391455972,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 190,
+                "mean_difference": -0.05231037489102005,
+                "negative_arm_accuracy": 0.4638186573670445,
+                "positive_arm_accuracy": 0.4115082824760244,
+                "ties": 827,
+                "wins": 130
+              },
+              "251": {
+                "losses": 84,
+                "mean_difference": 0.2101133391455972,
+                "negative_arm_accuracy": 0.27550130775937226,
+                "positive_arm_accuracy": 0.48561464690496947,
+                "ties": 738,
+                "wins": 325
+              },
+              "389": {
+                "losses": 91,
+                "mean_difference": 0.024411508282476024,
+                "negative_arm_accuracy": 0.5736704446381866,
+                "positive_arm_accuracy": 0.5980819529206626,
+                "ties": 937,
+                "wins": 119
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": 0.051147922115664046,
+            "sample_sd": 0.12041911084991712,
+            "minimum": -0.04882301656495205,
+            "maximum": 0.18482999128160418,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 168,
+                "mean_difference": -0.04882301656495205,
+                "negative_arm_accuracy": 0.4176111595466434,
+                "positive_arm_accuracy": 0.3687881429816914,
+                "ties": 867,
+                "wins": 112
+              },
+              "251": {
+                "losses": 73,
+                "mean_difference": 0.18482999128160418,
+                "negative_arm_accuracy": 0.24149956408020923,
+                "positive_arm_accuracy": 0.42632955536181344,
+                "ties": 789,
+                "wins": 285
+              },
+              "389": {
+                "losses": 88,
+                "mean_difference": 0.017436791630340016,
+                "negative_arm_accuracy": 0.5074106364428945,
+                "positive_arm_accuracy": 0.5248474280732345,
+                "ties": 951,
+                "wins": 108
+              }
+            }
+          }
+        },
+        "Full-C-only": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": -0.013949433304272014,
+            "sample_sd": 0.03748910200523104,
+            "minimum": -0.05579773321708806,
+            "maximum": 0.016564952048823016,
+            "signs": {
+              "negative": 2,
+              "positive": 1,
+              "zero": 0
+            },
+            "descriptive_only": false,
+            "seed_t95": {
+              "critical_value": 4.3026527299,
+              "df": 2,
+              "level": 0.95,
+              "lower": -0.10707752537837967,
+              "multiplicity_adjusted": false,
+              "n": 3,
+              "not_power_or_stability_confirmation": true,
+              "strong_approximate_normality_assumption": true,
+              "unit": "training seed, conditional on fixed known benchmark",
+              "upper": 0.07917865876983565
+            },
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 211,
+                "mean_difference": -0.05579773321708806,
+                "negative_arm_accuracy": 0.4115082824760244,
+                "positive_arm_accuracy": 0.35571054925893636,
+                "ties": 789,
+                "wins": 147
+              },
+              "251": {
+                "losses": 156,
+                "mean_difference": -0.0026155187445510027,
+                "negative_arm_accuracy": 0.48561464690496947,
+                "positive_arm_accuracy": 0.48299912816041846,
+                "ties": 838,
+                "wins": 153
+              },
+              "389": {
+                "losses": 84,
+                "mean_difference": 0.016564952048823016,
+                "negative_arm_accuracy": 0.5980819529206626,
+                "positive_arm_accuracy": 0.6146469049694856,
+                "ties": 960,
+                "wins": 103
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": -0.00813716942749201,
+            "sample_sd": 0.040069858454273945,
+            "minimum": -0.05318221447253706,
+            "maximum": 0.023539668700959023,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 193,
+                "mean_difference": -0.05318221447253706,
+                "negative_arm_accuracy": 0.3687881429816914,
+                "positive_arm_accuracy": 0.3156059285091543,
+                "ties": 822,
+                "wins": 132
+              },
+              "251": {
+                "losses": 137,
+                "mean_difference": 0.0052310374891020054,
+                "negative_arm_accuracy": 0.42632955536181344,
+                "positive_arm_accuracy": 0.4315605928509154,
+                "ties": 867,
+                "wins": 143
+              },
+              "389": {
+                "losses": 73,
+                "mean_difference": 0.023539668700959023,
+                "negative_arm_accuracy": 0.5248474280732345,
+                "positive_arm_accuracy": 0.5483870967741935,
+                "ties": 974,
+                "wins": 100
+              }
+            }
+          }
+        },
+        "Full-Static": {
+          "execution_accuracy": {
+            "n": 3,
+            "mean_difference": 0.04678872420807904,
+            "sample_sd": 0.1578832237321665,
+            "minimum": -0.10810810810810811,
+            "maximum": 0.2074978204010462,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": false,
+            "seed_t95": {
+              "critical_value": 4.3026527299,
+              "df": 2,
+              "level": 0.95,
+              "lower": -0.34541494593143257,
+              "multiplicity_adjusted": false,
+              "n": 3,
+              "not_power_or_stability_confirmation": true,
+              "strong_approximate_normality_assumption": true,
+              "unit": "training seed, conditional on fixed known benchmark",
+              "upper": 0.4389923943475907
+            },
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 242,
+                "mean_difference": -0.10810810810810811,
+                "negative_arm_accuracy": 0.4638186573670445,
+                "positive_arm_accuracy": 0.35571054925893636,
+                "ties": 787,
+                "wins": 118
+              },
+              "251": {
+                "losses": 83,
+                "mean_difference": 0.2074978204010462,
+                "negative_arm_accuracy": 0.27550130775937226,
+                "positive_arm_accuracy": 0.48299912816041846,
+                "ties": 743,
+                "wins": 321
+              },
+              "389": {
+                "losses": 83,
+                "mean_difference": 0.04097646033129904,
+                "negative_arm_accuracy": 0.5736704446381866,
+                "positive_arm_accuracy": 0.6146469049694856,
+                "ties": 934,
+                "wins": 130
+              }
+            }
+          },
+          "program_accuracy": {
+            "n": 3,
+            "mean_difference": 0.04301075268817204,
+            "sample_sd": 0.1460437564178352,
+            "minimum": -0.1020052310374891,
+            "maximum": 0.1900610287707062,
+            "signs": {
+              "negative": 1,
+              "positive": 2,
+              "zero": 0
+            },
+            "descriptive_only": true,
+            "seed_t95": null,
+            "p_value": null,
+            "paired_by_seed": {
+              "137": {
+                "losses": 221,
+                "mean_difference": -0.1020052310374891,
+                "negative_arm_accuracy": 0.4176111595466434,
+                "positive_arm_accuracy": 0.3156059285091543,
+                "ties": 822,
+                "wins": 104
+              },
+              "251": {
+                "losses": 73,
+                "mean_difference": 0.1900610287707062,
+                "negative_arm_accuracy": 0.24149956408020923,
+                "positive_arm_accuracy": 0.4315605928509154,
+                "ties": 783,
+                "wins": 291
+              },
+              "389": {
+                "losses": 73,
+                "mean_difference": 0.04097646033129904,
+                "negative_arm_accuracy": 0.5074106364428945,
+                "positive_arm_accuracy": 0.5483870967741935,
+                "ties": 954,
+                "wins": 120
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "six_seed_descriptive": {
+    "seeds": [
+      11,
+      29,
+      47,
+      137,
+      251,
+      389
+    ],
+    "independent_training_seed_count": 6,
+    "known_benchmark_not_new_independent_tasks": true,
+    "equal_weight_all_six_seeds": true,
+    "pooled_confidence_interval": false,
+    "no_p_values": true,
+    "no_selecting_better_block": true,
+    "arms_derived": {
+      "Static": {
+        "n_seeds": 6,
+        "repeated_task_denominator": 6882,
+        "native_invalid_prediction_count": 2537,
+        "native_invalid_prediction_fraction": 0.36864283638477185,
+        "invalid_prediction_reason_counts": {
+          "missing_or_invalid_submission": 2506,
+          "nonexecutable_submission": 31
+        },
+        "execution_accuracy": {
+          "correct_total": 2892,
+          "mean": 0.4202266782911944,
+          "sample_sd": 0.1306328772872812,
+          "minimum": 0.25108979947689625,
+          "maximum": 0.5736704446381866
+        },
+        "program_accuracy": {
+          "correct_total": 2573,
+          "mean": 0.3738738738738739,
+          "sample_sd": 0.117114268640503,
+          "minimum": 0.22319093286835223,
+          "maximum": 0.5074106364428945
+        }
+      },
+      "C-only": {
+        "n_seeds": 6,
+        "repeated_task_denominator": 6882,
+        "native_invalid_prediction_count": 1871,
+        "native_invalid_prediction_fraction": 0.2718686428363848,
+        "invalid_prediction_reason_counts": {
+          "missing_or_invalid_submission": 1834,
+          "nonexecutable_submission": 37
+        },
+        "execution_accuracy": {
+          "correct_total": 3352,
+          "mean": 0.4870677128741645,
+          "sample_sd": 0.0820431465834387,
+          "minimum": 0.3862249346120314,
+          "maximum": 0.5980819529206626
+        },
+        "program_accuracy": {
+          "correct_total": 2990,
+          "mean": 0.4344667247893054,
+          "sample_sd": 0.0693442298774021,
+          "minimum": 0.35135135135135137,
+          "maximum": 0.5248474280732345
+        }
+      },
+      "Full": {
+        "n_seeds": 6,
+        "repeated_task_denominator": 6882,
+        "native_invalid_prediction_count": 2149,
+        "native_invalid_prediction_fraction": 0.31226387678000583,
+        "invalid_prediction_reason_counts": {
+          "missing_or_invalid_submission": 2115,
+          "nonexecutable_submission": 34
+        },
+        "execution_accuracy": {
+          "correct_total": 3172,
+          "mean": 0.46091252542865446,
+          "sample_sd": 0.0940870706243775,
+          "minimum": 0.35571054925893636,
+          "maximum": 0.6146469049694856
+        },
+        "program_accuracy": {
+          "correct_total": 2820,
+          "mean": 0.4097646033129904,
+          "sample_sd": 0.08570675311208024,
+          "minimum": 0.3156059285091543,
+          "maximum": 0.5483870967741935
+        }
+      }
+    },
+    "comparisons_reported": {
+      "C-only-Static": {
+        "execution_accuracy": {
+          "n": 6,
+          "mean_difference": 0.06684103458297007,
+          "sample_sd": 0.10570732849664097,
+          "minimum": -0.05231037489102005,
+          "maximum": 0.2101133391455972,
+          "signs": {
+            "negative": 2,
+            "positive": 4,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        },
+        "program_accuracy": {
+          "n": 6,
+          "mean_difference": 0.06059285091543156,
+          "sample_sd": 0.0952162985640806,
+          "minimum": -0.04882301656495205,
+          "maximum": 0.18482999128160418,
+          "signs": {
+            "negative": 2,
+            "positive": 4,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        }
+      },
+      "Full-C-only": {
+        "execution_accuracy": {
+          "n": 6,
+          "mean_difference": -0.026155187445510025,
+          "sample_sd": 0.03259327703753453,
+          "minimum": -0.05928509154315606,
+          "maximum": 0.016564952048823016,
+          "signs": {
+            "negative": 5,
+            "positive": 1,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        },
+        "program_accuracy": {
+          "n": 6,
+          "mean_difference": -0.024702121476315023,
+          "sample_sd": 0.03379170440847351,
+          "minimum": -0.05318221447253706,
+          "maximum": 0.023539668700959023,
+          "signs": {
+            "negative": 4,
+            "positive": 2,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        }
+      },
+      "Full-Static": {
+        "execution_accuracy": {
+          "n": 6,
+          "mean_difference": 0.040685847137460034,
+          "sample_sd": 0.122772432121222,
+          "minimum": -0.10810810810810811,
+          "maximum": 0.2074978204010462,
+          "signs": {
+            "negative": 2,
+            "positive": 4,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        },
+        "program_accuracy": {
+          "n": 6,
+          "mean_difference": 0.03589072943911654,
+          "sample_sd": 0.11292717921795335,
+          "minimum": -0.1020052310374891,
+          "maximum": 0.1900610287707062,
+          "signs": {
+            "negative": 2,
+            "positive": 4,
+            "zero": 0
+          },
+          "descriptive_only": true,
+          "seed_t95": null,
+          "p_value": null
+        }
+      }
+    },
+    "paired_counts_reference": "Same per-seed official paired counts already preserved in blocks.A and blocks.B; not duplicated here."
+  }
+}

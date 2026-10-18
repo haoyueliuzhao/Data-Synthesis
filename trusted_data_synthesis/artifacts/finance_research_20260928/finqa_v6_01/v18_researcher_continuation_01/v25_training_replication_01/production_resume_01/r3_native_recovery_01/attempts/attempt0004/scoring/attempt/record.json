@@ -1,0 +1,55 @@
+{
+  "schema": "v37_unified_B_scoring_attempt.v1",
+  "at": "2026-10-18T02:34:38.034602+00:00",
+  "protocol_id": "0a6177dac05462af444b5fc6ed032b1b902cfe8fcae3de190f38222697558050",
+  "all_nine_model_seal_metadata_present": true,
+  "model_seals": {
+    "seed137/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/c_only/whole_test_seal/record.json",
+      "sha256": "d433bbacd273575e6e10812b8604d4a2de4df43a311d877cb5670155946a00ba",
+      "id": "b6227ceab8202f4ae002589ca17ee62dda9ee248551df9f22e4eaf0de233a100"
+    },
+    "seed137/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/full/whole_test_seal/record.json",
+      "sha256": "87766acd7db4e9bdbdd807f56e6cd62984b3c84854609320b27babb886a831a9",
+      "id": "da427d77be8617b83b696790d8187a94d34979fe68fbfc534e1c54f79c94f6ca"
+    },
+    "seed137/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/static/whole_test_seal/record.json",
+      "sha256": "1e861df684f955ea9a412084a3e5d377d2c0ea1eed2d20db0ee0dc844f3762b7",
+      "id": "3c2059fc17cf7ea6db00d87dbfe2f599dcc9cacac87883492d5a43c1f5d657f8"
+    },
+    "seed251/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/c_only/whole_test_seal/record.json",
+      "sha256": "c10641fed26183cc4f31a9edbd69092857e61dd8b57a1311f651374411efbd55",
+      "id": "cbdc9a35dd193ec99bc7eae66048ec53bff41ab2b33370294e940d0f9760dd23"
+    },
+    "seed251/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/full/whole_test_seal/record.json",
+      "sha256": "8809e91b4c61a5f6ffb3038170230d812569c49d64c42de802c5e4b22d6a335f",
+      "id": "68e212642b492c6b7213f7f211182cce873b6f040302671d575079f27fd4b88b"
+    },
+    "seed251/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/static/whole_test_seal/record.json",
+      "sha256": "237044b8071298097a86e9ab5c79658c08cecf2713e3372cc6b563c32c5744c9",
+      "id": "70c6da7ba372d9714c1c9df23a740f6bfa43b7b3bb37dcafb1feef425677ec2a"
+    },
+    "seed389/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/c_only/whole_test_seal/record.json",
+      "sha256": "cf1198a21581e7efb8c318331397cfb4de4e7bd99e1f946d89c48b3effbf5683",
+      "id": "35751624ca1dd2e891831ef5cc741ce9592427da8ff6a1b71cfc7ec0c0ab739e"
+    },
+    "seed389/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/full/whole_test_seal/record.json",
+      "sha256": "4c44197c0a7fd19128b5b44d051fb3bb569e9bc0730bdf4a84cb8418c3804d32",
+      "id": "e17c987bd20e2013023caeee7b00b68150cbfa7e979ee33315eb33e46241e83f"
+    },
+    "seed389/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/static/whole_test_seal/record.json",
+      "sha256": "c2d082bc7196fef50efa165c5b94ecbec12c4e2f659e3940a1e23424320169ec",
+      "id": "187df8108c624460085cdef39b15cae54b4e931869e2b23e9d92f004e50290c3"
+    }
+  },
+  "API_calls": 0,
+  "id": "0140656d9b9a20157fd11556be711e783919ffa6953a96863d7f1d14d4e9eef6"
+}

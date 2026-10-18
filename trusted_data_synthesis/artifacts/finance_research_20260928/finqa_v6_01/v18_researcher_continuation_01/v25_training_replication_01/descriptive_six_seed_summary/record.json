@@ -1,0 +1,968 @@
+{
+  "combined_six_seed_descriptive": {
+    "C-only-Static": {
+      "execution_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.2101133391455972,
+        "mean_difference": 0.06684103458297007,
+        "minimum": -0.05231037489102005,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 94,
+            "mean_difference": 0.12380122057541412,
+            "negative_arm_accuracy": 0.43679163034001744,
+            "positive_arm_accuracy": 0.5605928509154315,
+            "ties": 817,
+            "wins": 236
+          },
+          "137": {
+            "losses": 190,
+            "mean_difference": -0.05231037489102005,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.4115082824760244,
+            "ties": 827,
+            "wins": 130
+          },
+          "251": {
+            "losses": 84,
+            "mean_difference": 0.2101133391455972,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48561464690496947,
+            "ties": 738,
+            "wins": 325
+          },
+          "29": {
+            "losses": 170,
+            "mean_difference": -0.04010462074978204,
+            "negative_arm_accuracy": 0.5204882301656495,
+            "positive_arm_accuracy": 0.4803836094158675,
+            "ties": 853,
+            "wins": 124
+          },
+          "389": {
+            "losses": 91,
+            "mean_difference": 0.024411508282476024,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.5980819529206626,
+            "ties": 937,
+            "wins": 119
+          },
+          "47": {
+            "losses": 82,
+            "mean_difference": 0.13513513513513514,
+            "negative_arm_accuracy": 0.25108979947689625,
+            "positive_arm_accuracy": 0.3862249346120314,
+            "ties": 828,
+            "wins": 237
+          }
+        },
+        "sample_sd": 0.10570732849664097,
+        "signs": {
+          "negative": 2,
+          "positive": 4,
+          "zero": 0
+        }
+      },
+      "program_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.18482999128160418,
+        "mean_difference": 0.06059285091543156,
+        "minimum": -0.04882301656495205,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 82,
+            "mean_difference": 0.11421098517872712,
+            "negative_arm_accuracy": 0.38796861377506536,
+            "positive_arm_accuracy": 0.5021795989537925,
+            "ties": 852,
+            "wins": 213
+          },
+          "137": {
+            "losses": 168,
+            "mean_difference": -0.04882301656495205,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3687881429816914,
+            "ties": 867,
+            "wins": 112
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.18482999128160418,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.42632955536181344,
+            "ties": 789,
+            "wins": 285
+          },
+          "29": {
+            "losses": 151,
+            "mean_difference": -0.03225806451612903,
+            "negative_arm_accuracy": 0.46556233653007845,
+            "positive_arm_accuracy": 0.43330427201394944,
+            "ties": 882,
+            "wins": 114
+          },
+          "389": {
+            "losses": 88,
+            "mean_difference": 0.017436791630340016,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5248474280732345,
+            "ties": 951,
+            "wins": 108
+          },
+          "47": {
+            "losses": 71,
+            "mean_difference": 0.12816041848299914,
+            "negative_arm_accuracy": 0.22319093286835223,
+            "positive_arm_accuracy": 0.35135135135135137,
+            "ties": 858,
+            "wins": 218
+          }
+        },
+        "sample_sd": 0.0952162985640806,
+        "signs": {
+          "negative": 2,
+          "positive": 4,
+          "zero": 0
+        }
+      }
+    },
+    "Full-C-only": {
+      "execution_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.016564952048823016,
+        "mean_difference": -0.026155187445510025,
+        "minimum": -0.05928509154315606,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 174,
+            "mean_difference": -0.05928509154315606,
+            "negative_arm_accuracy": 0.5605928509154315,
+            "positive_arm_accuracy": 0.5013077593722755,
+            "ties": 867,
+            "wins": 106
+          },
+          "137": {
+            "losses": 211,
+            "mean_difference": -0.05579773321708806,
+            "negative_arm_accuracy": 0.4115082824760244,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 789,
+            "wins": 147
+          },
+          "251": {
+            "losses": 156,
+            "mean_difference": -0.0026155187445510027,
+            "negative_arm_accuracy": 0.48561464690496947,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 838,
+            "wins": 153
+          },
+          "29": {
+            "losses": 184,
+            "mean_difference": -0.04969485614646905,
+            "negative_arm_accuracy": 0.4803836094158675,
+            "positive_arm_accuracy": 0.4306887532693984,
+            "ties": 836,
+            "wins": 127
+          },
+          "389": {
+            "losses": 84,
+            "mean_difference": 0.016564952048823016,
+            "negative_arm_accuracy": 0.5980819529206626,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 960,
+            "wins": 103
+          },
+          "47": {
+            "losses": 158,
+            "mean_difference": -0.006102877070619006,
+            "negative_arm_accuracy": 0.3862249346120314,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 838,
+            "wins": 151
+          }
+        },
+        "sample_sd": 0.03259327703753453,
+        "signs": {
+          "negative": 5,
+          "positive": 1,
+          "zero": 0
+        }
+      },
+      "program_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.023539668700959023,
+        "mean_difference": -0.024702121476315023,
+        "minimum": -0.05318221447253706,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 150,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.5021795989537925,
+            "positive_arm_accuracy": 0.4489973844812554,
+            "ties": 908,
+            "wins": 89
+          },
+          "137": {
+            "losses": 193,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.3687881429816914,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 132
+          },
+          "251": {
+            "losses": 137,
+            "mean_difference": 0.0052310374891020054,
+            "negative_arm_accuracy": 0.42632955536181344,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 867,
+            "wins": 143
+          },
+          "29": {
+            "losses": 170,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.43330427201394944,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 868,
+            "wins": 109
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.023539668700959023,
+            "negative_arm_accuracy": 0.5248474280732345,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 974,
+            "wins": 100
+          },
+          "47": {
+            "losses": 150,
+            "mean_difference": -0.017436791630340016,
+            "negative_arm_accuracy": 0.35135135135135137,
+            "positive_arm_accuracy": 0.33391455972101136,
+            "ties": 867,
+            "wins": 130
+          }
+        },
+        "sample_sd": 0.03379170440847351,
+        "signs": {
+          "negative": 4,
+          "positive": 2,
+          "zero": 0
+        }
+      }
+    },
+    "Full-Static": {
+      "execution_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.2074978204010462,
+        "mean_difference": 0.040685847137460034,
+        "minimum": -0.10810810810810811,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 118,
+            "mean_difference": 0.06451612903225806,
+            "negative_arm_accuracy": 0.43679163034001744,
+            "positive_arm_accuracy": 0.5013077593722755,
+            "ties": 837,
+            "wins": 192
+          },
+          "137": {
+            "losses": 242,
+            "mean_difference": -0.10810810810810811,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 787,
+            "wins": 118
+          },
+          "251": {
+            "losses": 83,
+            "mean_difference": 0.2074978204010462,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 743,
+            "wins": 321
+          },
+          "29": {
+            "losses": 221,
+            "mean_difference": -0.08979947689625109,
+            "negative_arm_accuracy": 0.5204882301656495,
+            "positive_arm_accuracy": 0.4306887532693984,
+            "ties": 808,
+            "wins": 118
+          },
+          "389": {
+            "losses": 83,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 934,
+            "wins": 130
+          },
+          "47": {
+            "losses": 94,
+            "mean_difference": 0.12903225806451613,
+            "negative_arm_accuracy": 0.25108979947689625,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 811,
+            "wins": 242
+          }
+        },
+        "sample_sd": 0.122772432121222,
+        "signs": {
+          "negative": 2,
+          "positive": 4,
+          "zero": 0
+        }
+      },
+      "program_accuracy": {
+        "confidence_intervals": null,
+        "descriptive_only": true,
+        "maximum": 0.1900610287707062,
+        "mean_difference": 0.03589072943911654,
+        "minimum": -0.1020052310374891,
+        "n": 6,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 101,
+            "mean_difference": 0.06102877070619006,
+            "negative_arm_accuracy": 0.38796861377506536,
+            "positive_arm_accuracy": 0.4489973844812554,
+            "ties": 875,
+            "wins": 171
+          },
+          "137": {
+            "losses": 221,
+            "mean_difference": -0.1020052310374891,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 104
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.1900610287707062,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 783,
+            "wins": 291
+          },
+          "29": {
+            "losses": 204,
+            "mean_difference": -0.08544027898866609,
+            "negative_arm_accuracy": 0.46556233653007845,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 837,
+            "wins": 106
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 954,
+            "wins": 120
+          },
+          "47": {
+            "losses": 85,
+            "mean_difference": 0.11072362685265912,
+            "negative_arm_accuracy": 0.22319093286835223,
+            "positive_arm_accuracy": 0.33391455972101136,
+            "ties": 850,
+            "wins": 212
+          }
+        },
+        "sample_sd": 0.11292717921795335,
+        "signs": {
+          "negative": 2,
+          "positive": 4,
+          "zero": 0
+        }
+      }
+    }
+  },
+  "equal_weight_all_six_seeds": true,
+  "id": "0280941c4cf73cb42e4b4ab2e23f7256e2fc1ba9d922a9930609a93e1fd965d8",
+  "independent_training_seed_count": 6,
+  "known_benchmark_not_new_independent_tasks": true,
+  "new_three_seed_block": {
+    "C-only-Static": {
+      "execution_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.2101133391455972,
+        "mean_difference": 0.06073815751235106,
+        "minimum": -0.05231037489102005,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 190,
+            "mean_difference": -0.05231037489102005,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.4115082824760244,
+            "ties": 827,
+            "wins": 130
+          },
+          "251": {
+            "losses": 84,
+            "mean_difference": 0.2101133391455972,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48561464690496947,
+            "ties": 738,
+            "wins": 325
+          },
+          "389": {
+            "losses": 91,
+            "mean_difference": 0.024411508282476024,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.5980819529206626,
+            "ties": 937,
+            "wins": 119
+          }
+        },
+        "sample_sd": 0.13493061367012252,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.18482999128160418,
+        "mean_difference": 0.051147922115664046,
+        "minimum": -0.04882301656495205,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 168,
+            "mean_difference": -0.04882301656495205,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3687881429816914,
+            "ties": 867,
+            "wins": 112
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.18482999128160418,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.42632955536181344,
+            "ties": 789,
+            "wins": 285
+          },
+          "389": {
+            "losses": 88,
+            "mean_difference": 0.017436791630340016,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5248474280732345,
+            "ties": 951,
+            "wins": 108
+          }
+        },
+        "sample_sd": 0.12041911084991712,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-C-only": {
+      "execution_accuracy": {
+        "descriptive_only": false,
+        "maximum": 0.016564952048823016,
+        "mean_difference": -0.013949433304272014,
+        "minimum": -0.05579773321708806,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 211,
+            "mean_difference": -0.05579773321708806,
+            "negative_arm_accuracy": 0.4115082824760244,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 789,
+            "wins": 147
+          },
+          "251": {
+            "losses": 156,
+            "mean_difference": -0.0026155187445510027,
+            "negative_arm_accuracy": 0.48561464690496947,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 838,
+            "wins": 153
+          },
+          "389": {
+            "losses": 84,
+            "mean_difference": 0.016564952048823016,
+            "negative_arm_accuracy": 0.5980819529206626,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 960,
+            "wins": 103
+          }
+        },
+        "sample_sd": 0.03748910200523104,
+        "seed_t95": {
+          "critical_value": 4.3026527299,
+          "df": 2,
+          "level": 0.95,
+          "lower": -0.10707752537837967,
+          "multiplicity_adjusted": false,
+          "n": 3,
+          "not_power_or_stability_confirmation": true,
+          "strong_approximate_normality_assumption": true,
+          "unit": "training seed, conditional on fixed known benchmark",
+          "upper": 0.07917865876983565
+        },
+        "signs": {
+          "negative": 2,
+          "positive": 1,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.023539668700959023,
+        "mean_difference": -0.00813716942749201,
+        "minimum": -0.05318221447253706,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 193,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.3687881429816914,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 132
+          },
+          "251": {
+            "losses": 137,
+            "mean_difference": 0.0052310374891020054,
+            "negative_arm_accuracy": 0.42632955536181344,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 867,
+            "wins": 143
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.023539668700959023,
+            "negative_arm_accuracy": 0.5248474280732345,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 974,
+            "wins": 100
+          }
+        },
+        "sample_sd": 0.040069858454273945,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-Static": {
+      "execution_accuracy": {
+        "descriptive_only": false,
+        "maximum": 0.2074978204010462,
+        "mean_difference": 0.04678872420807904,
+        "minimum": -0.10810810810810811,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 242,
+            "mean_difference": -0.10810810810810811,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 787,
+            "wins": 118
+          },
+          "251": {
+            "losses": 83,
+            "mean_difference": 0.2074978204010462,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 743,
+            "wins": 321
+          },
+          "389": {
+            "losses": 83,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 934,
+            "wins": 130
+          }
+        },
+        "sample_sd": 0.1578832237321665,
+        "seed_t95": {
+          "critical_value": 4.3026527299,
+          "df": 2,
+          "level": 0.95,
+          "lower": -0.34541494593143257,
+          "multiplicity_adjusted": false,
+          "n": 3,
+          "not_power_or_stability_confirmation": true,
+          "strong_approximate_normality_assumption": true,
+          "unit": "training seed, conditional on fixed known benchmark",
+          "upper": 0.4389923943475907
+        },
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.1900610287707062,
+        "mean_difference": 0.04301075268817204,
+        "minimum": -0.1020052310374891,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 221,
+            "mean_difference": -0.1020052310374891,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 104
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.1900610287707062,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 783,
+            "wins": 291
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 954,
+            "wins": 120
+          }
+        },
+        "sample_sd": 0.1460437564178352,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    }
+  },
+  "no_p_values": true,
+  "no_power_or_stability_confirmation": true,
+  "no_selecting_better_block": true,
+  "original_three_seed_block": {
+    "C-only-Static": {
+      "execution_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.13513513513513514,
+        "mean_difference": 0.07294391165358907,
+        "minimum": -0.04010462074978204,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 94,
+            "mean_difference": 0.12380122057541412,
+            "negative_arm_accuracy": 0.43679163034001744,
+            "positive_arm_accuracy": 0.5605928509154315,
+            "ties": 817,
+            "wins": 236
+          },
+          "29": {
+            "losses": 170,
+            "mean_difference": -0.04010462074978204,
+            "negative_arm_accuracy": 0.5204882301656495,
+            "positive_arm_accuracy": 0.4803836094158675,
+            "ties": 853,
+            "wins": 124
+          },
+          "47": {
+            "losses": 82,
+            "mean_difference": 0.13513513513513514,
+            "negative_arm_accuracy": 0.25108979947689625,
+            "positive_arm_accuracy": 0.3862249346120314,
+            "ties": 828,
+            "wins": 237
+          }
+        },
+        "sample_sd": 0.09806677527954512,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.12816041848299914,
+        "mean_difference": 0.07003777971519907,
+        "minimum": -0.03225806451612903,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 82,
+            "mean_difference": 0.11421098517872712,
+            "negative_arm_accuracy": 0.38796861377506536,
+            "positive_arm_accuracy": 0.5021795989537925,
+            "ties": 852,
+            "wins": 213
+          },
+          "29": {
+            "losses": 151,
+            "mean_difference": -0.03225806451612903,
+            "negative_arm_accuracy": 0.46556233653007845,
+            "positive_arm_accuracy": 0.43330427201394944,
+            "ties": 882,
+            "wins": 114
+          },
+          "47": {
+            "losses": 71,
+            "mean_difference": 0.12816041848299914,
+            "negative_arm_accuracy": 0.22319093286835223,
+            "positive_arm_accuracy": 0.35135135135135137,
+            "ties": 858,
+            "wins": 218
+          }
+        },
+        "sample_sd": 0.08886493393137526,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-C-only": {
+      "execution_accuracy": {
+        "descriptive_only": true,
+        "maximum": -0.006102877070619006,
+        "mean_difference": -0.038360941586748035,
+        "minimum": -0.05928509154315606,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 174,
+            "mean_difference": -0.05928509154315606,
+            "negative_arm_accuracy": 0.5605928509154315,
+            "positive_arm_accuracy": 0.5013077593722755,
+            "ties": 867,
+            "wins": 106
+          },
+          "29": {
+            "losses": 184,
+            "mean_difference": -0.04969485614646905,
+            "negative_arm_accuracy": 0.4803836094158675,
+            "positive_arm_accuracy": 0.4306887532693984,
+            "ties": 836,
+            "wins": 127
+          },
+          "47": {
+            "losses": 158,
+            "mean_difference": -0.006102877070619006,
+            "negative_arm_accuracy": 0.3862249346120314,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 838,
+            "wins": 151
+          }
+        },
+        "sample_sd": 0.028344844301671942,
+        "signs": {
+          "negative": 3,
+          "positive": 0,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": -0.017436791630340016,
+        "mean_difference": -0.04126707352513804,
+        "minimum": -0.05318221447253706,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 150,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.5021795989537925,
+            "positive_arm_accuracy": 0.4489973844812554,
+            "ties": 908,
+            "wins": 89
+          },
+          "29": {
+            "losses": 170,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.43330427201394944,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 868,
+            "wins": 109
+          },
+          "47": {
+            "losses": 150,
+            "mean_difference": -0.017436791630340016,
+            "negative_arm_accuracy": 0.35135135135135137,
+            "positive_arm_accuracy": 0.33391455972101136,
+            "ties": 867,
+            "wins": 130
+          }
+        },
+        "sample_sd": 0.02063762950023946,
+        "signs": {
+          "negative": 3,
+          "positive": 0,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-Static": {
+      "execution_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.12903225806451613,
+        "mean_difference": 0.03458297006684103,
+        "minimum": -0.08979947689625109,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 118,
+            "mean_difference": 0.06451612903225806,
+            "negative_arm_accuracy": 0.43679163034001744,
+            "positive_arm_accuracy": 0.5013077593722755,
+            "ties": 837,
+            "wins": 192
+          },
+          "29": {
+            "losses": 221,
+            "mean_difference": -0.08979947689625109,
+            "negative_arm_accuracy": 0.5204882301656495,
+            "positive_arm_accuracy": 0.4306887532693984,
+            "ties": 808,
+            "wins": 118
+          },
+          "47": {
+            "losses": 94,
+            "mean_difference": 0.12903225806451613,
+            "negative_arm_accuracy": 0.25108979947689625,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 811,
+            "wins": 242
+          }
+        },
+        "sample_sd": 0.11244477560438973,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.11072362685265912,
+        "mean_difference": 0.02877070619006103,
+        "minimum": -0.08544027898866609,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "11": {
+            "losses": 101,
+            "mean_difference": 0.06102877070619006,
+            "negative_arm_accuracy": 0.38796861377506536,
+            "positive_arm_accuracy": 0.4489973844812554,
+            "ties": 875,
+            "wins": 171
+          },
+          "29": {
+            "losses": 204,
+            "mean_difference": -0.08544027898866609,
+            "negative_arm_accuracy": 0.46556233653007845,
+            "positive_arm_accuracy": 0.3801220575414124,
+            "ties": 837,
+            "wins": 106
+          },
+          "47": {
+            "losses": 85,
+            "mean_difference": 0.11072362685265912,
+            "negative_arm_accuracy": 0.22319093286835223,
+            "positive_arm_accuracy": 0.33391455972101136,
+            "ties": 850,
+            "wins": 212
+          }
+        },
+        "sample_sd": 0.10198287372630824,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    }
+  },
+  "pooled_confidence_interval": false,
+  "report_order": [
+    "original_three_seed_block",
+    "new_three_seed_block",
+    "combined_six_seed_descriptive"
+  ],
+  "schema": "v25_predefined_six_seed_descriptive_summary.v1",
+  "summaries": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/c_only_test_extension/summary/record.json",
+      "sha256": "cd6cd67a6340db72916657e4bee9acc8f84a5f6bcadc69962931b6a361e32568"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/summary/record.json",
+      "sha256": "08b4d74aca232ab148edcdea920b41514f77b937076bb56a48f2a388abb18709"
+    }
+  ]
+}

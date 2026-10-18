@@ -1,0 +1,396 @@
+{
+  "API_calls": 0,
+  "block": "B",
+  "comparisons": {
+    "C-only-Static": {
+      "execution_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.2101133391455972,
+        "mean_difference": 0.06073815751235106,
+        "minimum": -0.05231037489102005,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 190,
+            "mean_difference": -0.05231037489102005,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.4115082824760244,
+            "ties": 827,
+            "wins": 130
+          },
+          "251": {
+            "losses": 84,
+            "mean_difference": 0.2101133391455972,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48561464690496947,
+            "ties": 738,
+            "wins": 325
+          },
+          "389": {
+            "losses": 91,
+            "mean_difference": 0.024411508282476024,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.5980819529206626,
+            "ties": 937,
+            "wins": 119
+          }
+        },
+        "sample_sd": 0.13493061367012252,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.18482999128160418,
+        "mean_difference": 0.051147922115664046,
+        "minimum": -0.04882301656495205,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 168,
+            "mean_difference": -0.04882301656495205,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3687881429816914,
+            "ties": 867,
+            "wins": 112
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.18482999128160418,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.42632955536181344,
+            "ties": 789,
+            "wins": 285
+          },
+          "389": {
+            "losses": 88,
+            "mean_difference": 0.017436791630340016,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5248474280732345,
+            "ties": 951,
+            "wins": 108
+          }
+        },
+        "sample_sd": 0.12041911084991712,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-C-only": {
+      "execution_accuracy": {
+        "descriptive_only": false,
+        "maximum": 0.016564952048823016,
+        "mean_difference": -0.013949433304272014,
+        "minimum": -0.05579773321708806,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 211,
+            "mean_difference": -0.05579773321708806,
+            "negative_arm_accuracy": 0.4115082824760244,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 789,
+            "wins": 147
+          },
+          "251": {
+            "losses": 156,
+            "mean_difference": -0.0026155187445510027,
+            "negative_arm_accuracy": 0.48561464690496947,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 838,
+            "wins": 153
+          },
+          "389": {
+            "losses": 84,
+            "mean_difference": 0.016564952048823016,
+            "negative_arm_accuracy": 0.5980819529206626,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 960,
+            "wins": 103
+          }
+        },
+        "sample_sd": 0.03748910200523104,
+        "seed_t95": {
+          "critical_value": 4.3026527299,
+          "df": 2,
+          "level": 0.95,
+          "lower": -0.10707752537837967,
+          "multiplicity_adjusted": false,
+          "n": 3,
+          "not_power_or_stability_confirmation": true,
+          "strong_approximate_normality_assumption": true,
+          "unit": "training seed, conditional on fixed known benchmark",
+          "upper": 0.07917865876983565
+        },
+        "signs": {
+          "negative": 2,
+          "positive": 1,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.023539668700959023,
+        "mean_difference": -0.00813716942749201,
+        "minimum": -0.05318221447253706,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 193,
+            "mean_difference": -0.05318221447253706,
+            "negative_arm_accuracy": 0.3687881429816914,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 132
+          },
+          "251": {
+            "losses": 137,
+            "mean_difference": 0.0052310374891020054,
+            "negative_arm_accuracy": 0.42632955536181344,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 867,
+            "wins": 143
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.023539668700959023,
+            "negative_arm_accuracy": 0.5248474280732345,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 974,
+            "wins": 100
+          }
+        },
+        "sample_sd": 0.040069858454273945,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    },
+    "Full-Static": {
+      "execution_accuracy": {
+        "descriptive_only": false,
+        "maximum": 0.2074978204010462,
+        "mean_difference": 0.04678872420807904,
+        "minimum": -0.10810810810810811,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 242,
+            "mean_difference": -0.10810810810810811,
+            "negative_arm_accuracy": 0.4638186573670445,
+            "positive_arm_accuracy": 0.35571054925893636,
+            "ties": 787,
+            "wins": 118
+          },
+          "251": {
+            "losses": 83,
+            "mean_difference": 0.2074978204010462,
+            "negative_arm_accuracy": 0.27550130775937226,
+            "positive_arm_accuracy": 0.48299912816041846,
+            "ties": 743,
+            "wins": 321
+          },
+          "389": {
+            "losses": 83,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5736704446381866,
+            "positive_arm_accuracy": 0.6146469049694856,
+            "ties": 934,
+            "wins": 130
+          }
+        },
+        "sample_sd": 0.1578832237321665,
+        "seed_t95": {
+          "critical_value": 4.3026527299,
+          "df": 2,
+          "level": 0.95,
+          "lower": -0.34541494593143257,
+          "multiplicity_adjusted": false,
+          "n": 3,
+          "not_power_or_stability_confirmation": true,
+          "strong_approximate_normality_assumption": true,
+          "unit": "training seed, conditional on fixed known benchmark",
+          "upper": 0.4389923943475907
+        },
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      },
+      "program_accuracy": {
+        "descriptive_only": true,
+        "maximum": 0.1900610287707062,
+        "mean_difference": 0.04301075268817204,
+        "minimum": -0.1020052310374891,
+        "multiplicity_adjusted": false,
+        "n": 3,
+        "no_p_values": true,
+        "paired_by_seed": {
+          "137": {
+            "losses": 221,
+            "mean_difference": -0.1020052310374891,
+            "negative_arm_accuracy": 0.4176111595466434,
+            "positive_arm_accuracy": 0.3156059285091543,
+            "ties": 822,
+            "wins": 104
+          },
+          "251": {
+            "losses": 73,
+            "mean_difference": 0.1900610287707062,
+            "negative_arm_accuracy": 0.24149956408020923,
+            "positive_arm_accuracy": 0.4315605928509154,
+            "ties": 783,
+            "wins": 291
+          },
+          "389": {
+            "losses": 73,
+            "mean_difference": 0.04097646033129904,
+            "negative_arm_accuracy": 0.5074106364428945,
+            "positive_arm_accuracy": 0.5483870967741935,
+            "ties": 954,
+            "wins": 120
+          }
+        },
+        "sample_sd": 0.1460437564178352,
+        "signs": {
+          "negative": 1,
+          "positive": 2,
+          "zero": 0
+        },
+        "task_denominator": 1147
+      }
+    }
+  },
+  "fixed_known_benchmark": true,
+  "global_generation_seal_id": "d4229cf0ed25f3b048572dbcb25422d573f70459d2f414e1c17c0a40845dc331",
+  "id": "5202ec5f8e20a36c7a1b4de1b5577a4d8357a623bd11dc987ef4a94dee255ca1",
+  "model_reports": {
+    "seed137/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/c_only/scores/record.json",
+      "sha256": "25e65aa0674927a9053993c48749846a306a1d20256e39f21c3a4a5542378cac"
+    },
+    "seed137/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/full/scores/record.json",
+      "sha256": "41bfb10b207f370b052f921490cf7161a1c147c798235ed95094815312037d96"
+    },
+    "seed137/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/static/scores/record.json",
+      "sha256": "6912ffaad897d1a2d66e9fff731f0de1f821e52fd0d8f43cd0fe1f78f96b4c85"
+    },
+    "seed251/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/c_only/scores/record.json",
+      "sha256": "056af9a5713a1740b2874b8c75b61f2c173610e1617a270048be136a8c1bba02"
+    },
+    "seed251/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/full/scores/record.json",
+      "sha256": "4896e6ab4f882a0ed8aa6893112deaa23c263393b94ca6a4e0bbc1f5e7c18819"
+    },
+    "seed251/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/static/scores/record.json",
+      "sha256": "d14954e609ef286dff76243fe744e94741ab5a68cbece8ccddfac098debda78c"
+    },
+    "seed389/c_only": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/c_only/scores/record.json",
+      "sha256": "89b5031fa8355f4a33035d9b98a58da47570ac05267fada8a82bc3b1fb7820ab"
+    },
+    "seed389/full": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/full/scores/record.json",
+      "sha256": "f57db02062614b353f235137472497d7bbd8ae0caa7e6e072c71cbee92cf0850"
+    },
+    "seed389/static": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/static/scores/record.json",
+      "sha256": "c997c9fa95aa5092bb96b0809d58b507f6395ac28acc6b47e072957c13dbe7ae"
+    }
+  },
+  "new_episodes": 10323,
+  "new_generation_models": 9,
+  "no_candidate_replacement": true,
+  "no_extra_seeds_or_questions": true,
+  "protocol_id": "8deb6f7f44f8112a3b4c421f8490817eb140197c141b064e3776a9868e65a279",
+  "reported_models": 9,
+  "schema": "v25_three_arm_block_summary.v1",
+  "statistics": {
+    "arms": [
+      "Static",
+      "C-only",
+      "Full"
+    ],
+    "block": "B",
+    "combined_six_seeds": "predefined descriptive equal weighting only; report old/new blocks first; no pooled CI",
+    "confidence_interval_is_not_power_or_stability_confirmation": true,
+    "design": "prospectively locked new training-seed replication on known benchmark",
+    "eighty_percent_power_claimed": false,
+    "estimate": "equal-weight mean of the three within-seed paired accuracy differences",
+    "execution_interval": {
+      "applies_to": [
+        "Full-Static",
+        "Full-C-only"
+      ],
+      "assumption": "independent identically distributed approximately normal seed effects; strong untestable assumption at n=3",
+      "clip_to_accuracy_bounds": false,
+      "critical_value": 4.3026527299,
+      "df": 2,
+      "formula": "mean +/- 4.3026527299 * sample_SD / sqrt(3)",
+      "key_secondary_is_unadjusted": true,
+      "level": 0.95,
+      "multiplicity_adjusted": false,
+      "n": 3,
+      "small_sample_warning": true,
+      "unit": "independent training seed; fixed known test benchmark"
+    },
+    "extension_comparisons": [],
+    "fixed_known_benchmark_not_unseen_source_generalization": true,
+    "key_secondary": "Full-C-only native execution accuracy",
+    "multiplicity_adjusted": false,
+    "no_best_seed_checkpoint_or_block_selection": true,
+    "no_optional_stopping": true,
+    "no_p_values": true,
+    "old_source_cluster_interval_reused": false,
+    "original_six_model_preregistered_confirmation": false,
+    "other_descriptive": "C-only-Static native execution accuracy",
+    "paired_within_seed_same1147_tasks": true,
+    "primary": "Full-Static native execution accuracy",
+    "program_accuracy": "descriptive only; no confidence interval",
+    "reused_Full_minus_Static_reference_only": false,
+    "seed_dispersion": [
+      "sample SD (ddof=1)",
+      "minimum",
+      "maximum",
+      "positive/zero/negative counts"
+    ],
+    "seeds": [
+      137,
+      251,
+      389
+    ],
+    "source_cluster_bootstrap": false,
+    "stable_training_reproducibility_claimed": false,
+    "statistical_power_claimed": false,
+    "task_denominator": 1147,
+    "unknown_as_zero": false
+  }
+}
