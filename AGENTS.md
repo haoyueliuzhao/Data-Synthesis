@@ -208,6 +208,8 @@ V58于2026-10-18 23:12:41北京时间再次收到PID3800374、UID0、si_code0的
 
 V59已以源提交 `d6c44f436d466adbbcf42bfa6f1ec0baafc03cab` 冻结六文件，包ID `21ed26b65a2aa3d7fddc93a970a7f1af5f3ac3683fd30972bd824cbed7eacd4d`，协议ID `ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d`。42项不同CPU用例通过，最终真实worker导入287项依赖及已安装GPU隔离ResourceGuard核验通过，无CUDA/model加载。新监督器3878725/birth476359812、controller3878874/476360127、observer3878721/476359802已实际启动；2026-10-19 00:09:13快照为GPU2的137 shard01 attempt6/PID3879170和GPU1的shard02 attempt5/PID3879385两worker运行，实际派发与边界均无yyy/未知归属，资源门通过。新增14完整任务104行，累计770题5136行；2100反馈与4accepted未重派。五个进程有真实V59 signal policy启动证据，但未进行科学进程跨UID注入测试，不称root强杀已被防住。启动证据04/startup_verification/record.json ID `97bc146bc39972e4643d06d47af000078e97263be92736fc1509638241bda63f`。仅查04当前队列，禁止重复启动；本次入口已消费，V60外层定时守护须独立封存并验收，不热改04。
 
+用户随后要求自动恢复或定时检查。V60计划独立 `automatic_recovery_01/automatic_control_watchdog_01/` 账户级每分钟cron，初始只监视已运行04，不停止/接管或热改04。只有控制/runner/全部科学worker身份gone、原science锁和八GPU租约（原inode）可all-or-none取得并立即释放、无ownerTERM/任何INT/STOP/UNKNOWN反馈/源码状态数值或已知实现异常、原逐job持久断点审计通过时，才登记新 `episodes/episodeNNNNNN/` 单次派发。退出码缺失可在新授权下作为ALL_IDENTITIES_GONE_EXIT_UNKNOWN冷恢复，必须保留None和未知原因，不伪称SIGKILL/exit0，不扩采样或重复已提交工作。明确STOP持久禁止拉起；用户单独kill -9可能因无法留发送者意图而被恢复，需使用登记STOP入口。只退休已核验的本实验旧纯CPUobserver，科学活跃时不操作；最多1observer和1非科学runner，科学并发仍4及yyy隔离不变。不得把代码/CPU测试称为cron已安装；实际状态以 `trusted_data_synthesis/docs/finqa_v60_account_watchdog_20261019.md`、master协议及定时触发证据为准，禁止裸重启04或其他旧入口。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
