@@ -206,6 +206,8 @@ V58于2026-10-18 23:12:41北京时间再次收到PID3800374、UID0、si_code0的
 
 用户在V59首次派发前追加“不和yyy用户下的任务挂载在同一张卡上”。其host UID已只读确认为1000，新V59六文件包增加归属禁用门：控制派发与锁后复核、worker CUDA前/模型前及运行资源边界均检查计算和图形GPU进程UID；存在yyy或归属未知/MPS无法归属即不可用。发现同卡冲突只由本实验按原资源让渡与断点审计接续，不信号/迁移yyy，不放宽显存主存门；不可阻止对方随后上卡，不能保证零瞬时重叠。首次归属查询禁用GPU0/4/5/6/7，1/2/3仍需实际容量门。该准备不代表已启动，不能为凑四并发违反禁用条件。
 
+V59已以源提交 `d6c44f436d466adbbcf42bfa6f1ec0baafc03cab` 冻结六文件，包ID `21ed26b65a2aa3d7fddc93a970a7f1af5f3ac3683fd30972bd824cbed7eacd4d`，协议ID `ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d`。42项不同CPU用例通过，最终真实worker导入287项依赖及已安装GPU隔离ResourceGuard核验通过，无CUDA/model加载。新监督器3878725/birth476359812、controller3878874/476360127、observer3878721/476359802已实际启动；2026-10-19 00:09:13快照为GPU2的137 shard01 attempt6/PID3879170和GPU1的shard02 attempt5/PID3879385两worker运行，实际派发与边界均无yyy/未知归属，资源门通过。新增14完整任务104行，累计770题5136行；2100反馈与4accepted未重派。五个进程有真实V59 signal policy启动证据，但未进行科学进程跨UID注入测试，不称root强杀已被防住。启动证据04/startup_verification/record.json ID `97bc146bc39972e4643d06d47af000078e97263be92736fc1509638241bda63f`。仅查04当前队列，禁止重复启动；本次入口已消费，V60外层定时守护须独立封存并验收，不热改04。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

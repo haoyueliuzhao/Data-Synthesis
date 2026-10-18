@@ -1,0 +1,78 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 50653,
+      "gpu_isolation": {
+        "allowed": true,
+        "excluded_processes": [],
+        "excluded_uid": 1000,
+        "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+        "observed_epoch": 1792339215.0253747,
+        "process_count": 1,
+        "reason": "no_excluded_owner_observed",
+        "unresolved_processes": []
+      },
+      "index": 2,
+      "memory_free_mib": 50653,
+      "processes": [
+        {
+          "pid": 2447819,
+          "used_memory_mib": "30492"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 30501,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102"
+    },
+    "host": {
+      "available_bytes": 856507035648,
+      "live_worker_count": 0,
+      "required_bytes": 274877906944,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290287281,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+    "minimum_free_mib": 24576
+  },
+  "attempt": 6,
+  "birth": "476361170",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "0-37,76-113",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04/implementation/finqa_v59_worker.py",
+    "--mode",
+    "science",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "shard01",
+    "--gpu-index",
+    "2"
+  ],
+  "control_protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+  "id": "67df1be6d05dd2877d2614f611cda9742f8a4693a5a830ef813b1742e56f0b34",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed137.shard01",
+    "job_id": "seed137.shard01",
+    "kind": "class",
+    "memory_phase": "class",
+    "priority": 4,
+    "seed": 137,
+    "stage": "shard01"
+  },
+  "original_frozen_scientific_entrypoint": true,
+  "pid": 3879170,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_actual_attempt_launch.v1",
+  "started_epoch": 1792339217.0669081
+}

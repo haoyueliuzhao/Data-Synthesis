@@ -1,0 +1,54 @@
+{
+  "schema": "v54_resource_lifetime_closeout.v1",
+  "at": "2026-10-18T15:12:47.681492+00:00",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job_id": "seed137.shard01",
+  "gpu_index": 2,
+  "pid": 3658980,
+  "birth": "475584202",
+  "elapsed_slot_seconds": 4887.358560740016,
+  "status": "FAILED_OR_STOPPED",
+  "error": {
+    "type": "ExplicitStop",
+    "message": "explicit stop before next scientific operation"
+  },
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+    "descriptor": 5,
+    "device": 66304,
+    "inode": 5290287281,
+    "held_exclusive_flock": true
+  },
+  "resources": {
+    "all_gates_passed": true,
+    "single_process_lifetime_includes_loading": true,
+    "actual_boundary_observations": 2096,
+    "peak_allocated_bytes": 17356511232,
+    "minimum_boundary_free_bytes": 32031244288,
+    "peak_rss_bytes": 133801062400,
+    "minimum_host_available_bytes": 477334056960,
+    "resource_wait_seconds": 0.6801835130900145,
+    "peak_resets_before_loading": 1,
+    "peak_resets_after_loading": 0,
+    "warm_allocation_bytes": 0,
+    "anchor_bytes": 0,
+    "received_signals": [
+      {
+        "signal": 15,
+        "received_at_epoch": 1792336361.3603888
+      },
+      {
+        "signal": 15,
+        "received_at_epoch": 1792336362.061974
+      }
+    ],
+    "observed_violation": null,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/resources/seed137.shard01/pid3658980/observations.jsonl",
+    "preflight_shortages": 0,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "deferred_observation": null,
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "own_cache_release_does_not_reset_historical_peak": true
+  },
+  "id": "18a2c8f20a3c30f2f78d93bc3ab1a47c6961ed178103d4e60254dc12f0577a50"
+}

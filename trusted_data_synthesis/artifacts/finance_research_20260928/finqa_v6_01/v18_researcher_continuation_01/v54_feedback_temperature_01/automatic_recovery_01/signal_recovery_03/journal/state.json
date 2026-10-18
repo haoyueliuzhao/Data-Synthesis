@@ -1,0 +1,436 @@
+{
+  "accepted": {
+    "seed137.feedback_C05": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/feedback_C05/accepted/record.json",
+      "sha256": "813c9106351ac59b91f470a16381596b30727b46fa8560ea12d6f9d88a4a8ff1"
+    },
+    "seed137.shard00": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard00/accepted/record.json",
+      "sha256": "da05ce450209ee30056314674dc4d0163bb630c7ee11b99a34e5f2230a371565"
+    },
+    "seed251.feedback_C05": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/feedback_C05/accepted/record.json",
+      "sha256": "198a505cd37b7721405a43223a493d6ab01da413e9d7c6bfd10b22333f30584d"
+    },
+    "seed389.feedback_C05": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed389/feedback_C05/accepted/record.json",
+      "sha256": "5ca86d0b524029eefccf5945b8f868c5498bdcb3c085e9434208dc64140d8c73"
+    }
+  },
+  "active_jobs": [
+    {
+      "attempt": 5,
+      "birth": "475584202",
+      "gpu_index": 2,
+      "job_id": "seed137.shard01",
+      "pid": 3658980
+    },
+    {
+      "attempt": 4,
+      "birth": "475584307",
+      "gpu_index": 1,
+      "job_id": "seed137.shard02",
+      "pid": 3659004
+    },
+    {
+      "attempt": 3,
+      "birth": "475584402",
+      "gpu_index": 4,
+      "job_id": "seed137.shard03",
+      "pid": 3659030
+    },
+    {
+      "attempt": 3,
+      "birth": "475584476",
+      "gpu_index": 6,
+      "job_id": "seed251.shard00",
+      "pid": 3659045
+    }
+  ],
+  "attempt_history": [
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/feedback_C05/attempts/attempt0001",
+      "job_id": "seed137.feedback_C05"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/feedback_C05/attempts/attempt0001",
+      "job_id": "seed251.feedback_C05"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed389/feedback_C05/attempts/attempt0001",
+      "job_id": "seed389.feedback_C05"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard00/attempts/attempt0001",
+      "job_id": "seed137.shard00"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0001",
+      "job_id": "seed137.shard01"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard02/attempts/attempt0001",
+      "job_id": "seed137.shard02"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0002",
+      "job_id": "seed137.shard01"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/feedback_C05/attempts/attempt0002",
+      "job_id": "seed251.feedback_C05"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed389/feedback_C05/attempts/attempt0002",
+      "job_id": "seed389.feedback_C05"
+    },
+    {
+      "attempt": 3,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0003",
+      "job_id": "seed137.shard01"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard02/attempts/attempt0002",
+      "job_id": "seed137.shard02"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard03/attempts/attempt0001",
+      "job_id": "seed137.shard03"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard00/attempts/attempt0001",
+      "job_id": "seed251.shard00"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard01/attempts/attempt0001",
+      "job_id": "seed251.shard01"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard02/attempts/attempt0001",
+      "job_id": "seed251.shard02"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard03/attempts/attempt0001",
+      "job_id": "seed251.shard03"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/train_Hold/attempts/attempt0001",
+      "job_id": "seed137.train_Hold"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/train_Hold/attempts/attempt0001",
+      "job_id": "seed251.train_Hold"
+    },
+    {
+      "attempt": 1,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed389/train_Hold/attempts/attempt0001",
+      "job_id": "seed389.train_Hold"
+    },
+    {
+      "attempt": 3,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/feedback_C05/attempts/attempt0003",
+      "job_id": "seed251.feedback_C05"
+    },
+    {
+      "attempt": 4,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0004",
+      "job_id": "seed137.shard01"
+    },
+    {
+      "attempt": 3,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard02/attempts/attempt0003",
+      "job_id": "seed137.shard02"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard03/attempts/attempt0002",
+      "job_id": "seed137.shard03"
+    },
+    {
+      "attempt": 2,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard00/attempts/attempt0002",
+      "job_id": "seed251.shard00"
+    },
+    {
+      "attempt": 5,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0005",
+      "job_id": "seed137.shard01"
+    },
+    {
+      "attempt": 4,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard02/attempts/attempt0004",
+      "job_id": "seed137.shard02"
+    },
+    {
+      "attempt": 3,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard03/attempts/attempt0003",
+      "job_id": "seed137.shard03"
+    },
+    {
+      "attempt": 3,
+      "directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed251/shard00/attempts/attempt0003",
+      "job_id": "seed251.shard00"
+    }
+  ],
+  "control_protocol_id": "8b40efeeaf4ddff85957efb6eb05c3846084c0655f2216469549a20d9b66554e",
+  "controller_attempt": 1,
+  "evaluation_registered": false,
+  "id": "24f7da9f0492a318043c8332ee01ce7478365c47e5302894406426bbdffe17bb",
+  "inherited_unobserved_exits_not_reclassified": true,
+  "job_states": {
+    "seed137.distribution_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "db4d14855b9b927841154bedce55015e4491c7f6f379f0c0d43fcea08d515d50",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed137.feedback_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "473936454",
+      "durable_progress_digest": "b78c0f4b99e3231e688188f8ba270247c827fd07a3d9813ec12e988801dc3049",
+      "gpu_index": 2,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3302575,
+      "progress_units": 71,
+      "status": "COMPLETE"
+    },
+    "seed137.replay_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "0ea743f7a45d47a871f883d720f11cdec300c9538d11c64d8a4692f658c52762",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed137.shard00": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "473936626",
+      "durable_progress_digest": "d1d87ffc28b0cd130b4cf688cfd1ff38bb82fafa46b43098e069ff87dc7ce214",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3302616,
+      "progress_units": 9,
+      "status": "COMPLETE"
+    },
+    "seed137.shard01": {
+      "attempts": 5,
+      "birth": "475584202",
+      "durable_progress_digest": "5414a14e4a4bdc7a314b220ef0158fa4245efcbc047b033c1aff655a7983f26f",
+      "gpu_index": 2,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 1,
+      "pid": 3658980,
+      "progress_units": 21,
+      "status": "RUNNING"
+    },
+    "seed137.shard02": {
+      "attempts": 4,
+      "birth": "475584307",
+      "durable_progress_digest": "d571b431ef6541733703768bbd6f6744235b9ba52545e568c4b9e18698da1227",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3659004,
+      "progress_units": 41,
+      "status": "RUNNING"
+    },
+    "seed137.shard03": {
+      "attempts": 3,
+      "birth": "475584402",
+      "durable_progress_digest": "3172c0451e2a7fc71abd0d9fb47263636a6ed32c1c11e65b99dc2174384b098b",
+      "gpu_index": 4,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3659030,
+      "progress_units": 18,
+      "status": "RUNNING"
+    },
+    "seed137.train_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "907739af9bd0ce6e848130e5e18c58e91505a371f1603dbb8251a5b4ecebd868",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed137.train_Hold": {
+      "attempts": 1,
+      "durable_progress_digest": "3beb0d0e96ea3f9e77dd6188ee380b0ee3e708b07e5766ab7d6cebcb6c33d463",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.distribution_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "0a79db874b07c4f237f1c5f508338bce76764652967a38fc678b33cda135d7ff",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.feedback_C05": {
+      "accepted_attempt": 3,
+      "attempts": 3,
+      "birth": "475073965",
+      "durable_progress_digest": "dfa6042742db516fcdcef5b420197dad8eb271d8206c7fec6294e3983b1441d2",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3565543,
+      "progress_units": 1963,
+      "status": "COMPLETE"
+    },
+    "seed251.replay_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "63e84cef634930c759d2d7d265893a9761832c3a841a8597ef196f6c7d7bfb15",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.shard00": {
+      "attempts": 3,
+      "birth": "475584476",
+      "durable_progress_digest": "f8ba8b8fbbb13cf1410eb466dafad7850b2d36ebc817485c9dbd59f5f965ec1e",
+      "gpu_index": 6,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3659045,
+      "progress_units": 7,
+      "status": "RUNNING"
+    },
+    "seed251.shard01": {
+      "attempts": 1,
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.shard02": {
+      "attempts": 1,
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.shard03": {
+      "attempts": 1,
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.train_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "8cb92828d023bdebcf891c93f2b36f16ba25dabc82eb2e91c4242e315c09939f",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed251.train_Hold": {
+      "attempts": 1,
+      "durable_progress_digest": "5f5fbf572e879eaa7a77ff4fd3600f9d2add4a3a4ed6387e10e7dce766bb3aef",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.distribution_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "d60662270b31c63973c0561cf4068ea8cd87951fbce5395be558f124a7ef9170",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.feedback_C05": {
+      "accepted_attempt": 2,
+      "attempts": 2,
+      "birth": "474992155",
+      "durable_progress_digest": "a2f837ca89e38a7cb6b43662a46d5debcb63e37b7033754cfd375028f5b5d595",
+      "gpu_index": 1,
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3549529,
+      "progress_units": 2008,
+      "status": "COMPLETE"
+    },
+    "seed389.replay_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "fd69e9f66cad5d577b5daab0cb7df6c24a6f6415485592a84e2416ccd35b2190",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.train_C05": {
+      "attempts": 0,
+      "durable_progress_digest": "3217ac9b202c1e5e19ee9311d5d50e08b339d8fb91056cf22ff2eed57412fa49",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    },
+    "seed389.train_Hold": {
+      "attempts": 1,
+      "durable_progress_digest": "fd8f855e881d5024ba0c9712bc4b406384b05101b58767645180b01ab540b2e7",
+      "initial_authorized_signal_recovery": true,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "PENDING"
+    }
+  },
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "resource_wait_seconds": 159.7080834461376,
+  "schema": "v57_actual_job_attempt_journal.v1",
+  "updated_epoch": 1792336367.0653908
+}

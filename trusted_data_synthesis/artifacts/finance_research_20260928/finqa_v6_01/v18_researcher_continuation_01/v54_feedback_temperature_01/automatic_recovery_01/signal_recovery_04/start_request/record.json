@@ -1,0 +1,43 @@
+{
+  "schema": "v59_actual_single_supervisor_and_observer_start.v1",
+  "at": "2026-10-18T16:00:03.487723+00:00",
+  "source_commit": "d6c44f436d466adbbcf42bfa6f1ec0baafc03cab",
+  "control_protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+  "scientific_protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "explicit_user_request": "尽快恢复任务；仅保护本实验；不与yyy任务同卡",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04/implementation/finqa_v59_controller.py",
+    "supervise",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04"
+  ],
+  "pid": 3878725,
+  "birth": "476359812",
+  "frozen_CPU_verification_id": "9e2fbf3b42d7eab82cc36dea9d4001367ff60f2155ef2dcc71045110ec3affa6",
+  "observer_command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04/implementation/finqa_v59_observer.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04",
+    "--science-root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01"
+  ],
+  "observer_pid": 3878721,
+  "observer_birth": "476359802",
+  "observer_started_before_supervisor": true,
+  "scientific_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+  "control_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04",
+  "max_GPU_workers": 4,
+  "old_stop_marker_deleted": false,
+  "old_controller_restarted": false,
+  "old_unknown_exit_code_rewritten": false,
+  "old_sampling_quota_reset": false,
+  "owner_SIGTERM_SIGINT_and_STOP_preserved": true,
+  "root_or_sudo_not_used": true,
+  "private_root_candidate_logs_published": false,
+  "external_account_watchdog_not_installed_yet": true,
+  "id": "522cd64023a03189936ec39cdf10aa5cad9efaa0ef6afd5f189f3ac385ed07c6"
+}

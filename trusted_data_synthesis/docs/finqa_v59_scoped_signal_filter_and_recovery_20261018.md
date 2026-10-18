@@ -50,7 +50,25 @@ SIGKILL不可屏蔽以及信号权限规则见 [Linux signal(7)](https://man7.or
 
 ## 核验与实际状态
 
-准备记录ID为 `dfc01836a3597b34881e8919048be908fd2a3bb52fb59aeacb11994314b0288b`。42项不同的必要CPU差异用例通过：控制适配4、登记6、signals17、worker3、observer3、GPU隔离9项。CPU测试未向真实科学进程注入停止信号，模拟外UID的过滤测试不能称为实际跨UID信号验证。04尚未启动；正式冻结后只做包含新GPU hook的实际入口核验，不重扫科学数据或重跑历史数学测试。实际启动、PID/birth、GPU派发和新持久任务进展将在本节追加。
+准备记录ID为 `dfc01836a3597b34881e8919048be908fd2a3bb52fb59aeacb11994314b0288b`。42项不同的必要CPU差异用例通过：控制适配4、登记6、signals17、worker3、observer3、GPU隔离9项。CPU测试未向真实科学进程注入停止信号，模拟外UID的过滤测试不能称为实际跨UID信号验证。
+
+V59以源提交 `d6c44f436d466adbbcf42bfa6f1ec0baafc03cab` 冻结六文件包，实施包ID为 `21ed26b65a2aa3d7fddc93a970a7f1af5f3ac3683fd30972bd824cbed7eacd4d`，协议ID为 `ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d`，prepared ID为 `67ab05efb757d3feb8c056208b87a6cbb690a35953edaca72b1070480a673324`。正式冻结后实际worker入口的287项依赖匹配，CUDA未初始化、未加载父模型或Student；特别确认实际 `finqa_v56_runtime.ResourceGuard` 已替换为本次注册的资源隔离子类，而不只是存在一份未被消费的代码。
+
+唯一启动请求 `522cd64023a03189936ec39cdf10aa5cad9efaa0ef6afd5f189f3ac385ed07c6` 已实际执行。2026-10-19 00:09:13北京时间的启动核验确认以下进程均存活且PID/birth匹配：
+
+| 角色/工作 | PID | birth | 实际设备 |
+|---|---:|---|---|
+| 监督器 | 3878725 | 476359812 | 无GPU |
+| controller attempt1 | 3878874 | 476360127 | 无GPU |
+| 独立观察器 | 3878721 | 476359802 | 无GPU |
+| seed137 shard01 attempt6 | 3879170 | 476361170 | GPU2 |
+| seed137 shard02 attempt5 | 3879385 | 476361521 | GPU1 |
+
+实际科学并发是2，不是4；其他工作仍依原资源与依赖门排队。两worker分别已有267、306个通过的资源边界，派发与边界的GPU归属观察均allowed，excluded/unresolved列表为空。GPU2/1的已观测allocated峰值约15.286/15.249GiB，边界free最低约31.773/14.802GiB，RSS峰值约59.294/58.794GiB，全机有效可用RAM最低约674.591/674.193GiB；这是截至快照的观测，不是未来峰值保证。
+
+相对756题5032行基线，新增14份完整任务、104行，累计770题5136行。原2100反馈和4项accepted未重派；新增任务核验只读取原子metadata及Tensor存在/大小，没有重哈希Tensor或重扫反馈。观察器心跳正常，五个新实际进程均记录了owner1004、SI_USER-only的V59启动策略；尚未向科学进程注入跨UID信号，也没有据此宣称过滤已抵御真实攻击。
+
+启动证据为 `signal_recovery_04/startup_verification/record.json`，ID `97bc146bc39972e4643d06d47af000078e97263be92736fc1509638241bda63f`；CPU入口证据为 `frozen_cpu_verification/record.json`，ID `9e2fbf3b42d7eab82cc36dea9d4001367ff60f2155ef2dcc71045110ec3affa6`。整轮和统一评价尚未完成；本次04入口已经消费，禁止重复启动或改写冻结包。外层定时守护在独立V60登记完成前仍不能称为已生效。
 
 ## 用户追加的yyy同卡禁用
 
