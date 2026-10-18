@@ -178,6 +178,12 @@ V55首次准备以提交 `b812c803f6` 在创建 `recovery_01` 前被依赖SHA门
 
 V55已以源提交 `bac464b49c` 冻结91文件，实施包 `7d1889c638bac3f93e3fed85d422619e2df6c1363a62052fab79da7c93479e0a`、协议 `4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f`，22项必要CPU/mock及正式冻结入口核验通过。唯一控制器于2026-10-18 16:24:55北京启动，PID3145579/birth473629006；GPU2/1/4分别派发137/251/389低温反馈，GPU6派发137 shard00，总4worker已实际生效。16:28:40两条获批重新执行都已claim并真实返回receipt，旧UNKNOWN hash不变、各额度已消耗一次；完整反馈分别10/10/9条，137新增4份完整任务梯度，已观测资源门通过。新增optimizer仍0、cohort未齐、评估未开始，不称整轮通过。启动证据 `recovery_01/startup_verification/record.json` ID `707304a2b3b0c6ce26ed32b7368df9161bca3cf4dae8129cbe0306a08414c590`；后续看新根queue/status与feedback_recovery，不得重复启动旧/新控制器，不能把已用的两次授权再发放。
 
+V55随后于2026-10-18 16:31:28北京在seed389/GPU4下一反馈调用前触发free硬门：1.727905GiB<2GiB，其他内存门通过，实际该调用未执行；控制器按旧规则全池停止，16:31:50以STOPPED_FAILURE_NO_RETRY收口。四worker真实exit1、全部原进程退出。保留137/251/389完整反馈24/23/23共70条，未完成episode内实际返回2/1/0 turn共3条，三个末次调用均pre_call_rejected/actual_model_calls0，新增UNKNOWN0；实际返回136条包含这些partial turn。137 class仅9完整任务45行，未完成行无断点；R3/分布/optimizer/评价均未开始，原两次授权重执行已实际消耗并返回。不能把partial episode当完整反馈，旧V54 UNKNOWN不回写。
+
+用户随后明确要求“处理各种常见问题，设置自动恢复”，替代本轮任一失败停全池且不重试的运行策略。V56独立 `v54_feedback_temperature_01/automatic_recovery_01/`：资源不足在下一计算前记录、释放自身可回收缓存并重检，单worker最多等待60秒后让渡；确认瞬时资源/可恢复I/O故障经实际退出与持久断点审计后单任务重派，其他独立job继续。30/60/120/300秒退避，连续四次无新增持久进展的资源故障转900秒冷却后自动按原门重新准入，不因资源长期不足永久停池。UNKNOWN、状态/hash/数值或不明实现错误不盲目重试；明确停止监督器/控制器或STOP标记终止自动拉起。控制器意外退出只在空且已结算journal、旧worker真实退出、项目租约可全取得并释放、durable审计通过时自动恢复；不能伪造退出或接管未确认的活跃worker。
+
+V56只读继承70完整反馈、3部分returned turn、9任务45行梯度，以及三C1/六快照；重建原消息/工具状态接续，不重调已返回模型调用，不重新发放已消费的两次旧请求额度。剩1788次optimizer更新、2030未完整feedback episode（原目标2100）、1479新class任务和12267评价不变；未封存计算重做须计为故障开销，不重复已提交科学剂量。GPU0至7、最多4worker/每卡1、76GiB历史allocated/2GiB边界free、RSS160/192GiB和全机96GiB余量不放宽，无任意整轮截止，旧等待89.84583379887044秒继承。所有attempt独立记录、科学数据稳定，旧协议和失败不回写。实现/CPU测试不等于已经运行；实际状态见 `trusted_data_synthesis/docs/finqa_v56_automatic_recovery_20261018.md` 和新根唯一监督器/队列。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

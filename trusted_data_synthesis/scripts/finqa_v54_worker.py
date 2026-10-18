@@ -16,6 +16,7 @@ import importlib
 import io
 import json
 import os
+import re
 import time
 from pathlib import Path
 
@@ -110,6 +111,8 @@ class ScientificMonitor:
     def check_stop(self, label, **context):
         if self.guard.stop.requested:
             raise RuntimeError("scientific worker stop requested at " + label)
+        if hasattr(self.guard, "ensure_capacity"):
+            self.guard.check(label, boundary=True, **context)
 
 
 def load_cache(root, parent, rt):
@@ -132,6 +135,9 @@ def load_cache(root, parent, rt):
         cache_root = Path(root) / f"parents/seed{parent['seed']}/task_cache"
     cache = training_api.task_cache.TaskCache(cache_root, binding, plan,
                                              parent["parameter_spec"], rt)
+    protocol = checked(Path(root) / "protocol/record.json")
+    if "class_cache_inheritance" in protocol and not parent["old_class_context"]:
+        cache = importlib.import_module("finqa_v56_worker").overlay_cache(root, parent, rt, cache)
     return cache
 
 
@@ -176,7 +182,7 @@ def checked_old_point(parent, state, outer, rt):
 
 
 def execute_feedback(directory, parent, state, outer, driver, assets, science, rt, monitor,
-                     *, recovery_root=None):
+                     *, recovery_root=None, attempt_root=None):
     temperature = importlib.import_module("finqa_v54_temperature")
     checked_old_point(parent, state, outer, rt)
     if (Path(directory) / "payload/record.json").exists():
@@ -191,18 +197,24 @@ def execute_feedback(directory, parent, state, outer, driver, assets, science, r
     theta = {name: value.to(driver.parameters[name].device)
              for name, value in outer["theta_bar"].items()}
     cfg = temperature.RunConfig.model_validate(science["feedback_config"])
-    recovery_factory = None
+    recovery_factory, protocol = None, {}
     if recovery_root is not None:
         protocol = checked(Path(recovery_root) / "protocol/record.json")
-        if "feedback_recovery" in protocol:
+        if "feedback_recovery" in protocol and "feedback_inheritance" not in protocol:
             recovery = importlib.import_module("finqa_v55_feedback_recovery")
             recovery_factory = lambda condition: recovery.registered_guard(
                 recovery_root, parent["seed"], condition)
-    collector = temperature.LocalFeedbackCollector(
-        snapshot=assets["snapshot"], role_plan=assets["role_plan"],
+    collector_arguments = dict(snapshot=assets["snapshot"], role_plan=assets["role_plan"],
         root=Path(directory) / "feedback", config=cfg.model_copy(update={"temperature": 0.5}),
-        model_id=assets["assets"]["base_binding"]["id"], seeds=(11, 29),
-        recovery_guard_factory=recovery_factory)
+        model_id=assets["assets"]["base_binding"]["id"], seeds=(11, 29))
+    if "feedback_inheritance" in protocol:
+        require(attempt_root is not None, "V56 feedback needs an independent actual attempt directory")
+        collector = importlib.import_module("finqa_v56_feedback").V56FeedbackCollector(
+            **collector_arguments, attempt_root=Path(attempt_root) / "generation",
+            inheritance=protocol["feedback_inheritance"]["seeds"][str(parent["seed"])] )
+    else:
+        collector = temperature.LocalFeedbackCollector(**collector_arguments,
+                                                       recovery_guard_factory=recovery_factory)
 
     def event(value):
         monitor.snapshot("feedback." + value["phase"], boundary=True,
@@ -269,7 +281,14 @@ def execute_replay(root, directory, parent, state, outer, driver, rt, monitor):
                          response_backend_observation=value)
 
     def factory(model, parameters):
-        return temperature.ReplaySession(
+        session_type = temperature.ReplaySession
+        if hasattr(monitor.guard, "prepare_replay_response"):
+            class CapacityCheckedSession(temperature.ReplaySession):
+                def __call__(self, model, theta, prompt, targets, **kwargs):
+                    monitor.guard.prepare_replay_response(self, model, len(prompt), len(targets))
+                    return super().__call__(model, theta, prompt, targets, **kwargs)
+            session_type = CapacityCheckedSession
+        return session_type(
             model, parameters, temperature=0.5, condition_id=feedback["condition"]["id"],
             profile_id=profile_id, resident_kv_budget_bytes=2 * GIB,
             full_kv_budget_bytes=8 * GIB, activation_resident_budget_bytes=16 * GIB,
@@ -361,23 +380,38 @@ def execute_distribution(root, directory, parent, state, outer, driver, cache, r
                 complete_class_tasks=744, complete_class_rows=4974, optimizer_updates=0)
 
 
-def run(root, seed, stage, gpu_index):
+def run(root, seed, stage, gpu_index, *, attempt_root=None):
     root = Path(root).resolve()
     job = job_spec(seed, stage)
     plan = checked(root / "protocol/record.json")
     directory = stage_root(root, seed, stage)
     directory.mkdir(parents=True, exist_ok=True)
-    require(not (directory / "result/record.json").exists(), "successful stage cannot execute again")
+    recovering = "resource_recovery_policy" in plan
+    require(recovering or not (directory / "result/record.json").exists(), "successful stage cannot execute again")
     with (directory / "worker.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         attempts = directory / "attempts"
-        number = max((int(p.name.removeprefix("attempt")) for p in attempts.glob("attempt*")), default=0) + 1
-        attempt = attempts / f"attempt{number:04d}"
+        requested_attempt = (attempt_root or os.environ.get("V56_ATTEMPT_DIR")
+                             or os.environ.get("V56_JOB_ATTEMPT_ROOT"))
+        if requested_attempt is not None:
+            attempt = Path(requested_attempt).resolve()
+            require(recovering and attempt.parent == attempts.resolve()
+                    and re.fullmatch(r"attempt[0-9]{4,}", attempt.name) is not None
+                    and not attempt.is_symlink()
+                    and os.environ.get("V56_ATTEMPT_ID", attempt.name) == attempt.name,
+                    "worker attempt must be the registered stable job's independent attempt directory")
+        else:
+            require(not recovering, "V56 requires an explicit scheduler attempt identity")
+            number = max((int(p.name.removeprefix("attempt")) for p in attempts.glob("attempt*")), default=0) + 1
+            attempt = attempts / f"attempt{number:04d}"
         started = time.time()
         publish(attempt / "started/record.json", dict(schema="v54_scientific_worker_start.v1",
                 protocol_id=plan["id"], job=job, gpu_index=gpu_index, pid=os.getpid(),
                 started_epoch=started, automatic_retry_in_worker=False))
+        guard = None
         try:
+            if recovering and (directory / "result/record.json").exists():
+                return importlib.import_module("finqa_v56_worker").reuse_complete_result(root, job, attempt)
             training, rt = training_api.runtime()
             # Import scientific dependencies before restoring the actual training RNG.
             for module in ("finqa_v54_temperature", "finqa_v34_tail_memory",
@@ -386,11 +420,14 @@ def run(root, seed, stage, gpu_index):
                            "trusted_synthesis.experiments.finance_qa_vnext_anchored_vtdo.optimizer_pullback",
                            "trusted_synthesis.experiments.finance_qa_vnext_anchored_vtdo.distribution"):
                 importlib.import_module(module)
+            if recovering:
+                importlib.import_module("finqa_v56_feedback")
+                importlib.import_module("finqa_v56_worker")
             parent, state, outer = training_api.load_parent(root, seed, rt)
             require(parent["protocol_id"] == plan["id"], "parent belongs to another experiment protocol")
             science, pool, _prefix, assets = training.checked_launch(parent["training_root"])
             cache = load_cache(root, parent, rt) if stage.startswith("shard") or stage == "distribution_C05" else None
-            guard_module = importlib.import_module("finqa_v54_runtime")
+            guard_module = importlib.import_module("finqa_v56_runtime" if recovering else "finqa_v54_runtime")
             with guard_module.execution_context(root, job, gpu_index) as guard:
                 monitor = ScientificMonitor(guard, cooperative_replay=stage == "replay_C05")
                 model, tokenizer, optimizer, scope, _fresh = rt.launcher._load_components(assets, seed)
@@ -408,7 +445,8 @@ def run(root, seed, stage, gpu_index):
                     body = execute_shard(directory, parent, stage, driver, pool, cache, rt, monitor)
                 elif stage == "feedback_C05":
                     body = execute_feedback(directory, parent, state, outer, driver,
-                                            assets, science, rt, monitor, recovery_root=root)
+                                            assets, science, rt, monitor, recovery_root=root,
+                                            attempt_root=attempt if recovering else None)
                 elif stage == "replay_C05":
                     body = execute_replay(root, directory, parent, state, outer, driver, rt, monitor)
                 elif stage == "distribution_C05":
@@ -453,16 +491,24 @@ def run(root, seed, stage, gpu_index):
                 schema="v54_scientific_stage_result.v1", status="COMPLETE",
                 protocol_id=plan["id"], parent_id=parent["id"], seed=seed, stage=stage,
                 job=job, gpu_index=gpu_index, started_epoch=started, finished_epoch=time.time(),
+                actual_worker_pid=os.getpid(), actual_attempt_root=str(attempt),
                 resources=resource_report, model_released=True, **body))
             publish(attempt / "completed/record.json", dict(result=training_api.records.entry(
                     directory / "result/record.json"), protocol_id=plan["id"]))
+            if recovering:
+                publish(attempt / "result/record.json", dict(protocol_id=plan["id"],
+                    job_id=job["id"], stable_result=training_api.records.entry(directory / "result/record.json"),
+                    actual_worker_pid=os.getpid(), scientific_result_reused=False))
             return result
         except BaseException as error:
-            publish(attempt / "failure/record.json", dict(
-                schema="v54_scientific_worker_failure.v1", protocol_id=plan["id"],
-                job=job, gpu_index=gpu_index, exception_type=type(error).__name__,
-                error=str(error), started_epoch=started, finished_epoch=time.time(),
-                automatic_retry_in_worker=False, actual_durable_boundaries_only=True))
+            if recovering:
+                importlib.import_module("finqa_v56_worker").record_attempt_failure(root, job, attempt, error, guard=guard)
+            else:
+                publish(attempt / "failure/record.json", dict(
+                    schema="v54_scientific_worker_failure.v1", protocol_id=plan["id"],
+                    job=job, gpu_index=gpu_index, exception_type=type(error).__name__,
+                    error=str(error), started_epoch=started, finished_epoch=time.time(),
+                    automatic_retry_in_worker=False, actual_durable_boundaries_only=True))
             raise
 
 
@@ -472,6 +518,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, choices=training_api.SEEDS, required=True)
     parser.add_argument("--stage", choices=STAGES, required=True)
     parser.add_argument("--gpu-index", type=int, required=True)
+    parser.add_argument("--attempt-root", type=Path)
     args = parser.parse_args()
-    result = run(args.root, args.seed, args.stage, args.gpu_index)
+    result = run(args.root, args.seed, args.stage, args.gpu_index, attempt_root=args.attempt_root)
     print(json.dumps(dict(status=result["status"], id=result["id"])))

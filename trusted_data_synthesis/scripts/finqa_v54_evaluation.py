@@ -14,6 +14,7 @@ import gc
 import hashlib
 import importlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -328,6 +329,25 @@ def seal_job(root, plan, job, *, final=None):
 
 
 def worker(root, jobid, gpu, *, execution_context=None):
+    root = Path(root).resolve()
+    protocol = _protocol(root)
+    if "auto_recovery_policy" not in protocol:
+        return _worker(root, jobid, gpu, execution_context=execution_context)
+    require(jobid in planned_jobs(), "unregistered automatic evaluation job")
+    job = dict(planned_jobs()[jobid], kind="generate")
+    attempt = Path(os.environ["V56_ATTEMPT_DIR"]).resolve()
+    require(attempt.parent == job_root(root, job) / "attempts"
+            and attempt.name == os.environ["V56_ATTEMPT_ID"]
+            and attempt.name.startswith("attempt") and attempt.name[7:].isdigit(),
+            "automatic evaluation requires its dispatched independent attempt directory")
+    try:
+        return _worker(root, jobid, gpu, execution_context=execution_context, attempt_root=attempt)
+    except BaseException as error:
+        importlib.import_module("finqa_v56_worker").record_attempt_failure(root, job, attempt, error)
+        raise
+
+
+def _worker(root, jobid, gpu, *, execution_context=None, attempt_root=None):
     """One local GPU job, delegated resource lease/monitor, and no private scoring."""
     root = Path(root).resolve()
     plan, final = checked_plan(root), _runtime()
@@ -336,8 +356,14 @@ def worker(root, jobid, gpu, *, execution_context=None):
     directory = job_root(root, job)
     with (directory / "worker.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        progress = inspect_job(root, plan, job, final=final)
-        if progress["sealed"]:
+        automatic = attempt_root is not None
+        if automatic:
+            progress = importlib.import_module("finqa_v56_worker").audit_job_resume(root, dict(job, kind="generate"))
+            require(progress["resume_allowed"] and progress["unknown_calls"] == 0,
+                    "UNKNOWN or changed evaluation state cannot be automatically resumed")
+        else:
+            progress = inspect_job(root, plan, job, final=final)
+        if not automatic and progress["sealed"]:
             require((directory / "result/record.json").exists(),
                     "sealed generation without accepted resource result needs explicit disposition")
             accepted = checked(directory / "result/record.json")
@@ -345,7 +371,15 @@ def worker(root, jobid, gpu, *, execution_context=None):
             require(accepted["whole_queue_seal_id"] == seal["id"], "accepted generation seal changed")
             return accepted
         state = _snapshot_state(job["checkpoint"], job["seed"], job["step"], final)
-        context = execution_context or importlib.import_module("finqa_v54_runtime").execution_context
+        if automatic and (directory / "result/record.json").exists():
+            accepted = checked(directory / "result/record.json")
+            require(accepted["registration_id"] == plan["id"], "saved evaluation result registration changed")
+            seal_job(root, plan, job, final=final)
+            del state
+            return importlib.import_module("finqa_v56_worker").reuse_complete_result(
+                root, dict(job, kind="generate"), attempt_root)
+        resource_module = importlib.import_module("finqa_v56_runtime" if automatic else "finqa_v54_runtime")
+        context = execution_context or resource_module.execution_context
         provider = None
         with context(root, job, gpu) as resources:
             resources.check("before_evaluation_model_load", boundary=True)
@@ -357,12 +391,23 @@ def worker(root, jobid, gpu, *, execution_context=None):
             async def observed_chat(*args, **kwargs):
                 resources.check("before_evaluation_response", boundary=True)
                 result = await original_chat(*args, **kwargs)
-                resources.check("after_evaluation_response", boundary=True)
+                if not automatic:
+                    resources.check("after_evaluation_response", boundary=True)
                 return result
 
             provider.chat = observed_chat
             try:
-                asyncio.run(final.execute_run(generation_root(root, job), provider))
+                if automatic:
+                    def stopped():
+                        if resources.stop.requested:
+                            raise resource_module.ExplicitStop("explicit stop before next evaluation episode")
+
+                    asyncio.run(importlib.import_module("finqa_v56_feedback").execute_run_resumable(
+                        generation_root(root, job), provider, attempt_root=attempt_root / "generation",
+                        stop_check=stopped,
+                        after_return=lambda event: resources.check("after_durable_evaluation_response", boundary=True)))
+                else:
+                    asyncio.run(final.execute_run(generation_root(root, job), provider))
                 response_calls = provider.actual_model_calls
             finally:
                 provider.chat = original_chat
@@ -372,12 +417,17 @@ def worker(root, jobid, gpu, *, execution_context=None):
             resources.check("after_evaluation_model_release", boundary=True)
         resource_report = resources.report()
         seal, _ = seal_job(root, plan, job, final=final)
-        return publish(directory / "result/record.json", dict(schema="v54_evaluation_job_result.v1",
+        result = publish(directory / "result/record.json", dict(schema="v54_evaluation_job_result.v1",
             registration_id=plan["id"], job_id=jobid, status="COMPLETE", resources=resource_report,
             whole_queue_seal=file_binding(directory / "whole_queue_seal/record.json"),
             whole_queue_seal_id=seal["id"], sessions=job["denominator"],
             actual_new_response_calls=response_calls, new_API_calls=0,
             scoring_calls=0, private_references_read=False))
+        if automatic:
+            publish(attempt_root / "completed/record.json", dict(
+                schema="v56_evaluation_attempt_complete.v1", protocol_id=_protocol(root)["id"],
+                result=file_binding(directory / "result/record.json"), new_actual_response_calls=response_calls))
+        return result
 
 
 def seal_panel(root, panel, *, plan=None, final=None):
