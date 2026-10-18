@@ -200,6 +200,12 @@ V57 control02于2026-10-18 20:44:09北京时间再次收到SIGTERM；新内核�
 
 V58已以源提交 `d8da3b706bf3507bb07f80551f39c57081dd949a` 冻结独立5文件控制/监控包，协议ID `8b40efeeaf4ddff85957efb6eb05c3846084c0655f2216469549a20d9b66554e`。24项必要CPU用例通过，实际冻结worker导入287项依赖匹配、无CUDA/model加载。2026-10-18 21:50:39北京时间新监督器PID3658730/birth475583404、controller3658840/birth475583708、独立observer3658728/birth475583394已实际启动。21:53:12快照四worker为137 shard01 attempt5/GPU2、shard02 attempt4/GPU1、shard03 attempt3/GPU4、251 shard00 attempt3/GPU6；已观测资源边界通过，新增1完整任务4行、累计274题1838行，2100反馈和4accepted未重派。观察器心跳正常且当时dropped0，不能保证短命sender一定捕获，未对科学进程注入信号测试。启动证据 `signal_recovery_03/startup_verification/record.json` ID `7a7aed94220592d923f2f52fa2698a99bfd0852622fe815e3372c5b295946264`。原1788optimizer与12267评价尚未完成；仅查03监督/科学/observer队列，勿重复启动，新的合法TERM/INT/STOP仍终止自动恢复。全机候选进程日志仅本地保留，不上传。
 
+V58于2026-10-18 23:12:41北京时间再次收到PID3800374、UID0、si_code0的SIGTERM；发送进程约1毫秒后消失，未捕获exe、父链、登录UID或cgroup，观察器也未采到，不能认定具体操作者。23:26确认监督器、控制器、观察器及四worker登记身份全部gone，四worker记录ExplicitStop且已观测资源门通过；最终waitpid退出码缺失，不补写成功或推断SIGKILL。保留2100完整反馈、756题5032行完整类梯度（137为627题4189行、251为129题843行），后续732题、1788optimizer与12267评价仍待完成。
+
+用户随后明确“尽快恢复任务，同时屏蔽这种异常停止信号”，并限定只保护自己的实验。V59在独立 `automatic_recovery_01/signal_recovery_04/` 接续，科学ROOT及数学、剂量、四worker/八卡和硬资源门不变；只对父28attempt中11个精确缺waitpid身份登记初始恢复许可，未封存计算可作为故障开销重算，不重采样或重复提交。新增进程内过滤仅适用于SIGTERM、发送PID>0、已知发送UID非1004且si_code=0/SI_USER；UID1004的TERM、任意SIGINT、其他/未知信号语义及STOP仍执行原停止。运行ruid/euid都必须为1004，不使用口令/sudo或修改系统权限；SIGKILL无法屏蔽，同UID不同人无法区分，不把UID0当具体人员归属。日志故障不将过滤信号变成误停，原资源及科学异常门不变。用户另要求自动恢复/定时检查，账户级外层守护须独立登记、保留明确STOP并核验实际断点；04准备不代表已启动或守护已生效。具体状态见 `trusted_data_synthesis/docs/finqa_v59_scoped_signal_filter_and_recovery_20261018.md`。
+
+用户在V59首次派发前追加“不和yyy用户下的任务挂载在同一张卡上”。其host UID已只读确认为1000，新V59六文件包增加归属禁用门：控制派发与锁后复核、worker CUDA前/模型前及运行资源边界均检查计算和图形GPU进程UID；存在yyy或归属未知/MPS无法归属即不可用。发现同卡冲突只由本实验按原资源让渡与断点审计接续，不信号/迁移yyy，不放宽显存主存门；不可阻止对方随后上卡，不能保证零瞬时重叠。首次归属查询禁用GPU0/4/5/6/7，1/2/3仍需实际容量门。该准备不代表已启动，不能为凑四并发违反禁用条件。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
