@@ -194,6 +194,10 @@ V57首个control01于20:11:47实际启动，但包装入口遗漏原辅助脚本
 
 V57修正版02已于2026-10-18 20:25:31北京时间以源提交 `ac5792edeb` 正式启动，控制协议ID `0c67ed425dec0c64a6fdcb6b9e72625d70db2e15611029b10c54c416551ca920`、准备ID `aac854d97f3841a67e6feee72c41e51f02129ce91e096df910d4f1c155357fce`。28项不同CPU用例通过，正式冻结worker原序导入287项依赖匹配且无CUDA/model/parent加载；新监督器PID3565039/birth475072652，controller3565117/birth475072962。四worker分别为251feedback attempt3/GPU1，137shard01 attempt4/GPU4、shard02 attempt3/GPU6、shard03 attempt2/GPU7。20:28:18反馈251由654至659、实际returned1309至1318，旧turn0不重调、新turn1真实封存；389已accepted不重派。20:29:28新增5完整class任务31行，四worker科学资源边界通过；证据 `signal_recovery_02/startup_verification/record.json`。整轮、optimizer及评价尚未完成，不能把启动通过当实验通过。当前只查02控制目录，原V56/01停止和冻结不回写，不得重复启动任何已有入口；历史未知SIGTERM/SIGKILL发送者仍未确定。
 
+V57 control02于2026-10-18 20:44:09北京时间再次收到SIGTERM；新内核回执确认原始发送PID3587135、UID0，同时到达监督器/controller及两个worker，随后本项目正常传播停止。sender很快退出，exe/父进程/登录身份未捕获，不能指责具体用户或服务。所有旧身份已gone，旧queue未刷新且控制器/监督器缺最终退出记录，不能推断SIGKILL或补写成功。已完成三组2100反馈并accepted，完整class273题1834行保留，尚余1215题，1788optimizer与12267评价未改。
+
+用户随后明确“恢复任务，同时能否监控更多信息”，授权V58新控制 `automatic_recovery_01/signal_recovery_03/`，科学ROOT/协议/所有缓存仍为原V56。只读保留24旧attempt、4accepted以及7个精确未知waitpid旧attempt；继承273完整任务，不重复反馈或完整任务。新增限量只读信号/进程/父链/loginuid/cgroup监控及1个独立无GPU观察器，不收集env、完整cmdline、凭据或私人历史，不改系统权限或其他项目。用户另问屏蔽信号仅作能力讨论，尚未授权绕过管理员策略；新SIGTERM/SIGINT/STOP仍终止自动拉起，SIGKILL不可捕获，observer也可能随登录cgroup被清理。原四并发/八卡/资源硬门与资源故障自动退避不变。准备证据 `signal_recovery_preparation_02/record.json`，实际启动状态见 `trusted_data_synthesis/docs/finqa_v58_recovery_and_process_observation_20261018.md`；实现或CPU核验不等于恢复，勿裸重启旧入口或重复启动03。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
