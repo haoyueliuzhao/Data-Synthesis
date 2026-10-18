@@ -164,6 +164,10 @@ V53随后前三次attempt均在下一响应forward之前遇到R3可用容量不�
 
 本轮B统一评分已封存，ID `6bf7eb71324f649e0fed01898421cb6d1f084d49705f3f9739a64f5a2bf4486d`，科学汇总ID `5202ec5f8e20a36c7a1b4de1b5577a4d8357a623bd11dc987ef4a94dee255ca1`。Static/C-only/Full执行均值43.7663%/49.8402%/48.4452%；主比较Full−Static为+4.6789pp，但预登记seed层95%区间[-34.5415,+43.8992]pp跨零，不能称跨训练随机性的正收益已确认；Full−C-only为-1.3949pp，区间[-10.7078,+7.9179]pp。A旧块、B新seed及六seed描述合并必须分开，六seed不新增CI或阳性标签；均不构成新未见任务确认。用户2026-10-18要求汇总报告，见 `trusted_data_synthesis/docs/finqa_v25_training_replication_final_report_20261018.md` 与同目录 `finqa_v25_replication_final_metrics_20261018.json`。该报告任务未重训练、生成、评分或开展新实验。
 
+用户于2026-10-18提供反馈温度对照方案，并明确“参照方案修订并开展后续实验，本轮实验开放GPU使用限制，并发数暂设为4”。V54独立根为 `v18_researcher_continuation_01/v54_feedback_temperature_01/`，不恢复已完成的B。仅取seed137、251、389的C-only真实 `step0596_step`，Hold固定父π、C1复用通过完整路径验收的原T1更新、C05在同一θ̄新采样T0.5反馈，各后继真实窗口597至894、快照745/894、不执行894 outer。旧C1三个完整路径若全部合格，新增optimizer更新1788而非逻辑2682。每父点新反馈700，三父共2100；采样与全轨迹梯度均用log_softmax(logits/T)，归一化与1/T导数都保留，分母700含零奖励，禁止旧gJ乘二。九逻辑分支十八快照齐全及全部已派科学worker真实成功退出后，执行12267条登记评估；没有新test1147、QA、外部API或完整闭环扩轮。主比较dev883 greedy C05−C1，辅助C05−Hold，独立父点n=3；UNKNOWN不降分母，两项精确均值均严格正且合同完整才通过开发方向筛选，不称显著或稳定。
+
+本轮新硬件许可为物理GPU0至7（包括GPU2），总worker最多4、每卡最多1，CPU初始化、等待与draining计入；该许可取代已收口旧B的GPU2禁令及无独立总上限，仅适用于V54。八卡UUID、原GPU租约inode及CPU亲和须绑定，不干预其他项目。native按需分配、不做人为暖大块或锚点；首次free门为class/feedback/distribution/generate24GiB、train26GiB、R3 replay56GiB，经验门不是峰值保证。76GiB allocated历史峰值、2GiB规定边界free、RSS class160/其余192GiB、全机96GiB有效可用RAM余量保持。无任意阶段或等待截止，但本轮入口只允许一次新鲜启动，科学失败停全池、不盲目重试，不完整未知反馈不重采样；已完整任务、response累计梯度、逐步训练提交可保留供明确登记的冷恢复。启动前准备不等于已运行，实际状态见新根及 `trusted_data_synthesis/docs/finqa_v54_feedback_temperature_20261018.md`，不得重复启动任何旧监督器或本轮入口。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

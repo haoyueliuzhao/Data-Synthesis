@@ -1,0 +1,15 @@
+{
+  "gaps": [
+    "No per-draw saved C/gJ inspected; direction agreement NA without added backward.",
+    "No token-segment coefficient attribution in committed outer records.",
+    "No per-segment NLL/gradient attribution; probability mass is not actual loss/gradient."
+  ],
+  "id": "5b8c1ba6b26267b5264ba0f98c5980750d1a1aabc2cb3cc4e50184a1dcc76a93",
+  "invalid_summary_id": "5e9b6cc27c905a68fe1b249e4e14d42097acadde78ee40bfff57f8c6919ccc3b",
+  "manual_reading_pending": true,
+  "mechanisms_summary_id": "092a8c88f0a1150f9253cacaa749a94e54655434c730f07eb4cc08bfa138368c",
+  "new_GPU_or_provider_calls": 0,
+  "original_scores_and_records_unchanged": true,
+  "outer_summary_id": "e5d21b7de2298a0f2922db21f26fcccbde354b6e313ba852e7aa74d7bfadfae3",
+  "schema": "v54_bounded_historical_diagnostics_complete.v1"
+}

@@ -1,0 +1,80 @@
+{
+  "all_24_outer_success_coverage_now_available": true,
+  "cohort_seal_sha256": "95fb468646aa365118a39f2cc186c13e06661fbe4970866c13da77945deec985",
+  "coordinate": "seed389/c_only/step0894",
+  "id": "544a340d94f37ba656d6a18c35a9fe421929f274b1f30c2725d4b94c80f0d4b1",
+  "new_provider_or_scoring_calls": 0,
+  "original_lookup_status": {
+    "reason": "original native reward archive unavailable",
+    "status": "NA"
+  },
+  "point_id": "f99047e7eb6575b171043f22fd534d7430a51ee635f3deef48a6903cd534ca32",
+  "prior_analysis": {
+    "bytes": 140190,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/v54_historical_diagnostics_01/outer_signals/record.json",
+    "sha256": "529cea2fa11fe57c96edb65bb82f44ef67f0a0d304fea0b503b396e76f37a717"
+  },
+  "reason": "complete V43 resumed feedback was stored in feedback_resume_view, outside initial training_replication-only index",
+  "reward_source": {
+    "bytes": 336380,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/contexts/seed389/c_only/step0894_outer/feedback_resume_view/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/native_rewards/record.json",
+    "sha256": "b2605bd5e61a4e7336100c7202eba15b8b7d168e27451dd76501551d5fe685fd"
+  },
+  "roster_source": {
+    "bytes": 1068980,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/contexts/seed389/c_only/step0894_outer/feedback_resume_view/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/draw0/run.json",
+    "sha256": "d5ccd75769cbb6854644c9fba43d8a46b08cec8873b4607c9ae62624737b4e74"
+  },
+  "schema": "v54_historical_feedback_coverage_supplement.v1",
+  "source_group_session_counts": {
+    "finqa:report:AAPL/2016": 6,
+    "finqa:report:AES/2003": 10,
+    "finqa:report:AMT/2012": 12,
+    "finqa:report:ANSS/2014": 2,
+    "finqa:report:AON/2018": 8,
+    "finqa:report:APD/2013": 5,
+    "finqa:report:APD/2014": 3,
+    "finqa:report:BKNG/2015": 6,
+    "finqa:report:CE/2014": 7,
+    "finqa:report:CMCSA/2004": 5,
+    "finqa:report:EMN/2004": 2,
+    "finqa:report:EMN/2006": 5,
+    "finqa:report:ETR/2002": 2,
+    "finqa:report:GS/2015": 15,
+    "finqa:report:HIG/2016": 2,
+    "finqa:report:HII/2015": 7,
+    "finqa:report:HST/2007": 1,
+    "finqa:report:IP/2012": 21,
+    "finqa:report:IP/2014": 17,
+    "finqa:report:IPG/2016": 10,
+    "finqa:report:JPM/2015": 14,
+    "finqa:report:K/2012": 6,
+    "finqa:report:MKTX/2005": 2,
+    "finqa:report:MRO/2013": 17,
+    "finqa:report:ORLY/2006": 2,
+    "finqa:report:ORLY/2009": 5,
+    "finqa:report:PKG/2006": 16,
+    "finqa:report:PNC/2008": 6,
+    "finqa:report:RCL/2018": 2,
+    "finqa:report:RL/2009": 8,
+    "finqa:report:SNPS/2009": 6,
+    "finqa:report:TMUS/2016": 7,
+    "finqa:report:TMUS/2018": 1,
+    "finqa:report:UA/2007": 3,
+    "finqa:report:UAA/2016": 20,
+    "finqa:report:UNP/2010": 27,
+    "finqa:report:UNP/2011": 27,
+    "finqa:report:VTR/2006": 8
+  },
+  "successful_sessions": 323,
+  "successful_sessions_by_draw": [
+    167.0,
+    156.0
+  ],
+  "unique_successful_source_groups": 38,
+  "unique_successful_tasks": 217,
+  "unique_successful_tasks_by_draw": [
+    167,
+    156
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "CPU_only": true,
+  "GPU_backward": false,
+  "id": "2f694602942df5a9db5b696cee04387bec9ee466d45aa19e67087a607c80ecfb",
+  "models": 9,
+  "new_feedback": 0,
+  "outers": 24,
+  "schema": "v54_bounded_historical_diagnostics_registration.v1",
+  "scored_episodes": 10323,
+  "scoring_calls": 0,
+  "selection_rule": {
+    "categories": [
+      "A_no_opening_envelope",
+      "B_malformed_tag_in_prose_prefix",
+      "C_non_envelope_between_or_after_envelopes",
+      "D_invalid_call_object_schema",
+      "E_missing_closing_envelope",
+      "F_strict_JSON_or_argument_extraction_exception",
+      "G_accepted_tool_envelopes"
+    ],
+    "full_population_classification_is_automatic": true,
+    "manual_reading_is_limited_to_selected_episodes": true,
+    "maximum_per_model": 10,
+    "maximum_total": 90,
+    "no_repair_no_rescore_no_regeneration": true,
+    "order": "round robin through alphabetical first-rejection categories; within each category ascending episode SHA256",
+    "population": "all old B invalid_prediction episodes with available original bytes"
+  },
+  "sigmoid_saturation_cutoff": 4.59511985013459,
+  "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01",
+  "source_code_sha256": "9e6ac618069af8a06774313626b12ca25ba023319603c3c10cc45dff957bc696"
+}

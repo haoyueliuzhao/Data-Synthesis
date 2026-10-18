@@ -1,0 +1,3172 @@
+{
+  "C_already_contains_mu": true,
+  "expected_outer_count": 24,
+  "floor_active_count": 0,
+  "id": "e5d21b7de2298a0f2922db21f26fcccbde354b6e313ba852e7aa74d7bfadfae3",
+  "missing_optional_fields_are_NA_not_zero": true,
+  "new_feedback": 0,
+  "new_gradient_backwards": 0,
+  "new_scoring": 0,
+  "observed_outer_count": 24,
+  "original_RMS_definition": "sqrt(sum_noncontrol mu*pi*(C/mu)^2/sum_noncontrol mu)",
+  "rows": [
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "489e649b24514b5b514b040ec0d9d3656bb5d39217a426bceaa95703e40069b9",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "946a8dacfdd859ee75515ce946589c7832156995956e6e974b44087e54148238",
+      "seed": 137,
+      "source": {
+        "bytes": 1514063,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step0298_outer/record.json",
+        "sha256": "02aa9390e7b1b453e1e2da3123ec5d1c64a5106fbde09319b39e2db105f81a5c"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.007874107550133753,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.790640708774635,
+          "0.01": -2.550048991564916,
+          "0.1": -1.2857696962630032,
+          "0.25": -0.6251271022349961,
+          "0.5": 0.03333154887138264,
+          "0.75": 0.6231969388518723,
+          "0.9": 1.2541452315755905,
+          "0.99": 2.463914730519657,
+          "1": 6.928018984087327
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.1227740780755296e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -4.0118162130116554e-05,
+          "0.01": -2.6988387120554122e-05,
+          "0.1": -1.3607915151986152e-05,
+          "0.25": -6.616018864921798e-06,
+          "0.5": 3.527637105185568e-07,
+          "0.75": 6.595591023432488e-06,
+          "0.9": 1.327321832918495e-05,
+          "0.99": 2.6076787073213183e-05,
+          "1": 7.332253573934408e-05
+        },
+        "scale_after_floor": 0.007874107550133753,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0016011644832605533,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 2
+        },
+        "weighted_KL_next_current": 0.0006790917987099452,
+        "weighted_KL_next_prior": 0.0006790917987099452,
+        "weighted_TV": 0.008009321152676467,
+        "weighted_entropy": 0.37890806065358523
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 335682,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/3ffc26974198914f301e2654c0bb936052d5328a81b456eb1c22d92979706beb/native_rewards/record.json",
+          "sha256": "ea0077ec9fa9eb34a23acf1aa6d27266de1728b54455c0ebc0579e20b121b2ac"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 7,
+          "finqa:report:AES/2003": 11,
+          "finqa:report:AMT/2012": 14,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 8,
+          "finqa:report:APD/2013": 7,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 7,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 3,
+          "finqa:report:ETR/2002": 1,
+          "finqa:report:GS/2015": 13,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 22,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 11,
+          "finqa:report:JPM/2015": 15,
+          "finqa:report:K/2012": 10,
+          "finqa:report:L/2007": 3,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 15,
+          "finqa:report:ORLY/2006": 3,
+          "finqa:report:ORLY/2009": 3,
+          "finqa:report:PKG/2006": 20,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 6,
+          "finqa:report:SNPS/2009": 6,
+          "finqa:report:TMUS/2016": 3,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 18,
+          "finqa:report:UNP/2010": 27,
+          "finqa:report:UNP/2011": 28,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/3ffc26974198914f301e2654c0bb936052d5328a81b456eb1c22d92979706beb/draw0/run.json",
+          "sha256": "f407959a9820bf43af6abd445761bde7623d52f00239d550bd856b3439a987a3"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 328,
+        "successful_sessions_by_draw": [
+          168.0,
+          160.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 216,
+        "unique_successful_tasks_by_draw": [
+          168,
+          160
+        ]
+      },
+      "successful_feedback_sessions": 328,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "0b0debaa24c55fe724a604b441229539b63a01a9708c57ca6a55bab9dd583c5f",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "cdd993ca3b86ae10e79b3dc8dd6085225fc7f5665b2b13a31a57c415269a5989",
+      "seed": 137,
+      "source": {
+        "bytes": 1533927,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step0596_outer/record.json",
+        "sha256": "0fa08b5d3a668a206a6ad84daa048492a2c3d3564c58c3f4b1267f8be6a2c7e1"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.012170086936777309,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -6.742343204510839,
+          "0.01": -2.642823460400496,
+          "0.1": -1.2209289507227417,
+          "0.25": -0.5939550691906021,
+          "0.5": -0.016253374083967022,
+          "0.75": 0.5718038955071706,
+          "0.9": 1.2252523100965371,
+          "0.99": 2.9840997118769916,
+          "1": 5.989150554440858
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.757900921746674e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00011028884805979386,
+          "0.01": -4.3230364612404143e-05,
+          "0.1": -1.9971520798285034e-05,
+          "0.25": -9.715705414770445e-06,
+          "0.5": -2.6586690271215314e-07,
+          "0.75": 9.353364407406175e-06,
+          "0.9": 2.0042240770647965e-05,
+          "0.99": 4.8812839948326766e-05,
+          "1": 9.796839102821676e-05
+        },
+        "scale_after_floor": 0.012170086936777309,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.002410377810891307,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0005957513455784773,
+        "weighted_KL_next_prior": 0.0013921981845060624,
+        "weighted_TV": 0.007368884920723563,
+        "weighted_entropy": 0.378234998204437
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 336854,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/193a87d49a692542a77fb67a3ed6bb063c0e62e262fb0f078cb140c0f06b8cf2/native_rewards/record.json",
+          "sha256": "eac2c1c6ce617ce5f74d53dff72f3595b8b9a263acdf71c9f45a427a5c42cc2c"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 1,
+          "finqa:report:AES/2003": 11,
+          "finqa:report:AMT/2012": 14,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 6,
+          "finqa:report:APD/2013": 6,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 6,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 17,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 18,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 4,
+          "finqa:report:JPM/2015": 12,
+          "finqa:report:K/2012": 8,
+          "finqa:report:L/2007": 3,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 10,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 4,
+          "finqa:report:SNPS/2009": 5,
+          "finqa:report:TMUS/2016": 6,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 4,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 17,
+          "finqa:report:UNP/2011": 26,
+          "finqa:report:VTR/2006": 2
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/193a87d49a692542a77fb67a3ed6bb063c0e62e262fb0f078cb140c0f06b8cf2/draw0/run.json",
+          "sha256": "5e2eecaad2f0a97e6e52e8d550abe873ea80f769da3872bc783bd0a5d41966e1"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 278,
+        "successful_sessions_by_draw": [
+          134.0,
+          144.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 199,
+        "unique_successful_tasks_by_draw": [
+          134,
+          144
+        ]
+      },
+      "successful_feedback_sessions": 278,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "34f819dce3d4d029bd1b5c66255a0b82465ca4cc41d47c037fe58f5a950e5e48",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "ef02ae88eb61d2f78424695572ece1667c9cceb9567f9ca363270aeac67c7f1e",
+      "seed": 137,
+      "source": {
+        "bytes": 1534720,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step0894_outer/record.json",
+        "sha256": "6eeea5dc655939d60e1bd0cf68a8d75428042b8f3da761e6928c39d1b7041a1c"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.01352275472978958,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.353661494757842,
+          "0.01": -2.4708753709417697,
+          "0.1": -1.3980105821641657,
+          "0.25": -0.6860066414460196,
+          "0.5": -0.04144207646987844,
+          "0.75": 0.61400389300575,
+          "0.9": 1.2497430724690497,
+          "0.99": 2.719187204876581,
+          "1": 6.751094135276222
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.946492545391693e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -6.095529817251317e-05,
+          "0.01": -4.491000216280027e-05,
+          "0.1": -2.5409884693892953e-05,
+          "0.25": -1.2468682197958639e-05,
+          "0.5": -7.532406392410621e-07,
+          "0.75": 1.1159978559479464e-05,
+          "0.9": 2.27150121562535e-05,
+          "0.99": 4.942325488700013e-05,
+          "1": 0.00012270616955518984
+        },
+        "scale_after_floor": 0.01352275472978958,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0004647285055851759,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.000605557325223912,
+        "weighted_KL_next_prior": 0.0021070213553438465,
+        "weighted_TV": 0.007474486595715078,
+        "weighted_entropy": 0.37752244931582113
+      },
+      "step": 894,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 336977,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/9020aea8c96379d8de6d901cb7e3b4d9fe9884085f1e817181bc49ee6ae01140/native_rewards/record.json",
+          "sha256": "455f69896208285a33e3b2d12070741da3df34fda95539c38ddaad65557f48b7"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 5,
+          "finqa:report:AES/2003": 10,
+          "finqa:report:AMT/2012": 15,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 7,
+          "finqa:report:APD/2013": 5,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 2,
+          "finqa:report:CE/2014": 9,
+          "finqa:report:CMCSA/2004": 7,
+          "finqa:report:EMN/2006": 5,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 13,
+          "finqa:report:HII/2015": 8,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 19,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 12,
+          "finqa:report:JPM/2015": 11,
+          "finqa:report:K/2012": 9,
+          "finqa:report:L/2007": 3,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 8,
+          "finqa:report:ORLY/2006": 3,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 17,
+          "finqa:report:PNC/2008": 2,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 6,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 6,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 19,
+          "finqa:report:UNP/2010": 20,
+          "finqa:report:UNP/2011": 25,
+          "finqa:report:VTR/2006": 7
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/9020aea8c96379d8de6d901cb7e3b4d9fe9884085f1e817181bc49ee6ae01140/draw0/run.json",
+          "sha256": "abc46b1e35d3ec79d4834b7c76044dfecc96f50ee0721b9715214d3285ae8ffb"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 300,
+        "successful_sessions_by_draw": [
+          141.0,
+          159.0
+        ],
+        "unique_successful_source_groups": 36,
+        "unique_successful_tasks": 199,
+        "unique_successful_tasks_by_draw": [
+          141,
+          159
+        ]
+      },
+      "successful_feedback_sessions": 300,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "6dbd5eb59daa597802072d3a0a1a000a30318b7930e67da7ceea247b690cbc95",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "c07e70cc25add945f46a87646a237679d093ad26f15cd94a9efc4d0a2a2c402a",
+      "seed": 137,
+      "source": {
+        "bytes": 1625214,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/training/step1192_outer/record.json",
+        "sha256": "37f758a27fde73c794f93156001b5c5d53ae5d4838c58703c6d1c2b9ebaf3b78"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.02032602969294549,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.711074523525465,
+          "0.01": -2.83181178324226,
+          "0.1": -1.369872108691023,
+          "0.25": -0.6975999190701172,
+          "0.5": -0.013414325759654582,
+          "0.75": 0.5731421543494974,
+          "0.9": 1.279111985704316,
+          "0.99": 2.817944246683609,
+          "1": 3.709430313796027
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.956621801405888e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00012870623743394842,
+          "0.01": -7.736490643953643e-05,
+          "0.1": -3.74248133827844e-05,
+          "0.25": -1.905838261937577e-05,
+          "0.5": -3.6647847271718094e-07,
+          "0.75": 1.5658204902670208e-05,
+          "0.9": 3.4945252959715584e-05,
+          "0.99": 7.698604627843543e-05,
+          "1": 0.00010134138535232549
+        },
+        "scale_after_floor": 0.02032602969294549,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0007232967748073793,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0006580434459471617,
+        "weighted_KL_next_prior": 0.002515600619685083,
+        "weighted_TV": 0.0077798745762344785,
+        "weighted_entropy": 0.3769647939382108
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337818,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/bf76c0101ec95e3af22aa684a516da92eef775fe10eec74b2e2916aaedb3ddeb/native_rewards/record.json",
+          "sha256": "f2c0f4aa3850a3622529a69d622bb37880f95ada65b3bdacf4207d4b7ea0fb14"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 4,
+          "finqa:report:AES/2003": 12,
+          "finqa:report:AMT/2012": 13,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 6,
+          "finqa:report:APD/2013": 2,
+          "finqa:report:APD/2014": 5,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 8,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 8,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 17,
+          "finqa:report:IP/2014": 14,
+          "finqa:report:IPG/2016": 6,
+          "finqa:report:JPM/2015": 16,
+          "finqa:report:K/2012": 7,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 8,
+          "finqa:report:ORLY/2006": 3,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 18,
+          "finqa:report:PNC/2008": 4,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 8,
+          "finqa:report:SNPS/2009": 3,
+          "finqa:report:TMUS/2016": 5,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 13,
+          "finqa:report:UNP/2010": 21,
+          "finqa:report:UNP/2011": 17,
+          "finqa:report:VTR/2006": 9
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/c_only/feedback/bf76c0101ec95e3af22aa684a516da92eef775fe10eec74b2e2916aaedb3ddeb/draw0/run.json",
+          "sha256": "86b5dd94c0acb033b5e9047209a29df51cd22d107f5e634554b1ce1644e44e25"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 270,
+        "successful_sessions_by_draw": [
+          137.0,
+          133.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 188,
+        "unique_successful_tasks_by_draw": [
+          137,
+          133
+        ]
+      },
+      "successful_feedback_sessions": 270,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "d666d4552b2ced09d2d47d66a4f81cf64fee60f0a587574b377fedbf8da8d06f",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "946a8dacfdd859ee75515ce946589c7832156995956e6e974b44087e54148238",
+      "seed": 137,
+      "source": {
+        "bytes": 1513857,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/training/step0298_outer/record.json",
+        "sha256": "689da6507a8f46c114fe96130c45681b9d2f0fc1c1a38f5a9e94e5664b8526db"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.007874107550133753,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.790640708774635,
+          "0.01": -2.550048991564916,
+          "0.1": -1.2857696962630032,
+          "0.25": -0.6251271022349961,
+          "0.5": 0.03333154887138264,
+          "0.75": 0.6231969388518723,
+          "0.9": 1.2541452315755905,
+          "0.99": 2.463914730519657,
+          "1": 6.928018984087327
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.1227740780755296e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -4.0118162130116554e-05,
+          "0.01": -2.6988387120554122e-05,
+          "0.1": -1.3607915151986152e-05,
+          "0.25": -6.616018864921798e-06,
+          "0.5": 3.527637105185568e-07,
+          "0.75": 6.595591023432488e-06,
+          "0.9": 1.327321832918495e-05,
+          "0.99": 2.6076787073213183e-05,
+          "1": 7.332253573934408e-05
+        },
+        "scale_after_floor": 0.007874107550133753,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0016011644832605533,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 2
+        },
+        "weighted_KL_next_current": 0.0006790917987099456,
+        "weighted_KL_next_prior": 0.0006790917987099456,
+        "weighted_TV": 0.008009321152676468,
+        "weighted_entropy": 0.37890806065358523
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 335682,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/3ffc26974198914f301e2654c0bb936052d5328a81b456eb1c22d92979706beb/native_rewards/record.json",
+          "sha256": "0833a40feb1b29a4f1f987def113c88fe029a8034ad55b785bdd0bc33e4ca827"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 7,
+          "finqa:report:AES/2003": 11,
+          "finqa:report:AMT/2012": 14,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 8,
+          "finqa:report:APD/2013": 7,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 7,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 3,
+          "finqa:report:ETR/2002": 1,
+          "finqa:report:GS/2015": 13,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 22,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 11,
+          "finqa:report:JPM/2015": 15,
+          "finqa:report:K/2012": 10,
+          "finqa:report:L/2007": 3,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 15,
+          "finqa:report:ORLY/2006": 3,
+          "finqa:report:ORLY/2009": 3,
+          "finqa:report:PKG/2006": 20,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 6,
+          "finqa:report:SNPS/2009": 6,
+          "finqa:report:TMUS/2016": 3,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 18,
+          "finqa:report:UNP/2010": 27,
+          "finqa:report:UNP/2011": 28,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/3ffc26974198914f301e2654c0bb936052d5328a81b456eb1c22d92979706beb/draw0/run.json",
+          "sha256": "f407959a9820bf43af6abd445761bde7623d52f00239d550bd856b3439a987a3"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 328,
+        "successful_sessions_by_draw": [
+          168.0,
+          160.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 216,
+        "unique_successful_tasks_by_draw": [
+          168,
+          160
+        ]
+      },
+      "successful_feedback_sessions": 328,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "b5b5dfff51296ba843713a94962914efb90bf85d455f150df69ec5ab416c6627",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "b1eacb9d3d6385f16ab1b7c1e6292ab61c9bb180663dcf0687bbeba3e8a00178",
+      "seed": 137,
+      "source": {
+        "bytes": 1533757,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/training/step0596_outer/record.json",
+        "sha256": "33c9bc8cf3fd6a8ba46df017b1e667f1fc0844c3b6fed87c43b9ecadfd9f48a6"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.012170086936777309,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -6.742343204510839,
+          "0.01": -2.642823460400496,
+          "0.1": -1.2209289507227417,
+          "0.25": -0.5939550691906021,
+          "0.5": -0.016253374083966987,
+          "0.75": 0.5718038955071706,
+          "0.9": 1.2252523100965371,
+          "0.99": 2.9840997118769916,
+          "1": 5.989150554440858
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.757900921746674e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00011028884805979386,
+          "0.01": -4.3230364612404143e-05,
+          "0.1": -1.9971520798285034e-05,
+          "0.25": -9.715705414770445e-06,
+          "0.5": -2.6586690271215256e-07,
+          "0.75": 9.353364407406175e-06,
+          "0.9": 2.0042240770647965e-05,
+          "0.99": 4.8812839948326766e-05,
+          "1": 9.796839102821676e-05
+        },
+        "scale_after_floor": 0.012170086936777309,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0024103778108913072,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006170711287332761,
+        "weighted_KL_next_prior": 0.0011225422627413938,
+        "weighted_TV": 0.0074701860178432375,
+        "weighted_entropy": 0.3785350964553229
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 336854,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/e18ee39e9924764f84bc34670bcfd514b2879abdd2c8ba5c9e72a4003967e24c/native_rewards/record.json",
+          "sha256": "a7c080141670803caae967bc730bfbf18d742f85a76c65042a9a8164fe2aa69c"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 1,
+          "finqa:report:AES/2003": 11,
+          "finqa:report:AMT/2012": 14,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 6,
+          "finqa:report:APD/2013": 6,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 6,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 17,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 18,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 4,
+          "finqa:report:JPM/2015": 12,
+          "finqa:report:K/2012": 8,
+          "finqa:report:L/2007": 3,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 10,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 4,
+          "finqa:report:SNPS/2009": 5,
+          "finqa:report:TMUS/2016": 6,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 4,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 17,
+          "finqa:report:UNP/2011": 26,
+          "finqa:report:VTR/2006": 2
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/e18ee39e9924764f84bc34670bcfd514b2879abdd2c8ba5c9e72a4003967e24c/draw0/run.json",
+          "sha256": "8c0ac3fa155788d26f7c8fc45b12d6aa0a18d5ad897a9b161689348d1c7bc060"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 278,
+        "successful_sessions_by_draw": [
+          134.0,
+          144.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 199,
+        "unique_successful_tasks_by_draw": [
+          134,
+          144
+        ]
+      },
+      "successful_feedback_sessions": 278,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "fc02e6cfdadc9b063787c2d19fe8304cb78a51843258c814ab9b7d6cfceb2624",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "7babcfe8a6982fedc330ac2bfc87b9384ffaf03f8ec4f7e307ba3b7929938316",
+      "seed": 137,
+      "source": {
+        "bytes": 1534366,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/training/step0894_outer/record.json",
+        "sha256": "dd5d749c0ce73963f56fd5438c00137a14014fff71bc0a246cb34a864b976b4e"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.016943984976200522,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.565573073720602,
+          "0.01": -2.5932959543665715,
+          "0.1": -1.3138358529065048,
+          "0.25": -0.6745701556188002,
+          "0.5": -0.044778081486850585,
+          "0.75": 0.6181076501039653,
+          "0.9": 1.22454872638161,
+          "0.99": 2.6852403652944803,
+          "1": 5.394629129164642
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.4427451764374274e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00010397715264632732,
+          "0.01": -5.906017162584514e-05,
+          "0.1": -2.992152547424922e-05,
+          "0.25": -1.5362777664244892e-05,
+          "0.5": -1.0197837902906977e-06,
+          "0.75": 1.4076890775586289e-05,
+          "0.9": 2.7888084976391783e-05,
+          "0.99": 6.115412957935064e-05,
+          "1": 0.0001228582189741121
+        },
+        "scale_after_floor": 0.016943984976200522,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0010754768736278525,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0006135572549292412,
+        "weighted_KL_next_prior": 0.0015468583099524094,
+        "weighted_TV": 0.0073654131631416455,
+        "weighted_entropy": 0.37807087542635204
+      },
+      "step": 894,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337383,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/51d515bfd1eaa3ebb6c334967eee0f7263ded7c878e51eb12b6a22a09d5f2902/native_rewards/record.json",
+          "sha256": "ce2a253ee4f610e3c733a6ec3377b85af38db967e2c452ab57af3c555995d1ff"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 5,
+          "finqa:report:AES/2003": 11,
+          "finqa:report:AMT/2012": 13,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 8,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 3,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 4,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 6,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 12,
+          "finqa:report:HIG/2016": 4,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 19,
+          "finqa:report:IP/2014": 13,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 14,
+          "finqa:report:K/2012": 7,
+          "finqa:report:L/2007": 4,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 10,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 18,
+          "finqa:report:PNC/2008": 5,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 4,
+          "finqa:report:SNPS/2009": 3,
+          "finqa:report:TMUS/2016": 4,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 4,
+          "finqa:report:UAA/2016": 15,
+          "finqa:report:UNP/2010": 20,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/51d515bfd1eaa3ebb6c334967eee0f7263ded7c878e51eb12b6a22a09d5f2902/draw0/run.json",
+          "sha256": "29428ea89c6072ca743abf0f7e91e3ac80e6a4d69e2703d69d4220cd018dcde7"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 282,
+        "successful_sessions_by_draw": [
+          140.0,
+          142.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 203,
+        "unique_successful_tasks_by_draw": [
+          140,
+          142
+        ]
+      },
+      "successful_feedback_sessions": 282,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "c7fe4dd38072661b4d5d54de00557739780fea370798d7914302ce70d41f659b",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "48ae977e67bf65a82f9823c01e86ea1481f3303d61ba5f5d9ed75bf92b2ae57f",
+      "seed": 137,
+      "source": {
+        "bytes": 1624871,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/training/step1192_outer/record.json",
+        "sha256": "634905564d8221c4a948e1c0ffe48b7f49a8d75e323c533fb176643a56b8c729"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.01582840854881663,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.9505218061285343,
+          "0.01": -2.9754159168377106,
+          "0.1": -1.3867149163566657,
+          "0.25": -0.7171556217643688,
+          "0.5": -0.010077910412007292,
+          "0.75": 0.6150301028646187,
+          "0.9": 1.2470214180611463,
+          "0.99": 2.3761382913379694,
+          "1": 3.476843381300116
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.2498513604741508e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -8.404633485001534e-05,
+          "0.01": -6.33012079762891e-05,
+          "0.1": -2.95020030064938e-05,
+          "0.25": -1.5257301309633119e-05,
+          "0.5": -2.1440495069841985e-07,
+          "0.75": 1.3084607174679977e-05,
+          "0.9": 2.6530059777145817e-05,
+          "0.99": 5.055173070401137e-05,
+          "1": 7.396894825197215e-05
+        },
+        "scale_after_floor": 0.01582840854881663,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 0
+        },
+        "weighted_KL_next_current": 0.0006258896232298664,
+        "weighted_KL_next_prior": 0.0019233256980004444,
+        "weighted_TV": 0.00762345795607872,
+        "weighted_entropy": 0.37752532509437253
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337706,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/f0f5a7f942c116ae6692f2d4934a23c8b52749d6a3562ba8ffc880f550042182/native_rewards/record.json",
+          "sha256": "f1ae0419892b5aca28593d86f649acded8fe025c28ab4b3da8b23fc9c53a9866"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 4,
+          "finqa:report:AES/2003": 9,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 5,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 3,
+          "finqa:report:BKNG/2015": 6,
+          "finqa:report:CE/2014": 7,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 10,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 3,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 15,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 11,
+          "finqa:report:JPM/2015": 13,
+          "finqa:report:K/2012": 7,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 9,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 17,
+          "finqa:report:PNC/2008": 5,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 8,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 4,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 17,
+          "finqa:report:UNP/2010": 19,
+          "finqa:report:UNP/2011": 23,
+          "finqa:report:VTR/2006": 7
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed137/arms/full/feedback/f0f5a7f942c116ae6692f2d4934a23c8b52749d6a3562ba8ffc880f550042182/draw0/run.json",
+          "sha256": "61d752275e243b9b06fb4d1bb6a607b082dd26143d63aedf12d80464793b155c"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 276,
+        "successful_sessions_by_draw": [
+          140.0,
+          136.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 198,
+        "unique_successful_tasks_by_draw": [
+          140,
+          136
+        ]
+      },
+      "successful_feedback_sessions": 276,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "47110fd1f97a676c34d4650331ba87d73c870854754537694cfdc2eef4a93867",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "019ae2a545fb8bab7164413f050fc51e6cebae464889a05030f9be1fb55cb4ae",
+      "seed": 251,
+      "source": {
+        "bytes": 1513679,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step0298_outer/record.json",
+        "sha256": "18e1ce81e42f2a81618fdc3b7107a4cfa27e285bcf22f980e47287c13d2bce6b"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.012068331632470598,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.843958866135436,
+          "0.01": -2.813130385153964,
+          "0.1": -1.2258479983171189,
+          "0.25": -0.5884824827809411,
+          "0.5": -0.0070201144688895566,
+          "0.75": 0.5232262620163918,
+          "0.9": 1.1533010127416856,
+          "0.99": 2.940166482207083,
+          "1": 6.868207882197765
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.7425278743991813e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -6.235237954045443e-05,
+          "0.01": -4.5631438727712075e-05,
+          "0.1": -1.988432819178932e-05,
+          "0.25": -9.545701293145249e-06,
+          "0.5": -1.1387240525331233e-07,
+          "0.75": 8.48718823767711e-06,
+          "0.9": 1.8707552545471585e-05,
+          "0.99": 4.769207548649133e-05,
+          "1": 0.0001114083473697731
+        },
+        "scale_after_floor": 0.012068331632470598,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0036805988771054276,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 4
+        },
+        "weighted_KL_next_current": 0.0006181574790413624,
+        "weighted_KL_next_prior": 0.0006181574790413624,
+        "weighted_TV": 0.00743731781909651,
+        "weighted_entropy": 0.3788224237885783
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337598,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/8b606b530cdd9bf25df628b4bec279b0324c3527315930d9c41e5a0513da1366/native_rewards/record.json",
+          "sha256": "f2fa9d8436cce550f61e9158d999b38bae5c26698281d1fa4382b1c879e99083"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AES/2003": 7,
+          "finqa:report:AMT/2012": 15,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 4,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 11,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 3,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 17,
+          "finqa:report:IP/2014": 14,
+          "finqa:report:IPG/2016": 8,
+          "finqa:report:JPM/2015": 14,
+          "finqa:report:K/2012": 6,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 11,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 13,
+          "finqa:report:PNC/2008": 2,
+          "finqa:report:RL/2009": 6,
+          "finqa:report:SNPS/2009": 2,
+          "finqa:report:TMUS/2016": 4,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 17,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 4
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/8b606b530cdd9bf25df628b4bec279b0324c3527315930d9c41e5a0513da1366/draw0/run.json",
+          "sha256": "56eda34b6c70934cfadc1ee4c6c335f5409cd49086dfd193a7eb4d981cfde551"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 240,
+        "successful_sessions_by_draw": [
+          114.0,
+          126.0
+        ],
+        "unique_successful_source_groups": 36,
+        "unique_successful_tasks": 176,
+        "unique_successful_tasks_by_draw": [
+          114,
+          126
+        ]
+      },
+      "successful_feedback_sessions": 240,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "dc509a701a9e4b3b6fcd6861ccbffa2ac4ead3281acce79e4c699f66459545c7",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "e13a99db16e6d2dadf9f4c625232012a4427b10a3adb14bc3de274e9fa2edbb1",
+      "seed": 251,
+      "source": {
+        "bytes": 1534187,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step0596_outer/record.json",
+        "sha256": "35ea53b82bbd3f06fa256e90cb1a50beeee4c8955dd944fb5a88e4b83b0c6c91"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.015537970694669242,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -7.055786809001235,
+          "0.01": -2.260944930909577,
+          "0.1": -1.2519641423356893,
+          "0.25": -0.6496581576502228,
+          "0.5": -0.05172693862233604,
+          "0.75": 0.6163726787912249,
+          "0.9": 1.2933550359058184,
+          "0.99": 2.824572624200666,
+          "1": 5.575398362996269
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.2274381839759353e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00014735565680926748,
+          "0.01": -4.721840870797578e-05,
+          "0.1": -2.6146481390307333e-05,
+          "0.25": -1.3567700826776848e-05,
+          "0.5": -1.0802844844607689e-06,
+          "0.75": 1.2872554596845205e-05,
+          "0.9": 2.7010904093692866e-05,
+          "0.99": 5.8989417553487846e-05,
+          "1": 0.000116438677923848
+        },
+        "scale_after_floor": 0.015537970694669242,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0023054149912761766,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006074205472143432,
+        "weighted_KL_next_prior": 0.001279017307653962,
+        "weighted_TV": 0.00763625600722407,
+        "weighted_entropy": 0.378414702669272
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337345,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/689b308f2a0b9855e8f345e26521d1f11c0f248de7f0ee73fedf5b6770209140/native_rewards/record.json",
+          "sha256": "7796e35cd6946e2ebec71204f9e04944dc0fa4a4ae89946efa3294970b90116b"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AES/2003": 9,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 5,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 3,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 6,
+          "finqa:report:CMCSA/2004": 5,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 3,
+          "finqa:report:ETR/2002": 3,
+          "finqa:report:GS/2015": 9,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 19,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 10,
+          "finqa:report:K/2012": 8,
+          "finqa:report:L/2007": 5,
+          "finqa:report:MKTX/2005": 4,
+          "finqa:report:MRO/2013": 13,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 17,
+          "finqa:report:PNC/2008": 4,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 8,
+          "finqa:report:SNPS/2009": 1,
+          "finqa:report:TMUS/2016": 7,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 1,
+          "finqa:report:UAA/2016": 9,
+          "finqa:report:UNP/2010": 20,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 7
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/689b308f2a0b9855e8f345e26521d1f11c0f248de7f0ee73fedf5b6770209140/draw0/run.json",
+          "sha256": "46da1ff7a1b084741b341af5794e7b07e818e4dfec727138fa26b5ac4e7a955e"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 267,
+        "successful_sessions_by_draw": [
+          133.0,
+          134.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 193,
+        "unique_successful_tasks_by_draw": [
+          133,
+          134
+        ]
+      },
+      "successful_feedback_sessions": 267,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "138b999cf7d2608a8c01e9c18e19e609984890fe72e37c4a16d1589c2064ac39",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "1c1030c652c297cc960ed4c9d0f674596e06381281e88257092bdb42531afc09",
+      "seed": 251,
+      "source": {
+        "bytes": 1624476,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step0894_outer/record.json",
+        "sha256": "92f2f66bcdeff793268391662eee8a7cfc9a57724d838175df10512363f071e7"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.015719868895724843,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -5.483830122811268,
+          "0.01": -2.895521942274144,
+          "0.1": -1.2844976407407174,
+          "0.25": -0.6070358768840929,
+          "0.5": 0.02406184058385199,
+          "0.75": 0.5838345470316212,
+          "0.9": 1.1550490660178656,
+          "0.99": 2.602422405528006,
+          "1": 5.208841173567381
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.2411992769883384e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00011586705722717715,
+          "0.01": -6.117906628661842e-05,
+          "0.1": -2.713996573832251e-05,
+          "0.25": -1.2825973655402295e-05,
+          "0.5": 5.083991658171836e-07,
+          "0.75": 1.2335756096951594e-05,
+          "0.9": 2.440486543807833e-05,
+          "0.99": 5.4986208368544524e-05,
+          "1": 0.00011005685530528599
+        },
+        "scale_after_floor": 0.015719868895724843,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.004578273614955702,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 5
+        },
+        "weighted_KL_next_current": 0.0006651423415943733,
+        "weighted_KL_next_prior": 0.0017992628229402225,
+        "weighted_TV": 0.0078040576123749325,
+        "weighted_entropy": 0.37788325323203853
+      },
+      "step": 894,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337278,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/bc0298c427976c2f662db0447a6f6408164efbaede55e605e0f307008236e57e/native_rewards/record.json",
+          "sha256": "2db7409c23d7888f5a4068748c4931087ce950ca7e60b78653e6b1747c5d9e96"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 2,
+          "finqa:report:AES/2003": 13,
+          "finqa:report:AMT/2012": 11,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 4,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 5,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 7,
+          "finqa:report:CMCSA/2004": 4,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 3,
+          "finqa:report:GS/2015": 12,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 8,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 23,
+          "finqa:report:IP/2014": 16,
+          "finqa:report:IPG/2016": 6,
+          "finqa:report:JPM/2015": 8,
+          "finqa:report:K/2012": 10,
+          "finqa:report:L/2007": 5,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 9,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 3,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 7,
+          "finqa:report:SNPS/2009": 5,
+          "finqa:report:TMUS/2016": 7,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 20,
+          "finqa:report:UNP/2011": 22,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/bc0298c427976c2f662db0447a6f6408164efbaede55e605e0f307008236e57e/draw0/run.json",
+          "sha256": "6517c698d6fdb6f98c10646aab4db018bbe0519d597eaa4d89c96b016dc274d5"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 287,
+        "successful_sessions_by_draw": [
+          139.0,
+          148.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 205,
+        "unique_successful_tasks_by_draw": [
+          139,
+          148
+        ]
+      },
+      "successful_feedback_sessions": 287,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "21dfa09dfcbcc80c0c406ea7178fa4f0a1f04a2dbb9c6f228c90ea59ecc1442c",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "f81b584c0768a49194ac24dd7df5114cfdaa6d4462e0f70a86b000cc4f24d947",
+      "seed": 251,
+      "source": {
+        "bytes": 1614369,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/training/step1192_outer/record.json",
+        "sha256": "a35c37566ed44616086ab33df80cc5c8108986e421adaf949f1f84175ed2f88b"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.017944066044740706,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.7260946529546,
+          "0.01": -2.8833395396093437,
+          "0.1": -1.381450430781644,
+          "0.25": -0.6423325737545156,
+          "0.5": -0.0293832341671386,
+          "0.75": 0.6026295062703911,
+          "0.9": 1.163995423819779,
+          "0.99": 2.5721223508097695,
+          "1": 4.300837714587759
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.6178774125053007e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00011398569164827052,
+          "0.01": -6.954144506473431e-05,
+          "0.1": -3.331833033263618e-05,
+          "0.25": -1.54920136104023e-05,
+          "0.5": -7.086756646548612e-07,
+          "0.75": 1.453444040460401e-05,
+          "0.9": 2.8073670377416753e-05,
+          "0.99": 6.203539427161858e-05,
+          "1": 0.00010372918816972371
+        },
+        "scale_after_floor": 0.017944066044740706,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0005299805721777717,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0005738343972233563,
+        "weighted_KL_next_prior": 0.002679389899749334,
+        "weighted_TV": 0.007153705561980947,
+        "weighted_entropy": 0.37695904357531873
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 338880,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/b921c0505b5c6ba1ffc05b08f9348552264e19bb1b12fc165ccd57e42dcfa715/native_rewards/record.json",
+          "sha256": "dadafa52c12b5f119ccb827f74548fd19b5c4a911767f431b449003326aac5f7"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 5,
+          "finqa:report:AES/2003": 5,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 7,
+          "finqa:report:APD/2013": 2,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 7,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 6,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 8,
+          "finqa:report:HIG/2016": 3,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:IP/2012": 14,
+          "finqa:report:IP/2014": 14,
+          "finqa:report:IPG/2016": 6,
+          "finqa:report:JPM/2015": 9,
+          "finqa:report:K/2012": 7,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 11,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 13,
+          "finqa:report:PNC/2008": 4,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 6,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 11,
+          "finqa:report:UNP/2010": 19,
+          "finqa:report:UNP/2011": 19,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/c_only/feedback/b921c0505b5c6ba1ffc05b08f9348552264e19bb1b12fc165ccd57e42dcfa715/draw0/run.json",
+          "sha256": "258b4c4409745702d404f573412c855cc6953b4a7170bb4c140d5aa94d251a89"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 236,
+        "successful_sessions_by_draw": [
+          120.0,
+          116.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 187,
+        "unique_successful_tasks_by_draw": [
+          120,
+          116
+        ]
+      },
+      "successful_feedback_sessions": 236,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "42e1c60212d019f488e96ebd123ee19ecd7aedf95abf6f050744f1975f727e07",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "019ae2a545fb8bab7164413f050fc51e6cebae464889a05030f9be1fb55cb4ae",
+      "seed": 251,
+      "source": {
+        "bytes": 1513594,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0298_outer/record.json",
+        "sha256": "58e9251813262553738aa2b808a258330beef8a240ccfd3578a6141cf4990dc5"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.012068331632470598,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -3.843958866135436,
+          "0.01": -2.813130385153964,
+          "0.1": -1.2258479983171189,
+          "0.25": -0.5884824827809411,
+          "0.5": -0.0070201144688895566,
+          "0.75": 0.5232262620163918,
+          "0.9": 1.1533010127416856,
+          "0.99": 2.940166482207083,
+          "1": 6.868207882197765
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.7425278743991813e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -6.235237954045443e-05,
+          "0.01": -4.5631438727712075e-05,
+          "0.1": -1.988432819178932e-05,
+          "0.25": -9.545701293145249e-06,
+          "0.5": -1.1387240525331233e-07,
+          "0.75": 8.48718823767711e-06,
+          "0.9": 1.8707552545471585e-05,
+          "0.99": 4.769207548649133e-05,
+          "1": 0.0001114083473697731
+        },
+        "scale_after_floor": 0.012068331632470598,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0036805988771054276,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 4
+        },
+        "weighted_KL_next_current": 0.0006181574790413614,
+        "weighted_KL_next_prior": 0.0006181574790413614,
+        "weighted_TV": 0.00743731781909651,
+        "weighted_entropy": 0.3788224237885783
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337598,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/8b606b530cdd9bf25df628b4bec279b0324c3527315930d9c41e5a0513da1366/native_rewards/record.json",
+          "sha256": "de1fc55ed754418935d910c64437414cd0d468d45b9120764453904d1f650c60"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AES/2003": 7,
+          "finqa:report:AMT/2012": 15,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 4,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 4,
+          "finqa:report:GS/2015": 11,
+          "finqa:report:HIG/2016": 1,
+          "finqa:report:HII/2015": 3,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 17,
+          "finqa:report:IP/2014": 14,
+          "finqa:report:IPG/2016": 8,
+          "finqa:report:JPM/2015": 14,
+          "finqa:report:K/2012": 6,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 11,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 13,
+          "finqa:report:PNC/2008": 2,
+          "finqa:report:RL/2009": 6,
+          "finqa:report:SNPS/2009": 2,
+          "finqa:report:TMUS/2016": 4,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 17,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 4
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/8b606b530cdd9bf25df628b4bec279b0324c3527315930d9c41e5a0513da1366/draw0/run.json",
+          "sha256": "56eda34b6c70934cfadc1ee4c6c335f5409cd49086dfd193a7eb4d981cfde551"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 240,
+        "successful_sessions_by_draw": [
+          114.0,
+          126.0
+        ],
+        "unique_successful_source_groups": 36,
+        "unique_successful_tasks": 176,
+        "unique_successful_tasks_by_draw": [
+          114,
+          126
+        ]
+      },
+      "successful_feedback_sessions": 240,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "82ee3fc9dc5ea3c3f05f55661f6dc1aca1e499126e43166e0590dc30ecb84b12",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "377c7e267bfcaab43ef1c6b45c792ec0bcd1b940db043be0204ad65bb93f1a57",
+      "seed": 251,
+      "source": {
+        "bytes": 1622197,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0596_outer/record.json",
+        "sha256": "08bea410cb70effb9911a8e4665df6961b6b69546d7ecbf5607351477b1a02cc"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.015537970694669242,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -7.055786809001235,
+          "0.01": -2.260944930909577,
+          "0.1": -1.2519641423356893,
+          "0.25": -0.6496581576502228,
+          "0.5": -0.05172693862233604,
+          "0.75": 0.6163726787912247,
+          "0.9": 1.2933550359058184,
+          "0.99": 2.824572624200666,
+          "1": 5.575398362996269
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.2274381839759353e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00014735565680926748,
+          "0.01": -4.721840870797578e-05,
+          "0.1": -2.6146481390307333e-05,
+          "0.25": -1.3567700826776848e-05,
+          "0.5": -1.0802844844607689e-06,
+          "0.75": 1.28725545968452e-05,
+          "0.9": 2.701090409369287e-05,
+          "0.99": 5.8989417553487846e-05,
+          "1": 0.000116438677923848
+        },
+        "scale_after_floor": 0.015537970694669242,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.002305414991276177,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006352457083738423,
+        "weighted_KL_next_prior": 0.001044873054904318,
+        "weighted_TV": 0.007832686396387683,
+        "weighted_entropy": 0.37871518176747815
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337345,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/9cc57a17fa8d75c15bd5acbc85273148dd49f24c60b06b91c46157b63a00589f/native_rewards/record.json",
+          "sha256": "cb8a80c074fd37506b2dc01a92135260c5dcdadcc7ac2af18d684d411ee528c6"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AES/2003": 9,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 5,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 3,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 6,
+          "finqa:report:CMCSA/2004": 5,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 3,
+          "finqa:report:ETR/2002": 3,
+          "finqa:report:GS/2015": 9,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 19,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 10,
+          "finqa:report:K/2012": 8,
+          "finqa:report:L/2007": 5,
+          "finqa:report:MKTX/2005": 4,
+          "finqa:report:MRO/2013": 13,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 17,
+          "finqa:report:PNC/2008": 4,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 8,
+          "finqa:report:SNPS/2009": 1,
+          "finqa:report:TMUS/2016": 7,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 1,
+          "finqa:report:UAA/2016": 9,
+          "finqa:report:UNP/2010": 20,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 7
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/9cc57a17fa8d75c15bd5acbc85273148dd49f24c60b06b91c46157b63a00589f/draw0/run.json",
+          "sha256": "280cc04142f15e8b896addb848ab9e0b9d4d22c894c11437843a0e76809878f4"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 267,
+        "successful_sessions_by_draw": [
+          133.0,
+          134.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 193,
+        "unique_successful_tasks_by_draw": [
+          133,
+          134
+        ]
+      },
+      "successful_feedback_sessions": 267,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "56a561d034e7b5b7ba0320c9096566e074eb8999a73b0113f669bbadd3963cbd",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "ad7a294c7d99f8b470db4c512b005e457196eb97b94fcb210ca9547e83d644ed",
+      "seed": 251,
+      "source": {
+        "bytes": 1617624,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step0894_outer/record.json",
+        "sha256": "e4581e07a0d4fbb48c8320bff9da740bc6939daf71a30d077e9f45b7ec0199c5"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.012736311023617542,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -6.259467414763638,
+          "0.01": -2.6580778304798702,
+          "0.1": -1.3255011863116712,
+          "0.25": -0.6662528761955672,
+          "0.5": 0.025936518366770463,
+          "0.75": 0.6262016725470494,
+          "0.9": 1.225406644039397,
+          "0.99": 2.675585540318708,
+          "1": 3.709784467642176
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.8684115498960957e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00010715392988794211,
+          "0.01": -4.5502830610180346e-05,
+          "0.1": -2.269085399333262e-05,
+          "0.25": -1.1405381520976475e-05,
+          "0.5": 4.4399941503892143e-07,
+          "0.75": 1.071975707670528e-05,
+          "0.9": 2.0977365791523054e-05,
+          "0.99": 4.5802539800796855e-05,
+          "1": 6.350667850870456e-05
+        },
+        "scale_after_floor": 0.012736311023617542,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0009856509902968866,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 2
+        },
+        "weighted_KL_next_current": 0.0006694052777834778,
+        "weighted_KL_next_prior": 0.001441865676861515,
+        "weighted_TV": 0.007588414383726709,
+        "weighted_entropy": 0.37819385547923956
+      },
+      "step": 894,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337790,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/bcf82e36f580b3bc92124f7dabe171964ecb8459d7bca550338624e6c8bf7354/native_rewards/record.json",
+          "sha256": "4b1254722cd14ee78ac791c0c3dd3113bbb323df7752d960f1b8f40093ffaefa"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 3,
+          "finqa:report:AES/2003": 12,
+          "finqa:report:AMT/2012": 10,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 5,
+          "finqa:report:APD/2013": 3,
+          "finqa:report:APD/2014": 3,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 6,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 3,
+          "finqa:report:GS/2015": 16,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 19,
+          "finqa:report:IP/2014": 18,
+          "finqa:report:IPG/2016": 5,
+          "finqa:report:JPM/2015": 10,
+          "finqa:report:K/2012": 9,
+          "finqa:report:L/2007": 5,
+          "finqa:report:MKTX/2005": 2,
+          "finqa:report:MRO/2013": 12,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 16,
+          "finqa:report:PNC/2008": 1,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 2,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 1,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 19,
+          "finqa:report:UNP/2011": 18,
+          "finqa:report:VTR/2006": 7
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/bcf82e36f580b3bc92124f7dabe171964ecb8459d7bca550338624e6c8bf7354/draw0/run.json",
+          "sha256": "14398739f8a2dedf05e901e4665459af2c4a87b8c558328d7f952ea74aca6d74"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 261,
+        "successful_sessions_by_draw": [
+          125.0,
+          136.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 193,
+        "unique_successful_tasks_by_draw": [
+          125,
+          136
+        ]
+      },
+      "successful_feedback_sessions": 261,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "34cb3f33a710b8033439f688f4591ddd80939c98bb782be0db0477a6b096479f",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "e897db4487592eef9af19a3128492a8f880011cce3ce932c4ffc473b98e4e16e",
+      "seed": 251,
+      "source": {
+        "bytes": 1615679,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/training/step1192_outer/record.json",
+        "sha256": "cb3781783630049ea9efe1bd8168e589d5d9d380575d35472c543f76934670d7"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.01706949766751648,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.386378424886009,
+          "0.01": -3.081103488145832,
+          "0.1": -1.2804551153756285,
+          "0.25": -0.6334920220741804,
+          "0.5": 0.056243328490779884,
+          "0.75": 0.6759823627285745,
+          "0.9": 1.263652995264047,
+          "0.99": 2.531711718110891,
+          "1": 4.142362762434287
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 2.461675741912197e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -0.00010063612404897357,
+          "0.01": -7.068936667242227e-05,
+          "0.1": -2.9377319361913762e-05,
+          "0.25": -1.4534127141378389e-05,
+          "0.5": 1.2903835544176485e-06,
+          "0.75": 1.550897763962054e-05,
+          "0.9": 2.8991830450550893e-05,
+          "0.99": 5.8084740950427405e-05,
+          "1": 9.503770364432686e-05
+        },
+        "scale_after_floor": 0.01706949766751648,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 0
+        },
+        "weighted_KL_next_current": 0.0008917730070846344,
+        "weighted_KL_next_prior": 0.0013701380331815254,
+        "weighted_TV": 0.008888524649347591,
+        "weighted_entropy": 0.37829401417479935
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 338919,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/04384ad9dd9260679a5127751c4f39d332ec137827d84e5d655c33eb3fd2f316/native_rewards/record.json",
+          "sha256": "b2b92a1d3ff5cd9a3f8c3e12de9b5891684ec9e04fe517f7ccb224da926984f9"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 3,
+          "finqa:report:AES/2003": 8,
+          "finqa:report:AMT/2012": 10,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 4,
+          "finqa:report:APD/2013": 3,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 5,
+          "finqa:report:CE/2014": 9,
+          "finqa:report:CMCSA/2004": 3,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 11,
+          "finqa:report:HIG/2016": 3,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 16,
+          "finqa:report:IP/2014": 15,
+          "finqa:report:IPG/2016": 7,
+          "finqa:report:JPM/2015": 7,
+          "finqa:report:K/2012": 8,
+          "finqa:report:L/2007": 2,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 11,
+          "finqa:report:ORLY/2006": 2,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 14,
+          "finqa:report:PNC/2008": 4,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 4,
+          "finqa:report:SNPS/2009": 1,
+          "finqa:report:TMUS/2016": 3,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 19,
+          "finqa:report:UNP/2010": 21,
+          "finqa:report:UNP/2011": 17,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed251/arms/full/feedback/04384ad9dd9260679a5127751c4f39d332ec137827d84e5d655c33eb3fd2f316/draw0/run.json",
+          "sha256": "23488084ca0f28b1a149b121a24150d122b028eec0a67351b3023036dd12905d"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 245,
+        "successful_sessions_by_draw": [
+          121.0,
+          124.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 180,
+        "unique_successful_tasks_by_draw": [
+          121,
+          124
+        ]
+      },
+      "successful_feedback_sessions": 245,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "541f067958e551c1b501e81e206f34aceeda56a28d45008ca7980a60fc9b05ae",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "89241aac34cceafc8e5e816c7d80cb80f1d4fba796d89df4cb41a95883088758",
+      "seed": 389,
+      "source": {
+        "bytes": 1592761,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step0298_outer/record.json",
+        "sha256": "14f321a8453450a4da81b4e8cc77f004d2e6dbe414ee8db6c7a2fa965c89402f"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.009250452948014307,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -6.002804917137901,
+          "0.01": -2.4410908486221117,
+          "0.1": -1.234039577620895,
+          "0.25": -0.575109876928736,
+          "0.5": 0.006480785056746377,
+          "0.75": 0.5735203400554731,
+          "0.9": 1.1850399161412006,
+          "0.99": 2.5978426406448025,
+          "1": 10.518688639830527
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.3439876005927234e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -7.463530166947994e-05,
+          "0.01": -3.0351069942213928e-05,
+          "0.1": -1.534331323759347e-05,
+          "0.25": -7.150573731811253e-06,
+          "0.5": 8.057822208820778e-08,
+          "0.75": 7.130810376898278e-06,
+          "0.9": 1.4734080626052414e-05,
+          "0.99": 3.230002837853493e-05,
+          "1": 0.00013078311066877003
+        },
+        "scale_after_floor": 0.009250452948014307,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.002328966521106259,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006250288633139657,
+        "weighted_KL_next_prior": 0.0006250288633139657,
+        "weighted_TV": 0.00746648884213168,
+        "weighted_entropy": 0.37912523664959413
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337918,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/804e897843b5b5776f99010d152beadc1dbe978bff2432fb2e5ee5e4a85dec92/native_rewards/record.json",
+          "sha256": "b6eeedf0207bf6f699b66b88152310de1441530282b6bace8b26565b63151d15"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 2,
+          "finqa:report:AES/2003": 6,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 3,
+          "finqa:report:APD/2013": 2,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 9,
+          "finqa:report:CMCSA/2004": 5,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 1,
+          "finqa:report:GS/2015": 12,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:IP/2012": 16,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 8,
+          "finqa:report:JPM/2015": 9,
+          "finqa:report:K/2012": 5,
+          "finqa:report:L/2007": 2,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 9,
+          "finqa:report:ORLY/2006": 2,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 5,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 10,
+          "finqa:report:UNP/2010": 14,
+          "finqa:report:UNP/2011": 20,
+          "finqa:report:VTR/2006": 5
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/804e897843b5b5776f99010d152beadc1dbe978bff2432fb2e5ee5e4a85dec92/draw0/run.json",
+          "sha256": "cb2e59271de0de2ceb496aa7a6a71ccd8750abab760c86da5625d20a234b835e"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 245,
+        "successful_sessions_by_draw": [
+          127.0,
+          118.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 180,
+        "unique_successful_tasks_by_draw": [
+          127,
+          118
+        ]
+      },
+      "successful_feedback_sessions": 245,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "5f728d5a151dcaef259bec694b95dfad7d2339b873aad88f4ce389f4c8e7fa4e",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "5f29e11b5f31fe4410862c3e2a658f724c84e67ff0f2670a5dda067aca12c392",
+      "seed": 389,
+      "source": {
+        "bytes": 1629113,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step0596_outer/record.json",
+        "sha256": "86a03852139fd42a1dc0db6357e88b45782ef230d5fe926ca0fe04c63055f14b"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.00906163266984761,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.332538849429031,
+          "0.01": -2.598364219917605,
+          "0.1": -1.3396068781604376,
+          "0.25": -0.7064940999250333,
+          "0.5": 0.009038221625264214,
+          "0.75": 0.6163275188715694,
+          "0.9": 1.2370821419153515,
+          "0.99": 2.4168059629736116,
+          "1": 5.249670727047972
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.301509431299902e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -5.2768649974959793e-05,
+          "0.01": -3.164707271958128e-05,
+          "0.1": -1.6315894424584932e-05,
+          "0.25": -8.604825291579657e-06,
+          "0.5": 1.1008204886669002e-07,
+          "0.75": 7.506631156361201e-06,
+          "0.9": 1.5067182731808073e-05,
+          "0.99": 2.9435763267156173e-05,
+          "1": 6.393896205129109e-05
+        },
+        "scale_after_floor": 0.00906163266984761,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0009215597748300167,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0006537153368903163,
+        "weighted_KL_next_prior": 0.001375397809995919,
+        "weighted_TV": 0.007866735128934859,
+        "weighted_entropy": 0.37826918652159636
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 335929,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/31837b450ee799b307bc2cd8f2dfcb5443a1eef3e1ba87f1bdfa252e37235157/native_rewards/record.json",
+          "sha256": "be6bce6fe9796352fe465b2ba56ca97276501d2752511ba75f576aa9e8e915c5"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 4,
+          "finqa:report:AES/2003": 15,
+          "finqa:report:AMT/2012": 16,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 9,
+          "finqa:report:APD/2013": 3,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 8,
+          "finqa:report:CMCSA/2004": 4,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 5,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 14,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 25,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 13,
+          "finqa:report:K/2012": 11,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 10,
+          "finqa:report:ORLY/2006": 4,
+          "finqa:report:ORLY/2009": 7,
+          "finqa:report:PKG/2006": 24,
+          "finqa:report:PNC/2008": 7,
+          "finqa:report:RL/2009": 7,
+          "finqa:report:SNPS/2009": 3,
+          "finqa:report:TMUS/2016": 1,
+          "finqa:report:TMUS/2018": 3,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 23,
+          "finqa:report:UNP/2011": 25,
+          "finqa:report:VTR/2006": 8
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/31837b450ee799b307bc2cd8f2dfcb5443a1eef3e1ba87f1bdfa252e37235157/draw0/run.json",
+          "sha256": "bce3daa439a6540a34631612fbeba40c67abe2677b7dc1f1b76bc12833a14685"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 321,
+        "successful_sessions_by_draw": [
+          165.0,
+          156.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 216,
+        "unique_successful_tasks_by_draw": [
+          165,
+          156
+        ]
+      },
+      "successful_feedback_sessions": 321,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "95fb468646aa365118a39f2cc186c13e06661fbe4970866c13da77945deec985",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "f99047e7eb6575b171043f22fd534d7430a51ee635f3deef48a6903cd534ca32",
+      "seed": 389,
+      "source": {
+        "bytes": 1635970,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step0894_outer/record.json",
+        "sha256": "dfbc34f120cbcc5c33d3ec8070ccb5990be72706d7bceecac3802dd3605e9afe"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.011842331272020905,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -5.125701658860026,
+          "0.01": -2.4995412843357685,
+          "0.1": -1.334336479010973,
+          "0.25": -0.6608919278053218,
+          "0.5": -0.04388597210859678,
+          "0.75": 0.5758292143803887,
+          "0.9": 1.3294760463922701,
+          "0.99": 2.689135544254922,
+          "1": 3.7895123791230754
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.691219237332687e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -8.158636699699936e-05,
+          "0.01": -3.9785478383328996e-05,
+          "0.1": -2.1238783081706876e-05,
+          "0.25": -1.0519490785047238e-05,
+          "0.5": -6.985379299793991e-07,
+          "0.75": 9.165538054838854e-06,
+          "0.9": 2.1161419031712225e-05,
+          "0.99": 4.280327143875406e-05,
+          "1": 6.0318092678762824e-05
+        },
+        "scale_after_floor": 0.011842331272020905,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0009009522542706619,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0006242125489924198,
+        "weighted_KL_next_prior": 0.0020526205506371455,
+        "weighted_TV": 0.007438948370288251,
+        "weighted_entropy": 0.37767126345605984
+      },
+      "step": 894,
+      "success_coverage": {
+        "reason": "original native reward archive unavailable",
+        "status": "NA"
+      },
+      "successful_feedback_sessions": 323,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "c_only",
+      "cohort_seal_sha256": "e01e3aab13b86e1d8f06b80ecf277b1f3c73cd359df57fea7e559e78e37f8b75",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "0fe2bb975bbbaeab9c185af8d764cdebc8ad7e99f2f941c245c0e5091cf09cb7",
+      "seed": 389,
+      "source": {
+        "bytes": 1609696,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/training/step1192_outer/record.json",
+        "sha256": "ac5b25a459ae9444ac75302616efa24a067c037921a44275bd0322e37d6f0f71"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.0,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.013179108945781672,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.080710012729556,
+          "0.01": -2.929838129419045,
+          "0.1": -1.3850492980878322,
+          "0.25": -0.6460738671454787,
+          "0.5": -0.004747400895691679,
+          "0.75": 0.6158410710087461,
+          "0.9": 1.2280750914938872,
+          "0.99": 2.694895803099303,
+          "1": 4.659280298990133
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.920041232618541e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -7.228510999180771e-05,
+          "0.01": -5.189873104989083e-05,
+          "0.1": -2.4534563971475775e-05,
+          "0.25": -1.1444459518995615e-05,
+          "0.5": -8.409477636239534e-08,
+          "0.75": 1.0908920118428941e-05,
+          "0.9": 2.1753945462901525e-05,
+          "0.99": 4.773699648733267e-05,
+          "1": 8.253382079210372e-05
+        },
+        "scale_after_floor": 0.013179108945781672,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0011857875852991277,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.0006469076902137889,
+        "weighted_KL_next_prior": 0.0025954338364691807,
+        "weighted_TV": 0.007548069312664218,
+        "weighted_entropy": 0.3772029689579247
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 338520,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/39655a92f82db9bce9263daf7bfeee7ef57745fa8495a80fdf18136eecbf16eb/native_rewards/record.json",
+          "sha256": "f3ddc88b8c1659e417a956c8b81c257d5b470113845c8578caf4600f5b67862f"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 4,
+          "finqa:report:AES/2003": 7,
+          "finqa:report:AMT/2012": 8,
+          "finqa:report:ANSS/2014": 4,
+          "finqa:report:AON/2018": 7,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 4,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 9,
+          "finqa:report:HIG/2016": 3,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:IP/2012": 17,
+          "finqa:report:IP/2014": 17,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 16,
+          "finqa:report:K/2012": 5,
+          "finqa:report:L/2007": 2,
+          "finqa:report:MKTX/2005": 1,
+          "finqa:report:MRO/2013": 15,
+          "finqa:report:ORLY/2006": 1,
+          "finqa:report:ORLY/2009": 6,
+          "finqa:report:PKG/2006": 12,
+          "finqa:report:PNC/2008": 7,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 1,
+          "finqa:report:TMUS/2016": 3,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 1,
+          "finqa:report:UAA/2016": 11,
+          "finqa:report:UNP/2010": 15,
+          "finqa:report:UNP/2011": 24,
+          "finqa:report:VTR/2006": 4
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/c_only/feedback/39655a92f82db9bce9263daf7bfeee7ef57745fa8495a80fdf18136eecbf16eb/draw0/run.json",
+          "sha256": "469a4757df2b42646b13f789d0623ad60bdc30de42c5d0ed3e8209fc13df55b4"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 248,
+        "successful_sessions_by_draw": [
+          131.0,
+          117.0
+        ],
+        "unique_successful_source_groups": 37,
+        "unique_successful_tasks": 183,
+        "unique_successful_tasks_by_draw": [
+          131,
+          117
+        ]
+      },
+      "successful_feedback_sessions": 248,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "9d27a6e6436f9008d7714d860f8d18797b198de6c78f0e21bd9eee162f261485",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "89241aac34cceafc8e5e816c7d80cb80f1d4fba796d89df4cb41a95883088758",
+      "seed": 389,
+      "source": {
+        "bytes": 1592657,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step0298_outer/record.json",
+        "sha256": "7cac640e883bb57fe4d7f7afcd2a32ee83c435a488feffc0de6fda3178b37e22"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.009250452948014307,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -6.002804917137901,
+          "0.01": -2.4410908486221117,
+          "0.1": -1.234039577620895,
+          "0.25": -0.575109876928736,
+          "0.5": 0.006480785056746377,
+          "0.75": 0.5735203400554731,
+          "0.9": 1.1850399161412006,
+          "0.99": 2.5978426406448025,
+          "1": 10.518688639830527
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.3439876005927234e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -7.463530166947994e-05,
+          "0.01": -3.0351069942213928e-05,
+          "0.1": -1.534331323759347e-05,
+          "0.25": -7.150573731811253e-06,
+          "0.5": 8.057822208820778e-08,
+          "0.75": 7.130810376898278e-06,
+          "0.9": 1.4734080626052414e-05,
+          "0.99": 3.230002837853493e-05,
+          "1": 0.00013078311066877003
+        },
+        "scale_after_floor": 0.009250452948014307,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.002328966521106259,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006250288633139674,
+        "weighted_KL_next_prior": 0.0006250288633139674,
+        "weighted_TV": 0.00746648884213168,
+        "weighted_entropy": 0.37912523664959413
+      },
+      "step": 298,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337918,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/804e897843b5b5776f99010d152beadc1dbe978bff2432fb2e5ee5e4a85dec92/native_rewards/record.json",
+          "sha256": "9760d9988e055cc0756d08854794c6a946baed57aa80a98185e7690ec86c60cf"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 2,
+          "finqa:report:AES/2003": 6,
+          "finqa:report:AMT/2012": 12,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 3,
+          "finqa:report:APD/2013": 2,
+          "finqa:report:APD/2014": 2,
+          "finqa:report:BKNG/2015": 4,
+          "finqa:report:CE/2014": 9,
+          "finqa:report:CMCSA/2004": 5,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 1,
+          "finqa:report:GS/2015": 12,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:IP/2012": 16,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 8,
+          "finqa:report:JPM/2015": 9,
+          "finqa:report:K/2012": 5,
+          "finqa:report:L/2007": 2,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 9,
+          "finqa:report:ORLY/2006": 2,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 2,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 4,
+          "finqa:report:TMUS/2016": 5,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 3,
+          "finqa:report:UAA/2016": 10,
+          "finqa:report:UNP/2010": 14,
+          "finqa:report:UNP/2011": 20,
+          "finqa:report:VTR/2006": 5
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/804e897843b5b5776f99010d152beadc1dbe978bff2432fb2e5ee5e4a85dec92/draw0/run.json",
+          "sha256": "cb2e59271de0de2ceb496aa7a6a71ccd8750abab760c86da5625d20a234b835e"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 245,
+        "successful_sessions_by_draw": [
+          127.0,
+          118.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 180,
+        "unique_successful_tasks_by_draw": [
+          127,
+          118
+        ]
+      },
+      "successful_feedback_sessions": 245,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "7a392e4b106f4da06d8666196c48e5810a5015a2c63a09c02fc90c3242f431d8",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "ef2f47aabaea9388241d710781cdd29ca73986c9d84265bcf095595270905260",
+      "seed": 389,
+      "source": {
+        "bytes": 1628944,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step0596_outer/record.json",
+        "sha256": "e76e6c8570323aa8d5d26086cd30b2e1a1db753433c9208dfb74baa7f744735c"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.00906163266984761,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.332538849429031,
+          "0.01": -2.598364219917605,
+          "0.1": -1.3396068781604378,
+          "0.25": -0.7064940999250333,
+          "0.5": 0.009038221625264214,
+          "0.75": 0.6163275188715694,
+          "0.9": 1.2370821419153515,
+          "0.99": 2.4168059629736116,
+          "1": 5.249670727047974
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.301509431299902e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -5.276864997495979e-05,
+          "0.01": -3.164707271958128e-05,
+          "0.1": -1.6315894424584932e-05,
+          "0.25": -8.604825291579657e-06,
+          "0.5": 1.1008204886669002e-07,
+          "0.75": 7.506631156361201e-06,
+          "0.9": 1.5067182731808073e-05,
+          "0.99": 2.9435763267156173e-05,
+          "1": 6.39389620512911e-05
+        },
+        "scale_after_floor": 0.00906163266984761,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0009215597748300165,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 1
+        },
+        "weighted_KL_next_current": 0.000671129076149289,
+        "weighted_KL_next_prior": 0.001127960069390311,
+        "weighted_TV": 0.007915464972485414,
+        "weighted_entropy": 0.37851051936214725
+      },
+      "step": 596,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 335929,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/6f3bd5c8f75c6f1aa7cdc30d1781476639cf2f4bf34647bb46d7daf3f09808f1/native_rewards/record.json",
+          "sha256": "db805e5d67a28b04b5685067bc3ee0763c8207cdd934a928e0bf98719fd5f7d2"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 4,
+          "finqa:report:AES/2003": 15,
+          "finqa:report:AMT/2012": 16,
+          "finqa:report:ANSS/2014": 5,
+          "finqa:report:AON/2018": 9,
+          "finqa:report:APD/2013": 3,
+          "finqa:report:APD/2014": 4,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 8,
+          "finqa:report:CMCSA/2004": 4,
+          "finqa:report:EMN/2004": 2,
+          "finqa:report:EMN/2006": 5,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 14,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 4,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 25,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 13,
+          "finqa:report:K/2012": 11,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 10,
+          "finqa:report:ORLY/2006": 4,
+          "finqa:report:ORLY/2009": 7,
+          "finqa:report:PKG/2006": 24,
+          "finqa:report:PNC/2008": 7,
+          "finqa:report:RL/2009": 7,
+          "finqa:report:SNPS/2009": 3,
+          "finqa:report:TMUS/2016": 1,
+          "finqa:report:TMUS/2018": 3,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 23,
+          "finqa:report:UNP/2011": 25,
+          "finqa:report:VTR/2006": 8
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/6f3bd5c8f75c6f1aa7cdc30d1781476639cf2f4bf34647bb46d7daf3f09808f1/draw0/run.json",
+          "sha256": "ae97f24644fe4cc88665a7ce477e3169b2b1a0d66a37ae30c39a797c6fbb63ad"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 321,
+        "successful_sessions_by_draw": [
+          165.0,
+          156.0
+        ],
+        "unique_successful_source_groups": 38,
+        "unique_successful_tasks": 216,
+        "unique_successful_tasks_by_draw": [
+          165,
+          156
+        ]
+      },
+      "successful_feedback_sessions": 321,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "a560877a410ceb495ff7e0bce64916b17d2a0cbfb56b327f6b86b56f11201431",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "9e9b7c424c4552daeffdb7c7849a59c0dd7bf6c9253b15a6b53a590995f19d25",
+      "seed": 389,
+      "source": {
+        "bytes": 1626960,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step0894_outer/record.json",
+        "sha256": "4e4b0d55248a00c71885fd2389973e5543567312afa4dcf6f11acffed7faaf86"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.013649147509894181,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -5.056518444863302,
+          "0.01": -2.8618770211755726,
+          "0.1": -1.2168973449218283,
+          "0.25": -0.6307259423918818,
+          "0.5": -0.02936569510535697,
+          "0.75": 0.5992339405692002,
+          "0.9": 1.140445985544542,
+          "0.99": 2.5977961934739295,
+          "1": 5.271348790864657
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.9168734090813778e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -9.27650082532795e-05,
+          "0.01": -5.250293228118541e-05,
+          "0.1": -2.2324746458651362e-05,
+          "0.25": -1.1571063744655665e-05,
+          "0.5": -5.387321293327888e-07,
+          "0.75": 1.0993323182478732e-05,
+          "0.9": 2.0922198230865727e-05,
+          "0.99": 4.765820355560117e-05,
+          "1": 9.67062059443737e-05
+        },
+        "scale_after_floor": 0.013649147509894181,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.004037785807989065,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 3
+        },
+        "weighted_KL_next_current": 0.0006478027017189486,
+        "weighted_KL_next_prior": 0.0014220292405659285,
+        "weighted_TV": 0.00757905453856439,
+        "weighted_entropy": 0.378239084546289
+      },
+      "step": 894,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 336520,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/4e318311e3aaeb9d29e584545ec24c2a3b37e1df8e24c6a44a974d489a099e9c/native_rewards/record.json",
+          "sha256": "056735dafb52617148c27b84ce0ed3b4a8f455f02730d6a7acf7cdc6fc875449"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 2,
+          "finqa:report:AES/2003": 12,
+          "finqa:report:AMT/2012": 17,
+          "finqa:report:ANSS/2014": 2,
+          "finqa:report:AON/2018": 7,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 1,
+          "finqa:report:BKNG/2015": 2,
+          "finqa:report:CE/2014": 8,
+          "finqa:report:CMCSA/2004": 8,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 4,
+          "finqa:report:ETR/2002": 2,
+          "finqa:report:GS/2015": 15,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 5,
+          "finqa:report:HST/2007": 2,
+          "finqa:report:IP/2012": 20,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 9,
+          "finqa:report:JPM/2015": 12,
+          "finqa:report:K/2012": 7,
+          "finqa:report:L/2007": 2,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 13,
+          "finqa:report:ORLY/2006": 2,
+          "finqa:report:ORLY/2009": 5,
+          "finqa:report:PKG/2006": 19,
+          "finqa:report:PNC/2008": 6,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 8,
+          "finqa:report:SNPS/2009": 3,
+          "finqa:report:TMUS/2016": 5,
+          "finqa:report:TMUS/2018": 1,
+          "finqa:report:UA/2007": 2,
+          "finqa:report:UAA/2016": 15,
+          "finqa:report:UNP/2010": 19,
+          "finqa:report:UNP/2011": 21,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/4e318311e3aaeb9d29e584545ec24c2a3b37e1df8e24c6a44a974d489a099e9c/draw0/run.json",
+          "sha256": "e2cf85f2936865d72a2e56956087e5b26373bfadd054ede16a523592a47990f8"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 292,
+        "successful_sessions_by_draw": [
+          141.0,
+          151.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 212,
+        "unique_successful_tasks_by_draw": [
+          141,
+          151
+        ]
+      },
+      "successful_feedback_sessions": 292,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    },
+    {
+      "actual_segment_loss_or_gradient": {
+        "reason": "no saved per-segment NLL or gradient attribution; weights are not losses or gradients",
+        "status": "NA"
+      },
+      "arm": "full",
+      "cohort_seal_sha256": "ecdc5acc4504244d7b81e8f5451a7b38d96fb205e34c22c7e5139742e21ba15a",
+      "draw_gradient_direction": {
+        "reason": "no separately saved draw gJ/C in committed outer payload; no new backward authorized here",
+        "status": "NA"
+      },
+      "point_id": "7f31dd3fbc8cb8a7698d7ee0aa772a0b41e3c9b8d8f1692eedd1dc5681e27ada",
+      "seed": 389,
+      "source": {
+        "bytes": 1611805,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/training/step1192_outer/record.json",
+        "sha256": "1247f990fa808b8f34f69307976cd0555d3b8c7d3a36b44b8cba811f2344c6ba"
+      },
+      "statistics": {
+        "RMS_floor": 1e-08,
+        "contribution_exponent": 0.8,
+        "effective_novelty_exponent": 0.2,
+        "floor_active": false,
+        "global_weighted_RMS_C_over_mu": 0.011824308110378622,
+        "lambda_current": 4.0,
+        "lambda_prior": 1.0,
+        "normalized_C_over_T_C_quantiles_active_states": {
+          "0": -4.2361371117567685,
+          "0.01": -2.7943836510510853,
+          "0.1": -1.3718941442007382,
+          "0.25": -0.6440309449977386,
+          "0.5": -0.04156217378553897,
+          "0.75": 0.6311420596410485,
+          "0.9": 1.206316247238664,
+          "0.99": 2.764629844837745,
+          "1": 4.252338529467275
+        },
+        "quantiles_weighting": "unweighted over optimized (task,state) support; singleton controls excluded",
+        "raw_C_RMS_unweighted_active_states": 1.6854880996897496e-05,
+        "raw_C_quantiles_active_states": {
+          "0": -6.732444947207182e-05,
+          "0.01": -4.441082428579674e-05,
+          "0.1": -2.1803358946039956e-05,
+          "0.25": -1.0235511191225227e-05,
+          "0.5": -6.60542941636175e-07,
+          "0.75": 1.0030669589535913e-05,
+          "0.9": 1.917184809933553e-05,
+          "0.99": 4.39379503985346e-05,
+          "1": 6.758193677695619e-05
+        },
+        "scale_after_floor": 0.011824308110378622,
+        "sigmoid_saturation": {
+          "active_state_count": 845,
+          "definition": "sigmoid(C/T_C)<=0.01 or >=0.99, before epsilon map",
+          "noncontrol_mu_pi_weighted_mass": 0.0,
+          "normalized_threshold_absolute": 4.59511985013459,
+          "saturated_state_count": 0
+        },
+        "weighted_KL_next_current": 0.0006759051684066413,
+        "weighted_KL_next_prior": 0.0016888758019178416,
+        "weighted_TV": 0.007978129533388558,
+        "weighted_entropy": 0.37800829902861566
+      },
+      "step": 1192,
+      "success_coverage": {
+        "reward_source": {
+          "bytes": 337992,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/aed67a11e07299523e4161f11552309124779be821f33d98ba41fed40920962e/native_rewards/record.json",
+          "sha256": "ad5e1cf3a4ac024cfc452687f990d07a4b19a55fa91bce1ff4bb9403145e673d"
+        },
+        "source_group_session_counts": {
+          "finqa:report:AAPL/2016": 7,
+          "finqa:report:AES/2003": 5,
+          "finqa:report:AMT/2012": 14,
+          "finqa:report:ANSS/2014": 3,
+          "finqa:report:AON/2018": 1,
+          "finqa:report:APD/2013": 4,
+          "finqa:report:APD/2014": 1,
+          "finqa:report:BKNG/2015": 3,
+          "finqa:report:CE/2014": 5,
+          "finqa:report:CMCSA/2004": 4,
+          "finqa:report:EMN/2004": 1,
+          "finqa:report:EMN/2006": 5,
+          "finqa:report:ETR/2002": 3,
+          "finqa:report:GS/2015": 11,
+          "finqa:report:HIG/2016": 2,
+          "finqa:report:HII/2015": 3,
+          "finqa:report:HST/2007": 1,
+          "finqa:report:IP/2012": 21,
+          "finqa:report:IP/2014": 19,
+          "finqa:report:IPG/2016": 2,
+          "finqa:report:JPM/2015": 12,
+          "finqa:report:K/2012": 9,
+          "finqa:report:L/2007": 1,
+          "finqa:report:MKTX/2005": 3,
+          "finqa:report:MRO/2013": 9,
+          "finqa:report:ORLY/2006": 3,
+          "finqa:report:ORLY/2009": 4,
+          "finqa:report:PKG/2006": 17,
+          "finqa:report:PNC/2008": 3,
+          "finqa:report:RCL/2018": 1,
+          "finqa:report:RL/2009": 5,
+          "finqa:report:SNPS/2009": 5,
+          "finqa:report:TMUS/2016": 2,
+          "finqa:report:TMUS/2018": 2,
+          "finqa:report:UA/2007": 4,
+          "finqa:report:UAA/2016": 14,
+          "finqa:report:UNP/2010": 19,
+          "finqa:report:UNP/2011": 22,
+          "finqa:report:VTR/2006": 6
+        },
+        "source_roster": {
+          "bytes": 1068980,
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/seed389/arms/full/feedback/aed67a11e07299523e4161f11552309124779be821f33d98ba41fed40920962e/draw0/run.json",
+          "sha256": "1092e29286eacd2235091e05b4f09de294ebed7d2953b2d5df1bdb0f9c25b55f"
+        },
+        "status": "AVAILABLE",
+        "successful_sessions": 256,
+        "successful_sessions_by_draw": [
+          122.0,
+          134.0
+        ],
+        "unique_successful_source_groups": 39,
+        "unique_successful_tasks": 181,
+        "unique_successful_tasks_by_draw": [
+          122,
+          134
+        ]
+      },
+      "successful_feedback_sessions": 256,
+      "supervised_coefficient_mass": {
+        "reason": "outer record has distributions but no token-segment coefficient attribution",
+        "status": "NA"
+      }
+    }
+  ],
+  "schema": "v54_existing_B_24_outer_signals.v1"
+}

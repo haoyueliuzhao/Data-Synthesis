@@ -1,0 +1,24 @@
+{
+  "all_24_outer_success_coverage_available": true,
+  "automatic_invalid_cases": 2979,
+  "coverage_supplement_id": "544a340d94f37ba656d6a18c35a9fe421929f274b1f30c2725d4b94c80f0d4b1",
+  "id": "c81dfb9c3123111895a656c4db5446a1dd63dbbe02e34530765be6b98d8def21",
+  "initial_summary": {
+    "bytes": 809,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/v54_historical_diagnostics_01/summary/record.json",
+    "sha256": "211d6f632c346901e94625df1ba54099067a2f7979f4996cd65619a2d29aaed8"
+  },
+  "initial_summary_id": "5b8c1ba6b26267b5264ba0f98c5980750d1a1aabc2cb3cc4e50184a1dcc76a93",
+  "manual_cases": 18,
+  "manual_reading_completed": true,
+  "manual_reading_id": "5bedca9e0d1078762023b9b8830788ab318b21b664fa5f35f9880b0c31177cd6",
+  "new_GPU_backward_or_sampling_or_scoring_calls": 0,
+  "original_scientific_records_unchanged": true,
+  "remaining_optional_gaps": [
+    "No directly saved per-draw C/gJ in committed outer records; no additional backward or checkpoint deconvolution performed.",
+    "No reason/tool/final coefficient attribution in available outer/package summaries; deriving it requires original supervision spans.",
+    "No per-segment NLL/gradient attribution; coefficient mass is not actual loss/gradient."
+  ],
+  "schema": "v54_bounded_historical_diagnostics_closeout.v1",
+  "source_sha256": "f15b8e04a1623dbd984f3b2c45aadbbfada627c32fce7931d7bb2ff8b446b2d0"
+}

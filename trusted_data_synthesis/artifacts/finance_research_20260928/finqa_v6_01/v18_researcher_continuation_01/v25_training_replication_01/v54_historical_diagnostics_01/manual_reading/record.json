@@ -1,0 +1,246 @@
+{
+  "actual_cases_read": 18,
+  "candidate_packet_count": 90,
+  "cases_per_model": {
+    "seed137/c_only": 2,
+    "seed137/full": 2,
+    "seed137/static": 2,
+    "seed251/c_only": 2,
+    "seed251/full": 2,
+    "seed251/static": 2,
+    "seed389/c_only": 2,
+    "seed389/full": 2,
+    "seed389/static": 2
+  },
+  "examples": [
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed137/static",
+      "correctness_rescored": false,
+      "observation": "一次run_program成功返回0.6062，第二次输出说明该结果后实际EOS；没有提交封套。工具成功不等于已提交原生答案。",
+      "original_episode": {
+        "bytes": 159832,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/static/shards/test1147/generation/episodes/eb25f5749895e7b5eb8a7da9dd3bc37ec3f00bbc867da7475bb6cf99c5eb1526/episode.json",
+        "sha256": "013e8d67ae208053ee8c1520891cd80448800a4bb305a965e39c110ae4a935c2"
+      },
+      "task_key": "finqa/L/2009/page_84.pdf-1"
+    },
+    {
+      "category": "E_missing_closing_envelope",
+      "coordinate": "seed137/static",
+      "correctness_rescored": false,
+      "observation": "首调用出现submit_program JSON，但在</tool_call>之前实际EOS；JSON中的程序字符串是const_50。本分析不补封套或检验修补后结果。",
+      "original_episode": {
+        "bytes": 127385,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/static/shards/test1147/generation/episodes/2e6bad7b319b197d6df449a4be13ba538d6924a229a83efef51b98b7c82438bb/episode.json",
+        "sha256": "de6311016f34b618e74d3c12817f3215e38a87d6e61e2f3d270c6308191e7b71"
+      },
+      "task_key": "finqa/BLK/2015/page_124.pdf-4"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed137/c_only",
+      "correctness_rescored": false,
+      "observation": "run_program返回20.0后，第二次输出用普通Program: submit_program(...)文字表示提交意图，没有工具封套，并实际EOS。",
+      "original_episode": {
+        "bytes": 154349,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/c_only/shards/test1147/generation/episodes/251cc52dc9353952c59606a28bbc66165dce757801cdb97ce4dc2b370015a010/episode.json",
+        "sha256": "002d4329956fe463e390e968352aca8fc6414d57034b51d08a2e22049df57789"
+      },
+      "task_key": "finqa/AWK/2018/page_146.pdf-1"
+    },
+    {
+      "category": "C_non_envelope_between_or_after_envelopes",
+      "coordinate": "seed137/c_only",
+      "correctness_rescored": false,
+      "observation": "三次read_source后，第四次输出包含合法read_source封套，其后继续生成角色标记、伪工具消息与重复标记；原parser首先在封套后非空白处拒绝整段。",
+      "original_episode": {
+        "bytes": 457392,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/c_only/shards/test1147/generation/episodes/b04e3e5d97103353364e302a9ebeda3a98b86a8be18ccaa7e01f0bff612a21ef/episode.json",
+        "sha256": "366973922ba59b651a67269bcb85f3a74b1e58d2e67168ae506446fbd7bf9afc"
+      },
+      "task_key": "finqa/SNA/2013/page_83.pdf-3"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed137/full",
+      "correctness_rescored": false,
+      "observation": "首调用只有R/U/Q说明及普通Program文字，未形成工具封套，随后实际EOS；本分析没有核对其金融数值正确性。",
+      "original_episode": {
+        "bytes": 141259,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/full/shards/test1147/generation/episodes/c53b9e0544a4cc51d5c2f364b71254e9006876a2cc96f6cdcc6b2df38ce6168f/episode.json",
+        "sha256": "006339fdc628f5c21a9b197d05d8df4817ac8f6c0836a1baa41570ca56d4f0f5"
+      },
+      "task_key": "finqa/JPM/2018/page_90.pdf-4"
+    },
+    {
+      "category": "E_missing_closing_envelope",
+      "coordinate": "seed137/full",
+      "correctness_rescored": false,
+      "observation": "首调用多次重复讨论const_9.0，最后给出submit_program JSON而缺少关闭封套，并实际EOS。不能由补标签推断程序可执行或答案正确。",
+      "original_episode": {
+        "bytes": 86280,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed137/full/shards/test1147/generation/episodes/be31ed22cc50311a08065fa433cd28f5b834022571d7d144a0e715687bec5e41/episode.json",
+        "sha256": "a54bd11555adbe5062d9d42ee5fb8f7b44efd5a6cb9e59ad257672ebfffc5f7c"
+      },
+      "task_key": "finqa/FIS/2012/page_48.pdf-4"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed251/static",
+      "correctness_rescored": false,
+      "observation": "首调用文字提出322.4减326.5的计算，却没有任何工具封套，直接实际EOS。",
+      "original_episode": {
+        "bytes": 102407,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/static/shards/test1147/generation/episodes/3279d61b99408818f2124039f4d92ece2449741e4ef26321ab1a3c48fcf85c71/episode.json",
+        "sha256": "00351470ff9c2e8e3ec4f88b9906c9787d42fe90fef1565f5dd8017b343e6b07"
+      },
+      "task_key": "finqa/LMT/2014/page_77.pdf-2"
+    },
+    {
+      "category": "C_non_envelope_between_or_after_envelopes",
+      "coordinate": "seed251/static",
+      "correctness_rescored": false,
+      "observation": "七次read_source后，第八次合法封套后附角色标记及重复裸JSON；原parser因封套后非空白拒绝，不是没有可解析前缀。",
+      "original_episode": {
+        "bytes": 751789,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/static/shards/test1147/generation/episodes/99f9fb49c251d875b34876f5e600eb9c54c1f3e730b387e54293a0e5e7ec5974/episode.json",
+        "sha256": "eb256525651ee192f53233320dd70a8676944e52ab392f5df4a7acbc81268e6e"
+      },
+      "task_key": "finqa/JPM/2009/page_175.pdf-4"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed251/c_only",
+      "correctness_rescored": false,
+      "observation": "run_program成功返回-0.88636后，第二次仅文字解释结果，没有提交封套，随后实际EOS。",
+      "original_episode": {
+        "bytes": 241167,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/c_only/shards/test1147/generation/episodes/9d0fbbc6e5a7661fe56cb594155651d63c2bd773e010270bc04a1b8aa81b1959/episode.json",
+        "sha256": "004df451a625d65bdff5d5d5d1a9a7f17098f054eceb6399a434f5a885dce603"
+      },
+      "task_key": "finqa/ZBH/2007/page_67.pdf-1"
+    },
+    {
+      "category": "C_non_envelope_between_or_after_envelopes",
+      "coordinate": "seed251/c_only",
+      "correctness_rescored": false,
+      "observation": "两次run_program均得到实际ToolInputError；第三次合法封套后模型自行生成伪成功工具消息和提交封套，原parser首先因夹杂内容拒绝整段。伪工具成功不是实际工具事件。",
+      "original_episode": {
+        "bytes": 264090,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/c_only/shards/test1147/generation/episodes/714a39a0a8ab8409ebac8b15d2e8a98217bf775840a5229b413c6cf716875a40/episode.json",
+        "sha256": "7bec532b0d63e47b297e94075ca9a0dbf84072d476ff63407c3f1bab053157e9"
+      },
+      "task_key": "finqa/CME/2017/page_40.pdf-2"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed251/full",
+      "correctness_rescored": false,
+      "observation": "首调用反复重复执行/提交意图与R/U/Q文字，始终没有封套，达到2048 token长度上限；延长输出能否修复未知。",
+      "original_episode": {
+        "bytes": 117831,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/full/shards/test1147/generation/episodes/3cb3b2f09bf000e25bee09453c0dd513f7bb131dd7c6e831abea3b2c24d62c9a/episode.json",
+        "sha256": "002562233d43eddb5d642c798576c86e51cfcb93a6e91b9434eb3b0dfa1783a7"
+      },
+      "task_key": "finqa/BKNG/2016/page_33.pdf-3"
+    },
+    {
+      "category": "E_missing_closing_envelope",
+      "coordinate": "seed251/full",
+      "correctness_rescored": false,
+      "observation": "首调用submit_program JSON结束后实际EOS，缺少</tool_call>；程序内容为const_50，不对修补后的执行或正确性作推断。",
+      "original_episode": {
+        "bytes": 127932,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed251/full/shards/test1147/generation/episodes/2d0c86b8b0b1c02da064e89ff95d8dc274a7771e49482e214bfa4cc39e6b558b/episode.json",
+        "sha256": "034aefdf4bf2347f058b3eefb3635c7deeea0e88a16e2c93ccd693e0c7879dbf"
+      },
+      "task_key": "finqa/BLK/2015/page_124.pdf-4"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed389/static",
+      "correctness_rescored": false,
+      "observation": "首调用以普通Program: divide(1127.6,2719.3)文字给出意图，没有工具封套，随后实际EOS。",
+      "original_episode": {
+        "bytes": 125646,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/static/shards/test1147/generation/episodes/9b2f43fb225a72bb0c67276e1a310670993ee6002204574b6d2363ef8f183943/episode.json",
+        "sha256": "0ad3ff5cd5241063587e79c3ef482e54b998b3685f4bd9aea1291e722c210cb6"
+      },
+      "task_key": "finqa/ZBH/2009/page_58.pdf-1"
+    },
+    {
+      "category": "C_non_envelope_between_or_after_envelopes",
+      "coordinate": "seed389/static",
+      "correctness_rescored": false,
+      "observation": "两次真实read_source后，第三次合法封套后继续生成角色标记、伪工具响应和另一个工具调用；原parser在第一封套后的非空白处拒绝。",
+      "original_episode": {
+        "bytes": 256542,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/static/shards/test1147/generation/episodes/36afe6f94fb3e3831f40ef23e224f9f828575b8c8529c7a2bb46af76e0f630bf/episode.json",
+        "sha256": "61983e1c415308ccfbf09e36dbae6d6f7c7bb119cc160b7263e43e7aac353d8b"
+      },
+      "task_key": "finqa/JPM/2009/page_175.pdf-4"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed389/c_only",
+      "correctness_rescored": false,
+      "observation": "run_program返回0.32075后，第二次输出普通Program: submit_program(...)文字而非封套，随后实际EOS。",
+      "original_episode": {
+        "bytes": 169676,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/c_only/shards/test1147/generation/episodes/0be5e2b5a5b537d10ea46c8745cf3ee4c9593b4438023f4ff59085fb2294e1c9/episode.json",
+        "sha256": "00032f1035a3dc2f95a9f161fbe9f73ddaa37f00f4d11d45d3a4546b6cf110d0"
+      },
+      "task_key": "finqa/AON/2007/page_188.pdf-1"
+    },
+    {
+      "category": "F_strict_JSON_or_argument_extraction_exception",
+      "coordinate": "seed389/c_only",
+      "correctness_rescored": false,
+      "observation": "首个<tool_call>后直接出现大量角色标记而不是JSON，随后还有其他标签和对象；最先触发严格JSON异常，后续片段不被挽救。",
+      "original_episode": {
+        "bytes": 141925,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/c_only/shards/test1147/generation/episodes/84aeb6dec52cfb10ca79023f332dd60933f7fce39ca58b482df9d00cf862a2a3/episode.json",
+        "sha256": "8ec3a3ee04c17a9fb85f3edeaa674df3b787b3a4b08eff3c9308cca9d35b4e12"
+      },
+      "task_key": "finqa/HOLX/2006/page_71.pdf-1"
+    },
+    {
+      "category": "A_no_opening_envelope",
+      "coordinate": "seed389/full",
+      "correctness_rescored": false,
+      "observation": "首调用反复重复计算说明和提交意图，没有工具封套，直到2048 token上限；不是已验证的可由增加长度修复的案例。",
+      "original_episode": {
+        "bytes": 117051,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/full/shards/test1147/generation/episodes/8c0a76889f3c5043d378b9615b0f59adef5d067e32f9848ff80de9554b6f5473/episode.json",
+        "sha256": "00782a76e8fe2cc076258ceadbc80f441a24dff5c1360328d06be94c6b22999e"
+      },
+      "task_key": "finqa/CDNS/2015/page_30.pdf-1"
+    },
+    {
+      "category": "G_accepted_tool_envelopes",
+      "coordinate": "seed389/full",
+      "correctness_rescored": false,
+      "observation": "submit_program封套被原parser接受并真实提交，但program字符串是average interest-earning assets 2018自然语言；原评分为invalid。该例不是parser格式拒绝。",
+      "original_episode": {
+        "bytes": 143174,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/models/seed389/full/shards/test1147/generation/episodes/0a187f1939f7f97bd770b89c39c89193bfbe1b1d75f6f402eb8a58821f66ee57/episode.json",
+        "sha256": "02e94ec83f93e1f954762077c27c1943aaee3b59b5ff4f8f306da74456acda82"
+      },
+      "task_key": "finqa/JPM/2018/page_90.pdf-3"
+    }
+  ],
+  "full_saved_response_turns_and_tool_events_read": true,
+  "id": "5bedca9e0d1078762023b9b8830788ab318b21b664fa5f35f9880b0c31177cd6",
+  "new_generation_or_scoring": 0,
+  "observations_not_counterfactual_repairs": true,
+  "old_scores_changed": false,
+  "population_prevalence_not_inferred_from_purposeful_sample": true,
+  "schema": "v54_bounded_manual_reading_18.v1",
+  "selection_rule": "first two per model from the already sealed alphabetical-category/digest round-robin selection",
+  "source_packet": {
+    "bytes": 418501,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/v54_historical_diagnostics_01/invalid/reading_packet/record.json",
+    "sha256": "91f9d711241377dccd423e0ed1d0e6cb7f2d273ca397c6ea1dc16b65eae341eb"
+  }
+}
