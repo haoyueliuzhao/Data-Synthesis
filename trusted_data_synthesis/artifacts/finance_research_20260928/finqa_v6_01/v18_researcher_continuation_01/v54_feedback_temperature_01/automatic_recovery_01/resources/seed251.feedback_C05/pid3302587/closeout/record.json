@@ -1,0 +1,50 @@
+{
+  "schema": "v54_resource_lifetime_closeout.v1",
+  "at": "2026-10-18T11:46:14.829066+00:00",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job_id": "seed251.feedback_C05",
+  "gpu_index": 1,
+  "pid": 3302587,
+  "birth": "473936505",
+  "elapsed_slot_seconds": 8971.184983843938,
+  "status": "FAILED_OR_STOPPED",
+  "error": {
+    "type": "ExplicitStop",
+    "message": "explicit stop before next scientific operation"
+  },
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-93f4f576b5836a90256991315fe01b063316019c4ed330a10dcad034631cd37d.lock",
+    "descriptor": 5,
+    "device": 66304,
+    "inode": 5290289922,
+    "held_exclusive_flock": true
+  },
+  "resources": {
+    "all_gates_passed": true,
+    "single_process_lifetime_includes_loading": true,
+    "actual_boundary_observations": 5053,
+    "peak_allocated_bytes": 17284615168,
+    "minimum_boundary_free_bytes": 2304114688,
+    "peak_rss_bytes": 17529376768,
+    "minimum_host_available_bytes": 697981726720,
+    "resource_wait_seconds": 1.7238950543105602,
+    "peak_resets_before_loading": 1,
+    "peak_resets_after_loading": 0,
+    "warm_allocation_bytes": 0,
+    "anchor_bytes": 0,
+    "received_signals": [
+      {
+        "signal": 15,
+        "received_at_epoch": 1792323973.177536
+      }
+    ],
+    "observed_violation": null,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/resources/seed251.feedback_C05/pid3302587/observations.jsonl",
+    "preflight_shortages": 1,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "deferred_observation": null,
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "own_cache_release_does_not_reset_historical_peak": true
+  },
+  "id": "67ca42a30981ccc5386403ba394182da95f4427b4c984aad7b8c4d68dd46658f"
+}

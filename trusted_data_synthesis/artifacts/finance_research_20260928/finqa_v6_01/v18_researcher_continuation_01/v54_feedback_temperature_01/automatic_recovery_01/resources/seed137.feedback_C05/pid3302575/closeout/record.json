@@ -1,0 +1,42 @@
+{
+  "schema": "v54_resource_lifetime_closeout.v1",
+  "at": "2026-10-18T11:45:25.546713+00:00",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job_id": "seed137.feedback_C05",
+  "gpu_index": 2,
+  "pid": 3302575,
+  "birth": "473936454",
+  "elapsed_slot_seconds": 8922.162313731387,
+  "status": "COMPLETE",
+  "error": null,
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+    "descriptor": 4,
+    "device": 66304,
+    "inode": 5290287281,
+    "held_exclusive_flock": true
+  },
+  "resources": {
+    "all_gates_passed": true,
+    "single_process_lifetime_includes_loading": true,
+    "actual_boundary_observations": 4997,
+    "peak_allocated_bytes": 16967135232,
+    "minimum_boundary_free_bytes": 30110253056,
+    "peak_rss_bytes": 17532010496,
+    "minimum_host_available_bytes": 693050580992,
+    "resource_wait_seconds": 0.8059685947373509,
+    "peak_resets_before_loading": 1,
+    "peak_resets_after_loading": 0,
+    "warm_allocation_bytes": 0,
+    "anchor_bytes": 0,
+    "received_signals": [],
+    "observed_violation": null,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/resources/seed137.feedback_C05/pid3302575/observations.jsonl",
+    "preflight_shortages": 0,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "deferred_observation": null,
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "own_cache_release_does_not_reset_historical_peak": true
+  },
+  "id": "488f5c4e59af7e31a9f6c66f8a27636a52f832263ef437bd1e165cc4b4f76c7d"
+}

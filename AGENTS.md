@@ -198,6 +198,8 @@ V57 control02于2026-10-18 20:44:09北京时间再次收到SIGTERM；新内核�
 
 用户随后明确“恢复任务，同时能否监控更多信息”，授权V58新控制 `automatic_recovery_01/signal_recovery_03/`，科学ROOT/协议/所有缓存仍为原V56。只读保留24旧attempt、4accepted以及7个精确未知waitpid旧attempt；继承273完整任务，不重复反馈或完整任务。新增限量只读信号/进程/父链/loginuid/cgroup监控及1个独立无GPU观察器，不收集env、完整cmdline、凭据或私人历史，不改系统权限或其他项目。用户另问屏蔽信号仅作能力讨论，尚未授权绕过管理员策略；新SIGTERM/SIGINT/STOP仍终止自动拉起，SIGKILL不可捕获，observer也可能随登录cgroup被清理。原四并发/八卡/资源硬门与资源故障自动退避不变。准备证据 `signal_recovery_preparation_02/record.json`，实际启动状态见 `trusted_data_synthesis/docs/finqa_v58_recovery_and_process_observation_20261018.md`；实现或CPU核验不等于恢复，勿裸重启旧入口或重复启动03。
 
+V58已以源提交 `d8da3b706bf3507bb07f80551f39c57081dd949a` 冻结独立5文件控制/监控包，协议ID `8b40efeeaf4ddff85957efb6eb05c3846084c0655f2216469549a20d9b66554e`。24项必要CPU用例通过，实际冻结worker导入287项依赖匹配、无CUDA/model加载。2026-10-18 21:50:39北京时间新监督器PID3658730/birth475583404、controller3658840/birth475583708、独立observer3658728/birth475583394已实际启动。21:53:12快照四worker为137 shard01 attempt5/GPU2、shard02 attempt4/GPU1、shard03 attempt3/GPU4、251 shard00 attempt3/GPU6；已观测资源边界通过，新增1完整任务4行、累计274题1838行，2100反馈和4accepted未重派。观察器心跳正常且当时dropped0，不能保证短命sender一定捕获，未对科学进程注入信号测试。启动证据 `signal_recovery_03/startup_verification/record.json` ID `7a7aed94220592d923f2f52fa2698a99bfd0852622fe815e3372c5b295946264`。原1788optimizer与12267评价尚未完成；仅查03监督/科学/observer队列，勿重复启动，新的合法TERM/INT/STOP仍终止自动恢复。全机候选进程日志仅本地保留，不上传。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

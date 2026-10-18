@@ -1,0 +1,64 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 30139,
+      "index": 4,
+      "memory_free_mib": 30139,
+      "processes": [
+        {
+          "pid": 3115149,
+          "used_memory_mib": "51006"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 51015,
+      "uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e"
+    },
+    "host": {
+      "available_bytes": 826950930432,
+      "live_worker_count": 3,
+      "required_bytes": 470662750208,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5326296109,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-5f1b8d3803cfc2316ae4950839736f7b4b2c178e1e69de900a70a2e6d5e4e4dd.lock",
+    "minimum_free_mib": 24576
+  },
+  "attempt": 1,
+  "birth": "474710315",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/finqa_v56_worker.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "shard01",
+    "--gpu-index",
+    "4"
+  ],
+  "gpu_index": 4,
+  "gpu_uuid": "GPU-ae8978c8-5100-933e-78d1-46ed781a8a0e",
+  "id": "6e496f3b012382112465a848d8a7cd086a77d106892fc1a7d9e6ab6b7258ad9a",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed137.shard01",
+    "job_id": "seed137.shard01",
+    "kind": "class",
+    "memory_phase": "class",
+    "priority": 4,
+    "seed": 137,
+    "stage": "shard01"
+  },
+  "pid": 3475048,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v56_actual_attempt_launch.v1",
+  "started_epoch": 1792322708.5123954
+}

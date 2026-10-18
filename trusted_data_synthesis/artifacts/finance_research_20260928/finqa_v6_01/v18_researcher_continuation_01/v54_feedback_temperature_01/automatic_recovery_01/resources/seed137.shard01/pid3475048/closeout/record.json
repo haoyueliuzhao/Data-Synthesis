@@ -1,0 +1,66 @@
+{
+  "schema": "v54_resource_lifetime_closeout.v1",
+  "at": "2026-10-18T11:26:42.315657+00:00",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job_id": "seed137.shard01",
+  "gpu_index": 4,
+  "pid": 3475048,
+  "birth": "474710315",
+  "elapsed_slot_seconds": 60.16382766421884,
+  "status": "FAILED_OR_STOPPED",
+  "error": {
+    "type": "ResourceDeferred",
+    "message": "bounded capacity wait exhausted before further scientific work"
+  },
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-5f1b8d3803cfc2316ae4950839736f7b4b2c178e1e69de900a70a2e6d5e4e4dd.lock",
+    "descriptor": 7,
+    "device": 66304,
+    "inode": 5326296109,
+    "held_exclusive_flock": true
+  },
+  "resources": {
+    "all_gates_passed": false,
+    "single_process_lifetime_includes_loading": true,
+    "actual_boundary_observations": 0,
+    "peak_allocated_bytes": 0,
+    "minimum_boundary_free_bytes": null,
+    "peak_rss_bytes": 0,
+    "minimum_host_available_bytes": null,
+    "resource_wait_seconds": 60.1619040267542,
+    "peak_resets_before_loading": 0,
+    "peak_resets_after_loading": 0,
+    "warm_allocation_bytes": 0,
+    "anchor_bytes": 0,
+    "received_signals": [],
+    "observed_violation": null,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/resources/seed137.shard01/pid3475048/observations.jsonl",
+    "preflight_shortages": 30,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "deferred_observation": {
+      "at": "2026-10-18T11:26:42.315366+00:00",
+      "label": "pre_CUDA_capacity",
+      "resource_category": "startup_capacity",
+      "gpu_index": 4,
+      "free_bytes": 11986272256,
+      "required_free_bytes": 25769803776,
+      "host": {
+        "rss_bytes": 1950240768,
+        "peak_rss_bytes": 1969995776,
+        "available_bytes": 825298415616,
+        "rss_limit_bytes": 171798691840,
+        "available_reserve_bytes": 103079215104,
+        "passed": true
+      },
+      "cuda_initialized": false,
+      "elapsed_seconds": 60.161668449640274,
+      "event": "v56_capacity_preflight",
+      "status": "DEFERRED",
+      "accepted_scientific_boundary": false,
+      "historical_peaks_preserved": true
+    },
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "own_cache_release_does_not_reset_historical_peak": true
+  },
+  "id": "f542ea6a3e42ef1089e6fe9066db6bde68ffcc02cdbd0691c0ef183964eb66f8"
+}

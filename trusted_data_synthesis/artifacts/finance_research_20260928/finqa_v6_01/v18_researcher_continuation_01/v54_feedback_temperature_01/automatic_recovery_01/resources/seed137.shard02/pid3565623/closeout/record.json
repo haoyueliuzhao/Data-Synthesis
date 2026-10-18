@@ -1,0 +1,54 @@
+{
+  "schema": "v54_resource_lifetime_closeout.v1",
+  "at": "2026-10-18T12:44:15.244790+00:00",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "job_id": "seed137.shard02",
+  "gpu_index": 6,
+  "pid": 3565623,
+  "birth": "475074189",
+  "elapsed_slot_seconds": 1075.2565727652982,
+  "status": "FAILED_OR_STOPPED",
+  "error": {
+    "type": "ExplicitStop",
+    "message": "explicit stop before next scientific operation"
+  },
+  "inherited_gpu_lease": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-06a72e8c72bc84fed61017dde1354a5d859725e982c7efc0de6a264470a09910.lock",
+    "descriptor": 8,
+    "device": 66304,
+    "inode": 5290289924,
+    "held_exclusive_flock": true
+  },
+  "resources": {
+    "all_gates_passed": true,
+    "single_process_lifetime_includes_loading": true,
+    "actual_boundary_observations": 367,
+    "peak_allocated_bytes": 16493710848,
+    "minimum_boundary_free_bytes": 16850419712,
+    "peak_rss_bytes": 63792844800,
+    "minimum_host_available_bytes": 578924675072,
+    "resource_wait_seconds": 0.824628684669733,
+    "peak_resets_before_loading": 1,
+    "peak_resets_after_loading": 0,
+    "warm_allocation_bytes": 0,
+    "anchor_bytes": 0,
+    "received_signals": [
+      {
+        "signal": 15,
+        "received_at_epoch": 1792327449.4204876
+      },
+      {
+        "signal": 15,
+        "received_at_epoch": 1792327451.6835513
+      }
+    ],
+    "observed_violation": null,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/resources/seed137.shard02/pid3565623/observations.jsonl",
+    "preflight_shortages": 0,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "deferred_observation": null,
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "own_cache_release_does_not_reset_historical_peak": true
+  },
+  "id": "5176ccf96aa8a1bacab63ee4786ae0a4dbddb272c122f340bde47f72554e1693"
+}

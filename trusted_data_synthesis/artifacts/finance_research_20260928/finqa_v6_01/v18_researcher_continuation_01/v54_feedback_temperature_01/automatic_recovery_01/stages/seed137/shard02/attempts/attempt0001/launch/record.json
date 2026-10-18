@@ -1,0 +1,59 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 81151,
+      "index": 7,
+      "memory_free_mib": 81151,
+      "processes": [],
+      "total_mib": 81920,
+      "used_mib": 4,
+      "uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
+    },
+    "host": {
+      "available_bytes": 826985910272,
+      "live_worker_count": 3,
+      "required_bytes": 470655279104,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5280236274,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-23de3b19331d75a07aa41aef48e1af06933180307d9643e0e1770a6a9502d2ce.lock",
+    "minimum_free_mib": 24576
+  },
+  "attempt": 1,
+  "birth": "474719994",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/finqa_v56_worker.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "shard02",
+    "--gpu-index",
+    "7"
+  ],
+  "gpu_index": 7,
+  "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+  "id": "0ede521f7a655ab651ba7b6bd17e6ef54e75a1a694c6f8015a9313c913bc5232",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed137.shard02",
+    "job_id": "seed137.shard02",
+    "kind": "class",
+    "memory_phase": "class",
+    "priority": 4,
+    "seed": 137,
+    "stage": "shard02"
+  },
+  "pid": 3476612,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v56_actual_attempt_launch.v1",
+  "started_epoch": 1792322805.3045068
+}

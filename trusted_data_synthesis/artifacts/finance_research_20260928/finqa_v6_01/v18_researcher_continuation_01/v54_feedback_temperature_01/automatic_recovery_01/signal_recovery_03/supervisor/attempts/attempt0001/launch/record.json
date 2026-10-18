@@ -1,0 +1,18 @@
+{
+  "birth": "475583708",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_03/implementation/finqa_v58_controller.py",
+    "run",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_03",
+    "--controller-attempt",
+    "1"
+  ],
+  "control_protocol_id": "8b40efeeaf4ddff85957efb6eb05c3846084c0655f2216469549a20d9b66554e",
+  "controller_attempt": 1,
+  "id": "86ea9cc15a7d2e11bfd4a9985400b8bc21ffa78692861c5e37bdfcbf5db307a2",
+  "pid": 3658840,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af"
+}
