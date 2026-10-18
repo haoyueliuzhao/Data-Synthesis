@@ -1,0 +1,42 @@
+{
+  "schema": "v56_actual_frozen_automatic_recovery_CPU_verification.v1",
+  "at": "2026-10-18T09:15:13.956762+00:00",
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/record.json",
+    "sha256": "084bbe69bd9531c037ba6e18597eb4c4b26464ab9930cea2673718ef9886f050",
+    "id": "e415b937f644b2afde65c1940ef0d0a7f9c0dca03d58d1079ab1e7253132e5e7"
+  },
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/protocol/record.json",
+    "sha256": "da35e3251bfa0180cc076a8a491809c698f7095b95f2031bdbfbb64c020f667d",
+    "id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af"
+  },
+  "prepared": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/prepared/record.json",
+    "sha256": "0b5067ebdef364ef084e88ee3e191a570782c3f914cb2679b513d68c16f6c4c9",
+    "id": "a96fba8d69b744a597ed95402fc53f94a1e2b0c820b0955263c6471328674429"
+  },
+  "execution_modules_loaded_from_new_frozen_bundle": 15,
+  "original_scientific_files": 81,
+  "external_dependency_hashes_verified": true,
+  "actual_controller_constructed": true,
+  "core_jobs": 23,
+  "actual_new_optimizer_budget": 1788,
+  "inherited_complete_feedback": 70,
+  "inherited_partial_returns": 3,
+  "inherited_complete_class_tasks": 9,
+  "remaining_complete_feedback_target": 2030,
+  "inherited_resource_wait_seconds": 89.84583379887044,
+  "old_request_reexecution_allowances_remaining": 0,
+  "CUDA_initialized": false,
+  "science_or_supervisor_started": false,
+  "targeted_CPU_cases": {
+    "registration": 8,
+    "feedback": 7,
+    "runtime_worker": 13,
+    "controller": 18,
+    "evaluation": 2
+  },
+  "historical_full_math_suite_repeated": false,
+  "id": "8073ab89c04b69cb5fa4f27aef1de9735afe1a5ef46c944a922648432f1118c7"
+}

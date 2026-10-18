@@ -1,0 +1,59 @@
+{
+  "admission": {
+    "gpu": {
+      "free_mib": 81151,
+      "index": 6,
+      "memory_free_mib": 81151,
+      "processes": [],
+      "total_mib": 81920,
+      "used_mib": 4,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526"
+    },
+    "host": {
+      "available_bytes": 832353394688,
+      "live_worker_count": 2,
+      "required_bytes": 308411236352,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290289924,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-06a72e8c72bc84fed61017dde1354a5d859725e982c7efc0de6a264470a09910.lock",
+    "minimum_free_mib": 24576
+  },
+  "attempt": 1,
+  "birth": "473936562",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/finqa_v56_worker.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+    "--seed",
+    "389",
+    "--stage",
+    "feedback_C05",
+    "--gpu-index",
+    "6"
+  ],
+  "gpu_index": 6,
+  "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+  "id": "42585b5ce65825061fc3123a1915f3587a45235c1f3479e18dca915a4e520a27",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed389.feedback_C05",
+    "job_id": "seed389.feedback_C05",
+    "kind": "feedback",
+    "memory_phase": "feedback",
+    "priority": 0,
+    "seed": 389,
+    "stage": "feedback_C05"
+  },
+  "pid": 3302607,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v56_actual_attempt_launch.v1",
+  "started_epoch": 1792314970.9865823
+}

@@ -184,6 +184,8 @@ V55随后于2026-10-18 16:31:28北京在seed389/GPU4下一反馈调用前触发f
 
 V56只读继承70完整反馈、3部分returned turn、9任务45行梯度，以及三C1/六快照；重建原消息/工具状态接续，不重调已返回模型调用，不重新发放已消费的两次旧请求额度。剩1788次optimizer更新、2030未完整feedback episode（原目标2100）、1479新class任务和12267评价不变；未封存计算重做须计为故障开销，不重复已提交科学剂量。GPU0至7、最多4worker/每卡1、76GiB历史allocated/2GiB边界free、RSS160/192GiB和全机96GiB余量不放宽，无任意整轮截止，旧等待89.84583379887044秒继承。所有attempt独立记录、科学数据稳定，旧协议和失败不回写。实现/CPU测试不等于已经运行；实际状态见 `trusted_data_synthesis/docs/finqa_v56_automatic_recovery_20261018.md` 和新根唯一监督器/队列。
 
+V56已于2026-10-18 17:16:07北京时间以源提交 `ddaa5bd1c6` 正式启动，协议ID `53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af`、96文件包ID `e415b937f644b2afde65c1940ef0d0a7f9c0dca03d58d1079ab1e7253132e5e7`，48项CPU/mock用例与冻结实际入口核验通过。唯一监督器PID3302553/birth473936250，首控制器PID3302555/birth473936326；三feedback首次worker在GPU2/1/6，137 class在GPU7，共4worker。17:21:02反馈实际完整38/37/36共111条，继承70、新增41；旧部分返回不重调，三个原位置均有与原下一请求一致的新真实返回。17:22:58 class新增4完整任务39行，旧9任务不重算，四worker已观测资源门通过。仍为attempt1，尚未实测发生自动重派，不能把配置/故障注入测试称为真实故障恢复验收；optimizer与整套评价尚未开始，整轮未完成。证据 `automatic_recovery_01/startup_verification/record.json`，进度以同根 `supervisor/queue/status.json` 和 `queue/status.json` 为准；不得重复启动新监督器或旧入口。明确停止仍终止自动拉起。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

@@ -1,0 +1,30 @@
+{
+  "schema": "v56_authorized_single_automatic_supervisor_request.v1",
+  "at": "2026-10-18T09:16:07.863548+00:00",
+  "pid": 3302553,
+  "birth": "473936250",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/implementation/finqa_v56_controller.py",
+    "supervise",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01"
+  ],
+  "source_commit": "ddaa5bd1c6",
+  "explicit_user_request": "处理各种常见问题，设置自动恢复",
+  "max_GPU_workers": 4,
+  "physical_GPUs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "old_controller_restarted": false,
+  "old_consumed_request_allowance_reset": false,
+  "id": "f2362f14ebc180aa0e4a1bcde2352121dc1641f1c6e6cd4c8cf88bf8f8cb9759"
+}
