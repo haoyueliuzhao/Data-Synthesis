@@ -186,6 +186,10 @@ V56只读继承70完整反馈、3部分returned turn、9任务45行梯度，以�
 
 V56已于2026-10-18 17:16:07北京时间以源提交 `ddaa5bd1c6` 正式启动，协议ID `53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af`、96文件包ID `e415b937f644b2afde65c1940ef0d0a7f9c0dca03d58d1079ab1e7253132e5e7`，48项CPU/mock用例与冻结实际入口核验通过。唯一监督器PID3302553/birth473936250，首控制器PID3302555/birth473936326；三feedback首次worker在GPU2/1/6，137 class在GPU7，共4worker。17:21:02反馈实际完整38/37/36共111条，继承70、新增41；旧部分返回不重调，三个原位置均有与原下一请求一致的新真实返回。17:22:58 class新增4完整任务39行，旧9任务不重算，四worker已观测资源门通过。仍为attempt1，尚未实测发生自动重派，不能把配置/故障注入测试称为真实故障恢复验收；optimizer与整套评价尚未开始，整轮未完成。证据 `automatic_recovery_01/startup_verification/record.json`，进度以同根 `supervisor/queue/status.json` 和 `queue/status.json` 为准；不得重复启动新监督器或旧入口。明确停止仍终止自动拉起。
 
+V56随后于2026-10-18 19:45:58在137 shard02收到SIGTERM，19:46:13控制器也记录SIGTERM并进入明确停止，随后监督器实际waitpid获控制器exit-9，19:47:01以STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME收口。发送者未记录；不能归因用户/OOM/其他项目，也不能把早14.46秒的worker信号归因为之后控制器停池。所有原进程已退出，旧queue为未刷新的历史状态。此前137 shard01 CUDA前资源不足已实际自动重派到attempt2，不能说自动恢复从未触发。
+
+用户随后明确“尽快恢复任务，同时排查异常信号来源”，授权V57独立控制目录 `automatic_recovery_01/signal_recovery_01/` 接续，科学ROOT、协议及全部绑定仍为原V56，旧停止marker/冻结包/未知exit不回写。已保留2054完整反馈、251下一题turn0已返回、UNKNOWN0，余46题；208完整class任务1421行，余1280题；1788新optimizer及12267评价剂量不变。137 feedback和shard00原accepted只读复用；389反馈完整结果缺旧waitpid，只允许新CPU收尾验证并真实exit0后开放依赖，不能补写旧exit0。251反馈、389反馈、137 shard01 attempt2三项旧缺失waitpid例外仅限本次精确身份，不扩成新未知退出通用自动接管。四并发/八卡、资源硬门及自动资源退避不变。新SIGTERM/SIGINT或STOP仍终止自动拉起，增加sender PID/UID/si_code观测而非忽略信号。实际启动状态见 `trusted_data_synthesis/docs/finqa_v57_signal_recovery_20261018.md`，准备/CPU通过不代表已恢复。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

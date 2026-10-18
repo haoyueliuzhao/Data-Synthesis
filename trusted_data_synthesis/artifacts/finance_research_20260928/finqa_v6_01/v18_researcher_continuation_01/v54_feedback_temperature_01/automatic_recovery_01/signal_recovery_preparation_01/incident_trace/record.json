@@ -1,0 +1,77 @@
+{
+  "schema": "v57_retrospective_signal_incident_trace.v1",
+  "observed_at": "2026-10-18T12:08:21.093586+00:00",
+  "scientific_protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "first_observed_worker_signal": {
+    "signal": 15,
+    "received_at_epoch": 1792323958.7113435,
+    "job_id": "seed137.shard02",
+    "evidence": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard02/attempts/attempt0001/failure/record.json",
+      "sha256": "30c0ed63228114a2844a08f4963550aba893d515fd133e7a4e832e12e281d504",
+      "id": "4f43ab9e1153d95621fce059db476708496944e04a537a7a4fb1553b5fc9424c"
+    }
+  },
+  "controller_stop_marker": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/control/stop_requested/record.json",
+    "sha256": "0a78e309eddac4f39b52d55922d33cfadd842ae4b1108620370e0c9ab1e0dd4f",
+    "id": "3340c7030479e01366329159fab412523827c1496d4c2938247c1c0819dca610"
+  },
+  "controller_SIGTERM_observed": true,
+  "stop_marker_epoch": 1792323973.1742222,
+  "worker_signal_precedes_marker_seconds": 14.462878704071045,
+  "controller_actual_exit": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/supervisor/attempts/attempt0001/actual_exit/record.json",
+    "sha256": "ace4ea123a47c008b247d40f7cdf5cd800a901f99315f2f4e93be643948eedc8",
+    "id": "0fbef4ab7978e47f32737c7eef01c347b4e068dc90dad29542b067f5e1955cf1"
+  },
+  "supervisor_closeout": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/supervisor/closeout/record.json",
+    "sha256": "489a5ae5c81f0e5dcae2ec7779b99a4eb1438ed397eb17075ebf49ea01e617a3",
+    "id": "45381008ad8fa847fc174ea2abaf1583a74376781992601591ba32f20b545b7c"
+  },
+  "controller_SIGKILL_observed_by_parent": true,
+  "first_SIGTERM_sender_pid": null,
+  "first_SIGTERM_sender_uid": null,
+  "SIGKILL_sender_pid": null,
+  "historical_sender_not_recorded": true,
+  "old_supervisor_has_no_controller_SIGKILL_branch": true,
+  "old_600_second_stop_grace_not_exhausted_at_controller_exit": true,
+  "observed_stopped_worker_scientific_resource_gates_passed": true,
+  "earlier_actual_resource_auto_retry": {
+    "decision": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0001/recovery_decisions/decision0001/record.json",
+      "sha256": "637c95af351c41eea96810d53f424cb0fb3231ddbb39b99bb9e47fa4c2ca6138",
+      "id": "bb34fd323bcc8f7f0b3a191d77ba88bbf9895a6f999c0e1aefb5698647b0e06a"
+    },
+    "next_actual_launch": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/stages/seed137/shard01/attempts/attempt0002/launch/record.json",
+      "sha256": "5640fccdc4240565ba4e03192b8ea0271d582926158e2d9cee25513d7f2f4f7b",
+      "id": "9b7f4c870690c48ab457246a13ea92e67c3f1b398dd31d845cd5e36dad429bc0"
+    }
+  },
+  "retrospective_search": {
+    "window_start": "2026-10-18T11:44:00Z",
+    "window_end": "2026-10-18T11:48:00Z",
+    "scope": "readable local execution-call records and target-PID shell-history matches",
+    "signal_sending_execution_call_found": false,
+    "indirect_monitor_template_inspected_and_read_only": true,
+    "target_PID_shell_history_match_found": false,
+    "complete_system_or_interactive_command_audit": false,
+    "private_unrelated_conversation_or_credentials_archived": false
+  },
+  "system_log_access": {
+    "journal": "user journal has no visible entries; system journal not accessible",
+    "kernel_log": "permission denied",
+    "system_log": "permission denied",
+    "noninteractive_sudo": "password required; no credentials requested or bypass attempted"
+  },
+  "documentation_reference": "https://learn.chatgpt.com/docs/reference/troubleshooting#feedback-and-logs",
+  "direct_cause": "received termination signals triggered the explicit-stop contract",
+  "attribution": "UNKNOWN; no claim about user, administrator, Codex, another project, or OOM",
+  "current_recovery_authorization": "尽快恢复任务，同时排查异常信号来源",
+  "old_record_rewritten": false,
+  "signal_sent_by_this_audit": false,
+  "model_or_API_calls": 0,
+  "id": "dbebfb9454a94156865ab3804d8f02037f59cdba45875e965c199bcaa50604bd"
+}
