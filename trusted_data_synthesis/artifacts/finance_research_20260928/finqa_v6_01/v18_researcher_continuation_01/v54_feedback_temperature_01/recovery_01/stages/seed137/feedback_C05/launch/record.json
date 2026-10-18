@@ -1,0 +1,67 @@
+{
+  "API_calls_in_controller": 0,
+  "CPU_initialization_wait_and_draining_count_as_workers": true,
+  "admission": {
+    "gpu": {
+      "free_mib": 50653,
+      "index": 2,
+      "memory_free_mib": 50653,
+      "processes": [
+        {
+          "pid": 2447819,
+          "used_memory_mib": "30492"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 30501,
+      "uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102"
+    },
+    "host": {
+      "available_bytes": 847410135040,
+      "live_worker_count": 0,
+      "required_bytes": 171798691840,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290287281,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-8febaca3405b21e63e75b2c2fcd5d4fbae83ea63bcd84e9be2b88970597f950d.lock",
+    "minimum_free_mib": 24576
+  },
+  "automatic_retry": false,
+  "birth": "473629344",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "0-37,76-113",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/implementation/finqa_v54_worker.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "feedback_C05",
+    "--gpu-index",
+    "2"
+  ],
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-88a33540-ff55-746e-d82b-45821b463102",
+  "id": "84047107b39df1877bc536482b29e8002a1b46024fb7f318efa718341a7bbf74",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed137.feedback_C05",
+    "job_id": "seed137.feedback_C05",
+    "kind": "feedback",
+    "memory_phase": "feedback",
+    "priority": 0,
+    "seed": 137,
+    "stage": "feedback_C05"
+  },
+  "pid": 3145614,
+  "protocol_id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f",
+  "schema": "v54_device_leased_stage_launch.v1",
+  "started_epoch": 1792311898.8033142,
+  "total_worker_count_after_dispatch": 1
+}

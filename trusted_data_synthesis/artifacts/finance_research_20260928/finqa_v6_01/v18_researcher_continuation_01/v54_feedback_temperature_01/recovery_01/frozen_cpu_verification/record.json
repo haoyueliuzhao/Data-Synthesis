@@ -1,0 +1,41 @@
+{
+  "schema": "v55_actual_frozen_CPU_prelaunch_verification.v1",
+  "at": "2026-10-18T08:24:16.676594+00:00",
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/implementation/record.json",
+    "sha256": "55d767a3f48991d803063ec2a90551b0962f64a0deea3148592b8b912205cc2b",
+    "id": "7d1889c638bac3f93e3fed85d422619e2df6c1363a62052fab79da7c93479e0a"
+  },
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/protocol/record.json",
+    "sha256": "8118887a61b34886143b133fe5a2912716dfcd189e54fb050a65d1876a3e82a0",
+    "id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f"
+  },
+  "prepared": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/prepared/record.json",
+    "sha256": "680f07f850de839a217b648d08a7901afe892c093d05a20e3db99a003866a922",
+    "id": "52509ab593601c8a126e32ece9261ede90f70a4240408565b6a595a1a1c10752"
+  },
+  "frozen_execution_modules": 10,
+  "original_scientific_files": 81,
+  "original_dependencies_hash_checked": true,
+  "actual_Controller_constructed_from_new_frozen_entry": true,
+  "CUDA_initialized": false,
+  "actual_new_optimizer_budget": 1788,
+  "core_jobs": 23,
+  "inherited_resource_wait_seconds": 89.84583379887044,
+  "request_reexecution_quotas": {
+    "137": 1,
+    "251": 0,
+    "389": 1
+  },
+  "claims_consumed": 0,
+  "scientific_controller_started": false,
+  "CPU_targeted_tests": {
+    "registration_and_controller": 13,
+    "request_guard": 8,
+    "interrupted_wait": 1
+  },
+  "no_historical_full_suite_repeated": true,
+  "id": "74ae1815450b112977151ef72549b30bd9c8a3f5c51bc2e4e53a21e7c310a510"
+}

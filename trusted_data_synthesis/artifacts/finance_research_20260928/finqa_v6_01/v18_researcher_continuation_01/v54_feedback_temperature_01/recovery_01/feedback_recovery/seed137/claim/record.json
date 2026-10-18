@@ -1,0 +1,30 @@
+{
+  "authorization_id": "1c5e5a4752535944a4db82d074a0a262e8792cd1813cfe6fc91d3ec383515492",
+  "authorized_reexecution_ordinal": 1,
+  "automatic_retry": false,
+  "claim_consumed_before_generate": true,
+  "claim_reset_allowed": false,
+  "claimed_epoch": 1792311997.5353239,
+  "condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+  "draw_seed": 11,
+  "id": "ffa0a6043fdb2823b63a64643bd321335acdd98b3146f646faca44220afafc30",
+  "old_failure_event": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/events/53c30485743331fd7b737728d2ea72f0ba56d6d0718a38c1de97744baf86fa98/000002/event.json",
+    "sha256": "b259959e7d0e19b5655e3aa81548da8d5bbfb90ea6fad471409e3379bee8706f"
+  },
+  "old_incomplete": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/incomplete/53c30485743331fd7b737728d2ea72f0ba56d6d0718a38c1de97744baf86fa98/record.json",
+    "sha256": "c3dd7223ef8d205ae69e2317db9ea1a0500968d62551500695395f93143f4b36"
+  },
+  "old_record_written": false,
+  "original_episode_key": "53c30485743331fd7b737728d2ea72f0ba56d6d0718a38c1de97744baf86fa98",
+  "original_task_id": "AMT/2012/page_121.pdf-1",
+  "parameter_digest": "8a5b51445752e9b5e9d7618b2bd6236f94949951438a3bbca28b953373194dab",
+  "pid": 3145614,
+  "point_id": "cdd993ca3b86ae10e79b3dc8dd6085225fc7f5665b2b13a31a57c415269a5989",
+  "protocol_id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f",
+  "schema": "v55_actual_single_request_reexecution_claim.v1",
+  "scientific_request_sha256": "8a0fbe0ad1d565ed1c6c274f4bda77e64f6af6cce0b95d045d734aee025a33d1",
+  "seed": 137,
+  "turn_index": 0
+}

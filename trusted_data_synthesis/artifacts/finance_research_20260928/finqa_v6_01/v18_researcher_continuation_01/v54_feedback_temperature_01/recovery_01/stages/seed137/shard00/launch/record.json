@@ -1,0 +1,67 @@
+{
+  "API_calls_in_controller": 0,
+  "CPU_initialization_wait_and_draining_count_as_workers": true,
+  "admission": {
+    "gpu": {
+      "free_mib": 54541,
+      "index": 6,
+      "memory_free_mib": 54541,
+      "processes": [
+        {
+          "pid": 3085471,
+          "used_memory_mib": "26604"
+        }
+      ],
+      "total_mib": 81920,
+      "used_mib": 26613,
+      "uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526"
+    },
+    "host": {
+      "available_bytes": 846733783040,
+      "live_worker_count": 3,
+      "required_bytes": 479790567424,
+      "reserve_bytes": 103079215104
+    },
+    "lease_inode": 5290289924,
+    "lease_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-06a72e8c72bc84fed61017dde1354a5d859725e982c7efc0de6a264470a09910.lock",
+    "minimum_free_mib": 24576
+  },
+  "automatic_retry": false,
+  "birth": "473629457",
+  "command": [
+    "/usr/bin/taskset",
+    "--cpu-list",
+    "38-75,114-151",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/implementation/finqa_v54_worker.py",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01",
+    "--seed",
+    "137",
+    "--stage",
+    "shard00",
+    "--gpu-index",
+    "6"
+  ],
+  "gpu_index": 6,
+  "gpu_uuid": "GPU-6cf85ebf-ae89-905b-5d97-46f83b295526",
+  "id": "bd09f078e5e7bbda69f877e4374e55cdfca4e3d4a814ca9193b4b246b81d8308",
+  "inherited_gpu_lease": true,
+  "job": {
+    "arm": null,
+    "dependencies": [],
+    "id": "seed137.shard00",
+    "job_id": "seed137.shard00",
+    "kind": "class",
+    "memory_phase": "class",
+    "priority": 4,
+    "seed": 137,
+    "stage": "shard00"
+  },
+  "pid": 3145653,
+  "protocol_id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f",
+  "schema": "v54_device_leased_stage_launch.v1",
+  "started_epoch": 1792311899.9332383,
+  "total_worker_count_after_dispatch": 4
+}

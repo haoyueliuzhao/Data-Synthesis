@@ -1,0 +1,3275 @@
+{
+  "schema": "v55_actual_four_worker_and_two_returned_requests.v1",
+  "at": "2026-10-18T08:28:40.976388+00:00",
+  "status": "RUNNING_TWO_AUTHORIZED_REQUESTS_RETURNED",
+  "source_commit": "bac464b49c",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/protocol/record.json",
+    "sha256": "8118887a61b34886143b133fe5a2912716dfcd189e54fb050a65d1876a3e82a0",
+    "id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f"
+  },
+  "implementation": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/implementation/record.json",
+    "sha256": "55d767a3f48991d803063ec2a90551b0962f64a0deea3148592b8b912205cc2b",
+    "id": "7d1889c638bac3f93e3fed85d422619e2df6c1363a62052fab79da7c93479e0a"
+  },
+  "prepared": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/prepared/record.json",
+    "sha256": "680f07f850de839a217b648d08a7901afe892c093d05a20e3db99a003866a922",
+    "id": "52509ab593601c8a126e32ece9261ede90f70a4240408565b6a595a1a1c10752"
+  },
+  "frozen_CPU_verification": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/frozen_cpu_verification/record.json",
+    "sha256": "1cf0ad36bdc79f39f5932796c7ff5569fb7f449cd5c77e406e4c2f339e5fefdf",
+    "id": "74ae1815450b112977151ef72549b30bd9c8a3f5c51bc2e4e53a21e7c310a510"
+  },
+  "controller_launch": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/launch/record.json",
+    "sha256": "63ffb08f9b80b91346c32fa2b3135bd66ebcaab3595d614968fb614e832b397d",
+    "id": "4bb03df5bdd84778f79acc39e0e08a14f852c782ffa5f2857b06aa90e67f81b6"
+  },
+  "observed_queue": {
+    "accepted_jobs": [],
+    "active_workers": [
+      {
+        "birth": "473629344",
+        "gpu_index": 2,
+        "job_id": "seed137.feedback_C05",
+        "lifecycle": "RUNNING",
+        "pid": 3145614
+      },
+      {
+        "birth": "473629386",
+        "gpu_index": 1,
+        "job_id": "seed251.feedback_C05",
+        "lifecycle": "RUNNING",
+        "pid": 3145623
+      },
+      {
+        "birth": "473629423",
+        "gpu_index": 4,
+        "job_id": "seed389.feedback_C05",
+        "lifecycle": "RUNNING",
+        "pid": 3145634
+      },
+      {
+        "birth": "473629457",
+        "gpu_index": 6,
+        "job_id": "seed137.shard00",
+        "lifecycle": "RUNNING",
+        "pid": 3145653
+      }
+    ],
+    "evaluation_registered": false,
+    "max_gpu_workers": 4,
+    "pending_jobs": [
+      "seed137.shard01",
+      "seed137.shard02",
+      "seed137.shard03",
+      "seed137.replay_C05",
+      "seed137.distribution_C05",
+      "seed137.train_Hold",
+      "seed137.train_C05",
+      "seed251.shard00",
+      "seed251.shard01",
+      "seed251.shard02",
+      "seed251.shard03",
+      "seed251.replay_C05",
+      "seed251.distribution_C05",
+      "seed251.train_Hold",
+      "seed251.train_C05",
+      "seed389.replay_C05",
+      "seed389.distribution_C05",
+      "seed389.train_Hold",
+      "seed389.train_C05"
+    ],
+    "protocol_id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f",
+    "resource_wait_seconds": 89.84583379887044,
+    "schema": "v54_controller_queue.v1",
+    "status": "RUNNING",
+    "stop_reason": null,
+    "updated_epoch": 1792312120.0550895
+  },
+  "maximum_GPU_workers": 4,
+  "workers": [
+    {
+      "birth": "473629344",
+      "gpu_index": 2,
+      "job_id": "seed137.feedback_C05",
+      "lifecycle": "RUNNING",
+      "pid": 3145614,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/launch/record.json",
+        "sha256": "a1e5cbd1fb86008eb0dc8e85b312449b13b713be80d6213ac36cbb1f08ae4671",
+        "id": "84047107b39df1877bc536482b29e8002a1b46024fb7f318efa718341a7bbf74"
+      },
+      "admission": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed137.feedback_C05/pid3145614/admission/record.json",
+        "sha256": "a1de99ba7a9bc3480a0acdc9ea3f3705937df81e342379174bbe83d951b0e615",
+        "id": "cc9a1c6b58ceecdd824228720988a88bceed0fd61045a6be0a4ee9153cfffd92"
+      },
+      "resource_log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed137.feedback_C05/pid3145614/observations.jsonl",
+      "resource_log_prefix_bytes": 17136,
+      "resource_log_prefix_sha256": "c061b28bfb74831af0897b46eb06490082ce0376a91b51ca97beb82b3ab56d63",
+      "observed_resources": [
+        {
+          "at": "2026-10-18T08:25:32.021739+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 2,
+          "free_bytes": 53113520128,
+          "required_bytes": 25769803776,
+          "host": {
+            "rss_bytes": 1947918336,
+            "peak_rss_bytes": 1966387200,
+            "available_bytes": 840871444480,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": false,
+          "elapsed_seconds": 0.18232743721455336
+        },
+        {
+          "at": "2026-10-18T08:25:32.824397+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 2,
+          "free_bytes": 52673511424,
+          "required_bytes": 22548578304,
+          "host": {
+            "rss_bytes": 1964105728,
+            "peak_rss_bytes": 1966387200,
+            "available_bytes": 840850284544,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": true,
+          "elapsed_seconds": 0.5262355105951428
+        },
+        {
+          "at": "2026-10-18T08:25:32.825621+00:00",
+          "label": "before_model_load",
+          "boundary": true,
+          "allocated_bytes": 0,
+          "reserved_bytes": 0,
+          "peak_allocated_bytes": 0,
+          "peak_reserved_bytes": 0,
+          "free_bytes": 52673511424,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2055008256,
+            "peak_rss_bytes": 2055008256,
+            "available_bytes": 840712404992,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:27.861742+00:00",
+          "label": "after_model_load.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 37309775872,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2379366400,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 829215207424,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:28.350515+00:00",
+          "label": "after_model_load.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15263072256,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 37330747392,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2379366400,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 828454912000,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:31.335749+00:00",
+          "label": "feedback.feedback_condition_registration",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 37309775872,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2539524096,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 823801802752,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:31.344999+00:00",
+          "label": "feedback.feedback_generation",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 37309775872,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2539524096,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 823765569536,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:37.512194+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 37309775872,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2739965952,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 807413936128,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:45.570808+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16242442240,
+          "peak_allocated_bytes": 15969913856,
+          "peak_reserved_bytes": 16242442240,
+          "free_bytes": 36307337216,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3362807808,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 793263222784,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:51.111993+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16645095424,
+          "peak_allocated_bytes": 16026261504,
+          "peak_reserved_bytes": 16645095424,
+          "free_bytes": 35904684032,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3364052992,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783849467904,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:58.105570+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16645095424,
+          "peak_allocated_bytes": 16026261504,
+          "peak_reserved_bytes": 16645095424,
+          "free_bytes": 35904684032,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3364052992,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 784026890240,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:03.650857+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16645095424,
+          "peak_allocated_bytes": 16026261504,
+          "peak_reserved_bytes": 16645095424,
+          "free_bytes": 35904684032,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3364052992,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783171424256,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:13.271774+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17079205888,
+          "peak_allocated_bytes": 16048226304,
+          "peak_reserved_bytes": 17079205888,
+          "free_bytes": 35470573568,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783151599616,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:19.900922+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17532190720,
+          "peak_allocated_bytes": 16114123776,
+          "peak_reserved_bytes": 17532190720,
+          "free_bytes": 35017588736,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783065530368,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:26.748992+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17532190720,
+          "peak_allocated_bytes": 16114123776,
+          "peak_reserved_bytes": 17532190720,
+          "free_bytes": 35017588736,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 782673108992,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:32.765816+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18016632832,
+          "peak_allocated_bytes": 16161404928,
+          "peak_reserved_bytes": 18016632832,
+          "free_bytes": 34533146624,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 784452050944,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:42.247699+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18016632832,
+          "peak_allocated_bytes": 16161404928,
+          "peak_reserved_bytes": 18016632832,
+          "free_bytes": 34533146624,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 784137961472,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:49.698484+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18016632832,
+          "peak_allocated_bytes": 16161404928,
+          "peak_reserved_bytes": 18016632832,
+          "free_bytes": 34533146624,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 782707146752,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:54.903489+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783522217984,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:00.809659+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783460036608,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:05.889600+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783449321472,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:12.749356+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783532802048,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:17.525645+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783382745088,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:24.777662+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783368298496,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:29.744109+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783434293248,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:35.626582+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18519949312,
+          "peak_allocated_bytes": 16202393600,
+          "peak_reserved_bytes": 18519949312,
+          "free_bytes": 34029830144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3365298176,
+            "peak_rss_bytes": 17525932032,
+            "available_bytes": 783454396416,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        }
+      ],
+      "observed_boundaries": 24,
+      "peak_allocated_bytes": 16202393600,
+      "minimum_boundary_free_bytes": 34029830144,
+      "all_observed_resource_gates_passed": true
+    },
+    {
+      "birth": "473629386",
+      "gpu_index": 1,
+      "job_id": "seed251.feedback_C05",
+      "lifecycle": "RUNNING",
+      "pid": 3145623,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/launch/record.json",
+        "sha256": "c65585546875ad4b2db2b0983fb9ba08d5cd7c7fdbd61757c48a8de24c49a4d4",
+        "id": "fa782a4ec82863da3222806e1e0cb25a6054ed7a46dfe78bf4a8a173523780a0"
+      },
+      "admission": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed251.feedback_C05/pid3145623/admission/record.json",
+        "sha256": "0b07257eb183e63069ff4fa046d58b25919a4530de677f9c61156750520f4a61",
+        "id": "a133b8866f6cad7bd68d4284b907dde6bc870f1f638a251dc80e46f71fca42e7"
+      },
+      "resource_log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed251.feedback_C05/pid3145623/observations.jsonl",
+      "resource_log_prefix_bytes": 17833,
+      "resource_log_prefix_sha256": "a9d05e7f2cce87858d063b82eeee642b6975fb533e190c6f5c569ae71920bf6d",
+      "observed_resources": [
+        {
+          "at": "2026-10-18T08:25:32.336352+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 1,
+          "free_bytes": 35426140160,
+          "required_bytes": 25769803776,
+          "host": {
+            "rss_bytes": 1944817664,
+            "peak_rss_bytes": 1966714880,
+            "available_bytes": 840804397056,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": false,
+          "elapsed_seconds": 0.21096970699727535
+        },
+        {
+          "at": "2026-10-18T08:25:33.346733+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 1,
+          "free_bytes": 34986131456,
+          "required_bytes": 22548578304,
+          "host": {
+            "rss_bytes": 1962250240,
+            "peak_rss_bytes": 1966714880,
+            "available_bytes": 840740192256,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": true,
+          "elapsed_seconds": 0.5848526014015079
+        },
+        {
+          "at": "2026-10-18T08:25:33.348214+00:00",
+          "label": "before_model_load",
+          "boundary": true,
+          "allocated_bytes": 0,
+          "reserved_bytes": 0,
+          "peak_allocated_bytes": 0,
+          "peak_reserved_bytes": 0,
+          "free_bytes": 34986131456,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2051903488,
+            "peak_rss_bytes": 2051903488,
+            "available_bytes": 840630636544,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:27.357929+00:00",
+          "label": "after_model_load.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 19622395904,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2367188992,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 830152179712,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:27.718809+00:00",
+          "label": "after_model_load.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15263072256,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 19643367424,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2367188992,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 829529538560,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:30.730980+00:00",
+          "label": "feedback.feedback_condition_registration",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 19622395904,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2529259520,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 825360429056,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:30.740248+00:00",
+          "label": "feedback.feedback_generation",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 19622395904,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2529259520,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 825326624768,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:36.616252+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 19622395904,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2721083392,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 809345257472,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:45.862967+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16265510912,
+          "peak_allocated_bytes": 15969913856,
+          "peak_reserved_bytes": 16265510912,
+          "free_bytes": 18596888576,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3332866048,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 791837536256,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:51.404249+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16674455552,
+          "peak_allocated_bytes": 16031471616,
+          "peak_reserved_bytes": 16674455552,
+          "free_bytes": 18187943936,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3334111232,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783841648640,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:58.225282+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16674455552,
+          "peak_allocated_bytes": 16031471616,
+          "peak_reserved_bytes": 16674455552,
+          "free_bytes": 18187943936,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3334111232,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 784020221952,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:03.723913+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16674455552,
+          "peak_allocated_bytes": 16031471616,
+          "peak_reserved_bytes": 16674455552,
+          "free_bytes": 18187943936,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3334111232,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783142465536,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:11.249539+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17089691648,
+          "peak_allocated_bytes": 16048226304,
+          "peak_reserved_bytes": 17089691648,
+          "free_bytes": 17772707840,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783250784256,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:17.001401+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17536385024,
+          "peak_allocated_bytes": 16103498752,
+          "peak_reserved_bytes": 17536385024,
+          "free_bytes": 17326014464,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783079927808,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:22.860094+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17989369856,
+          "peak_allocated_bytes": 16110154752,
+          "peak_reserved_bytes": 17989369856,
+          "free_bytes": 16873029632,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 782992011264,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:29.930567+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 784556847104,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:37.947618+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 784079863808,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:43.709386+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783980044288,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:49.153400+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783083347968,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:55.800277+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783482421248,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:00.908677+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783459479552,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:09.598829+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783497641984,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:15.690770+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783386308608,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:23.333497+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783331160064,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:29.161784+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783402508288,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:35.234688+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783432134656,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:39.133359+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18467520512,
+          "peak_allocated_bytes": 16160112640,
+          "peak_reserved_bytes": 18467520512,
+          "free_bytes": 16394878976,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3335356416,
+            "peak_rss_bytes": 17514590208,
+            "available_bytes": 783922176000,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        }
+      ],
+      "observed_boundaries": 25,
+      "peak_allocated_bytes": 16160112640,
+      "minimum_boundary_free_bytes": 16394878976,
+      "all_observed_resource_gates_passed": true
+    },
+    {
+      "birth": "473629423",
+      "gpu_index": 4,
+      "job_id": "seed389.feedback_C05",
+      "lifecycle": "RUNNING",
+      "pid": 3145634,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/launch/record.json",
+        "sha256": "7d0d942e54607947d5bbf0aa2b808ad501ec610125fb99e922cb9a81ec567d26",
+        "id": "34ffd20c39183b311edd95311609c04766d7ca6a1972e7297a7a25b9219fb232"
+      },
+      "admission": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed389.feedback_C05/pid3145634/admission/record.json",
+        "sha256": "cfad04563f831d1ea8f03bfc47941c0f1f63f040b96b84d846438042970c207f",
+        "id": "c26b0723a80d5c48ac091c5cb2aeb988d9d69619c5d1eb6816b399b0555ad740"
+      },
+      "resource_log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed389.feedback_C05/pid3145634/observations.jsonl",
+      "resource_log_prefix_bytes": 17832,
+      "resource_log_prefix_sha256": "32d0d0cf32b03cf1f7a800508a55ed3e9b1db32bf4fada997fe8e29b5f707c2d",
+      "observed_resources": [
+        {
+          "at": "2026-10-18T08:25:32.917457+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 4,
+          "free_bytes": 60545826816,
+          "required_bytes": 25769803776,
+          "host": {
+            "rss_bytes": 1951490048,
+            "peak_rss_bytes": 1969319936,
+            "available_bytes": 840730025984,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": false,
+          "elapsed_seconds": 0.2391911819577217
+        },
+        {
+          "at": "2026-10-18T08:25:33.983241+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 4,
+          "free_bytes": 60105818112,
+          "required_bytes": 22548578304,
+          "host": {
+            "rss_bytes": 1967677440,
+            "peak_rss_bytes": 1969319936,
+            "available_bytes": 840628703232,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": true,
+          "elapsed_seconds": 0.5735083036124706
+        },
+        {
+          "at": "2026-10-18T08:25:33.984008+00:00",
+          "label": "before_model_load",
+          "boundary": true,
+          "allocated_bytes": 0,
+          "reserved_bytes": 0,
+          "peak_allocated_bytes": 0,
+          "peak_reserved_bytes": 0,
+          "free_bytes": 60105818112,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2058575872,
+            "peak_rss_bytes": 2058575872,
+            "available_bytes": 840525066240,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:29.599693+00:00",
+          "label": "after_model_load.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 44742082560,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2404306944,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 826886103040,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:29.962808+00:00",
+          "label": "after_model_load.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15263072256,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 44763054080,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2404306944,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 826954076160,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:33.042797+00:00",
+          "label": "feedback.feedback_condition_registration",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 44742082560,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2561761280,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 820128030720,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:33.049685+00:00",
+          "label": "feedback.feedback_generation",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 44742082560,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2561761280,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 820104130560,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": null
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:39.398451+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15282745344,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 62142152704,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2759081984,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 804880338944,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:49.384766+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16269705216,
+          "peak_allocated_bytes": 15969913856,
+          "peak_reserved_bytes": 16269705216,
+          "free_bytes": 61112451072,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3382013952,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 786054152192,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:55.153094+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16678649856,
+          "peak_allocated_bytes": 16036584448,
+          "peak_reserved_bytes": 16678649856,
+          "free_bytes": 60703506432,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3383259136,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783660892160,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:02.275841+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16678649856,
+          "peak_allocated_bytes": 16036584448,
+          "peak_reserved_bytes": 16678649856,
+          "free_bytes": 60703506432,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3383259136,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783481880576,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:06.881574+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 16678649856,
+          "peak_allocated_bytes": 16036584448,
+          "peak_reserved_bytes": 16678649856,
+          "free_bytes": 60703506432,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3383259136,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783520550912,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:13.984930+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17093885952,
+          "peak_allocated_bytes": 16048226304,
+          "peak_reserved_bytes": 17093885952,
+          "free_bytes": 60288270336,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783184719872,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:19.849229+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17540579328,
+          "peak_allocated_bytes": 16103543808,
+          "peak_reserved_bytes": 17540579328,
+          "free_bytes": 59841576960,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783069507584,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:25.785744+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 17993564160,
+          "peak_allocated_bytes": 16110154752,
+          "peak_reserved_bytes": 17993564160,
+          "free_bytes": 59388592128,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 782445899776,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:30.585875+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18478006272,
+          "peak_allocated_bytes": 16161760256,
+          "peak_reserved_bytes": 18478006272,
+          "free_bytes": 58904150016,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 784499929088,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:37.543911+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18478006272,
+          "peak_allocated_bytes": 16161760256,
+          "peak_reserved_bytes": 18478006272,
+          "free_bytes": 58904150016,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 784130220032,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:42.284779+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18478006272,
+          "peak_allocated_bytes": 16161760256,
+          "peak_reserved_bytes": 18478006272,
+          "free_bytes": 58904150016,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 784129867776,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:47.701643+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18478006272,
+          "peak_allocated_bytes": 16161760256,
+          "peak_reserved_bytes": 18478006272,
+          "free_bytes": 58904150016,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783842148352,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:53.218789+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 58400833536,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783074582528,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:58.750488+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 58400833536,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783435067392,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:03.963398+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 58400833536,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783478980608,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:11.216766+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 58400833536,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783506149376,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:17.366745+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 30263345152,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783383298048,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:27.802169+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 30263345152,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783398670336,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:33.198584+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 30242373632,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783458668544,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:39.293595+00:00",
+          "label": "feedback.before_actual_feedback_call",
+          "boundary": true,
+          "allocated_bytes": 15316299776,
+          "reserved_bytes": 18981322752,
+          "peak_allocated_bytes": 16195686400,
+          "peak_reserved_bytes": 18981322752,
+          "free_bytes": 30236082176,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 3384504320,
+            "peak_rss_bytes": 17553260544,
+            "available_bytes": 783918809088,
+            "rss_limit_bytes": 206158430208,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "feedback_condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+            "draw_seed": 11
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        }
+      ],
+      "observed_boundaries": 25,
+      "peak_allocated_bytes": 16195686400,
+      "minimum_boundary_free_bytes": 30236082176,
+      "all_observed_resource_gates_passed": true
+    },
+    {
+      "birth": "473629457",
+      "gpu_index": 6,
+      "job_id": "seed137.shard00",
+      "lifecycle": "RUNNING",
+      "pid": 3145653,
+      "launch": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/shard00/launch/record.json",
+        "sha256": "e3065db898246f8bcba788df5c3224839bc2edcbd4063556c80df7920fdadad1",
+        "id": "bd09f078e5e7bbda69f877e4374e55cdfca4e3d4a814ca9193b4b246b81d8308"
+      },
+      "admission": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed137.shard00/pid3145653/admission/record.json",
+        "sha256": "f41b1a6cb4f965d9f8618dfe563f21ec0d55a67092baee43778cbc587afec327",
+        "id": "cfb3dc8217134a5a5323c546aafe5a82a4f6052443b4a89bc5302b0080365462"
+      },
+      "resource_log_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/resources/seed137.shard00/pid3145653/observations.jsonl",
+      "resource_log_prefix_bytes": 19678,
+      "resource_log_prefix_sha256": "20f3595b01cb677afb0a9c811217e45efd6ba69e228315b07493b450c49be73f",
+      "observed_resources": [
+        {
+          "at": "2026-10-18T08:25:33.452672+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 6,
+          "free_bytes": 57190383616,
+          "required_bytes": 25769803776,
+          "host": {
+            "rss_bytes": 1947799552,
+            "peak_rss_bytes": 1967906816,
+            "available_bytes": 840602914816,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": false,
+          "elapsed_seconds": 0.22653108835220337
+        },
+        {
+          "at": "2026-10-18T08:25:34.394625+00:00",
+          "event": "resource_admitted",
+          "gpu_index": 6,
+          "free_bytes": 56750374912,
+          "required_bytes": 22548578304,
+          "host": {
+            "rss_bytes": 1965232128,
+            "peak_rss_bytes": 1967906816,
+            "available_bytes": 840517922816,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "cuda_initialized": true,
+          "elapsed_seconds": 0.46963229961693287
+        },
+        {
+          "at": "2026-10-18T08:25:34.395395+00:00",
+          "label": "before_model_load",
+          "boundary": true,
+          "allocated_bytes": 0,
+          "reserved_bytes": 0,
+          "peak_allocated_bytes": 0,
+          "peak_reserved_bytes": 0,
+          "free_bytes": 56750374912,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2056146944,
+            "peak_rss_bytes": 2056146944,
+            "available_bytes": 840576770048,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:29.822133+00:00",
+          "label": "after_model_load.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15284043776,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 41386639360,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2379288576,
+            "peak_rss_bytes": 17529106432,
+            "available_bytes": 826901823488,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:30.193059+00:00",
+          "label": "after_model_load.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15262560256,
+          "reserved_bytes": 15263072256,
+          "peak_allocated_bytes": 15282745856,
+          "peak_reserved_bytes": 15284043776,
+          "free_bytes": 41407610880,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 2379288576,
+            "peak_rss_bytes": 17529106432,
+            "available_bytes": 826527563776,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:52.671697+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15405529600,
+          "reserved_bytes": 16592666624,
+          "peak_allocated_bytes": 16232236032,
+          "peak_reserved_bytes": 16592666624,
+          "free_bytes": 39929118720,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 39833411584,
+            "peak_rss_bytes": 39833411584,
+            "available_bytes": 783720341504,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:74ab82d394cd21ba0d58420e97be017cdfa99eff5001d41d20249cc7d07f0f20",
+            "package_row": 0,
+            "completed_rows": 1
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:26:59.333747+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15397347840,
+          "reserved_bytes": 17523802112,
+          "peak_allocated_bytes": 16278305792,
+          "peak_reserved_bytes": 17523802112,
+          "free_bytes": 38995886080,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40107352064,
+            "peak_rss_bytes": 40107352064,
+            "available_bytes": 783990853632,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:74ab82d394cd21ba0d58420e97be017cdfa99eff5001d41d20249cc7d07f0f20",
+            "package_row": 1,
+            "completed_rows": 2
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:05.679704+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15411445760,
+          "reserved_bytes": 17523802112,
+          "peak_allocated_bytes": 16278305792,
+          "peak_reserved_bytes": 17523802112,
+          "free_bytes": 38995886080,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40107352064,
+            "peak_rss_bytes": 40107352064,
+            "available_bytes": 783705739264,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:c26d012b75137007fa180d29baf3e756b97fc15b88ddbd0856be0b57ca195aa3",
+            "package_row": 0,
+            "completed_rows": 3
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:12.834869+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15399040512,
+          "reserved_bytes": 18033410048,
+          "peak_allocated_bytes": 16282931200,
+          "peak_reserved_bytes": 18033410048,
+          "free_bytes": 38486278144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40107352064,
+            "peak_rss_bytes": 40107352064,
+            "available_bytes": 783169134592,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:c26d012b75137007fa180d29baf3e756b97fc15b88ddbd0856be0b57ca195aa3",
+            "package_row": 1,
+            "completed_rows": 4
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:18.661209+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15411141632,
+          "reserved_bytes": 18033410048,
+          "peak_allocated_bytes": 16282931200,
+          "peak_reserved_bytes": 18033410048,
+          "free_bytes": 38486278144,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40107352064,
+            "peak_rss_bytes": 40107352064,
+            "available_bytes": 783069573120,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:4d08653d50168ec88b652e9de02e171052e5c3a3493667e45d332ed9bd8a2745",
+            "package_row": 0,
+            "completed_rows": 5
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:24.966828+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15413093376,
+          "reserved_bytes": 18813550592,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 37706137600,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40107352064,
+            "peak_rss_bytes": 40107352064,
+            "available_bytes": 782436126720,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:4d08653d50168ec88b652e9de02e171052e5c3a3493667e45d332ed9bd8a2745",
+            "package_row": 1,
+            "completed_rows": 6
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:25.130142+00:00",
+          "label": "complete_class_task.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 18813550592,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 37706137600,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40117313536,
+            "peak_rss_bytes": 40117313536,
+            "available_bytes": 782741848064,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:25.596987+00:00",
+          "label": "complete_class_task.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 15357444096,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 41162244096,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40117313536,
+            "peak_rss_bytes": 40117313536,
+            "available_bytes": 782917799936,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:31.955956+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15404116480,
+          "reserved_bytes": 16796090368,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39723597824,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40138481664,
+            "peak_rss_bytes": 40138481664,
+            "available_bytes": 784477798400,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:e2ac8f45f5b17efab44ba4a82e3f8263a1e30bb452f6c2ea9051a986e4ce9fd3",
+            "package_row": 0,
+            "completed_rows": 1
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:38.694402+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15400617472,
+          "reserved_bytes": 17744003072,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38775685120,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40138481664,
+            "peak_rss_bytes": 40138481664,
+            "available_bytes": 784088887296,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:e2ac8f45f5b17efab44ba4a82e3f8263a1e30bb452f6c2ea9051a986e4ce9fd3",
+            "package_row": 1,
+            "completed_rows": 2
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:38.836274+00:00",
+          "label": "complete_class_task.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 17744003072,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38775685120,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40138481664,
+            "peak_rss_bytes": 40138481664,
+            "available_bytes": 784087613440,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:39.338436+00:00",
+          "label": "complete_class_task.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 15357444096,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 41162244096,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40138481664,
+            "peak_rss_bytes": 40138481664,
+            "available_bytes": 784056410112,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:45.837403+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15381624832,
+          "reserved_bytes": 16565403648,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39954284544,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 783809011712,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:e06d0c6cfc5b38b2763774b6bad8515e6118b120c4ec955962c534d8d8716378",
+            "package_row": 0,
+            "completed_rows": 1
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:52.183112+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15399071232,
+          "reserved_bytes": 17456693248,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39062994944,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 782608007168,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:e06d0c6cfc5b38b2763774b6bad8515e6118b120c4ec955962c534d8d8716378",
+            "package_row": 1,
+            "completed_rows": 2
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:27:58.372196+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15400786432,
+          "reserved_bytes": 17456693248,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39062994944,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 783435665408,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:2e124a3b5abc678e8e0a25bf93aea0d86f6d5f10875890d5078bfaeb03cd136f",
+            "package_row": 0,
+            "completed_rows": 3
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:04.585712+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15399212032,
+          "reserved_bytes": 18190696448,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38328991744,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 783488286720,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:2e124a3b5abc678e8e0a25bf93aea0d86f6d5f10875890d5078bfaeb03cd136f",
+            "package_row": 1,
+            "completed_rows": 4
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:04.732140+00:00",
+          "label": "complete_class_task.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 18190696448,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38328991744,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 783493758976,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:05.164432+00:00",
+          "label": "complete_class_task.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 15357444096,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 41162244096,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40565579776,
+            "peak_rss_bytes": 40565579776,
+            "available_bytes": 783476563968,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:10.497227+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15391692288,
+          "reserved_bytes": 16498294784,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 40021393408,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40570560512,
+            "peak_rss_bytes": 40570560512,
+            "available_bytes": 783506063360,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:b28b9fcfe574ebbea83876615fa26c35587aa4fb855780777464760a4acb5c57",
+            "package_row": 0,
+            "completed_rows": 1
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:15.870043+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15384248832,
+          "reserved_bytes": 17341349888,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39178338304,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40571805696,
+            "peak_rss_bytes": 40571805696,
+            "available_bytes": 783323353088,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:b28b9fcfe574ebbea83876615fa26c35587aa4fb855780777464760a4acb5c57",
+            "package_row": 1,
+            "completed_rows": 2
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:21.373671+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15387738112,
+          "reserved_bytes": 17341349888,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39178338304,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40571805696,
+            "peak_rss_bytes": 40571805696,
+            "available_bytes": 783251136512,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:91057ec6e6ee24314aed511c9affda09187c46b1705ff7bb4e164575d72e439b",
+            "package_row": 0,
+            "completed_rows": 3
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:26.337619+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15389116928,
+          "reserved_bytes": 17341349888,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39178338304,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40571805696,
+            "peak_rss_bytes": 40571805696,
+            "available_bytes": 783373832192,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:91057ec6e6ee24314aed511c9affda09187c46b1705ff7bb4e164575d72e439b",
+            "package_row": 1,
+            "completed_rows": 4
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:31.031057+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15395341824,
+          "reserved_bytes": 17341349888,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 39178338304,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40571805696,
+            "peak_rss_bytes": 40571805696,
+            "available_bytes": 783449079808,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:867ed442fc1f188b370b98d925f763a82dbd67a8ea12cd475efe8d2e4ce6988d",
+            "package_row": 0,
+            "completed_rows": 5
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:36.005679+00:00",
+          "label": "class_row_end",
+          "boundary": true,
+          "allocated_bytes": 15392698368,
+          "reserved_bytes": 18035507200,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38484180992,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40571805696,
+            "peak_rss_bytes": 40571805696,
+            "available_bytes": 783469412352,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {
+            "package_id": "v10gen:867ed442fc1f188b370b98d925f763a82dbd67a8ea12cd475efe8d2e4ce6988d",
+            "package_row": 1,
+            "completed_rows": 6
+          },
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:36.146506+00:00",
+          "label": "complete_class_task.before_cleanup",
+          "boundary": false,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 18035507200,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 38484180992,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40573050880,
+            "peak_rss_bytes": 40573050880,
+            "available_bytes": 783457771520,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        },
+        {
+          "at": "2026-10-18T08:28:36.520287+00:00",
+          "label": "complete_class_task.after_cleanup",
+          "boundary": true,
+          "allocated_bytes": 15329669120,
+          "reserved_bytes": 15357444096,
+          "peak_allocated_bytes": 16306972160,
+          "peak_reserved_bytes": 18813550592,
+          "free_bytes": 41162244096,
+          "total_bytes": 85095874560,
+          "host": {
+            "rss_bytes": 40573050880,
+            "peak_rss_bytes": 40573050880,
+            "available_bytes": 783413977088,
+            "rss_limit_bytes": 171798691840,
+            "available_reserve_bytes": 103079215104,
+            "passed": true
+          },
+          "stop_requested": false,
+          "context": {},
+          "allocated_pass": true,
+          "free_pass": true,
+          "passed": true
+        }
+      ],
+      "observed_boundaries": 29,
+      "peak_allocated_bytes": 16306972160,
+      "minimum_boundary_free_bytes": 37706137600,
+      "all_observed_resource_gates_passed": true
+    }
+  ],
+  "authorized_reexecution_returns": {
+    "137": {
+      "claim": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/feedback_recovery/seed137/claim/record.json",
+        "sha256": "86be5456c45b319102f2df043ada24451eab84dfa26077004737063532799ecd",
+        "id": "ffa0a6043fdb2823b63a64643bd321335acdd98b3146f646faca44220afafc30"
+      },
+      "resolution": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/feedback_recovery/seed137/resolution/record.json",
+        "sha256": "3a41d8303dd693a46ba6487bbfd38df684d05d66d513f954ca0b8f587d522aec",
+        "id": "8f8db9e72903ec1b055e263dabc0d840dc9446df9516567697859aee1a380583"
+      },
+      "condition_id": "ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1",
+      "returned_generated_tokens": 162,
+      "temperature": 0.5,
+      "new_actual_model_calls": 1,
+      "old_unknown_preserved": true,
+      "whole_episode_complete_not_inferred_from_receipt": true
+    },
+    "389": {
+      "claim": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/feedback_recovery/seed389/claim/record.json",
+        "sha256": "0ddaf831f5eb09741d83b3be38d5fef832873ab17a83418293a908efa42d774f",
+        "id": "75dedcb66c83b5bf998796ff71d796b91e8c30e30419634c759b4bb5741a9447"
+      },
+      "resolution": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/feedback_recovery/seed389/resolution/record.json",
+        "sha256": "ea772afd6cc7f1c82351cd76fc60d87d8fd01cfa77c7da4bb2455d7026ab21a4",
+        "id": "20347a1a26a76920f4070a25deb547428e04c2eea907e837087b75afc81bdf2d"
+      },
+      "condition_id": "4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb",
+      "returned_generated_tokens": 201,
+      "temperature": 0.5,
+      "new_actual_model_calls": 1,
+      "old_unknown_preserved": true,
+      "whole_episode_complete_not_inferred_from_receipt": true
+    }
+  },
+  "feedback_progress": {
+    "137": {
+      "complete_feedback_episodes": 10,
+      "episode_files": [
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/00299d1f9b4fb56b07caaa6d75e8af98375a2600841db073df82d8064bb4e9bd/episode.json",
+          "sha256": "12d31c48dcd4094179937b79648d72ac4ac116b0a3388ce5f64fc9a60d776369"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/027c0673fef42d89b1f031a9b207a9c2dc09366fa9224f5f9ba451a9cc792733/episode.json",
+          "sha256": "e2d1ac6fce83ac6b7faa623d34fea35cd5e6e5dff352d7fbeea02367e833ecb4"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/53c30485743331fd7b737728d2ea72f0ba56d6d0718a38c1de97744baf86fa98/episode.json",
+          "sha256": "f4a1fe23221f040ee471fba1877aad27a6d4808d838280603d80f1999b4db86d"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/7650f1d2d6a92c3cd71f6e67319db0d2b09d5f5773a05be3f7b0709699070ad8/episode.json",
+          "sha256": "7cf955596174e3019bcae21700ecd98e1c3820eaf1097ac24d3619ef8d210646"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/7d212096746c7c3d31da65c47f8ac4d0e3514ada02ad5f80520ffcd0db83c5ce/episode.json",
+          "sha256": "731aefb3030a252f506a2fc79b8bed5d7b81e8da35c24f1c27975b08f0dd1226"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/800981943de2824e86dd5119ef273e33afdf6650bcb07e7d6d7d7cc3b1ddf64a/episode.json",
+          "sha256": "936e8279e72daa9921bdf60cbebebc779a3ef21bd9ced62a6514f255e7a0fdf9"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/8a5e9c1b3f50df2c2c68ffc6d0191dcca22868b0213dabb4d9827636de557cae/episode.json",
+          "sha256": "5f434b4a928722ac5b36f5b21cde44daedc1c4dbc217436986dce1b5c633e6c6"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/9245c110682d2a34bb8003c42c117d1c7b01b4e70b4d6194b2ba8134f2170a91/episode.json",
+          "sha256": "2692365620778c3dd7a29916fb582fec8000846734326ccd228d2477df0ae1b4"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/b4b711f2ec6805fe7fd566efef6609bb1adf370a6524396dfe8493d3622f8924/episode.json",
+          "sha256": "09c16396568eaf12b4d8e0ca3011e3232c906c0fb09880832f2c9043b87a686f"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed137/feedback_C05/feedback/ecf64c78bcd6c952a228f61936479b1e290e6d20a205b8cf4125ab7468eb1fd1/draw0/episodes/e6b1a1e9f4e8a14bfc5284c5774e3977adaa40e8127cb17c91d73f483143dd87/episode.json",
+          "sha256": "6ab0f2890cc42591fb9402bac3757f7df2939e43ea9c8319d378500a5b26f017"
+        }
+      ],
+      "full_cohort_sealed": false
+    },
+    "251": {
+      "complete_feedback_episodes": 10,
+      "episode_files": [
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/72235c83b9da31a810379051eaaa7aefd536c8b02c172fbbe5ca76882103adcc/episode.json",
+          "sha256": "cdbfde36fe9ee5ae3ed4eb5465050d749efec0d870e85d20736758a82c923f9b"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/77be3b12c053d1377c5a6896ae732ed88750008071540817d22d9eebf1737e3e/episode.json",
+          "sha256": "bf1346778e5b9b32ac6b2ab34cc0e467e51e2b2e36b2082bb2ff4c16f1ef47a3"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/973c68583771df1bde34a0409b8122d2e432eb25bc50ce37b31e5ec8012c08e8/episode.json",
+          "sha256": "18f5ce367fb526877167260fa33742ee3fdc6290154965fdd8f3302b9a668ebf"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/a42417102ae435dad06ff21aa8aab6ca51b05b43733c07630622f3bbb831716c/episode.json",
+          "sha256": "afd5ee799139a9b9c57731dd332315e85bb9b1996db338d697fada91d7fbb4c6"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/a7b21191b7cea43846f189f51d91212e558b605ade2acf1399826688516d8064/episode.json",
+          "sha256": "a75a86bde431b1badc477621ffcd295526162a3dac6757caef8d3e9fcc4c55fb"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/aead1912dd5055d9a1fe991362f381952c1a8659bf5fec82ee5e58a7182ab9df/episode.json",
+          "sha256": "75c09fb0c5ffd8848a0501c6bd0602ccd2f3dff6812af85cce878c4118bdb786"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/b055467209e34d74aee2d26a8284d4e9042ad3077ce6c42de30009f36eb2b1a1/episode.json",
+          "sha256": "592fb3845cf76bc33be7b14ebe66d057c2a009df3356db68badd1145a61b8858"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/b9e6f115ad44090bfd6fd6f458ce51d776154c23644a538ebe7b7c3d9d1d7508/episode.json",
+          "sha256": "d03dc81d162a5cca5db9f9c4983c22838bc5d853605fbb6c194a62087867f8e5"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/ba4da552359c43218cef26707c77db302b1b9bff973aa1bbf3c9bf52ba99c535/episode.json",
+          "sha256": "83ad871bcbcbf38f5e7466019b0f9db6d5527987b1be783240118270c1cbb42e"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed251/feedback_C05/feedback/503df5a9bdf5ee1ce05580e7fc16af9edbc9f7b429e6e9df8b53defb43931644/draw0/episodes/e1c840d8e457c8de91b55b98980c73d87a4101cdc1cab7318098cc01120a03a3/episode.json",
+          "sha256": "87950b665ec44646c60c761d9e186ab7bc6c505c3244cc31098d31f3aac8719f"
+        }
+      ],
+      "full_cohort_sealed": false
+    },
+    "389": {
+      "complete_feedback_episodes": 9,
+      "episode_files": [
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/0b85558f02bdeac723485da4c0ddd043d5e33ac06a6239cf433fa2ce57225602/episode.json",
+          "sha256": "c3ce2375623fcba7303886ea7e7663d48bb638ca4cdf01009b8be7df4c16d47c"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/16ad33ea323d927b4fe0875c89764ec4311107ca08e00a07dbfcc6cc5ca83863/episode.json",
+          "sha256": "6157a5a5a471e2a2e9456fb5f7b8412cbfb775e82ec0fa829bf1ae73793fdf88"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/1a47765a0b7276a93a066a45519a6d67e196735daa07141cbfe98eecd22616cc/episode.json",
+          "sha256": "60c002e13ae28b76f94a9b144415f9999393dcc8e657d19eccb4ce747f5d6905"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/2aa77c66eed342402caa2e027f0b1fc58d5b8207a98fa24495cb4d996b2444ef/episode.json",
+          "sha256": "ecd4ea687de2dac1109c7a6a9b95e52d73f0d6738b807e830313b1f81910e382"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/49bb0f5c2ea2b8084d9d667c5034287013cdc11e73582808d76a1c76e1d45cde/episode.json",
+          "sha256": "c53ae48b839c95f042a0aac80482720b330af01c3c5d93ea34a11e3785dfa6dc"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/4fc845be3feee612e2c7820edc852234a88797cd7cc05082d71ac52345fa521f/episode.json",
+          "sha256": "4223fc17d1bc7e932528d5e1856d0431179deca0941c44a7d400b87a61599b1d"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/85d42ac5489b19a88835cd75303f7020a9ea513b22d16e81fd82a13d192b8963/episode.json",
+          "sha256": "c143d6e1c2525c2f6bdded1230363bf55863f580ec83a336ac5d176d2f4b64e7"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/9741de41bfc3279095b8184a5b9d3adc83a0615897b4dc70a12ba3ccbb2ff66e/episode.json",
+          "sha256": "d039b2b28e1d4beceb8af9beaed61376ca61f67f0ec36ce25fc5b61138d182bb"
+        },
+        {
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/stages/seed389/feedback_C05/feedback/4c15c1661ea18e226e034605499fd176f0f9e6c73739f250b66f56bfe8a94abb/draw0/episodes/ae87389fbf40c3f94d4dc06cb00bc22cb092b0b25cada7b11ecfff873f7255ed/episode.json",
+          "sha256": "d1e38b09c86ccaa0644eaf946b706edd0569074d1d54b4727716619fb22cc8b6"
+        }
+      ],
+      "full_cohort_sealed": false
+    }
+  },
+  "new_complete_class_tasks_seed137": 4,
+  "new_complete_task_records": [
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed137/task_cache/task0002/record.json",
+      "sha256": "107c86d71d91c29e846c4e5031598b64887e4debb549f8f85f053d94aaa6a3c3"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed137/task_cache/task0007/record.json",
+      "sha256": "09b102fee5dfada708376466a12b4040c70f403b2f8740d7bcb8660bb4a4135e"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed137/task_cache/task0008/record.json",
+      "sha256": "f7383a2ea022198458a7674402f64b39b0f0b12f2e9862db4ea85eafad192420"
+    },
+    {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed137/task_cache/task0015/record.json",
+      "sha256": "a308f7db7813f0c1de92d0cb8c07321c48e1b8bf484fb034601d4ee681040c10"
+    }
+  ],
+  "old_UNKNOWN_records_unmodified": true,
+  "historical_failure_not_reclassified": true,
+  "actual_new_optimizer_updates": 0,
+  "evaluation_started": false,
+  "entire_experiment_complete": false,
+  "scientific_workers_still_running": true,
+  "id": "707304a2b3b0c6ce26ed32b7368df9161bca3cf4dae8129cbe0306a08414c590"
+}

@@ -176,6 +176,8 @@ V54已以源提交 `58240ac877` 冻结89文件，实施包 `d3ffbe95fa28c5881c44
 
 V55首次准备以提交 `b812c803f6` 在创建 `recovery_01` 前被依赖SHA门拒绝：生命周期身份读取引入历史控制器别名，与原81包的同名文件产生扫描冲突。已修正为先完整科学加载和依赖绑定，再读取原进程身份，不放宽源码hash；精确CLI顺序CPU核验通过，CUDA未初始化。该准备没有新protocol/worker/claim/模型调用，不消耗两条授权额度，拒绝证据在 `recovery_preparation_01/rejection/record.json`。原科学失败不改写，尚未创建的新恢复目录仍可按本次明确授权首次冻结和启动。
 
+V55已以源提交 `bac464b49c` 冻结91文件，实施包 `7d1889c638bac3f93e3fed85d422619e2df6c1363a62052fab79da7c93479e0a`、协议 `4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f`，22项必要CPU/mock及正式冻结入口核验通过。唯一控制器于2026-10-18 16:24:55北京启动，PID3145579/birth473629006；GPU2/1/4分别派发137/251/389低温反馈，GPU6派发137 shard00，总4worker已实际生效。16:28:40两条获批重新执行都已claim并真实返回receipt，旧UNKNOWN hash不变、各额度已消耗一次；完整反馈分别10/10/9条，137新增4份完整任务梯度，已观测资源门通过。新增optimizer仍0、cohort未齐、评估未开始，不称整轮通过。启动证据 `recovery_01/startup_verification/record.json` ID `707304a2b3b0c6ce26ed32b7368df9161bca3cf4dae8129cbe0306a08414c590`；后续看新根queue/status与feedback_recovery，不得重复启动旧/新控制器，不能把已用的两次授权再发放。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

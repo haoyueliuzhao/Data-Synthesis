@@ -1,0 +1,67 @@
+{
+  "schema": "v55_three_inherited_parent_ready.v1",
+  "at": "2026-10-18T08:23:15.866184+00:00",
+  "protocol": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/protocol/record.json",
+    "sha256": "8118887a61b34886143b133fe5a2912716dfcd189e54fb050a65d1876a3e82a0",
+    "id": "4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f"
+  },
+  "original_prepared": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/prepared/record.json",
+    "sha256": "aac01c31373a1f8c542c0a05ae5188dd38ced913832bdbfbed543c4e914c03ef",
+    "id": "32de8dbfcf97acb7ffd487312f8ad62878ced8e9b2b76ba193b3aa4f8708865f"
+  },
+  "parents": {
+    "137": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed137/record.json",
+      "sha256": "462cb1daa082f677bfffd047df06978705507cfa540cbc8cc15ff361100d9809",
+      "id": "c617361f593e51e9a9ba32ee6a4e3d5e3620c24c4a4d0a179fe937d92b2adab1"
+    },
+    "251": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed251/record.json",
+      "sha256": "ce0272c785c8a53459a86277211d43fa34bbd84fb12daad24aa74dd1221e1236",
+      "id": "73e7351e2f5df34450046ebf55558f9470fbb2657ed7fc7bd0bf922122575e90"
+    },
+    "389": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/parents/seed389/record.json",
+      "sha256": "caab1e17136a7c5f6e64a8ef17cb15825c648e3a6bf7a6fab20046dc56e5b827",
+      "id": "99b00fa47cc72d6dbd593484340ba72d96027ddcc1e1fcb2cd30312caa935442"
+    }
+  },
+  "c1_branches": {
+    "seed137/C1": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/branches/seed137/C1/completed/record.json",
+      "sha256": "f1acbc6822e643f88044c0a7ccbbe26115100bad15d009515f5a4c459d4e7808",
+      "id": "43286d038e5dabaca0b54d457d544430ac4771e714d1e76131a150d66ca7feef"
+    },
+    "seed251/C1": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/branches/seed251/C1/completed/record.json",
+      "sha256": "00f49667ebc5a68473f0acce693e236b7fab0520b995d006ac8921bd0fb845a2",
+      "id": "52ef552ed4b78b41c542824285a99206307fe5b4b468c56743c0f05eec422cc3"
+    },
+    "seed389/C1": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/recovery_01/branches/seed389/C1/completed/record.json",
+      "sha256": "7c06ef662e5a01cae3af00ed47f40f96ddfde5f42c998c910bf1b67c5975a373",
+      "id": "592943c05332766fbf12e2f2d2d437bbb7e1e5734b5d8242786c40c3880573c9"
+    }
+  },
+  "actual_new_optimizer_budget": 1788,
+  "logical_optimizer_updates": 2682,
+  "reused_C1_logical_updates": 894,
+  "new_feedback_sessions": 2100,
+  "reused_feedback_sessions": 2100,
+  "new_evaluation_sessions": 12267,
+  "total_new_sessions": 14367,
+  "new_class_task_count": 1488,
+  "inherited_resource_wait_seconds": 89.84583379887044,
+  "original_parent_mathematical_audit_reexecuted": false,
+  "original_class_task_plan_reused": true,
+  "old_failed_episodes_not_promoted_to_complete": true,
+  "old_unknown_requests_authorized_once_each": 2,
+  "disk_free_bytes": 555261423616,
+  "disk_minimum_admission_bytes": 157982654464,
+  "cpu_preparation_only": true,
+  "CUDA_initialized": false,
+  "scientific_controller_started": false,
+  "id": "52509ab593601c8a126e32ece9261ede90f70a4240408565b6a595a1a1c10752"
+}

@@ -50,6 +50,21 @@ GPU0 至 7 均可选，总 worker 最多 4，每卡最多 1；CPU 初始化、CU
 
 ## 实际状态
 
-本次恢复授权已明确，正在进行独立实现、必要 CPU 核验与冻结登记。科学恢复尚未因授权或代码完成而被称为已启动；唯一新 launch、实际请求 claim、真实 returned resolution 和资源记录将在启动后追加。不得启动旧 V54 控制器或绕过新 guard。
+恢复版已于 2026-10-18 16:24:55 北京时间实际启动，源提交 `bac464b49c`，91 文件实施包 `7d1889c638bac3f93e3fed85d422619e2df6c1363a62052fab79da7c93479e0a`，协议 `4d5edf332c3ab3114d21686042fd928a7782d4d04c357b97f92f69e6aa544d3f`，prepared `52509ab593601c8a126e32ece9261ede90f70a4240408565b6a595a1a1c10752`。正式冻结 CPU 入口已实际构造控制器，核对 23 个训练侧作业、三份 C1 复用及旧等待继承，未初始化 CUDA。
+
+唯一控制器为 PID3145579、birth473629006。16:28:40 的启动核验确认四个 worker 正在运行，各占不同物理 GPU：
+
+| 作业 | GPU | PID | 当时已完整反馈或任务 |
+|---|---:|---:|---:|
+| seed137 T0.5 feedback | 2 | 3145614 | 10 条反馈 |
+| seed251 T0.5 feedback | 1 | 3145623 | 10 条反馈 |
+| seed389 T0.5 feedback | 4 | 3145634 | 9 条反馈 |
+| seed137 class shard00 | 6 | 3145653 | 4 份完整任务梯度缓存 |
+
+137 和 389 的两条获批重新执行均已原子 claim，并真实返回完整 token/概率回执；科学 request hash、原 point、参数和 T0.5 condition 均匹配，各只消费一次额度，旧 UNKNOWN 文件 hash 不变。独立 `feedback_recovery/seed137/` 与 `seed389/` 各保存 claim/resolution。上述完整 episode 数另外按原 `episode_is_complete` 和最终 `episode_completed` 事件核对，不从单个返回回执推断整个 episode 完成。
+
+四个 worker 已观测资源门通过，allocated 观测峰值分别为 15.090、15.050、15.083、15.187GiB；规定边界最低 free 分别为 31.693、15.269、28.160、35.117GiB。每个 worker 从加载前计入峰值，无暖大块或人工锚点。这是启动阶段观测，不保证后续共享 GPU 资源始终足够。
+
+启动证据为 `startup_verification/record.json`，ID `707304a2b3b0c6ce26ed32b7368df9161bca3cf4dae8129cbe0306a08414c590`。记录封存了实际 launch、PID/birth、两份返回、完整反馈/任务引用，以及持续追加资源日志的已观测字节前缀和 hash，未把活动日志的当前全文件 hash 当作永久不变引用。此时新增 optimizer 更新仍为 0，700 条 cohort 尚未齐全，评估未开始；整轮实验没有完成。不得重复启动本控制器、旧 V54 控制器或绕过 guard。
 
 后续状态从新根 `queue/status.json` 及各 stage 查看；两条恢复额度及实际返回以新根反馈恢复记录为准。旧根 `STOPPED_FAILURE_NO_RETRY` 保持历史含义，不代表新恢复队列状态。
