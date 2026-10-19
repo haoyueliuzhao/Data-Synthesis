@@ -1,0 +1,44 @@
+{
+  "CUDA_initialized": false,
+  "actual_returncode": 0,
+  "actual_stderr": "",
+  "actual_stdout": {
+    "id": "146ec9a306c607a167554d75de3cbc80368b329aa513d8370e4380bd7c089f15",
+    "status": "CPU_IMPORTS_VERIFIED"
+  },
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/concurrency_six_01/implementation/finqa_v61_controller.py",
+    "check-imports",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/concurrency_six_01"
+  ],
+  "distinct_CPU_mock_tests": {
+    "backend": 24,
+    "controller": 5,
+    "cron": 18,
+    "handoff": 39,
+    "registration": 5,
+    "total": 117,
+    "watchdog": 26
+  },
+  "finished_epoch": 1792383187.2789829,
+  "full_import_result_was_returned_in_memory_not_persisted": true,
+  "id": "2985041743d79776fbae9ea3d5031f778ebb608d6bdc14cfcea41e0992d8c1fc",
+  "implementation": {
+    "id": "b7c2bb5fd0c6bf0c9e07dd46534b7c03a38a76ae711cd83480d51797ce384da9",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/concurrency_six_01/implementation/record.json",
+    "sha256": "b044d7821bb2f44691b88ec61961acfc372ac10e8da0ba9731cd269c1160b20f"
+  },
+  "no_repeat_scientific_audit": true,
+  "original_frozen_scientific_import_closure_checked": true,
+  "protocol": {
+    "id": "004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/concurrency_six_01/protocol/record.json",
+    "sha256": "75c07c386d9fb9c1d219507b09f59f9cc6c49355a9a3e706c2dd1b129ca78ffd"
+  },
+  "recovered_scientific_pool_crash_test_performed": false,
+  "schema": "v61_actual_frozen_CPU_verification_receipt.v1",
+  "scientific_workers_started": 0,
+  "started_epoch": 1792383183.712419
+}

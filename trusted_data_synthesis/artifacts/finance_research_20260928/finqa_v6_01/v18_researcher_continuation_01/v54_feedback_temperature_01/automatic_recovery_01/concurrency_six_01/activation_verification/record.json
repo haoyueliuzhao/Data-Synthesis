@@ -1,0 +1,105 @@
+{
+  "schema": "v61_actual_passive_cron_activation_verification.v1",
+  "status": "ACTIVE_WAITING_FOR_TRAINING_CORE_NOT_YET_SIX_WORKER_DISPATCH",
+  "observed_BJT": "2026-10-19T12:18:05.968522",
+  "source_commit": "d51cff57f1a3239d5762233f69157f3e0f5b4f2a",
+  "protocol_id": "004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9",
+  "prepared_id": "1f8a92226307142c10e792d5ec788be2b7c529ee7730707da07ea7325c1199f6",
+  "implementation_id": "b7c2bb5fd0c6bf0c9e07dd46534b7c03a38a76ae711cd83480d51797ce384da9",
+  "cpu_verification_id": "2985041743d79776fbae9ea3d5031f778ebb608d6bdc14cfcea41e0992d8c1fc",
+  "installation_result": {
+    "status": "INSTALLED",
+    "action": "install",
+    "at_epoch": 1792383204.859492,
+    "owner_uid": 1004,
+    "changed": true,
+    "unrelated_lines_preserved": true,
+    "fresh_read_and_exact_postwrite_verification": true,
+    "raw_crontab_and_private_backup_not_included": true
+  },
+  "actual_automatic_cron_heartbeat": {
+    "current_scientific_workers_signaled": false,
+    "handoff_status": "WAITING_FOR_ACCEPTED_TRAINING_CORE",
+    "heartbeat_epoch": 1792383485.0286727,
+    "id": "838c22b8bdb8fe67865e6259b1be539ff66c81d597d46880ab44da087d945166",
+    "invocation": {
+      "ancestor_comm_indicates_cron": true,
+      "argv_environment_or_unrelated_processes_read": false,
+      "automatic_activation_not_claimed_from_line_installation": true,
+      "birth": "480763593",
+      "euid": 1004,
+      "grandparent": {
+        "birth": "480763592",
+        "comm": "cron",
+        "pid": 698963,
+        "ppid": 2682
+      },
+      "observed_epoch": 1792383241.3346136,
+      "parent": {
+        "birth": "480763592",
+        "comm": "sh",
+        "pid": 698965,
+        "ppid": 698963
+      },
+      "pid": 698967,
+      "uid": 1004
+    },
+    "partial_GPU_leases_retained": false,
+    "protocol_id": "004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9",
+    "schema": "v61_cron_tick_heartbeat.v1",
+    "started_epoch": 1792383241.3346193,
+    "status": "PASSIVE_HANDOFF_RUNNING"
+  },
+  "observed_replay_progress": {
+    "251": {
+      "at": "2026-10-19T04:17:30.572386+00:00",
+      "completed_responses": 537,
+      "total_responses": 790,
+      "elapsed_seconds_this_process": 17913.906614680775,
+      "rounded_memory_GiB": {
+        "device_free_bytes_at_response_boundary": 39.073,
+        "torch_peak_allocated_bytes": 33.39
+      }
+    },
+    "389": {
+      "at": "2026-10-19T04:17:58.117211+00:00",
+      "completed_responses": 474,
+      "total_responses": 803,
+      "elapsed_seconds_this_process": 15346.20984407328,
+      "rounded_memory_GiB": {
+        "device_free_bytes_at_response_boundary": 40.356,
+        "torch_peak_allocated_bytes": 33.355
+      }
+    }
+  },
+  "earlier_queue_snapshot_BJT": "2026-10-19T12:13:34.823137",
+  "earlier_queue_summary": {
+    "accepted_jobs": 17,
+    "core_jobs": 23,
+    "training_segments_complete": 4,
+    "training_segments_total": 6,
+    "completed_optimizer_updates": 1192,
+    "registered_optimizer_updates": 1788,
+    "evaluation_registered": false,
+    "effective_old_max_gpu_workers": 4,
+    "active_workers": [
+      {
+        "job_id": "seed251.replay_C05",
+        "gpu_index": 1,
+        "pid": 374771,
+        "birth": "478983055"
+      },
+      {
+        "job_id": "seed389.replay_C05",
+        "gpu_index": 2,
+        "pid": 410176,
+        "birth": "479242735"
+      }
+    ]
+  },
+  "handoff_or_six_worker_scientific_launch_acceptance_claimed": false,
+  "destructive_recovery_test_performed": false,
+  "later_additional_readonly_seal_checks": "not executed: automatic approval service timed out; this receipt uses the successful 12:18 observation above",
+  "source_of_evidence": "successful frozen install command and actual automatic cron heartbeat, not a manual tick",
+  "id": "7d3fbd6a0a07b78b7d0d2445caec8b7693b1d7142c3787ba05217dbd121124ff"
+}

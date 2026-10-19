@@ -78,4 +78,8 @@ trusted_data_synthesis/.venv/bin/python "$FINQA_V61_ROOT/implementation/finqa_v6
 
 ## 正式冻结与实际激活
 
-本节在源提交、冻结CPU依赖核验和真实cron触发后追加实际结果。当前源版本尚未执行交接，不宣称六个科学worker已经运行。
+源提交 `d51cff57f1a3239d5762233f69157f3e0f5b4f2a` 已推送。14文件实施包ID为 `b7c2bb5fd0c6bf0c9e07dd46534b7c03a38a76ae711cd83480d51797ce384da9`；新协议ID为 `004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9`。冻结入口实际CPU导入核验exit 0、CUDA未初始化，回执ID为 `2985041743d79776fbae9ea3d5031f778ebb608d6bdc14cfcea41e0992d8c1fc`。
+
+北京时间2026-10-19 12:13:24已安装本账户V61 cron，写前后配置核验通过，原V60及其他行保留。12:14:01真实cron启动观察器PID698967、birth480763593，父进程为sh、祖父为cron，UID/eUID均1004。12:18:05实际心跳为 `PASSIVE_HANDOFF_RUNNING` / `WAITING_FOR_ACCEPTED_TRAINING_CORE`，记录未保留部分GPU租约、未信号科学worker。两路回放为537/790和474/803，训练仍为1192/1788更新，尚未评价。
+
+成功取得的12:18快照已封存于 `activation_verification/record.json`，ID为 `7d3fbd6a0a07b78b7d0d2445caec8b7693b1d7142c3787ba05217dbd121124ff`。随后补充只读汇总因审批服务超时未执行，不当作已完成核验。此状态只表示被动观察器已实际生效，不代表交接完成或已有六worker派发；不要重复安装、手动tick或重启旧控制器。后续真正的六并发启动、评价速度及准确率仍以实际记录为准。
