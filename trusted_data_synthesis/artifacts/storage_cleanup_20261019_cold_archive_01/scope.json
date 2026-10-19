@@ -1,0 +1,203 @@
+{
+  "schema": "old_experiments_lossless_cold_archive_scope.v1",
+  "authorization": "进一步清理压缩旧实验产物",
+  "registered_date_BJT": "2026-10-19",
+  "sources": [
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v15_prefix_completion_01/wallet_before_v15_mapping.sqlite3",
+      "group": "legacy_wallets",
+      "allocated_bytes": 2698375168,
+      "logical_bytes": 2698379264
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v12_rereview_02/wallet_before_v12_request_transfer.sqlite3",
+      "group": "legacy_wallets",
+      "allocated_bytes": 2239471616,
+      "logical_bytes": 2239475712
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replay_performance_01/micro_R0/profile/trace.json",
+      "group": "profiling_trace",
+      "allocated_bytes": 3645366272,
+      "logical_bytes": 3645363481
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/contexts/seed389/c_only/step0894_outer/feedback_resume_view/dc03ecaa04ac96ea215e281ab5de848ddbf93ebb202fd32c541d637824c6c972/cohort_seal/record.json",
+      "group": "old_feedback_cohort",
+      "allocated_bytes": 157585408,
+      "logical_bytes": 157584229
+    }
+  ],
+  "gradient_contexts": [
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/contexts/seed137/c_only/step1192_outer",
+      "group": "old_class_seed137",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796662040
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/dual_gpu0_gpu6_01/contexts/seed389/full/step1192_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796668312
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/contexts/seed389/c_only/step1192_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796703384
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/host_memory_admission_01/contexts/seed389/full/step0894_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796699480
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed137/full/step1192_outer",
+      "group": "old_class_seed137",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796702680
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed251/c_only/step0894_outer",
+      "group": "old_class_seed251",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796708824
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed251/c_only/step1192_outer",
+      "group": "old_class_seed251",
+      "count": 186,
+      "allocated_bytes": 3550715904,
+      "logical_bytes": 3550414918
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed389/c_only/step0298_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796661208
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/contexts/seed389/full/step0298_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796655064
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed251/c_only/step1192_outer",
+      "group": "old_class_seed251",
+      "count": 558,
+      "allocated_bytes": 10247135232,
+      "logical_bytes": 10246239890
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed251/full/step0894_outer",
+      "group": "old_class_seed251",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796647576
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed389/c_only/step0894_outer",
+      "group": "old_class_seed389",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796655064
+    },
+    {
+      "path": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_04/contexts/seed251/full/step1192_outer",
+      "group": "old_class_seed251",
+      "count": 744,
+      "allocated_bytes": 13797851136,
+      "logical_bytes": 13796647576
+    }
+  ],
+  "groups": {
+    "legacy_wallets": {
+      "count": 2,
+      "allocated_bytes": 4937846784,
+      "logical_bytes": 4937854976
+    },
+    "profiling_trace": {
+      "count": 1,
+      "allocated_bytes": 3645366272,
+      "logical_bytes": 3645363481
+    },
+    "old_feedback_cohort": {
+      "count": 1,
+      "allocated_bytes": 157585408,
+      "logical_bytes": 157584229
+    },
+    "old_class_seed137": {
+      "count": 1488,
+      "allocated_bytes": 27595702272,
+      "logical_bytes": 27593364720
+    },
+    "old_class_seed389": {
+      "count": 4464,
+      "allocated_bytes": 82787106816,
+      "logical_bytes": 82780042512
+    },
+    "old_class_seed251": {
+      "count": 2976,
+      "allocated_bytes": 55191404544,
+      "logical_bytes": 55186658784
+    }
+  },
+  "retention_method": "lossless local tar.zst, all member bytes verified before any expanded original is unlinked; keep all directories and every unselected file",
+  "gradient_scope": "Only the 13 named historical contexts, task_cache/taskNNNN/gradient.pt; complete-task records remain. Seed251 c_only1192 has inherited186 plus new558, not two744-task passes.",
+  "protected_scopes": [
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01",
+    "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+    "Every step0596_outer historical context and inherited task cache",
+    "All C1 step597..894 state/record, parent596, evaluation745/894, original GPU leases and science owner lock",
+    "All training/replay/virtual-point/final-model state.pt; no checkpoint is selected in this pass",
+    "All Git-tracked files, historical immutable protocol and implementation files, task records and plans, unselected cohort/feedback/stop/acceptance records",
+    "V10 raw source episodes/registrations, V12 reviews/pairs, V13 authority, V14 supervision/encoding, V15 prefix_material/task schedule, V16/V17 records, V18 material and evaluation registration",
+    "All existing cold/local archives, their manifests and restore code, .git, worktrees, .venv and base models"
+  ],
+  "dependency_audit": {
+    "current_scientific_protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+    "current_source_control_protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+    "prepared_six_worker_protocol_id": "004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9",
+    "read_paths_checked": [
+      "V54 current protocol/prepared/three parents and frozen science/worker/automatic audit/evaluation code",
+      "V25.checked_launch -> V18.load_training_pool and historical authority/material chain",
+      "V54.load_cache old_class_context selection",
+      "V32 profiling writer and V33 profile-record references"
+    ],
+    "class_cache_conclusion": "Only seed389 has old_class_context; exact step0596 cache below is excluded. Seed137 and251 use current V54 caches. Current guard audits only the V54 scientific root; old0298/0894/1192 task gradients are not read.",
+    "current_old_class_context": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed389/c_only/step0596_outer/context/record.json",
+    "current_old_class_cache": "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/contexts/seed389/c_only/step0596_outer/task_cache",
+    "wallet_conclusion": "The two before-mapping/request-transfer snapshots are historical backups, not live budget/wallet databases used by the current source loader.",
+    "trace_conclusion": "Historical profiling evidence; keep old profile record and protocol unchanged. Restore trace at its original path before historical profiling inspection.",
+    "cohort_conclusion": "Selected cohort belongs to old seed389 step894 outer; current C1 stops at894_step and does not perform894_outer. Its live oldT1 source belongs to the596 parent point.",
+    "limitations": "Targeted current-code and sealed-reference audit, not a proof about every future dynamically constructed path. Current code has no transparent compressed-file fallback; historical audit/replay of selected files requires explicit restoration."
+  },
+  "compression_measurement": {
+    "kind": "one representative old full389 step298 task0528 gradient, zstd -T2 -6 stdout counted without saving a trial archive",
+    "source_bytes": 10160479,
+    "compressed_bytes": 9490538,
+    "not_a_total_savings_prediction": true
+  },
+  "execution_policy": {
+    "max_parallel_packers": 3,
+    "zstd_threads_per_packer": 2,
+    "zstd_level": 6,
+    "no_GPU_or_API_or_scientific_signals": true,
+    "complete_member_verification_required": true,
+    "positive_allocated_savings_per_archive_required": true,
+    "no_repeated_full_restore_drill": true,
+    "no_old_cleanup_plan_resume": true,
+    "original_inode_ctime_or_ACL_not_promised_on_restore": true
+  }
+}
