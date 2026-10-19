@@ -224,6 +224,8 @@ V61已以源提交 `d51cff57f1a3239d5762233f69157f3e0f5b4f2a` 冻结14文件，�
 
 用户于2026-10-19进一步要求“进一步清理压缩旧实验产物”。本次独立 `storage_cleanup_20261019_cold_archive_01/` 计划只对scope白名单8,932个旧载荷无损冷归档：两before钱包快照、旧V32 trace、一个旧seed389894 cohort，以及13个旧非596context的8,928份完整 `task_cache/taskNNNN/gradient.pt`。全部分组逐成员内容校验和持久化成功后才移除展开原件；保留全部目录、任务record、协议、源码、反馈及未选中文件，不扩展本日上午不可恢复删除。整个V54、整个旧B training_replication、所有0596 context/继承缓存、当前三C1窗口、模型、锁及早期材料读取链保持原路径原字节。当前loader没有透明冷压缩回退，未来旧点逐张量审计须先显式隔离恢复，再按原记录核验放回；不能重写SHA或把缺失当从未生成。内容包在 `cold_archive_20261019_01/` 本机保存，索引不是内容备份，不得清除既有旧归档。最多3个CPU packer各2线程，不干预科学进程。准备不代表已回收空间；实际结果与恢复命令见 `trusted_data_synthesis/docs/storage_cleanup_20261019_lossless_cold_archive.md`。
 
+上述冷归档已于2026-10-19 14:13:03北京时间以 `COMPLETE` 完成，源提交 `597643946a`。8,932个展开原件（162.343506GiB）在六包完整内容校验后移除，内容包实际分配144.761425GiB；扣除当时审计文件后净回收17.581253GiB。376保护锚点和73,953非目标文件元数据检查通过，当前两回放及V60/V61继续运行。计划ID `6ef2e6bf28c16c16dc1d1cfb011c7cbf08e02c8c408a79181f479d2279240f56`，结果ID `b9099e5c3d3b4989f5c054928eb34b64c79bc13072db9cfd3613c1c6571d655e`；禁止重新prepare/apply。旧非596梯度和四个指定大载荷现在必须先从 `cold_archive_20261019_01/` 对应组显式恢复，不能把原路径缺失当科学失败并重采样或重算。压缩包仅本机保存，六包、成员清单与固定恢复源码均须保留，Git摘要不能替代内容；完整restore步骤与实际计量见本轮报告。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。
