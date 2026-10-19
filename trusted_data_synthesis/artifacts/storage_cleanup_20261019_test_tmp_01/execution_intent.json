@@ -1,0 +1,114 @@
+{
+  "at": "2026-10-19T01:22:27.413044+00:00",
+  "plan_id": "6005968967136bad57e821f4290688938124e7164294ffbdf8e6d74122f86950",
+  "process_guard": {
+    "inspected_same_account_processes": 43,
+    "hits": [],
+    "inaccessible_same_account_processes": [
+      {
+        "pid": 6878,
+        "comm": "systemd"
+      },
+      {
+        "pid": 6879,
+        "comm": "(sd-pam)"
+      },
+      {
+        "pid": 1835737,
+        "comm": "sshd"
+      },
+      {
+        "pid": 3749356,
+        "comm": "sshd"
+      }
+    ],
+    "other_accounts_not_claimed_audited": true
+  },
+  "runtime": {
+    "observed_at": "2026-10-19T01:22:27.413427+00:00",
+    "snapshots": {
+      "control_queue": {
+        "status": "RUNNING",
+        "updated_epoch": 1792372944.8000293,
+        "active_workers": [
+          {
+            "attempt": 1,
+            "birth": "478983055",
+            "gpu_index": 1,
+            "job_id": "seed251.replay_C05",
+            "lifecycle": "RUNNING",
+            "pid": 374771
+          },
+          {
+            "attempt": 1,
+            "birth": "479242735",
+            "gpu_index": 2,
+            "job_id": "seed389.replay_C05",
+            "lifecycle": "RUNNING",
+            "pid": 410176
+          },
+          {
+            "attempt": 1,
+            "birth": "479357128",
+            "gpu_index": 4,
+            "job_id": "seed137.train_C05",
+            "lifecycle": "RUNNING",
+            "pid": 423628
+          },
+          {
+            "attempt": 3,
+            "birth": "479372906",
+            "gpu_index": 6,
+            "job_id": "seed389.train_Hold",
+            "lifecycle": "RUNNING",
+            "pid": 426249
+          }
+        ],
+        "controller_attempt": 1
+      },
+      "watchdog_queue": {
+        "status": "WATCHING_LIVE_EPISODE",
+        "phase": "WATCHING",
+        "at_epoch": 1792372921.2413568,
+        "current_episode": {
+          "protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+          "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04"
+        }
+      },
+      "cron_status": {
+        "status": "TICK_COMPLETED"
+      }
+    },
+    "processes": [
+      {
+        "pid": 374771,
+        "expected_birth": "478983055",
+        "observed_birth": "478983055"
+      },
+      {
+        "pid": 410176,
+        "expected_birth": "479242735",
+        "observed_birth": "479242735"
+      },
+      {
+        "pid": 423628,
+        "expected_birth": "479357128",
+        "observed_birth": "479357128"
+      },
+      {
+        "pid": 426249,
+        "expected_birth": "479372906",
+        "observed_birth": "479372906"
+      },
+      {
+        "pid": 3878725,
+        "expected_birth": "476359812",
+        "observed_birth": "476359812"
+      }
+    ],
+    "dynamic_queue_equality_not_required": true,
+    "no_process_signal_or_experiment_action": true
+  },
+  "free_bytes": 413008613376,
+  "id": "0dc50257f124379ac69a99c7345811c0a18bd989186e6bdb5b598bf33df7b947"
+}

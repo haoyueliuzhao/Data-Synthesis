@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-19T01:27:48.567065+00:00",
+  "plan_id": "6005968967136bad57e821f4290688938124e7164294ffbdf8e6d74122f86950",
+  "source_result_id": "2f073c3be86f1ac5c6f05ee10e7b33ecb89a86738f0e772dadb56e48029eb6df",
+  "files": [
+    {
+      "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261019_test_tmp_01/test_fixtures.tar.gz",
+      "destination": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261019_01/test_fixtures.tar.gz",
+      "sha256": "44f1551e9b224a39afe9d78190f6ef0a8413a36089e404f64e587e07dd85cd48",
+      "identity_before": [
+        66304,
+        6948271124,
+        33204,
+        110225955,
+        1792373101024213550,
+        1792373189376842140,
+        1,
+        110227456
+      ]
+    },
+    {
+      "source": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261019_test_tmp_01/member_manifest.json.gz",
+      "destination": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261019_01/member_manifest.json.gz",
+      "sha256": "813ae38bbf85ff5498e1841f30d8e3b1021853ea4892a097374855e137dc33c0",
+      "identity_before": [
+        66304,
+        6961259295,
+        33204,
+        18748584,
+        1792373195379892391,
+        1792373195379892391,
+        1,
+        18751488
+      ]
+    }
+  ],
+  "no_old_record_rewrite": true,
+  "same_filesystem": true,
+  "id": "e3d63a829df0f4129267134d0157506e27e00a8b0f851f8c3929e64a7d99f898"
+}
