@@ -245,6 +245,7 @@ def one_original_lease(binding):
                     and (os.fstat(stream.fileno()).st_dev, os.fstat(stream.fileno()).st_ino)
                         == (expected['device'], expected['inode']), 'ORIGINAL_LEASE_IDENTITY_CHANGED')
                 fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                require(inode(path) == dict(path=str(path), **expected), 'ORIGINAL_LEASE_CHANGED_DURING_ACQUISITION')
             except BlockingIOError:
                 stream.close()
                 continue
