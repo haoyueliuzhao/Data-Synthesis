@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-19T01:50:05.943112+00:00",
+  "authorization_exact": "允许删除旧中间状态",
+  "dependency_scope_sha256": "c44c3e9ff4a46e665ce31d97afe5503e15f365d1f3c37f6b4a8202aa08feba72",
+  "filesystem_before": {
+    "available_bytes": 411904491520,
+    "free_bytes": 411904491520
+  },
+  "no_retry_or_resume": true,
+  "plan_sha256": "d4b16b4e0a740773b79e3bb0b7d56b9c1567473b61efe654781949aa372970b1",
+  "process_audit": {
+    "allowed_current_identities": [
+      {
+        "birth": "478983055",
+        "pid": 374771,
+        "role": "current_scientific_worker"
+      },
+      {
+        "birth": "476359802",
+        "pid": 3878721,
+        "role": "current_readonly_observer"
+      },
+      {
+        "birth": "476359812",
+        "pid": 3878725,
+        "role": "current_supervisor"
+      },
+      {
+        "birth": "476360127",
+        "pid": 3878874,
+        "role": "current_controller"
+      },
+      {
+        "birth": "479242735",
+        "pid": 410176,
+        "role": "current_scientific_worker"
+      },
+      {
+        "birth": "479357128",
+        "pid": 423628,
+        "role": "current_scientific_worker"
+      },
+      {
+        "birth": "479372906",
+        "pid": 426249,
+        "role": "current_scientific_worker"
+      }
+    ],
+    "at": "2026-10-19T01:50:05.888993+00:00",
+    "limitation": "Same-account readable FD/mmap/path snapshot only; future dynamic opens, other accounts and protected daemon FD tables are not comprehensively covered.",
+    "no_process_signaled": true,
+    "other_uid_processes_not_inspected": 1795,
+    "own_uid": 1004,
+    "own_uid_processes_checked": 38,
+    "private_unrelated_argv_not_logged": true,
+    "protected_system_daemons_not_fully_inspected": [
+      {
+        "comm": "sshd",
+        "error_type": "PermissionError",
+        "pid": 1835737
+      },
+      {
+        "comm": "sshd",
+        "error_type": "PermissionError",
+        "pid": 3749356
+      },
+      {
+        "comm": "systemd",
+        "error_type": "PermissionError",
+        "pid": 6878
+      },
+      {
+        "comm": "(sd-pam)",
+        "error_type": "PermissionError",
+        "pid": 6879
+      }
+    ],
+    "target_users": [],
+    "unknown_relevant_python": [],
+    "vanished_processes": 0
+  },
+  "protected_before": {
+    "compared_fields": "all recorded metadata and summary SHA256",
+    "protected_count": 12143,
+    "protection_counts": {
+      "all_epoch_endpoints": 72,
+      "all_nonselected_old_B_checkpoint_states": 999,
+      "all_old_B_checkpoint_records": 10761,
+      "all_outer_inputs": 24,
+      "all_shared_files": 6,
+      "cleanup_implementation_or_scope": 4,
+      "complete_protected_C1_window": 894,
+      "current_scientific_control_and_original_lock_anchor": 356,
+      "explicit_registered_recovery_point": 6,
+      "old_B_arm_result": 9,
+      "small_dependency_audit": 12
+    },
+    "unchanged": true
+  },
+  "protection_source_sha256": "af819613455507dae7143ae248d4d6f00190c187eb40571bcc5958ac1652e03e",
+  "script_sha256": "029eba16cbb4f41fb7ea44c957a37f13a21f6d29d7b9a137f9850ff290a98c17",
+  "source_engine_sha256": "232f419898c04c6fe813a9f0b43984f64a064b36537276b084eebcb122e982df"
+}

@@ -212,6 +212,12 @@ V59已以源提交 `d6c44f436d466adbbcf42bfa6f1ec0baafc03cab` 冻结六文件，
 
 V60已于2026-10-19以源提交 `72d4259d514b04fd46f6bdad5682eb088db2c6b4` 冻结13文件，实施包ID `341cc51eadf55b3fb390ac1285de78c1d937c86b532660ecff8f1dbceb35df3f`、协议ID `3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b`。55项不同CPU用例及真实冻结CPU导入通过，CUDA未初始化。00:35:31账户每分钟cron实际安装，00:36:01首次自动触发，00:37:01的真实cron祖先/UID及WATCHING_LIVE_EPISODE心跳封存于master `activation_verification/record.json`，ID `0fc69d0e608509b561bca7ea61004a1b1b3a79a435297eb65396eba1f1aea14e`。快照中旧04继续3worker/GPU2、1、0且最近资源/yyy隔离边界通过，没有新episode/request/runner或科学信号；没有实际冷故障恢复测试，不能称强杀已被防住。查看master `cron/status.json`、`queue/status.json`；初始健康阶段没有state.json属正常。明确停止用冻结 `finqa_v60_cron.py stop`，先持久禁止恢复并给当前/待接管episode写STOP；`remove`仅关闭外层巡检而不停止科学。不得删除STOP/terminal、重复安装第二条任务或裸重启04，详细命令见V60报告。
 
+# 已授权的旧B中间状态清理
+
+用户于2026-10-19在知晓不可恢复后果后明确选择“允许删除旧中间状态”。09:50已完成独立 `storage_cleanup_20261019_replication_intermediates_01/` 计划，移除旧V25 `training_replication/seed{137,251,389}/arms/{static,c_only,full}/training/stepNNNN_step/state.pt` 中299至1490的非149倍数步，排除三个C-only的597至894整段，并额外保留C-only1371193、Full389299、Full2511213/1237/1334/1335。实际删除9762个文件、278.753510GiB，没有内容备份，不能通过Git或JSON恢复；所有目录及原逐步记录保持历史原义，禁止补造状态或改写原SHA来绕过缺失。
+
+72个旧B epoch终点、九最终模型、完整C1窗口、outer/shared/反馈/结果、现行V54温度实验全树与原锁inode均保留；12143项保护对象在删除前后核验未变，当前科学进程及V60继续运行。以后需要被删步数的精确历史恢复或逐张量审计时，必须明确该不可恢复限制；不得将本次策略套用到仍运行的Hold/C05或重新执行已消费的清理计划。精确名单、额外恢复点证据和实际结果见 `trusted_data_synthesis/docs/storage_cleanup_20261019_replication_intermediates.md`。此前测试夹具的可恢复压缩备份不是本轮正式张量的备份。
+
 # 本地测试临时文件
 
 - CPU/mock/pytest 的临时运行目录统一放在已被Git忽略的 `trusted_data_synthesis/artifacts/test_tmp/` 下；使用 `mktemp -d` 创建独立子目录，再作为 `--basetemp`。不要把 `.test-*`、`.v10-*-cpu-*` 等临时目录建在仓库根目录。

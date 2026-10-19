@@ -1,0 +1,102 @@
+{
+  "schema": "v25_authorized_non_epoch_retention_scope.v1",
+  "authorization": "允许删除旧中间状态",
+  "authorization_context": "User explicitly approved irreversible deletion of old intermediate model/Adam/RNG checkpoints after being told current experiment dependencies, epoch checkpoints and final models remain. This does not authorize deletion of feedback, results, source, active-run states or old backups.",
+  "scope_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication",
+  "candidate_base_count": 9768,
+  "candidate_base_allocated_bytes": 299493425152,
+  "seeds": [
+    137,
+    251,
+    389
+  ],
+  "arms": [
+    "static",
+    "c_only",
+    "full"
+  ],
+  "candidate_steps_inclusive": [
+    299,
+    1490
+  ],
+  "exclude_epoch_multiples_of": 149,
+  "preserved_C1_window": {
+    "arm": "c_only",
+    "start_step": 597,
+    "end_step": 894,
+    "all_three_seeds": true
+  },
+  "excluded_coordinates": [
+    {
+      "seed": 137,
+      "arm": "c_only",
+      "step": 1193,
+      "reason": "V38 accepted production pilot checkpoint",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/pilot_acceptance/record.json"
+    },
+    {
+      "seed": 389,
+      "arm": "full",
+      "step": 299,
+      "reason": "V40 accepted production pilot checkpoint",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/pilot_acceptance/record.json"
+    },
+    {
+      "seed": 251,
+      "arm": "full",
+      "step": 1213,
+      "reason": "Registered cold-recovery initial checkpoint; directly confirmed in context",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/contexts/seed251/full/step1213_train/context/record.json"
+    },
+    {
+      "seed": 251,
+      "arm": "full",
+      "step": 1237,
+      "reason": "Published durable closeout checkpoint",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/closeout_01/record.json"
+    },
+    {
+      "seed": 251,
+      "arm": "full",
+      "step": 1334,
+      "reason": "V50 registered cold-recovery initial checkpoint; directly confirmed in context",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/contexts/seed251/full/step1334_train/context/record.json"
+    },
+    {
+      "seed": 251,
+      "arm": "full",
+      "step": 1335,
+      "reason": "V50 actual startup verification checkpoint",
+      "evidence": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/startup_verification/record.json"
+    }
+  ],
+  "expected_candidate_count": 9762,
+  "expected_candidate_allocated_bytes": 299309301760,
+  "protected_audit_refs": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_01/pilot_acceptance/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/recovery_02/pilot_acceptance/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/contexts/seed251/full/step1213_train/context/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/fixed_gpu_reservation_02/closeout_01/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/contexts/seed251/full/step1334_train/context/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/single_gpu0_01/startup_verification/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/registration/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/registration/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/replication_evaluation/summary/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/attempts/attempt0004/result/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/attempts/attempt0004/actual_final_progress/record.json",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/production_resume_01/r3_native_recovery_01/supervisor/closeout/record.json"
+  ],
+  "protected_current_science_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01",
+  "control_reference_review": {
+    "pilot_acceptance_records": 20,
+    "additional_control_records": 65,
+    "direct_non_epoch_train_context_records": 6,
+    "additional_exclusions_count": 6,
+    "bounded_metadata_review_not_full_recursive_dependency_proof": true,
+    "no_tensor_contents_read_or_hashed": true
+  },
+  "recoverability": "Irreversible. Unique actual model, Adam, RNG and pi state files have no asserted content backup. Retained JSON or Git metadata cannot reconstruct them.",
+  "no_experiment_restart_or_signal": true,
+  "no_mathematics_or_immutable_scientific_manifest_changes": true,
+  "no_periodic_or_automatic_future_cleanup": true
+}
