@@ -218,7 +218,9 @@ V61已以源提交 `d51cff57f1a3239d5762233f69157f3e0f5b4f2a` 冻结14文件，�
 
 用户于2026-10-19选中“避开yyy账户”明确要求“取消此限制”。V62仅取消本轮GPU准入对已知yyy/UID1000的特殊排斥，不干预其进程；UNKNOWN/MPS归属阻断、GPU0至7、总6/每卡1、初始化/等待/draining名额、原GPU/RAM硬门及信号/STOP规则保持。新主目录为 `automatic_recovery_01/shared_gpu_admission_01/`，旧V59/V60/V61冻结不热改。先在独立 `shared_gpu_admission_preparation_01/` 核验旧V61尚未交接，用至多60秒的一把空闲原GPU项目租约阻止CPU交接竞态，仅写旧V61被替代终态让其自然退出、移除精确旧61cron；禁止对旧61发送TERM或调用stop而误停科学池。此退休不信号科学worker、不写科学STOP；必须实际完成才允许新62注册安装。之后仍按23核心accepted、获胜exit0、自然全局空队列和八锁all-or-none接管旧04及V60，沿用原严格维护停止与断点审计，不重跑已完成任务或扩剂量。准备不等于已生效；真实状态见 `trusted_data_synthesis/docs/finqa_v62_shared_gpu_admission_20261019.md` 及新协议/回执/launch。旧61已进入事务或身份/停止不一致时不得强行按此未接管退休路径继续。
 
-用户于2026-10-19 19:18明确回复“授权安全切换并继续实验”：允许全部科学worker成功退出后，对核验PID/birth的原04 controller发送一次登记维护TERM，让原supervisor自然退出，并替换本账户精确cron，由取消yyy排除的新V62接续原队列。此授权不允许信号科学worker，不干预其他项目、不重复已验收任务、不扩评估或训练剂量；停止、身份、状态和资源硬门保持。当前仍按自然全局空队列与八锁all-or-none约束准备，逐步持有自然释放租约以阻止旧池补派的变化须有另外明确选择；不能把维护授权直接写成新策略已经生效。
+用户于2026-10-19 19:18明确回复“授权安全切换并继续实验”：允许全部科学worker成功退出后，对核验PID/birth的原04 controller发送一次登记维护TERM，让原supervisor自然退出，并替换本账户精确cron，由取消yyy排除的新V62接续原队列。此授权不允许信号科学worker，不干预其他项目、不重复已验收任务、不扩评估或训练剂量；停止、身份、状态和资源硬门保持。用户随后明确选择“仍只等待自然全空窗口”，维持自然全局空队列与八锁all-or-none；不得逐步扣留租约促排空或阻止旧池补派。生成已全部accepted或评分已开始时不再切换，由旧系统收口。
+
+V62已以源提交 `8149a46a3b084e8a29fa557e615caec65bb4b7f5` 冻结17文件，协议ID `9262f599aa20a2d9119152a1a6594f777ac22c7731e3c3ca0272f78d912fede8`；99项不同CPU/mock及一次正式冻结worker CPU导入通过，287科学依赖绑定通过且CUDA未初始化。2026-10-19 19:38:57安装单条本账户cron，19:39:01实际启动PID1596622/birth483433624的被动观察器。19:40:10为 `PASSIVE_HANDOFF_RUNNING` / `WAITING_FOR_NATURAL_GLOBAL_EMPTY`，未持部分GPU租约、未信号科学进程、未建立新episode；旧04继续4worker，23核心加8评价已accepted。证据 `shared_gpu_admission_01/activation_verification/record.json` ID `3a85c1c9a269d2ca7cf9461da0df751756ad24bded759d012f402248164105d4`。此时六并发及取消yyy排除尚未作用于科学worker，不能把观察器启动称为策略切换。旧V61已于18:24自然退休、精确cron删除且未信号科学池；不可重启。后续读取新master cron/handoff状态，交接后按state指向episode；不要手动tick或重复安装。明确停止用新冻结 `finqa_v62_cron.py stop`，remove仅撤定时行、不停止现有观察器。
 
 # 已授权的旧B中间状态清理
 

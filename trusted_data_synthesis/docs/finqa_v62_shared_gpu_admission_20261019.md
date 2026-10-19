@@ -48,6 +48,22 @@ V61在18:11快照仍是纯CPU被动观察器，等待23个训练核心作业全�
 
 截至上述快照，新账户共享策略尚未生效。取消账户排除的请求与实际停止旧控制器的维护操作分别记录；在19:18获得维护授权以前，没有执行新交接、阻塞原实验或预留GPU等待确认。
 
-19:18授权后的只读预检显示，绑定旧controller仍为PID3878874/birth476360127，supervisor仍为PID3878725/birth476359812；23个核心任务及4个评价作业已accepted，另外4个评价worker继续运行，尚无V62主目录。原被动all-or-none方式只在自然全空时接管；持续补派评价可能使该窗口延迟至剩余生成已全部结束。是否改为逐步持有自然释放的项目租约、仅暂缓新派发的方案另行询问，未获答复前不实施该变化。
+19:18授权后的只读预检显示，绑定旧controller仍为PID3878874/birth476360127，supervisor仍为PID3878725/birth476359812；23个核心任务及4个评价作业已accepted，另外4个评价worker继续运行，当时尚无V62主目录。用户随后明确选择“仍只等待自然全空窗口”：保留原被动all-or-none方式，不逐步持有自然释放的租约、不阻止旧池补派。持续补派可能使该窗口直到生成结束仍未出现；若所有生成已经accepted或进入评分，则不再切换，由旧系统完成评分及收口。
 
-获得维护授权后，独立V62 handoff及43项CPU/mock用例已完成；总计99项不同用例通过。handoff从既有V61隔离复制，新增固定路径、ID及SHA绑定的V61退休凭证，保留原单controller维护TERM、实际退出、STOP、历史未知退出例外与不迁移最终评分等检查。正式冻结之后只再执行一次真实worker CPU导入，验证新资源守卫和冻结科学依赖；不额外运行不覆盖新守卫的重复controller导入，不加载模型或初始化CUDA。
+获得维护授权后，独立V62 handoff及43项CPU/mock用例已完成；总计99项不同用例通过。handoff从既有V61隔离复制，新增固定路径、ID及SHA绑定的V61退休凭证，保留原单controller维护TERM、实际退出、STOP、历史未知退出例外与不迁移最终评分等检查。
+
+## 正式冻结和被动观察器启动
+
+V62以源提交 `8149a46a3b084e8a29fa557e615caec65bb4b7f5` 冻结17文件，实施包ID为 `3f388db8ef04eeac28b2b7c45409641e9cb2f552cde6a4d159b87888b43a4c7a`，协议ID为 `9262f599aa20a2d9119152a1a6594f777ac22c7731e3c3ca0272f78d912fede8`，准备ID为 `9d58a107383ddebfed65ae5bf7361ad4f422b9285274642ca145acd9af1bc9cc`。原六份V59文件逐字继承，其余十一份为独立V62实现。
+
+一次正式冻结worker CPU导入实际exit 0，新资源守卫来源为本次冻结 `finqa_v62_gpu_isolation.py`，287项实际导入科学依赖通过绑定检查；未加载父状态或模型、未初始化CUDA，科学调用和optimizer更新均为0。CPU摘要见 `cpu_verification/record.json`，原始输出见 `verification/worker_cpu_imports_01/output.json`。未重复运行不覆盖新守卫的controller导入。
+
+2026-10-19 19:38:57北京时间实际安装单条本账户V62 cron，保留V60与全部其他条目；19:39:01由真实cron自动触发观察器PID1596622/birth483433624，UID/EUID均1004。19:40:10封存的启动证据显示 `PASSIVE_HANDOFF_RUNNING` / `WAITING_FOR_NATURAL_GLOBAL_EMPTY`，没有持有部分GPU租约，没有handoff事务、新科学episode或科学进程信号。原04仍为RUNNING，31个accepted为23核心加8个评价作业，4个评价worker继续在GPU0、6、1、2运行。
+
+启动证据位于 `activation_verification/record.json`，ID为 `3a85c1c9a269d2ca7cf9461da0df751756ad24bded759d012f402248164105d4`。这证明被动交接观察器实际工作，不证明六并发或取消账户排除已用于科学worker；两项运行变化仍须以未来新episode launch和实际队列为准。
+
+## 查看和停止
+
+进度先读新主目录 `cron/status.json` 与 `handoff/state.json`；交接完成后再按 `state.json` 指向的episode读取科学队列。不要手动tick、重复安装、重启旧04或重新启动已退休V61。
+
+若要明确停止本轮及自动恢复，使用新主目录冻结入口 `implementation/finqa_v62_cron.py stop --root <新主目录>`；该命令会持久保存STOP并传递给绑定科学episode，不能用作普通观察器退休。`remove`只移除cron行，不会停止已经活跃的被动观察进程或科学worker。正常交接由现有观察器按冻结合同单次完成，不需要人工补发TERM。

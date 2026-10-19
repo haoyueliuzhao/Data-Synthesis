@@ -1,0 +1,28 @@
+{
+  "schema": "v62_actual_frozen_worker_cpu_verification.v1",
+  "status": "PASS",
+  "protocol_id": "9262f599aa20a2d9119152a1a6594f777ac22c7731e3c3ca0272f78d912fede8",
+  "implementation_id": "3f388db8ef04eeac28b2b7c45409641e9cb2f552cde6a4d159b87888b43a4c7a",
+  "source_commit": "8149a46a3b084e8a29fa557e615caec65bb4b7f5",
+  "actual_exit_code": 0,
+  "completed_tool_output_recorded": true,
+  "output": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/shared_gpu_admission_01/verification/worker_cpu_imports_01/output.json",
+    "sha256": "be1dee8b449239a39de6639c748e6d7653d499e5531180161e74da52278ee16f"
+  },
+  "verification_kind": "one actual frozen worker import; no duplicate controller import",
+  "verified_dependency_count": 287,
+  "verified_dependencies_digest": "a5348f6c6f6dfd1dc08e90aff47e302a01daf2d477941bc347c23f6696f85427",
+  "installed_resource_guard": {
+    "isolation_helper_module_match": true,
+    "isolation_helper_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/shared_gpu_admission_01/implementation/finqa_v62_gpu_isolation.py",
+    "module": "_v62_worker_bound_gpu_isolation",
+    "qualname": "guarded_class.<locals>.IsolatedResourceGuard"
+  },
+  "CUDA_initialized": false,
+  "model_loaded": false,
+  "parent_loaded": false,
+  "scientific_calls": 0,
+  "optimizer_updates": 0,
+  "id": "08ac4cfe0c9bc1d21c7431f76bb018878f4a3eb483ca159085a2ff4e3a8e6536"
+}
