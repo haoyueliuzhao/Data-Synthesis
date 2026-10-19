@@ -216,6 +216,8 @@ V60已于2026-10-19以源提交 `72d4259d514b04fd46f6bdad5682eb088db2c6b4` 冻�
 
 V61已以源提交 `d51cff57f1a3239d5762233f69157f3e0f5b4f2a` 冻结14文件，协议ID `004dd186042eb61c4168531d36c04fd740a54458841100b5c9ef8b9374076ff9`，117项不同CPU/mock及正式冻结CPU导入通过。2026-10-19 12:13:24安装账户cron并保留旧V60，12:14:01真实启动观察器PID698967/birth480763593；12:18为 `PASSIVE_HANDOFF_RUNNING` / `WAITING_FOR_ACCEPTED_TRAINING_CORE`，未持部分GPU租约、未信号科学worker，不能称六worker已派发。证据 `concurrency_six_01/activation_verification/record.json` ID `7d3fbd6a0a07b78b7d0d2445caec8b7693b1d7142c3787ba05217dbd121124ff`。进度先读新master cron/handoff状态；交接后再按state指向新episode。禁止重复安装、手动tick或重启旧入口；明确停止用新冻结 `finqa_v61_cron.py stop`，remove仅移除定时行而不停止已活跃观察器。
 
+用户于2026-10-19选中“避开yyy账户”明确要求“取消此限制”。V62仅取消本轮GPU准入对已知yyy/UID1000的特殊排斥，不干预其进程；UNKNOWN/MPS归属阻断、GPU0至7、总6/每卡1、初始化/等待/draining名额、原GPU/RAM硬门及信号/STOP规则保持。新主目录为 `automatic_recovery_01/shared_gpu_admission_01/`，旧V59/V60/V61冻结不热改。先在独立 `shared_gpu_admission_preparation_01/` 核验旧V61尚未交接，用至多60秒的一把空闲原GPU项目租约阻止CPU交接竞态，仅写旧V61被替代终态让其自然退出、移除精确旧61cron；禁止对旧61发送TERM或调用stop而误停科学池。此退休不信号科学worker、不写科学STOP；必须实际完成才允许新62注册安装。之后仍按23核心accepted、获胜exit0、自然全局空队列和八锁all-or-none接管旧04及V60，沿用原严格维护停止与断点审计，不重跑已完成任务或扩剂量。准备不等于已生效；真实状态见 `trusted_data_synthesis/docs/finqa_v62_shared_gpu_admission_20261019.md` 及新协议/回执/launch。旧61已进入事务或身份/停止不一致时不得强行按此未接管退休路径继续。
+
 # 已授权的旧B中间状态清理
 
 用户于2026-10-19在知晓不可恢复后果后明确选择“允许删除旧中间状态”。09:50已完成独立 `storage_cleanup_20261019_replication_intermediates_01/` 计划，移除旧V25 `training_replication/seed{137,251,389}/arms/{static,c_only,full}/training/stepNNNN_step/state.pt` 中299至1490的非149倍数步，排除三个C-only的597至894整段，并额外保留C-only1371193、Full389299、Full2511213/1237/1334/1335。实际删除9762个文件、278.753510GiB，没有内容备份，不能通过Git或JSON恢复；所有目录及原逐步记录保持历史原义，禁止补造状态或改写原SHA来绕过缺失。
