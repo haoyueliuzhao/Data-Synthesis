@@ -1,0 +1,23 @@
+{
+  "GPU": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+  "at": "2026-10-20T07:21:20.002950+00:00",
+  "birth": "490527443",
+  "id": "817712c31f45b41736206146d9ed8a49a9b6a2ac7c24c956a2036589e34ad0a7",
+  "known_existing_processes": 2,
+  "lease": {
+    "device": 66304,
+    "inode": 5280236274,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks/gpu-23de3b19331d75a07aa41aef48e1af06933180307d9643e0e1770a6a9502d2ce.lock"
+  },
+  "maximum_seconds": 3600,
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "other_processes_modified": false,
+  "ownership_source_sha256": "ff7cf559bc1d74eb4d1db07ee64400e287643b84828de6b1d0588e4a95ef4e60",
+  "pid": 3018773,
+  "requested_GiB": 32,
+  "runtime_free_floor_GiB": 2,
+  "schema": "v63_explicit_GPU7_reservation.v1",
+  "source_sha256": "6433d2d58fd7d288916eb16d34d21d4959e33de1b796bf978ef4150ccccbc8f7",
+  "startup_free_margin_GiB": 4
+}

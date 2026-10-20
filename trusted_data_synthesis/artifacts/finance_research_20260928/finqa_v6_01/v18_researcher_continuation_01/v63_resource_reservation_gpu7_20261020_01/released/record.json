@@ -1,0 +1,12 @@
+{
+  "GPU": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+  "at": "2026-10-20T07:19:41.153816+00:00",
+  "birth": "490517357",
+  "id": "71825760406ac7054e896e3fb7f8a260022e9b9121af4064598175b3b5b8ff65",
+  "intent_id": "3893089100cb9d44d2c617204907e2e049c802a1dcf26fbd29e4188f8820be9e",
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "pid": 3012254,
+  "reason": "reservation_failed",
+  "schema": "v63_GPU7_reservation_released.v1"
+}

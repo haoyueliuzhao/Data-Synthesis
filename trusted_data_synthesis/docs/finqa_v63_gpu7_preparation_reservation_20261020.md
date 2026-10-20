@@ -11,3 +11,5 @@
 实施入口为 `scripts/finqa_v63_reservation.py`。实际成功以该目录 `reserved/record.json` 为准，释放以 `released/record.json` 与身份退出为准，源码准备不等于已占到显存。
 
 首个64GiB实例PID3012254/birth490517357于15:19:41北京时间因申请前余量已经不足而退出，没有实际占位；其failure和released记录保持不变。随后显卡空闲仅38760MiB。为继续用户的GPU7占位请求，另登记唯一32GiB容量实例 `v63_resource_reservation_gpu7_20261020_02/`，原4GiB启动余量、2GiB运行free门和一小时上限不变；不重启01、不循环重试、不修改其他项目。新增参数只允许选择明确的01/64GiB或02/32GiB登记目录，没有任意卡或任意目录的派发范围。
+
+32GiB实例实际 reserved 于15:21:22，PID3018773/birth490527443。16:20:32北京时间核对身份后调用唯一 `release --reservation 2`，封存释放请求 `1adf6c42af252072cf288f8508ef1dea802be2e8905c22550089524835acc8c1`。正式V63监督器于16:21启动前，已读取实际released记录、确认该原身份退出，并确认原device/inode `66304/5280236274` 的项目GPU7租约可取后立即释放检查锁。没有延长TTL或再建占位，没有向其他进程发信号。随后GPU7承接正式seed137/C05/b1 feedback，临时占位不计入科学剂量。

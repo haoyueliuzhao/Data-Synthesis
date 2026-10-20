@@ -1,0 +1,7482 @@
+{
+  "actual_loss_or_gradient_contribution": false,
+  "arm": "C1",
+  "branch_distribution_used": true,
+  "coefficient_mass": {
+    "final": 55.051260477686085,
+    "reason": 190.73344166697743,
+    "tool": 52.2152978553365
+  },
+  "coefficient_mass_fraction": {
+    "final": 0.18473577341505398,
+    "reason": 0.640045106265025,
+    "tool": 0.17521912031992115
+  },
+  "distribution": {
+    "id": "97b50af45331c1a8957994c42e591f81308d85819f2bba0c7f5deee20d335628",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/branches/seed251/C1/completed/record.json",
+    "sha256": "2bf014f29534e84b5f936274f9020245243888fc841fbf4bf0c3c7fb8be5c730"
+  },
+  "exact_actual_batch_denominators": true,
+  "expected_total_mass": 298,
+  "feedback_batch": 0,
+  "id": "54f5d2828f33cef8ded5b64ff94596d3acb3273c23bc1e6c113422b739a7b618",
+  "input_id": "103f474a52544a292ec8d1cf96e7c5dea8ea14bd699966be847e98ba679e360a",
+  "layer_labels": {
+    "final": "approved_submit_program_envelope_and_its_Student_EOS",
+    "reason": "public_reasoning_and_public_updates",
+    "tool": "approved_ordinary_tool_envelope_and_its_Student_EOS"
+  },
+  "material_input_id": "d38f95b64659d48726adb59cb15fdb81d2e30607b3833137841bcb869ea85f45",
+  "package_count": 2468,
+  "per_task": {
+    "AAL/2016/page_37.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09074534198633145,
+        "reason": 0.25094362108650753,
+        "tool": 0.05831103692716104
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAL/2016/page_37.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0944845719121158,
+        "reason": 0.2110308561757684,
+        "tool": 0.0944845719121158
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAP/2006/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06304760142665464,
+        "reason": 0.27390479714669075,
+        "tool": 0.06304760142665464
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAP/2006/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07414616936606092,
+        "reason": 0.2517076612678782,
+        "tool": 0.07414616936606092
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAP/2006/page_85.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.058636669142877365,
+        "reason": 0.2827266617142453,
+        "tool": 0.058636669142877365
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAP/2006/page_85.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08143291463821338,
+        "reason": 0.23713417072357326,
+        "tool": 0.08143291463821338
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2010/page_42.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08498985801217039,
+        "reason": 0.23002028397565924,
+        "tool": 0.08498985801217039
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2010/page_42.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09170731707317074,
+        "reason": 0.21658536585365856,
+        "tool": 0.09170731707317074
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2010/page_43.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06655173678612039,
+        "reason": 0.2668965264277593,
+        "tool": 0.06655173678612039
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2010/page_73.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0675,
+        "reason": 0.265,
+        "tool": 0.0675
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_27.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07290325342654574,
+        "reason": 0.25419349314690853,
+        "tool": 0.07290325342654574
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_27.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06376545726321511,
+        "reason": 0.2724690854735698,
+        "tool": 0.06376545726321511
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_27.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05863642302498301,
+        "reason": 0.2862877854582638,
+        "tool": 0.05507579151675325
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_39.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06459910646872667,
+        "reason": 0.2708017870625467,
+        "tool": 0.06459910646872667
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06260500445950393,
+        "reason": 0.27478999108099217,
+        "tool": 0.06260500445950393
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_41.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08439100563243006,
+        "reason": 0.23637883698948386,
+        "tool": 0.07923015737808602
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_41.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06892715749107887,
+        "reason": 0.26214568501784224,
+        "tool": 0.06892715749107887
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_41.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09015503093243041,
+        "reason": 0.2196899381351392,
+        "tool": 0.09015503093243041
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_72.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0722331080476667,
+        "reason": 0.25553378390466663,
+        "tool": 0.0722331080476667
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_78.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06479139649196042,
+        "reason": 0.2704172070160792,
+        "tool": 0.06479139649196042
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2013/page_78.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07995263785987769,
+        "reason": 0.24009472428024464,
+        "tool": 0.07995263785987769
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_26.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11184321641248665,
+        "reason": 0.24717598676349342,
+        "tool": 0.04098079682401997
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_26.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07425149700598803,
+        "reason": 0.25149700598802394,
+        "tool": 0.07425149700598803
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_67.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08097165991902834,
+        "reason": 0.23805668016194334,
+        "tool": 0.08097165991902834
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_67.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07155012416424081,
+        "reason": 0.2568997516715184,
+        "tool": 0.07155012416424081
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_67.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05878699916435766,
+        "reason": 0.2824260016712847,
+        "tool": 0.05878699916435766
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_67.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08326818755291066,
+        "reason": 0.27493011939272516,
+        "tool": 0.04180169305436421
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_78.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054629116482735024,
+        "reason": 0.28351777822788427,
+        "tool": 0.061853105289380685
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_78.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06272177872566834,
+        "reason": 0.27455644254866335,
+        "tool": 0.06272177872566834
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_78.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06696040487509683,
+        "reason": 0.26607919024980636,
+        "tool": 0.06696040487509683
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AAPL/2014/page_78.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0694536568832298,
+        "reason": 0.27325074094478663,
+        "tool": 0.05729560217198359
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2006/page_62.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07643312101910829,
+        "reason": 0.24713375796178347,
+        "tool": 0.07643312101910829
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2006/page_65.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0976492284981197,
+        "reason": 0.2765827049742412,
+        "tool": 0.02576806652763921
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_52.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05670556150903583,
+        "reason": 0.28658887698192836,
+        "tool": 0.05670556150903583
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_52.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08288266370007387,
+        "reason": 0.23423467259985226,
+        "tool": 0.08288266370007387
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_52.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07226027785233725,
+        "reason": 0.24420431285644356,
+        "tool": 0.08353540929121919
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_87.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07163797901175603,
+        "reason": 0.23863379196715367,
+        "tool": 0.08972822902109027
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_87.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06349879291055763,
+        "reason": 0.27300241417888477,
+        "tool": 0.06349879291055763
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ABMD/2008/page_87.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08629498879822922,
+        "reason": 0.25788153203174463,
+        "tool": 0.0558234791700262
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ADI/2012/page_65.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06049876192311579,
+        "reason": 0.27900247615376844,
+        "tool": 0.06049876192311579
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_42.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.057269678018544254,
+        "reason": 0.28546064396291154,
+        "tool": 0.057269678018544254
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_45.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.057258610880420044,
+        "reason": 0.2873621872941879,
+        "tool": 0.0553792018253921
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_45.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0843332216860328,
+        "reason": 0.27353757765328324,
+        "tool": 0.042129200660683874
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06428571428571428,
+        "reason": 0.27142857142857146,
+        "tool": 0.06428571428571428
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_51.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.049711185235114995,
+        "reason": 0.25974592132140256,
+        "tool": 0.09054289344348251
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_77.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07159209433713545,
+        "reason": 0.2568158113257291,
+        "tool": 0.07159209433713545
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2001/page_77.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04360902255639098,
+        "reason": 0.27518796992481204,
+        "tool": 0.081203007518797
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_110.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06869918699186991,
+        "reason": 0.26260162601626014,
+        "tool": 0.06869918699186991
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_110.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08461538461538462,
+        "reason": 0.23076923076923078,
+        "tool": 0.08461538461538462
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_110.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07172482775594617,
+        "reason": 0.25655034448810765,
+        "tool": 0.07172482775594617
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_110.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08786040714582469,
+        "reason": 0.22427918570835065,
+        "tool": 0.08786040714582469
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_168.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06147944656413263,
+        "reason": 0.2770411068717347,
+        "tool": 0.06147944656413263
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_168.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06397875635450781,
+        "reason": 0.2720424872909844,
+        "tool": 0.06397875635450781
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_168.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06355327319411981,
+        "reason": 0.27289345361176043,
+        "tool": 0.06355327319411981
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0554721414673888,
+        "reason": 0.28905571706522243,
+        "tool": 0.0554721414673888
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AES/2017/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07179487179487179,
+        "reason": 0.2564102564102564,
+        "tool": 0.07179487179487179
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ALLE/2015/page_81.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08710919876339794,
+        "reason": 0.2257816024732041,
+        "tool": 0.08710919876339794
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ALLE/2015/page_81.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.1082368808174112,
+        "reason": 0.24777176453834143,
+        "tool": 0.04399135464424739
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMAT/2012/page_37.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07064807767394017,
+        "reason": 0.25870384465211965,
+        "tool": 0.07064807767394017
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMAT/2012/page_37.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08541242236863772,
+        "reason": 0.22917515526272456,
+        "tool": 0.08541242236863772
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMAT/2016/page_30.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07607795494640873,
+        "reason": 0.24784409010718253,
+        "tool": 0.07607795494640873
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMAT/2016/page_30.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07128436704368869,
+        "reason": 0.25743126591262266,
+        "tool": 0.07128436704368869
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_102.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08527137405851935,
+        "reason": 0.2294572518829613,
+        "tool": 0.08527137405851935
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_102.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08162264150943396,
+        "reason": 0.2367547169811321,
+        "tool": 0.08162264150943396
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_28.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08265438667600387,
+        "reason": 0.2346912266479923,
+        "tool": 0.08265438667600387
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_28.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07036910807943562,
+        "reason": 0.25926178384112875,
+        "tool": 0.07036910807943562
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_28.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07637253783835263,
+        "reason": 0.24725492432329477,
+        "tool": 0.07637253783835263
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_46.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05963058248076075,
+        "reason": 0.24940083550332698,
+        "tool": 0.09096858201591229
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_46.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07181952552605815,
+        "reason": 0.24018164200097986,
+        "tool": 0.08799883247296197
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_76.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09854741519853179,
+        "reason": 0.26356267846284903,
+        "tool": 0.037889906338619155
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_76.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07457473948688903,
+        "reason": 0.25085052102622196,
+        "tool": 0.07457473948688903
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_76.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05995997254155025,
+        "reason": 0.2800800549168995,
+        "tool": 0.05995997254155025
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_76.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08921388783009314,
+        "reason": 0.22157222433981372,
+        "tool": 0.08921388783009314
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_90.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07115819625454864,
+        "reason": 0.2576836074909028,
+        "tool": 0.07115819625454864
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_90.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0913519771668514,
+        "reason": 0.21729604566629723,
+        "tool": 0.0913519771668514
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_91.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08058755866238668,
+        "reason": 0.23882488267522667,
+        "tool": 0.08058755866238668
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_91.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09222191310246908,
+        "reason": 0.2155561737950619,
+        "tool": 0.09222191310246908
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_91.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10897739429333053,
+        "reason": 0.18204521141333896,
+        "tool": 0.10897739429333053
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AMT/2004/page_91.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07710236865867189,
+        "reason": 0.23799707053163738,
+        "tool": 0.08490056080969077
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ANSS/2016/page_82.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06073451804501297,
+        "reason": 0.27853096390997406,
+        "tool": 0.06073451804501297
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ANSS/2016/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06069100923599328,
+        "reason": 0.2786179815280135,
+        "tool": 0.06069100923599328
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ANSS/2016/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10379682400225734,
+        "reason": 0.19240635199548534,
+        "tool": 0.10379682400225734
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ANSS/2016/page_85.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0840393907254718,
+        "reason": 0.23192121854905642,
+        "tool": 0.0840393907254718
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_29.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07798483795196098,
+        "reason": 0.275778644230112,
+        "tool": 0.04623651781792712
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_29.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06413244568463385,
+        "reason": 0.2636735766758595,
+        "tool": 0.07219397763950659
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_43.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06582591002024249,
+        "reason": 0.268348179959515,
+        "tool": 0.06582591002024249
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_43.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07779523047110265,
+        "reason": 0.24440953905779475,
+        "tool": 0.07779523047110265
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_45.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0387211016035723,
+        "reason": 0.3039704361980599,
+        "tool": 0.057308462198367834
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_45.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05391612255062065,
+        "reason": 0.2921677548987587,
+        "tool": 0.05391612255062065
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06896551724137932,
+        "reason": 0.2620689655172414,
+        "tool": 0.06896551724137932
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_50.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07469201434406056,
+        "reason": 0.25061597131187885,
+        "tool": 0.07469201434406056
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_62.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06674343195376126,
+        "reason": 0.2710157931101983,
+        "tool": 0.06224077493604054
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_62.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06603280305833026,
+        "reason": 0.2679343938833395,
+        "tool": 0.06603280305833026
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_62.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05807962529274005,
+        "reason": 0.2838407494145199,
+        "tool": 0.05807962529274005
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_62.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08275816339625752,
+        "reason": 0.23448367320748498,
+        "tool": 0.08275816339625752
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_72.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08128314992678888,
+        "reason": 0.23743370014642226,
+        "tool": 0.08128314992678888
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_72.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07333143484719129,
+        "reason": 0.25333713030561744,
+        "tool": 0.07333143484719129
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AON/2015/page_77.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056985511168565234,
+        "reason": 0.28602897766286955,
+        "tool": 0.056985511168565234
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APD/2019/page_100.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07570673979342663,
+        "reason": 0.24858652041314674,
+        "tool": 0.07570673979342663
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APD/2019/page_108.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06647435897435898,
+        "reason": 0.2670512820512821,
+        "tool": 0.06647435897435898
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APD/2019/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06,
+        "reason": 0.28,
+        "tool": 0.06
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APD/2019/page_53.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06881720430107527,
+        "reason": 0.2623655913978495,
+        "tool": 0.06881720430107527
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APTV/2014/page_46.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06168864272472829,
+        "reason": 0.27662271455054344,
+        "tool": 0.06168864272472829
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APTV/2014/page_46.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06787878787878787,
+        "reason": 0.2642424242424242,
+        "tool": 0.06787878787878787
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "APTV/2014/page_46.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08654182753433821,
+        "reason": 0.22691634493132354,
+        "tool": 0.08654182753433821
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AWK/2013/page_12.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10652173913043478,
+        "reason": 0.18695652173913044,
+        "tool": 0.10652173913043478
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AWK/2013/page_123.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08809430016747666,
+        "reason": 0.2238113996650467,
+        "tool": 0.08809430016747666
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "AWK/2013/page_123.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0720203615938213,
+        "reason": 0.2559592768123574,
+        "tool": 0.0720203615938213
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_80.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08613613091443034,
+        "reason": 0.22772773817113934,
+        "tool": 0.08613613091443034
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_80.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0924794903240134,
+        "reason": 0.2572062541306689,
+        "tool": 0.050314255545317675
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_80.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.074512077294686,
+        "reason": 0.250975845410628,
+        "tool": 0.074512077294686
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_80.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08738110336081167,
+        "reason": 0.22523779327837667,
+        "tool": 0.08738110336081167
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_81.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05451095318724185,
+        "reason": 0.2909780936255163,
+        "tool": 0.05451095318724185
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_81.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06376679003617915,
+        "reason": 0.2724664199276417,
+        "tool": 0.06376679003617915
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_81.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07867177522349936,
+        "reason": 0.24265644955300128,
+        "tool": 0.07867177522349936
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2009/page_81.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07687251925434373,
+        "reason": 0.2462549614913126,
+        "tool": 0.07687251925434373
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_28.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09268172079216055,
+        "reason": 0.2146365584156789,
+        "tool": 0.09268172079216055
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_28.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0783852569868726,
+        "reason": 0.24322948602625483,
+        "tool": 0.0783852569868726
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_32.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.029951690821256042,
+        "reason": 0.31787439613526575,
+        "tool": 0.052173913043478265
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_32.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.03297480620155039,
+        "reason": 0.31555232558139534,
+        "tool": 0.05147286821705427
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_32.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09000075139225323,
+        "reason": 0.21999849721549355,
+        "tool": 0.09000075139225323
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BDX/2017/page_32.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0635003637861254,
+        "reason": 0.27299927242774924,
+        "tool": 0.0635003637861254
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2009/page_98.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05015189909758565,
+        "reason": 0.26312141562689173,
+        "tool": 0.08672668527552259
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2009/page_98.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10354685467100883,
+        "reason": 0.24565936722865342,
+        "tool": 0.050793778100337805
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2014/page_33.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07200000000000001,
+        "reason": 0.256,
+        "tool": 0.07200000000000001
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2014/page_33.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06484374070721916,
+        "reason": 0.2703125185855617,
+        "tool": 0.06484374070721916
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2014/page_68.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07651607882241096,
+        "reason": 0.24696784235517813,
+        "tool": 0.07651607882241096
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2014/page_68.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06891990865184375,
+        "reason": 0.2621601826963125,
+        "tool": 0.06891990865184375
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2015/page_123.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06464646464646465,
+        "reason": 0.27070707070707073,
+        "tool": 0.06464646464646465
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2015/page_123.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.053515283015602905,
+        "reason": 0.2929694339687942,
+        "tool": 0.053515283015602905
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2015/page_35.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06638445963214769,
+        "reason": 0.2672310807357046,
+        "tool": 0.06638445963214769
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2015/page_35.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08221660017144933,
+        "reason": 0.2355667996571014,
+        "tool": 0.08221660017144933
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2015/page_35.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0713966387946022,
+        "reason": 0.25720672241079556,
+        "tool": 0.0713966387946022
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_35.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08072357263990956,
+        "reason": 0.2385528547201809,
+        "tool": 0.08072357263990956
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_35.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07175537634190876,
+        "reason": 0.2564892473161825,
+        "tool": 0.07175537634190876
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_35.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0788011988011988,
+        "reason": 0.2423976023976024,
+        "tool": 0.0788011988011988
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_35.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0744174973962208,
+        "reason": 0.2511650052075584,
+        "tool": 0.0744174973962208
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_77.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09333333333333334,
+        "reason": 0.21333333333333332,
+        "tool": 0.09333333333333334
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_77.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06693227091633466,
+        "reason": 0.2661354581673307,
+        "tool": 0.06693227091633466
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_81.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06434127713249231,
+        "reason": 0.2713174457350154,
+        "tool": 0.06434127713249231
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_81.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06701570680628273,
+        "reason": 0.2659685863874346,
+        "tool": 0.06701570680628273
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_81.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08466202989417458,
+        "reason": 0.23067594021165086,
+        "tool": 0.08466202989417458
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_81.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09699322302696725,
+        "reason": 0.250599291903722,
+        "tool": 0.052407485069310755
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_87.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06779686417024146,
+        "reason": 0.2644062716595171,
+        "tool": 0.06779686417024146
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_87.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08285896842777996,
+        "reason": 0.23428206314444006,
+        "tool": 0.08285896842777996
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "BLK/2017/page_87.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06089073260838658,
+        "reason": 0.2782185347832269,
+        "tool": 0.06089073260838658
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_141.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06277430902430903,
+        "reason": 0.27445138195138197,
+        "tool": 0.06277430902430903
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_141.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06890816221501143,
+        "reason": 0.2621836755699771,
+        "tool": 0.06890816221501143
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_141.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08151998486316331,
+        "reason": 0.25750336595268486,
+        "tool": 0.060976649184151785
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_141.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0753953751951239,
+        "reason": 0.2492092496097522,
+        "tool": 0.0753953751951239
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_162.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.053458745088701035,
+        "reason": 0.293082509822598,
+        "tool": 0.053458745088701035
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_162.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07628865979381444,
+        "reason": 0.24742268041237114,
+        "tool": 0.07628865979381444
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_194.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07038265306122449,
+        "reason": 0.25923469387755105,
+        "tool": 0.07038265306122449
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_194.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.058824738026594346,
+        "reason": 0.2823505239468113,
+        "tool": 0.058824738026594346
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_200.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06047321953252789,
+        "reason": 0.2790535609349442,
+        "tool": 0.06047321953252789
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_200.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08245425415426558,
+        "reason": 0.23509149169146895,
+        "tool": 0.08245425415426558
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_200.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06098654708520179,
+        "reason": 0.27802690582959644,
+        "tool": 0.06098654708520179
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_248.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06289994952364533,
+        "reason": 0.27420010095270936,
+        "tool": 0.06289994952364533
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_248.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08101358978676695,
+        "reason": 0.23797282042646611,
+        "tool": 0.08101358978676695
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_255.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.041025641025641026,
+        "reason": 0.31794871794871793,
+        "tool": 0.041025641025641026
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_255.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.052320675105485236,
+        "reason": 0.29535864978902954,
+        "tool": 0.052320675105485236
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_255.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10614734338121096,
+        "reason": 0.25882578101626047,
+        "tool": 0.03502687560252856
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_279.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06716761230375687,
+        "reason": 0.26566477539248623,
+        "tool": 0.06716761230375687
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_279.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07561118039926738,
+        "reason": 0.24877763920146523,
+        "tool": 0.07561118039926738
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_38.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0394088669950739,
+        "reason": 0.3300492610837439,
+        "tool": 0.03054187192118227
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_38.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07539897462091358,
+        "reason": 0.24920205075817287,
+        "tool": 0.07539897462091358
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_38.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0708824685194129,
+        "reason": 0.2582350629611742,
+        "tool": 0.0708824685194129
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_38.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06215834979879924,
+        "reason": 0.2756833004024015,
+        "tool": 0.06215834979879924
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_41.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07719136350192252,
+        "reason": 0.245617272996155,
+        "tool": 0.07719136350192252
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_41.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06,
+        "reason": 0.28,
+        "tool": 0.06
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_42.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0660036800156144,
+        "reason": 0.2679926399687712,
+        "tool": 0.0660036800156144
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_42.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07100616547042563,
+        "reason": 0.2579876690591487,
+        "tool": 0.07100616547042563
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0748403291594629,
+        "reason": 0.2503193416810742,
+        "tool": 0.0748403291594629
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_48.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08703374727762461,
+        "reason": 0.22593250544475077,
+        "tool": 0.08703374727762461
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_53.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07464351119592091,
+        "reason": 0.25071297760815825,
+        "tool": 0.07464351119592091
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2009/page_53.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07186371726417493,
+        "reason": 0.2562725654716501,
+        "tool": 0.07186371726417493
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_314.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07281520001524175,
+        "reason": 0.25436959996951647,
+        "tool": 0.07281520001524175
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_314.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07176079734219269,
+        "reason": 0.2564784053156146,
+        "tool": 0.07176079734219269
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_314.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07647125244549446,
+        "reason": 0.24705749510901104,
+        "tool": 0.07647125244549446
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_46.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.060176991150442484,
+        "reason": 0.27964601769911507,
+        "tool": 0.060176991150442484
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_46.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07431693989071038,
+        "reason": 0.25136612021857924,
+        "tool": 0.07431693989071038
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_73.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07749992729887564,
+        "reason": 0.2450001454022487,
+        "tool": 0.07749992729887564
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_73.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059903381642512084,
+        "reason": 0.28019323671497587,
+        "tool": 0.059903381642512084
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "C/2015/page_73.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06464646464646465,
+        "reason": 0.27070707070707073,
+        "tool": 0.06464646464646465
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CAG/2008/page_35.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06296996315831335,
+        "reason": 0.2740600736833733,
+        "tool": 0.06296996315831335
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CAG/2008/page_35.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07398843930635839,
+        "reason": 0.2520231213872833,
+        "tool": 0.07398843930635839
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CAG/2008/page_47.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07520626189972499,
+        "reason": 0.24958747620055005,
+        "tool": 0.07520626189972499
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CAG/2008/page_47.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08555503914596484,
+        "reason": 0.22888992170807038,
+        "tool": 0.08555503914596484
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_30.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0699769670255386,
+        "reason": 0.2600460659489228,
+        "tool": 0.0699769670255386
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_30.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07741240612852827,
+        "reason": 0.24517518774294345,
+        "tool": 0.07741240612852827
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_30.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07453489205844838,
+        "reason": 0.24600113869731918,
+        "tool": 0.07946396924423241
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_93.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08648648648648649,
+        "reason": 0.22702702702702704,
+        "tool": 0.08648648648648649
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_93.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08570585806147131,
+        "reason": 0.22858828387705743,
+        "tool": 0.08570585806147131
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2007/page_93.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06412213740458016,
+        "reason": 0.2717557251908397,
+        "tool": 0.06412213740458016
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2012/page_31.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11141552511415526,
+        "reason": 0.28858447488584477,
+        "tool": 0.0
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2012/page_31.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08279220779220779,
+        "reason": 0.2344155844155844,
+        "tool": 0.08279220779220779
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2012/page_41.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0658008658008658,
+        "reason": 0.2683982683982684,
+        "tool": 0.0658008658008658
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2012/page_58.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0761904761904762,
+        "reason": 0.24761904761904763,
+        "tool": 0.0761904761904762
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDNS/2012/page_58.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07029288702928871,
+        "reason": 0.2594142259414226,
+        "tool": 0.07029288702928871
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_34.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07419354838709677,
+        "reason": 0.25161290322580643,
+        "tool": 0.07419354838709677
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_34.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06606656696806222,
+        "reason": 0.2678668660638755,
+        "tool": 0.06606656696806222
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_35.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05866666666666667,
+        "reason": 0.2826666666666667,
+        "tool": 0.05866666666666667
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_53.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0675579258817457,
+        "reason": 0.24843422840620588,
+        "tool": 0.08400784571204842
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_53.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07228648308697024,
+        "reason": 0.2554270338260595,
+        "tool": 0.07228648308697024
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_54.pdf-1": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.08543778801843319,
+        "reason": 0.27912442396313364,
+        "tool": 0.08543778801843319
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "CDW/2015/page_54.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06535521973249957,
+        "reason": 0.26928956053500086,
+        "tool": 0.06535521973249957
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_54.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08056066359324301,
+        "reason": 0.296969696969697,
+        "tool": 0.022469639437060013
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "CDW/2015/page_54.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08187674035330508,
+        "reason": 0.23624651929338983,
+        "tool": 0.08187674035330508
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DG/2008/page_73.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07446699398173695,
+        "reason": 0.2670866838711515,
+        "tool": 0.05844632214711162
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DG/2008/page_73.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07755314720034295,
+        "reason": 0.24489370559931412,
+        "tool": 0.07755314720034295
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DG/2008/page_73.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06167615729885443,
+        "reason": 0.2766476854022912,
+        "tool": 0.06167615729885443
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DG/2008/page_86.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0846939746679263,
+        "reason": 0.23061205066414742,
+        "tool": 0.0846939746679263
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DG/2008/page_86.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11389093110727033,
+        "reason": 0.1722181377854593,
+        "tool": 0.11389093110727033
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2011/page_35.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07808776895481455,
+        "reason": 0.24382446209037084,
+        "tool": 0.07808776895481455
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2011/page_35.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12391671114416113,
+        "reason": 0.2093302432361187,
+        "tool": 0.06675304561972016
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2011/page_35.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09432705708803713,
+        "reason": 0.2201396648739338,
+        "tool": 0.08553327803802911
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2017/page_22.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08789157186053238,
+        "reason": 0.2242168562789353,
+        "tool": 0.08789157186053238
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2017/page_22.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12471595327925537,
+        "reason": 0.2259872611081301,
+        "tool": 0.04929678561261456
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2017/page_41.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09195402298850575,
+        "reason": 0.2160919540229885,
+        "tool": 0.09195402298850575
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2017/page_41.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.074000762701438,
+        "reason": 0.24881042395670336,
+        "tool": 0.07718881334185866
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISCA/2017/page_41.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06787236877164934,
+        "reason": 0.2642552624567013,
+        "tool": 0.06787236877164934
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISH/2008/page_120.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08061557276803914,
+        "reason": 0.23876885446392174,
+        "tool": 0.08061557276803914
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISH/2011/page_130.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0731975760474205,
+        "reason": 0.253604847905159,
+        "tool": 0.0731975760474205
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DISH/2011/page_130.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0922211853500535,
+        "reason": 0.2465517139819551,
+        "tool": 0.0612271006679914
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2008/page_29.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08587587148359417,
+        "reason": 0.2633903758958608,
+        "tool": 0.05073375262054508
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2008/page_29.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.1111820943117888,
+        "reason": 0.2530929618320337,
+        "tool": 0.035724943856177444
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2008/page_49.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07485380116959064,
+        "reason": 0.25029239766081873,
+        "tool": 0.07485380116959064
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2008/page_49.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05698533869471079,
+        "reason": 0.2860293226105784,
+        "tool": 0.05698533869471079
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2016/page_59.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0668985510909233,
+        "reason": 0.2595913275702196,
+        "tool": 0.07351012133885718
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DRE/2016/page_64.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07967656033245171,
+        "reason": 0.23251557285210878,
+        "tool": 0.0878078668154395
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "DVN/2004/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10674070739719596,
+        "reason": 0.27731568513910676,
+        "tool": 0.015943607463697357
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_102.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07239961776423166,
+        "reason": 0.29764024322477267,
+        "tool": 0.029960139010995753
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_103.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0772865950188705,
+        "reason": 0.24542680996225902,
+        "tool": 0.0772865950188705
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_103.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06545961928415853,
+        "reason": 0.26908076143168297,
+        "tool": 0.06545961928415853
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_78.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04617626741200902,
+        "reason": 0.307647465175982,
+        "tool": 0.04617626741200902
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_78.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05289514781226883,
+        "reason": 0.29420970437546234,
+        "tool": 0.05289514781226883
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "EOG/2017/page_93.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06134858874486429,
+        "reason": 0.2773028225102715,
+        "tool": 0.06134858874486429
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "FRT/2006/page_133.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08527165986238959,
+        "reason": 0.22945668027522081,
+        "tool": 0.08527165986238959
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "FRT/2006/page_133.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07823917792409864,
+        "reason": 0.24352164415180275,
+        "tool": 0.07823917792409864
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "FRT/2007/page_137.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08840497436090052,
+        "reason": 0.22319005127819902,
+        "tool": 0.08840497436090052
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "FRT/2007/page_137.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08528449967298887,
+        "reason": 0.22943100065402225,
+        "tool": 0.08528449967298887
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "FRT/2009/page_124.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05916118549422792,
+        "reason": 0.27100477518323796,
+        "tool": 0.06983403932253418
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GIS/2008/page_83.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06363786322773615,
+        "reason": 0.27962349127299957,
+        "tool": 0.0567386454992643
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GIS/2008/page_83.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08257822649295865,
+        "reason": 0.23484354701408272,
+        "tool": 0.08257822649295865
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GIS/2008/page_83.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07817495782468893,
+        "reason": 0.2436500843506222,
+        "tool": 0.07817495782468893
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2007/page_18.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08434426229508196,
+        "reason": 0.23131147540983607,
+        "tool": 0.08434426229508196
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2007/page_18.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07498120522743203,
+        "reason": 0.25003758954513594,
+        "tool": 0.07498120522743203
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2007/page_39.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08624034677945416,
+        "reason": 0.2275193064410917,
+        "tool": 0.08624034677945416
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2007/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07318461224040623,
+        "reason": 0.25363077551918756,
+        "tool": 0.07318461224040623
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2007/page_97.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09315068493150686,
+        "reason": 0.2136986301369863,
+        "tool": 0.09315068493150686
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08407496837990111,
+        "reason": 0.23185006324019777,
+        "tool": 0.08407496837990111
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_39.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06896777985157727,
+        "reason": 0.2620644402968455,
+        "tool": 0.06896777985157727
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_88.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06464646464646465,
+        "reason": 0.27070707070707073,
+        "tool": 0.06464646464646465
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_88.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07632116315331186,
+        "reason": 0.24735767369337625,
+        "tool": 0.07632116315331186
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_92.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0740493389668802,
+        "reason": 0.2519013220662396,
+        "tool": 0.0740493389668802
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_95.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06896889028548706,
+        "reason": 0.2620622194290259,
+        "tool": 0.06896889028548706
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_95.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06597134132017854,
+        "reason": 0.268057317359643,
+        "tool": 0.06597134132017854
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_95.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06811286124003557,
+        "reason": 0.2637742775199289,
+        "tool": 0.06811286124003557
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2008/page_99.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08504381981661228,
+        "reason": 0.22991236036677543,
+        "tool": 0.08504381981661228
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_67.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07615282489525316,
+        "reason": 0.24769435020949374,
+        "tool": 0.07615282489525316
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_67.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06687016687016686,
+        "reason": 0.26625966625966624,
+        "tool": 0.06687016687016686
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_69.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08259444540279455,
+        "reason": 0.2348111091944109,
+        "tool": 0.08259444540279455
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_83.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06844849671512608,
+        "reason": 0.2631030065697479,
+        "tool": 0.06844849671512608
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_83.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0795873729746028,
+        "reason": 0.2408252540507944,
+        "tool": 0.0795873729746028
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_83.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07590954082005551,
+        "reason": 0.24818091835988904,
+        "tool": 0.07590954082005551
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_83.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0761319061232631,
+        "reason": 0.24773618775347384,
+        "tool": 0.0761319061232631
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_84.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07297297297297298,
+        "reason": 0.22297297297297297,
+        "tool": 0.10405405405405406
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2016/page_84.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06913285087680927,
+        "reason": 0.2474960320707514,
+        "tool": 0.08337111705243938
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2018/page_74.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08036638981673738,
+        "reason": 0.23926722036652526,
+        "tool": 0.08036638981673738
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2018/page_79.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08802378630917797,
+        "reason": 0.2239524273816441,
+        "tool": 0.08802378630917797
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2018/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07193000247539026,
+        "reason": 0.25613999504921947,
+        "tool": 0.07193000247539026
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2018/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.062298250864586,
+        "reason": 0.2617090990566094,
+        "tool": 0.0759926500788047
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GPN/2018/page_85.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07335519824592314,
+        "reason": 0.2532896035081537,
+        "tool": 0.07335519824592314
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GRMN/2004/page_91.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0747619536115878,
+        "reason": 0.25047609277682437,
+        "tool": 0.0747619536115878
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "GRMN/2004/page_91.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07768078022795818,
+        "reason": 0.24463843954408368,
+        "tool": 0.07768078022795818
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0797163120567376,
+        "reason": 0.24056737588652483,
+        "tool": 0.0797163120567376
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_88.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07305879883204008,
+        "reason": 0.25388240233591985,
+        "tool": 0.07305879883204008
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_88.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05861277595671853,
+        "reason": 0.28277444808656294,
+        "tool": 0.05861277595671853
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_88.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08671752738654148,
+        "reason": 0.22656494522691706,
+        "tool": 0.08671752738654148
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08050420168067227,
+        "reason": 0.2389915966386555,
+        "tool": 0.08050420168067227
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06658905331906459,
+        "reason": 0.2668218933618708,
+        "tool": 0.06658905331906459
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06567386448250187,
+        "reason": 0.2686522710349962,
+        "tool": 0.06567386448250187
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06443294894414411,
+        "reason": 0.26256571311571886,
+        "tool": 0.07300133794013706
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-5": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06080981595092025,
+        "reason": 0.2783803680981595,
+        "tool": 0.06080981595092025
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2011/page_92.pdf-6": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.060004553954992004,
+        "reason": 0.279990892090016,
+        "tool": 0.060004553954992004
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2018/page_43.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07937083045778698,
+        "reason": 0.24125833908442607,
+        "tool": 0.07937083045778698
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2018/page_43.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08302312464749013,
+        "reason": 0.23395375070501975,
+        "tool": 0.08302312464749013
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2018/page_43.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07749508415080823,
+        "reason": 0.24500983169838356,
+        "tool": 0.07749508415080823
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HFC/2018/page_43.pdf-5": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04088397790055249,
+        "reason": 0.26077348066298345,
+        "tool": 0.09834254143646409
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2012/page_132.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07046975698027544,
+        "reason": 0.2590604860394491,
+        "tool": 0.07046975698027544
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2012/page_132.pdf-3": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.10719086962610279,
+        "reason": 0.23561826074779443,
+        "tool": 0.10719086962610279
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "HIG/2013/page_124.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07540675655203757,
+        "reason": 0.24918648689592487,
+        "tool": 0.07540675655203757
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_124.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07319038336582195,
+        "reason": 0.25361923326835606,
+        "tool": 0.07319038336582195
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_124.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09286738807885861,
+        "reason": 0.25227297442436925,
+        "tool": 0.054859637496772126
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_212.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10786516853932585,
+        "reason": 0.18426966292134833,
+        "tool": 0.10786516853932585
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_212.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06729315832958643,
+        "reason": 0.26541368334082716,
+        "tool": 0.06729315832958643
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_235.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054666667333156824,
+        "reason": 0.2846946716129829,
+        "tool": 0.06063866105386025
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HIG/2013/page_235.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06357564115528333,
+        "reason": 0.25580989913412744,
+        "tool": 0.08061445971058923
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_133.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0801556608250714,
+        "reason": 0.2396886783498572,
+        "tool": 0.0801556608250714
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_133.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08295579086435893,
+        "reason": 0.23408841827128216,
+        "tool": 0.08295579086435893
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_141.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05830200371824004,
+        "reason": 0.28339599256351994,
+        "tool": 0.05830200371824004
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_141.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06284470246734397,
+        "reason": 0.2743105950653121,
+        "tool": 0.06284470246734397
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_153.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07204080543057856,
+        "reason": 0.25591838913884296,
+        "tool": 0.07204080543057856
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HOLX/2009/page_153.pdf-2": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.09318708621312988,
+        "reason": 0.26362582757374026,
+        "tool": 0.09318708621312988
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "HOLX/2009/page_153.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0698529664956441,
+        "reason": 0.2602940670087118,
+        "tool": 0.0698529664956441
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_18.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07238095238095238,
+        "reason": 0.21142857142857144,
+        "tool": 0.11619047619047619
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_18.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07032495687444637,
+        "reason": 0.2593500862511073,
+        "tool": 0.07032495687444637
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_80.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07350159922124878,
+        "reason": 0.2529968015575024,
+        "tool": 0.07350159922124878
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_80.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07953216374269007,
+        "reason": 0.2409356725146199,
+        "tool": 0.07953216374269007
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_80.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06641509433962264,
+        "reason": 0.23245283018867927,
+        "tool": 0.10113207547169813
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2005/page_80.pdf-4": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.08256767842493848,
+        "reason": 0.28486464315012305,
+        "tool": 0.08256767842493848
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "HUM/2012/page_109.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09622083470259613,
+        "reason": 0.20755833059480777,
+        "tool": 0.09622083470259613
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2016/page_133.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07380952380952381,
+        "reason": 0.25238095238095243,
+        "tool": 0.07380952380952381
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HUM/2016/page_133.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0671183061672789,
+        "reason": 0.31437062743433075,
+        "tool": 0.018511066398390345
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2016/page_119.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08958212701049532,
+        "reason": 0.2560016292676639,
+        "tool": 0.05441624372184076
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2016/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0617829291811469,
+        "reason": 0.27643414163770624,
+        "tool": 0.0617829291811469
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2016/page_52.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05269628921802835,
+        "reason": 0.2946074215639433,
+        "tool": 0.05269628921802835
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2016/page_52.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06331023026633432,
+        "reason": 0.2733795394673314,
+        "tool": 0.06331023026633432
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2016/page_79.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07786113335679536,
+        "reason": 0.24427773328640928,
+        "tool": 0.07786113335679536
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2017/page_75.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11733028399894645,
+        "reason": 0.24722863930814462,
+        "tool": 0.035441076692909024
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "HWM/2017/page_77.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10857627561228818,
+        "reason": 0.25100076135289806,
+        "tool": 0.04042296303481377
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ILMN/2017/page_23.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08,
+        "reason": 0.24000000000000002,
+        "tool": 0.08
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ILMN/2017/page_23.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08000267891791596,
+        "reason": 0.23999464216416813,
+        "tool": 0.08000267891791596
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2015/page_122.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06282894736842105,
+        "reason": 0.27434210526315794,
+        "tool": 0.06282894736842105
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2015/page_122.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0648774669269139,
+        "reason": 0.27024506614617216,
+        "tool": 0.0648774669269139
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2015/page_122.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06305418719211824,
+        "reason": 0.2738916256157636,
+        "tool": 0.06305418719211824
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2015/page_122.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07289877811058812,
+        "reason": 0.25420244377882373,
+        "tool": 0.07289877811058812
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_105.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059058634224965184,
+        "reason": 0.27530297881793014,
+        "tool": 0.06563838695710472
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_105.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06267000326406266,
+        "reason": 0.27465999347187464,
+        "tool": 0.06267000326406266
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06346153846153846,
+        "reason": 0.2730769230769231,
+        "tool": 0.06346153846153846
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_48.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08667785790205411,
+        "reason": 0.2266442841958918,
+        "tool": 0.08667785790205411
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_48.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08313682216883131,
+        "reason": 0.2337263556623374,
+        "tool": 0.08313682216883131
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07268696978195009,
+        "reason": 0.2546260604360998,
+        "tool": 0.07268696978195009
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_50.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05459452827873881,
+        "reason": 0.29081094344252245,
+        "tool": 0.05459452827873881
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_50.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07467311076944139,
+        "reason": 0.25065377846111725,
+        "tool": 0.07467311076944139
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "INTC/2018/page_50.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08957119705012118,
+        "reason": 0.22085760589975767,
+        "tool": 0.08957119705012118
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_27.pdf-1": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.06277048751184766,
+        "reason": 0.32445902497630463,
+        "tool": 0.06277048751184766
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "IP/2005/page_27.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06294737379148492,
+        "reason": 0.2741052524170302,
+        "tool": 0.06294737379148492
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_28.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08826195328036834,
+        "reason": 0.26536798533115524,
+        "tool": 0.04637006138847645
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_28.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05717321094679585,
+        "reason": 0.2856535781064083,
+        "tool": 0.05717321094679585
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_28.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07794963741333125,
+        "reason": 0.27105724691246796,
+        "tool": 0.05099311567420081
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_29.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06358470170280207,
+        "reason": 0.2728305965943959,
+        "tool": 0.06358470170280207
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_29.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07724621011410492,
+        "reason": 0.24550757977179014,
+        "tool": 0.07724621011410492
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_31.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08501279034266568,
+        "reason": 0.2883859834469904,
+        "tool": 0.02660122621034394
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_31.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05666353677621283,
+        "reason": 0.28667292644757436,
+        "tool": 0.05666353677621283
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_31.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054915061505230796,
+        "reason": 0.2826086416327759,
+        "tool": 0.06247629686199331
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_32.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07201464868640475,
+        "reason": 0.2559707026271905,
+        "tool": 0.07201464868640475
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_32.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0643583726717356,
+        "reason": 0.2712832546565288,
+        "tool": 0.0643583726717356
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_32.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06258460259295753,
+        "reason": 0.27483079481408496,
+        "tool": 0.06258460259295753
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_32.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06274412651224245,
+        "reason": 0.27451174697551506,
+        "tool": 0.06274412651224245
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2005/page_83.pdf-1": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.08402537983425415,
+        "reason": 0.2533580801104972,
+        "tool": 0.11261654005524863
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "IP/2006/page_19.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08552331606217617,
+        "reason": 0.22895336787564768,
+        "tool": 0.08552331606217617
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_19.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07631211900174371,
+        "reason": 0.2473757619965126,
+        "tool": 0.07631211900174371
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_19.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07995174020560256,
+        "reason": 0.2400965195887949,
+        "tool": 0.07995174020560256
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_34.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.060693861990087694,
+        "reason": 0.27861227601982463,
+        "tool": 0.060693861990087694
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_34.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07058757700134949,
+        "reason": 0.25882484599730105,
+        "tool": 0.07058757700134949
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_84.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08112420115624626,
+        "reason": 0.23775159768750753,
+        "tool": 0.08112420115624626
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2006/page_84.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08637195689319732,
+        "reason": 0.22725608621360538,
+        "tool": 0.08637195689319732
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_101.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06846664047460577,
+        "reason": 0.2630667190507885,
+        "tool": 0.06846664047460577
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_101.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06372590601022517,
+        "reason": 0.2725481879795497,
+        "tool": 0.06372590601022517
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_101.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0784232512884615,
+        "reason": 0.243153497423077,
+        "tool": 0.0784232512884615
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_105.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10310126261128505,
+        "reason": 0.2379603613459774,
+        "tool": 0.058938376042737606
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_61.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05304082718204229,
+        "reason": 0.29391834563591546,
+        "tool": 0.05304082718204229
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_61.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.055099994124546386,
+        "reason": 0.29617059673354557,
+        "tool": 0.048729409141908056
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_61.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07800886592724515,
+        "reason": 0.24398226814550975,
+        "tool": 0.07800886592724515
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_62.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07762687794510782,
+        "reason": 0.27065133345796627,
+        "tool": 0.05172178859692588
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_62.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05849724668469519,
+        "reason": 0.28300550663060964,
+        "tool": 0.05849724668469519
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_62.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08698415779094938,
+        "reason": 0.25284092400033187,
+        "tool": 0.06017491820871872
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_62.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06783091687853593,
+        "reason": 0.26433816624292816,
+        "tool": 0.06783091687853593
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_64.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07714896817772492,
+        "reason": 0.2774933926464276,
+        "tool": 0.04535763917584752
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_64.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.055623269075051704,
+        "reason": 0.2887534618498966,
+        "tool": 0.055623269075051704
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_65.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07136158482397502,
+        "reason": 0.25727683035204996,
+        "tool": 0.07136158482397502
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_70.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05424443690254731,
+        "reason": 0.2915111261949054,
+        "tool": 0.05424443690254731
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_70.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06387450502589095,
+        "reason": 0.2722509899482181,
+        "tool": 0.06387450502589095
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2013/page_70.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.053737683644753384,
+        "reason": 0.2925246327104932,
+        "tool": 0.053737683644753384
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_45.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09404884834175031,
+        "reason": 0.2753028766456278,
+        "tool": 0.030648275012621868
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_45.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07095719569188455,
+        "reason": 0.2580856086162309,
+        "tool": 0.07095719569188455
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06844919786096257,
+        "reason": 0.2631016042780749,
+        "tool": 0.06844919786096257
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_50.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06860562674858917,
+        "reason": 0.2627887465028217,
+        "tool": 0.06860562674858917
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_50.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06183183992378229,
+        "reason": 0.2763363201524355,
+        "tool": 0.06183183992378229
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_83.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06082851821112437,
+        "reason": 0.27834296357775123,
+        "tool": 0.06082851821112437
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_83.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056948867203778425,
+        "reason": 0.2861022655924432,
+        "tool": 0.056948867203778425
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_83.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09257142857142857,
+        "reason": 0.21485714285714286,
+        "tool": 0.09257142857142857
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IP/2018/page_83.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06861954706282915,
+        "reason": 0.2543205389018647,
+        "tool": 0.07705991403530621
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_100.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07724553758275163,
+        "reason": 0.24550892483449677,
+        "tool": 0.07724553758275163
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_100.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07538346392495454,
+        "reason": 0.2492330721500909,
+        "tool": 0.07538346392495454
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_104.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05818181818181818,
+        "reason": 0.28363636363636363,
+        "tool": 0.05818181818181818
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_26.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08992521811383465,
+        "reason": 0.2201495637723307,
+        "tool": 0.08992521811383465
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_26.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0640874273243707,
+        "reason": 0.2718251453512586,
+        "tool": 0.0640874273243707
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_39.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08674638705387192,
+        "reason": 0.2265072258922562,
+        "tool": 0.08674638705387192
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04003903229504878,
+        "reason": 0.3141979154790468,
+        "tool": 0.04576305222590446
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_39.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08531043190296307,
+        "reason": 0.22937913619407385,
+        "tool": 0.08531043190296307
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_52.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054468085106382985,
+        "reason": 0.29106382978723405,
+        "tool": 0.054468085106382985
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_52.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07686417872556486,
+        "reason": 0.24627164254887027,
+        "tool": 0.07686417872556486
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_78.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06231533195558972,
+        "reason": 0.2753693360888206,
+        "tool": 0.06231533195558972
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_78.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09017760766763652,
+        "reason": 0.21964478466472698,
+        "tool": 0.09017760766763652
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IPG/2018/page_78.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07760710925129172,
+        "reason": 0.2447857814974166,
+        "tool": 0.07760710925129172
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_57.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08018945745918596,
+        "reason": 0.2396210850816281,
+        "tool": 0.08018945745918596
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_57.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08425790409505507,
+        "reason": 0.26901647149226315,
+        "tool": 0.04672562441268173
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_65.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06661262537000433,
+        "reason": 0.25343395753888354,
+        "tool": 0.07995341709111223
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_65.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056737588652482275,
+        "reason": 0.2865248226950355,
+        "tool": 0.056737588652482275
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_65.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07839674622984995,
+        "reason": 0.24320650754030015,
+        "tool": 0.07839674622984995
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_79.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07719601651238275,
+        "reason": 0.24560796697523452,
+        "tool": 0.07719601651238275
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_79.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0771316955296013,
+        "reason": 0.24573660894079744,
+        "tool": 0.0771316955296013
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "IQV/2016/page_79.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07923715980108317,
+        "reason": 0.24152568039783368,
+        "tool": 0.07923715980108317
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JKHY/2011/page_34.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06413207547169811,
+        "reason": 0.27173584905660375,
+        "tool": 0.06413207547169811
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JKHY/2011/page_34.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07509899965788014,
+        "reason": 0.24980200068423974,
+        "tool": 0.07509899965788014
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JKHY/2011/page_34.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07699057943863097,
+        "reason": 0.24601884112273809,
+        "tool": 0.07699057943863097
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JKHY/2011/page_55.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.058767492742517025,
+        "reason": 0.282465014514966,
+        "tool": 0.058767492742517025
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JKHY/2018/page_16.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059504132231404966,
+        "reason": 0.2809917355371901,
+        "tool": 0.059504132231404966
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_104.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08629010095560825,
+        "reason": 0.22741979808878351,
+        "tool": 0.08629010095560825
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_104.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07517463268480265,
+        "reason": 0.2654944501193587,
+        "tool": 0.059330917195838606
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_119.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06653909570503605,
+        "reason": 0.2741000164353532,
+        "tool": 0.0593608878596108
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_119.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0862862372498907,
+        "reason": 0.26588362419120704,
+        "tool": 0.047830138558902294
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_144.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07173353498622366,
+        "reason": 0.25653293002755273,
+        "tool": 0.07173353498622366
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_144.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07860804552465535,
+        "reason": 0.26058599051869064,
+        "tool": 0.060805963956654094
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_144.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06738304569629872,
+        "reason": 0.2652339086074026,
+        "tool": 0.06738304569629872
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_145.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06306354293267197,
+        "reason": 0.2738729141346561,
+        "tool": 0.06306354293267197
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_145.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04506912442396313,
+        "reason": 0.3098617511520737,
+        "tool": 0.04506912442396313
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_145.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04941838649155723,
+        "reason": 0.3011632270168856,
+        "tool": 0.04941838649155723
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_69.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07370357525666513,
+        "reason": 0.2525928494866697,
+        "tool": 0.07370357525666513
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_69.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08156329403586352,
+        "reason": 0.236873411928273,
+        "tool": 0.08156329403586352
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_83.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06929323308270677,
+        "reason": 0.2614135338345865,
+        "tool": 0.06929323308270677
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "JPM/2017/page_83.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08953413736022432,
+        "reason": 0.22093172527955138,
+        "tool": 0.08953413736022432
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KHC/2018/page_27.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06769027291808091,
+        "reason": 0.25572922608656024,
+        "tool": 0.07658050099535892
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KHC/2018/page_27.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07030828543284674,
+        "reason": 0.2884166098893697,
+        "tool": 0.04127510467778357
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KHC/2018/page_27.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0733339326505727,
+        "reason": 0.2533321346988546,
+        "tool": 0.0733339326505727
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2006/page_67.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06663182525096736,
+        "reason": 0.23364841704488112,
+        "tool": 0.09971975770415156
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2006/page_67.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.058461202662883335,
+        "reason": 0.2830775946742333,
+        "tool": 0.058461202662883335
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_108.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07923731282867666,
+        "reason": 0.2415253743426467,
+        "tool": 0.07923731282867666
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_108.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06426073747846388,
+        "reason": 0.27147852504307224,
+        "tool": 0.06426073747846388
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_112.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06367770028262687,
+        "reason": 0.27264459943474634,
+        "tool": 0.06367770028262687
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_130.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06101669577111485,
+        "reason": 0.2779666084577703,
+        "tool": 0.06101669577111485
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_131.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07183006535947713,
+        "reason": 0.2563398692810458,
+        "tool": 0.07183006535947713
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_131.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06072192426309658,
+        "reason": 0.27855615147380686,
+        "tool": 0.06072192426309658
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_131.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07984291949429462,
+        "reason": 0.2403141610114108,
+        "tool": 0.07984291949429462
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_131.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07902843689413208,
+        "reason": 0.24194312621173591,
+        "tool": 0.07902843689413208
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KIM/2014/page_59.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06896551724137931,
+        "reason": 0.26206896551724135,
+        "tool": 0.06896551724137931
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2010/page_164.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04913696285549968,
+        "reason": 0.30172607428900067,
+        "tool": 0.04913696285549968
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2010/page_164.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06746501818934324,
+        "reason": 0.2650699636213135,
+        "tool": 0.06746501818934324
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2010/page_2.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10238558134495063,
+        "reason": 0.19522883731009877,
+        "tool": 0.10238558134495063
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2014/page_114.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07084502065991108,
+        "reason": 0.2583099586801778,
+        "tool": 0.07084502065991108
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2014/page_18.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07342814371257485,
+        "reason": 0.2531437125748503,
+        "tool": 0.07342814371257485
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "KMI/2014/page_18.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08057553956834533,
+        "reason": 0.23884892086330936,
+        "tool": 0.08057553956834533
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "L/2010/page_41.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10058253834092927,
+        "reason": 0.23924715956051157,
+        "tool": 0.060170302098559184
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LKQ/2016/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0806512798684885,
+        "reason": 0.23869744026302306,
+        "tool": 0.0806512798684885
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LKQ/2016/page_48.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07763814170627296,
+        "reason": 0.2447237165874541,
+        "tool": 0.07763814170627296
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LKQ/2016/page_48.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07090848558771226,
+        "reason": 0.2581830288245755,
+        "tool": 0.07090848558771226
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_37.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.064,
+        "reason": 0.272,
+        "tool": 0.064
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_37.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0733320251177394,
+        "reason": 0.25333594976452123,
+        "tool": 0.0733320251177394
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_39.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07272727272727272,
+        "reason": 0.2545454545454546,
+        "tool": 0.07272727272727272
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08217743764267679,
+        "reason": 0.2356451247146464,
+        "tool": 0.08217743764267679
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_39.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.044094488188976384,
+        "reason": 0.31181102362204727,
+        "tool": 0.044094488188976384
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_55.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07560891557618436,
+        "reason": 0.2786837103906952,
+        "tool": 0.04570737403312039
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_55.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05683899528435557,
+        "reason": 0.2863220094312889,
+        "tool": 0.05683899528435557
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_55.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08500131312766873,
+        "reason": 0.22999737374466256,
+        "tool": 0.08500131312766873
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2007/page_55.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07962469032624055,
+        "reason": 0.23251682635107887,
+        "tool": 0.08785848332268059
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_26.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06945667467037366,
+        "reason": 0.26108665065925274,
+        "tool": 0.06945667467037366
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_26.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07540391016298985,
+        "reason": 0.24919217967402033,
+        "tool": 0.07540391016298985
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_26.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07989626011509895,
+        "reason": 0.2402074797698021,
+        "tool": 0.07989626011509895
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_44.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.02587064676616916,
+        "reason": 0.32537313432835824,
+        "tool": 0.048756218905472645
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_44.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.043613998602161475,
+        "reason": 0.3127720027956771,
+        "tool": 0.043613998602161475
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_45.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06389465650868839,
+        "reason": 0.2722106869826232,
+        "tool": 0.06389465650868839
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_45.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05944001223274259,
+        "reason": 0.28111997553451495,
+        "tool": 0.05944001223274259
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_45.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07079409304437893,
+        "reason": 0.2584118139112421,
+        "tool": 0.07079409304437893
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_47.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04926357491652651,
+        "reason": 0.2904680654779518,
+        "tool": 0.060268359605521724
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_47.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056799184505606524,
+        "reason": 0.28640163098878696,
+        "tool": 0.056799184505606524
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_47.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06639930252833479,
+        "reason": 0.2672013949433304,
+        "tool": 0.06639930252833479
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_49.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05445026178010472,
+        "reason": 0.2910994764397906,
+        "tool": 0.05445026178010472
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_49.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06139363064914946,
+        "reason": 0.27721273870170104,
+        "tool": 0.06139363064914946
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_81.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059125036262326194,
+        "reason": 0.28174992747534766,
+        "tool": 0.059125036262326194
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_81.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07164025943867136,
+        "reason": 0.2567194811226573,
+        "tool": 0.07164025943867136
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_87.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06129810644406508,
+        "reason": 0.2650549477748049,
+        "tool": 0.07364694578113005
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_87.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07096774193548387,
+        "reason": 0.25806451612903225,
+        "tool": 0.07096774193548387
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_87.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06192626719879135,
+        "reason": 0.2761474656024173,
+        "tool": 0.06192626719879135
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_89.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12169153748378125,
+        "reason": 0.24751193459366605,
+        "tool": 0.030796527922552698
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_89.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0736969696969697,
+        "reason": 0.2526060606060606,
+        "tool": 0.0736969696969697
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_89.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06997503243956373,
+        "reason": 0.2600499351208726,
+        "tool": 0.06997503243956373
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2013/page_89.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07625272331154684,
+        "reason": 0.24749455337690632,
+        "tool": 0.07625272331154684
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_31.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06570120526955059,
+        "reason": 0.26859758946089884,
+        "tool": 0.06570120526955059
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_31.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07484633162182563,
+        "reason": 0.25030733675634875,
+        "tool": 0.07484633162182563
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_45.pdf-3": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.08084852076056538,
+        "reason": 0.2789427017821608,
+        "tool": 0.09020877745727382
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "LMT/2014/page_45.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09173399233279474,
+        "reason": 0.21653201533441058,
+        "tool": 0.09173399233279474
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_46.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0721899153478101,
+        "reason": 0.25562016930437986,
+        "tool": 0.0721899153478101
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_46.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0661511166258977,
+        "reason": 0.2676977667482046,
+        "tool": 0.0661511166258977
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_46.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07018230616617381,
+        "reason": 0.25963538766765243,
+        "tool": 0.07018230616617381
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_47.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09767441860465116,
+        "reason": 0.20465116279069767,
+        "tool": 0.09767441860465116
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_47.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08173188747156837,
+        "reason": 0.2258084900844984,
+        "tool": 0.09245962244393321
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_47.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.067385140533122,
+        "reason": 0.25734275918797017,
+        "tool": 0.07527210027890788
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_49.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08065412608443578,
+        "reason": 0.23869174783112845,
+        "tool": 0.08065412608443578
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_49.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05643991774787381,
+        "reason": 0.2871201645042524,
+        "tool": 0.05643991774787381
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_49.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07563025210084034,
+        "reason": 0.24873949579831933,
+        "tool": 0.07563025210084034
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_49.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07156982454603737,
+        "reason": 0.25686035090792525,
+        "tool": 0.07156982454603737
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07830419729135633,
+        "reason": 0.24339160541728735,
+        "tool": 0.07830419729135633
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_85.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07361398665746492,
+        "reason": 0.2527720266850702,
+        "tool": 0.07361398665746492
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_93.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07324598552205945,
+        "reason": 0.2535080289558811,
+        "tool": 0.07324598552205945
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2014/page_93.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.085099937081026,
+        "reason": 0.25560400947927897,
+        "tool": 0.059296053439695025
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_106.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06346153846153847,
+        "reason": 0.2730769230769231,
+        "tool": 0.06346153846153847
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_106.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07592627037949173,
+        "reason": 0.24814745924101655,
+        "tool": 0.07592627037949173
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_106.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07227497209608122,
+        "reason": 0.2554500558078376,
+        "tool": 0.07227497209608122
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_52.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06957998855410565,
+        "reason": 0.26084002289178876,
+        "tool": 0.06957998855410565
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_52.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056105475099782504,
+        "reason": 0.287789049800435,
+        "tool": 0.056105475099782504
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_52.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.061043655612309206,
+        "reason": 0.2779126887753816,
+        "tool": 0.061043655612309206
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_53.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.056356471161214124,
+        "reason": 0.2872870576775718,
+        "tool": 0.056356471161214124
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_55.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0690815840720524,
+        "reason": 0.28672850628613333,
+        "tool": 0.04418990964181435
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_55.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0642841919121411,
+        "reason": 0.2714316161757178,
+        "tool": 0.0642841919121411
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_55.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06085201026518392,
+        "reason": 0.27829597946963214,
+        "tool": 0.06085201026518392
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_86.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07094461783638685,
+        "reason": 0.25811076432722635,
+        "tool": 0.07094461783638685
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "LMT/2015/page_86.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07259472328430035,
+        "reason": 0.2548105534313994,
+        "tool": 0.07259472328430035
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_113.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08825784768434497,
+        "reason": 0.22348430463131008,
+        "tool": 0.08825784768434497
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_113.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07472527472527472,
+        "reason": 0.25054945054945055,
+        "tool": 0.07472527472527472
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_113.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07913821305943206,
+        "reason": 0.2417235738811359,
+        "tool": 0.07913821305943206
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_116.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06905594405594406,
+        "reason": 0.2618881118881119,
+        "tool": 0.06905594405594406
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_116.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08680459770114943,
+        "reason": 0.22639080459770117,
+        "tool": 0.08680459770114943
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_125.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07044141794648895,
+        "reason": 0.2591171641070221,
+        "tool": 0.07044141794648895
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_125.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07218150921939732,
+        "reason": 0.2556369815612054,
+        "tool": 0.07218150921939732
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_125.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06817722263795091,
+        "reason": 0.26364555472409823,
+        "tool": 0.06817722263795091
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_70.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06493996873280683,
+        "reason": 0.27012006253438636,
+        "tool": 0.06493996873280683
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MA/2008/page_70.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06699867177850673,
+        "reason": 0.2660026564429866,
+        "tool": 0.06699867177850673
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAR/2018/page_42.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0667143825279281,
+        "reason": 0.2665712349441438,
+        "tool": 0.0667143825279281
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAR/2018/page_42.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06577442571231391,
+        "reason": 0.26845114857537217,
+        "tool": 0.06577442571231391
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_29.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07098707971850915,
+        "reason": 0.2580258405629817,
+        "tool": 0.07098707971850915
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_29.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08546182253400249,
+        "reason": 0.27242881840579636,
+        "tool": 0.04210935906020122
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_29.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0763011792280085,
+        "reason": 0.23617812934886107,
+        "tool": 0.08752069142313046
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_29.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08424447438008283,
+        "reason": 0.23151105123983437,
+        "tool": 0.08424447438008283
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_86.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.052317163046776784,
+        "reason": 0.29536567390644647,
+        "tool": 0.052317163046776784
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_86.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07491620453628121,
+        "reason": 0.25016759092743757,
+        "tool": 0.07491620453628121
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_89.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06595744680851064,
+        "reason": 0.2680851063829787,
+        "tool": 0.06595744680851064
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2010/page_89.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08224378881987578,
+        "reason": 0.23551242236024844,
+        "tool": 0.08224378881987578
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2017/page_37.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06120689655172414,
+        "reason": 0.2606744421906694,
+        "tool": 0.0781186612576065
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2017/page_37.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06131386861313869,
+        "reason": 0.2773722627737227,
+        "tool": 0.06131386861313869
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MAS/2017/page_37.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04927536231884058,
+        "reason": 0.30144927536231886,
+        "tool": 0.04927536231884058
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_119.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0954141151340848,
+        "reason": 0.24238803021784444,
+        "tool": 0.062197854648070795
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_119.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08212627018632013,
+        "reason": 0.2357474596273597,
+        "tool": 0.08212627018632013
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_119.pdf-3": {
+      "exposure": "9/20",
+      "mass": {
+        "final": 0.09893938246231088,
+        "reason": 0.25212123507537826,
+        "tool": 0.09893938246231088
+      },
+      "tail_visits": 1,
+      "visits": 2
+    },
+    "MRO/2008/page_119.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07577800716237751,
+        "reason": 0.2730007501625398,
+        "tool": 0.051221242675082684
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_130.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06778870662323885,
+        "reason": 0.26442258675352226,
+        "tool": 0.06778870662323885
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_130.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.070950096721686,
+        "reason": 0.258099806556628,
+        "tool": 0.070950096721686
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_135.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059048958026259105,
+        "reason": 0.28190208394748184,
+        "tool": 0.059048958026259105
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_142.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08139732953796511,
+        "reason": 0.2372053409240698,
+        "tool": 0.08139732953796511
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_142.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07837571686594433,
+        "reason": 0.2738758227864473,
+        "tool": 0.04774846034760845
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_145.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07224091031578578,
+        "reason": 0.24475584752986346,
+        "tool": 0.0830032421543508
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_145.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06831418688637339,
+        "reason": 0.2633716262272532,
+        "tool": 0.06831418688637339
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_146.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05891676231076133,
+        "reason": 0.28216647537847733,
+        "tool": 0.05891676231076133
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_146.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0633759590792839,
+        "reason": 0.27324808184143223,
+        "tool": 0.0633759590792839
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_41.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09206858795867864,
+        "reason": 0.24671756577747303,
+        "tool": 0.06121384626384832
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_41.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07972047758076384,
+        "reason": 0.24055904483847232,
+        "tool": 0.07972047758076384
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_41.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07452357787928257,
+        "reason": 0.2509528442414348,
+        "tool": 0.07452357787928257
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_42.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07010023287874445,
+        "reason": 0.2597995342425111,
+        "tool": 0.07010023287874445
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_42.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06818332880147437,
+        "reason": 0.2636333423970513,
+        "tool": 0.06818332880147437
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_42.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0980683323429537,
+        "reason": 0.24763124053995764,
+        "tool": 0.054300427117088726
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_44.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08250696983543768,
+        "reason": 0.26805604398357213,
+        "tool": 0.049436986180990204
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_44.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07272727272727272,
+        "reason": 0.2545454545454546,
+        "tool": 0.07272727272727272
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_44.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06032888022104784,
+        "reason": 0.2793422395579043,
+        "tool": 0.06032888022104784
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_70.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0806224779256063,
+        "reason": 0.2387550441487874,
+        "tool": 0.0806224779256063
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_70.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06403234329265087,
+        "reason": 0.2854612151051548,
+        "tool": 0.050506441602194384
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_70.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07247282938184475,
+        "reason": 0.2550543412363105,
+        "tool": 0.07247282938184475
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_70.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07709859105429218,
+        "reason": 0.26841063967321954,
+        "tool": 0.054490769272488304
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_99.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07246417454219131,
+        "reason": 0.2550716509156174,
+        "tool": 0.07246417454219131
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_99.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.1265785667275018,
+        "reason": 0.2162981642288444,
+        "tool": 0.05712326904365375
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_99.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08024411814129048,
+        "reason": 0.23951176371741906,
+        "tool": 0.08024411814129048
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2008/page_99.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.13443518908955723,
+        "reason": 0.2332556954071938,
+        "tool": 0.032309115503249
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_18.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06446400294837323,
+        "reason": 0.27107199410325356,
+        "tool": 0.06446400294837323
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_18.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06682630906768838,
+        "reason": 0.26634738186462326,
+        "tool": 0.06682630906768838
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_22.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08731988318195215,
+        "reason": 0.25754414168207274,
+        "tool": 0.05513597513597514
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_22.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06056627338716376,
+        "reason": 0.2788674532256725,
+        "tool": 0.06056627338716376
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_39.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0785737235382705,
+        "reason": 0.29976556897380086,
+        "tool": 0.021660707487928667
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08664822604130602,
+        "reason": 0.22670354791738798,
+        "tool": 0.08664822604130602
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_39.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07412040233709288,
+        "reason": 0.25175919532581426,
+        "tool": 0.07412040233709288
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_40.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07473011292018329,
+        "reason": 0.25053977415963347,
+        "tool": 0.07473011292018329
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_40.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07839933165583927,
+        "reason": 0.24320133668832147,
+        "tool": 0.07839933165583927
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_41.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.14246575342465753,
+        "reason": 0.25753424657534246,
+        "tool": 0.0
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_41.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06934495610008508,
+        "reason": 0.26131008779982984,
+        "tool": 0.06934495610008508
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MRO/2012/page_41.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0712901218164729,
+        "reason": 0.3021242490114978,
+        "tool": 0.0265856291720293
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MS/2012/page_150.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0634920634920635,
+        "reason": 0.27301587301587305,
+        "tool": 0.0634920634920635
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MS/2015/page_200.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.1276595744680851,
+        "reason": 0.2723404255319149,
+        "tool": 0.0
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_43.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06532206413940715,
+        "reason": 0.25839701903700846,
+        "tool": 0.0762809168235844
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_43.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06757445017362938,
+        "reason": 0.26485109965274123,
+        "tool": 0.06757445017362938
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_64.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07414860517850551,
+        "reason": 0.251702789642989,
+        "tool": 0.07414860517850551
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_64.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06632670365631348,
+        "reason": 0.2673465926873731,
+        "tool": 0.06632670365631348
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_64.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06385992751164309,
+        "reason": 0.2722801449767138,
+        "tool": 0.06385992751164309
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_64.pdf-5": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06615108558702676,
+        "reason": 0.2676978288259465,
+        "tool": 0.06615108558702676
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "MSI/2005/page_64.pdf-6": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07093107176854904,
+        "reason": 0.2581378564629019,
+        "tool": 0.07093107176854904
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NCLH/2016/page_84.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07501942501942502,
+        "reason": 0.2397047397047397,
+        "tool": 0.08527583527583528
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NCLH/2016/page_84.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07016142536611655,
+        "reason": 0.2596771492677669,
+        "tool": 0.07016142536611655
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NCLH/2016/page_84.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08804549112168691,
+        "reason": 0.27224206428772607,
+        "tool": 0.03971244459058699
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NKE/2014/page_36.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06835973430449732,
+        "reason": 0.28852555636634986,
+        "tool": 0.043114709329152824
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NKE/2014/page_36.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059674012522850206,
+        "reason": 0.2806519749542996,
+        "tool": 0.059674012522850206
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NKE/2014/page_36.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06154745734786286,
+        "reason": 0.27690508530427427,
+        "tool": 0.06154745734786286
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NKE/2014/page_36.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07438578481683844,
+        "reason": 0.27027474530317536,
+        "tool": 0.05533946987998625
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NWS/2016/page_148.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06965215487720153,
+        "reason": 0.26069569024559697,
+        "tool": 0.06965215487720153
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "NWS/2016/page_148.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0715113982195304,
+        "reason": 0.2569772035609392,
+        "tool": 0.0715113982195304
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ORLY/2015/page_28.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08753745580926386,
+        "reason": 0.2249250883814723,
+        "tool": 0.08753745580926386
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ORLY/2015/page_28.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09375840000178853,
+        "reason": 0.2471827140357419,
+        "tool": 0.05905888596246959
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ORLY/2015/page_28.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07137123362569125,
+        "reason": 0.2572575327486175,
+        "tool": 0.07137123362569125
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ORLY/2015/page_28.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08425903762703668,
+        "reason": 0.25296881172506047,
+        "tool": 0.06277215064790288
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "ORLY/2016/page_29.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07260609792044198,
+        "reason": 0.25478780415911606,
+        "tool": 0.07260609792044198
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PM/2014/page_112.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07975243454906311,
+        "reason": 0.2404951309018738,
+        "tool": 0.07975243454906311
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PM/2014/page_112.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06918918918918919,
+        "reason": 0.2616216216216216,
+        "tool": 0.06918918918918919
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PM/2014/page_112.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07207401160627457,
+        "reason": 0.255851976787451,
+        "tool": 0.07207401160627457
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PM/2014/page_112.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0668610894997351,
+        "reason": 0.2662778210005298,
+        "tool": 0.0668610894997351
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_155.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08411028700316385,
+        "reason": 0.25748012349175575,
+        "tool": 0.05840958950508039
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_155.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07011749057163821,
+        "reason": 0.2597650188567236,
+        "tool": 0.07011749057163821
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_44.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.098245646203153,
+        "reason": 0.25255085318756376,
+        "tool": 0.04920350060928326
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_44.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05771516184323181,
+        "reason": 0.2781278350521444,
+        "tool": 0.06415700310462387
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_73.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07505698413488669,
+        "reason": 0.2498860317302266,
+        "tool": 0.07505698413488669
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2016/page_73.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07904523475759526,
+        "reason": 0.23300162773311062,
+        "tool": 0.0879531375092942
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_45.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06632024125180107,
+        "reason": 0.26735951749639786,
+        "tool": 0.06632024125180107
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_45.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09647162786870105,
+        "reason": 0.23999325434496357,
+        "tool": 0.06353511778633539
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_45.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06848142441362781,
+        "reason": 0.2630371511727444,
+        "tool": 0.06848142441362781
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_45.pdf-5": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06363636363636363,
+        "reason": 0.23787878787878788,
+        "tool": 0.09848484848484848
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_81.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07272727272727274,
+        "reason": 0.2545454545454546,
+        "tool": 0.07272727272727274
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_81.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0809814690092807,
+        "reason": 0.2742313926863274,
+        "tool": 0.04478713830439189
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PNC/2018/page_81.pdf-5": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08424478822599216,
+        "reason": 0.2315104235480157,
+        "tool": 0.08424478822599216
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PPG/2015/page_40.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08359078169205464,
+        "reason": 0.23281843661589074,
+        "tool": 0.08359078169205464
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PPG/2015/page_40.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.061130796694285505,
+        "reason": 0.26524822650760166,
+        "tool": 0.07362097679811287
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PPG/2015/page_40.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05473684210526316,
+        "reason": 0.2905263157894737,
+        "tool": 0.05473684210526316
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "PPG/2015/page_40.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08210526315789474,
+        "reason": 0.23578947368421052,
+        "tool": 0.08210526315789474
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2009/page_13.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07409213727350628,
+        "reason": 0.25181572545298747,
+        "tool": 0.07409213727350628
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2009/page_90.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.1086233421872046,
+        "reason": 0.18275331562559086,
+        "tool": 0.1086233421872046
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2009/page_90.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05701434593981919,
+        "reason": 0.28597130812036164,
+        "tool": 0.05701434593981919
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2009/page_90.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07828026623493434,
+        "reason": 0.24343946753013135,
+        "tool": 0.07828026623493434
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2009/page_90.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06928383435307825,
+        "reason": 0.26143233129384347,
+        "tool": 0.06928383435307825
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2017/page_38.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08357016720596977,
+        "reason": 0.26196574249736615,
+        "tool": 0.054464090296664144
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RCL/2017/page_38.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10873786407766992,
+        "reason": 0.18252427184466022,
+        "tool": 0.10873786407766992
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_109.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0764137665320453,
+        "reason": 0.2471724669359094,
+        "tool": 0.0764137665320453
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_109.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09097687573759908,
+        "reason": 0.2180462485248019,
+        "tool": 0.09097687573759908
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_109.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08094275094275094,
+        "reason": 0.2381144981144981,
+        "tool": 0.08094275094275094
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_109.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06761244670726319,
+        "reason": 0.26477510658547365,
+        "tool": 0.06761244670726319
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_40.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07752221005233054,
+        "reason": 0.24495557989533895,
+        "tool": 0.07752221005233054
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2013/page_40.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09387755102040818,
+        "reason": 0.2122448979591837,
+        "tool": 0.09387755102040818
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2016/page_141.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06539540405272957,
+        "reason": 0.2692091918945409,
+        "tool": 0.06539540405272957
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2016/page_40.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11096714061856904,
+        "reason": 0.17806571876286195,
+        "tool": 0.11096714061856904
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2016/page_40.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0811054866871303,
+        "reason": 0.2377890266257394,
+        "tool": 0.0811054866871303
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2016/page_40.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0807264773425947,
+        "reason": 0.23854704531481064,
+        "tool": 0.0807264773425947
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RE/2016/page_40.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08466648689817777,
+        "reason": 0.2306670262036445,
+        "tool": 0.08466648689817777
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RL/2012/page_13.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0800206481843938,
+        "reason": 0.23995870363121238,
+        "tool": 0.0800206481843938
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RL/2012/page_13.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07691301074420848,
+        "reason": 0.24617397851158307,
+        "tool": 0.07691301074420848
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_137.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06479749855473031,
+        "reason": 0.26267144975614864,
+        "tool": 0.07253105168912105
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_16.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06994535519125683,
+        "reason": 0.26010928961748636,
+        "tool": 0.06994535519125683
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_16.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08627450980392158,
+        "reason": 0.2274509803921569,
+        "tool": 0.08627450980392158
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_69.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07315694466517882,
+        "reason": 0.2536861106696424,
+        "tool": 0.07315694466517882
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_69.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09055923800391737,
+        "reason": 0.21888152399216526,
+        "tool": 0.09055923800391737
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2013/page_92.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06288039875255046,
+        "reason": 0.2742392024948991,
+        "tool": 0.06288039875255046
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_17.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0816326530612245,
+        "reason": 0.23673469387755103,
+        "tool": 0.0816326530612245
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_17.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06345145732858042,
+        "reason": 0.2531767666177396,
+        "tool": 0.08337177605368001
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054892940098875104,
+        "reason": 0.29021411980224987,
+        "tool": 0.054892940098875104
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_50.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07843605669692627,
+        "reason": 0.24312788660614748,
+        "tool": 0.07843605669692627
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_69.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08325791855203621,
+        "reason": 0.2334841628959276,
+        "tool": 0.08325791855203621
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_69.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05551881979255269,
+        "reason": 0.28896236041489465,
+        "tool": 0.05551881979255269
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_98.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06556714687862229,
+        "reason": 0.2688657062427554,
+        "tool": 0.06556714687862229
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "RSG/2016/page_98.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07702711190202031,
+        "reason": 0.24594577619595942,
+        "tool": 0.07702711190202031
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SLG/2012/page_61.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06945837362252676,
+        "reason": 0.2610832527549465,
+        "tool": 0.06945837362252676
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SLG/2012/page_61.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08936011237339511,
+        "reason": 0.2212797752532098,
+        "tool": 0.08936011237339511
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SLG/2012/page_87.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.047740880282718536,
+        "reason": 0.2871915067612956,
+        "tool": 0.06506761295598587
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SLG/2018/page_45.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06549284052332457,
+        "reason": 0.26901431895335093,
+        "tool": 0.06549284052332457
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_111.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06537681871883813,
+        "reason": 0.26924636256232376,
+        "tool": 0.06537681871883813
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_111.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07681246310136446,
+        "reason": 0.24637507379727114,
+        "tool": 0.07681246310136446
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_33.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07259905574233087,
+        "reason": 0.25480188851533825,
+        "tool": 0.07259905574233087
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_56.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06985017517530775,
+        "reason": 0.2602996496493845,
+        "tool": 0.06985017517530775
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_56.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0731291161884557,
+        "reason": 0.2537417676230886,
+        "tool": 0.0731291161884557
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_59.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08423105776444112,
+        "reason": 0.23153788447111778,
+        "tool": 0.08423105776444112
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_93.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07068886577600444,
+        "reason": 0.2586222684479912,
+        "tool": 0.07068886577600444
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNA/2013/page_93.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06388410556667327,
+        "reason": 0.27223178886665345,
+        "tool": 0.06388410556667327
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "SNPS/2003/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07171079225657608,
+        "reason": 0.2565784154868479,
+        "tool": 0.07171079225657608
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_65.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.084,
+        "reason": 0.232,
+        "tool": 0.084
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_65.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.054781893004115234,
+        "reason": 0.29043621399176955,
+        "tool": 0.054781893004115234
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_65.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.04142374346074906,
+        "reason": 0.2773043625869971,
+        "tool": 0.08127189395225383
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_65.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05457705535540276,
+        "reason": 0.2616272659944883,
+        "tool": 0.08379567865010894
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_95.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06231900755152399,
+        "reason": 0.275361984896952,
+        "tool": 0.06231900755152399
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2007/page_95.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07150053022269354,
+        "reason": 0.25699893955461295,
+        "tool": 0.07150053022269354
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_107.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07066582914572865,
+        "reason": 0.25866834170854275,
+        "tool": 0.07066582914572865
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_107.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06482213438735178,
+        "reason": 0.27035573122529644,
+        "tool": 0.06482213438735178
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_107.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06343147414838002,
+        "reason": 0.26377648681052746,
+        "tool": 0.07279203904109253
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_107.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08127457097237317,
+        "reason": 0.23745085805525368,
+        "tool": 0.08127457097237317
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_175.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09215783959277929,
+        "reason": 0.21568432081444144,
+        "tool": 0.09215783959277929
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_175.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07798836125592562,
+        "reason": 0.24402327748814884,
+        "tool": 0.07798836125592562
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_54.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07619342448466264,
+        "reason": 0.24761315103067472,
+        "tool": 0.07619342448466264
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_54.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12171012658912878,
+        "reason": 0.23531465429529547,
+        "tool": 0.04297521911557575
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_54.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09334903720422297,
+        "reason": 0.2573112342164221,
+        "tool": 0.04933972857935495
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_71.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08273687481533173,
+        "reason": 0.23452625036933655,
+        "tool": 0.08273687481533173
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_71.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07797646113445227,
+        "reason": 0.2370773807613985,
+        "tool": 0.08494615810414924
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_71.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07035047287196704,
+        "reason": 0.2592990542560659,
+        "tool": 0.07035047287196704
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STT/2013/page_71.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07929013295602015,
+        "reason": 0.2414197340879597,
+        "tool": 0.07929013295602015
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STZ/2010/page_51.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07815672716166394,
+        "reason": 0.2436865456766721,
+        "tool": 0.07815672716166394
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STZ/2010/page_51.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0787637153856636,
+        "reason": 0.24247256922867283,
+        "tool": 0.0787637153856636
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STZ/2010/page_51.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12980104715524277,
+        "reason": 0.1931540187077575,
+        "tool": 0.07704493413699981
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "STZ/2010/page_51.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08807173384133508,
+        "reason": 0.22385653231732988,
+        "tool": 0.08807173384133508
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TFX/2006/page_50.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08507936507936507,
+        "reason": 0.20063492063492064,
+        "tool": 0.11428571428571428
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TFX/2006/page_50.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05964002558574889,
+        "reason": 0.26707494987394637,
+        "tool": 0.07328502454030474
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TFX/2015/page_42.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06512665515256189,
+        "reason": 0.24746689694876223,
+        "tool": 0.08740644789867588
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TFX/2015/page_42.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07173307099524512,
+        "reason": 0.2565338580095098,
+        "tool": 0.07173307099524512
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TFX/2015/page_42.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05983656561808649,
+        "reason": 0.28032686876382695,
+        "tool": 0.05983656561808649
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TROW/2011/page_13.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08739401498832043,
+        "reason": 0.22521197002335913,
+        "tool": 0.08739401498832043
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TROW/2011/page_13.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0586863398381723,
+        "reason": 0.2826273203236554,
+        "tool": 0.0586863398381723
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_28.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06991869918699187,
+        "reason": 0.2601626016260163,
+        "tool": 0.06991869918699187
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_28.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.059594334779959755,
+        "reason": 0.2773836943094708,
+        "tool": 0.06302197091056944
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_68.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07626314393159528,
+        "reason": 0.24747371213680947,
+        "tool": 0.07626314393159528
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_68.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09513089072833417,
+        "reason": 0.2097382185433317,
+        "tool": 0.09513089072833417
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_68.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.12455037919826652,
+        "reason": 0.15089924160346696,
+        "tool": 0.12455037919826652
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "TSCO/2017/page_73.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07377049180327869,
+        "reason": 0.25245901639344265,
+        "tool": 0.07377049180327869
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UA/2009/page_63.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08574651193515027,
+        "reason": 0.22850697612969947,
+        "tool": 0.08574651193515027
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UA/2009/page_63.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07709886244226194,
+        "reason": 0.24580227511547614,
+        "tool": 0.07709886244226194
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2010/page_33.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07773279352226721,
+        "reason": 0.2639676113360324,
+        "tool": 0.05829959514170041
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_34.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07975320906610939,
+        "reason": 0.24049358186778122,
+        "tool": 0.07975320906610939
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_34.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05877551020408164,
+        "reason": 0.28244897959183674,
+        "tool": 0.05877551020408164
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_56.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0800779376393533,
+        "reason": 0.2398441247212934,
+        "tool": 0.0800779376393533
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_56.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06463732266722193,
+        "reason": 0.27072535466555614,
+        "tool": 0.06463732266722193
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_56.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06151860218523812,
+        "reason": 0.27696279562952375,
+        "tool": 0.06151860218523812
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2013/page_56.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07554978684368532,
+        "reason": 0.24890042631262937,
+        "tool": 0.07554978684368532
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2016/page_34.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0825260105261838,
+        "reason": 0.23494797894763242,
+        "tool": 0.0825260105261838
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "UPS/2016/page_34.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07627118644067797,
+        "reason": 0.24745762711864408,
+        "tool": 0.07627118644067797
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "V/2009/page_88.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.11056910569105691,
+        "reason": 0.2894308943089431,
+        "tool": 0.0
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "V/2009/page_89.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0793263521537299,
+        "reason": 0.2413472956925402,
+        "tool": 0.0793263521537299
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VLO/2012/page_130.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.051036180947170794,
+        "reason": 0.2979276381056584,
+        "tool": 0.051036180947170794
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VLO/2012/page_27.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09460654568668922,
+        "reason": 0.24550570496391821,
+        "tool": 0.05988774934939258
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VLO/2012/page_27.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.03593869201487696,
+        "reason": 0.32587291038249955,
+        "tool": 0.03818839760262355
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VNO/2005/page_69.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07784527030758187,
+        "reason": 0.24430945938483628,
+        "tool": 0.07784527030758187
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VNO/2005/page_69.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0745349468347126,
+        "reason": 0.25093010633057483,
+        "tool": 0.0745349468347126
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VNO/2011/page_177.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08401854883890604,
+        "reason": 0.23196290232218794,
+        "tool": 0.08401854883890604
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VNO/2011/page_85.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08376318725907891,
+        "reason": 0.23247362548184217,
+        "tool": 0.08376318725907891
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VNO/2011/page_85.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08292682926829269,
+        "reason": 0.3170731707317073,
+        "tool": 0.0
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2003/page_39.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06976744186046512,
+        "reason": 0.26046511627906976,
+        "tool": 0.06976744186046512
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2003/page_39.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06451612903225806,
+        "reason": 0.2709677419354839,
+        "tool": 0.06451612903225806
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_106.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.05405405405405406,
+        "reason": 0.2918918918918919,
+        "tool": 0.05405405405405406
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06198212593376152,
+        "reason": 0.276035748132477,
+        "tool": 0.06198212593376152
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_48.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07637758060149435,
+        "reason": 0.24724483879701134,
+        "tool": 0.07637758060149435
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_48.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0744054585201051,
+        "reason": 0.2511890829597898,
+        "tool": 0.0744054585201051
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_48.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06808106737750612,
+        "reason": 0.2638378652449878,
+        "tool": 0.06808106737750612
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_97.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06577777777777778,
+        "reason": 0.26844444444444443,
+        "tool": 0.06577777777777778
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_97.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.06766328806793723,
+        "reason": 0.24649160568230738,
+        "tool": 0.08584510624975542
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "VTR/2007/page_97.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08762417623971226,
+        "reason": 0.22475164752057553,
+        "tool": 0.08762417623971226
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2016/page_61.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08888864733042784,
+        "reason": 0.2477604921870447,
+        "tool": 0.0633508604825275
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2016/page_61.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.0675644445416708,
+        "reason": 0.26487111091665844,
+        "tool": 0.0675644445416708
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2016/page_61.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07149758454106281,
+        "reason": 0.2570048309178744,
+        "tool": 0.07149758454106281
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2016/page_61.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07879628354937068,
+        "reason": 0.24240743290125863,
+        "tool": 0.07879628354937068
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_116.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07061259510563077,
+        "reason": 0.25877480978873846,
+        "tool": 0.07061259510563077
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_116.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08914923989475507,
+        "reason": 0.2217015202104899,
+        "tool": 0.08914923989475507
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_116.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.10452261306532665,
+        "reason": 0.19095477386934676,
+        "tool": 0.10452261306532665
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_116.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07218467960438499,
+        "reason": 0.25563064079123005,
+        "tool": 0.07218467960438499
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_48.pdf-1": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08947550263307011,
+        "reason": 0.2210489947338598,
+        "tool": 0.08947550263307011
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_48.pdf-2": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.07169482595504519,
+        "reason": 0.2460112697488958,
+        "tool": 0.08229390429605901
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_48.pdf-3": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.08870040982497569,
+        "reason": 0.22259918035004864,
+        "tool": 0.08870040982497569
+      },
+      "tail_visits": 0,
+      "visits": 2
+    },
+    "WELL/2017/page_48.pdf-4": {
+      "exposure": "2/5",
+      "mass": {
+        "final": 0.09797347635677311,
+        "reason": 0.2395412256716918,
+        "tool": 0.062485297971535084
+      },
+      "tail_visits": 0,
+      "visits": 2
+    }
+  },
+  "rules_id": "7fc72b1db84b8765ddc5632a23703061fdb20c2215f25d88ed7e1cb8c0e97d73",
+  "schema": "v63_actual_branch_supervised_coefficient_mass.v1",
+  "seed": 251,
+  "separate_reason_and_update_not_claimed": true,
+  "state_count": 1360,
+  "task_count": 744,
+  "total_coefficient_mass": 298.0,
+  "updates": 298
+}

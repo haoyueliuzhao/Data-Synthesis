@@ -230,6 +230,8 @@ V54温度对照已由原04于2026-10-20 08:51:34北京时间以COMPLETE收口，
 
 V63沿用最多6worker、GPU0至7/每卡1和共享准入，未知归属/MPS仍阻断；阶段free门feedback/distribution/generate为24GiB、train26GiB、replay56GiB，allocated历史峰值76GiB、边界free2GiB、RSS192GiB及主机96GiB余量不变。初始化、等待、draining占名额；已确认资源/I/O故障仅从实际完整断点自动恢复，UNKNOWN/数值/状态/源码异常不自动重试，合法停止终止自动拉起。不另装新cron或全机observer；沿用已授权的进程内非本UID SI_USER TERM过滤边界，SIGKILL无法捕获。用户另要求“先占用七号卡”，GPU7仅独立有界准备期占位，正式派发前须核验释放；不是科学启动。诊断规则先冻结，旧813 invalid及最多36对实际定性阅读、各分支真实分布监督系数及C/q方向表不改变评分。当前实现/CPU核验不等于已冻结、派发或实验通过；具体实际状态见 `trusted_data_synthesis/docs/finqa_v63_balanced_feedback_repetition_20261020.md`，不得重复启动旧入口或未核验的新监督器。
 
+V63已从源提交 `1c6cd75ae5` 冻结112文件，实施包ID `4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8`，协议ID `a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db`；正式冻结入口313项CPU依赖通过、CUDA未初始化。用户随后重新确认继续并要求“我已经手动提交，尽快开始实验”。2026-10-20 16:21北京时间唯一监督器PID3477806/birth490889573、controller3478025/490889852已实际启动；GPU7首worker为seed137.feedback_C05、PID3478389/490890361，原32GiB占位按登记release请求实际退出、原租约释放后才派发。16:26观察到draw101的8条完整反馈及16条实际returned记录，最近资源门通过；不是700反馈齐全或整轮通过。已登记旧结果CPU诊断完成：813 invalid、parser不一致/缺档/UNKNOWN均0，旧9条监督系数封存；逐例阅读状态见报告。当前只查新根supervisor及queue，不得重复启动新监督器或重开旧实验，环境审批超时不伪装成科学attempt/资源失败。
+
 # 已授权的旧B中间状态清理
 
 用户于2026-10-19在知晓不可恢复后果后明确选择“允许删除旧中间状态”。09:50已完成独立 `storage_cleanup_20261019_replication_intermediates_01/` 计划，移除旧V25 `training_replication/seed{137,251,389}/arms/{static,c_only,full}/training/stepNNNN_step/state.pt` 中299至1490的非149倍数步，排除三个C-only的597至894整段，并额外保留C-only1371193、Full389299、Full2511213/1237/1334/1335。实际删除9762个文件、278.753510GiB，没有内容备份，不能通过Git或JSON恢复；所有目录及原逐步记录保持历史原义，禁止补造状态或改写原SHA来绕过缺失。

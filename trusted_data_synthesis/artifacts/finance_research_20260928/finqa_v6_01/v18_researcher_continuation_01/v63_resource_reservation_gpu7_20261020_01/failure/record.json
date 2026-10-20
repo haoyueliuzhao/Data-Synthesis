@@ -1,0 +1,8 @@
+{
+  "automatic_retry": false,
+  "error": "GPU7 no longer has 64GiB plus 4GiB margin",
+  "error_type": "RuntimeError",
+  "id": "e45f8b29abc8d69b265776d8d0fab9d67e02d94523880db60d0122d50f45e626",
+  "intent_id": "3893089100cb9d44d2c617204907e2e049c802a1dcf26fbd29e4188f8820be9e",
+  "schema": "v63_reservation_failure.v1"
+}

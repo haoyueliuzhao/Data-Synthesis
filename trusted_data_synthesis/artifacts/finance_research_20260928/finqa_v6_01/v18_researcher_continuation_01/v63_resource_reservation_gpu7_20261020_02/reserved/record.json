@@ -1,0 +1,18 @@
+{
+  "GPU": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+  "allocated_bytes": 34359738368,
+  "at": "2026-10-20T07:21:22.098295+00:00",
+  "birth": "490527443",
+  "exclusive_physical_GPU_claimed": false,
+  "exclusive_project_lease": true,
+  "free_bytes": 5842468864,
+  "gpu_index": 7,
+  "id": "eefa7856bce85d1237252df0695a137a9e8733c8e7ae5374d39bf1d41f152e45",
+  "intent_id": "817712c31f45b41736206146d9ed8a49a9b6a2ac7c24c956a2036589e34ad0a7",
+  "model_calls": 0,
+  "optimizer_updates": 0,
+  "pid": 3018773,
+  "schema": "v63_GPU7_reservation_started.v1",
+  "scientific_worker_started": false,
+  "ttl_seconds": 3600
+}

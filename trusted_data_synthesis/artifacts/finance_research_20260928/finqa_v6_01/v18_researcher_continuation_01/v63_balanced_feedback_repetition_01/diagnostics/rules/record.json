@@ -1,0 +1,182 @@
+{
+  "id": "7fc72b1db84b8765ddc5632a23703061fdb20c2215f25d88ed7e1cb8c0e97d73",
+  "implementation": {
+    "id": "4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/record.json",
+    "sha256": "c83227d06b91b8cddc2994c889f144a2d74008a7d3128554a2fa8d215bf559bf"
+  },
+  "old_outcomes_already_known": true,
+  "policy": {
+    "GPU_work": 0,
+    "analysis_is_posthoc_not_blinded": true,
+    "coefficients": {
+      "EOS": "retain original encoding's action layer; no EOS inferred from decoded text",
+      "categories": {
+        "final": "approved_submit_program_envelope_and_its_Student_EOS",
+        "reason": "public_reasoning_and_public_updates",
+        "tool": "approved_ordinary_tool_envelope_and_its_Student_EOS"
+      },
+      "classification_frozen_before_diagnostic_calculation": true,
+      "distribution": "Hold: actual parent pi; every C branch: its own actual fixed q",
+      "loss_or_gradient_contribution_claimed": false,
+      "multiply_coefficient_by_mu": false,
+      "original_seed_schedule_and_real_tail_batches": true,
+      "original_three_layers_partition_all_and_only_supervised_targets": true,
+      "reason_and_update_separately_identified": false,
+      "retokenize_or_reclassify_original_text": false,
+      "source": "original reviewed span authority and original frozen Student layer_target_positions",
+      "token_coefficient": "p_branch[x,z] / (B_actual * n_xz * whole_package_L_P)",
+      "updates": 298,
+      "window": [
+        597,
+        894
+      ],
+      "zero_target_context_not_removed": true
+    },
+    "directions": {
+      "C_already_includes_mu": true,
+      "RMS_definition": "original mu-weighted RMS(C/mu) over noncontrol support",
+      "endpoint": "complete dev883 native I/W/R utility",
+      "executed_direction": "sum_task_state C[x,z] * (q[x,z] - parent_pi[x,z])",
+      "existing_old_draw_fields": "retain exact source/field references; do not fabricate numerical comparisons",
+      "explanatory_only": true,
+      "missing_new_results": "PENDING, never invented or selected from the better old/new batch",
+      "missing_old_draw_components": "NA only after bounded formal metadata field inspection; no old R3 replay",
+      "multiply_direction_by_mu_again": false,
+      "old_C_on_new_direction_and_new_C_on_old_direction": true,
+      "old_draw_field_names": [
+        "draw_components",
+        "draw_gJ",
+        "gJ_by_draw",
+        "C_by_draw",
+        "draw_C_diagnostics",
+        "draw_gradient_digests",
+        "draw_components_schema",
+        "draw_response_counts",
+        "formal_and_draws_atomically_committed"
+      ],
+      "old_draw_inspection": "existing old outer/distribution metadata plus C05 replay result and final complete checkpoint record",
+      "old_draw_intermediate_checkpoint_scan": false,
+      "old_draw_metadata_scopes": [
+        "evidence",
+        "feedback_report",
+        "report",
+        "binding",
+        "backend_identity"
+      ],
+      "old_draw_replay_Tensor_opened": false,
+      "old_new_same_temperature": true,
+      "q_distance": "mu-weighted TV and both directional KLs on identical positive support",
+      "report_saved_RMS_and_floor": true,
+      "success_episode_task_and_source_support": true,
+      "two_batches_not_a_population_variance_estimate": true,
+      "within_batch_two_temperature_comparison": true
+    },
+    "external_API_calls": 0,
+    "native_rescoring_calls": 0,
+    "new_backward_passes": 0,
+    "new_invalid_population": {
+      "arms": [
+        "C1",
+        "C05"
+      ],
+      "batch": 1,
+      "denominator_per_condition": 883,
+      "maximum_rows": 5298,
+      "no_new_qualitative_reading_quota": true,
+      "same_automatic_parser_categories": true,
+      "seeds": [
+        137,
+        251,
+        389
+      ]
+    },
+    "new_model_calls": 0,
+    "old_invalid_population": {
+      "arms": [
+        "Hold",
+        "C1",
+        "C05"
+      ],
+      "denominator_per_condition": 883,
+      "expected_invalid_by_arm": {
+        "C05": 271,
+        "C1": 247,
+        "Hold": 295
+      },
+      "expected_total": 813,
+      "panel": "step894_dev883_greedy",
+      "seeds": [
+        137,
+        251,
+        389
+      ]
+    },
+    "old_results_already_seen": true,
+    "original_B_remaining_72_examples_read": false,
+    "output_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/diagnostics",
+    "parser": {
+      "accepted_prefix_or_longer_generation_counterfactual": false,
+      "categories": [
+        "A_no_opening_envelope",
+        "B_malformed_tag_in_prose_prefix",
+        "C_non_envelope_between_or_after_envelopes",
+        "D_invalid_call_object_schema",
+        "E_missing_closing_envelope",
+        "F_strict_JSON_or_argument_extraction_exception",
+        "G_accepted_tool_envelopes"
+      ],
+      "episode_exclusive_category": "terminal returned turn's original-parser first-return branch",
+      "first_rejected_turn": "separate earliest A..F returned turn, not the episode exclusive category",
+      "implementation": "same frozen parse_qwen_native_response; label its seven tuple return branches only",
+      "repair_or_rescore": false,
+      "saved_original_tool_calls_compared": true,
+      "saved_parser_disagreement_blocks_diagnostic_acceptance": true
+    },
+    "payload_access": {
+      "Tensor_container_opening_disclosed": true,
+      "extracted_small_inputs_reused": true,
+      "extraction_cost_recorded": true,
+      "gradient_tensor_values_accessed": false,
+      "model_constructed": false,
+      "old_C05": "one SHA-bound CPU mmap extraction of C/q/evidence per seed"
+    },
+    "qualitative": {
+      "automatic_reading_packet_is_not_completed_manual_analysis": true,
+      "baseline": "C1",
+      "batch": 0,
+      "candidate": "C05",
+      "digest_fields": [
+        "policy_id",
+        "seed",
+        "task_key",
+        "transition",
+        "baseline_episode_sha256",
+        "candidate_episode_sha256"
+      ],
+      "immutable_selection_before_reading_original_pair_bytes": true,
+      "maximum_per_parent": 12,
+      "maximum_per_parent_per_direction": 6,
+      "maximum_total": 36,
+      "new_batch_additional_qualitative_pairs": 0,
+      "order": "ascending canonical selection SHA256, then original task key",
+      "read_both_original_trajectories_and_existing_tool_events": true,
+      "redistribute_unused_stratum_quota": false,
+      "strata": [
+        "I->R",
+        "R->I"
+      ]
+    },
+    "schema": "v63_bounded_posthoc_diagnostics_policy.v1",
+    "source_mutation": false,
+    "source_old_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01"
+  },
+  "preparation_only": true,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "registered_before_diagnostic_scans": true,
+  "schema": "v63_frozen_posthoc_diagnostic_rules.v1",
+  "source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/finqa_v63_diagnostics.py",
+    "sha256": "7c7ea32653fdb1df93bb15971183ca7a88bc3b88ee813a435c23a707d314d0fe"
+  }
+}

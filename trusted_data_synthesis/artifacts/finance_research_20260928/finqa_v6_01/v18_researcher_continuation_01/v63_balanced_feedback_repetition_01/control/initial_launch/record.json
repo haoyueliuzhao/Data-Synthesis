@@ -1,0 +1,18 @@
+{
+  "birth": "490889573",
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/finqa_v63_entry.py",
+    "--mode",
+    "supervise",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01"
+  ],
+  "id": "692dc8b0cfab6b03a3d0d8912e273e95ee74d26139bbd491f1a8348608ce3165",
+  "pid": 3477806,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "schema": "v63_actual_initial_supervisor_process.v1",
+  "started_epoch": 1792484501.090908,
+  "supervisor_actual_scientific_dispatch_not_yet_verified": true
+}

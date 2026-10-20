@@ -1,0 +1,100 @@
+{
+  "assistant_qualitative_reading_completed": true,
+  "baseline": "C1",
+  "candidate": "C05",
+  "causal_mechanism_confirmed": false,
+  "completion_basis": "three completed assistant per-pair reports; original source SHA checks were performed in those individual reviews",
+  "counterfactual_accuracy_computed": false,
+  "episode_sides_read": 72,
+  "existing_tool_events_read": 117,
+  "feedback_batch": 0,
+  "id": "a136370bd9f637a86595fd0bd73e362aaa13ed5eac3d1000e863bf82651e2851",
+  "independent_human_audit": false,
+  "new_batch_qualitative_pairs": 0,
+  "new_model_calls": 0,
+  "new_original_episode_scans_by_this_publication": 0,
+  "new_qualitative_samples": 0,
+  "new_scoring_calls": 0,
+  "new_tool_executions": 0,
+  "old_bounded_diagnostics": {
+    "id": "fba81b4a780a5d5ea532164ba3d95fda10bc85bb9cb2e2e49dabb7615da82d0b",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/diagnostics/old/record.json",
+    "sha256": "c4b434422a4ba79f83ab19845998f7b47f87b86020c48ee2495c0d1683b3e0a0"
+  },
+  "original_B_additional_examples_read": 0,
+  "original_packet_not_modified": true,
+  "original_selection_not_modified": true,
+  "packet_manual_reading_completed_flag_preserved": false,
+  "pairs_read": 36,
+  "queue_or_scientific_process_changed": false,
+  "reading_packet": {
+    "id": "ddd93457381ea6012664548c69eefd3a0d0a5b332e65dd36f3c9ac8f1e1066a8",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/diagnostics/invalid/batch0/reading_packet/record.json",
+    "sha256": "3d968269f34a0333c1baae57d007afc4864789cb767e161dbc9e43cea732d76a"
+  },
+  "recorded_at_UTC": "2026-10-20T08:38:01.067383+00:00",
+  "reports_by_seed": {
+    "137": {
+      "I_to_R_pairs": 6,
+      "R_to_I_pairs": 6,
+      "assistant_report_completed": true,
+      "episode_sides_read": 24,
+      "existing_tool_events_read": 26,
+      "original_episode_SHA_repeated_by_this_publication": false,
+      "original_episode_SHA_verification_completed_in_individual_review": true,
+      "pairs_read": 12,
+      "report": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/docs/audit_reports/finqa_v63_balanced_repetition_20261020/qualitative_seed137.md",
+        "sha256": "e65622de4ffb3765e94e4a8820486e129f46a70829d70ca62958d77edd92dc21"
+      },
+      "returned_turns_read": 36,
+      "seed": 137
+    },
+    "251": {
+      "I_to_R_pairs": 6,
+      "R_to_I_pairs": 6,
+      "assistant_report_completed": true,
+      "episode_sides_read": 24,
+      "existing_tool_events_read": 24,
+      "original_episode_SHA_repeated_by_this_publication": false,
+      "original_episode_SHA_verification_completed_in_individual_review": true,
+      "pairs_read": 12,
+      "report": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/docs/audit_reports/finqa_v63_balanced_repetition_20261020/qualitative_seed251.md",
+        "sha256": "9fccbb32f22bbf0ee6812c7a1a6c6b7ded63f1f8c97ee3cc5473930fbcb5e91f"
+      },
+      "returned_turns_read": 36,
+      "seed": 251
+    },
+    "389": {
+      "I_to_R_pairs": 6,
+      "R_to_I_pairs": 6,
+      "assistant_report_completed": true,
+      "episode_sides_read": 24,
+      "existing_tool_events_read": 67,
+      "original_episode_SHA_repeated_by_this_publication": false,
+      "original_episode_SHA_verification_completed_in_individual_review": true,
+      "pairs_read": 12,
+      "report": {
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/docs/audit_reports/finqa_v63_balanced_repetition_20261020/qualitative_seed389.md",
+        "sha256": "9a22518f07e18ed7fecdf4f45d196c88a5fb27fca9020a2cf8f95a9ae90f0f0e"
+      },
+      "returned_turns_read": 76,
+      "seed": 389
+    }
+  },
+  "returned_turns_read": 148,
+  "schema": "v63_completed_bounded_assistant_qualitative_review.v1",
+  "seeds": [
+    137,
+    251,
+    389
+  ],
+  "selection": {
+    "id": "8a123abcaf73fd725b6155a91c05683d064579f885c935bb396309e8e80a0e23",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/diagnostics/invalid/batch0/selection/record.json",
+    "sha256": "83dbcbf39489381ad0d9b3441cac08b02f7addb5f501c40e1ffdd525f3ee3fad"
+  },
+  "status": "COMPLETE_ASSISTANT_QUALITATIVE_READING",
+  "whole_experiment_completion_claimed": false
+}

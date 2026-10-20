@@ -1,0 +1,4123 @@
+{
+  "coordinate": "seed251/C05",
+  "denominator": 883,
+  "feedback_batch": 0,
+  "first_rejected_turn_category_counts": {
+    "A_no_opening_envelope": 46,
+    "E_missing_closing_envelope": 5
+  },
+  "first_rejected_turn_counts": {
+    "1": 34,
+    "2": 15,
+    "3": 1,
+    "5": 1
+  },
+  "id": "b183804763984865915264d810658ebf9e8aa2ec4fdedcd928cde08b4132b61c",
+  "incomplete_original_receipts": 0,
+  "invalid_count": 65,
+  "native_scores_rewritten": false,
+  "new_model_calls": 0,
+  "original_archive_unavailable": 0,
+  "parser_disagreement_count": 0,
+  "parser_repaired": false,
+  "parser_source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/.codex-worktrees/finqa-v18-researcher-continuation-20260930/trusted_data_synthesis/src/trusted_synthesis/finance_research/qwen_protocol.py",
+    "sha256": "352f255a202e133b0bec46cf4e222c17ae6eb4e8cd8f9c767ec8cb2f84ea8bc5"
+  },
+  "rows": [
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 91,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "0dc5ae46b05bd985c89e5126c099ae2fe3146568765a95f5b743a4f9aaa241df",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 144549,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/951e9147f6c2e6cbbc8eb03c9298caad199daeedeb5fc4cb60cdb3974d008340/episode.json",
+        "sha256": "aab9fa383a27331f8c7abfaff1b79768ed3b89a530d7ddbe6c216d4e18d85791"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:C/2017",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/C/2017/page_328.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 135,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "e72db49a0401c6ec6cb81f1e4bf892cf0f31e53edeb60e775d4df51beb5b1179",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 91,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "0dc5ae46b05bd985c89e5126c099ae2fe3146568765a95f5b743a4f9aaa241df",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "66f34e6e102458431a425634ed37835fd3e3b3a746aede36958a983932e317d3",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 115903,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/0770cb051fcc1a1cb71cd43a7b1af992d3a97e2b7b6caf64b052116914654d87/episode.json",
+        "sha256": "013fa7b95e846e833af877e6b626e07e46db79497c885b9e7e6d24d8d8662248"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:MRO/2007",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/MRO/2007/page_149.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "66f34e6e102458431a425634ed37835fd3e3b3a746aede36958a983932e317d3",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 3,
+      "native_reason": "nonexecutable_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 271701,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/93987fe4e9450481f49f1adaade64f17ca7ceced417642a161be04524fd1a6b7/episode.json",
+        "sha256": "0a8c3b47665c64cde47e568d71dfeada39205d25a0f6e7933fb3f8856ba20bbb"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:C/2010",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/C/2010/page_223.pdf-3",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 135,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "c3ea9751c63f316bc0ead7ca7a8199b0c35a2ffeafc9106f127acc892a00253f",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "read_source": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 210,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "d9b2061ed59c8c5622fca38510f95a97a709a6db46c3f990a6409844b8b4db48",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "read_source": 1,
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 234,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "d1f88ab1ef9736c817e82901b968188eb21e1a0cd2f9042d619bab3dc5efe2b3",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 244,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "c685f9c704b542b7110279b6b7f3eeb6adb14089e6421a9d9efc18657de3b543",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 112205,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/331c4505fa7d6ca624bcc4215a070cbb104e83e391c20e79c25ccbece987e8fd/episode.json",
+        "sha256": "bab53eb43594b24bce8c3c06cefa7b143635eebe4e56abcd476a6a644d89eaae"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ABMD/2009",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ABMD/2009/page_88.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 244,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "c685f9c704b542b7110279b6b7f3eeb6adb14089e6421a9d9efc18657de3b543",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 32,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 5584432,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/900864e4637acfe206b11fb064b1400c20541e5938817a2c70c2cd6461741248/episode.json",
+        "sha256": "8dff6cb6a9f0aad4612c24d4a471ec508e47000c36380adabdf2b3762c2ca359"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLK/2013",
+        "level": "report"
+      },
+      "stop_reason": "max_steps",
+      "task_key": "finqa/BLK/2013/page_124.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 134,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "9da4266d098051e16f46ff7854d58ce034b24643bb208a324391d88c34404d0d",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 122,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "fae2336c46a8f140e4705c9c3baa8d06d10bd168fc77d40e4a6fb19f7354c1bb",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 2,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 109,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "989b843604c990579b51f1974d9ea360f52fa641f6f2d553836430743ff25c41",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 3,
+          "earlier_tool_events": 3,
+          "earlier_tool_names": {
+            "run_program": 3
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 109,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "a4fb224ed849d9872260313fe21330e601e25afc379730b50d9290ab6ad7fde3",
+          "saved_parser_result_matches": true,
+          "turn": 4
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 4,
+          "earlier_tool_events": 4,
+          "earlier_tool_names": {
+            "run_program": 4
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 109,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "4b0c7bd4204e115619de4e15746fe4e2da5ee0c87186702a8595b11457986806",
+          "saved_parser_result_matches": true,
+          "turn": 5
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 5,
+          "earlier_tool_events": 5,
+          "earlier_tool_names": {
+            "run_program": 5
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "36423e60379e017121324984e97fd1d00aae93d155fc49a7a2d5ba177ec66742",
+          "saved_parser_result_matches": true,
+          "turn": 6
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 6,
+          "earlier_tool_events": 6,
+          "earlier_tool_names": {
+            "run_program": 6
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 7
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 7,
+          "earlier_tool_events": 7,
+          "earlier_tool_names": {
+            "run_program": 7
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "36423e60379e017121324984e97fd1d00aae93d155fc49a7a2d5ba177ec66742",
+          "saved_parser_result_matches": true,
+          "turn": 8
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 8,
+          "earlier_tool_events": 8,
+          "earlier_tool_names": {
+            "run_program": 8
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 9
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 9,
+          "earlier_tool_events": 9,
+          "earlier_tool_names": {
+            "run_program": 9
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 10
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 10,
+          "earlier_tool_events": 10,
+          "earlier_tool_names": {
+            "run_program": 10
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 11
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 11,
+          "earlier_tool_events": 11,
+          "earlier_tool_names": {
+            "run_program": 11
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 12
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 12,
+          "earlier_tool_events": 12,
+          "earlier_tool_names": {
+            "run_program": 12
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "52243cb3166ce009dcf746d4ceb79e9c640d7a5a7e2d3d347430d6e48659cab8",
+          "saved_parser_result_matches": true,
+          "turn": 13
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 13,
+          "earlier_tool_events": 13,
+          "earlier_tool_names": {
+            "run_program": 13
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "2f8ac35a4a00444db72285c03ead92f3b7481c9d56beafc6bdb12a4461dd18c7",
+          "saved_parser_result_matches": true,
+          "turn": 14
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 14,
+          "earlier_tool_events": 14,
+          "earlier_tool_names": {
+            "run_program": 14
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "2f8ac35a4a00444db72285c03ead92f3b7481c9d56beafc6bdb12a4461dd18c7",
+          "saved_parser_result_matches": true,
+          "turn": 15
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 15,
+          "earlier_tool_events": 15,
+          "earlier_tool_names": {
+            "run_program": 15
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "a85985fdb993eec66aaa3364be32010e854cc66b443e31bdd602e537e7a7a013",
+          "saved_parser_result_matches": true,
+          "turn": 16
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 16,
+          "earlier_tool_events": 16,
+          "earlier_tool_names": {
+            "run_program": 16
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "142b9e2b28bfced71d5fdff785348f5472dfed1803bd162cb4708dfb4ee9c02a",
+          "saved_parser_result_matches": true,
+          "turn": 17
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 17,
+          "earlier_tool_events": 17,
+          "earlier_tool_names": {
+            "run_program": 17
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "028643f59a5e23c68a954da6d053fb9c6cb29d0b940dc9bf4ab44de8b9b87a2d",
+          "saved_parser_result_matches": true,
+          "turn": 18
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 18,
+          "earlier_tool_events": 18,
+          "earlier_tool_names": {
+            "run_program": 18
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "142b9e2b28bfced71d5fdff785348f5472dfed1803bd162cb4708dfb4ee9c02a",
+          "saved_parser_result_matches": true,
+          "turn": 19
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 19,
+          "earlier_tool_events": 19,
+          "earlier_tool_names": {
+            "run_program": 19
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "028643f59a5e23c68a954da6d053fb9c6cb29d0b940dc9bf4ab44de8b9b87a2d",
+          "saved_parser_result_matches": true,
+          "turn": 20
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 20,
+          "earlier_tool_events": 20,
+          "earlier_tool_names": {
+            "run_program": 20
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "028643f59a5e23c68a954da6d053fb9c6cb29d0b940dc9bf4ab44de8b9b87a2d",
+          "saved_parser_result_matches": true,
+          "turn": 21
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 21,
+          "earlier_tool_events": 21,
+          "earlier_tool_names": {
+            "run_program": 21
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "028643f59a5e23c68a954da6d053fb9c6cb29d0b940dc9bf4ab44de8b9b87a2d",
+          "saved_parser_result_matches": true,
+          "turn": 22
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 22,
+          "earlier_tool_events": 22,
+          "earlier_tool_names": {
+            "run_program": 22
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "021c4db62cba0a4aac3eb5ec51c7d6d6af33e97bf8cb0aba310cf2c29a8a8559",
+          "saved_parser_result_matches": true,
+          "turn": 23
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 23,
+          "earlier_tool_events": 23,
+          "earlier_tool_names": {
+            "run_program": 23
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "eb0b8786d15b545c2f43970789613dd862f96537131340d83a2f94815d59e2c0",
+          "saved_parser_result_matches": true,
+          "turn": 24
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 24,
+          "earlier_tool_events": 24,
+          "earlier_tool_names": {
+            "run_program": 24
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "2bba2ecaead16f22fcd415d34c42388fd9e7f6867c53a28fffb82361ac8df81b",
+          "saved_parser_result_matches": true,
+          "turn": 25
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 25,
+          "earlier_tool_events": 25,
+          "earlier_tool_names": {
+            "run_program": 25
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 111,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "112e1b4725343128fb6bd11ab67319a25a3d45b92f201059b7d3f19ec0492277",
+          "saved_parser_result_matches": true,
+          "turn": 26
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 26,
+          "earlier_tool_events": 26,
+          "earlier_tool_names": {
+            "run_program": 26
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 111,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "112e1b4725343128fb6bd11ab67319a25a3d45b92f201059b7d3f19ec0492277",
+          "saved_parser_result_matches": true,
+          "turn": 27
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 27,
+          "earlier_tool_events": 27,
+          "earlier_tool_names": {
+            "run_program": 27
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "f480734b73ca790a34db41cc28c986e4728c637f19a8681ebf47a3de58eda944",
+          "saved_parser_result_matches": true,
+          "turn": 28
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 28,
+          "earlier_tool_events": 28,
+          "earlier_tool_names": {
+            "run_program": 28
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 111,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "112e1b4725343128fb6bd11ab67319a25a3d45b92f201059b7d3f19ec0492277",
+          "saved_parser_result_matches": true,
+          "turn": 29
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 29,
+          "earlier_tool_events": 29,
+          "earlier_tool_names": {
+            "run_program": 29
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 111,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "112e1b4725343128fb6bd11ab67319a25a3d45b92f201059b7d3f19ec0492277",
+          "saved_parser_result_matches": true,
+          "turn": 30
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 30,
+          "earlier_tool_events": 30,
+          "earlier_tool_names": {
+            "run_program": 30
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 110,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "f480734b73ca790a34db41cc28c986e4728c637f19a8681ebf47a3de58eda944",
+          "saved_parser_result_matches": true,
+          "turn": 31
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 31,
+          "earlier_tool_events": 31,
+          "earlier_tool_names": {
+            "run_program": 31
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 111,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "112e1b4725343128fb6bd11ab67319a25a3d45b92f201059b7d3f19ec0492277",
+          "saved_parser_result_matches": true,
+          "turn": 32
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "6bd94e0cd72f26c2054d189bec90d781526e8d975510b159637bfbd4d8d6ebac",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 137171,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/b9e11603a283a67868d0fefdd090d82582dbf56374579f92911d71d754519a9f/episode.json",
+        "sha256": "ca0cab52e326129355811121f2adaee80256545b9b22060bb3cb190e1d80fe27"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:DISH/2013",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/DISH/2013/page_138.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "6bd94e0cd72f26c2054d189bec90d781526e8d975510b159637bfbd4d8d6ebac",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 172,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "c0203812a6b4102a01bc42e0ca79aa7c797217c7a5e7c4253b3375d8e9fcc965",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 174008,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/ddfaa9301bcac3c1b042b3ff7eadbf17ec27a9a18eb1f0defe4a0ebfa2db681a/episode.json",
+        "sha256": "a9e680d2b1106c87c311d8d618364c99c6b1af3748609d2e62ba327de6385dbc"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AMT/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/AMT/2008/page_32.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 199,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "cadae3bf2a55c3d00946226bbc74a38d1f942941494736cb4a9b11d4a2c1fb98",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 172,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "c0203812a6b4102a01bc42e0ca79aa7c797217c7a5e7c4253b3375d8e9fcc965",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 131,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8c53f2eb7494eb88bc78a8f00a210dc79c8ed923fa05be5c7ee1270c194f58cc",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 110717,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/bdec446116e8ae49f14fbe3330efb06d98d8f476c6641406246d4a362433e1ec/episode.json",
+        "sha256": "ad56bad170b46582409e0661d2bf8dd896d2284f6464813d58c33251a7d2921b"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:TROW/2010",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/TROW/2010/page_22.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 131,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8c53f2eb7494eb88bc78a8f00a210dc79c8ed923fa05be5c7ee1270c194f58cc",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 97,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "b965ec19b8547a2e115d5a9d26f0f7e72dbdf2f89415d16ffa4fb223a97db0de",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 108987,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/735de899daae9a3a72b88e01d42407eb66cafa13a91f29bd558ef806fb52565b/episode.json",
+        "sha256": "789ef4d8270c54ba5741d20533314dca2b3147aba99426c6d2e23ddb3d794042"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:IPG/2009",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/IPG/2009/page_85.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 97,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "b965ec19b8547a2e115d5a9d26f0f7e72dbdf2f89415d16ffa4fb223a97db0de",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 133,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "455eea7744584976221bc235981b154d25150f6cb7a3a8437f8ad2a81e05e517",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 90466,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/71b6206a7182ac55f8fa18ed5663859b1ff035375890ec2f414b89b80003e6ff/episode.json",
+        "sha256": "7c9307377a98384c8e383bc25a549056cb37cfe7fcd48147e2758702cca1c5d1"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ETR/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ETR/2008/page_355.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 133,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "455eea7744584976221bc235981b154d25150f6cb7a3a8437f8ad2a81e05e517",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 2,
+      "native_reason": "nonexecutable_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 154601,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/e2a776d61e835f1890bf5ae49ac3a7d2212767ff4334620f40c14d0abafdd027/episode.json",
+        "sha256": "399d350f8a510ec77896282b6765dc91179e410754eb1aa96fa11e5922e5c567"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:FRT/2005",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/FRT/2005/page_117.pdf-1",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 402,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "594408769af1dd72cad03fc52dd4ec815fe858eed896907c627bf0ee6cb3e729",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 278,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "b4f38fc38b40fe0e89e91df8d78dce08a98af31ac44524cae086cfbf43e9e373",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 105,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "b009cc6c587b11308953b0c9f2eaae5723e2a3be142319bdc08763e97c87e3c1",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 238272,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/f4f4b0d6ab06fbbdece6cfc49a452511a36c89bc58bbb27653efa9e1cadfae69/episode.json",
+        "sha256": "0cc9a7e31427e6762731a817d763bec35f6b5f57f474aa33e8c4bd09ae804bb7"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:SWKS/2006",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/SWKS/2006/page_81.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 201,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "690e70994c0d09fe89d53bb58d0bc5355e2d342bca2dcca89aedfd582c93ec6f",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 105,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "b009cc6c587b11308953b0c9f2eaae5723e2a3be142319bdc08763e97c87e3c1",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "nonexecutable_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 94032,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/e11b766c01e5ea560b988a595b331430295e4e0e192e55363fe2223fc2c7b7e7/episode.json",
+        "sha256": "44b9e0748560d68833604e1a259bb6e2efd5e023dcf1a0d890ec4f1ff97d1155"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:VLO/2018",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/VLO/2018/page_25.pdf-1",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 108,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "ba598ea920b2b521bcc285274aa48c989ce6b766ed5e619ad9f9c200a3abe6fa",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 97723,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/65ba449820c3677721b4b3fa78af424fb693d94ec0cacbc0cf329173f94cce43/episode.json",
+        "sha256": "3ee9dc2a3595ad7ada6be3a2aca507d9b6bf4ab5cc25a0ee2583f946901027e8"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AON/2014",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/AON/2014/page_47.pdf-3",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 149,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "4ed0e9d04bc35917ecc8e51326dcfc9adf083cb7cbc5f826887113a593dc50cd",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 232,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "9abf5fe5b53d546012724a3ad9f9b97b73be27fad96e30ecf5b725c0155a4cc3",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 109225,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/ac486e93fb42de2634bad8a3a29f0353d63c196043be36ba309694708e4b9840/episode.json",
+        "sha256": "197ccf138e0fa2228f1743b6403e28a3ddf1d4cd71c34bd6ab8bb76c2ec262b5"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:UNP/2006",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/UNP/2006/page_37.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 232,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "9abf5fe5b53d546012724a3ad9f9b97b73be27fad96e30ecf5b725c0155a4cc3",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 127,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "816c15e39e4137f6621fe021bb5d94c0bdfa328e2f6c762f2a7d6f4a63092933",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 122835,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/6d7d4f445f59acf87bd87342d3ca8cb2aa701fa8d5a716a12d0830fef62b9195/episode.json",
+        "sha256": "10814126a7d269537d31a8d1c9f80148cc4a59b6a991cc9e6391929000aa5c4e"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PPG/2011",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/PPG/2011/page_70.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 127,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "816c15e39e4137f6621fe021bb5d94c0bdfa328e2f6c762f2a7d6f4a63092933",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 152,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "cf69dbd7567acb4444443654b70ff540a039319acb41d9dce4e2e8f17f9ecc52",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 112743,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/4b8343a59b78f1ded02040d301f46856937be974057380949894b0bc16ef241e/episode.json",
+        "sha256": "9e51801b390f55b6cb247b6159c03dac6343088b755a42a396dd089fe0a6f896"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ADBE/2018",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ADBE/2018/page_86.pdf-4",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 152,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "cf69dbd7567acb4444443654b70ff540a039319acb41d9dce4e2e8f17f9ecc52",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "b6b6bd1d8ca45111ea2fc2c1aa821e0b67ea832466dcc98459b158011c1f4040",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 231167,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/111324a295f2dff8ad6b124ae97ba3d097f23332ebef5c9e7bbe95486ba6fa76/episode.json",
+        "sha256": "ce1560448ce25d79e61a79a298ee166362eeb028d7c2da4117ce383520f98752"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ETR/2017",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ETR/2017/page_316.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 324,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "e26a1ab4595086cc8e6a478f1d4d528a703a17fed715cb3f11e18b0920116266",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "b6b6bd1d8ca45111ea2fc2c1aa821e0b67ea832466dcc98459b158011c1f4040",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 85,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "849fbd07cb010e6ce6f2736a560aa370f60c6d1a7ada8de5d70181a1a649be81",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 226346,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/a11a8fce42457a14b0b7844c8e706725827fc7e904dc36f7b193646988ed1a26/episode.json",
+        "sha256": "3ca94a57f9334184596e7e13647de13a6cab0428823b217f501dc14ac0e35c12"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AAPL/2003",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/AAPL/2003/page_24.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 117,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "6978d64ef0fb2c3b19c7f2be6aa2261fd3a881979ad7fece48c4844ed06615ae",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 85,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "849fbd07cb010e6ce6f2736a560aa370f60c6d1a7ada8de5d70181a1a649be81",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 114,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "662a8601104b36f35c6310242239dfae350936ea38f451fc2c79a28d3c1a5cf9",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 181044,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/9a1bc48566f6680e4e10278d8b4207c75c8fbbc702276fe0bd7f318b404b7ffe/episode.json",
+        "sha256": "0e8368d0f29160300bd5488214e788fb45b16865c2e0c56575549bf8c092d42e"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:K/2013",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/K/2013/page_62.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 116,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "9f9536b60afa7a1b4b4936377cf150c5f1b2f414ddef65a36715a85f511f4747",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 114,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "662a8601104b36f35c6310242239dfae350936ea38f451fc2c79a28d3c1a5cf9",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 133,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8d23a7941aa48f10602c65d6087d8eb27eafbbb5526c6e6c90563862e10a9362",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 122083,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/ff70905d5ffda2c0aea3ccaa6423c4f22e7ff031b61cbfd3af9a54cfae15319d/episode.json",
+        "sha256": "3e497a87350fec6ff13669a3d9a8ffbc817c21da760074974eee2751818cc2c0"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PM/2015",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/PM/2015/page_38.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 133,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8d23a7941aa48f10602c65d6087d8eb27eafbbb5526c6e6c90563862e10a9362",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 120,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "51434e255848ee8b9975c46401b9a6f5e36bf2f3748434493eba00fb3a951b42",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 194287,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/99fefe6f53562c3d6575e93e910a19255d6098f6940db5f8031113f8073b342a/episode.json",
+        "sha256": "4f815515cd19c110bb7dd7e99aff136a2f717fafd28d76d4eba48470ed497c95"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLL/2007",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/BLL/2007/page_35.pdf-4",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 239,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "cd19af6fbd7e5f76d5ab4956a777cd822d911404cdd532ef728404efd8b184f7",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 120,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "51434e255848ee8b9975c46401b9a6f5e36bf2f3748434493eba00fb3a951b42",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 85,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "604efae6b199f56f6c417b20807c5f1a2f91ccbe328adf150fd04dc0eee61cba",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 113304,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/c5b24517c0dc8a30f161443d7d624c386ded8c6003f28440324c7718636b7861/episode.json",
+        "sha256": "3256df26821de17d9bf0d4a01d876dfddb7d61965d40c4ded1d338a8de025edd"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:MRO/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/MRO/2008/page_69.pdf-4",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 85,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "604efae6b199f56f6c417b20807c5f1a2f91ccbe328adf150fd04dc0eee61cba",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 103250,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/423dab22ad77b02a24c29091cd16b92d314ad316058a7effa1abcaca04ffd52a/episode.json",
+        "sha256": "ff0d4ed77b7e032e1986bdd34689b1c28363b7461892e44fa056b68b75b395f7"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AAL/2015",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/AAL/2015/page_118.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 136,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "484a72d86dab0a54388897b4fb934c08888b25dc913a9b4245f607f70fd471eb",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 115,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "afb4c851ef028e8946fcb4837443b76fde019620245f00723716885f903f6a16",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 218168,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/75029a5d9ea68983be944788c1608cff5b35e878fb6a4cbd982a5a5b0eaa1c21/episode.json",
+        "sha256": "250b2a6f1a3bd9a10e4e9988709a3ac9eeba0798c0fa439a6469feadf614453b"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:C/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/C/2008/page_102.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 284,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "32b6a9a41e3cce612b521bd3483f12ba66e242e38039669b09e002ed26e60d6f",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 115,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "afb4c851ef028e8946fcb4837443b76fde019620245f00723716885f903f6a16",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 140,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8f93c5aafc811a7b6b621a3eaacdb13b9aee413a58819d373699583d737d28b9",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 108763,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/4e13353b7c171e26b35c3efee7558750567b292775316525bb58d2596657a22d/episode.json",
+        "sha256": "934219c8bc89dfbea0ed2d9c86daadd2293402eb96419b02b6f8379a2f4771d2"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ETR/2011",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ETR/2011/page_324.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 140,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8f93c5aafc811a7b6b621a3eaacdb13b9aee413a58819d373699583d737d28b9",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 3,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 385446,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/0a18bc7bef73c1a3e8571700c6f28f093f35ef553a0fddab54cab2b1aea8d8bd/episode.json",
+        "sha256": "a2cc8ef31aec5a52f6d112d55011bcff6fd6422e6ecf0481db383eeb2c5eac02"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLK/2014",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/BLK/2014/page_119.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 218,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "f1fddb2fd3aa0ad380ca2135101d9863a873761fd73bd3715254a85971606cd5",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 182,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "eb0028f21befda53366dfae5bfabd848b1a575568d2ac93d106df0d17c86e273",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 2,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 128,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "d553ea5c7a61b5e77fd407b3b8313ed0a517394679f7efc0fec0f82b229f4683",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 82,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "413f80a55f261cd9e191d456750363ffab59205c09c21febba5926f668e79f6a",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 105597,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/c656678d1f019eeee9051f23fd7abaee8c4d51a8d059158bfe6397adb9ed7c0e/episode.json",
+        "sha256": "e069de0b13bda4d2c9eba8f54fc56f70dc6e580195501bd8e50c888e94f5801c"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:HII/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/HII/2014/page_69.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 82,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "413f80a55f261cd9e191d456750363ffab59205c09c21febba5926f668e79f6a",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 105235,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/0c9c0d94d73edcee7d09775a1098c2e0d94ee507a796b9d87b5e4003cd8e6079/episode.json",
+        "sha256": "454c98d7478042866b48c8d7ed065f3d417a7afd4f7399d4dfa22fb4292b156e"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PM/2017",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/PM/2017/page_38.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 162,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "cad670ec7e02d3bc14f8c604f8c5e152a619473c6263acf4fed90b7554158de4",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 177,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "0ed90c0a8a41a00189f6961f53ec72eaf1606b6245499a00513eb33fbe342ce1",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 108591,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/c4dc7a3089b49a88000533bc4ee512dfa988ffcf700aef4443a0266e751d83f2/episode.json",
+        "sha256": "69d17059c2808134e3f74f73eac4ac13dc46599be2c9782e5c49a01a469d4f7d"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:MRO/2011",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/MRO/2011/page_73.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 177,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "0ed90c0a8a41a00189f6961f53ec72eaf1606b6245499a00513eb33fbe342ce1",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 106184,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/693d456aae217b451b0468f90034ae0f80f40beff488549a3d09dfbb9e72ea6c/episode.json",
+        "sha256": "c67d90423576d4f149ec519d44209de66e84234084dae97851dd95e949a294f9"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:UNP/2009",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/UNP/2009/page_65.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 160,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "25c50f0c3ad67ff1db18f3a2c8b341dfa4d34b4a775f36f0a835711ef4b1e2b4",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 118,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "2756d9b09df437d8fb008d393272487fa692c481e32e7f6e8faa21f9a4b7953c",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 107056,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/42ee4491720b0403164be735f4737fc54f6cf6914456d37223832bc3e8e43fa2/episode.json",
+        "sha256": "bb783f5614c607d4ef7f53cf7ad84f8636b90709c308492cb2bf507e65d5733d"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:HII/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/HII/2014/page_69.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 118,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "2756d9b09df437d8fb008d393272487fa692c481e32e7f6e8faa21f9a4b7953c",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 112,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "646e4905951e35c027cc64355299eb730c38eb31f51246ae8d8e6dff68473203",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 101058,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/15e9d3bcd2c7790276f4d1911e94e541c089f09114c4d7b0cb945598f67608b6/episode.json",
+        "sha256": "50ff7985e203b56a64fa94dd6b14111a3c25932e868e04dfeebdf34313ba60c2"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AAL/2015",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/AAL/2015/page_118.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 112,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "646e4905951e35c027cc64355299eb730c38eb31f51246ae8d8e6dff68473203",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 4,
+        "earlier_tool_events": 4,
+        "earlier_tool_names": {
+          "run_program": 4
+        },
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "cfa55ea0ac263aa9de3fd04237b99853f7af54b3cdfcdf50933cd75b081d139a",
+        "saved_parser_result_matches": true,
+        "turn": 5
+      },
+      "model_calls": 5,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 641727,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/c5a9ccadf5ed22071ec7a1d6b4fac982a0c3cfd50c7035592f081ee93b5b2f4e/episode.json",
+        "sha256": "77a3d3573625024343833f05f986af2bdef457acbe21e7cac933e0bdf2cedf4c"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PM/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/PM/2014/page_67.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 182,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "f8266a43411b4532fb9a2ac0160cafbc6c9ca88448cfafdf147f1a4d4af7ed82",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 157,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "073f1b56d8c83a39eb2fca6247a7bd9b64b4b91bdf7e8faeac4cdca53edad194",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 2,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 140,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "e0aac1ff71daba7d284ce7800fef81fd0f6d8c333c57143d0c4fc775bd3e1e4b",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 3,
+          "earlier_tool_events": 3,
+          "earlier_tool_names": {
+            "run_program": 3
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 157,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "7bad025e9b6766490f7f95359e2d62a17b5687efd43e7649c557187f723d89b6",
+          "saved_parser_result_matches": true,
+          "turn": 4
+        },
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 4,
+          "earlier_tool_events": 4,
+          "earlier_tool_names": {
+            "run_program": 4
+          },
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "cfa55ea0ac263aa9de3fd04237b99853f7af54b3cdfcdf50933cd75b081d139a",
+          "saved_parser_result_matches": true,
+          "turn": 5
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 3,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 318308,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/4d304571dce0437733daa73f54e94074d5c1e18dcb5aff08bf7a57eb853acd56/episode.json",
+        "sha256": "02409b267cd287018dc0085fa11ae5c66d9c9a611f49310b1b9e1bd32c0f2fa4"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:IPG/2009",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/IPG/2009/page_85.pdf-1",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 174,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "ec6879ff8335c000a814b03417564f47294592dee26fd36d4560bc718a15544c",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 148,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "65e2edaf41261156eb6cc4a258726a5ab754825d30e7c6a5fcc6e9326727feb0",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 164,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "9970a6ec0a742488e07752fae2c4fac6b1154c453ef49ea0d0ab6658d6ec79b7",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 96,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "0288f159fbd7514c13513d8153c300b62ef95017b58b16718ab51882fe93d712",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 195399,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/585c1d643d499147f3904f5727bc83b5dfede2c32935b0d6edd9b0502c1680d7/episode.json",
+        "sha256": "8fd2af51a952ece118d0287d6705e7ee42d83153b4683009665661362db16cdc"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:RSG/2017",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/RSG/2017/page_142.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 194,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "10d9d7e8c80a1465408ac787c576177c7d9711dc090f52871d2b025fd8bed36a",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 96,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "0288f159fbd7514c13513d8153c300b62ef95017b58b16718ab51882fe93d712",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 180,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "28cc376349753a2e4aa06d8ebee450fffe04543c73529fa7867ba18ffd95830e",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 124591,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/7ef40b4e70cb55b3c2c05369a5dcc2090f6746077621581710e2bda08942acbd/episode.json",
+        "sha256": "c32c812473b90914e21802fbde00bf182f615da52f2d5b1f2ecd1fcb55fde5bb"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:C/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/C/2008/page_211.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 180,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "28cc376349753a2e4aa06d8ebee450fffe04543c73529fa7867ba18ffd95830e",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 2,
+        "earlier_tool_names": {
+          "run_program": 2
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 190,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "bbd334875d26f8cfb8131af0ea25a7a13632ff8eac9d181a1f69249f0fb4da1d",
+        "saved_parser_result_matches": true,
+        "turn": 3
+      },
+      "model_calls": 3,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 313028,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/5a564ec4fda73e14f9d18042c5694c342f11f3e6479a68f4543f8d7bdaabd609/episode.json",
+        "sha256": "586c17e8392e72c84e57b821c2ea8b936eae5d50835bdb541a6f30e5999b86ac"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:NWS/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/NWS/2016/page_61.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 150,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "90d8393020c2c1fbd5fff93ce72e383771fec6778b0b3a2f7856530b6d3e2b93",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 399,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "1bfee150a980eae1767a5b15f5a29acb3c511f86a4c6ab35c514670bb528a489",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 190,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "bbd334875d26f8cfb8131af0ea25a7a13632ff8eac9d181a1f69249f0fb4da1d",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "E_missing_closing_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 451,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "4d9f5f9796de64e74f901781c16a85672716a55bc4a479b01a346ce399d5b8ee",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 118839,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/f733cc64e101d99ea59f9f0d88b8d95a25e46a38754f76ea52ebb51623689963/episode.json",
+        "sha256": "887214abfa656ff9abdafaced00fc90973359dc556aa2ee4266264ce4a8c832e"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AES/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/AES/2016/page_185.pdf-3",
+      "terminal_parser_category": "E_missing_closing_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "E_missing_closing_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 451,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "4d9f5f9796de64e74f901781c16a85672716a55bc4a479b01a346ce399d5b8ee",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "d6cb8399bb250afe48ae9ba104a73c1e2cdc2cce898cd0a2e8b5628fccf7b2a9",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 155418,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/8b3c1ca69b441ae4fc82ea1ec7671ff2c2cc541429fd0bc6601416535274b812/episode.json",
+        "sha256": "18f73a585f9fc09f7186dac9436a3f85c8a2ab91649f054b5b267fb31799950b"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ABMD/2004",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ABMD/2004/page_26.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "d6cb8399bb250afe48ae9ba104a73c1e2cdc2cce898cd0a2e8b5628fccf7b2a9",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 113,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "d1a661abec93227e8d8f9355cd5cfd7b6780b40849860f9b566096d0b8af9f75",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 158318,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/2f555275c7c88cff59ee01370dfac8781ce1502a39433cf6fb1893f7901b798b/episode.json",
+        "sha256": "48d6b6115f9272ab66a374bcb0199ccb00cdcc649655de27c66eceff4ff1952a"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:UPS/2006",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/UPS/2006/page_32.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 162,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "57b04788686d0fa0ffb5c5fddc58a656f9cb9d8212a53406bc8bd5495fc3c5d9",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 113,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "d1a661abec93227e8d8f9355cd5cfd7b6780b40849860f9b566096d0b8af9f75",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 165,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "d7ed1824cdf7e18365258a240f3453c58cb28046e4eb1705949446a615e9a101",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 133612,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/398a9b4716471e5c7b0244a5f314601c7f5eb90ee3ad053f7751468b494e2bf1/episode.json",
+        "sha256": "520ef76fda5e4ab8644ec59160bd4dacd556e2e4dcd7334bd021aa31a4e7bdc6"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ADI/2011",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ADI/2011/page_50.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 165,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "d7ed1824cdf7e18365258a240f3453c58cb28046e4eb1705949446a615e9a101",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 99,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "b4117215e197c60c263e243454230f02e5cf89ccfdecc0deacadfb7807b7bbf3",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 112116,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/77ca01229b9916d844d18eb6cde2edcdf7d7c9d6aac6f72bc274b29c50d929ab/episode.json",
+        "sha256": "30cf15e4e49d7de713650abdab3a882dff485c45a24942d106affacb0e8f27bb"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:GS/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/GS/2016/page_70.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 99,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "b4117215e197c60c263e243454230f02e5cf89ccfdecc0deacadfb7807b7bbf3",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 102,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "a73d0edecfb1dc596b443c20d3b56ab71c751f4210fcea2d1c5d383f3c9f2dbb",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 121101,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/bdcdc29cd4622703af08d4041686bcc74328c02dcbe4ef1c0d400bc0a8264b3d/episode.json",
+        "sha256": "918b9a9e38dff7acbad1c9f93e7ddd47efee057486bc7c20b56f200c001ffcbb"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:CAT/2017",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/CAT/2017/page_85.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 102,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "a73d0edecfb1dc596b443c20d3b56ab71c751f4210fcea2d1c5d383f3c9f2dbb",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 100475,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/2cccdbf070ff4d46fb31d3a573dcc6da01a3d054ad3340228846238455ebadf8/episode.json",
+        "sha256": "788b15be565725c1b064b1dc3611b5821f030ff581356196ef2992fdae96868c"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:EW/2016",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/EW/2016/page_94.pdf-1",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 135,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "1b67eb51f18f9913f34bfaeab9905e4fee12ea4baf2ad20d73007bce618f7a65",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 88915,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/d09484d506d589fb98d594486cd1865d053d24ee7dbe5a5f554d68d23907721d/episode.json",
+        "sha256": "6ac1c676c32ba23ffe72942963438d08addec851273dcffcf30f22481bfeb777"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:VTR/2007",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/VTR/2007/page_47.pdf-2",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 232,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "b2384c8b759142efdf81578530258d6e9a8575005314a088a4ed0618a16588f6",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "fd937f27be6e17ae561bff990b8f8dfdfabfd463403cf86220003b714d82ea43",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 239239,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/7343898ffb423c671a4525ff7564640cf0d0a2e5269d5901ce711c0cb21e0dc4/episode.json",
+        "sha256": "b21e1b0205477f1087516e944dbede017c1bd0a3507831150e28e1c13807bce9"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:UNP/2015",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/UNP/2015/page_35.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 146,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "66ca1385b2511e26cae1bd230c0c6fd3e52562ee6109c4c19be662797f09cdd9",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "fd937f27be6e17ae561bff990b8f8dfdfabfd463403cf86220003b714d82ea43",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "E_missing_closing_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 236,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "a60ee97babdc9f2b951b5d104e9751f77b2d878b197a8c2f202fee3d9364bf28",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 75168,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/f463e4e2764b1cd2b4bece43f69f2316b7f1cca3f6f8aed9a46c29a72ac03659/episode.json",
+        "sha256": "61f20e5ad02b3b2ea6f39af7b8d817a760ff01953b0e962396eed0496c64c9bd"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:APD/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/APD/2016/page_96.pdf-1",
+      "terminal_parser_category": "E_missing_closing_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "E_missing_closing_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 236,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "a60ee97babdc9f2b951b5d104e9751f77b2d878b197a8c2f202fee3d9364bf28",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 162,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8078d36bf58939ebc392b5dff18fdcd712cbd72630a6729b4142aae0f98f0aef",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 192254,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/0055848be6a81ee9d06cf51fb96fc87c754e3ce8e1fb562e110e0c21462c8dc6/episode.json",
+        "sha256": "5b6a0edf8c9366ad1d7035444df5d6085ead92f38a2b9a27ec6e8b8a1fd1d096"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:UNP/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/UNP/2014/page_25.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 278,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "ec4ca6faf66494a756b8505534ce45180e5c0f3de7929ab74078d8112ff5a574",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 162,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8078d36bf58939ebc392b5dff18fdcd712cbd72630a6729b4142aae0f98f0aef",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 144,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "dec768ed5214d3ac8fd5a03ec810cb164f9d49ed42ae288f39a73945e4c32a42",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 113917,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/70d6d6cded2eacd26e50554573b6c93529262a4526d88bdcd7b6527f55ce4a65/episode.json",
+        "sha256": "aa5f6cbb14042b892be26cc84e355caefa0a2aa1f15baa24fe37327573857558"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PNC/2011",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/PNC/2011/page_87.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 144,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "dec768ed5214d3ac8fd5a03ec810cb164f9d49ed42ae288f39a73945e4c32a42",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 175,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "f951c432d25a0626dc34f54477fbe3bc2fd7073d2f2eab1da1e612f8af8521a0",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 97216,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/45edd1b462719a6bfab8440097e74c7f84c1be7c1e514452cdcbba1992c523ec/episode.json",
+        "sha256": "cce3559761194d3e939e8a971300ada5a8430a8e1f390501ccc23114cc47e2de"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AON/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/AON/2014/page_47.pdf-4",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 175,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "f951c432d25a0626dc34f54477fbe3bc2fd7073d2f2eab1da1e612f8af8521a0",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 96,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "2585721b4927bbe6dcc279f08befb1ea4e81cf458f9c8dace4d9636ee4485033",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 189997,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/44f3d39c4589246b8c7b7c5640d838315e2910401e1f3456ebad3bf61fc729c9/episode.json",
+        "sha256": "bbb5fe4aaa87165fecec250c7e70fd6fb030b9973a6688f7e351335cb2c34409"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:GPN/2017",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/GPN/2017/page_77.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 133,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "d10a3cc48da89db57be4aabd03a6b78d2b629854b0969dabb06da6925f65dc62",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 96,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "2585721b4927bbe6dcc279f08befb1ea4e81cf458f9c8dace4d9636ee4485033",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 98,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "bf4b379fcc9af8bd2fa025906156c426429029af43de367c216747c5df0367e9",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 109876,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/873812cbb15a19203d561249ffde0874fb942235d9752ed2123db6bf35045f54/episode.json",
+        "sha256": "020a7960e20cd2aea1a9ed2d8deab19360d15a1a55e70b85f021fb431ea1b0e0"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:MRO/2009",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/MRO/2009/page_56.pdf-3",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 98,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "bf4b379fcc9af8bd2fa025906156c426429029af43de367c216747c5df0367e9",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 118,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8c1838cebfedb4647e3560ca17e96646a71da7298b925011bb7eb2536faa2e81",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 147370,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/ef86680a4ac89307e569c1f38bb82d2725c46e173fd9e9868186e683ee06cf67/episode.json",
+        "sha256": "f003340402a0298ed50d7eeec9d44fffad9693ddee233ad65ea03855d59a0e2b"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:NKE/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/NKE/2016/page_37.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 118,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8c1838cebfedb4647e3560ca17e96646a71da7298b925011bb7eb2536faa2e81",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "run_program": 1
+        },
+        "finish_reason": "stop",
+        "generated_tokens": 93,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "d75470ed00c11d12acea6a1201787dbe71aef6b39373476ac7e1a04c35fed930",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 155680,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/93e4e26b26b5b28c57822f16d3d3ebe6f9c543f7d8f764081e833f24bb778836/episode.json",
+        "sha256": "d7bc1a83624860c3bc1cc07cef3ef32c55824ec76622b72835f2d6108c940273"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:CDNS/2012",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/CDNS/2012/page_30.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 159,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "847be79136336eff7cdf7ac50cf953f3f34ce8a9ef714adc72c2d0150d18e205",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 93,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "d75470ed00c11d12acea6a1201787dbe71aef6b39373476ac7e1a04c35fed930",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 154,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "0331be7637ca5f8b2cffe4864f839bf56d9eaa2e7adcc0e8e436ddd17bf09550",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 114957,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/769faca42af1042a3c9e9c8747a49d429d52c23d67fef54070a0228df175d0af/episode.json",
+        "sha256": "051c7eae8cbf5dc5fba7636409dc1a84a1b96af45fa88f991f6ccbeacb11707b"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:ABMD/2007",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/ABMD/2007/page_52.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 154,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "0331be7637ca5f8b2cffe4864f839bf56d9eaa2e7adcc0e8e436ddd17bf09550",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 103,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "8d74fd2aa1ce57330ec252f256c801fce97c668f806d5bda9616d3faca537ee2",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 113776,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/66ad487dcd3b49172cf2867e858d30d9a33ff97b2d64dc8b985b57e6476a224d/episode.json",
+        "sha256": "444dee226093e94098913100b4739bd6fb97f8afaf19789d924c42ee45d9fed4"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:MRO/2014",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/MRO/2014/page_58.pdf-1",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 103,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "8d74fd2aa1ce57330ec252f256c801fce97c668f806d5bda9616d3faca537ee2",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 133,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "c264101229db2b990b743355e71f3223a00b3255c3d1593fb9b288bc9c20fc9c",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 113709,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/495b1025595477b09d50fb2b9159cf4c196339a50ffd1d8fd0df660c5db164e4/episode.json",
+        "sha256": "c78c5e32ef918324e5c0fc1fc677669c64c3f102fe84adac8ccd00f276a59363"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:HOLX/2012",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/HOLX/2012/page_113.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 133,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "c264101229db2b990b743355e71f3223a00b3255c3d1593fb9b288bc9c20fc9c",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 87,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "88f55d0af30626ce534a9e9c880fd7320fec2a5b43ed212a6f4cb8bdf95dabe8",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 114263,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/de39dac1f3b146df7a3ad2f78fdb1b1c1a9b5003ec2979dd3089849d1180d59d/episode.json",
+        "sha256": "b7a5631b6714bd5ff114a588edf7a3f52c41839d332cc8a6db463db4a5343a33"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:PNC/2009",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/PNC/2009/page_41.pdf-4",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 87,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "88f55d0af30626ce534a9e9c880fd7320fec2a5b43ed212a6f4cb8bdf95dabe8",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 1,
+      "native_reason": "nonexecutable_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 114163,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/9d34363585346f9ff57685f00ba54c9ce930becee9d7696a7415fa462b91c55d/episode.json",
+        "sha256": "09e372c90565b04d7c73cb2e138c5a292a09b408b7f1b6ae105ccdb07415f971"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:AES/2001",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/AES/2001/page_44.pdf-4",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 103,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "d940db94239edcf6ba010012d51767134ade5f3fe894ca2e7842270c14ca7c94",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": false,
+        "category": "A_no_opening_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 1,
+        "earlier_tool_names": {
+          "read_source": 1
+        },
+        "finish_reason": "length",
+        "generated_tokens": 2048,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "286db88270224081474ff0a71e7a8717c7cbe60150c840dcc0ef90c4cc7c60e9",
+        "saved_parser_result_matches": true,
+        "turn": 2
+      },
+      "model_calls": 2,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 229581,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/37ba90c6e46aee87ec667bdc18701ecbb4766261f48f58f511abd4ece1057e79/episode.json",
+        "sha256": "0c37d01da6fe98f0bfaa26ecd8b24a79e957c4c5c0ea13aedcc8b1147ff465e5"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:IPG/2008",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/IPG/2008/page_21.pdf-2",
+      "terminal_parser_category": "A_no_opening_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 127,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "9b2605f1c1792d0700cdee02310caaa085abf50563eb116ae417bff0b235d5b4",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": false,
+          "category": "A_no_opening_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "read_source": 1
+          },
+          "finish_reason": "length",
+          "generated_tokens": 2048,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "286db88270224081474ff0a71e7a8717c7cbe60150c840dcc0ef90c4cc7c60e9",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "E_missing_closing_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 117,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "a6b265dd22578f7503175bcbb46d53753ed8ca57a300bfef79beac31c26bf0ea",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 135096,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/22be6935dcc4df9c27c1afa9546d71a3f562adefa4248f2ae7ab47b493f2bac7/episode.json",
+        "sha256": "36cb56cc0f21e27bc24aaf7515d7399a4019c74730cf0c2684caedaf1c511274"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLK/2013",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/BLK/2013/page_124.pdf-3",
+      "terminal_parser_category": "E_missing_closing_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "E_missing_closing_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 117,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "a6b265dd22578f7503175bcbb46d53753ed8ca57a300bfef79beac31c26bf0ea",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": null,
+      "model_calls": 5,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 440255,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/22a10aaa7cf4ec6280fd2bef3364f08bf1ffe1dfe3e66ff608d7cf83164a8131/episode.json",
+        "sha256": "5dc7f2c73ebea272f6b91df0d60405ac8d59832d046d23e5d34536dc30862433"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:APTV/2014",
+        "level": "report"
+      },
+      "stop_reason": "final_answer",
+      "task_key": "finqa/APTV/2014/page_49.pdf-1",
+      "terminal_parser_category": "G_accepted_tool_envelopes",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 169,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "f4c2e4a5f2e404c0d594b8d53e9af74376d9a3244b09a8a7c62cc1282abaad77",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 1,
+          "earlier_tool_names": {
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 132,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "91ca55077b1cf69b091397219b9bc35eec6dfa4055eaa960f14848aa76074586",
+          "saved_parser_result_matches": true,
+          "turn": 2
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 1,
+          "earlier_tool_events": 2,
+          "earlier_tool_names": {
+            "read_source": 1,
+            "run_program": 1
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 155,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "87891a4efa50fb1c515c48cfd11aba65e31a1c54838be76c4fcb7e93d5bfb9de",
+          "saved_parser_result_matches": true,
+          "turn": 3
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 2,
+          "earlier_tool_events": 3,
+          "earlier_tool_names": {
+            "read_source": 1,
+            "run_program": 2
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 152,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "79283828f8c0c0a06aa1d4e8db0ba79b66043da56092668c75fc1c3b9ad96e7d",
+          "saved_parser_result_matches": true,
+          "turn": 4
+        },
+        {
+          "actual_EOS": true,
+          "category": "G_accepted_tool_envelopes",
+          "earlier_tool_errors": 3,
+          "earlier_tool_events": 4,
+          "earlier_tool_names": {
+            "read_source": 1,
+            "run_program": 3
+          },
+          "finish_reason": "stop",
+          "generated_tokens": 146,
+          "parsed_call_count": 1,
+          "raw_response_sha256": "58fd889bb1d8d56c2277644176cfd017621687c298e9219e778fa2a118cb7333",
+          "saved_parser_result_matches": true,
+          "turn": 5
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "E_missing_closing_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 128,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "2edf8173d4881a933a4c1fe9c08beef0bc8ff43d8c91832fe5aae3a00014ff16",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 131131,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/63296ea2708e91f2f5869c8a902c85702a37928788053dbb2ebed023f9dd3f70/episode.json",
+        "sha256": "1252a84f277e8b8350e031ae2b420e596beb05ec3d31e0601ca6415893133d21"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLK/2016",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/BLK/2016/page_119.pdf-3",
+      "terminal_parser_category": "E_missing_closing_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "E_missing_closing_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 128,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "2edf8173d4881a933a4c1fe9c08beef0bc8ff43d8c91832fe5aae3a00014ff16",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "available": true,
+      "first_rejected_turn": {
+        "actual_EOS": true,
+        "category": "E_missing_closing_envelope",
+        "earlier_tool_errors": 0,
+        "earlier_tool_events": 0,
+        "earlier_tool_names": {},
+        "finish_reason": "stop",
+        "generated_tokens": 114,
+        "parsed_call_count": 0,
+        "raw_response_sha256": "67d07b249920ea302ebb9e7348f39f308112df54f6ba360d3e9641b3c0d18d12",
+        "saved_parser_result_matches": true,
+        "turn": 1
+      },
+      "model_calls": 1,
+      "native_reason": "missing_or_invalid_submission",
+      "native_rescored": false,
+      "native_state": "I",
+      "original_episode": {
+        "bytes": 135096,
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/episodes/ee4ffc8542bcfa05edc2708f8417006561b0c2e4b80142f129d106ff3fa24af4/episode.json",
+        "sha256": "80f28a304b2c2bc5226f89214d5e52bb00a15e0b794e5e6a99200634c1b4b754"
+      },
+      "original_receipts_complete": true,
+      "saved_parser_disagreement": false,
+      "source_group": {
+        "group": "finqa:report:BLK/2013",
+        "level": "report"
+      },
+      "stop_reason": "no_tool_call",
+      "task_key": "finqa/BLK/2013/page_124.pdf-4",
+      "terminal_parser_category": "E_missing_closing_envelope",
+      "tools_reexecuted": 0,
+      "turns": [
+        {
+          "actual_EOS": true,
+          "category": "E_missing_closing_envelope",
+          "earlier_tool_errors": 0,
+          "earlier_tool_events": 0,
+          "earlier_tool_names": {},
+          "finish_reason": "stop",
+          "generated_tokens": 114,
+          "parsed_call_count": 0,
+          "raw_response_sha256": "67d07b249920ea302ebb9e7348f39f308112df54f6ba360d3e9641b3c0d18d12",
+          "saved_parser_result_matches": true,
+          "turn": 1
+        }
+      ]
+    }
+  ],
+  "rules_id": "7fc72b1db84b8765ddc5632a23703061fdb20c2215f25d88ed7e1cb8c0e97d73",
+  "schema": "v63_saved_native_invalid_first_parser_diagnostic.v1",
+  "source": {
+    "generation_seal": {
+      "bytes": 248480,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/generation_seal/seal.json",
+      "sha256": "568036a328b9c42acc6a33a0bc73a4208f0790fe2500ac97226c44b82f0d8e4f"
+    },
+    "run": {
+      "bytes": 1182421,
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/shards/step894_dev883_greedy/generation/run.json",
+      "sha256": "cf0ffb85f2bac2d4f78298bcdd0029bb575a927741e0d6806d7386627adb7570"
+    },
+    "score": {
+      "id": "f66de49c6bf07489d93c3f065ce8e30a1e75599c3ae9df5ed00dcf8e1e26de03",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/panels/step894_dev883_greedy/models/seed251/C05/record.json",
+      "sha256": "6409f24d18cdf1d631e85dd03598f0d49017cc7e78e51ae2b027cf888bab61a0"
+    },
+    "whole_generation_seal": {
+      "id": "43093bb9468b4b34ce5018af81503266df9ad35e125f6d7c946eed738e685a9b",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/whole_queue_seal/record.json",
+      "sha256": "5d9896ef8e9226401b714e8d2f9d5e3dd2f685a4af3dbf106c237016f79ead90"
+    }
+  },
+  "terminal_parser_category_counts": {
+    "A_no_opening_envelope": 46,
+    "E_missing_closing_envelope": 5,
+    "G_accepted_tool_envelopes": 14
+  }
+}
