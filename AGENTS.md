@@ -226,6 +226,10 @@ V54温度对照已由原04于2026-10-20 08:51:34北京时间以COMPLETE收口，
 
 用户于2026-10-20要求“汇总本轮实验报告，等待审计”。最终报告为 `trusted_data_synthesis/docs/finqa_v54_v62_final_experiment_report_20261020.md`，索引为 `trusted_data_synthesis/docs/audit_reports/finqa_v54_temperature_20261020/evidence.json`。当前状态是实验完成、报告待审计，不是独立审计通过；不启动下一轮、补跑、扩seed、重采样或裸恢复旧入口。主开发集C05−C1仅+0.037750个百分点，1正2负，两个不确定性区间均跨零，三个辅助面板均值也低于C1/Hold；仅通过方向性筛选，promotion明确automatic_followup_authorized=false。等待审计意见和后续明确范围，历史UNKNOWN、失败和缺失waitpid不回写。
 
+用户随后提供375行审计并明确“参照审计修订并开展后续实验”。V63独立登记于 `v63_balanced_feedback_repetition_01/`：固定三个真实pre596父点，每父新增C1/b1与C05/b1，反馈种子101/103、每条件350题×2draw且各自分母700，旧9条件只读不合并。精确新增4200条反馈、1788次有效optimizer更新和7458条评价（24作业），新逻辑会话11658；不新做class forward、不增745/test/Hold评价、不重开原B。原完整任务梯度只读复用且分布阶段原序重建G/虚拟点逐位验同点；两新臂均从真实父θ/Adam/RNG固定自身q训练597—894，894不做outer。正式R3不改700分母或response累加，新增两draw原子诊断分量及每条件2个VJP/2次C内积，成本计入原资源门，不能平均归一化q。六新分支真实成功退出后开放全部评价，24生成全部成功退出后统一评分；新主门仅b1净正确数C05−C1至少27、C05−旧Hold至少1，非显著性门，不自动授权后继，原advance不回写。
+
+V63沿用最多6worker、GPU0至7/每卡1和共享准入，未知归属/MPS仍阻断；阶段free门feedback/distribution/generate为24GiB、train26GiB、replay56GiB，allocated历史峰值76GiB、边界free2GiB、RSS192GiB及主机96GiB余量不变。初始化、等待、draining占名额；已确认资源/I/O故障仅从实际完整断点自动恢复，UNKNOWN/数值/状态/源码异常不自动重试，合法停止终止自动拉起。不另装新cron或全机observer；沿用已授权的进程内非本UID SI_USER TERM过滤边界，SIGKILL无法捕获。用户另要求“先占用七号卡”，GPU7仅独立有界准备期占位，正式派发前须核验释放；不是科学启动。诊断规则先冻结，旧813 invalid及最多36对实际定性阅读、各分支真实分布监督系数及C/q方向表不改变评分。当前实现/CPU核验不等于已冻结、派发或实验通过；具体实际状态见 `trusted_data_synthesis/docs/finqa_v63_balanced_feedback_repetition_20261020.md`，不得重复启动旧入口或未核验的新监督器。
+
 # 已授权的旧B中间状态清理
 
 用户于2026-10-19在知晓不可恢复后果后明确选择“允许删除旧中间状态”。09:50已完成独立 `storage_cleanup_20261019_replication_intermediates_01/` 计划，移除旧V25 `training_replication/seed{137,251,389}/arms/{static,c_only,full}/training/stepNNNN_step/state.pt` 中299至1490的非149倍数步，排除三个C-only的597至894整段，并额外保留C-only1371193、Full389299、Full2511213/1237/1334/1335。实际删除9762个文件、278.753510GiB，没有内容备份，不能通过Git或JSON恢复；所有目录及原逐步记录保持历史原义，禁止补造状态或改写原SHA来绕过缺失。
