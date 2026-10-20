@@ -18,6 +18,7 @@ import finqa_v63_gpu_isolation as ownership
 REPO = Path("/data1/zhuxinrui/projects/Data-Synthesis")
 V18 = REPO / "trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01"
 ROOT = V18 / "v63_resource_reservation_gpu7_20261020_01"
+REQUESTED_GIB = 64
 GPU = "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434"
 LEASE = V18 / "v25_training_replication_01/training_replication/locks/gpu-23de3b19331d75a07aa41aef48e1af06933180307d9643e0e1770a6a9502d2ce.lock"
 GIB = 1024 ** 3
@@ -85,7 +86,7 @@ def hold():
             raise RuntimeError("GPU7 lease inode changed")
         owner_snapshot = known_owners()
         intent = publish("intent", dict(schema="v63_explicit_GPU7_reservation.v1",
-            requested_GiB=64, maximum_seconds=3600, startup_free_margin_GiB=4,
+            requested_GiB=REQUESTED_GIB, maximum_seconds=3600, startup_free_margin_GiB=4,
             runtime_free_floor_GiB=2, GPU=GPU, pid=os.getpid(), birth=birth(os.getpid()),
             at=datetime.now(timezone.utc).isoformat(),
             lease=dict(path=str(LEASE), device=old.st_dev, inode=old.st_ino),
@@ -99,9 +100,9 @@ def hold():
             import torch
             known_owners()
             free, _ = torch.cuda.mem_get_info()
-            if stopped[0] or free < 68 * GIB:
-                raise RuntimeError("GPU7 no longer has 64GiB plus 4GiB margin")
-            allocation = torch.empty(64 * GIB, dtype=torch.uint8, device="cuda:0")
+            if stopped[0] or free < (REQUESTED_GIB + 4) * GIB:
+                raise RuntimeError("GPU7 no longer has requested capacity plus 4GiB margin")
+            allocation = torch.empty(REQUESTED_GIB * GIB, dtype=torch.uint8, device="cuda:0")
             remaining = torch.cuda.mem_get_info()[0]
             if remaining < 4 * GIB:
                 raise RuntimeError("GPU7 headroom changed during reservation")
@@ -156,6 +157,10 @@ def release():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("hold", "release"))
+    parser.add_argument("--reservation", type=int, choices=(1, 2), default=1)
     args = parser.parse_args()
+    if args.reservation == 2:
+        ROOT = V18 / "v63_resource_reservation_gpu7_20261020_02"
+        REQUESTED_GIB = 32
     result = hold() if args.action == "hold" else release()
     print(json.dumps(result, ensure_ascii=False))

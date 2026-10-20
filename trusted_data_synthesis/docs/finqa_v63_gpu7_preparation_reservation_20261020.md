@@ -9,3 +9,5 @@
 正式派发前，核对本项目占位PID、birth及reserved记录，写入精确release请求；确认原身份退出、项目租约释放后，再让正式worker依新协议准入。占位保存的模型调用、optimizer更新均为0。资源许可不增加审计方案中的4200条反馈、1788次有效更新或7458条评价预算。
 
 实施入口为 `scripts/finqa_v63_reservation.py`。实际成功以该目录 `reserved/record.json` 为准，释放以 `released/record.json` 与身份退出为准，源码准备不等于已占到显存。
+
+首个64GiB实例PID3012254/birth490517357于15:19:41北京时间因申请前余量已经不足而退出，没有实际占位；其failure和released记录保持不变。随后显卡空闲仅38760MiB。为继续用户的GPU7占位请求，另登记唯一32GiB容量实例 `v63_resource_reservation_gpu7_20261020_02/`，原4GiB启动余量、2GiB运行free门和一小时上限不变；不重启01、不循环重试、不修改其他项目。新增参数只允许选择明确的01/64GiB或02/32GiB登记目录，没有任意卡或任意目录的派发范围。
