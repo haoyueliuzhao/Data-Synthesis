@@ -1,0 +1,10 @@
+{
+  "automatic_restart_stopped": true,
+  "control_protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+  "controller_attempts": 1,
+  "finished_epoch": 1792457498.2646983,
+  "id": "96f8d67d93144a783514afc42e6a9c85e2aa1f19024450c7a35f9ddc8671e1af",
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "schema": "v57_supervisor_closeout.v1",
+  "status": "COMPLETE"
+}

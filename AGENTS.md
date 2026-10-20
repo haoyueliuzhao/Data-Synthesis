@@ -222,6 +222,10 @@ V61已以源提交 `d51cff57f1a3239d5762233f69157f3e0f5b4f2a` 冻结14文件，�
 
 V62已以源提交 `8149a46a3b084e8a29fa557e615caec65bb4b7f5` 冻结17文件，协议ID `9262f599aa20a2d9119152a1a6594f777ac22c7731e3c3ca0272f78d912fede8`；99项不同CPU/mock及一次正式冻结worker CPU导入通过，287科学依赖绑定通过且CUDA未初始化。2026-10-19 19:38:57安装单条本账户cron，19:39:01实际启动PID1596622/birth483433624的被动观察器。19:40:10为 `PASSIVE_HANDOFF_RUNNING` / `WAITING_FOR_NATURAL_GLOBAL_EMPTY`，未持部分GPU租约、未信号科学进程、未建立新episode；旧04继续4worker，23核心加8评价已accepted。证据 `shared_gpu_admission_01/activation_verification/record.json` ID `3a85c1c9a269d2ca7cf9461da0df751756ad24bded759d012f402248164105d4`。此时六并发及取消yyy排除尚未作用于科学worker，不能把观察器启动称为策略切换。旧V61已于18:24自然退休、精确cron删除且未信号科学池；不可重启。后续读取新master cron/handoff状态，交接后按state指向episode；不要手动tick或重复安装。明确停止用新冻结 `finqa_v62_cron.py stop`，remove仅撤定时行、不停止现有观察器。
 
+V54温度对照已由原04于2026-10-20 08:51:34北京时间以COMPLETE收口，68个任务全部accepted（23核心、45评价），九分支十八快照、1788次新增optimizer更新和12267条评价会话及评分全部完成。最终controller真实waitpid=0，科学worker、controller和supervisor已退出；V60终态为COMPLETE_NO_FURTHER_RECOVERY。V62于08:48:33记录NO_HANDOFF_REMAINING_WORK，未发维护信号或建立新科学episode，因此六并发及取消yyy排除从未用于本轮科学worker。V60/V62 cron仍可轻量读取终态，不能因实验完成擅自改写或删除历史记录。
+
+用户于2026-10-20要求“汇总本轮实验报告，等待审计”。最终报告为 `trusted_data_synthesis/docs/finqa_v54_v62_final_experiment_report_20261020.md`，索引为 `trusted_data_synthesis/docs/audit_reports/finqa_v54_temperature_20261020/evidence.json`。当前状态是实验完成、报告待审计，不是独立审计通过；不启动下一轮、补跑、扩seed、重采样或裸恢复旧入口。主开发集C05−C1仅+0.037750个百分点，1正2负，两个不确定性区间均跨零，三个辅助面板均值也低于C1/Hold；仅通过方向性筛选，promotion明确automatic_followup_authorized=false。等待审计意见和后续明确范围，历史UNKNOWN、失败和缺失waitpid不回写。
+
 # 已授权的旧B中间状态清理
 
 用户于2026-10-19在知晓不可恢复后果后明确选择“允许删除旧中间状态”。09:50已完成独立 `storage_cleanup_20261019_replication_intermediates_01/` 计划，移除旧V25 `training_replication/seed{137,251,389}/arms/{static,c_only,full}/training/stepNNNN_step/state.pt` 中299至1490的非149倍数步，排除三个C-only的597至894整段，并额外保留C-only1371193、Full389299、Full2511213/1237/1334/1335。实际删除9762个文件、278.753510GiB，没有内容备份，不能通过Git或JSON恢复；所有目录及原逐步记录保持历史原义，禁止补造状态或改写原SHA来绕过缺失。

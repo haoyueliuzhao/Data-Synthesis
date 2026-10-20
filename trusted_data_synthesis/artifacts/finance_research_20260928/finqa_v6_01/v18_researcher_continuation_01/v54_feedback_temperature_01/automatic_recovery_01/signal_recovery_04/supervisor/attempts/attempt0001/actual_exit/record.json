@@ -1,0 +1,9 @@
+{
+  "actual_waitpid_observed": true,
+  "birth": "476360127",
+  "control_protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+  "id": "82dc0a1b4d508b3d86e76e02b8e62c8db4ffc9186843fa98dca380aa47a7fa60",
+  "pid": 3878874,
+  "protocol_id": "53e084012b25dc34cc9a073cb53a1a3bf5d1dc7c4547937cd39e87e4d4be75af",
+  "returncode": 0
+}

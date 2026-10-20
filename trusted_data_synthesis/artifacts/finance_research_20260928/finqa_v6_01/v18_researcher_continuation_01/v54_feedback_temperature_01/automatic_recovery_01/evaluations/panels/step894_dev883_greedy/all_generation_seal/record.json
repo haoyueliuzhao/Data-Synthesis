@@ -1,0 +1,48 @@
+{
+  "all_provider_calls_settled": true,
+  "id": "531bf9b1c1d898fbb29dadc373ec951db9abd5f7d45b7fadb6b2b018258da3cd",
+  "jobs": {
+    "step894_dev883_greedy_seed137_C05_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed137_C05_draw20260928/whole_queue_seal/record.json",
+      "sha256": "8558e6c2c352012ce44e6b4005248d2a0e56151b73c713e729e8b56deaa1791b"
+    },
+    "step894_dev883_greedy_seed137_C1_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed137_C1_draw20260928/whole_queue_seal/record.json",
+      "sha256": "cc99cca2018d926b2252138ccb7675023fd502b49b71722315f541d5fcf44f1e"
+    },
+    "step894_dev883_greedy_seed137_Hold_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed137_Hold_draw20260928/whole_queue_seal/record.json",
+      "sha256": "a57367a190c09262fe986a460b37f14ad09078688ae54bf3a6f65883a766e07c"
+    },
+    "step894_dev883_greedy_seed251_C05_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C05_draw20260928/whole_queue_seal/record.json",
+      "sha256": "5d9896ef8e9226401b714e8d2f9d5e3dd2f685a4af3dbf106c237016f79ead90"
+    },
+    "step894_dev883_greedy_seed251_C1_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_C1_draw20260928/whole_queue_seal/record.json",
+      "sha256": "dadccf367bc16b847f9d56319a3cc267c93f905b3d060f7cdc1d1afa67290ad7"
+    },
+    "step894_dev883_greedy_seed251_Hold_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed251_Hold_draw20260928/whole_queue_seal/record.json",
+      "sha256": "a702c65ec63eb7449fa50cc4128d6490c0f037c94cfe132079e0d378d0546991"
+    },
+    "step894_dev883_greedy_seed389_C05_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed389_C05_draw20260928/whole_queue_seal/record.json",
+      "sha256": "25e99331d309eae2dc4019391a3c1534ec6e407d80655bf8e0604411a97f352f"
+    },
+    "step894_dev883_greedy_seed389_C1_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed389_C1_draw20260928/whole_queue_seal/record.json",
+      "sha256": "8e10da19a7a1fff34dfbcd978904f87f4fa6b6fb5b8f557435188764bc9df9d8"
+    },
+    "step894_dev883_greedy_seed389_Hold_draw20260928": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/evaluations/jobs/step894_dev883_greedy_seed389_Hold_draw20260928/whole_queue_seal/record.json",
+      "sha256": "6955acb7fab1df7f7b7a10d4b410ed9b05bd75bdbc089fa95027069c76a1e493"
+    }
+  },
+  "model_count": 9,
+  "panel": "step894_dev883_greedy",
+  "private_references_read": false,
+  "registration_id": "7a540e10aba2fefe744a2c38ad74ea437158b776255e5bf95ac00266bccd7386",
+  "schema": "v54_complete_panel_generation_seal.v1",
+  "sessions": 7947
+}

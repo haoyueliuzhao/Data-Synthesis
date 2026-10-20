@@ -1,0 +1,14 @@
+{
+  "at_epoch": 1792457521.533765,
+  "automatic_recovery_allowed": false,
+  "current_episode": {
+    "protocol_id": "ffad4c05b8031cf94be53746b40ea1f0636c66e13e8a042d02b51cdb70736d5d",
+    "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v54_feedback_temperature_01/automatic_recovery_01/signal_recovery_04"
+  },
+  "id": "0990ae9ed8d3c4eb81a5115c8e8950bf6ef10e3d16107eaf0027c1d061bfa3a0",
+  "new_user_authorization_required": true,
+  "protocol_id": "3348cfe262cfdd12c6e4fb74b5b926d4845dc64301e4d3259df3261494f25b3b",
+  "reason": "COMPLETE",
+  "schema": "v60_permanent_automatic_recovery_stop.v1",
+  "status": "COMPLETE_NO_FURTHER_RECOVERY"
+}
