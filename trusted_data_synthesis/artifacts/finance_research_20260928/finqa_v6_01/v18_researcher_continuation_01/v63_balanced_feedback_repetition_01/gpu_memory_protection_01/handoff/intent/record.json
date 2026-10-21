@@ -1,0 +1,36 @@
+{
+  "at_epoch": 1792550570.6644158,
+  "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+  "barrier_gpu_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "birth": "497496500",
+  "id": "41fbf81c909c1d8d0f6acbdb54854588533adb048aad10a5e8249a7907bf0e78",
+  "original_active_workers": [
+    {
+      "attempt": 1,
+      "birth": "497257753",
+      "gpu_index": 0,
+      "job_id": "seed389.replay_C1",
+      "pid": 4038644
+    },
+    {
+      "attempt": 2,
+      "birth": "497355153",
+      "gpu_index": 7,
+      "job_id": "seed137.replay_C1",
+      "pid": 4125976
+    }
+  ],
+  "pid": 4188026,
+  "schema": "v64_single_maintenance_signal_intent.v1",
+  "signal": 15,
+  "target_birth": "490889852",
+  "target_pid": 3478025,
+  "uid": 1004
+}

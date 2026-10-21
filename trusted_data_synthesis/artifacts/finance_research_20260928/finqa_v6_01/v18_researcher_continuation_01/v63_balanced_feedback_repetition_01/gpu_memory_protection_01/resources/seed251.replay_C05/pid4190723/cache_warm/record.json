@@ -1,0 +1,111 @@
+{
+  "actual_reserved_growth_bytes": 17179869184,
+  "actual_warm_allocation_bytes": 17179869184,
+  "after": {
+    "allocated_bytes": 15292837888,
+    "allocated_pass": true,
+    "at": "2026-10-21T02:45:33.649940+00:00",
+    "boundary": true,
+    "context": {
+      "warm_allocation_bytes": 17179869184
+    },
+    "free_bytes": 52098433024,
+    "free_pass": true,
+    "gpu_isolation": {
+      "allowed": true,
+      "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "known_processes": [
+        {
+          "birth": "497502592",
+          "pid": 4190723,
+          "uids": [
+            1004,
+            1004,
+            1004,
+            1004
+          ]
+        }
+      ],
+      "observed_epoch": 1792550733.6506698,
+      "process_count": 1,
+      "reason": "all_observed_process_owners_known",
+      "unresolved_processes": []
+    },
+    "host": {
+      "available_bytes": 827066036224,
+      "available_reserve_bytes": 103079215104,
+      "passed": true,
+      "peak_rss_bytes": 17530945536,
+      "rss_bytes": 2618843136,
+      "rss_limit_bytes": 206158430208
+    },
+    "label": "v64_after_replay_cache_warm",
+    "passed": true,
+    "peak_allocated_bytes": 32472707072,
+    "peak_reserved_bytes": 32474398720,
+    "reserved_bytes": 32474398720,
+    "stop_requested": false,
+    "total_bytes": 85095874560
+  },
+  "before": {
+    "allocated_bytes": 15292837888,
+    "allocated_pass": true,
+    "at": "2026-10-21T02:45:33.380107+00:00",
+    "boundary": true,
+    "context": {},
+    "free_bytes": 69278302208,
+    "free_pass": true,
+    "gpu_isolation": {
+      "allowed": true,
+      "gpu_uuid": "GPU-ab6e97cc-19e4-64b8-f792-7b6920a45434",
+      "known_processes": [
+        {
+          "birth": "497502592",
+          "pid": 4190723,
+          "uids": [
+            1004,
+            1004,
+            1004,
+            1004
+          ]
+        }
+      ],
+      "observed_epoch": 1792550733.3805084,
+      "process_count": 1,
+      "reason": "all_observed_process_owners_known",
+      "unresolved_processes": []
+    },
+    "host": {
+      "available_bytes": 827034324992,
+      "available_reserve_bytes": 103079215104,
+      "passed": true,
+      "peak_rss_bytes": 17530945536,
+      "rss_bytes": 2618843136,
+      "rss_limit_bytes": 206158430208
+    },
+    "label": "v64_before_replay_cache_warm",
+    "passed": true,
+    "peak_allocated_bytes": 15292837888,
+    "peak_reserved_bytes": 15294529536,
+    "reserved_bytes": 15294529536,
+    "stop_requested": false,
+    "total_bytes": 85095874560
+  },
+  "cache_releases_during_warm": 0,
+  "contiguous_reuse_or_future_free_guaranteed": false,
+  "control_protocol_id": "2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9",
+  "estimated_reusable_bytes_after": 17181560832,
+  "extra_scientific_response": false,
+  "gpu_index": 7,
+  "id": "83704058b81cb1080609258ab44cf394344379e8c8cd8e17eb9a834d2ba5c690",
+  "job_id": "seed251.replay_C05",
+  "live_warm_tensor_remaining": false,
+  "model_or_rng_call": false,
+  "original_peak_stats_not_reset": true,
+  "planning_free_headroom_observed_after": true,
+  "planning_margin_is_not_a_new_scientific_gate": true,
+  "requested_warm_bytes": 17179869184,
+  "schema": "v64_actual_worker_local_cache_warm.v1",
+  "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "status": "FULL"
+}

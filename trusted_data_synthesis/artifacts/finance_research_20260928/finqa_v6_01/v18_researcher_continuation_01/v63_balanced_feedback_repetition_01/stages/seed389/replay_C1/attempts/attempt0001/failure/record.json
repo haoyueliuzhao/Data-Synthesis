@@ -1,0 +1,116 @@
+{
+  "CUDA_initialized": true,
+  "attempt_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/stages/seed389/replay_C1/attempts/attempt0001",
+  "automatic_retry_in_worker": false,
+  "error": "replay paused at complete response 58",
+  "exception_chain": [
+    {
+      "actual_errno": null,
+      "automatic_recovery_allowed": null,
+      "message": "replay paused at complete response 58",
+      "module": "finqa_v32_replay_variants",
+      "type": "ReplayPaused"
+    }
+  ],
+  "exception_type": "ReplayPaused",
+  "feedback_batch": 1,
+  "finished_epoch": 1792550597.5248384,
+  "id": "11cb2b39e76a2be49b75045f9f565e8cf637e634bb648787b2b62d2cbf9c27ea",
+  "job": {
+    "arm": "C1",
+    "feedback_batch": 1,
+    "id": "seed389.replay_C1",
+    "job_id": "seed389.replay_C1",
+    "kind": "replay",
+    "memory_phase": "replay",
+    "seed": 389,
+    "stage": "replay_C1",
+    "temperature": 1.0
+  },
+  "pid": 4038644,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "resource_closeout": {
+    "id": "00207142f2e169108ffdfe63cc7442b878bc791492415512d238a7f40287de93",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/resources/seed389.replay_C1/pid4038644/closeout/record.json",
+    "sha256": "a6223e5420c369a25c41cec7beb47a86a5f9bc2da5f6a89bb15ad16c8e36aa40"
+  },
+  "resources": {
+    "actual_boundary_observations": 367,
+    "all_gates_passed": true,
+    "anchor_bytes": 0,
+    "deferred_observation": null,
+    "gpu_isolation_checks": 371,
+    "gpu_isolation_policy": {
+      "GPU_UUIDs_memory_math_and_worker_limits_unchanged": true,
+      "account_name_lookup_required": false,
+      "conflict_yields_only_own_worker_via_original_resource_deferral": true,
+      "controller_dispatch_and_locked_recheck": true,
+      "environment_or_command_line_read": false,
+      "excluded_host_uid": null,
+      "excluded_username": null,
+      "known_UID_sharing_allowed": true,
+      "no_global_GPU_reservation_or_zero_transient_overlap_guarantee": true,
+      "observation_cache_seconds": 0,
+      "original_explicit_stop_and_lifetime_hard_gates_take_precedence": true,
+      "other_process_signals_or_migration": false,
+      "other_project_files_read": false,
+      "own_unsealed_compute_may_be_recomputed_after_durable_audit": true,
+      "prior_account_specific_exclusion_cancelled": true,
+      "process_birth_checked_before_and_after": true,
+      "query_timeout_seconds": 3,
+      "schema": "v63_known_UID_shared_GPU_admission.v1",
+      "source": "nvidia-smi XML compute and graphics processes plus proc status/stat",
+      "uid_fields": [
+        "real",
+        "effective",
+        "saved",
+        "filesystem"
+      ],
+      "unknown_ownership_or_unattributed_MPS_blocks_admission": true,
+      "worker_each_resource_sample_checked": true,
+      "worker_pre_CUDA_and_pre_model_recheck": true
+    },
+    "last_gpu_isolation_observation": {
+      "allowed": true,
+      "gpu_uuid": "GPU-f813ce38-39d7-ab21-f72b-55f87284eaa5",
+      "known_processes": [
+        {
+          "birth": "497257753",
+          "pid": 4038644,
+          "uids": [
+            1004,
+            1004,
+            1004,
+            1004
+          ]
+        }
+      ],
+      "observed_epoch": 1792550597.2749665,
+      "process_count": 1,
+      "reason": "all_observed_process_owners_known",
+      "unresolved_processes": []
+    },
+    "maximum_single_capacity_wait_seconds": 60.0,
+    "minimum_boundary_free_bytes": 45198802944,
+    "minimum_host_available_bytes": 825358856192,
+    "observations_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/resources/seed389.replay_C1/pid4038644/observations.jsonl",
+    "observed_violation": null,
+    "own_cache_release_does_not_reset_historical_peak": true,
+    "peak_allocated_bytes": 34892279808,
+    "peak_resets_after_loading": 0,
+    "peak_resets_before_loading": 1,
+    "peak_rss_bytes": 17545596928,
+    "preflight_shortages": 0,
+    "preflight_shortages_not_reclassified_as_pass": true,
+    "received_signals": [
+      {
+        "received_at_epoch": 1792550575.703489,
+        "signal": 15
+      }
+    ],
+    "resource_wait_seconds": 1.5820764359086752,
+    "single_process_lifetime_includes_loading": true,
+    "warm_allocation_bytes": 0
+  },
+  "schema": "v63_actual_attempt_failure.v1"
+}

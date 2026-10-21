@@ -1,0 +1,55 @@
+{
+  "actual_checkpoint_byte_revalidation_required_in_cold_worker": true,
+  "actual_returncode": 1,
+  "attempt": 1,
+  "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+  "birth": "497257753",
+  "checkpoint_boundary": "complete_response",
+  "error_type": "ReplayPaused",
+  "id": "37ab5c0e1e9f91df67c1bedd5adc2125da50f255679369d65f71f9ebb5900215",
+  "job_id": "seed389.replay_C1",
+  "kernel_stop_receipts": [
+    {
+      "SIGKILL_capturable": false,
+      "at_epoch": 1792550575.7028263,
+      "context": {
+        "CPU_import_check": false,
+        "attempt_id": "attempt0001",
+        "feedback_batch": 1,
+        "inherited_filter_implementation_id": "21ed26b65a2aa3d7fddc93a970a7f1af5f3ac3683fd30972bd824cbed7eacd4d",
+        "job_id": "seed389.replay_C1",
+        "mode": "worker",
+        "v63_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01"
+      },
+      "decision": {
+        "action": "DISPATCH_ORIGINAL_STOP",
+        "dispatch_original_stop": true,
+        "filtered": false,
+        "owner_uid": 1004,
+        "reason": "owner, INT, unknown/kernel semantics or non-admitted signal code"
+      },
+      "pid": 4038644,
+      "provenance": "kernel_sigwaitinfo",
+      "receipt_id": "4038644-1792550575702818150",
+      "receipt_queue_drops_before": 0,
+      "role": "worker",
+      "schema": "v59_received_signal_kernel_receipt.v1",
+      "sender_birth_at_signal_time_known": false,
+      "si_code": 0,
+      "si_pid": 3478025,
+      "si_uid": 1004,
+      "signal": 15,
+      "signal_name": "SIGTERM"
+    }
+  ],
+  "original_failure": {
+    "id": "11cb2b39e76a2be49b75045f9f565e8cf637e634bb648787b2b62d2cbf9c27ea",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/stages/seed389/replay_C1/attempts/attempt0001/failure/record.json",
+    "sha256": "a87c948c6b35472892aa420183b005d67398826021a2dae90ae1e47dc5276e59"
+  },
+  "pid": 4038644,
+  "progress_units": 58,
+  "schema": "v64_complete_response_maintenance_acceptance.v1",
+  "status": "PASS",
+  "worker_signaled": true
+}

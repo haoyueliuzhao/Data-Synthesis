@@ -1,0 +1,11 @@
+{
+  "at_epoch": 1792550570.66565,
+  "id": "b271233576e4e941372849fb67ec72f01bfa0a1ce684013b28a02f7359068b3f",
+  "intent": {
+    "id": "41fbf81c909c1d8d0f6acbdb54854588533adb048aad10a5e8249a7907bf0e78",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/handoff/intent/record.json",
+    "sha256": "3fe0cc1f108b0c0ef1f93e977eff9f37dc40e6f246192104c7db098720d8d822"
+  },
+  "sent_once": true,
+  "target": "registered old controller only"
+}

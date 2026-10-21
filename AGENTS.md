@@ -269,3 +269,7 @@ V63已从源提交 `1c6cd75ae5` 冻结112文件，实施包ID `4442335a0a1e881bb
 本次只授权一次核验原控制器/监督器PID与birth、完整反馈、活动replay范围及原状态后进行的受控切换；由原协作停止路径在完整response断点封存，所有旧worker真实退出并结算、旧控制器及监督器身份消失、租约及断点审计通过后才单次启用新控制器。不强杀worker、不热改旧冻结文件，不以维护许可覆盖新的UNKNOWN、数值/状态失败或无关停止。总并发仍6、每卡1、GPU0至7，初始化/等待/draining占名额；原自动资源恢复与合法停止边界不变。新控制协议明确仅覆盖旧R3运行期warm0及常规缓存释放行为，原协议、STOP和历史失败不回写。
 
 本段追加时仅完成实现及52项分项CPU/mock核验（资源19、控制器/入口33），尚未进行V64切换、派发或实际显存预热；不另起GPU小试。最终整体测试、冻结及真实生效状态须以 `trusted_data_synthesis/docs/finqa_v64_native_cache_protection_20261021.md` 后续更新、新控制目录及首个真实 `cache_warm/record.json` 为准，不能把准备/CPU通过或旧V63继续运行称作保护已生效。
+
+V64于2026-10-21 10:43:49北京时间完成单次受控切换：旧seed137.C1/seed389.C1回放分别封存完整response406/58，UNKNOWN均0，原资源门通过且实际exit1（ReplayPaused）；旧监督器和控制器已退出，旧合法停止记录不改写。源提交 `cf79cb34f9`，新协议 `2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9`；总66项CPU/mock和322个冻结CPU依赖核验通过。新监督器PID4190175/birth497501597，新控制器PID4190338/birth497501887，首次在GPU7/0派发seed251.C05/C1回放。当前控制状态改看 `gpu_memory_protection_01/supervisor/queue/status.json`、`gpu_memory_protection_01/queue/status.json`；旧根STOP/closeout属于已授权维护历史，不得因此重复启动旧入口。首个真实预留量仍以新版worker的cache_warm证据为准，交接COMPLETE不是科学整轮COMPLETE。
+
+V64首批两个worker于10:45:33北京时间均实际FULL预热16GiB，allocator reserved各增加16GiB，预热期间主动降级释放0次，随后原R3科学边界通过；证据为 `gpu_memory_protection_01/activation_verification/record.json`。这仅是本worker已取得的可复用缓存，不是OS独占或未来显存保证；原矩阵及整轮统一评价尚未完成。不要再执行已完成的handoff或原V63旧监督入口。

@@ -1,0 +1,13 @@
+{
+  "at_epoch": 1792550575.701362,
+  "automatic_restart_allowed": false,
+  "id": "9f9eebd198cfd386f9847e3241f6d29bf82c9a0ea65b8f99fa255410728b460e",
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "reason": {
+    "marker": false,
+    "signals": [
+      15
+    ]
+  },
+  "schema": "v63_terminal_explicit_stop.v1"
+}

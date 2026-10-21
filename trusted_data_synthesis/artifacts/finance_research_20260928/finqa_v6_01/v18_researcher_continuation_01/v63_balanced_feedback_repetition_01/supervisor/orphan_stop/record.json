@@ -1,0 +1,10 @@
+{
+  "all_identities_observed_exited": true,
+  "automatic_restart_allowed": false,
+  "id": "f92b4a341974c4fc22a088ef91f33bd1701a61744faeabbe42c5d32b9c51ee4a",
+  "nonchild_waitpid_or_exit_zero_not_fabricated": true,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "schema": "v63_explicit_stop_orphan_identity_audit.v1",
+  "shared_cooperative_grace_seconds": 600,
+  "workers": []
+}

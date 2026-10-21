@@ -1,0 +1,9 @@
+{
+  "automatic_restart_stopped": true,
+  "controller_attempts": 1,
+  "finished_epoch": 1792550616.3230505,
+  "id": "b012b2fd2229246ec6987c35649a4618efce259fa1ee52261fd202748fd3aaca",
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "schema": "v63_supervisor_closeout.v1",
+  "status": "STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME"
+}

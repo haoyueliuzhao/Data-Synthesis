@@ -143,4 +143,36 @@ CPU/mock测试临时目录应按仓库约定在 `artifacts/test_tmp/` 下用 `mk
 
 交接还要求内核停止receipt来源明确且没有已报告的receipt队列丢失；ReplayPaused必须同时具有本进程实际资源closeout且全部原资源门通过。新控制器启动若失败，先发布新控制根终止标记，在GPU租约屏障释放前请求停止；退出未确认时如实标记，不宣称已退出。
 
-待实际冻结、整体入口核验、受控交接和首个真实预热发生后追加。本节目前没有声称上述步骤已完成。
+### 8.1 冻结与正式入口核验
+
+源提交 `cf79cb34f9` 已推送。新7文件包ID为 `68f98365beaeebe0e256bc551939c9cb1ae5963833fa50d151b282e2c9c4ef71`，控制协议ID为 `2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9`。原V63科学协议、112文件源码和科学身份不变。
+
+冻结入口 CPU 实际依赖核验通过，322个依赖来源匹配；`CUDA_initialized=false`、`scientific_calls=0`。证据为新控制目录 `frozen_worker_import_verification/record.json`，ID `87b497372ab5ffe4794b30af7617aa071c1dc61a0228fd8c9e45bd5550937a58`。它不代表实际预热或科学效果。
+
+### 8.2 实际受控切换
+
+2026-10-21 10:43:49北京时间，单次交接以 `COMPLETE` 收口（仅指交接，不是整轮实验完成），记录ID `fc9570adbaa1c140965cf1157ee06c0de4e2ff1d6465921fb84f889f7a61bec8`。直接暂停目标仅为登记的旧控制器；本次信号及父监督器的合法传播均有内核receipt核验。旧监督器和控制器已经退出，旧终止记录保留为 `STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME`，不改写成科学成功。
+
+| 维护暂停作业 | 原attempt / PID | 完整response累计断点 | 实际exit | 恢复审计 |
+|---|---|---:|---:|---|
+| seed137.replay_C1 | attempt0002 / 4125976 | 406 | 1 | ReplayPaused、UNKNOWN=0、原资源门通过 |
+| seed389.replay_C1 | attempt0001 / 4038644 | 58 | 1 | ReplayPaused、UNKNOWN=0、原资源门通过 |
+
+退出1来自维护暂停，不伪报exit0。两个实际累计梯度断点、4200条已封存反馈及原7项accepted结果只读继承；新worker须再次验证实际Tensor和同点绑定。维护期间没有额外反馈采样或重复已提交response。
+
+新监督器PID `4190175`、birth `497501597`；新控制器PID `4190338`、birth `497501887`。首轮派发为GPU7上的 `seed251.replay_C05`（PID4190723）及GPU0上的 `seed251.replay_C1`（PID4190836）。调度继续按原优先级与原可运行时间，不声称暂停的两项必须抢先于其他原队列工作。已有worker上限6、每卡1及全部资源门不变。
+
+首次实际预热量见后续8.3；仅凭上述启动不宣称已取得16GiB缓存。
+
+### 8.3 首次真实预留与科学边界
+
+2026-10-21 10:45:33北京时间，两项新版worker均完成FULL预热。下表来自各自不可变 `cache_warm/record.json`，不是计划值：
+
+| 实际作业 / GPU | 临时预热Tensor峰值 | allocator reserved实际增量 | 预热后estimated reusable | 预热期间主动降级释放 |
+|---|---:|---:|---:|---:|
+| seed251.replay_C05 / GPU7 | 16GiB | 16GiB | 约16.002GiB | 0次 |
+| seed251.replay_C1 / GPU0 | 16GiB | 16GiB | 约16.002GiB | 0次 |
+
+两份预热后快照均为allocated `15,292,837,888` bytes、reserved `32,474,398,720` bytes、physical free `52,098,433,024` bytes；包含预热的allocated历史峰为 `32,472,707,072` bytes。临时Tensor已经释放，16GiB留在本worker可复用native缓存中，而非以活张量占位。随后观测到原 `before_actual_R3_response` 与 `replay.before_response` 边界通过；没有为了验证再额外执行一个response。
+
+实际启用证据为 `activation_verification/record.json`，ID `1a4d9977a4d45cf2b75727c881fac1a87eb45612706f1b6a2256e8d590b74cae`。它绑定两个warm记录、新控制器/监督器、交接与当时科学资源观测。此证据说明首批两worker保护已实际取得，不保证其他worker也能足额、不保证缓存永不被allocator释放或外部不再占用free，不构成新的科学准确率/吞吐结论。原矩阵仍在执行，整轮实验未完成。
