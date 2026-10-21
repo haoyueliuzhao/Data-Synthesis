@@ -259,3 +259,13 @@ V63已从源提交 `1c6cd75ae5` 冻结112文件，实施包ID `4442335a0a1e881bb
 - 此约束针对 API 调用，不改变本轮九个固定 Student 保存点、GPU 评价条件或历史实验记录。
 
 详细适用范围见 `trusted_data_synthesis/docs/api_model_policy_20260927.md`。
+
+# V64 同进程显存缓存保护
+
+用户于2026-10-21要求“提供保护，防止再次被挤占”，明确选择“完整断点受控切换”，并询问提前预留显存。本次V64仅在原V63科学根下独立 `gpu_memory_protection_01/` 登记运行层修订；科学ROOT、原协议/参数点/条件/反馈/奖励/断点身份不变，不新开科学实验。原4200条完整反馈只读复用，六分支1788次有效optimizer提交、24评价生成作业及7458条评价会话不扩展，不新增class forward或已封存response前缀重放。未封存计算若重算，须明确计为维护/恢复开销。
+
+仅对新版冷worker在模型、theta及持久张量完成后、首次真实 `prepare_replay_response` 前，最多一次额外16GiB uint8同进程native缓存预热；释放临时Tensor引用但保留可复用allocator cache，不调用RNG/模型，不用旁路holder，不修改其他项目、GPU compute mode或系统权限。按实际余量可为PARTIAL或ZERO，不能称足额；14GiB raw-free规划头寸和64MiB峰值规划裕量不替代原精确科学门。预热计入76GiB allocated历史峰，阶段不reset；原2GiB边界free、精确R3 raw-free/KV与总容量门、RSS和主机96GiB余量保持。常规cleanup保留自身缓存，只有原physical-free谓词失败时才审计降级释放并重新核验；原失败观测不追认。native缓存不是OS级独占，碎片、allocator内部释放及外部消耗真实free仍可能导致安全退出。
+
+本次只授权一次核验原控制器/监督器PID与birth、完整反馈、活动replay范围及原状态后进行的受控切换；由原协作停止路径在完整response断点封存，所有旧worker真实退出并结算、旧控制器及监督器身份消失、租约及断点审计通过后才单次启用新控制器。不强杀worker、不热改旧冻结文件，不以维护许可覆盖新的UNKNOWN、数值/状态失败或无关停止。总并发仍6、每卡1、GPU0至7，初始化/等待/draining占名额；原自动资源恢复与合法停止边界不变。新控制协议明确仅覆盖旧R3运行期warm0及常规缓存释放行为，原协议、STOP和历史失败不回写。
+
+本段追加时仅完成实现及52项分项CPU/mock核验（资源19、控制器/入口33），尚未进行V64切换、派发或实际显存预热；不另起GPU小试。最终整体测试、冻结及真实生效状态须以 `trusted_data_synthesis/docs/finqa_v64_native_cache_protection_20261021.md` 后续更新、新控制目录及首个真实 `cache_warm/record.json` 为准，不能把准备/CPU通过或旧V63继续运行称作保护已生效。
