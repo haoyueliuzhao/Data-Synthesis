@@ -49,6 +49,28 @@
 
 不增加回答分母、反馈、训练、评分或科学实验次数。明确停止迁移协调器必须停止后续接续；已派发的新child只由本控制核验身份后合法停止，保留其真实退出与返回。任何身份、状态、数值、返回完整性或资源失败均停止本次，不自动重试或换卡。
 
-## 6. 准备状态
+## 6. 冻结、核验与实际等待
 
-本文初稿时迁移尚未冻结或启动，尚未向GPU0目标发送信号。后续以独立protocol、冻结CPU核验、实际协调器状态及源/新退出证据说明是否已排队、已安全停止或真正迁入GPU6，不把等待协调器启动称为迁移完成。
+源提交 `00a16b5499` 已推送远端，独立冻结4文件：binding、registration、worker_bridge、entry。实施包ID为 `d83e9d3780b561af2bea2fb3a3ec72c440db3226b71ff2dc852c00ff7ad5be7f`，协议ID为 `3c884498d7fa74aa14786939ef2a697784ab75668c5e9581ee57d381cc49c956`。
+
+69项必要CPU回归通过：登记23项、桥接14项、入口32项。覆盖精确身份/单次信号、真实空闲与租约、原返回缓存不重算、停止形态与来源、旧HARD保留、实际退出、早退子进程证据、禁止重试及追加写入范围。真实源run、缓存目录、资源与native audit字段均与冻结实现核对；只读检查没有暂停或调用模型。
+
+项目Python没有 `os.pidfd_open`，实际发送路径为两次核验PID/birth后单次 `os.kill`，不能宣称已使用pidfd。只新建的CPU测试子进程验证了该路径的kernel `si_code=0`、发送PID及UID1004；该验证没有操作既有实验进程。正式冻结入口核验345个依赖，原V67 worker闭包与冷迁移控制构造均PASS，未初始化CUDA、发信号或执行模型调用。
+
+2026-10-22北京时间14:35:34，迁移协调器PID2727365/birth507532935实际启动。14:36:29观察为 `WAITING_GPU6_IDLE_AND_SAFE_SOURCE`，尚未取得GPU6租约、没有发送源停止信号、没有新GPU worker。此时GPU0目标227/883，GPU6 draw29为113/120；GPU0仍继续原工作。
+
+等待启动证据为 `startup_verification/record.json`，ID `14dbd16905c10e1c05e9f4c40644f22524be9ae06f82bc8307f06f9d8cf507f3`。后续查本目录 `queue/status.json`、`signal/`、`baseline/`、`worker/` 及目标原目录attempt0002；禁止重复启动同一协调器。等待协调器启动不代表迁移已经完成。
+
+## 7. 实际交接：GPU0退出、GPU6接续
+
+GPU6 draw29完成120题、实际exit0并被原控制接受后，协调器于14:38:23发送唯一一次登记SIGTERM。源203941/birth507110006于14:38:26被原父控制器实际waitpid确认exit1，原状态保留EXPLICIT_STOP/HARD_BLOCKED及资源FAILED_OR_STOPPED；内核receipt发送者与本次协调器一致。此exit1是已授权协作停止，不是OOM或数值失败，也没有改写成旧进程成功退出。
+
+停止后的实际断点为235题完整回答、454次已返回模型调用，UNKNOWN＝0。原job/generation锁释放、资源历史硬门及同点请求绑定核验通过，完整Episode、候选、返回、tool和调用记录形成不可变前缀基线。未重新采样已有回答。
+
+新GPU6 worker为PID2731998/birth507551516，原C67目标目录下attempt0002，执行未修改的冻结V67入口。实际CUDA准入已核验GPU6 UUID与同一secondary EX租约，模型加载计入新进程历史峰；没有使用旁路新槽位。
+
+14:41:17验收时，新进程已观察到12次实际新模型返回，完整回答由235推进到241，最新实际资源边界通过；旧GPU0身份已退出，本实验不再占用GPU0。GPU7旧seed389/C1仍继续，V68仍保留四组已接受评分并等待剩余完整组，没有对其他worker/controller发送信号。
+
+实际交接证据为 `handoff_verification/record.json`，ID `78a3dbd717d1900ae32a88ed283db415912b1cd6666c9bb7111ebfa7e0d9ec80`。当前状态为 `RUNNING_MIGRATED_TARGET`：迁卡已生效，但883题完整生成及新worker最终exit0/accepted尚未完成。最终原返回前缀、实际新增调用数量和完整结果还会由已冻结桥接器在真实退出时核验；不能将本次启动验收当作整项生成完成。
+
+后续进度必须合并V69新worker，而不能只看旧C67 journal中的HARD：旧状态是保留的交接历史。未来原C67可能因此BLOCKED收口，不表示GPU6新worker已停止；应以本次独立队列与实际attempt0002结果区分。完成后V68自动评分接纳同一job的新增accepted，无需重复生成或重启评分。
