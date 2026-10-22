@@ -317,3 +317,13 @@ V69已于14:38:23在GPU6原任务验收退出且实际空闲后发送登记的�
 V69目标GPU6 worker于2026-10-22 17:45:16北京时间真实exit0，17:45:23以 `MIGRATION_COMPLETE_TARGET_ACCEPTED` 收口；235个父episode、454次父返回及2269个原文件保持，新完成648题、1257次返回，累计883题、1711次返回。V68于17:45:55以 `ALL_SIX_GROUPS_SCORED_AWAITING_GLOBAL_ANALYSIS` 收口，六组原24作业7458条native评分全部接受，六CPU评分真实exit0且资源通过。本轮控制器、监督器及worker均已退出；不得重复启动V65/V67/V68/V69。旧20项GPU均exit1、20次CPU补封存均exit0；新4逻辑生成共5次GPU尝试（4个exit0、迁移源1个exit1），不得伪称原GPU全部exit0或改写旧BLOCKED/HARD。
 
 用户随后要求“生成实验报告”。已仅依据完整封存分数，在独立 `report_analysis_01/` 做一次原冻结公式的派生统计，未重新生成、评分、读取私人参考或调用GPU/API；文档与小型来源摘要为 `trusted_data_synthesis/docs/finqa_v63_v69_experiment_report_20261022.md` 及 `docs/report_data/finqa_v63_v69_report_summary_20261022.json`。新开发集C05−C1净20/2649，即+0.755002pp，低于预登记27门；C05−Hold净31，满足另一个数值条件但不能替代主门。seed389/C05原draw诊断FAIL与单点例外保留，原全局评价屏障和部分b1/postrun诊断仍未完成；报告派生分析完成不等于原科学协议整体COMPLETE或独立审计通过。本次不创建promotion、不启动后继、不恢复原B，等待审计及后续明确范围。
+
+# V70 Full 单路径连续闭环验证
+
+用户于2026-10-23提供“小规模连续闭环验证”完整方案并明确“参照方案修订并开展后续实验”。仅授权独立 `v70_full_closed_loop_01/`，从已接受的seed137/C1/b1/step894真实θ/Adam/RNG/π初始化，明确由C-only转为T1/Full；固定最小seed不是按最佳成绩选点。Full沿原0.8/0.2贡献与新颖性指数、历史锚4/先验锚1、ε0.05/T_N1/RMS floor1e−8。894、1192各应用一次正式新q并实际训练298步，终点1490再做一次新贡献与候选q探测，但禁止应用或继续训练。旧outer历史不补造596，旧自动outer入口关闭，训练提交幂等；不能裸恢复旧driver或V63队列。
+
+精确新预算为3×700＝2100反馈、2次应用＋1次probe、596optimizer提交、2976任务暴露、三次新完整class(各744任务/1360状态/2468包/4974有效行)，新评价仅1192/cal120与1490/cal120/dev883共1123，会话合计3223。各点4个完整任务分片，必须重算该点class，不复用596/前点缓存、G/虚拟点/gJ/C；同点安全恢复只复用完整已封存任务或response累计梯度/训练提交。起点评价只读复用67/120、525/883，不重评；不增随机/test/1192dev/材料/温度/seed或平行消融，不能按cal成绩选优、停掉或改变固定后续日程。
+
+每点CPU冻结实际平滑C及RMS/任务尺度，N随分布更新，FP64最多100步，以最大可调任务Hilbert更新残差≤1e−8停止；首步须匹配正式Full候选(绝对1e−12/Hilbert1e−10)。参考只用于R/G/D与rho0.8 Hilbert追踪诊断，真实训练仍一次q；保留可调μ归一化及全任务口径、两draw敏感性，不能平均归一化drawq或称总体方差/收敛证明。全零实际反馈保持π并标无信息，不计作收敛。原gJ/rawC均值atol1e−7/rtol2e−4不放宽，V66单点例外不继承；历史未完成诊断仅检查本轮依赖，旧FAIL/停止不回写。
+
+GPU0—7，总最多6worker、每卡1个primary EX租约，初始化/等待/draining计名额；原阶段准入、76GiB allocated峰、2GiB边界free、classRSS160/其他192和主机96GiB余量保持，不干预外部项目、不新占位或cron。资源/可恢复I/O按原持久断点规则接续，UNKNOWN、状态/hash/源码/数值异常阻断，明确STOP禁止重拉；不另设任意墙钟截止但不扩固定科学剂量。全部26科学/生成job真实退出接受后，独立单CPU子进程一次评分/汇总，RSS64/host96；1490probe不应用。正常完成即停，不自动扩轮。初稿状态尚未冻结/科学启动，实际证据及说明见 `trusted_data_synthesis/docs/finqa_v70_full_closed_loop_20261023.md`；不得把实现或CPU通过表述为实验已运行。
