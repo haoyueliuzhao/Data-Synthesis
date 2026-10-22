@@ -8,7 +8,7 @@
 - 原V65：`S/early_generation_01/`，20项、6215会话。
 - 新V67：`S/evaluation_completion_01/`，独立冻结源码、协议、控制状态、修复证据和资源记录。
 - 最后组生成仍是原4项、1243会话；全24项总7458会话不变。
-- 本文初稿时尚未冻结或启动V67；下列设计与测试结果不代表已实际修复验收或派发。
+- V67已独立冻结，并于2026-10-22北京时间13:24:59启动。实际派发与CPU修复验收见第8节；不代表全部生成或评分完成。
 
 原六组训练均已完成，最后 seed389/C05 已封存894点、实际训练退出码0，`S/training_barrier/record.json` 已存在。因此最后4项不必等待原20项全部收尾：核验六组屏障及最后训练证据后，可以与旧剩余生成并行。
 
@@ -68,8 +68,28 @@ V67的 `evaluations/registration/record.json` 仅含 seed389/C05 原4项，共12
 
 用户已撤销此前误发的历史清理命令，本次不删除历史数据或完整断点。
 
-## 7. 已完成核验与待补实际证据
+## 7. 必要核验与冻结
 
-评价/worker的30项CPU回归已通过（3.43秒）。覆盖真实冻结 `Episode` 的旧TypeError重现、JSON模式哈希等价、原生回答封存、精确4项/1243剂量、六组训练屏障、最后组实际退出绑定、UNKNOWN阻塞、资源故障分类、合法停止和完整结果零调用复用。
+131项CPU回归已分项通过：评价/worker30项、CPU封存23项、登记35项、资源13项、控制器/入口30项。覆盖真实冻结 `Episode` 的旧TypeError重现、JSON模式哈希等价、原生回答封存、精确4项/1243剂量、六组训练屏障、最后组实际退出绑定、UNKNOWN阻塞、资源故障分类、合法停止、完整结果零调用复用与CPU派发日志刷盘间隙的孤儿进程处置。
 
-上述不是GPU小试，也没有新增回答。控制/入口、CPU修复、资源及整体冻结核验在本初稿时尚待完成。后续由实际冻结记录、启动记录、CPU补验收与新GPU派发证据补充，不预先宣称修复生效。
+一次集成回归中的两个失败属于新增测试假设错误：一个fixture缺少必需的GPU归属核验字段；另一个把48GiB主存预算误写成GPU门。均在冻结前修正并定向复验，实际运行门始终沿用24GiB，没有发生GPU失败或科学重试。
+
+实施源提交 `f95d74dd62` 已推送远端，独立冻结8文件：binding、registration、runtime、evaluation、worker、sealing、controller、entry。实施包ID为 `653d3a7936ce8564756c8f61c1d0370bbd3b1b604a0aaf36af30b711c3962141`，协议ID为 `92d90941f2757278f94dd3bcdd73af39d1271fb2aa37bf896260aa4efa382a83`。
+
+正式冻结入口实际核验342个依赖，结果PASS，未初始化CUDA、未加载模型或调用provider；另一次实际冷控制器构造确认恰好4个新job、20个旧修复job和已授权的设备顺序。CPU seal冷导入亦确认torch未加载。上述核验不算GPU小试或新增回答，证据分别位于 `frozen_worker_import_verification/record.json` 和 `frozen_controller_construction/record.json`。
+
+## 8. 实际启动与观测
+
+监督器于13:24:59启动，PID203450/birth507109416；控制器PID203516/birth507109451。启动前原V66控制及监督器已真实退出且COMPLETE，六组训练屏障通过；旧V65三个生成worker继续运行，没有向它们发送停止或迁移信号。
+
+| 物理GPU | 原V65 worker PID | 新V67 worker PID | 最后组首次生成任务 |
+|---|---:|---:|---|
+| 0 | 3597208 | 203941 | development greedy，883题 |
+| 6 | 3599779 | 203971 | calibration greedy，120题 |
+| 7 | 4144818 | 204192 | calibration random T1/draw11，120题 |
+
+三个新worker均已实际通过CUDA准入并持有次槽目录中的对应UUID锁；GPU进程表同时观察到上述六个进程，证明同卡双任务已经生效，不只是登记或派发意图。剩余calibration random T1/draw29的120题作业等待本控制名额，不能额外启动第4个新worker。
+
+13:27:55实际验收时，最初失败的17项已全部CPU补封存并接受，每项新CPU实际exit0，旧GPU exit1完整保留，新增科学调用为0。CPU当前无活动child，仍待旧控制中3项生成实际收尾后补封存。三个新GPU worker已分别观测到14、14、11次 `after_durable_evaluation_response` 返回边界；这是真实模型返回次数，不是整题数、最终答案数或完整生成作业数。最新已观测资源边界均通过，全部新GPU作业仍处RUNNING，不声称已获得新的准确率或吞吐结论。
+
+队列状态位于 `evaluation_completion_01/queue/status.json` 和 `journal/state.json`；旧三项仍查 `early_generation_01/queue/status.json`。禁止重复启动监督器或旧全24作业入口。首个启动请求位于 `startup_dispatch/`，后续实际验收快照见 `startup_verification/record.json`。
