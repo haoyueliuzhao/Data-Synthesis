@@ -283,3 +283,13 @@ V64于2026-10-22凌晨以 `BLOCKED_OPERATOR_REQUIRED` 停止：seed389-C05完整
 V65全部20生成实际exit0后只封存 `GENERATIONS_SEALED_AWAITING_GLOBAL_SCORING`，不是科学整轮COMPLETE；V66不生成或评分。后续须独立继承/adopt已有20项完整内容、accepted与真实退出，只首次生成原剩4项1243会话；六训练及全24生成真实退出齐全后才建立全局评分屏障，禁止裸跑旧全24队列导致重复生成，也禁止局部评分影响后续任务。当前追加时仍处源码未冻结、未启动阶段；V65控制/入口37项、评价/审计24项及runtime9项共70项CPU测试通过，V66当前19项分项通过且最终FAIL保留修订待最后核验；这些不代表整体冻结或实际运行验收。详细边界与后续实际状态见 `trusted_data_synthesis/docs/finqa_v65_v66_parallel_generation_recovery_20261022.md`。用户随后已撤销误发的历史清理请求，本次不清理数据。
 
 V65/V66已以源提交 `7df0d359fd` 独立冻结并完成正式CPU入口核验，V66最终19项回归通过。2026-10-22北京时间09:10:21启动V66监督器2268050/birth505581604、控制器2269004/birth505581880；09:11:00启动V65监督器2289830/birth505585529、控制器2289964/birth505585558。V65协议 `85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870`，V66协议 `880696df07eb62d93f006fe86a4417a90badfe7766167f2d6a945bbf4cba91e3`。截至09:13，V65在GPU2/6/0/4/5实际生成；V66 GPU7的830收尾attempt0002真实exit0 accepted，restored830/总830、零新增response，诊断仍false且明确accepted_by_exception，随后已派发distribution_C05（PID2328617）。不把该收尾接受说成原FAIL改判PASS，也不代表rawC门、最后训练或整轮评价完成。当前状态分别看 `early_generation_01/queue/status.json` 与 `single_diagnostic_exception_01/queue/status.json` 及其supervisor目录；禁止重复启动任一监督器、旧入口或扩展既定5+1分割。实际启动证据均在各自 `startup_verification/record.json`。
+
+# V67 序列化修复与最后一组生成
+
+用户于2026-10-22要求“修复问题，此外最后一组是否可以开始生成了”。本次V67仅在原V63科学根下独立 `evaluation_completion_01/` 修复已有回答封存并首次生成最后seed389/C05原4项1243会话；科学点、cohort、各作业内任务顺序、draw与解码配置不变。原六组训练屏障已建立，最后组894点及实际训练exit0须核验后才派发，不必等待原20项生成全部结束。V66梯度诊断FAIL和单点例外继续原样保留，不扩大数值例外、不重新训练或回放。
+
+V65故障为直接JSON哈希原生Pydantic `Episode` 导致TypeError，修复必须先 `model_dump(mode="json")` 再canonical哈希。准备时17项旧job原生回答完整、资源PASS但真实exit1，另3项仍运行；旧失败、exit1、回答/native seal与冻结文件不改写。最多1个64GiB预算CPU child仅在V67新目录补封存并取得新CPU实际exit0，旧20项只读引用、不复制或重写原回答、零新forward/API。旧剩3项须实际退出且完整封存后才接入；UNKNOWN、未封存、身份/资源异常不能套用序列化例外。不得声称旧GPU失败进程exit0，不能裸重跑原全24队列。
+
+本次新增GPU上限3，原V65剩余集合最多3，合计不超过6；用户随后明确允许每张物理卡最多两个本实验worker，初始化/等待/draining计名额。旧V65仍只使用原主槽EX租约且每卡1；新V67每卡始终最多一个次槽EX，次槽固定为原GPU租约根下 `v67-secondary-slot/`，文件名仍绑定同一GPU UUID哈希。两个独立全局互斥槽组成每卡“旧1＋新1≤2”，不复制或改写旧租约，不以主槽退出/再占为由增加次槽；后继同类新控制必须复用该次槽根，不得另建目录绕过上限。用户明确优先GPU0、6、7，不满足准入时依次回退GPU2、4、5、3、1；同卡第二worker仍须满足实际冻结生成准入GPU free至少24GiB及GPU隔离审计，并通过继承FD、路径/inode与WRITE FLOCK检查，持槽直到真实退出，不干预其他项目或旧worker。24GiB的GPU准入不得与48GiB的生成worker主存启动预算混淆。新控制主存启动额外全额预留旧3×48GiB与CPU64GiB共208GiB，不按实测低RSS抵扣；原RAM96GiB余量、阶段RSS、allocated峰76GiB、边界free2GiB及阶段准入硬门不变。四新job优先派发development883题，仅改变跨job调度顺序，不扩大剂量。
+
+最终24项封存须明确区分旧20项原GPU退出及CPU修复接受与新4项生成退出，不能伪造“旧20 GPU均exit0”；封存仍不自动评分、不读私人参考或查看局部准确率，不代表整轮COMPLETE。旧失败及原协议不回写，误发清理已撤销，本次不删除数据。本段追加时V67尚未冻结或启动，评价/worker30项CPU用例通过，其余最终核验待完成；实际状态以新目录和 `trusted_data_synthesis/docs/finqa_v67_serialization_repair_and_final_generation_20261022.md` 后续更新为准。
