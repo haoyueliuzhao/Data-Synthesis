@@ -295,3 +295,9 @@ V65故障为直接JSON哈希原生Pydantic `Episode` 导致TypeError，修复必
 最终24项封存须明确区分旧20项原GPU退出及CPU修复接受与新4项生成退出，不能伪造“旧20 GPU均exit0”；封存仍不自动评分、不读私人参考或查看局部准确率，不代表整轮COMPLETE。旧失败及原协议不回写，误发清理已撤销，本次不删除数据。本段追加时V67尚未冻结或启动，评价/worker30项CPU用例通过，其余最终核验待完成；实际状态以新目录和 `trusted_data_synthesis/docs/finqa_v67_serialization_repair_and_final_generation_20261022.md` 后续更新为准。
 
 V67已以源提交 `f95d74dd62` 冻结8文件，实施包 `653d3a7936ce8564756c8f61c1d0370bbd3b1b604a0aaf36af30b711c3962141`、协议 `92d90941f2757278f94dd3bcdd73af39d1271fb2aa37bf896260aa4efa382a83`；131项分项CPU回归及正式342依赖入口核验通过，无CUDA小试。2026-10-22北京时间13:24:59监督器203450/birth507109416、控制器203516/birth507109451实际启动。13:27:55验收时初始17项失败均已CPU实际exit0补封存，旧GPU exit1及原回答不变；旧3项继续运行。新seed389/C05的development883、calibration greedy120、random draw11的120分别在GPU0/6/7派发203941、203971、204192，并实际产生模型返回；同卡各有旧、新两个worker，合计6，draw29仍等待新控制名额。新worker已通过原24GiB准入及次槽EX描述符核验，已观测资源边界通过；不是全部生成或评分完成。实际证据见 `evaluation_completion_01/startup_verification/record.json`，禁止重复启动已有监督器或旧全24生成队列。
+
+# V68 完成组自动评分
+
+用户于2026-10-22先要求已完成组开始评分，随后明确“设置自动接续，已完成的组自动进入评分，不再等待统一评分，提高效率”。本次独立 `partial_scoring_01/` 覆盖原六组、24作业、7458条评价会话；单组全部四项原始生成完整封存并实际接受后，首次自动进入CPU评分，无需再次确认。该新授权仅改变私有评分开启时机，不改写旧全24屏障合同或声称原屏障已通过；原生成器继续运行，不重复生成、评分已接受组、重评旧b0/Hold或将分数反馈给后续任务。
+
+V65来源须保留原GPU exit1与V67新CPU exit0的复合证据；V67新生成须自身实际GPU exit0。未退出、缺失、UNKNOWN调用、状态漂移或资源失败不能作为就绪。评分复用冻结native scorer与原I/W/R/UNKNOWN定义，保留完整分母：dev greedy883、calibration greedy120、random draw11/29合240；不在部分矩阵上计算跨seed推断或advancement，完整分析须只读接纳已评分行。最多2个CPU worker，每个RSS峰32GiB，全机有效可用RAM至少96GiB；固定启动门512GiB＝96＋6×48＋64＋2×32，不按低实际RSS抵扣其他阶段预算。禁用CUDA、模型加载、provider/API和新科学生成；只管理本scope核验身份的CPU子进程，合法停止禁用接续，CPU失败不自动重试。后续同一六组就绪自动接续不扩展实验范围。原V65/V67进程与历史结果不改写；实际冻结、启动及首批结果见 `trusted_data_synthesis/docs/finqa_v68_automatic_group_scoring_20261022.md`，本段初稿尚未启动。
