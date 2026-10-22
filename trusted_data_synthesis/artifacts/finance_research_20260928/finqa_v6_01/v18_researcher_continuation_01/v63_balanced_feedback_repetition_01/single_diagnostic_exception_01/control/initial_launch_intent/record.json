@@ -1,0 +1,18 @@
+{
+  "combined_limit": 6,
+  "command": [
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+    "-u",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/single_diagnostic_exception_01/implementation/finqa_v66_entry.py",
+    "--mode",
+    "supervise",
+    "--root",
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/single_diagnostic_exception_01"
+  ],
+  "control_protocol_id": "880696df07eb62d93f006fe86a4417a90badfe7766167f2d6a945bbf4cba91e3",
+  "created_epoch": 1792631421.4060967,
+  "id": "73d1ea81811c3ce5fc4b0997d3a028a3f209da0563e1e333821e5ea855511492",
+  "other_control_limit": 5,
+  "prepared_id": "178fe32323a61f4b10094bd8b7ce14cb512d14a9f7dd751de2cb7d783d1527a1",
+  "worker_limit": 1
+}

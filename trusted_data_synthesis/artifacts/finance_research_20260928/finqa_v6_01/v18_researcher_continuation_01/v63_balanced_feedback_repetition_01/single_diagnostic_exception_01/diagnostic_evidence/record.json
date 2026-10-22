@@ -1,0 +1,65 @@
+{
+  "cause_established": false,
+  "checkpoint": {
+    "id": "308506bf3d318e961b5bc41f2b8589042dec8d0a00ff98499cc87b246619906a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/stages/seed389/replay_C05/checkpoints/response000830/record.json",
+    "sha256": "3cfbfd3c6942703c1b8e1a6012341db9250bf2f8ce91c594210f25449f1e0147"
+  },
+  "checkpoint_binding_digest": "326fcd86bf496df111cbe1b868bfcf56b491261e99527adf2d4b8e9a5f57b819",
+  "checkpoint_state": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/stages/seed389/replay_C05/checkpoints/response000830/state.pt",
+    "sha256": "f540252df99ab10edcc631926640e074a3918ced213404af7ed6022954b103eb"
+  },
+  "completed_responses": 830,
+  "condition_id": "4c0f1c2cd9c2da1d4cdc2f487a875a5855dbbc300b1c514a14d92583bbd7196b",
+  "draw_digests": {
+    "101": "4f4d6a354a364403178e2a66778c5fc02b96ea9b4ce06e7039e93261dfbd9b3b",
+    "103": "e13d0a763b8b44b4070b3e29cea04cd08f055e4c1a5bf10e0557597406220911"
+  },
+  "formal_digest": "cf78758b94aff56e34004c6259c4c3dc9200fd2d015e01baa78d5e728377896c",
+  "formal_gradient_replaced": false,
+  "id": "03438f932fb321c21159246b18e112bdccc23af725a18d74e6868e3dd9ac51ab",
+  "interpretation": "Observed opposite-sign draw components are consistent with floating-point cancellation; cause not proved.",
+  "new_response_replays": 0,
+  "original_failure": {
+    "id": "4923706cd73b2c5b511dcb6e3a4f353d35ccdfa712f05918b46644b18901aba3",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/stages/seed389/replay_C05/attempts/attempt0001/failure/record.json",
+    "sha256": "7282dec23cbc634e7d3a67677ad6d1da2b8dcb57d4e81c6a00f3dd43db49e135"
+  },
+  "point_id": "5f29e11b5f31fe4410862c3e2a658f724c84e67ff0f2670a5dda067aca12c392",
+  "report": {
+    "L2_error": 1.1373514006744202e-05,
+    "atol": 1e-07,
+    "element_count": 2523136,
+    "failed_element_count": 1,
+    "failing_elements": [
+      {
+        "absolute_error": 1.1212978279218078e-07,
+        "draw101": -0.13516968488693237,
+        "draw103": 0.1351926028728485,
+        "flat_index": 73,
+        "formal": 1.1346863175276667e-05,
+        "mean": 1.1458992958068848e-05,
+        "parameter": "model.layers.17.self_attn.v_proj.lora_B",
+        "registered_threshold": 1.0226937263505533e-07,
+        "shape": [
+          512,
+          8
+        ]
+      }
+    ],
+    "formal_gradient_replaced_by_component_mean": false,
+    "maximum_absolute_error": 5.364418029785156e-07,
+    "parameter_count": 112,
+    "passed": false,
+    "reference_L2_norm": 22.586200094877377,
+    "relative_L2_error": 5.035603137742392e-07,
+    "rtol": 0.0002,
+    "source": "V54_CPU_full_autograd_gradient_comparison",
+    "source_is_CPU_gradient_comparison_not_old_production_bitwise_gate": true
+  },
+  "schema": "v66_readonly_exact_single_failure_CPU_evidence.v1",
+  "state_bytes": 30461727,
+  "status": "FAIL",
+  "tolerance_changed": false
+}

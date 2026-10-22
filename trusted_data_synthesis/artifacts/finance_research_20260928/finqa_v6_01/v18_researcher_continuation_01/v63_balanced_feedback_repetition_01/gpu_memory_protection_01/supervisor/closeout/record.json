@@ -1,0 +1,10 @@
+{
+  "automatic_restart_stopped": true,
+  "control_protocol_id": "2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9",
+  "controller_attempts": 1,
+  "finished_epoch": 1792613015.7351847,
+  "id": "d7a0c3c43a13c45616cc4e64aab98f1bdf70aad0db109f4ffb52284b5950c321",
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "schema": "v64_supervisor_closeout.v1",
+  "status": "BLOCKED_OPERATOR_REQUIRED"
+}

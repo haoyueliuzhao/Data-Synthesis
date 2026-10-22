@@ -1,0 +1,377 @@
+{
+  "accepted_jobs": [
+    "seed137.feedback_C05",
+    "seed137.feedback_C1",
+    "seed137.replay_C05",
+    "seed251.feedback_C05",
+    "seed251.feedback_C1",
+    "seed389.feedback_C05",
+    "seed389.feedback_C1",
+    "seed251.replay_C1",
+    "seed137.replay_C1",
+    "seed251.replay_C05",
+    "seed251.distribution_C05",
+    "seed251.distribution_C1",
+    "seed137.distribution_C05",
+    "seed137.distribution_C1",
+    "seed389.replay_C1",
+    "seed389.distribution_C1",
+    "seed137.train_C05",
+    "seed251.train_C1",
+    "seed251.train_C05",
+    "seed137.train_C1",
+    "seed389.train_C1"
+  ],
+  "active_workers": 0,
+  "attempt_count": 27,
+  "automatic_restart_allowed": false,
+  "control_protocol_id": "2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9",
+  "finished_epoch": 1792613011.2929895,
+  "id": "5003ed0c76e8b257065f4aa3ea61f5b1a3a3cef5b834b22eaa29ae25d1c3817a",
+  "job_states": {
+    "seed137.distribution_C05": {
+      "accepted_attempt": 2,
+      "actual_progress": false,
+      "attempts": 2,
+      "backoff_seconds": 30,
+      "birth": "501879901",
+      "durable_progress_digest": "afa936481dd28ca5f72ffd574506885a86f3fa5b59021603e6f0b711c24224ca",
+      "gpu_index": 2,
+      "next_eligible_epoch": 1792578646.601523,
+      "no_progress_failures": 1,
+      "pid": 4139201,
+      "progress_units": 0,
+      "reason": "proved resource shortage after actual exit and settled durable audit",
+      "status": "COMPLETE"
+    },
+    "seed137.distribution_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501880126",
+      "durable_progress_digest": "17b472e6a4a06334ccb0ae09de2ab835b050563e01a7f42df79c2160a3e3a833",
+      "gpu_index": 6,
+      "maintenance_dependency_restore": {
+        "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+        "old_blockers": [
+          "seed137.replay_C1"
+        ],
+        "original_status": "PENDING"
+      },
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4139335,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed137.feedback_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "490890361",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3478389,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed137.feedback_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "492048379",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 129611,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed137.replay_C05": {
+      "accepted_attempt": 2,
+      "actual_progress": true,
+      "attempts": 2,
+      "backoff_seconds": 30,
+      "birth": "497256052",
+      "durable_progress_digest": "4f716b568e45855462709728ede941eda6000acc32acfe9356904e28361d2fca",
+      "gpu_index": 7,
+      "next_eligible_epoch": 1792546036.812322,
+      "no_progress_failures": 0,
+      "pid": 4037117,
+      "progress_units": 768,
+      "reason": "proved resource shortage after actual exit and settled durable audit",
+      "status": "COMPLETE"
+    },
+    "seed137.replay_C1": {
+      "accepted_attempt": 3,
+      "actual_progress": true,
+      "attempts": 3,
+      "backoff_seconds": 30,
+      "birth": "499764443",
+      "durable_progress_digest": "b64480b890d99f90089461268a3a49ba3badff80754fcc71cf5a613c12bc48b6",
+      "gpu_index": 0,
+      "maintenance_authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+      "maintenance_resume_audit": {
+        "id": "e53e20f3a90ed1eb6d9994c4586331faf11b5e72e4a4c802a4b327c2858d7010",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/handoff/jobs/seed137.replay_C1/resume_audit/record.json",
+        "sha256": "ac61c22fea79af4e44ea28ada080ad7c4edd3c1b6d3b50e02b7ec0a3de0f04fb"
+      },
+      "maintenance_source_status": "HARD_BLOCKED",
+      "next_eligible_epoch": 1792545990.9906092,
+      "no_progress_failures": 0,
+      "pid": 3194283,
+      "progress_units": 406,
+      "reason": "explicitly authorized complete-response maintenance continuation",
+      "status": "COMPLETE"
+    },
+    "seed137.train_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501919412",
+      "durable_progress_digest": "afa936481dd28ca5f72ffd574506885a86f3fa5b59021603e6f0b711c24224ca",
+      "gpu_index": 2,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4149631,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed137.train_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501919628",
+      "durable_progress_digest": "17b472e6a4a06334ccb0ae09de2ab835b050563e01a7f42df79c2160a3e3a833",
+      "gpu_index": 6,
+      "maintenance_dependency_restore": {
+        "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+        "old_blockers": [
+          "seed137.distribution_C1"
+        ],
+        "original_status": "PENDING"
+      },
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4149687,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.distribution_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501880345",
+      "durable_progress_digest": "acbeaf0e628ca24fc927d8ad42aad7ac77a2093cdea30b5dedc8bf552be5419c",
+      "gpu_index": 4,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4139374,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.distribution_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501880596",
+      "durable_progress_digest": "760d7f67ac43811b25f5b4de4852219b3c09963d0712d9da523ba1b7345c67fa",
+      "gpu_index": 5,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4139449,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.feedback_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "492315468",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 0,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 430266,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.feedback_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "493169444",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3850387,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.replay_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "497502592",
+      "durable_progress_digest": "acbeaf0e628ca24fc927d8ad42aad7ac77a2093cdea30b5dedc8bf552be5419c",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4190723,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.replay_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "497502813",
+      "durable_progress_digest": "760d7f67ac43811b25f5b4de4852219b3c09963d0712d9da523ba1b7345c67fa",
+      "gpu_index": 0,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4190836,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.train_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501916937",
+      "durable_progress_digest": "acbeaf0e628ca24fc927d8ad42aad7ac77a2093cdea30b5dedc8bf552be5419c",
+      "gpu_index": 4,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4148950,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed251.train_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "501919854",
+      "durable_progress_digest": "760d7f67ac43811b25f5b4de4852219b3c09963d0712d9da523ba1b7345c67fa",
+      "gpu_index": 5,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4149720,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed389.distribution_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed389.replay_C05"
+      ],
+      "durable_progress_digest": null,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed389.distribution_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "502517505",
+      "durable_progress_digest": "e28949161ded5c1d4e0365f3bc3c1964247c14a2505f7c4f6f638f57e76ca9d5",
+      "gpu_index": 7,
+      "maintenance_dependency_restore": {
+        "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+        "old_blockers": [
+          "seed389.replay_C1"
+        ],
+        "original_status": "PENDING"
+      },
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 1243929,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed389.feedback_C05": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "493457325",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 0,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 4050677,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed389.feedback_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "494333622",
+      "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "gpu_index": 7,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 176265,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    },
+    "seed389.replay_C05": {
+      "attempts": 1,
+      "birth": "500181559",
+      "durable_progress_digest": "71cd8c0c7aec487c344c3d86cf28df9fd692139c4f8b677c9a81657317ad1680",
+      "failure_classification": "HARD_BLOCK",
+      "gpu_index": 0,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3456182,
+      "progress_units": 0,
+      "reason": "no verified retry-safe resource/I/O failure",
+      "status": "HARD_BLOCKED"
+    },
+    "seed389.replay_C1": {
+      "accepted_attempt": 2,
+      "attempts": 2,
+      "birth": "500420714",
+      "durable_progress_digest": "956918c28910f6b829a3e13c7209634c935c22498734bf940f8fe9ec86c89659",
+      "gpu_index": 7,
+      "maintenance_authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+      "maintenance_resume_audit": {
+        "id": "4186daf364bd574236fcc29a78876dc79c033f33d78413b444023b90672697ec",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/handoff/jobs/seed389.replay_C1/resume_audit/record.json",
+        "sha256": "39ea9c8b444521736ecb8ef2df168ddb1a030bded7ee03221cbb6a70cb6fe3a1"
+      },
+      "maintenance_source_status": "HARD_BLOCKED",
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 3682827,
+      "progress_units": 58,
+      "reason": "explicitly authorized complete-response maintenance continuation",
+      "status": "COMPLETE"
+    },
+    "seed389.train_C05": {
+      "attempts": 0,
+      "blocked_by": [
+        "seed389.distribution_C05"
+      ],
+      "durable_progress_digest": null,
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "progress_units": 0,
+      "status": "DEPENDENCY_BLOCKED"
+    },
+    "seed389.train_C1": {
+      "accepted_attempt": 1,
+      "attempts": 1,
+      "birth": "502623230",
+      "durable_progress_digest": "e28949161ded5c1d4e0365f3bc3c1964247c14a2505f7c4f6f638f57e76ca9d5",
+      "gpu_index": 7,
+      "maintenance_dependency_restore": {
+        "authorization_id": "02c2d843795eb14d2789e970b6671da4f472996180c9c3df0c85e64adcb9626c",
+        "old_blockers": [
+          "seed389.distribution_C1"
+        ],
+        "original_status": "PENDING"
+      },
+      "next_eligible_epoch": 0.0,
+      "no_progress_failures": 0,
+      "pid": 1261333,
+      "progress_units": 0,
+      "status": "COMPLETE"
+    }
+  },
+  "old_stop_and_failure_records_unchanged": true,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "resource_wait_seconds": 109514.09503041673,
+  "schema": "v64_protected_control_closeout.v1",
+  "status": "BLOCKED_OPERATOR_REQUIRED"
+}

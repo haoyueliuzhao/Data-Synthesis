@@ -1,0 +1,35 @@
+{
+  "all_old_control_and_worker_identities_exited": true,
+  "control_protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+  "generation_jobs": 20,
+  "generation_plan": {
+    "id": "ef65ed2ffa6f482c0a8d7652c7d365df380e155aea301c1cc869b7fc86160351",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/early_generation_01/evaluations/registration/record.json",
+    "sha256": "0f6ee998a9c9a4087e91de7729cb0b368971b864955f1730bf76cb57fa64af23"
+  },
+  "id": "b67df638a92cd8d41faca70811ff46277ac53b5ea2881f06eab2d2a656ddbc26",
+  "inherited_journal": {
+    "id": "46ed14c6d14172bf8d6e35a387a7f63261c4e139fafc2b2308b283c7c23dbe50",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/journal/state.json",
+    "sha256": "0cb2aae4b9589e04bdd646f0499a0bc48d9038112f59417cf695898d9cf0ad47"
+  },
+  "new_scientific_calls": 0,
+  "old_actual_worker_exits": 27,
+  "parent_control_closeout": {
+    "id": "5003ed0c76e8b257065f4aa3ea61f5b1a3a3cef5b834b22eaa29ae25d1c3817a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/closeout/record.json",
+    "sha256": "f6d2053ab8c9f86f57b6458186f496293f7a351f3f78074d3756e149ab974bd1"
+  },
+  "parent_supervisor_closeout": {
+    "id": "d7a0c3c43a13c45616cc4e64aab98f1bdf70aad0db109f4ffb52284b5950c321",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/supervisor/closeout/record.json",
+    "sha256": "3caf8a8ab3366064b23dbb58cc41683caaccbac8b9896a0cad752d2e7d46144d"
+  },
+  "prepared_epoch": 1792631339.650263,
+  "private_references_read": false,
+  "protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+  "schema": "v65_exact_twenty_public_generation_jobs_prepared.v1",
+  "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "scoring_calls": 0,
+  "sessions": 6215
+}

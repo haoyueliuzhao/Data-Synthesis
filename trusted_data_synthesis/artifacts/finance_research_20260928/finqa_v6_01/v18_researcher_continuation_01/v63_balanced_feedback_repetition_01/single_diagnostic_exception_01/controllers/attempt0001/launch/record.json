@@ -1,0 +1,10 @@
+{
+  "birth": "505581880",
+  "control_protocol_id": "880696df07eb62d93f006fe86a4417a90badfe7766167f2d6a945bbf4cba91e3",
+  "controller_attempt": 1,
+  "id": "9505b15e2af51005e3b4fff6b9c9577238cde4e6cff19e8f3d554b112ff28f95",
+  "pid": 2269004,
+  "protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "schema": "v64_controller_attempt_launch.v1",
+  "started_epoch": 1792631427.5032632
+}

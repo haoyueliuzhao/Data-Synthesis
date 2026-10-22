@@ -1,0 +1,36 @@
+{
+  "committed_files": [
+    "finqa_v66_binding.py",
+    "finqa_v66_diagnostics.py",
+    "finqa_v66_temperature.py",
+    "finqa_v66_runtime.py",
+    "finqa_v66_worker.py",
+    "finqa_v66_controller.py",
+    "finqa_v66_registration.py",
+    "finqa_v66_entry.py"
+  ],
+  "id": "071b7b251beafbe387a1c8ca483290ee8df5349b56f56ef468d84e9d068edbeb",
+  "original_frozen_sources_modified": false,
+  "original_implementation": {
+    "id": "4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/record.json",
+    "sha256": "c83227d06b91b8cddc2994c889f144a2d74008a7d3128554a2fa8d215bf559bf"
+  },
+  "protection_implementation": {
+    "id": "68f98365beaeebe0e256bc551939c9cb1ae5963833fa50d151b282e2c9c4ef71",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/implementation/record.json",
+    "sha256": "39e73d1c9dbc9788dbabe56978653a7e410b1111119e9879702a9e08506487b3"
+  },
+  "schema": "v66_frozen_single_point_exception_sources.v1",
+  "sha256": {
+    "finqa_v66_binding.py": "e9ac34cbeeb2b8b172c49641981a59a04bc964103188d5d3b5206a25ccd92cbf",
+    "finqa_v66_controller.py": "6d002612d4c2150926792081b1f80d65e286f8fda5ca44cae6184634242c7e54",
+    "finqa_v66_diagnostics.py": "abe0ec7f5f6f6101ad5cb61f8839c709653bef7f55347eee38ab4112a0a68fb8",
+    "finqa_v66_entry.py": "99bdcecc0277c35baea49acc3ccb138c2de925d6255820c1f60963f42f2efee8",
+    "finqa_v66_registration.py": "d217d4bb0033d6757e652428f0caa9f55e3f0815c82a7dc80b9cbf83e6abd96e",
+    "finqa_v66_runtime.py": "286eb55d8e9f9b24f1c798d569bf281dbc9185bc635ae32b27cbd0a4ba0efd74",
+    "finqa_v66_temperature.py": "11b40482da3f3c5ed2811da34faefb08b3099b9affb1c0b4c3beb5fb37eb0532",
+    "finqa_v66_worker.py": "9bcf49fde447fe42fb9e33965f8f0586ea86658c5ea7c7bf688a0bd3e7114478"
+  },
+  "source_commit": "7df0d359fd9388ddc6fd7cb81080bc2d11973ac0"
+}

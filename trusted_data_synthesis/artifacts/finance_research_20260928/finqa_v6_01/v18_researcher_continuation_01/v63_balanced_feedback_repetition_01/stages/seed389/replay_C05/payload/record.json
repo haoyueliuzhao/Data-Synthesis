@@ -1,0 +1,14 @@
+{
+  "actual_tensors_saved": true,
+  "arm": "C05",
+  "feedback_batch": 1,
+  "id": "a6b9570858a60c758575b8ee0bd9a0a39a5e7538878ed10b448d53db5aac49b2",
+  "parent_id": "08c88e0c605e18f9df2aadb8c61eb14d188767079eeee9e4f771ba089d4cfbcf",
+  "parent_state_digest": "e5a79f8b36703d41ee0f93391f0bfcf51b749ef2f057f789ad3daf570eb84023",
+  "schema": "v63_actual_scientific_payload.v1",
+  "stage": "replay_C05",
+  "state_bytes": 30626719,
+  "state_digest": "cdc2d898b1c0687700bc432fe8f4e0de4f0f123814a205c7912cb27f861594f3",
+  "state_sha256": "fbf98734753953afb1f0e9155a0da585a8e32e58fdafd8b23d04d6c643568c0e",
+  "temperature": 0.5
+}

@@ -1,0 +1,84 @@
+{
+  "GPU_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "all_old_control_and_worker_identities_exited": true,
+  "allowed_controls": {
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/early_generation_01": {
+      "excluded_coordinate": "seed389/C05",
+      "generation_jobs": 20,
+      "max_gpu_workers": 5,
+      "reserved_other_control_startup_gib": 64,
+      "sessions": 6215,
+      "stages": [
+        "generate"
+      ]
+    },
+    "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/single_diagnostic_exception_01": {
+      "additional_response_replay": 0,
+      "existing_response_cursor": 830,
+      "max_gpu_workers": 1,
+      "remaining_optimizer_updates": 298,
+      "reserved_other_control_startup_gib": 240,
+      "stages": [
+        "seed389.replay_C05",
+        "seed389.distribution_C05",
+        "seed389.train_C05"
+      ]
+    }
+  },
+  "authorization": {
+    "early_generation_answer": "同意",
+    "early_generation_question": "五组先行生成并封存，暂不评分",
+    "exception_answer": "授权该单点例外并继续",
+    "exception_question": "仅seed389-C05这一次已知梯度均值诊断失败的继续执行例外；保留FAIL和原始误差，不改正式梯度、不重放830条，其他状态、资源及数值检查不放宽",
+    "parallel_request": "问题组并行处理，尽快恢复实验"
+  },
+  "authorized_controls_use_shared_scientific_owner_lock": true,
+  "caps_not_reallocated_automatically_when_other_control_idle": true,
+  "completed_responses_or_training_repeated": false,
+  "created_epoch": 1792631283.1564674,
+  "each_control_has_exclusive_local_owner_and_supervisor_locks": true,
+  "global_max_gpu_workers": 6,
+  "gpu_lease_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v25_training_replication_01/training_replication/locks",
+  "historical_exclusive_scientific_controller_is_excluded": true,
+  "id": "613e1599e70b2212aac42bcfb151f44ba6e94c4838ecc89e443726bafe06a3a4",
+  "inherited_journal": {
+    "id": "46ed14c6d14172bf8d6e35a387a7f63261c4e139fafc2b2308b283c7c23dbe50",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/journal/state.json",
+    "sha256": "0cb2aae4b9589e04bdd646f0499a0bc48d9038112f59417cf695898d9cf0ad47"
+  },
+  "initialization_resource_wait_and_draining_count_in_own_cap": true,
+  "max_workers_per_gpu": 1,
+  "new_feedback_or_class_passes_authorized": 0,
+  "old_actual_worker_exits": 27,
+  "old_failures_and_protocols_rewritten": false,
+  "original_global_scientific_budget": {
+    "generation_jobs": 24,
+    "sessions": 7458
+  },
+  "other_control_RAM_reservation_not_reduced_by_its_actual_RSS": true,
+  "parent_control_closeout": {
+    "id": "5003ed0c76e8b257065f4aa3ea61f5b1a3a3cef5b834b22eaa29ae25d1c3817a",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/closeout/record.json",
+    "sha256": "f6d2053ab8c9f86f57b6458186f496293f7a351f3f78074d3756e149ab974bd1"
+  },
+  "parent_supervisor_closeout": {
+    "id": "d7a0c3c43a13c45616cc4e64aab98f1bdf70aad0db109f4ffb52284b5950c321",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/supervisor/closeout/record.json",
+    "sha256": "3caf8a8ab3366064b23dbb58cc41683caaccbac8b9896a0cad752d2e7d46144d"
+  },
+  "predecessor_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01",
+  "schema": "v65_v66_authorized_disjoint_parallel_continuation.v1",
+  "scientific_owner_lock": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/owner.lock",
+  "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "scientific_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01",
+  "scoring_calls_authorized": 0
+}

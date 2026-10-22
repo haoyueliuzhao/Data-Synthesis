@@ -1,0 +1,35 @@
+{
+  "committed_files": [
+    "finqa_v65_binding.py",
+    "finqa_v65_registration.py",
+    "finqa_v65_runtime.py",
+    "finqa_v65_evaluation.py",
+    "finqa_v65_worker.py",
+    "finqa_v65_controller.py",
+    "finqa_v65_entry.py"
+  ],
+  "id": "e7721781d4af4bbd3f943b25101c391d6bd587262068e3330c7a3b6febb4881b",
+  "original_sources_modified": false,
+  "predecessor_implementation": {
+    "id": "68f98365beaeebe0e256bc551939c9cb1ae5963833fa50d151b282e2c9c4ef71",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/gpu_memory_protection_01/implementation/record.json",
+    "sha256": "39e73d1c9dbc9788dbabe56978653a7e410b1111119e9879702a9e08506487b3"
+  },
+  "private_root_resource_lifecycle_adapters_explicit": true,
+  "schema": "v65_frozen_unscored_generation_sources.v1",
+  "scientific_implementation": {
+    "id": "4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/record.json",
+    "sha256": "c83227d06b91b8cddc2994c889f144a2d74008a7d3128554a2fa8d215bf559bf"
+  },
+  "sha256": {
+    "finqa_v65_binding.py": "5bb383078db84a4a6ad8cfd3fc42c4dfef825334824cbecf2486c20ba4120729",
+    "finqa_v65_controller.py": "35d8c34a6125917b063528de7c85249a59d4f1e57849e69226e2cad0d1065b9c",
+    "finqa_v65_entry.py": "21f528782dda258b78b6b3fe67751491992f351c1654b31ee462696a935f53c9",
+    "finqa_v65_evaluation.py": "4104f3e8072d23eb01ac29d0def87d854cf14c90b1dcc1dca657fa03cd4230d3",
+    "finqa_v65_registration.py": "94a7b111d64761c49005a92dd07ffcefab1fa1797f08e4510dd7c62d3d9e3c8d",
+    "finqa_v65_runtime.py": "a494786ac493ddec5c73a2d011fd30f113b3968b3a4171a5551f519d7f3781bd",
+    "finqa_v65_worker.py": "e9173316ae067294ba1214c120bb39f7583f610ad9211bfc5d8125afe5cc3f77"
+  },
+  "source_commit": "7df0d359fd9388ddc6fd7cb81080bc2d11973ac0"
+}

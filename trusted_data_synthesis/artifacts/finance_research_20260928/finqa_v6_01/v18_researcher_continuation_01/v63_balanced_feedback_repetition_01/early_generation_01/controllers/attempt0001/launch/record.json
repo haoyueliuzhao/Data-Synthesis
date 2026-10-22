@@ -1,0 +1,11 @@
+{
+  "birth": "505585558",
+  "control_protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+  "controller_attempt": 1,
+  "id": "6256159f3b4bb55d5f05ed82ec7fd1ba104025285b40df397e45c2cd94c8f692",
+  "pid": 2289964,
+  "protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+  "schema": "v65_controller_attempt_launch.v1",
+  "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "started_epoch": 1792631463.8917737
+}

@@ -1,0 +1,297 @@
+{
+  "CPU_preflight": {
+    "id": "e00977c585c8dc8e5b7323481520c06224e1b04f3e2f71c754d76e7f96643556",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/early_generation_01/frozen_worker_import_verification/record.json",
+    "sha256": "389ad4805b4eb5148a0926be966b01a9d012219c3c42065ba08486ed71319f37"
+  },
+  "actual_workers": [
+    {
+      "actual_identity_live": true,
+      "birth": "505586137",
+      "gpu_index": 2,
+      "job_id": "step894_calibration120_greedy_seed137_C05_b1_draw20260928",
+      "pid": 2292193
+    },
+    {
+      "actual_identity_live": true,
+      "birth": "505586351",
+      "gpu_index": 6,
+      "job_id": "step894_calibration120_greedy_seed137_C1_b1_draw20260928",
+      "pid": 2293144
+    },
+    {
+      "actual_identity_live": true,
+      "birth": "505586596",
+      "gpu_index": 0,
+      "job_id": "step894_calibration120_random_T1_seed137_C05_b1_draw11",
+      "pid": 2294235
+    },
+    {
+      "actual_identity_live": true,
+      "birth": "505586858",
+      "gpu_index": 4,
+      "job_id": "step894_calibration120_random_T1_seed137_C05_b1_draw29",
+      "pid": 2296256
+    },
+    {
+      "actual_identity_live": true,
+      "birth": "505587114",
+      "gpu_index": 5,
+      "job_id": "step894_calibration120_random_T1_seed137_C1_b1_draw11",
+      "pid": 2296873
+    }
+  ],
+  "control_protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+  "controller": {
+    "id": "6256159f3b4bb55d5f05ed82ec7fd1ba104025285b40df397e45c2cd94c8f692",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/early_generation_01/controllers/attempt0001/launch/record.json",
+    "sha256": "8a3cff2dc81026d267898c8dc2bf5d435de7986edbdf9614f4b3e2cef84f0e7c"
+  },
+  "id": "40b6641b9b6ffdac431613a9e8c47dfee53040142379ec50b9c494b05e990aae",
+  "implementation_id": "e7721781d4af4bbd3f943b25101c391d6bd587262068e3330c7a3b6febb4881b",
+  "observed_epoch": 1792631618.1039343,
+  "private_references_read": false,
+  "queue_snapshot": {
+    "accepted_jobs": [],
+    "active_workers": [
+      {
+        "attempt": 1,
+        "birth": "505586137",
+        "gpu_index": 2,
+        "job_id": "step894_calibration120_greedy_seed137_C05_b1_draw20260928",
+        "lifecycle": "RUNNING",
+        "pid": 2292193
+      },
+      {
+        "attempt": 1,
+        "birth": "505586351",
+        "gpu_index": 6,
+        "job_id": "step894_calibration120_greedy_seed137_C1_b1_draw20260928",
+        "lifecycle": "RUNNING",
+        "pid": 2293144
+      },
+      {
+        "attempt": 1,
+        "birth": "505586596",
+        "gpu_index": 0,
+        "job_id": "step894_calibration120_random_T1_seed137_C05_b1_draw11",
+        "lifecycle": "RUNNING",
+        "pid": 2294235
+      },
+      {
+        "attempt": 1,
+        "birth": "505586858",
+        "gpu_index": 4,
+        "job_id": "step894_calibration120_random_T1_seed137_C05_b1_draw29",
+        "lifecycle": "RUNNING",
+        "pid": 2296256
+      },
+      {
+        "attempt": 1,
+        "birth": "505587114",
+        "gpu_index": 5,
+        "job_id": "step894_calibration120_random_T1_seed137_C1_b1_draw11",
+        "lifecycle": "RUNNING",
+        "pid": 2296873
+      }
+    ],
+    "control_protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+    "controller_attempt": 1,
+    "evaluation_registered": true,
+    "job_states": {
+      "step894_calibration120_greedy_seed137_C05_b1_draw20260928": {
+        "attempts": 1,
+        "birth": "505586137",
+        "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "gpu_index": 2,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "pid": 2292193,
+        "progress_units": 0,
+        "status": "RUNNING"
+      },
+      "step894_calibration120_greedy_seed137_C1_b1_draw20260928": {
+        "attempts": 1,
+        "birth": "505586351",
+        "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "gpu_index": 6,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "pid": 2293144,
+        "progress_units": 0,
+        "status": "RUNNING"
+      },
+      "step894_calibration120_greedy_seed251_C05_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_greedy_seed251_C1_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_greedy_seed389_C1_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed137_C05_b1_draw11": {
+        "attempts": 1,
+        "birth": "505586596",
+        "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "gpu_index": 0,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "pid": 2294235,
+        "progress_units": 0,
+        "status": "RUNNING"
+      },
+      "step894_calibration120_random_T1_seed137_C05_b1_draw29": {
+        "attempts": 1,
+        "birth": "505586858",
+        "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "gpu_index": 4,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "pid": 2296256,
+        "progress_units": 0,
+        "status": "RUNNING"
+      },
+      "step894_calibration120_random_T1_seed137_C1_b1_draw11": {
+        "attempts": 1,
+        "birth": "505587114",
+        "durable_progress_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "gpu_index": 5,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "pid": 2296873,
+        "progress_units": 0,
+        "status": "RUNNING"
+      },
+      "step894_calibration120_random_T1_seed137_C1_b1_draw29": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed251_C05_b1_draw11": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed251_C05_b1_draw29": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed251_C1_b1_draw11": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed251_C1_b1_draw29": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed389_C1_b1_draw11": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_calibration120_random_T1_seed389_C1_b1_draw29": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_dev883_greedy_seed137_C05_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_dev883_greedy_seed137_C1_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_dev883_greedy_seed251_C05_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_dev883_greedy_seed251_C1_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      },
+      "step894_dev883_greedy_seed389_C1_b1_draw20260928": {
+        "attempts": 0,
+        "durable_progress_digest": null,
+        "next_eligible_epoch": 0.0,
+        "no_progress_failures": 0,
+        "progress_units": 0,
+        "status": "PENDING"
+      }
+    },
+    "max_gpu_workers": 5,
+    "protocol_id": "85a9477e307377c0b57d4045f0d9a2498d22ba5554f7749b3aa1b165a997c870",
+    "resource_wait_seconds": 109514.09503041673,
+    "schema": "v65_protected_per_job_queue.v1",
+    "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+    "status": "RUNNING",
+    "total_registered_jobs": 20,
+    "updated_epoch": 1792631616.7282755
+  },
+  "schema": "v65_actual_startup_verification.v1",
+  "scientific_protocol_id": "a4e56b5954cad3f578cfa5e8ba7bac64a87810cc857d04ef8c5b736f28b4d8db",
+  "scoring_calls": 0,
+  "status": "PASS",
+  "supervisor": {
+    "id": "f4d428b91460cfdb1e28e6b486205132eb47a3cade143dec960bbe799064c3ed",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/early_generation_01/supervisor/launch/record.json",
+    "sha256": "0483c9856afcf86c070dab4116b15f48b93e721ccf0e2df75e5362293982fa4e"
+  },
+  "whole_experiment_complete": false
+}
