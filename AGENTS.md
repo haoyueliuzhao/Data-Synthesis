@@ -273,3 +273,11 @@ V63已从源提交 `1c6cd75ae5` 冻结112文件，实施包ID `4442335a0a1e881bb
 V64于2026-10-21 10:43:49北京时间完成单次受控切换：旧seed137.C1/seed389.C1回放分别封存完整response406/58，UNKNOWN均0，原资源门通过且实际exit1（ReplayPaused）；旧监督器和控制器已退出，旧合法停止记录不改写。源提交 `cf79cb34f9`，新协议 `2ae502f0d54bef462d92483c32a5408282250accd873d4104900d9b6ac8d89f9`；总66项CPU/mock和322个冻结CPU依赖核验通过。新监督器PID4190175/birth497501597，新控制器PID4190338/birth497501887，首次在GPU7/0派发seed251.C05/C1回放。当前控制状态改看 `gpu_memory_protection_01/supervisor/queue/status.json`、`gpu_memory_protection_01/queue/status.json`；旧根STOP/closeout属于已授权维护历史，不得因此重复启动旧入口。首个真实预留量仍以新版worker的cache_warm证据为准，交接COMPLETE不是科学整轮COMPLETE。
 
 V64首批两个worker于10:45:33北京时间均实际FULL预热16GiB，allocator reserved各增加16GiB，预热期间主动降级释放0次，随后原R3科学边界通过；证据为 `gpu_memory_protection_01/activation_verification/record.json`。这仅是本worker已取得的可复用缓存，不是OS独占或未来显存保证；原矩阵及整轮统一评价尚未完成。不要再执行已完成的handoff或原V63旧监督入口。
+
+V64于2026-10-22凌晨以 `BLOCKED_OPERATOR_REQUIRED` 停止：seed389-C05完整830条response已封存，但draw梯度均值未通过原逐元素数值门；原资源门通过、无停止信号证据，不能归因为OOM或被挤占。五条其余分支自然完成，旧控制与worker已全部退出，21/24核心阶段accepted、1490/1788次更新已提交，4200反馈完整保留，评价生成与评分尚未启动。原失败及完整830断点不得重写或伪报原门通过。
+
+用户于2026-10-22对“五组先行生成并封存，暂不评分”回复“同意”，随后要求“问题组并行处理，尽快恢复实验”，并明确“授权该单点例外并继续”。本次仅登记同一V63科学根下两个独立运行层：`early_generation_01/` 的V65只给seed137/251的C1/C05及seed389-C1五个已验收894端点生成原20作业、6215会话；`single_diagnostic_exception_01/` 的V66只接续seed389-C05完整response830收尾、一次原distribution及298次原剂量训练。唯一例外只接受这次已知梯度均值诊断FAIL继续执行，仍保留FAIL、原误差、完整梯度及断点哈希；正式gJ不替换、不重放830、不重采样4200、不重做class、不重跑五训练。raw C均值及其他数值/状态/资源/UNKNOWN门不在例外中，新失败不得自动套用。原冻结协议、源码、STOP、failure和closeout均不回写。
+
+两运行层通过 `parallel_continuation_authorization_01/` 绑定不重叠任务集合，总worker仍最多6，固定拆为V65最多5与V66最多1，每卡1、GPU0—7及原全局GPU独占租约保持，初始化/等待/draining计名额；对方空闲不自动借用名额。V65原启动主存公式额外预留64GiB给V66，V66额外预留240GiB给V65，不按对方实际RSS抵扣；原96GiB全机RAM余量、RSS、76GiB allocated历史峰及2GiB边界free不放宽。两个登记新控制器对原科学owner取SH以排除旧EX入口，自身root和supervisor owner仍EX；只审计自身settled worker后允许资源安全恢复，不要求合法peer释放全部GPU租约。明确STOP只控制本侧核验身份，不干预对等控制或外部进程。
+
+V65全部20生成实际exit0后只封存 `GENERATIONS_SEALED_AWAITING_GLOBAL_SCORING`，不是科学整轮COMPLETE；V66不生成或评分。后续须独立继承/adopt已有20项完整内容、accepted与真实退出，只首次生成原剩4项1243会话；六训练及全24生成真实退出齐全后才建立全局评分屏障，禁止裸跑旧全24队列导致重复生成，也禁止局部评分影响后续任务。当前追加时仍处源码未冻结、未启动阶段；V65控制/入口37项、评价/审计24项及runtime9项共70项CPU测试通过，V66当前19项分项通过且最终FAIL保留修订待最后核验；这些不代表整体冻结或实际运行验收。详细边界与后续实际状态见 `trusted_data_synthesis/docs/finqa_v65_v66_parallel_generation_recovery_20261022.md`。用户随后已撤销误发的历史清理请求，本次不清理数据。
