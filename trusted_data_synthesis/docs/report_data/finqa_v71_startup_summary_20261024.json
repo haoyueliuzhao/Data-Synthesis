@@ -1,0 +1,56 @@
+{
+  "actual_step": 898,
+  "as_of_Beijing": "2026-10-24 21:57:58",
+  "example_reading_observations_id": "227bdf0945e7df5c139b34bc7692c8169938345412efb739f1d485099b1295be",
+  "existing_distribution_analysis_id": "72011b19c204b0f12a36d7549e1799ed9cf5e288933d3128abd5d5637ab01c2d",
+  "existing_invalid_analysis_id": "46e75110ab8c57768a9d456ac2f4f0fa0c634ca3885ed178a33bb1a23f718d11",
+  "existing_invalid_count": 325,
+  "first_failure_counts": {
+    "invalid_envelope_or_arguments": 3,
+    "missing_terminal_submission": 305,
+    "none_observed": 5,
+    "program_nonexecutable": 12
+  },
+  "implementation_id": "ae5ea266872c9f269ad39c2adeb8f2566fa922adfa0f5f82bb3bd20f47a00244",
+  "main_deltas_pending": [
+    "(371-H)/883",
+    "(H-525)/883"
+  ],
+  "new_evaluation_sessions_completed_at_startup": 0,
+  "new_evaluation_sessions_planned": 1123,
+  "new_fixed_endpoint_results_available": false,
+  "new_optimizer_commits": 4,
+  "new_optimizer_updates_planned": 596,
+  "new_outer_updates": 0,
+  "original_scientific_artifacts_changed": false,
+  "pi0_exactly_preserved": true,
+  "protocol_id": "1b69496f9fe3a1617eab1d6a34739c60305c63d00229924c0edbdb507b9d6d80",
+  "resource_observation_prefix": {
+    "admission_events": 2,
+    "all_observed_pass": true,
+    "byte_count": 18144,
+    "gate_observations": 19,
+    "max_allocated_bytes": 18109597696,
+    "min_boundary_free_bytes": 61539811328,
+    "min_host_available_bytes": 814296666112,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v71_fixed_distribution_control_01/execution_revision_01/resources/step894.train/pid1122575/observations.jsonl",
+    "sha256": "bc24120c5fbd0e955e4c738f9e02c34dd6a2024bf1ed4ccb78e328f5d7ea5839",
+    "total_records": 21
+  },
+  "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v71_fixed_distribution_control_01/execution_revision_01",
+  "schema": "v71_startup_and_existing_analysis_summary.v1",
+  "source_commit": "2776120472ed95c4d66fb74e1f36f9e2f8390bab",
+  "source_transition_counts": {
+    "I->I": 65,
+    "R->I": 179,
+    "W->I": 81
+  },
+  "startup_verification_id": "fc5a659c899dd066e13d4903eefe94ae0c0d951ebb233db2d54f4eff79a74dd1",
+  "status": "RUNNING_REAL_FIXED_DISTRIBUTION_TRAINING",
+  "terminal_counts": {
+    "invalid_envelope_or_arguments": 2,
+    "missing_terminal_submission": 312,
+    "program_nonexecutable": 2,
+    "truncation_or_interaction_budget": 9
+  }
+}
