@@ -333,3 +333,11 @@ V70已以源提交 `f6346e00632245190797b449d13c66c2bfe791a9` 冻结14文件并�
 V70已于2026-10-24 18:13北京时间以 `COMPLETE` 收口，26逻辑作业最终全部接受；30次GPU尝试为26个exit0、4个资源延后exit1，历史false与失败保留。两次Full应用、596更新、2976任务暴露、三点2232完整class任务/14922有效行、2100反馈、1393实际response回放及1123评价生成/评分全部完成；1490候选未应用。控制器与最终CPU评分子进程均有实际waitpid=0，监督器有COMPLETE自收口且身份已退出，但没有其自身waitpid退出码，不可混用。四次恢复的直接证据是GPU归属探测TimeoutExpired，不是已证实OOM；未知模型调用数均0，复用完整任务或原返回接续。旧supervisor/queue的RUNNING属于最后陈旧快照，应以closeout与实际退出为准，禁止重复启动或裸恢复。
 
 用户随后要求“汇总本次实验报告”。报告为 `trusted_data_synthesis/docs/finqa_v70_final_experiment_report_20261024.md`，机器摘要为 `docs/report_data/finqa_v70_report_summary_20261024.json`（派生ID `f6d847daf6b96619807b065d8d3f6257211faa36e1d77dee7591b2588cf32e0e`）。三点冻结映射75/74/74次均达门，但R/G先降后升、D从0.079936增至0.084212，没有共同下降趋势；终点dev371/883对起点525/883，净−154、−17.440544pp，cal最终53/120对起点67/120。无平行对照，不能单独归因于Full或Novelty，不称有益在线收敛。本次报告只读封存JSON，没有重新评分、映射迭代、GPU/API或Tensor计算；报告待审计，后继需另行明确范围，不自动扩轮，不补seed/1192dev，不恢复原B。科学closeout ID `1c247ed079c09ec570c839aa5591531c396eb18a4ea42313c9dce13a9bf3bd81`。
+
+# V71 同父点固定分布续训对照
+
+用户于2026-10-24提供“同父点固定分布续训对照＋既有产物机制分析”完整审计并明确“参照审计修订并开展后续实验”。只授权独立 `v71_fixed_distribution_control_01/` 一条“保持894实际分布续训”分支：精确恢复V70登记的seed137/C1/b1/step894真实θ/buffer/Adam/RNG/π/先验/日程，固定当时实际π₀，执行895—1192与1193—1490各298更新，共596次、2976任务暴露；零新outer、反馈、class、response回放、VJP或末端probe。π₀不是先验/均匀/冻结参考点；条件名Fixed894，原生checkpoint标签C-only仅为准确继承，不重新运行动态C-only。关闭自动outer，原outer_done=[298]不补造；每批原任务数、mask、整包归一化、一次clip/Adam不变，恢复后不重置训练RNG。
+
+新增评价仅1192/cal120、1490/cal120/dev883共1123，沿用原greedy/native合同，旧894和Full评分只读复用，不补1192dev/random/test。两个train加三个generate共五逻辑作业，实际接受退出齐全后单CPU首次评分；中间生成可并行，成绩不改日程。并列报告(371−H)/883与(H−525)/883、EA/PA全分母I/W/R/UNKNOWN及三组配对迁移，不设旧27门或新余弦门；仅识别此父点/随机实现/开发面板两次Full路径整体的条件增量，不拆分C/N/窗口因果效应。
+
+并行只读分析既有325条invalid（179/81/65来源）、固定ID各6对共24对原始输出；终末类别与首次失败分别保存，旧分数不改；新结果用同一规则。权重比较q₁−π₀、q₂−q₁、q₂−π₀，按真实batch/包数/整包mask归一化算名义监督份额，不冒充loss/梯度；只读已有NLL/范数。两半批与正式C直接评价实际δπ，C已含μ不再乘；1490未应用贡献不能解释过去跌幅，不依据分析改权重。不把机制分析全部完成设为训练启动门。GPU0—7/总6/每卡primary1、原26GiB训练/24GiB生成准入、76GiB峰/2GiB边界/RSS192/host96保持；只按真实持久边界恢复，UNKNOWN/状态/数值失败阻断，明确停止禁重拉。旧V70及历史失败不回写，完成即停不扩轮。初稿尚未冻结启动，实际证据及说明见 `trusted_data_synthesis/docs/finqa_v71_fixed_distribution_control_20261024.md`。
