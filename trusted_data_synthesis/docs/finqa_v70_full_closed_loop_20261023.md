@@ -6,7 +6,7 @@
 
 本轮从已接受的 seed137/C1/b1/step894 完整状态开始，显式切换为 Full，在894和1192各应用一次新分布并进行298次真实 optimizer 更新，至1490结束训练；1490再计算一次新候选分布，仅用于末端探测，不应用、不继续训练。
 
-本轮已于2026-10-23 00:45:23北京时间实际启动。00:50:27启动验收时，GPU6、7、2上的三个class worker正在计算894点的新梯度，已原子封存16个完整任务；第四分片尚因原主存启动门等待。反馈、Full更新、后继optimizer和新评价均尚未开始；这是初始class运行，不是全轮完成或理论得到验证。冻结与实际证据见第9节。
+本轮于2026-10-23 00:45:23北京时间实际启动，并于10月24日18:13以 `COMPLETE` 收口：两次Full应用、596次optimizer更新、2100反馈、三点完整class及1123条评价生成/评分全部完成。第9节保留00:50启动时的历史快照，不作为当前运行状态。完整数值、恢复记录及解释见[最终实验报告](finqa_v70_final_experiment_report_20261024.md)；冻结映射达到数值门限，不等于在线路径趋稳或效用改善。
 
 独立科学目录为：
 
@@ -177,4 +177,4 @@ R/G共有三个点，D只有两次相邻变化，不估计趋势显著性。小R
 
 证据位于新根 `activation/{dispatch_intent,actual_launch}/record.json`、`supervisor/launch/record.json`、`controllers/attempt0001/launch/record.json` 与 `startup_verification/record.json`。启动验收保存队列快照、实际身份、资源日志已完成前缀的长度/SHA及完整任务记录引用；不把持续追加的整个日志误当不可变文件。
 
-后续由唯一已运行监督器按固定DAG和原安全恢复规则接续。不要重复执行prepare、activation、supervise或旧入口，不热改本轮冻结包。1490探测、两窗口更新和最终评价均尚无完成证据，须以后续实际result、accepted与closeout判断。
+以上为启动验收时的历史记录。本轮现已完成固定DAG及最终评分，控制器和最终CPU子进程均有实际exit 0，监督器已自收口并退出。不要重复执行prepare、activation、supervise或旧入口，不热改冻结包或自动扩轮。1490探测候选未应用；最终结果与证据索引见[最终实验报告](finqa_v70_final_experiment_report_20261024.md)。
