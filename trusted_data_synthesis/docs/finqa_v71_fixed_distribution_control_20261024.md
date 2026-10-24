@@ -8,9 +8,9 @@
 
 独立根目录：
 
-`trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v71_fixed_distribution_control_01/`
+`trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v71_fixed_distribution_control_01/execution_revision_01/`
 
-本文初始登记时尚未冻结或启动训练；实际准备、启动和首批进度追加在文末。V70已完成状态、旧失败、原生输出及分数均保持不变。不恢复原B，不启动旧控制器，不补seed、温度、学习率或第三条分支。
+本文初始登记时尚未冻结或启动训练；首版准备保留在上级目录，因解释脚本封存引用错误而在科学启动前拒绝，详见文末。实际准备、启动和首批进度追加在文末。V70已完成状态、旧失败、原生输出及分数均保持不变。不恢复原B，不启动旧控制器，不补seed、温度、学习率或第三条分支。
 
 ## 2. 唯一父点与固定分布
 
@@ -215,3 +215,13 @@ M_\ell=\sum_b\sum_{x\in b}\sum_z\sum_{P\in(x,z)}
 | 1193–1490 | 0.242762 | 0.231384 | 0.938838 | 83／298 |
 
 这些是既有 Full 路径的描述性动态。不同位置对应不同 batch，窗口间也使用不同分布；不能把上述均值视为同一评测集上的 loss 曲线，也不能由训练 NLL 下降直接推导开发集效用提高。新固定分布路径结束后，可用相同纯 JSON 统计函数整理其对应 receipt，与已封存 Full 结果一起报告；当前没有提前宣称新路径表现。
+
+## 10. 未启动首版的保留与执行修订
+
+源提交 `24fe4bf4d4` 的首版14文件包已冻结在上级目录，实施包 `e1050c4a1ca6649b646ec66466620c3cec5a4a1bed101b2115fc66dc8ae4875e`、协议 `38e1371ae6b8828e3559cdee94215d1e20f41a14f46dbdcd4d121a59c92fe8de`。329项正式导入依赖及零派发冷控制器检查通过，但并行既有输出分析发现 `_endpoint_index` 把内部native seal ID误当成评分实际绑定的whole-queue seal ID。该检查在读取/分类原始episode之前失败，只产生预登记24对选择名单。
+
+首版没有activation、监督器、科学worker、训练更新、生成或评分。首版源码、协议及已有只读分析保持不变，准备拒绝记录为上级 `preparation_closeout/record.json`，ID `7a4c0bc89c8e8fefd5c52309b2e1175444da70609f47af85055849f7d8e28912`。这属于未启动实现的修订，不称科学资源失败或一次新实验重试。
+
+修订只把匹配对象纠正为whole-queue seal自身ID，新增真实结构回归；评价/失效规则17项通过，必要CPU用例累计66项不同用例。另一次同类只读核验正确构造Full与父点各883条输出索引，并成功解释一条实际原始invalid；没有执行模型或评分。
+
+修订执行版在独立 `execution_revision_01/` 从新提交重新冻结；不热改首版。新协议明确引用首版零科学执行的准备收口。已计算的分布/监督JSON可以逐字只读继承，不重复3073份输入读取或统计。原实验预算、同父点、固定π₀和全部评价/资源合同不变。

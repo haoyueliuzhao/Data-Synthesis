@@ -160,3 +160,15 @@ def test_explicit_stop_precedes_any_analysis_or_private_runtime(tmp_path, monkey
     monkeypatch.setattr(evaluation, "_protocol", lambda root: pytest.fail("must stop first"))
     with pytest.raises(ValueError, match="STOP"):
         evaluation.finish(tmp_path)
+
+
+def test_native_scores_bind_whole_queue_seal_not_inner_archive(tmp_path, monkeypatch):
+    whole = dict(id="whole", generation_seal_id="native-inner", generation_seal={"path": "archive"},
+                 episode_sha256=["canonical"])
+    monkeypatch.setattr(failure.binding, "checked", lambda path: whole)
+    calls = []
+    monkeypatch.setattr(failure, "_generation_index", lambda *args: calls.append(args) or "index")
+    assert failure._endpoint_index(tmp_path, "job", {"generation_seal_id": "whole", "results": ["row"]}) == "index"
+    assert calls[0][1:] == ({"path": "archive"}, ["row"], ["canonical"])
+    with pytest.raises(ValueError, match="whole-queue"):
+        failure._endpoint_index(tmp_path, "job", {"generation_seal_id": "native-inner", "results": ["row"]})

@@ -226,7 +226,9 @@ def _baseline_index(report):
 def _endpoint_index(root, job_id, report):
     directory = Path(root) / "evaluations/jobs" / job_id
     whole = binding.checked(directory / "whole_queue_seal/record.json")
-    require(whole["generation_seal_id"] == report["generation_seal_id"], "native score seal differs")
+    # V70/V71 native scores bind the complete endpoint whole-queue seal. Its
+    # inner generation_seal_id identifies the native episode archive separately.
+    require(whole["id"] == report["generation_seal_id"], "native score whole-queue seal differs")
     generation = directory / "shards" / job_id / "generation"
     return _generation_index(generation, whole["generation_seal"], report["results"], whole["episode_sha256"])
 

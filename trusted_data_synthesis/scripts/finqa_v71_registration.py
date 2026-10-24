@@ -258,6 +258,14 @@ def checked_prepared(root=ROOT):
 def prepare(source_commit):
     require(not ROOT.exists(), 'V71 may not replace any prepared, running or partially frozen experiment')
     loaded = modules()
+    previous = checked(binding.PREPARATION_ROOT / 'preparation_closeout/record.json')
+    require(previous['status'] == 'PREPARATION_REJECTED_BEFORE_SCIENTIFIC_LAUNCH'
+            and previous['supervisor_launched'] is False
+            and previous['new_scientific_calls'] == previous['new_optimizer_updates']
+                == previous['new_generation_sessions'] == previous['new_scoring_calls'] == 0
+            and not (binding.PREPARATION_ROOT / 'activation').exists()
+            and not (binding.PREPARATION_ROOT / 'supervisor').exists(),
+            'only the unlaunched preparation may be superseded by this execution revision')
     parent, baseline, full = parent_metadata(), baseline_evaluation(), full_evaluation()
     lineage = historical_source_bindings()
     policies = _policy_fields(loaded)
@@ -270,6 +278,7 @@ def prepare(source_commit):
     implementation = freeze(source_commit, lineage)
     protocol = publish(ROOT / 'protocol/record.json', dict(schema=SCHEMA, output_root=str(ROOT),
         source_commit=implementation['source_commit'],
+        unlaunched_preparation=binding.entry(binding.PREPARATION_ROOT / 'preparation_closeout/record.json'),
         authorization='参照审计修订并开展后续实验', user_plan=binding.file_ref(binding.USER_PLAN),
         implementation=binding.entry(ROOT / 'implementation/record.json'),
         source_scientific_protocol=binding.entry(binding.V63_ROOT / 'protocol/record.json'),

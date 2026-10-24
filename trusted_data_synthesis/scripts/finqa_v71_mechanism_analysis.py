@@ -20,7 +20,7 @@ import tempfile
 REPO = Path('/data1/zhuxinrui/projects/Data-Synthesis')
 V18 = REPO / 'trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01'
 V70 = V18 / 'v70_full_closed_loop_01'
-ROOT = V18 / 'v71_fixed_distribution_control_01'
+ROOT = V18 / 'v71_fixed_distribution_control_01/execution_revision_01'
 LAYERS = ('reason', 'tool', 'final')
 
 
