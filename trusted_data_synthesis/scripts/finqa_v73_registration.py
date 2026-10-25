@@ -165,7 +165,7 @@ def freeze(source_commit, input_directory="inputs"):
     sources[str(vendor_init)] = b.sha(vendor_init)
     sources[str(vendor / "finqa_evaluate.py")] = expected_tokens
     destination = b.ROOT / "implementation"
-    destination.mkdir(exist_ok=False)
+    destination.mkdir(parents=True, exist_ok=False)
     for name, raw in raw_files.items():
         with (destination / name).open("xb") as stream:
             stream.write(raw); stream.flush(); os.fsync(stream.fileno())
@@ -186,12 +186,16 @@ def freeze(source_commit, input_directory="inputs"):
         implementation=b.entry(destination / "record.json"),
         selection=b.entry(b.PREPARATION_ROOT / "selection/record.json"), inputs=b.entry(input_path),
         rejected_preparation=b.entry(b.PREPARATION_ROOT / "preparation_closeout/record.json"),
+        prior_execution_failure=b.entry(b.PREPARATION_ROOT / "execution_revision_01/closeout/record.json"),
+        prior_cold_entry_audit=b.entry(b.PREPARATION_ROOT / "execution_revision_01/cold_entry_failure_audit/record.json"),
+        continuation_scope="same authorized probe budget after diagnosed pre-CUDA policy-registration correction; old failed controller is never restarted",
         scientific_contract=contract(), measurement_policy=measurement.policy(),
         model_bindings=model_bindings(bundle), jobs=jobs_for(bundle),
         gpu_uuids=resources.GPU_UUIDS, cpu_affinity=resources.CPU_AFFINITY,
         gpu_priority=list(b.GPU_PRIORITY), gpu_lease_root=old_protocol["gpu_lease_root"],
         allowed_gpu_indices=list(range(8)), max_gpu_workers=6, max_workers_per_gpu=1,
         resource_policy=resources.resource_policy(), gpu_isolation_policy=resources.isolation.gpu_isolation_policy(),
+        resource_recovery_policy=resources.resource_recovery_policy(),
         final_analysis_resource_policy=controller.cpu_resource_policy(),
         signal_policy=signals.signals_policy(), signal_source_bindings=signals.external_source_bindings(),
         recovery_policy=recovery_policy(), no_wallclock_deadlines=True,
@@ -221,6 +225,7 @@ def checked_protocol(root=b.ROOT):
         p = b.checked(b.ROOT / "protocol/record.json")
         b.require(p["scientific_contract"] == contract() and p["implementation"]["id"] == manifest["id"]
             and p["recovery_policy"] == recovery_policy(), "frozen probe contract changed")
+        importlib.import_module("finqa_v73_resources").validate_registered_contract(p)
         _PROTOCOL = p
     return _PROTOCOL
 

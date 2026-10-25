@@ -2,7 +2,7 @@
 
 日期：2026-10-25，北京时间。依据V72后续审计及用户“参照审计修订并开展后续实验”授权。
 
-当前状态：96题名单及修订后的实际输入已封存，288个来源历史逐token核对通过，UNKNOWN为0；事前去重为263份不同输入，计划789次单回应生成和288条固定父回应概率测量。首版冻结包在CPU导入检查时因遗漏原vendor包初始化文件的来源绑定而被拒绝，没有科学派发；修订执行目录为`execution_revision_01/`，只读继承同一名单和输入。实际依赖核验及启动状态将在本文件末尾登记。准备错误、原UNKNOWN及首版冻结记录均保留。
+当前状态：96题及288份来源历史已精确核对，去重后仍计划789次生成和288条概率测量。`execution_revision_01/`已实际派发首worker，但在资源守卫构造时因缺少策略登记字段退出，未进入CUDA初始化、模型加载或调用intent；旧池以`STOPPED_FAILURE_NO_RETRY`收口且全部退出。正在独立`execution_revision_02/`补齐原资源政策的登记与构造契约预检，复用原输入、原完整预算，禁止重启旧池。实际修订核验和启动状态见末尾后续记录。
 
 本轮检查两个相互补充的问题：给定同一真实交互历史，后继模型是否仍更容易放弃合法下一动作；进一步固定父回应的前置文字后，对相同关键动作token的条件预测是否也变化。结果用于定位后续训练应验证的因素，不产生新的FinQA准确率，也不自动启动训练或Full。
 
@@ -10,7 +10,7 @@
 
 `trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v73_same_context_probe_01/`
 
-上列父目录保留选样、输入准备及未启动首版。正式修订科学根为该目录下的`execution_revision_01/`；不能启动父目录旧入口。
+上列父目录保留选样、输入准备及未启动首版。`execution_revision_01/`保留首次冷worker失败。新的受控执行根为该目录下的`execution_revision_02/`；不能启动父目录或01旧入口。
 
 ## 1. 三个已有模型与固定样本
 
@@ -149,6 +149,12 @@ P/H/L各分成两个固定分片，按去重context ID和task key稳定哈希分
 
 该次entry退出码为1，GPU/模型/工具/评分/optimizer均0，收口记录为父目录`preparation_closeout/record.json`。旧包、协议、输入和失败保持不变；新执行在独立`execution_revision_01/`重新登记，复用原选样及已通过的修订输入，不重做288份历史准备。
 
+`execution_revision_01/`从源提交`60cbbfd1b4`登记，协议ID`839d2dda3327eeb3bce9be8b2427c02309e4bdc1d5b35f561d16c51b311902f3`，实施包ID`bd052197e409280114ba06385a7588dd975b3fac81bfdcdfd5a2cab2f9b5e3a1`，正式CPU导入核验ID`0a8a20afd070bb31d78c25568c0d3bda25ccf7e7d544e382c37091c66b938953`。21:54:41实际启动监督器1961180/birth536087594、controller1961250/birth536087624；首个H.shard0派发到GPU6，PID1961814/birth536087860。
+
+该worker在继承的V56资源守卫构造器中被`resource_recovery_policy`登记一致性检查拒绝：协议有本轮`recovery_policy`，但漏了资源守卫单独要求的顶层字段。错误发生在原V54构造器、`__enter__`、CUDA set_device和Predictor之前。实际worker exit1、controller exit2，21:54:56以`STOPPED_FAILURE_NO_RETRY`收口；不是显存不足或数值失败。21:57核对三个身份均已退出，intent、模型加载证明、实际返回均为0。
+
+01的收口ID为`eb20ce571739facab2767d01d0fa49d67fd4871b8bd01454e107df4ecaa4848d`，补充边界证据为01下`cold_entry_failure_audit/record.json`。自动恢复没有重试此实现故障。当前任务修正通过独立02登记：补齐同一资源政策字段并在冷入口直接检查完整资源构造契约，保持原输入、模型、数学、预算和硬资源门；不重启01、不将原失败改写为准备成功或资源故障、不重做选样/上下文。
+
 ## 8. 结果解释及后续边界
 
 完成后得到F/K分别的“模型状态×相同历史”动作矩阵和固定父回应的分组概率变化。对角线大量不复现时，应明确测量再现性限制；没有预设“多少例算大量”的统计晋级门，不根据结果删除题目。合法非终末动作与提交选择、公开文字续写与结构条件概率、静态候选与可执行正确答案均分别解释。
@@ -157,6 +163,6 @@ P/H/L各分成两个固定分片，按去重context ID和task key稳定哈希分
 
 ## 9. 实施核验
 
-共137项不同的针对性CPU/mock用例通过：输入16、动作与概率测量26、统计汇总11、推理适配21、worker持久返回13、注册/入口适配7、控制器生命周期27、最终CPU独立退出屏障16。受影响路径在修订后回归；没有重新跑旧科学测试或GPU小试。另以纯JSON夹具连接worker输出、概率分组和最终汇总，检查UNKNOWN保留48分母、NA不补零及对角线来源SHA。
+共159项不同的针对性CPU/mock用例通过：输入16、动作与概率测量26、统计汇总11、推理适配21、worker持久返回13、注册/入口适配7、控制器生命周期27、最终CPU独立退出屏障16、完整资源构造契约22。受影响路径在修订后回归；没有重新跑旧科学测试或GPU小试。资源新增用例包含真实继承构造器的CPU沙箱，禁止进入`__enter__`、查询设备、启动监控线程或初始化CUDA；明确验证worker容量等待policy与controller重试policy不能互相替代。另以纯JSON夹具连接worker输出、概率分组和最终汇总，检查UNKNOWN保留48分母、NA不补零及对角线来源SHA。
 
 实际加载证明由每个真正加载模型的attempt另行封存，包括原架构、实际identity、直接安装A/B及零随机LoRA初始化/optimizer/backward；只复用全部既有返回的新attempt不会补造加载证明。最终CPU入口自身核对六个accepted、退出屏障、launch/actual PID-birth和资源/剂量，不仅依赖控制器的布尔状态。

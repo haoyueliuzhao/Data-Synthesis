@@ -60,6 +60,54 @@ def resource_recovery_policy():
         old_UNKNOWN_and_single_numeric_exception_allowances_inherited=False)
 
 
+def validate_registered_contract(protocol):
+    """Pure structural checks for the complete inherited guard protocol.
+
+    This is not GPU admission. It does not enter a guard, inspect live capacity,
+    acquire a lease, start a sampler or initialize CUDA. In particular the V56
+    per-worker capacity-deferral policy is separate from the V73 controller's
+    job-retry policy and must be registered under its original required key.
+    """
+    required = {
+        "id", "resource_policy", "resource_recovery_policy", "gpu_isolation_policy",
+        "allowed_gpu_indices", "gpu_uuids", "gpu_lease_root", "max_gpu_workers",
+        "max_workers_per_gpu",
+    }
+    require(isinstance(protocol, dict), "resource guard requires a protocol object")
+    require(required <= protocol.keys(), "missing resource guard protocol fields: "
+            + str(sorted(required - protocol.keys())))
+    require(isinstance(protocol["id"], str) and protocol["id"], "resource protocol identity is absent")
+    require(protocol["gpu_isolation_policy"] == isolation.gpu_isolation_policy(),
+            "registered original GPU ownership policy changed")
+    require(type(protocol["max_gpu_workers"]) is int and protocol["max_gpu_workers"] == 6
+            and type(protocol["max_workers_per_gpu"]) is int and protocol["max_workers_per_gpu"] == 1,
+            "registered six-total/one-per-GPU worker contract changed")
+    require(protocol["resource_recovery_policy"] == resource_recovery_policy(),
+            "registered inherited per-worker capacity-deferral policy missing or changed")
+    require(protocol["resource_policy"] == resource_policy(),
+            "registered complete lifetime resource policy changed")
+    require(protocol["allowed_gpu_indices"] == list(range(8))
+            and protocol["gpu_uuids"] == GPU_UUIDS,
+            "registered eight physical GPU identities changed")
+    lease_root = Path(protocol["gpu_lease_root"])
+    expected_lease_root = V18 / "v25_training_replication_01/training_replication/locks"
+    require(lease_root.is_absolute() and lease_root.resolve() == expected_lease_root.resolve(),
+            "resource __enter__ requires the original project GPU lease root")
+    if "output_root" in protocol:
+        require(Path(protocol["output_root"]).resolve() == ROOT.resolve(),
+                "resource protocol belongs to another execution root")
+    return dict(schema="v73_inherited_resource_constructor_contract.v1", status="PASS",
+        checked_constructor_fields=sorted(required - {"id", "gpu_lease_root"}),
+        checked_enter_protocol_fields=["id", "gpu_lease_root"],
+        constructor_chain=["V73.ResourceGuard", "IsolatedResourceGuard(no own constructor)",
+            "V56.ResourceGuard", "V54.ResourceGuard"],
+        V64_constructor_is_not_inherited=True,
+        controller_retry_and_worker_capacity_deferral_are_distinct=True,
+        environment_and_lease_FD_validation_deferred_to_actual_enter=True,
+        live_resources_observed=False, resource_admission_passed=False,
+        guard_entered=False, CUDA_initialized=False, model_loaded=False)
+
+
 def _private(name, source, substitutions):
     raw = Path(source.__file__).read_text()
     for before, after, count in substitutions:
@@ -118,11 +166,7 @@ class ResourceGuard(_SharedGuard):
     def __init__(self, root, job, gpu_index, *, torch_module=None):
         require(Path(root).resolve() == ROOT.resolve(), "foreign V73 resource root")
         protocol = binding.checked(ROOT / "protocol/record.json")
-        require(protocol["gpu_isolation_policy"] == isolation.gpu_isolation_policy()
-                and protocol["max_gpu_workers"] == 6 and protocol["max_workers_per_gpu"] == 1,
-                "registered V73 worker-slot/owner-isolation policy changed")
-        require(protocol["resource_policy"]["memory_protection_policy"] == memory_protection_policy(),
-                "registered worker-local native cache protection changed")
+        validate_registered_contract(protocol)
         self.control_protocol = protocol
         self._warm_attempted, self._warm_allocation_bytes = False, 0
         self._warm_status = "NOT_ATTEMPTED" if job.get("kind") == "replay" else "NOT_APPLICABLE"

@@ -45,12 +45,14 @@ def check_imports():
         importlib.import_module("finqa_v73_" + name)
     _binding, final, _model, measurement = importlib.import_module("finqa_v73_runtime")._modules()
     measurement._api()
+    importlib.import_module("finqa_v73_resources").validate_registered_contract(protocol)
     b.require(not final.torch.cuda.is_initialized(), "CPU dependency check initialized CUDA")
     b.require(b.checked(b.ROOT / "prepared/record.json")["protocol"]["id"] == protocol["id"], "preparation differs")
     return b.publish(b.ROOT / "frozen_worker_import_verification/record.json", dict(
         schema="v73_actual_frozen_CPU_dependencies.v1", status="PASS", protocol_id=protocol["id"],
         implementation_id=implementation["id"], CUDA_initialized=False, model_loaded=False,
-        new_model_calls=0, **verify_imported_sources(implementation)))
+        new_model_calls=0, resource_constructor_contract_checked=True,
+        **verify_imported_sources(implementation)))
 
 
 def analysis_inputs(bundle):
