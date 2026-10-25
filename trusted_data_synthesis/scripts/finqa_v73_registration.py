@@ -57,12 +57,12 @@ def recovery_policy():
 
 def prepare_inputs(input_directory="inputs"):
     b.require(re.fullmatch(r"inputs(?:_revision_[0-9]{2})?", input_directory), "invalid independent input directory")
-    input_path = b.ROOT / input_directory / "record.json"
+    input_path = b.PREPARATION_ROOT / input_directory / "record.json"
     b.require(not input_path.exists(), "input preparation already complete")
     inputs = importlib.import_module("finqa_v73_inputs")
     measurement = importlib.import_module("finqa_v73_measurement")
     loaded = inputs.load_sources()
-    selection_path = b.ROOT / "selection/record.json"
+    selection_path = b.PREPARATION_ROOT / "selection/record.json"
     if selection_path.exists():
         selection = b.checked(selection_path)
         b.require(selection["original_source_refs"] == loaded["source_refs"], "selected source bytes changed")
@@ -86,13 +86,13 @@ def prepare_inputs(input_directory="inputs"):
             del bundle["targets"][task_key]
     bundle["dedup"]["planned_probability_sequences"] = 3 * len(bundle["targets"])
     b.publish(input_path, dict(bundle,
-        selection=b.entry(b.ROOT / "selection/record.json"),
+        selection=b.entry(selection_path),
         preparation_source_sha256={name: b.sha(b.REPO / "trusted_data_synthesis/scripts" / name)
             for name in ("finqa_v73_inputs.py", "finqa_v73_measurement.py")},
         original_source_refs=loaded["source_refs"],
         generation_registrations=loaded["registrations"],
         new_model_calls=0, CUDA_initialized=False, new_native_scores=0))
-    return dict(status="INPUTS_PREPARED", selection=b.entry(b.ROOT / "selection/record.json"),
+    return dict(status="INPUTS_PREPARED", selection=b.entry(selection_path),
         inputs=b.entry(input_path))
 
 
@@ -135,7 +135,7 @@ def jobs_for(inputs):
 def freeze(source_commit, input_directory="inputs"):
     b.require(not (b.ROOT / "implementation").exists(), "V73 implementation already frozen")
     b.require(re.fullmatch(r"inputs(?:_revision_[0-9]{2})?", input_directory), "invalid independent input directory")
-    input_path = b.ROOT / input_directory / "record.json"
+    input_path = b.PREPARATION_ROOT / input_directory / "record.json"
     bundle = b.checked(input_path)
     b.require(bundle["contexts"] and bundle["targets"], "all-UNKNOWN input reconstruction blocks scientific dispatch")
     commit = subprocess.check_output(["git", "rev-parse", source_commit + "^{commit}"], cwd=b.REPO, text=True).strip()
@@ -151,6 +151,19 @@ def freeze(source_commit, input_directory="inputs"):
     inherited = b.read_ref(inherited_ref)
     sources = dict(inherited["source_bindings"])
     sources.update({str(b.V72_ROOT / "implementation" / name): sha for name, sha in inherited["sha256"].items()})
+    # The original package initializer contains only its provenance docstring.
+    # The program tokenizer is pinned by the original vendor PROVENANCE, not
+    # by the earlier worker-import subset. Register these exact existing bytes.
+    vendor = Path(inherited["frozen_source_root"]) / "trusted_synthesis/finance_research/metric_vendor"
+    vendor_init = vendor / "__init__.py"
+    b.require(vendor_init.read_bytes() == b'"""Pinned, licensed upstream metric implementations; see PROVENANCE.json."""\n', "original vendor initializer changed")
+    provenance_path = vendor / "PROVENANCE.json"
+    provenance = json.loads(provenance_path.read_bytes())
+    expected_tokens = "b64686fab3de2053da53c40f01a14fac7783cae101d64af722c1b59d54269df2"
+    b.require(provenance["files"]["finqa_evaluate.py"]["local_sha256"] == expected_tokens
+        and b.sha(vendor / "finqa_evaluate.py") == expected_tokens, "original pure program tokenizer changed")
+    sources[str(vendor_init)] = b.sha(vendor_init)
+    sources[str(vendor / "finqa_evaluate.py")] = expected_tokens
     destination = b.ROOT / "implementation"
     destination.mkdir(exist_ok=False)
     for name, raw in raw_files.items():
@@ -159,6 +172,7 @@ def freeze(source_commit, input_directory="inputs"):
     manifest = b.publish(destination / "record.json", dict(schema="v73_frozen_probe_implementation.v1",
         source_commit=commit, sha256={name: hashlib.sha256(raw).hexdigest() for name, raw in raw_files.items()},
         source_bindings=sources, inherited_manifest=inherited_ref,
+        explicit_vendor_provenance=b.file_ref(provenance_path),
         frozen_source_root=inherited["frozen_source_root"],
         original_scientific_sources_modified=False))
     resources = importlib.import_module("finqa_v73_resources")
@@ -170,7 +184,8 @@ def freeze(source_commit, input_directory="inputs"):
         output_root=str(b.ROOT), source_commit=commit,
         user_plan=b.file_ref(b.USER_PLAN), authorization="参照审计修订并开展后续实验",
         implementation=b.entry(destination / "record.json"),
-        selection=b.entry(b.ROOT / "selection/record.json"), inputs=b.entry(input_path),
+        selection=b.entry(b.PREPARATION_ROOT / "selection/record.json"), inputs=b.entry(input_path),
+        rejected_preparation=b.entry(b.PREPARATION_ROOT / "preparation_closeout/record.json"),
         scientific_contract=contract(), measurement_policy=measurement.policy(),
         model_bindings=model_bindings(bundle), jobs=jobs_for(bundle),
         gpu_uuids=resources.GPU_UUIDS, cpu_affinity=resources.CPU_AFFINITY,
