@@ -15,3 +15,6 @@ trusted_data_synthesis/build/
 /.codex-worktrees/
 # Live process locks/state; reviewed evidence is archived separately.
 /trusted_data_synthesis/runtime/
+
+# Local workspace collaboration instructions.
+/AGENTS.md
