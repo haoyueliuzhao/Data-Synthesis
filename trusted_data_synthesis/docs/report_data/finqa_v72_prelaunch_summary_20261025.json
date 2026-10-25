@@ -1,0 +1,78 @@
+{
+  "conflicts": [],
+  "counts": {
+    "critical_token_coverage": {
+      "EOS": {
+        "supervised": 4928,
+        "tokens": 4928
+      },
+      "action_name": {
+        "supervised": 19712,
+        "tokens": 19712
+      },
+      "arguments": {
+        "supervised": 109698,
+        "tokens": 109698
+      },
+      "close_envelope": {
+        "supervised": 4928,
+        "tokens": 4928
+      },
+      "open_envelope": {
+        "supervised": 4928,
+        "tokens": 4928
+      }
+    },
+    "effective_rows": 4974,
+    "layer_counts": {
+      "final": 89789,
+      "reason": 325582,
+      "tool": 88905
+    },
+    "native_action_counts": {
+      "list_sources": 5,
+      "read_source": 70,
+      "run_program": 2435,
+      "submit_program": 2468
+    },
+    "packages_without_positive_submit": 0,
+    "positive_other_action_rows": 2460,
+    "positive_submit_rows": 2468,
+    "prose_mentions": {
+      "final_answer_as_action": 0,
+      "final_answer_in_prose": 0,
+      "plain_submit_program_in_prose": 0
+    },
+    "rows": 4978,
+    "supervised_tokens": 504276,
+    "unsupervised_action_rows": 50
+  },
+  "existing_analysis_id": "c09a67226bd2b50c3231f0fba3113c96957fb7184345c4bf529030f60a36db16",
+  "existing_analysis_source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v72_static_audit.py",
+    "sha256": "10841b99e3115a1cf8239b1268d5c62a6132c0ff6995f8e0eae2c9f99bdead3b"
+  },
+  "existing_producer_snapshot": "/tmp/v72_static_audit_before_vendor_binding.py",
+  "gate_passed": true,
+  "material_check_is_not_model_point_validation": true,
+  "new_model_calls": 0,
+  "new_optimizer_updates": 0,
+  "new_scoring_calls": 0,
+  "schema": "v72_prelaunch_static_and_saved_analysis_summary.v1",
+  "scientific_root": "v72_low_lr_continuation_01",
+  "scope": {
+    "effective_rows": 4974,
+    "packages": 2468,
+    "rows": 4978,
+    "tasks": 744
+  },
+  "static_analysis_source": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v72_static_audit.py",
+    "sha256": "fe222fb3b1c63d65d7eb3e8731681a1a1a87d8785d1bc19738dc42123a4f0662"
+  },
+  "static_audit_id": "0ebaa1b04f802cd60ee63b620954b80c066386eebcc20a01ec4ee40d516ccbad",
+  "static_gate_is_not_effectiveness_proof": true,
+  "static_material_lineage_parent_digest": "b1dd738c3fa32b4a54709a1b9a2c8e96631a7fe5aff62eef6fd926c28461d806",
+  "status": "STATIC_GATE_PASS_NO_SCIENTIFIC_LAUNCH_YET",
+  "true_model_parent1192_digest": "2dbeeb60a2eb99c8dac36768faf7eb09c8acdffc2b0ae3f4444a0204fcdaa340"
+}
