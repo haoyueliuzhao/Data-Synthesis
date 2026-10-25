@@ -2,7 +2,7 @@
 
 日期：2026-10-24，北京时间。依据用户提供的完整审计方案及“参照审计修订并开展后续实验”授权，本轮只新增一条“保持894实际分布续训”路径。对照对象为已经完成的 V70 Full 路径，不重新训练或生成 Full 结果。
 
-当前状态：修订版于2026-10-24 21:53:16北京时间实际启动；21:57:58启动验收时GPU6已封存step898，共4次新optimizer更新，实际π₀与原outer历史保持不变，已观测资源门通过。325条既有invalid分类、固定24对阅读及分布/监督分析已完成。新分支尚未到1192/1490，1123条新评价和主终点比较尚未完成；后文中的计划与既有分析不代表新训练结果。
+当前状态：本轮已于2026-10-25 07:13:47北京时间以 `COMPLETE` 收口。596次更新、2976次任务暴露、1123条新评价及最终配对/机制分析全部完成，实际π₀不变、零新增outer；五GPU作业与最终CPU均实际exit0。固定分布终点dev377/883，Full为371/883，共同起点525/883。完整结果见[最终实验报告](finqa_v71_final_experiment_report_20261025.md)。第11节保留10月24日step898启动验收的历史快照，不代表当前运行状态。
 
 ## 1. 研究问题与独立目录
 
@@ -290,3 +290,11 @@ M_\ell=\sum_b\sum_{x\in b}\sum_z\sum_{P\in(x,z)}
 既有分布监督统计ID `72011b19c204b0f12a36d7549e1799ed9cf5e288933d3128abd5d5637ab01c2d` 已逐字继承至本修订根并附原来源及新协议引用；325条失效分类ID `46e75110ab8c57768a9d456ac2f4f0fa0c634ca3885ed178a33bb1a23f718d11`，24对阅读观察ID `227bdf0945e7df5c139b34bc7692c8169938345412efb739f1d485099b1295be`。最终分析已绑定这些既有产物，并在新结果齐全后采用相同规则整理固定分布invalid及实际596步receipt，不重新评分V70。
 
 正式进度查看本修订根 `supervisor/queue/status.json`、`queue/status.json` 与 `training/step*_step/record.json`。队列中的progress_units可能是最近派发/恢复审计的计数，实时训练提交以完整checkpoint为准。上级首版目录没有活跃控制器；禁止重复prepare/activation/supervise或裸用旧入口。
+
+## 12. 实际完成与最终报告
+
+修订执行版已经完成全部五个逻辑GPU作业，各为attempt0001、实际waitpid exit0及资源PASS，两个训练窗口各298更新，原π₀与outer_done=[298]保持。最终CPU首次评分/分析也实际exit0；科学closeout ID为 `712a98f7c929c72f880d12f2167644ec8ab89984d30507899fefb0512a86e5d1`，于2026-10-25 07:13:47北京时间完成，监督器07:13:51随后自收口。所有本轮身份已退出；监督器没有自身waitpid退出码，不能借用控制器exit0。
+
+最终固定分布1192/cal为74/120，1490/cal为56/120，1490/dev为377/883；对应Full为71/120、53/120、371/883。固定分布dev相对起点净−148、−16.761042个百分点；Full相对固定分布净−6、−0.679502个百分点。Full与固定分布同题新增/丢失正确为126/132，invalid为325/317、共同155题；小净差不表示输出等价或稳定优势。
+
+详细完整报告为[finqa_v71_final_experiment_report_20261025.md](finqa_v71_final_experiment_report_20261025.md)，机器摘要为[finqa_v71_report_summary_20261025.json](report_data/finqa_v71_report_summary_20261025.json)，派生ID `e3fa64896b83be4e823bdae5bcd15d1464633bf4dd2104973e9d4c3cd61fe751`。本次只整理60份已存JSON，没有新评分、模型、Tensor或原始Episode操作；首版准备拒绝及V70原结果不改写。旧supervisor/queue的RUNNING是自收口前的陈旧快照，以实际closeout为准，禁止重新启动或扩展本轮。
