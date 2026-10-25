@@ -1,0 +1,74 @@
+{
+  "AGENTS_remains_local_ignored": true,
+  "V72_runtime_after": {
+    "accepted_jobs": [
+      "step1192.train",
+      "step1192.dev_greedy",
+      "step1490.cal_greedy"
+    ],
+    "active_workers": [
+      {
+        "birth": "533694005",
+        "job_id": "step1490.dev_greedy",
+        "pid": 1665121,
+        "same_live_identity": true
+      }
+    ],
+    "queue_status": "RUNNING"
+  },
+  "already_absent_pytest1997_not_attributed_bytes": 45056,
+  "authorization": "清理历史无用数据",
+  "data_volume_net_reclaimed_bytes": 10109186048,
+  "data_volume_source_allocated_bytes_removed": 10704175104,
+  "id": "6b679b1b545aebc5bd39ab2a9a517b6b8273b17025d6093c7b86ab5f266829fb",
+  "main_wallet_or_sidecars_modified": false,
+  "model_or_training_checkpoint_payloads_removed": 0,
+  "new_GPU_or_API_calls": 0,
+  "new_backups_and_operation_audits_on_data_volume": 594989056,
+  "observed_Beijing": "2026-10-25T17:09:38.113981+08:00",
+  "operations": {
+    "project_tests": {
+      "backup_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261025_01",
+      "removed_files": null,
+      "removed_roots": 23,
+      "result": {
+        "id": "579d0e7788c1524ce45b23832d7ff4db0253c645a31621ddde6fb381e0ec1fda",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261025_test_cache_01/result.json",
+        "sha256": "0d965c98b73fe9d59b90c20dc1082c5e40803d2400127d6d50ae6f0d6ad5753a"
+      },
+      "retained_backup_and_audit_allocated_bytes": 10665984,
+      "source_allocated_bytes": 60444672
+    },
+    "tmp_tests_and_duplicates": {
+      "backup_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/local_test_archive_20261025_tmp_01",
+      "removed_duplicates": 4,
+      "removed_roots": 16,
+      "result": {
+        "id": "67e8ae3689146220dc0c4f14db4c6a23440be5cf2fd28cc4f668e5bfb9748c24",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261025_tmp_tests_01/complete.json",
+        "sha256": "efd1aa702d5f12beca0773d045566cd8777ade9aaf9d25bad93ab4050617633b"
+      },
+      "retained_backup_and_audit_allocated_bytes": 2428928,
+      "source_allocated_bytes": 160378880
+    },
+    "wallet_snapshots": {
+      "backup_directory": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/cold_archive_20261025_wallet_snapshots_01",
+      "removed_files": 4,
+      "removed_roots": 0,
+      "result": {
+        "id": "7b816f3f0283e9247ac2bc73023ad0a682b8cad1b96e8fd5274e4a1a75924cf9",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261025_wallet_snapshots_01/result.json",
+        "sha256": "030b4ffce5182b86070abd8aa2f9b9bd5e099a3ac18bf24874ccd06377ea41df"
+      },
+      "retained_backup_and_audit_allocated_bytes": 581894144,
+      "source_allocated_bytes": 10643730432
+    }
+  },
+  "prior_archives_removed": 0,
+  "process_signals_sent": 0,
+  "schema": "storage_cleanup_20261025_complete_summary.v1",
+  "status": "COMPLETE",
+  "subsequent_summary_docs_git_and_directory_metadata_not_in_net": true,
+  "tmp_volume_allocated_bytes_removed": 160378880,
+  "total_net_reclaimed_across_both_filesystems": 10269564928
+}
