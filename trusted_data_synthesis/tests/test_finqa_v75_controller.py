@@ -188,3 +188,61 @@ def test_explicit_stop_is_terminal_no_auto_restart_and_shared_grace_not_reset(ob
     result=obj.stop_pool(dict(kind='EXPLICIT'))
     assert result['status']=='STOPPED_EXPLICIT_REQUEST_NO_AUTO_RESUME'
     assert result['automatic_controller_restart_allowed'] is False and result['automatic_followup_started'] is False
+
+
+def mock_admission_runtime(obj,monkeypatch,free_gib,gpu_count=1):
+    """Real inherited flock/acquire code, exclusively under pytest's temp root."""
+    lease_root=obj.root/'mock_gpu_leases'
+    monkeypatch.setattr(control.base,'GPU_LEASE_ROOT',lease_root)
+    rows=[dict(index=gpu,uuid=obj.protocol['gpu_uuids'][str(gpu)],free_mib=free_gib*1024,
+        gpu_isolation=dict(allowed=True,gpu_uuid=obj.protocol['gpu_uuids'][str(gpu)])) for gpu in range(gpu_count)]
+    inventories=[]
+    def inventory():
+        inventories.append(True)
+        return rows
+    obj.runtime=SimpleNamespace(inventory=inventory,
+        host_memory=lambda:dict(available_bytes=1000*control.GIB),
+        process_memory=lambda pid:dict(rss_bytes=10*control.GIB,peak_rss_bytes=12*control.GIB))
+    return rows,lease_root,inventories
+
+
+def test_actual_acquire_accepts_all_four_initial_collection_jobs_with_isolated_fixture_leases(obj,monkeypatch):
+    rows,lease_root,inventories=mock_admission_runtime(obj,monkeypatch,24,gpu_count=4)
+    originals={key:dict(value) for key,value in obj.jobs.items()}
+    leases=[]
+    try:
+        for index,key in enumerate(['L.initial.shard0','L.initial.shard1','P.initial.shard0','P.initial.shard1']):
+            result=obj.acquire(obj.jobs[key])
+            assert result is not None
+            gpu,lease,admission=result;leases.append(lease)
+            assert gpu['index']==index and admission['minimum_free_mib']==24*1024
+            assert Path(admission['lease_path']).parent==lease_root
+            assert admission['primary_EX_lease'] and not lease.closed
+            obj.active[key]=SimpleNamespace(gpu=index,job=obj.jobs[key],process=SimpleNamespace(pid=10000+index),lifecycle='INITIALIZING')
+        assert len(leases)==len({c.gpu for c in obj.active.values()})==4
+        assert len(inventories)==8  # Original inventory and fresh post-lock recheck.
+        assert all(obj.jobs[key]==value for key,value in originals.items())
+        assert all(obj.jobs[key]['stage']=='collect' for key in obj.active)
+    finally:
+        for lease in leases:lease.close()
+
+
+@pytest.mark.parametrize('key,minimum_gib',[('L.initial.shard0',24),('step1192.train',26)])
+def test_actual_acquire_keeps_exact_phase_capacity_and_owner_gates(obj,monkeypatch,key,minimum_gib):
+    rows,lease_root,_=mock_admission_runtime(obj,monkeypatch,minimum_gib)
+    row=rows[0];original=dict(obj.jobs[key])
+    row['free_mib']=minimum_gib*1024-1
+    assert obj.acquire(obj.jobs[key]) is None and not lease_root.exists()
+    row['free_mib']=minimum_gib*1024
+    row['gpu_isolation']['allowed']=False
+    assert obj.acquire(obj.jobs[key]) is None and not lease_root.exists()
+    row['gpu_isolation']['allowed']=True
+    acquired=obj.acquire(obj.jobs[key])
+    assert acquired is not None
+    _,lease,admission=acquired
+    try:
+        assert admission['minimum_free_mib']==minimum_gib*1024
+        assert Path(admission['lease_path']).parent==lease_root
+        assert obj.jobs[key]==original
+    finally:
+        lease.close()

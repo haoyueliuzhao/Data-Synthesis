@@ -173,6 +173,18 @@ class Controller(base.Controller):
     def _audit(self, job):
         return importlib.import_module("finqa_v75_worker").audit(job, self.protocol["id"])
 
+    def acquire(self, job):
+        """Use canonical memory phase for inherited admission, preserving the job.
+
+        The V72 lease/admission function consumes train/generate resource stages.
+        V75's collect stage is scientific scheduling metadata. This private view
+        adapts both of its phase lookups without changing any inherited gate or
+        the identity passed to the worker, launch record or acceptance checks.
+        """
+        phase = importlib.import_module("finqa_v75_resources").kind(job)
+        resource_job = dict(job, stage=phase)
+        return base.Controller.acquire(self, resource_job)
+
     def journal(self):
         _status(self.root / "journal/state.json", dict(schema="v75_actual_process_journal.v1",
             protocol_id=self.protocol["id"], updated_epoch=time.time(),
