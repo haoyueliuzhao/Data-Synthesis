@@ -1,0 +1,718 @@
+{
+  "V74_stratification": {
+    "id": "a26be1b2e4b17af55b8e09d1cc651b147dc95d82a204fbeff219fa35efc7d90e",
+    "new_model_calls": 0,
+    "new_native_scores": 0,
+    "new_probability_measurements": 0,
+    "new_raw_episode_reads": 0,
+    "new_tool_calls": 0,
+    "original_scores_changed": false,
+    "posthoc_descriptive_not_independent_test": true,
+    "producer": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/scripts/finqa_v75_analysis.py",
+      "sha256": "37b513fc4418871bc6d5c908352484c0f88dd0bc639f44edad4b8e7098e0a3c5"
+    },
+    "schema": "v75_readonly_V74_state_stratification.v1",
+    "source": {
+      "id": "d0377f9caeeb808fe7adc14769141f4b26eb15af6efa71526af59d52c7279cf8",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v74_cross_history_continuation_01/final_summary/record.json",
+      "sha256": "86d164c563199c1b9513cb1b3eb0d4fce22354eb8902ac43db6266d485d3a01c"
+    },
+    "source_final_summary_id": "d0377f9caeeb808fe7adc14769141f4b26eb15af6efa71526af59d52c7279cf8",
+    "status": "COMPLETE",
+    "strata": {
+      "F": {
+        "both_initial": {
+          "denominator": 3,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 0,
+              "no_call": 3,
+              "states": {
+                "I": 3,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 3,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 3,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": [
+            "draw20260928/finqa/MRO/2004/page_36.pdf-1",
+            "draw20260928/finqa/AMAT/2014/page_35.pdf-1",
+            "draw20260928/finqa/ADBE/2018/page_86.pdf-4"
+          ]
+        },
+        "both_post_tool": {
+          "denominator": 19,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 19,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 19,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 9,
+              "no_call": 10,
+              "states": {
+                "I": 10,
+                "R": 9,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": [
+            "draw20260928/finqa/LKQ/2010/page_84.pdf-1",
+            "draw20260928/finqa/AAL/2013/page_15.pdf-3",
+            "draw20260928/finqa/ETFC/2007/page_126.pdf-3",
+            "draw20260928/finqa/HUM/2017/page_133.pdf-1",
+            "draw20260928/finqa/CDNS/2018/page_31.pdf-4",
+            "draw20260928/finqa/INTC/2013/page_33.pdf-1",
+            "draw20260928/finqa/AES/2002/page_46.pdf-2",
+            "draw20260928/finqa/C/2008/page_102.pdf-1",
+            "draw20260928/finqa/LKQ/2016/page_26.pdf-1",
+            "draw20260928/finqa/SNA/2012/page_33.pdf-2",
+            "draw20260928/finqa/UNP/2011/page_21.pdf-1",
+            "draw20260928/finqa/IPG/2008/page_21.pdf-4",
+            "draw20260928/finqa/GPN/2017/page_77.pdf-1",
+            "draw20260928/finqa/PNC/2009/page_46.pdf-2",
+            "draw20260928/finqa/VNO/2012/page_84.pdf-2",
+            "draw20260928/finqa/ETR/2016/page_418.pdf-2",
+            "draw20260928/finqa/C/2017/page_328.pdf-1",
+            "draw20260928/finqa/AMT/2010/page_34.pdf-2",
+            "draw20260928/finqa/ADI/2011/page_50.pdf-2"
+          ]
+        },
+        "parent_initial_student_post": {
+          "denominator": 0,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": []
+        },
+        "parent_post_student_initial": {
+          "denominator": 26,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 26,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 26,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 26,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 26,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": [
+            "draw20260928/finqa/PNC/2015/page_159.pdf-1",
+            "draw20260928/finqa/UNP/2008/page_27.pdf-1",
+            "draw20260928/finqa/PPG/2011/page_70.pdf-4",
+            "draw20260928/finqa/JPM/2005/page_37.pdf-2",
+            "draw20260928/finqa/AAPL/2008/page_78.pdf-2",
+            "draw20260928/finqa/MRO/2011/page_73.pdf-3",
+            "draw20260928/finqa/GS/2017/page_106.pdf-1",
+            "draw20260928/finqa/HIG/2008/page_318.pdf-3",
+            "draw20260928/finqa/LMT/2017/page_80.pdf-1",
+            "draw20260928/finqa/IPG/2015/page_48.pdf-3",
+            "draw20260928/finqa/ALXN/2007/page_104.pdf-2",
+            "draw20260928/finqa/BLK/2012/page_160.pdf-3",
+            "draw20260928/finqa/APD/2016/page_39.pdf-1",
+            "draw20260928/finqa/UNP/2013/page_44.pdf-2",
+            "draw20260928/finqa/MSI/2006/page_61.pdf-3",
+            "draw20260928/finqa/GS/2016/page_70.pdf-1",
+            "draw20260928/finqa/ZBH/2003/page_58.pdf-1",
+            "draw20260928/finqa/LMT/2010/page_42.pdf-3",
+            "draw20260928/finqa/LKQ/2018/page_83.pdf-3",
+            "draw20260928/finqa/MS/2014/page_267.pdf-1",
+            "draw20260928/finqa/APD/2013/page_40.pdf-1",
+            "draw20260928/finqa/UNP/2006/page_37.pdf-3",
+            "draw20260928/finqa/BLL/2010/page_28.pdf-2",
+            "draw20260928/finqa/ZBH/2017/page_71.pdf-2",
+            "draw20260928/finqa/AES/2016/page_191.pdf-2",
+            "draw20260928/finqa/MRO/2009/page_139.pdf-2"
+          ]
+        }
+      },
+      "K": {
+        "both_initial": {
+          "denominator": 0,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": []
+        },
+        "both_post_tool": {
+          "denominator": 43,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 43,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 43,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 42,
+              "no_call": 1,
+              "states": {
+                "I": 1,
+                "R": 42,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": [
+            "draw20260928/finqa/ZBH/2017/page_71.pdf-3",
+            "draw20260928/finqa/C/2010/page_223.pdf-2",
+            "draw20260928/finqa/UNP/2011/page_76.pdf-3",
+            "draw20260928/finqa/SLB/2012/page_44.pdf-4",
+            "draw20260928/finqa/ETR/2011/page_376.pdf-2",
+            "draw20260928/finqa/PNC/2009/page_46.pdf-4",
+            "draw20260928/finqa/ABMD/2006/page_75.pdf-4",
+            "draw20260928/finqa/ETFC/2011/page_82.pdf-2",
+            "draw20260928/finqa/AAL/2015/page_118.pdf-1",
+            "draw20260928/finqa/IP/2007/page_31.pdf-4",
+            "draw20260928/finqa/FIS/2007/page_94.pdf-3",
+            "draw20260928/finqa/IPG/2009/page_85.pdf-2",
+            "draw20260928/finqa/APD/2018/page_59.pdf-2",
+            "draw20260928/finqa/UNP/2013/page_54.pdf-1",
+            "draw20260928/finqa/JPM/2007/page_147.pdf-2",
+            "draw20260928/finqa/AAPL/2004/page_36.pdf-1",
+            "draw20260928/finqa/RSG/2017/page_142.pdf-2",
+            "draw20260928/finqa/AON/2010/page_115.pdf-2",
+            "draw20260928/finqa/AAP/2011/page_28.pdf-2",
+            "draw20260928/finqa/PM/2015/page_85.pdf-1",
+            "draw20260928/finqa/APD/2014/page_39.pdf-1",
+            "draw20260928/finqa/DRE/2013/page_39.pdf-2",
+            "draw20260928/finqa/ETR/2015/page_109.pdf-1",
+            "draw20260928/finqa/HWM/2016/page_40.pdf-1",
+            "draw20260928/finqa/PKG/2009/page_65.pdf-2",
+            "draw20260928/finqa/LMT/2012/page_47.pdf-3",
+            "draw20260928/finqa/MS/2014/page_292.pdf-2",
+            "draw20260928/finqa/VTR/2007/page_47.pdf-4",
+            "draw20260928/finqa/BLK/2017/page_122.pdf-2",
+            "draw20260928/finqa/GIS/2019/page_37.pdf-1",
+            "draw20260928/finqa/JPM/2008/page_85.pdf-3",
+            "draw20260928/finqa/PNC/2013/page_112.pdf-1",
+            "draw20260928/finqa/MRO/2008/page_69.pdf-1",
+            "draw20260928/finqa/MAS/2012/page_70.pdf-3",
+            "draw20260928/finqa/V/2008/page_17.pdf-2",
+            "draw20260928/finqa/VLO/2018/page_25.pdf-3",
+            "draw20260928/finqa/GS/2012/page_165.pdf-2",
+            "draw20260928/finqa/MSI/2009/page_65.pdf-2",
+            "draw20260928/finqa/HUM/2017/page_133.pdf-3",
+            "draw20260928/finqa/ANSS/2013/page_55.pdf-1",
+            "draw20260928/finqa/FBHS/2017/page_76.pdf-1",
+            "draw20260928/finqa/LMT/2013/page_74.pdf-3",
+            "draw20260928/finqa/STZ/2006/page_68.pdf-1"
+          ]
+        },
+        "parent_initial_student_post": {
+          "denominator": 0,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 0,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 0,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": []
+        },
+        "parent_post_student_initial": {
+          "denominator": 5,
+          "directions": {
+            "L_from_P": {
+              "EA_correct": 5,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 5,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            },
+            "P_from_L": {
+              "EA_correct": 5,
+              "no_call": 0,
+              "states": {
+                "I": 0,
+                "R": 5,
+                "UNKNOWN": 0,
+                "W": 0
+              }
+            }
+          },
+          "task_keys": [
+            "draw20260928/finqa/INTC/2013/page_29.pdf-1",
+            "draw20260928/finqa/IP/2012/page_93.pdf-2",
+            "draw20260928/finqa/IPG/2008/page_62.pdf-3",
+            "draw20260928/finqa/VNO/2012/page_84.pdf-1",
+            "draw20260928/finqa/DISH/2013/page_138.pdf-3"
+          ]
+        }
+      }
+    }
+  },
+  "V74_stratification_ref": {
+    "id": "a26be1b2e4b17af55b8e09d1cc651b147dc95d82a204fbeff219fa35efc7d90e",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/historical_V74_stratification/record.json",
+    "sha256": "7628459c380ff5d7890ce1186ca7d700d5604678f20046eca6e6114507c32947"
+  },
+  "collection_call_cap": 12160,
+  "id": "4634b6bae8f76497976a76f647b76279763bb103442a46d7dcf26c79ff8ee7ff",
+  "input_ref": {
+    "id": "2b926fe2a7fde517750111e3d12849d21eed045f8d6377a401f292298ea62f13",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/inputs/record.json",
+    "sha256": "f2755b2e33a226cc4f9222a3243fe959340931b96fc9e55102e763f70e3d67d0"
+  },
+  "new_model_calls": 0,
+  "new_native_scores": 0,
+  "new_tool_executions": 0,
+  "optimizer_updates": 0,
+  "schema": "v75_preparation_summary.v1",
+  "selected_task_count": 128,
+  "selection_salt": "finqa-v75-training-state-demonstration-20261027-v1",
+  "source_cluster_count": 128,
+  "source_files": 12,
+  "source_overlap": {
+    "development_answers_accessed": false,
+    "original744_vs_development883": {
+      "company_count": 66,
+      "company_overlap": [
+        "AAL",
+        "AAP",
+        "AAPL",
+        "ABMD",
+        "ADI",
+        "AES",
+        "ALLE",
+        "AMAT",
+        "AMT",
+        "ANSS",
+        "AON",
+        "APD",
+        "APTV",
+        "AWK",
+        "BDX",
+        "BLK",
+        "C",
+        "CAG",
+        "CDNS",
+        "DISCA",
+        "DISH",
+        "DRE",
+        "DVN",
+        "FRT",
+        "GIS",
+        "GPN",
+        "HIG",
+        "HOLX",
+        "HUM",
+        "HWM",
+        "ILMN",
+        "INTC",
+        "IP",
+        "IPG",
+        "JKHY",
+        "JPM",
+        "KHC",
+        "L",
+        "LKQ",
+        "LMT",
+        "MA",
+        "MAS",
+        "MRO",
+        "MS",
+        "MSI",
+        "NKE",
+        "NWS",
+        "PM",
+        "PNC",
+        "PPG",
+        "RCL",
+        "RE",
+        "RSG",
+        "SNA",
+        "SNPS",
+        "STT",
+        "STZ",
+        "TFX",
+        "TROW",
+        "TSCO",
+        "UA",
+        "UPS",
+        "V",
+        "VLO",
+        "VNO",
+        "VTR"
+      ],
+      "left_tasks": 744,
+      "left_tasks_in_shared_source_clusters": 233,
+      "report_count": 30,
+      "report_overlap": [
+        "AAPL/2014",
+        "ABMD/2006",
+        "AES/2001",
+        "AES/2017",
+        "AMT/2004",
+        "APD/2019",
+        "APTV/2014",
+        "AWK/2013",
+        "BLK/2014",
+        "BLK/2017",
+        "CAG/2008",
+        "CDNS/2012",
+        "HWM/2016",
+        "HWM/2017",
+        "IP/2005",
+        "IP/2006",
+        "LKQ/2016",
+        "LMT/2013",
+        "LMT/2015",
+        "MA/2008",
+        "MRO/2008",
+        "NWS/2016",
+        "PM/2014",
+        "PNC/2016",
+        "PNC/2018",
+        "RSG/2016",
+        "TFX/2015",
+        "TSCO/2017",
+        "UA/2009",
+        "VTR/2007"
+      ],
+      "right_tasks": 883,
+      "source_cluster_count": 30,
+      "source_cluster_overlap": [
+        "finqa:report:AAPL/2014",
+        "finqa:report:ABMD/2006",
+        "finqa:report:AES/2001",
+        "finqa:report:AES/2017",
+        "finqa:report:AMT/2004",
+        "finqa:report:APD/2019",
+        "finqa:report:APTV/2014",
+        "finqa:report:AWK/2013",
+        "finqa:report:BLK/2014",
+        "finqa:report:BLK/2017",
+        "finqa:report:CAG/2008",
+        "finqa:report:CDNS/2012",
+        "finqa:report:HWM/2016",
+        "finqa:report:HWM/2017",
+        "finqa:report:IP/2005",
+        "finqa:report:IP/2006",
+        "finqa:report:LKQ/2016",
+        "finqa:report:LMT/2013",
+        "finqa:report:LMT/2015",
+        "finqa:report:MA/2008",
+        "finqa:report:MRO/2008",
+        "finqa:report:NWS/2016",
+        "finqa:report:PM/2014",
+        "finqa:report:PNC/2016",
+        "finqa:report:PNC/2018",
+        "finqa:report:RSG/2016",
+        "finqa:report:TFX/2015",
+        "finqa:report:TSCO/2017",
+        "finqa:report:UA/2009",
+        "finqa:report:VTR/2007"
+      ],
+      "task_id_overlap": []
+    },
+    "overlaps_registered_not_used_to_reselect": true,
+    "schema": "v75_existing_split_source_overlap.v1",
+    "selected128_vs_V73_V74_fixed96": {
+      "company_count": 41,
+      "company_overlap": [
+        "AAL",
+        "AAP",
+        "AAPL",
+        "ABMD",
+        "ADI",
+        "AES",
+        "AMAT",
+        "AMT",
+        "ANSS",
+        "AON",
+        "APD",
+        "BLK",
+        "C",
+        "CDNS",
+        "DISH",
+        "DRE",
+        "GIS",
+        "GPN",
+        "HIG",
+        "HUM",
+        "HWM",
+        "INTC",
+        "IP",
+        "IPG",
+        "JPM",
+        "LKQ",
+        "LMT",
+        "MAS",
+        "MRO",
+        "MS",
+        "MSI",
+        "PM",
+        "PNC",
+        "PPG",
+        "RSG",
+        "SNA",
+        "STZ",
+        "V",
+        "VLO",
+        "VNO",
+        "VTR"
+      ],
+      "left_tasks": 128,
+      "left_tasks_in_shared_source_clusters": 7,
+      "report_count": 7,
+      "report_overlap": [
+        "ABMD/2006",
+        "BLK/2017",
+        "HWM/2016",
+        "LKQ/2016",
+        "LMT/2013",
+        "MRO/2008",
+        "VTR/2007"
+      ],
+      "right_tasks": 96,
+      "source_cluster_count": 7,
+      "source_cluster_overlap": [
+        "finqa:report:ABMD/2006",
+        "finqa:report:BLK/2017",
+        "finqa:report:HWM/2016",
+        "finqa:report:LKQ/2016",
+        "finqa:report:LMT/2013",
+        "finqa:report:MRO/2008",
+        "finqa:report:VTR/2007"
+      ],
+      "task_id_overlap": []
+    },
+    "selected128_vs_development883": {
+      "company_count": 66,
+      "company_overlap": [
+        "AAL",
+        "AAP",
+        "AAPL",
+        "ABMD",
+        "ADI",
+        "AES",
+        "ALLE",
+        "AMAT",
+        "AMT",
+        "ANSS",
+        "AON",
+        "APD",
+        "APTV",
+        "AWK",
+        "BDX",
+        "BLK",
+        "C",
+        "CAG",
+        "CDNS",
+        "DISCA",
+        "DISH",
+        "DRE",
+        "DVN",
+        "FRT",
+        "GIS",
+        "GPN",
+        "HIG",
+        "HOLX",
+        "HUM",
+        "HWM",
+        "ILMN",
+        "INTC",
+        "IP",
+        "IPG",
+        "JKHY",
+        "JPM",
+        "KHC",
+        "L",
+        "LKQ",
+        "LMT",
+        "MA",
+        "MAS",
+        "MRO",
+        "MS",
+        "MSI",
+        "NKE",
+        "NWS",
+        "PM",
+        "PNC",
+        "PPG",
+        "RCL",
+        "RE",
+        "RSG",
+        "SNA",
+        "SNPS",
+        "STT",
+        "STZ",
+        "TFX",
+        "TROW",
+        "TSCO",
+        "UA",
+        "UPS",
+        "V",
+        "VLO",
+        "VNO",
+        "VTR"
+      ],
+      "left_tasks": 128,
+      "left_tasks_in_shared_source_clusters": 29,
+      "report_count": 29,
+      "report_overlap": [
+        "AAPL/2014",
+        "ABMD/2006",
+        "AES/2001",
+        "AES/2017",
+        "AMT/2004",
+        "APD/2019",
+        "APTV/2014",
+        "AWK/2013",
+        "BLK/2014",
+        "BLK/2017",
+        "CAG/2008",
+        "CDNS/2012",
+        "HWM/2016",
+        "HWM/2017",
+        "IP/2005",
+        "IP/2006",
+        "LKQ/2016",
+        "LMT/2013",
+        "LMT/2015",
+        "MA/2008",
+        "MRO/2008",
+        "NWS/2016",
+        "PM/2014",
+        "PNC/2016",
+        "PNC/2018",
+        "TFX/2015",
+        "TSCO/2017",
+        "UA/2009",
+        "VTR/2007"
+      ],
+      "right_tasks": 883,
+      "source_cluster_count": 29,
+      "source_cluster_overlap": [
+        "finqa:report:AAPL/2014",
+        "finqa:report:ABMD/2006",
+        "finqa:report:AES/2001",
+        "finqa:report:AES/2017",
+        "finqa:report:AMT/2004",
+        "finqa:report:APD/2019",
+        "finqa:report:APTV/2014",
+        "finqa:report:AWK/2013",
+        "finqa:report:BLK/2014",
+        "finqa:report:BLK/2017",
+        "finqa:report:CAG/2008",
+        "finqa:report:CDNS/2012",
+        "finqa:report:HWM/2016",
+        "finqa:report:HWM/2017",
+        "finqa:report:IP/2005",
+        "finqa:report:IP/2006",
+        "finqa:report:LKQ/2016",
+        "finqa:report:LMT/2013",
+        "finqa:report:LMT/2015",
+        "finqa:report:MA/2008",
+        "finqa:report:MRO/2008",
+        "finqa:report:NWS/2016",
+        "finqa:report:PM/2014",
+        "finqa:report:PNC/2016",
+        "finqa:report:PNC/2018",
+        "finqa:report:TFX/2015",
+        "finqa:report:TSCO/2017",
+        "finqa:report:UA/2009",
+        "finqa:report:VTR/2007"
+      ],
+      "task_id_overlap": []
+    },
+    "task_disjointness_not_report_or_company_independence": true
+  },
+  "source_support_count": 744,
+  "status": "PREPARED_INPUTS_NO_SCIENCE"
+}
