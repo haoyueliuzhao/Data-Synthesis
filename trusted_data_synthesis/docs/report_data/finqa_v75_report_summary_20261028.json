@@ -1,0 +1,2441 @@
+{
+  "collection": {
+    "jobs": [
+      {
+        "completed_slots": 56,
+        "external_API_calls": 0,
+        "job_id": "L.initial.shard0",
+        "logical_sessions": 56,
+        "new_model_calls": 95,
+        "new_tool_calls": 78,
+        "not_applicable": 0,
+        "reconstruction_tool_calls": 0
+      },
+      {
+        "completed_slots": 72,
+        "external_API_calls": 0,
+        "job_id": "L.initial.shard1",
+        "logical_sessions": 72,
+        "new_model_calls": 130,
+        "new_tool_calls": 110,
+        "not_applicable": 0,
+        "reconstruction_tool_calls": 0
+      },
+      {
+        "completed_slots": 56,
+        "external_API_calls": 0,
+        "job_id": "P.initial.shard0",
+        "logical_sessions": 56,
+        "new_model_calls": 100,
+        "new_tool_calls": 91,
+        "not_applicable": 0,
+        "reconstruction_tool_calls": 0
+      },
+      {
+        "completed_slots": 72,
+        "external_API_calls": 0,
+        "job_id": "P.initial.shard1",
+        "logical_sessions": 72,
+        "new_model_calls": 139,
+        "new_tool_calls": 131,
+        "not_applicable": 0,
+        "reconstruction_tool_calls": 0
+      },
+      {
+        "completed_slots": 56,
+        "external_API_calls": 0,
+        "job_id": "P.post.shard0",
+        "logical_sessions": 38,
+        "new_model_calls": 38,
+        "new_tool_calls": 36,
+        "not_applicable": 18,
+        "reconstruction_tool_calls": 39
+      },
+      {
+        "completed_slots": 72,
+        "external_API_calls": 0,
+        "job_id": "P.post.shard1",
+        "logical_sessions": 58,
+        "new_model_calls": 58,
+        "new_tool_calls": 51,
+        "not_applicable": 14,
+        "reconstruction_tool_calls": 58
+      }
+    ],
+    "totals": {
+      "completed_slots": 384,
+      "external_API_calls": 0,
+      "logical_sessions": 352,
+      "new_model_calls": 560,
+      "new_tool_calls": 497,
+      "not_applicable": 32,
+      "reconstruction_tool_calls": 97
+    }
+  },
+  "execution": {
+    "controller_returncode": 2,
+    "elapsed_wall_seconds": 20002.773859500885,
+    "final_cpu_returncode": 1,
+    "finished_bj": "2026-10-27T16:57:09.939405+08:00",
+    "jobs": [
+      {
+        "actual_exit": {
+          "id": "a44f7a593527b884cf98953606e33cbb9ca6696a931c1285a59634175f541fc0",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard0/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "cab966102afcd35a095cca95df4b6737624b01fd51946153a79a0c1caf831251"
+        },
+        "attempt": 1,
+        "birth": "549582753",
+        "finished_bj": "2026-10-27T11:36:15.469460+08:00",
+        "gpu": 6,
+        "job_id": "L.initial.shard0",
+        "pid": 1937194,
+        "result": {
+          "id": "90b4910cb4ef9f539149417435fb33b89a32fd459bc7d3908f24e49c982cd382",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard0/result/record.json",
+          "sha256": "0002e905d6dd10f1419ff4b77cd11af4b9f121a6eb7d16c6b22a2789cdc461f1"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:23:55.072215+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "9c2baed75549b5eb50f90695ba36a7f47f89ce428a94165a4c59d48d08b55206",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard1/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "81edaa284ed6b25cf1d5052a3014fcb1c8de207778b49a99612fdda28674966a"
+        },
+        "attempt": 1,
+        "birth": "549582978",
+        "finished_bj": "2026-10-27T11:42:10.496357+08:00",
+        "gpu": 7,
+        "job_id": "L.initial.shard1",
+        "pid": 1937231,
+        "result": {
+          "id": "a6bfd9372c485b72e0c89b57af448df323f19ebbf0ce241994c167ceee118e96",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard1/result/record.json",
+          "sha256": "23fcb1ff17e7ef04374f8028285f774479c700e4155d679d893f0fa127e129ea"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:23:57.403435+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "36b3dc05da6a50bc33576505edd2dd5b585e0934b8be0f945f8209ad72908b18",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard0/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "20f69b57dd17f2710cb149690ebb4710b2a1b8dee11b17e4cf4fa811bc9b4831"
+        },
+        "attempt": 1,
+        "birth": "549583297",
+        "finished_bj": "2026-10-27T11:36:35.045780+08:00",
+        "gpu": 2,
+        "job_id": "P.initial.shard0",
+        "pid": 1937323,
+        "result": {
+          "id": "f7368c50f75e3658a8c2cb2f0dc59b600d84612df85ca5bd8ba45122f70faa71",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard0/result/record.json",
+          "sha256": "809802f032b3887a8636711ff7579c69c8c83191445e41074a31798982e044a8"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:24:00.501049+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "663a7ee1df8e15db3afe59be78b9854b4d0c070b0c1388bc66d4e3bf907d1095",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard1/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "175021f462ade321295847a716263e2e5e64ccad33ee025132f9a411bc8f3d31"
+        },
+        "attempt": 1,
+        "birth": "549583559",
+        "finished_bj": "2026-10-27T11:44:08.168211+08:00",
+        "gpu": 4,
+        "job_id": "P.initial.shard1",
+        "pid": 1937378,
+        "result": {
+          "id": "0ac3b212376bc22948e8f85f5b21111ca28b2cd4ee7e009ea69e7ca3c0671e33",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard1/result/record.json",
+          "sha256": "f33ba9ee80c00ca600eec1f7e969e7f2718cc008c5ee4f9dd2b17b583305ba19"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:24:03.170975+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "4e18f3621d857557f2f1181a6e66045667c579a8042a9f3eb57167dcf282bd5f",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard0/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "2e510d42968a00a35a3afd25ecf6f3b2c457089fd2c253b614b2017f882fff39"
+        },
+        "attempt": 1,
+        "birth": "549693088",
+        "finished_bj": "2026-10-27T11:47:36.688490+08:00",
+        "gpu": 6,
+        "job_id": "P.post.shard0",
+        "pid": 1981334,
+        "result": {
+          "id": "4e16881409f9669a9a0d61ef6bca151c3575635983de68b63052f952df210712",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard0/result/record.json",
+          "sha256": "c8284b449d1234391ff220a39415a75e073640d0b77b6e02911a840e8c654801"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:42:18.507241+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "3235203ade23b19fd1935862ec9bc8cfa693122328e5e6983e8871778a6dc318",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard1/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "85c13499c0ee2da3414755d74ebc5ef44fa27bf50f7fbd34409e7d0d3da5cf04"
+        },
+        "attempt": 1,
+        "birth": "549693292",
+        "finished_bj": "2026-10-27T11:50:31.942086+08:00",
+        "gpu": 7,
+        "job_id": "P.post.shard1",
+        "pid": 1982459,
+        "result": {
+          "id": "d758fb7990c299f6c3a1549ddb1d8c4eebf815e92389a9015695978cd5b08fdd",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard1/result/record.json",
+          "sha256": "fa75cf5f3f0d5c1bd01f984f83bf5efd20dedfa26862c20eee429f980db3b685"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:42:20.476013+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "c2bb50e4b15ce0c54cafd8c5fdbcbc09e0d32435e996f922c9d316cc2f7adcae",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "8d8f9df5198f9af5b164d85feefba13da2fda82a82698be4654d96c4a2749237"
+        },
+        "attempt": 1,
+        "birth": "549748937",
+        "finished_bj": "2026-10-27T15:08:18.570137+08:00",
+        "gpu": 6,
+        "job_id": "step1192.train",
+        "pid": 2288639,
+        "result": {
+          "id": "5d3babe039205ce3be88462b6a3a201f883dd43d4cf05ab954c0094db8f96d79",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/result/record.json",
+          "sha256": "ca4a43aff4fbdc3a3ee431077bed2d09d96bcc1c9f526c4d0c45e698efb491a5"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T11:51:37.185982+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "b3ae8a0b78b50800ec0275ff5128e7af38bb7857d74251dca84510a6d9608725",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard0/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "730e19b6dab67a84ac500d6b067a6dc9994f939545dbbb7bdda06a77e25037d8"
+        },
+        "attempt": 1,
+        "birth": "550929812",
+        "finished_bj": "2026-10-27T16:48:01.053180+08:00",
+        "gpu": 6,
+        "job_id": "step1490.dev_greedy.shard0",
+        "pid": 390480,
+        "result": {
+          "id": "a301eb74bd328270d61afde35ece18a3ca4da2ca53d3faebffc833b40930a2f5",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard0/result/record.json",
+          "sha256": "2ee7177c1aa0a40c4f25a5ca266d60855c15d4c3cf18ab4bc23e8c4f3d6522ef"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T15:08:25.705522+08:00",
+        "status": "COMPLETE"
+      },
+      {
+        "actual_exit": {
+          "id": "75c7a9dd349e543c07e8154972e2e0d5a8580134c29be812989c3b2cd1444b27",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard1/attempts/attempt0001/actual_exit/record.json",
+          "sha256": "55d5d762e000309021decb66e377a213fd2f8709e31d622eed8b0a7cd5b5c072"
+        },
+        "attempt": 1,
+        "birth": "550930017",
+        "finished_bj": "2026-10-27T16:56:38.856156+08:00",
+        "gpu": 7,
+        "job_id": "step1490.dev_greedy.shard1",
+        "pid": 393131,
+        "result": {
+          "id": "214182cbdf7bf49167b819cc30d3023dd6441392bb62fd99e4352cab2dbd211f",
+          "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard1/result/record.json",
+          "sha256": "16c595b6f7b7b7d6ce3838d09dbc2bdabafce204ac71f34897acecb75b432222"
+        },
+        "returncode": 0,
+        "started_bj": "2026-10-27T15:08:27.783694+08:00",
+        "status": "COMPLETE"
+      }
+    ],
+    "materials_cpu_returncode": 0,
+    "observed_bj": "2026-10-28T15:08:28.943823+08:00",
+    "registered_process_observation": [
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1936856,
+        "registered_birth": "549582157",
+        "role": "supervisor",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1937018,
+        "registered_birth": "549582355",
+        "role": "controller",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 2133948,
+        "registered_birth": "551580427",
+        "role": "final_cpu",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1937194,
+        "registered_birth": "549582753",
+        "role": "L.initial.shard0",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1937231,
+        "registered_birth": "549582978",
+        "role": "L.initial.shard1",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1937323,
+        "registered_birth": "549583297",
+        "role": "P.initial.shard0",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1937378,
+        "registered_birth": "549583559",
+        "role": "P.initial.shard1",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1981334,
+        "registered_birth": "549693088",
+        "role": "P.post.shard0",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 1982459,
+        "registered_birth": "549693292",
+        "role": "P.post.shard1",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 2288639,
+        "registered_birth": "549748937",
+        "role": "step1192.train",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 390480,
+        "registered_birth": "550929812",
+        "role": "step1490.dev_greedy.shard0",
+        "state": null
+      },
+      {
+        "matching_live_process": false,
+        "observed_birth": null,
+        "pid": 393131,
+        "registered_birth": "550930017",
+        "role": "step1490.dev_greedy.shard1",
+        "state": null
+      }
+    ],
+    "scientific_closeout": {
+      "id": "9c33732cd28e60788e075d068ea2ff302431c47eace0a6d638831d03102043f9",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/closeout/record.json",
+      "sha256": "a88646932d972ae44f8f7dbf64bb504d5cab0f45d70938d2c990fa6db97618d6"
+    },
+    "scientific_final_summary_present": false,
+    "scientific_status": "STOPPED_FAILURE_NO_RETRY",
+    "stale_supervisor_queue_does_not_override_closeout": true,
+    "started_bj": "2026-10-27T11:23:47.165545+08:00",
+    "supervisor_closeout": {
+      "actual_controller_exit": {
+        "id": "29b5592dcf49a5af0c464581d747ef3b263e4aa14f21259a143c329fde24a958",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/supervisor/attempts/attempt0001/actual_exit/record.json",
+        "sha256": "192befea24e972e3afb62421d9c3faee6bc11af0e1278c5bd208871d8328fda0"
+      },
+      "automatic_restart_stopped": true,
+      "controller_attempts": 1,
+      "finished_epoch": 1793091433.2206738,
+      "id": "a77668075c4bf81eec7f645ace6d3572631bb9a533e290009238484cb531824b",
+      "protocol_id": "542895ea40b06c777336c5c7a68b56a21ccb657f4188333e44d7d3446a1903bb",
+      "status": "STOPPED_FAILURE_NO_RETRY"
+    },
+    "supervisor_self_waitpid_code_available": false
+  },
+  "failure": {
+    "actual_dose_available": true,
+    "analysis_log": {
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/final_analysis/attempt0001/analysis.log",
+      "sha256": "b25793f7657fa999ac8ed46671ace9e87ca351adb763f758e17e18cfa44bc784"
+    },
+    "exception": "KeyError",
+    "frozen_location": "implementation/finqa_v75_evaluation.py:384",
+    "missing_key": "planned_demonstration_dose",
+    "new_final_summary_not_published": true,
+    "no_resource_violation_observed": true,
+    "planned_dose_source": {
+      "id": "6485969c9ff287b82c93a7ea7d048d7d8b49fe7ac03aa4e46cd77c43b308182d",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/materials/record.json",
+      "sha256": "f8fdacb0f56fdf9734aabe8cd47875e0f40688377d44ec41e9e8d5f5c699273a"
+    },
+    "train_completed_has_missing_key": false
+  },
+  "generation": {
+    "jobs": [
+      {
+        "actual_new_response_calls": 892,
+        "job_id": "step1490.dev_greedy.shard0",
+        "new_API_calls": 0,
+        "sessions": 442
+      },
+      {
+        "actual_new_response_calls": 903,
+        "job_id": "step1490.dev_greedy.shard1",
+        "new_API_calls": 0,
+        "sessions": 441
+      }
+    ],
+    "totals": {
+      "actual_new_response_calls": 1795,
+      "new_API_calls": 0,
+      "sessions": 883
+    }
+  },
+  "id": "9a8218c4b5103311631db4a846b65a619a00e7deec05cd329d6d22e16d19e962",
+  "materials": {
+    "available_source_clusters": {
+      "initial": 101,
+      "post": 78
+    },
+    "coverage": {
+      "initial:L_original_no_call:admitted": 26,
+      "initial:L_original_no_call:selected": 37,
+      "initial:L_original_no_call:state_exists": 37,
+      "initial:L_original_no_call:teacher_not_correct": 11,
+      "initial:L_original_other_failure:admitted": 5,
+      "initial:L_original_other_failure:selected": 11,
+      "initial:L_original_other_failure:state_exists": 11,
+      "initial:L_original_other_failure:teacher_not_correct": 6,
+      "initial:L_original_success:admitted": 70,
+      "initial:L_original_success:selected": 80,
+      "initial:L_original_success:state_exists": 80,
+      "initial:L_original_success:teacher_not_correct": 10,
+      "post:L_original_no_call:admitted": 7,
+      "post:L_original_no_call:no_state": 23,
+      "post:L_original_no_call:selected": 37,
+      "post:L_original_no_call:state_exists": 14,
+      "post:L_original_no_call:teacher_not_correct": 7,
+      "post:L_original_other_failure:no_state": 1,
+      "post:L_original_other_failure:selected": 11,
+      "post:L_original_other_failure:state_exists": 10,
+      "post:L_original_other_failure:teacher_not_correct": 10,
+      "post:L_original_success:admitted": 71,
+      "post:L_original_success:no_state": 8,
+      "post:L_original_success:selected": 80,
+      "post:L_original_success:state_exists": 72,
+      "post:L_original_success:teacher_not_correct": 1
+    },
+    "dose": {
+      "additional_forward_RNG_consumption_not_paired": true,
+      "available_tasks": {
+        "initial": 101,
+        "post": 78
+      },
+      "equal_744_task_mass": {
+        "initial": "101/2976",
+        "post": "13/496"
+      },
+      "four_task_tail_batches": 2,
+      "old_baseline_actual_consumption": {
+        "physical_package_count": 4936,
+        "rows_completed": 9948,
+        "sequence_tokens": 42883106,
+        "target_tokens": 1008552
+      },
+      "old_tokens_still_consumed_but_weight_diluted": true,
+      "planned_candidate_total_input_positions": 45270770,
+      "planned_candidate_total_microbatches": 10496,
+      "planned_candidate_total_target_tokens": 1075128,
+      "planned_teacher_input_positions": {
+        "initial": 1684428,
+        "post": 703236
+      },
+      "planned_teacher_microbatches": {
+        "initial": 392,
+        "post": 156
+      },
+      "planned_teacher_target_tokens": {
+        "initial": 49240,
+        "post": 17336
+      },
+      "realized_average_update_mass": {
+        "initial": "811/23840",
+        "old": "22403/23840",
+        "post": "313/11920"
+      },
+      "realized_window_mass_sum": {
+        "initial": "811/80",
+        "old": "22403/80",
+        "post": "313/40"
+      },
+      "schema": "v75_planned_exact_demonstration_dose.v1",
+      "task_exposures": 1488,
+      "task_mass_source": "actual V72 coefficient*n_state*L/fixed_pi, mu/(B*p_s); old pi roundoff not renormalized",
+      "updates": 298,
+      "weights_are_not_gradient_or_loss_measurements": true
+    },
+    "id": "6485969c9ff287b82c93a7ea7d048d7d8b49fe7ac03aa4e46cd77c43b308182d",
+    "selected_tasks": 128
+  },
+  "paired_analysis_artifact": {
+    "id": "f6e67e1505683aa612f6c568c394b1d3b8501ffa4ad5ff09ecdba3b2016ae34e",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/report_derivation_20261028/paired_analysis.json",
+    "sha256": "ce395929f822ed9175a0b49e40fbaa9c5c33f90d1641c95cd0103bbe23163b91"
+  },
+  "producer": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/report_derivation_20261028/actual_extraction_producer.py",
+    "sha256": "34f86a43c9e592e0df58f43c4565bcfd29cc0dcaabecdcae8f88dc7692a24d43"
+  },
+  "report_date": "2026-10-28",
+  "report_only_paired_analysis": {
+    "automatic_Full_resume": false,
+    "automatic_followup": false,
+    "combination_recipe_effect_only": true,
+    "denominator": 883,
+    "development_is_unseen_confirmation": false,
+    "estimands": {
+      "B_correct": 431,
+      "P_correct": 536,
+      "S_correct": 557.0,
+      "S_minus_B": {
+        "baseline_accuracy": 0.4881087202718007,
+        "both_executable": {
+          "baseline_accuracy": 0.6698717948717948,
+          "candidate_accuracy": 0.6875,
+          "denominator": 624,
+          "explanatory_only": true
+        },
+        "candidate_accuracy": 0.6308040770101925,
+        "decomposition": {
+          "denominator": 883,
+          "exact_count_identity": true,
+          "invalid_correct_component": 0.13023782559456398,
+          "invalid_correct_net_count": 115,
+          "numerator": 126,
+          "wrong_correct_component": 0.01245753114382786,
+          "wrong_correct_net_count": 11
+        },
+        "denominator": 883,
+        "difference": 0.14269535673839184,
+        "lost_correct_known_pairs": 26,
+        "net_correct": 126,
+        "new_correct_known_pairs": 152,
+        "numerator": 126,
+        "status": "COMPLETE",
+        "transitions": {
+          "I->I": 38,
+          "I->R": 128,
+          "I->UNKNOWN": 0,
+          "I->W": 64,
+          "R->I": 13,
+          "R->R": 405,
+          "R->UNKNOWN": 0,
+          "R->W": 13,
+          "UNKNOWN->I": 0,
+          "UNKNOWN->R": 0,
+          "UNKNOWN->UNKNOWN": 0,
+          "UNKNOWN->W": 0,
+          "W->I": 16,
+          "W->R": 24,
+          "W->UNKNOWN": 0,
+          "W->W": 182
+        },
+        "unknown_pair_count": 0,
+        "unknown_pair_indices": []
+      },
+      "S_minus_P": {
+        "baseline_accuracy": 0.6070215175537939,
+        "both_executable": {
+          "baseline_accuracy": 0.6983695652173914,
+          "candidate_accuracy": 0.6942934782608695,
+          "denominator": 736,
+          "explanatory_only": true
+        },
+        "candidate_accuracy": 0.6308040770101925,
+        "decomposition": {
+          "denominator": 883,
+          "exact_count_identity": true,
+          "invalid_correct_component": 0.027180067950169876,
+          "invalid_correct_net_count": 24,
+          "numerator": 21,
+          "wrong_correct_component": -0.0033975084937712344,
+          "wrong_correct_net_count": -3
+        },
+        "denominator": 883,
+        "difference": 0.02378255945639864,
+        "lost_correct_known_pairs": 55,
+        "net_correct": 21,
+        "new_correct_known_pairs": 76,
+        "numerator": 21,
+        "status": "COMPLETE",
+        "transitions": {
+          "I->I": 25,
+          "I->R": 46,
+          "I->UNKNOWN": 0,
+          "I->W": 34,
+          "R->I": 22,
+          "R->R": 481,
+          "R->UNKNOWN": 0,
+          "R->W": 33,
+          "UNKNOWN->I": 0,
+          "UNKNOWN->R": 0,
+          "UNKNOWN->UNKNOWN": 0,
+          "UNKNOWN->W": 0,
+          "W->I": 20,
+          "W->R": 30,
+          "W->UNKNOWN": 0,
+          "W->W": 192
+        },
+        "unknown_pair_count": 0,
+        "unknown_pair_indices": []
+      },
+      "descriptive_count_case": "observed_recipe_increment_and_parent_net_gain_on_development",
+      "formulas": {
+        "S-B": "(S-431)/883",
+        "S-P": "(S-536)/883"
+      }
+    },
+    "fixed_old96_mechanism_slice": {
+      "F": {
+        "denominator": 48,
+        "independent_validation": false,
+        "native_metrics": {
+          "B": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.0,
+              "correct": 0.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.0,
+              "correct": 0.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 48,
+              "R": 0,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "P": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.75,
+              "correct": 36.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "S": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.75,
+              "correct": 36.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.5416666666666666,
+              "correct": 26.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 5,
+              "R": 36,
+              "UNKNOWN": 0,
+              "W": 7
+            }
+          }
+        },
+        "new_episodes": 0,
+        "no_call": {
+          "B": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 29,
+              "denominator": 48,
+              "rate": 0.6041666666666666
+            },
+            "post_tool": {
+              "count": 19,
+              "denominator": 48,
+              "rate": 0.3958333333333333
+            },
+            "total_no_call": 48
+          },
+          "P": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "S": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 1,
+              "denominator": 48,
+              "rate": 0.020833333333333332
+            },
+            "post_tool": {
+              "count": 4,
+              "denominator": 48,
+              "rate": 0.08333333333333333
+            },
+            "total_no_call": 5
+          }
+        },
+        "paired": {
+          "S-B": {
+            "execution_accuracy": {
+              "baseline_accuracy": 0.0,
+              "both_executable": {
+                "baseline_accuracy": null,
+                "candidate_accuracy": null,
+                "denominator": 0,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.75,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": 0.75,
+                "invalid_correct_net_count": 36,
+                "numerator": 36,
+                "wrong_correct_component": 0.0,
+                "wrong_correct_net_count": 0
+              },
+              "denominator": 48,
+              "difference": 0.75,
+              "lost_correct_known_pairs": 0,
+              "net_correct": 36,
+              "new_correct_known_pairs": 36,
+              "numerator": 36,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 5,
+                "I->R": 36,
+                "I->UNKNOWN": 0,
+                "I->W": 7,
+                "R->I": 0,
+                "R->R": 0,
+                "R->UNKNOWN": 0,
+                "R->W": 0,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 28,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 1,
+                    "R": 23,
+                    "UNKNOWN": 0,
+                    "W": 4
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 2,
+                    "R": 23,
+                    "UNKNOWN": 0,
+                    "W": 4
+                  },
+                  "reduction_count": 28,
+                  "reduction_rate": 0.5833333333333334,
+                  "reference_count": 29,
+                  "reference_no_call_to_candidate_stop": {
+                    "final_answer": 27,
+                    "no_tool_call": 2
+                  },
+                  "still_any_no_call": 2
+                },
+                "post_tool": {
+                  "candidate_count": 4,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 16,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 13,
+                    "UNKNOWN": 0,
+                    "W": 3
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 3,
+                    "R": 13,
+                    "UNKNOWN": 0,
+                    "W": 3
+                  },
+                  "reduction_count": 15,
+                  "reduction_rate": 0.3125,
+                  "reference_count": 19,
+                  "reference_no_call_to_candidate_stop": {
+                    "final_answer": 16,
+                    "no_tool_call": 3
+                  },
+                  "still_any_no_call": 3
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": 0.5416666666666666,
+              "lost_correct_known_pairs": 0,
+              "new_correct_known_pairs": 26,
+              "numerator": 26,
+              "transitions": {
+                "0->0": 22,
+                "0->1": 26,
+                "1->0": 0,
+                "1->1": 0
+              },
+              "unknown_pairs": 0
+            }
+          },
+          "S-P": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.8372093023255814,
+                "denominator": 43,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.75,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.10416666666666667,
+                "invalid_correct_net_count": -5,
+                "numerator": -12,
+                "wrong_correct_component": -0.14583333333333334,
+                "wrong_correct_net_count": -7
+              },
+              "denominator": 48,
+              "difference": -0.25,
+              "lost_correct_known_pairs": 12,
+              "net_correct": -12,
+              "new_correct_known_pairs": 0,
+              "numerator": -12,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 5,
+                "R->R": 36,
+                "R->UNKNOWN": 0,
+                "R->W": 7,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 4,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -4,
+                  "reduction_rate": -0.08333333333333333,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.20833333333333334,
+              "lost_correct_known_pairs": 10,
+              "new_correct_known_pairs": 0,
+              "numerator": -10,
+              "transitions": {
+                "0->0": 12,
+                "0->1": 0,
+                "1->0": 10,
+                "1->1": 26
+              },
+              "unknown_pairs": 0
+            }
+          }
+        },
+        "reused_conditional_selection": true
+      },
+      "K": {
+        "denominator": 48,
+        "independent_validation": false,
+        "native_metrics": {
+          "B": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.9166666666666666,
+              "correct": 44.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "P": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.9166666666666666,
+              "correct": 44.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "S": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.9375,
+              "correct": 45.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.875,
+              "correct": 42.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 1,
+              "R": 45,
+              "UNKNOWN": 0,
+              "W": 2
+            }
+          }
+        },
+        "new_episodes": 0,
+        "no_call": {
+          "B": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "P": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "S": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 1,
+              "denominator": 48,
+              "rate": 0.020833333333333332
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 1
+          }
+        },
+        "paired": {
+          "S-B": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.9574468085106383,
+                "denominator": 47,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.9375,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.020833333333333332,
+                "invalid_correct_net_count": -1,
+                "numerator": -3,
+                "wrong_correct_component": -0.041666666666666664,
+                "wrong_correct_net_count": -2
+              },
+              "denominator": 48,
+              "difference": -0.0625,
+              "lost_correct_known_pairs": 3,
+              "net_correct": -3,
+              "new_correct_known_pairs": 0,
+              "numerator": -3,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 1,
+                "R->R": 45,
+                "R->UNKNOWN": 0,
+                "R->W": 2,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 0,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": 0,
+                  "reduction_rate": 0.0,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.041666666666666664,
+              "lost_correct_known_pairs": 2,
+              "new_correct_known_pairs": 0,
+              "numerator": -2,
+              "transitions": {
+                "0->0": 4,
+                "0->1": 0,
+                "1->0": 2,
+                "1->1": 42
+              },
+              "unknown_pairs": 0
+            }
+          },
+          "S-P": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.9574468085106383,
+                "denominator": 47,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.9375,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.020833333333333332,
+                "invalid_correct_net_count": -1,
+                "numerator": -3,
+                "wrong_correct_component": -0.041666666666666664,
+                "wrong_correct_net_count": -2
+              },
+              "denominator": 48,
+              "difference": -0.0625,
+              "lost_correct_known_pairs": 3,
+              "net_correct": -3,
+              "new_correct_known_pairs": 0,
+              "numerator": -3,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 1,
+                "R->R": 45,
+                "R->UNKNOWN": 0,
+                "R->W": 2,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 0,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": 0,
+                  "reduction_rate": 0.0,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.041666666666666664,
+              "lost_correct_known_pairs": 2,
+              "new_correct_known_pairs": 0,
+              "numerator": -2,
+              "transitions": {
+                "0->0": 4,
+                "0->1": 0,
+                "1->0": 2,
+                "1->1": 42
+              },
+              "unknown_pairs": 0
+            }
+          }
+        },
+        "reused_conditional_selection": true
+      }
+    },
+    "independent_parent_count": 1,
+    "independent_seed_replication": false,
+    "individual_components_identified": false,
+    "inherited_pi_was_never_reweighted": false,
+    "native_metrics": {
+      "B": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.4881087202718007,
+          "correct": 431.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.41336353340883353,
+          "correct": 365.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 230,
+          "R": 431,
+          "UNKNOWN": 0,
+          "W": 222
+        }
+      },
+      "P": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.6070215175537939,
+          "correct": 536.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.5028312570781427,
+          "correct": 444.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 105,
+          "R": 536,
+          "UNKNOWN": 0,
+          "W": 242
+        }
+      },
+      "S": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.6308040770101925,
+          "correct": 557.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.5288788221970555,
+          "correct": 467.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 67,
+          "R": 557,
+          "UNKNOWN": 0,
+          "W": 259
+        }
+      }
+    },
+    "new_adaptive_distribution_updates": 0,
+    "new_old96_generations": 0,
+    "no_call": {
+      "B": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 127,
+          "denominator": 883,
+          "rate": 0.1438278595696489
+        },
+        "post_tool": {
+          "count": 91,
+          "denominator": 883,
+          "rate": 0.10305775764439411
+        },
+        "total_no_call": 218
+      },
+      "P": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 41,
+          "denominator": 883,
+          "rate": 0.0464326160815402
+        },
+        "post_tool": {
+          "count": 41,
+          "denominator": 883,
+          "rate": 0.0464326160815402
+        },
+        "total_no_call": 82
+      },
+      "S": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 18,
+          "denominator": 883,
+          "rate": 0.020385050962627407
+        },
+        "post_tool": {
+          "count": 31,
+          "denominator": 883,
+          "rate": 0.035107587768969425
+        },
+        "total_no_call": 49
+      }
+    },
+    "old_scores_rescored": false,
+    "paired": {
+      "S-B": {
+        "execution_accuracy": {
+          "baseline_accuracy": 0.4881087202718007,
+          "both_executable": {
+            "baseline_accuracy": 0.6698717948717948,
+            "candidate_accuracy": 0.6875,
+            "denominator": 624,
+            "explanatory_only": true
+          },
+          "candidate_accuracy": 0.6308040770101925,
+          "decomposition": {
+            "denominator": 883,
+            "exact_count_identity": true,
+            "invalid_correct_component": 0.13023782559456398,
+            "invalid_correct_net_count": 115,
+            "numerator": 126,
+            "wrong_correct_component": 0.01245753114382786,
+            "wrong_correct_net_count": 11
+          },
+          "denominator": 883,
+          "difference": 0.14269535673839184,
+          "lost_correct_known_pairs": 26,
+          "net_correct": 126,
+          "new_correct_known_pairs": 152,
+          "numerator": 126,
+          "status": "COMPLETE",
+          "transitions": {
+            "I->I": 38,
+            "I->R": 128,
+            "I->UNKNOWN": 0,
+            "I->W": 64,
+            "R->I": 13,
+            "R->R": 405,
+            "R->UNKNOWN": 0,
+            "R->W": 13,
+            "UNKNOWN->I": 0,
+            "UNKNOWN->R": 0,
+            "UNKNOWN->UNKNOWN": 0,
+            "UNKNOWN->W": 0,
+            "W->I": 16,
+            "W->R": 24,
+            "W->UNKNOWN": 0,
+            "W->W": 182
+          },
+          "unknown_pair_count": 0,
+          "unknown_pair_indices": []
+        },
+        "no_call": {
+          "denominator": 883,
+          "full_denominators": true,
+          "more_actions_do_not_imply_higher_EA": true,
+          "stages": {
+            "initial": {
+              "candidate_count": 18,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 117,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 5,
+                "R": 80,
+                "UNKNOWN": 0,
+                "W": 32
+              },
+              "old_stage_no_call_to_candidate_state": {
+                "I": 15,
+                "R": 80,
+                "UNKNOWN": 0,
+                "W": 32
+              },
+              "reduction_count": 109,
+              "reduction_rate": 0.12344280860702152,
+              "reference_count": 127,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 114,
+                "no_tool_call": 13
+              },
+              "still_any_no_call": 13
+            },
+            "post_tool": {
+              "candidate_count": 31,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 78,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 4,
+                "R": 47,
+                "UNKNOWN": 0,
+                "W": 27
+              },
+              "old_stage_no_call_to_candidate_state": {
+                "I": 17,
+                "R": 47,
+                "UNKNOWN": 0,
+                "W": 27
+              },
+              "reduction_count": 60,
+              "reduction_rate": 0.06795016987542468,
+              "reference_count": 91,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 77,
+                "no_tool_call": 14
+              },
+              "still_any_no_call": 14
+            }
+          }
+        },
+        "program_accuracy": {
+          "denominator": 883,
+          "difference": 0.11551528878822197,
+          "lost_correct_known_pairs": 21,
+          "new_correct_known_pairs": 123,
+          "numerator": 102,
+          "transitions": {
+            "0->0": 395,
+            "0->1": 123,
+            "1->0": 21,
+            "1->1": 344
+          },
+          "unknown_pairs": 0
+        }
+      },
+      "S-P": {
+        "execution_accuracy": {
+          "baseline_accuracy": 0.6070215175537939,
+          "both_executable": {
+            "baseline_accuracy": 0.6983695652173914,
+            "candidate_accuracy": 0.6942934782608695,
+            "denominator": 736,
+            "explanatory_only": true
+          },
+          "candidate_accuracy": 0.6308040770101925,
+          "decomposition": {
+            "denominator": 883,
+            "exact_count_identity": true,
+            "invalid_correct_component": 0.027180067950169876,
+            "invalid_correct_net_count": 24,
+            "numerator": 21,
+            "wrong_correct_component": -0.0033975084937712344,
+            "wrong_correct_net_count": -3
+          },
+          "denominator": 883,
+          "difference": 0.02378255945639864,
+          "lost_correct_known_pairs": 55,
+          "net_correct": 21,
+          "new_correct_known_pairs": 76,
+          "numerator": 21,
+          "status": "COMPLETE",
+          "transitions": {
+            "I->I": 25,
+            "I->R": 46,
+            "I->UNKNOWN": 0,
+            "I->W": 34,
+            "R->I": 22,
+            "R->R": 481,
+            "R->UNKNOWN": 0,
+            "R->W": 33,
+            "UNKNOWN->I": 0,
+            "UNKNOWN->R": 0,
+            "UNKNOWN->UNKNOWN": 0,
+            "UNKNOWN->W": 0,
+            "W->I": 20,
+            "W->R": 30,
+            "W->UNKNOWN": 0,
+            "W->W": 192
+          },
+          "unknown_pair_count": 0,
+          "unknown_pair_indices": []
+        },
+        "no_call": {
+          "denominator": 883,
+          "full_denominators": true,
+          "more_actions_do_not_imply_higher_EA": true,
+          "stages": {
+            "initial": {
+              "candidate_count": 18,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 38,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 3,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 14
+              },
+              "old_stage_no_call_to_candidate_state": {
+                "I": 6,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 14
+              },
+              "reduction_count": 23,
+              "reduction_rate": 0.026047565118912798,
+              "reference_count": 41,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 37,
+                "no_tool_call": 4
+              },
+              "still_any_no_call": 4
+            },
+            "post_tool": {
+              "candidate_count": 31,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 36,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 4,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 11
+              },
+              "old_stage_no_call_to_candidate_state": {
+                "I": 9,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 11
+              },
+              "reduction_count": 10,
+              "reduction_rate": 0.011325028312570781,
+              "reference_count": 41,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 33,
+                "no_tool_call": 8
+              },
+              "still_any_no_call": 8
+            }
+          }
+        },
+        "program_accuracy": {
+          "denominator": 883,
+          "difference": 0.026047565118912798,
+          "lost_correct_known_pairs": 44,
+          "new_correct_known_pairs": 67,
+          "numerator": 23,
+          "transitions": {
+            "0->0": 372,
+            "0->1": 67,
+            "1->0": 44,
+            "1->1": 400
+          },
+          "unknown_pairs": 0
+        }
+      }
+    },
+    "schema": "v75_candidate_paired_complete_development_analysis.v1",
+    "source_cluster_sensitivity": {
+      "cluster_count": 224,
+      "cluster_task_counts": {
+        "finqa:report:AAL/2013": 4,
+        "finqa:report:AAL/2015": 3,
+        "finqa:report:AAP/2011": 3,
+        "finqa:report:AAP/2012": 3,
+        "finqa:report:AAPL/2003": 2,
+        "finqa:report:AAPL/2004": 2,
+        "finqa:report:AAPL/2005": 2,
+        "finqa:report:AAPL/2008": 1,
+        "finqa:report:AAPL/2014": 4,
+        "finqa:report:ABMD/2004": 4,
+        "finqa:report:ABMD/2006": 4,
+        "finqa:report:ABMD/2007": 4,
+        "finqa:report:ABMD/2009": 7,
+        "finqa:report:ADBE/2018": 4,
+        "finqa:report:ADI/2011": 6,
+        "finqa:report:AES/2001": 2,
+        "finqa:report:AES/2002": 4,
+        "finqa:report:AES/2003": 2,
+        "finqa:report:AES/2015": 4,
+        "finqa:report:AES/2016": 7,
+        "finqa:report:AES/2017": 8,
+        "finqa:report:ALLE/2016": 1,
+        "finqa:report:ALXN/2007": 2,
+        "finqa:report:AMAT/2013": 2,
+        "finqa:report:AMAT/2014": 3,
+        "finqa:report:AMT/2004": 3,
+        "finqa:report:AMT/2005": 8,
+        "finqa:report:AMT/2008": 4,
+        "finqa:report:AMT/2010": 4,
+        "finqa:report:AMT/2012": 2,
+        "finqa:report:ANSS/2013": 3,
+        "finqa:report:AON/2009": 7,
+        "finqa:report:AON/2010": 5,
+        "finqa:report:AON/2011": 4,
+        "finqa:report:AON/2014": 4,
+        "finqa:report:AOS/2004": 2,
+        "finqa:report:APD/2013": 5,
+        "finqa:report:APD/2014": 4,
+        "finqa:report:APD/2016": 6,
+        "finqa:report:APD/2018": 2,
+        "finqa:report:APD/2019": 4,
+        "finqa:report:APTV/2014": 3,
+        "finqa:report:AWK/2013": 4,
+        "finqa:report:BDX/2018": 4,
+        "finqa:report:BDX/2019": 1,
+        "finqa:report:BKR/2017": 4,
+        "finqa:report:BLK/2012": 8,
+        "finqa:report:BLK/2013": 8,
+        "finqa:report:BLK/2014": 4,
+        "finqa:report:BLK/2016": 4,
+        "finqa:report:BLK/2017": 3,
+        "finqa:report:BLL/2007": 8,
+        "finqa:report:BLL/2010": 4,
+        "finqa:report:C/2008": 7,
+        "finqa:report:C/2010": 4,
+        "finqa:report:C/2017": 4,
+        "finqa:report:CAG/2008": 2,
+        "finqa:report:CAT/2017": 4,
+        "finqa:report:CB/2010": 7,
+        "finqa:report:CDNS/2006": 4,
+        "finqa:report:CDNS/2012": 4,
+        "finqa:report:CDNS/2018": 4,
+        "finqa:report:CMCSA/2015": 3,
+        "finqa:report:CME/2010": 1,
+        "finqa:report:CME/2012": 4,
+        "finqa:report:CME/2017": 5,
+        "finqa:report:CNP/2010": 2,
+        "finqa:report:DISCA/2012": 4,
+        "finqa:report:DISH/2013": 3,
+        "finqa:report:DRE/2002": 2,
+        "finqa:report:DRE/2007": 3,
+        "finqa:report:DRE/2009": 3,
+        "finqa:report:DRE/2013": 2,
+        "finqa:report:DVN/2007": 2,
+        "finqa:report:DVN/2014": 2,
+        "finqa:report:ETFC/2007": 3,
+        "finqa:report:ETFC/2011": 4,
+        "finqa:report:ETFC/2013": 2,
+        "finqa:report:ETFC/2014": 4,
+        "finqa:report:ETR/2002": 8,
+        "finqa:report:ETR/2003": 2,
+        "finqa:report:ETR/2004": 4,
+        "finqa:report:ETR/2008": 11,
+        "finqa:report:ETR/2011": 11,
+        "finqa:report:ETR/2013": 4,
+        "finqa:report:ETR/2015": 5,
+        "finqa:report:ETR/2016": 4,
+        "finqa:report:ETR/2017": 10,
+        "finqa:report:EW/2016": 8,
+        "finqa:report:EW/2017": 2,
+        "finqa:report:FBHS/2017": 5,
+        "finqa:report:FIS/2007": 6,
+        "finqa:report:FRT/2005": 2,
+        "finqa:report:GIS/2012": 2,
+        "finqa:report:GIS/2019": 3,
+        "finqa:report:GPN/2009": 4,
+        "finqa:report:GPN/2017": 4,
+        "finqa:report:GS/2012": 3,
+        "finqa:report:GS/2013": 2,
+        "finqa:report:GS/2014": 2,
+        "finqa:report:GS/2016": 6,
+        "finqa:report:GS/2017": 6,
+        "finqa:report:HIG/2008": 3,
+        "finqa:report:HIG/2011": 3,
+        "finqa:report:HII/2014": 4,
+        "finqa:report:HII/2017": 10,
+        "finqa:report:HOLX/2007": 4,
+        "finqa:report:HOLX/2008": 6,
+        "finqa:report:HOLX/2010": 1,
+        "finqa:report:HOLX/2012": 2,
+        "finqa:report:HOLX/2015": 1,
+        "finqa:report:HUM/2017": 4,
+        "finqa:report:HWM/2016": 2,
+        "finqa:report:HWM/2017": 2,
+        "finqa:report:ILMN/2007": 4,
+        "finqa:report:INTC/2013": 7,
+        "finqa:report:IP/2005": 7,
+        "finqa:report:IP/2006": 4,
+        "finqa:report:IP/2007": 8,
+        "finqa:report:IP/2009": 4,
+        "finqa:report:IP/2012": 4,
+        "finqa:report:IPG/2008": 12,
+        "finqa:report:IPG/2009": 3,
+        "finqa:report:IPG/2015": 6,
+        "finqa:report:JKHY/2014": 2,
+        "finqa:report:JPM/2005": 3,
+        "finqa:report:JPM/2007": 7,
+        "finqa:report:JPM/2008": 5,
+        "finqa:report:JPM/2009": 2,
+        "finqa:report:JPM/2013": 3,
+        "finqa:report:JPM/2014": 5,
+        "finqa:report:JPM/2018": 5,
+        "finqa:report:K/2013": 2,
+        "finqa:report:KHC/2016": 4,
+        "finqa:report:L/2015": 4,
+        "finqa:report:LKQ/2010": 4,
+        "finqa:report:LKQ/2016": 3,
+        "finqa:report:LKQ/2018": 3,
+        "finqa:report:LLY/2018": 3,
+        "finqa:report:LMT/2005": 4,
+        "finqa:report:LMT/2006": 5,
+        "finqa:report:LMT/2010": 4,
+        "finqa:report:LMT/2012": 4,
+        "finqa:report:LMT/2013": 4,
+        "finqa:report:LMT/2015": 10,
+        "finqa:report:LMT/2016": 4,
+        "finqa:report:LMT/2017": 3,
+        "finqa:report:MA/2008": 2,
+        "finqa:report:MAS/2012": 3,
+        "finqa:report:MAS/2018": 5,
+        "finqa:report:MMM/2005": 1,
+        "finqa:report:MO/2012": 4,
+        "finqa:report:MRO/2004": 2,
+        "finqa:report:MRO/2006": 3,
+        "finqa:report:MRO/2007": 6,
+        "finqa:report:MRO/2008": 4,
+        "finqa:report:MRO/2009": 7,
+        "finqa:report:MRO/2011": 4,
+        "finqa:report:MRO/2014": 1,
+        "finqa:report:MRO/2015": 4,
+        "finqa:report:MRO/2017": 4,
+        "finqa:report:MS/2014": 3,
+        "finqa:report:MS/2017": 2,
+        "finqa:report:MSI/2006": 4,
+        "finqa:report:MSI/2009": 2,
+        "finqa:report:NKE/2016": 2,
+        "finqa:report:NWS/2016": 1,
+        "finqa:report:OKE/2008": 2,
+        "finqa:report:OKE/2012": 1,
+        "finqa:report:PKG/2009": 4,
+        "finqa:report:PM/2014": 3,
+        "finqa:report:PM/2015": 10,
+        "finqa:report:PM/2017": 8,
+        "finqa:report:PM/2018": 5,
+        "finqa:report:PNC/2009": 8,
+        "finqa:report:PNC/2011": 8,
+        "finqa:report:PNC/2013": 6,
+        "finqa:report:PNC/2015": 2,
+        "finqa:report:PNC/2016": 1,
+        "finqa:report:PNC/2018": 2,
+        "finqa:report:PPG/2011": 4,
+        "finqa:report:PPG/2013": 4,
+        "finqa:report:RCL/2014": 2,
+        "finqa:report:RE/2015": 4,
+        "finqa:report:RE/2017": 4,
+        "finqa:report:RSG/2009": 2,
+        "finqa:report:RSG/2015": 4,
+        "finqa:report:RSG/2016": 2,
+        "finqa:report:RSG/2017": 3,
+        "finqa:report:SLB/2012": 4,
+        "finqa:report:SNA/2012": 3,
+        "finqa:report:SNPS/2006": 4,
+        "finqa:report:SPGI/2015": 1,
+        "finqa:report:SPGI/2018": 1,
+        "finqa:report:STT/2008": 2,
+        "finqa:report:STT/2009": 3,
+        "finqa:report:STT/2011": 3,
+        "finqa:report:STZ/2006": 4,
+        "finqa:report:SWKS/2006": 2,
+        "finqa:report:SYY/2019": 2,
+        "finqa:report:TFX/2015": 3,
+        "finqa:report:TROW/2010": 4,
+        "finqa:report:TSCO/2017": 2,
+        "finqa:report:TSCO/2018": 2,
+        "finqa:report:UA/2009": 1,
+        "finqa:report:UA/2015": 2,
+        "finqa:report:UAA/2016": 3,
+        "finqa:report:UNP/2006": 4,
+        "finqa:report:UNP/2007": 3,
+        "finqa:report:UNP/2008": 7,
+        "finqa:report:UNP/2009": 2,
+        "finqa:report:UNP/2011": 8,
+        "finqa:report:UNP/2013": 7,
+        "finqa:report:UNP/2014": 11,
+        "finqa:report:UNP/2015": 6,
+        "finqa:report:UPS/2006": 4,
+        "finqa:report:V/2008": 2,
+        "finqa:report:V/2013": 1,
+        "finqa:report:VLO/2018": 3,
+        "finqa:report:VNO/2012": 2,
+        "finqa:report:VRTX/2003": 3,
+        "finqa:report:VTR/2007": 4,
+        "finqa:report:ZBH/2003": 6,
+        "finqa:report:ZBH/2017": 4
+      },
+      "comparisons": {
+        "execution_accuracy:S-B": {
+          "bootstrap_values_sha256": "16acd349457a2d3f1c898fef999c2ad1d91de2692cf2d8056d2411888825b0c6",
+          "level": 0.95,
+          "lower": 0.11252758127108967,
+          "mean_difference": 0.14269535673839184,
+          "upper": 0.17327333943334858
+        },
+        "execution_accuracy:S-P": {
+          "bootstrap_values_sha256": "ddf33aa58246182eea7f24adb5e00c77b8dc25221f33c6a9c50d1d72b3a67fae",
+          "level": 0.95,
+          "lower": -0.0011979310144843481,
+          "mean_difference": 0.02378255945639864,
+          "upper": 0.04900873349663179
+        },
+        "program_accuracy:S-B": {
+          "bootstrap_values_sha256": "e5ec856596eb83d6e15b5bda15985f0da3451de46825627b84bdea4215bf297c",
+          "level": 0.95,
+          "lower": 0.08899861916437733,
+          "mean_difference": 0.11551528878822197,
+          "upper": 0.14252620396881288
+        },
+        "program_accuracy:S-P": {
+          "bootstrap_values_sha256": "b39275ee390b1dc5a5cc080068cb7217e3b5fe73c4723e32ba8d39f616b3bc5f",
+          "level": 0.95,
+          "lower": 0.002270083213005217,
+          "mean_difference": 0.026047565118912798,
+          "upper": 0.05000139043381533
+        }
+      },
+      "cross_seed_uncertainty": false,
+      "incomplete_metrics_not_imputed": true,
+      "independent_training_parent_count": 1,
+      "replicates": 10000,
+      "same_weights_all_available_comparisons": true,
+      "seed": 20261018,
+      "shared_weight_sha256": "7e93674c4eca85921ff7a46af7315801f44e84fb1051074990b7bf0abe39cc13",
+      "status": "COMPLETE",
+      "task_count": 883,
+      "task_weighted": true,
+      "uncertainty_scope": "source-composition sensitivity conditional on one fixed parent and training realization"
+    },
+    "statistics_contract": {
+      "UNKNOWN_as_zero": false,
+      "UNKNOWN_denominator_reduced": false,
+      "advancement_threshold": null,
+      "automatic_Full_resume": false,
+      "automatic_followup": false,
+      "candidate": "S_StateDemo1490",
+      "causal_components_identified": false,
+      "denominator": 883,
+      "development_panel_is_unseen_confirmation": false,
+      "independent_training_parent_count": 1,
+      "intervention_is_combination": true,
+      "mechanism_slice": "the existing V73 fixed96 F/K48 tasks within this single dev883 run",
+      "metrics": [
+        "execution_accuracy",
+        "program_accuracy",
+        "I/W/R/UNKNOWN",
+        "new_correct",
+        "lost_correct"
+      ],
+      "new_candidate_training_branches": 1,
+      "new_slice_generation": 0,
+      "no_call_stage_denominator": 883,
+      "no_call_stages": [
+        "initial",
+        "post_tool"
+      ],
+      "no_p_values": true,
+      "paired_orientation": "old original trajectory -> candidate; candidate minus reference",
+      "parent_net_gain": "(S-536)/883",
+      "primary": "(S-431)/883",
+      "reused_control": "B_V72LowLR1490",
+      "reused_control_is_new_independent_replication": false,
+      "reused_correct": {
+        "B": 431,
+        "P": 536
+      },
+      "reused_parent": "P_Fixed1192",
+      "schema": "v75_one_parent_paired_development_statistics.v1",
+      "source_cluster": {
+        "cross_seed_uncertainty": false,
+        "draw": "G uniform source-cluster indices with replacement per replicate",
+        "implementation": "original frozen V54 source_cluster_sensitivity",
+        "ordered_clusters": "lexicographically sorted actual lineage.source_group",
+        "percentile_interval": [
+          0.025,
+          0.975
+        ],
+        "quantile_method": "linear",
+        "replicates": 10000,
+        "rng": "numpy.random.Generator(numpy.random.PCG64(seed))",
+        "same_cluster_weights_all_available_comparisons": true,
+        "seed": 20261018,
+        "significance_or_stability_confirmation": false,
+        "statistic": "sum(sampled cluster paired sums)/sum(sampled cluster question counts)",
+        "task_weighted": true,
+        "uncertainty_scope": "source-composition sensitivity conditional on one fixed parent and training realization"
+      },
+      "unit_compute_advantage_claimed": false
+    },
+    "status": "COMPLETE"
+  },
+  "resources": {
+    "final_cpu": {
+      "CUDA_initialized": false,
+      "all_gates_passed": true,
+      "failures": [],
+      "minimum_host_available_bytes": 759050936320,
+      "peak_rss_bytes": 1220468736
+    },
+    "gpu_jobs": [
+      {
+        "all_gates_passed": true,
+        "job_id": "L.initial.shard0",
+        "minimum_boundary_free_bytes": 64459046912,
+        "minimum_host_available_bytes": 775906717696,
+        "peak_allocated_bytes": 16722386944,
+        "peak_rss_bytes": 16352686080,
+        "received_signals": [],
+        "resource_wait_seconds": 1.5304378690198064
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "L.initial.shard1",
+        "minimum_boundary_free_bytes": 28283633664,
+        "minimum_host_available_bytes": 776012685312,
+        "peak_allocated_bytes": 17215029248,
+        "peak_rss_bytes": 16341561344,
+        "received_signals": [],
+        "resource_wait_seconds": 1.645351581275463
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "P.initial.shard0",
+        "minimum_boundary_free_bytes": 32071090176,
+        "minimum_host_available_bytes": 775913172992,
+        "peak_allocated_bytes": 16653879808,
+        "peak_rss_bytes": 16347086848,
+        "received_signals": [],
+        "resource_wait_seconds": 1.3762942580506206
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "P.initial.shard1",
+        "minimum_boundary_free_bytes": 42416340992,
+        "minimum_host_available_bytes": 776084119552,
+        "peak_allocated_bytes": 17210707968,
+        "peak_rss_bytes": 16349831168,
+        "received_signals": [],
+        "resource_wait_seconds": 1.4516970301046968
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "P.post.shard0",
+        "minimum_boundary_free_bytes": 66552004608,
+        "minimum_host_available_bytes": 779559845888,
+        "peak_allocated_bytes": 16725362688,
+        "peak_rss_bytes": 16371437568,
+        "received_signals": [],
+        "resource_wait_seconds": 1.3512762244790792
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "P.post.shard1",
+        "minimum_boundary_free_bytes": 30835867648,
+        "minimum_host_available_bytes": 778872115200,
+        "peak_allocated_bytes": 17213366272,
+        "peak_rss_bytes": 16349822976,
+        "received_signals": [],
+        "resource_wait_seconds": 1.5050730351358652
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "step1192.train",
+        "minimum_boundary_free_bytes": 55502110720,
+        "minimum_host_available_bytes": 772276420608,
+        "peak_allocated_bytes": 20403515904,
+        "peak_rss_bytes": 17456078848,
+        "received_signals": [],
+        "resource_wait_seconds": 1.3319573858752847
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "step1490.dev_greedy.shard0",
+        "minimum_boundary_free_bytes": 46167687168,
+        "minimum_host_available_bytes": 753725100032,
+        "peak_allocated_bytes": 17595929600,
+        "peak_rss_bytes": 16446279680,
+        "received_signals": [],
+        "resource_wait_seconds": 1.459295179694891
+      },
+      {
+        "all_gates_passed": true,
+        "job_id": "step1490.dev_greedy.shard1",
+        "minimum_boundary_free_bytes": 26492665856,
+        "minimum_host_available_bytes": 758438162432,
+        "peak_allocated_bytes": 17098174976,
+        "peak_rss_bytes": 16420315136,
+        "received_signals": [],
+        "resource_wait_seconds": 1.3635458052158356
+      }
+    ],
+    "maximum_peak_allocated_GiB": 19.002254962921143,
+    "maximum_peak_rss_GiB": 16.257240295410156,
+    "minimum_boundary_free_GiB": 24.6732177734375,
+    "minimum_host_available_GiB": 701.9612007141113
+  },
+  "schema": "v75_experiment_report_readonly_derivation.v1",
+  "scientific_root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01",
+  "scope": {
+    "frozen_files_modified": false,
+    "new_API_calls": 0,
+    "new_GPU_workers": 0,
+    "new_model_calls": 0,
+    "new_native_scores": 0,
+    "new_tool_calls": 0,
+    "new_training": 0,
+    "paired_statistics_derived_once_for_report": true,
+    "raw_episode_reads": 0,
+    "scientific_restart": false,
+    "tensor_loads": 0
+  },
+  "source_json_count": 39,
+  "sources": [
+    {
+      "id": "9c33732cd28e60788e075d068ea2ff302431c47eace0a6d638831d03102043f9",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/closeout/record.json",
+      "sha256": "a88646932d972ae44f8f7dbf64bb504d5cab0f45d70938d2c990fa6db97618d6"
+    },
+    {
+      "id": "c77077e87b2260dfaedfe5d7dfd705a88479e8d0467812457f162cf73e669c8e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/all_jobs_exit_barrier/record.json",
+      "sha256": "9192d1cb4aa1e2c579e95d3c7e53f97de8aea35ae0e8537d4e69c9ee298938a2"
+    },
+    {
+      "id": "a77668075c4bf81eec7f645ace6d3572631bb9a533e290009238484cb531824b",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/supervisor/closeout/record.json",
+      "sha256": "5fd5b49a5721d9b8af378c04e92504c4da28ee3b9f042fe65ebac057443339e0"
+    },
+    {
+      "id": "c228b1e687697ba757249de3dcf5b4b74e4e8e35636e56b3b695c6995921070e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/activation/record.json",
+      "sha256": "dcc58d57e18553b3f0395d0298513a86f2407e2306a4e09956e3dfb913c938f3"
+    },
+    {
+      "id": "29b5592dcf49a5af0c464581d747ef3b263e4aa14f21259a143c329fde24a958",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/supervisor/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "192befea24e972e3afb62421d9c3faee6bc11af0e1278c5bd208871d8328fda0"
+    },
+    {
+      "id": "44e500da1511c05125b3e1148793aa71d9b6c8ff42fcea3c38a79f268d5a28cc",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/final_analysis/attempt0001/actual_exit/record.json",
+      "sha256": "9a1630369f0cc2c7ab4c7566ea721f5baea5a45bccf0cf9d3d8cc0c1b22c0af4"
+    },
+    {
+      "id": "06140a21b83d60760468393af67bd7a6e0f4389d53f7667f3b2d6344ed973002",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/final_analysis/attempt0001/resources/closeout/record.json",
+      "sha256": "542c63ca219d31b6b388b55ad66cdd38c944980edc34a6a180fef0be6a42fa06"
+    },
+    {
+      "id": "030c172aceb542c6666d55d796572222d5cf4b4c13ffb63f2210a1c084298256",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/materials_preparation/attempt0001/actual_exit/record.json",
+      "sha256": "3f08d6c16f390e4570f4237840bb076a666e6a63a6991247b04e61c3996672e8"
+    },
+    {
+      "id": "6485969c9ff287b82c93a7ea7d048d7d8b49fe7ac03aa4e46cd77c43b308182d",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/materials/record.json",
+      "sha256": "f8fdacb0f56fdf9734aabe8cd47875e0f40688377d44ec41e9e8d5f5c699273a"
+    },
+    {
+      "id": "5d3babe039205ce3be88462b6a3a201f883dd43d4cf05ab954c0094db8f96d79",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/result/record.json",
+      "sha256": "ca4a43aff4fbdc3a3ee431077bed2d09d96bcc1c9f526c4d0c45e698efb491a5"
+    },
+    {
+      "id": "fe1f5e9b03de7a954af1b46166b792e630d699506785800569832f8aec5d1a41",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/completed/record.json",
+      "sha256": "5dc2a831c1a129095e38d42b972a611fd896d7be7664d0451c4445e669074519"
+    },
+    {
+      "id": "3b10995c2a5eec330beb386b196eba986c2e19041856688b0510753694105534",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard0/accepted/record.json",
+      "sha256": "316fbf73d0d5abe0cc39001c8df7e8a58c2b2c250b3c4e962c43f0000e902b7c"
+    },
+    {
+      "id": "a44f7a593527b884cf98953606e33cbb9ca6696a931c1285a59634175f541fc0",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard0/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "cab966102afcd35a095cca95df4b6737624b01fd51946153a79a0c1caf831251"
+    },
+    {
+      "id": "90b4910cb4ef9f539149417435fb33b89a32fd459bc7d3908f24e49c982cd382",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard0/result/record.json",
+      "sha256": "0002e905d6dd10f1419ff4b77cd11af4b9f121a6eb7d16c6b22a2789cdc461f1"
+    },
+    {
+      "id": "a660d0bf3c9f96716741c9abe36e9435c5ae070a1c4a41005538f82d9290879d",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard1/accepted/record.json",
+      "sha256": "558e9d114b3fac76e60dcdf0098678f3fee071a093049c670b07c97c3d1bf70a"
+    },
+    {
+      "id": "9c2baed75549b5eb50f90695ba36a7f47f89ce428a94165a4c59d48d08b55206",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard1/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "81edaa284ed6b25cf1d5052a3014fcb1c8de207778b49a99612fdda28674966a"
+    },
+    {
+      "id": "a6bfd9372c485b72e0c89b57af448df323f19ebbf0ce241994c167ceee118e96",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/L.initial.shard1/result/record.json",
+      "sha256": "23fcb1ff17e7ef04374f8028285f774479c700e4155d679d893f0fa127e129ea"
+    },
+    {
+      "id": "c7ab7ad45892a48fdd6d41dec69017a830930027121e3173323a544a440eaca2",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard0/accepted/record.json",
+      "sha256": "ec8b5577f82f8dade01adce87bb9a1c3ef56d4be8b70d2ad8ae09143b7bc044d"
+    },
+    {
+      "id": "36b3dc05da6a50bc33576505edd2dd5b585e0934b8be0f945f8209ad72908b18",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard0/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "20f69b57dd17f2710cb149690ebb4710b2a1b8dee11b17e4cf4fa811bc9b4831"
+    },
+    {
+      "id": "f7368c50f75e3658a8c2cb2f0dc59b600d84612df85ca5bd8ba45122f70faa71",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard0/result/record.json",
+      "sha256": "809802f032b3887a8636711ff7579c69c8c83191445e41074a31798982e044a8"
+    },
+    {
+      "id": "3359b6bd21845e7b60e1991eef9ef0759b72538a2c98e73820ea81f38cb350f5",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard1/accepted/record.json",
+      "sha256": "36f2186a53a818ed92e324c8cc59b63cbea72029af9199c1c6ad38705d3a006b"
+    },
+    {
+      "id": "663a7ee1df8e15db3afe59be78b9854b4d0c070b0c1388bc66d4e3bf907d1095",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard1/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "175021f462ade321295847a716263e2e5e64ccad33ee025132f9a411bc8f3d31"
+    },
+    {
+      "id": "0ac3b212376bc22948e8f85f5b21111ca28b2cd4ee7e009ea69e7ca3c0671e33",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.initial.shard1/result/record.json",
+      "sha256": "f33ba9ee80c00ca600eec1f7e969e7f2718cc008c5ee4f9dd2b17b583305ba19"
+    },
+    {
+      "id": "7906199a7934c3641f7bdeee9dce4d0fcaa81a0027d9618d06b9949933bc0e3a",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard0/accepted/record.json",
+      "sha256": "3a6b599fa8baa64ace2020f90fcaf360c6bc32fb4ad49b6dd8d9d6ff21c6ccb2"
+    },
+    {
+      "id": "4e18f3621d857557f2f1181a6e66045667c579a8042a9f3eb57167dcf282bd5f",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard0/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "2e510d42968a00a35a3afd25ecf6f3b2c457089fd2c253b614b2017f882fff39"
+    },
+    {
+      "id": "4e16881409f9669a9a0d61ef6bca151c3575635983de68b63052f952df210712",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard0/result/record.json",
+      "sha256": "c8284b449d1234391ff220a39415a75e073640d0b77b6e02911a840e8c654801"
+    },
+    {
+      "id": "8c7bbf65b43362c0b7ef5d4f3048893f1b7a617b23921ae3fbdf49032ce05221",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard1/accepted/record.json",
+      "sha256": "ea0833b75d8ee70d19de1bd2264c52b0fa76935c738fa4191c7fc259ff747dc0"
+    },
+    {
+      "id": "3235203ade23b19fd1935862ec9bc8cfa693122328e5e6983e8871778a6dc318",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard1/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "85c13499c0ee2da3414755d74ebc5ef44fa27bf50f7fbd34409e7d0d3da5cf04"
+    },
+    {
+      "id": "d758fb7990c299f6c3a1549ddb1d8c4eebf815e92389a9015695978cd5b08fdd",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/jobs/P.post.shard1/result/record.json",
+      "sha256": "fa75cf5f3f0d5c1bd01f984f83bf5efd20dedfa26862c20eee429f980db3b685"
+    },
+    {
+      "id": "71efccb693cc398a6abcc05376496c35704b19c18436194b45bfa826d2684c67",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/accepted/record.json",
+      "sha256": "8071e856d97fd299a95cf67591cee138539e9b96598549ca3eb475c0468b819e"
+    },
+    {
+      "id": "c2bb50e4b15ce0c54cafd8c5fdbcbc09e0d32435e996f922c9d316cc2f7adcae",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/points/step1192/train/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "8d8f9df5198f9af5b164d85feefba13da2fda82a82698be4654d96c4a2749237"
+    },
+    {
+      "id": "db0e89453c0430efc051a7af23b18780176fe9711828671e147b66a3040a44e3",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard0/accepted/record.json",
+      "sha256": "0effc494e7fe11636abb3d25541b3e00ffed47492741fb6561a785b5a0e99d39"
+    },
+    {
+      "id": "b3ae8a0b78b50800ec0275ff5128e7af38bb7857d74251dca84510a6d9608725",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard0/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "730e19b6dab67a84ac500d6b067a6dc9994f939545dbbb7bdda06a77e25037d8"
+    },
+    {
+      "id": "a301eb74bd328270d61afde35ece18a3ca4da2ca53d3faebffc833b40930a2f5",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard0/result/record.json",
+      "sha256": "2ee7177c1aa0a40c4f25a5ca266d60855c15d4c3cf18ab4bc23e8c4f3d6522ef"
+    },
+    {
+      "id": "eb0451cba6b72705a8e50d336f933c1083b47c3bda6aa804706854ec3c3d3c41",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard1/accepted/record.json",
+      "sha256": "9226bdf0e34d32a246fb96f433a1b3022cbedbec6d4d44848c97a7c96c73088b"
+    },
+    {
+      "id": "75c7a9dd349e543c07e8154972e2e0d5a8580134c29be812989c3b2cd1444b27",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard1/attempts/attempt0001/actual_exit/record.json",
+      "sha256": "55d5d762e000309021decb66e377a213fd2f8709e31d622eed8b0a7cd5b5c072"
+    },
+    {
+      "id": "214182cbdf7bf49167b819cc30d3023dd6441392bb62fd99e4352cab2dbd211f",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/jobs/step1490.dev_greedy.shard1/result/record.json",
+      "sha256": "16c595b6f7b7b7d6ce3838d09dbc2bdabafce204ac71f34897acecb75b432222"
+    },
+    {
+      "id": "f6e67e1505683aa612f6c568c394b1d3b8501ffa4ad5ff09ecdba3b2016ae34e",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/report_derivation_20261028/paired_analysis.json",
+      "sha256": "ce395929f822ed9175a0b49e40fbaa9c5c33f90d1641c95cd0103bbe23163b91"
+    },
+    {
+      "id": "259a754f4c5687df6811a8350bb151b5d709052f0f70ce580460b3ac67db5bbb",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/docs/report_data/finqa_v75_training_start_summary_20261027.json",
+      "sha256": "733985d9e4adb446e0d909dcf6a48597fdbc0e4c4745deedbe441b9ff2334f3a"
+    }
+  ],
+  "status": "REPORT_COMPLETE_SCIENTIFIC_RUN_REMAINS_FAILED",
+  "timezone": "Asia/Shanghai",
+  "training": {
+    "actual_demonstration_consumption": {
+      "all298_actual_receipts_match_frozen_slots": true,
+      "extra_forward_RNG_not_bitwise_paired_to_B": true,
+      "fixed_missing_slot_mass_retained_in_old": true,
+      "material_id": "6485969c9ff287b82c93a7ea7d048d7d8b49fe7ac03aa4e46cd77c43b308182d",
+      "original_task_frequency_unchanged": true,
+      "schema": "v75_complete_actual_demonstration_consumption.v1",
+      "status": "PASS",
+      "student_prefix_target_count": 0,
+      "task_exposures": 1488,
+      "teacher_input_positions": 2387664,
+      "teacher_microbatches": 548,
+      "teacher_target_tokens": 66576,
+      "teacher_trajectories": 358,
+      "teacher_trajectory_exposures_by_slot": {
+        "initial": 202,
+        "post": 156
+      },
+      "updates": 298
+    },
+    "completed_record_keys": [
+      "actual_demonstration_consumption",
+      "arm",
+      "checkpoint_arm",
+      "condition",
+      "demonstration_materials",
+      "distribution_digest",
+      "final_checkpoint",
+      "final_step",
+      "fixed_distribution",
+      "fixed_distribution_digest",
+      "id",
+      "initial_checkpoint",
+      "initial_learning_rate",
+      "initial_step",
+      "learning_rate",
+      "learning_rate_checked_before_and_after_every_update",
+      "learning_rate_intervention",
+      "new_optimizer_updates",
+      "next_outer_automatically_executed",
+      "optimizer_updates",
+      "outer_done",
+      "outer_updates",
+      "point_context_id",
+      "post_intervention_state_digest",
+      "protocol_id",
+      "resources",
+      "schema",
+      "seed",
+      "snapshots",
+      "status",
+      "task_exposures",
+      "training_binding",
+      "update_receipts",
+      "updates_in_final_worker"
+    ],
+    "final_checkpoint": {
+      "actual_state_digest": "4af6df33357787c85c32bc519ecb83efd1da3f6cfdd037657337b8bdcd642df1",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/training/step1490_step",
+      "phase": "step",
+      "record_sha256": "8edb25effe33beb1b8e0793e3ccdeb737b34a560b5e12cd528bd504137980c32",
+      "state_sha256": "232e2d123925557cc2d8d40f554f81af7685dd21779fa54ccc8c4cbdaf40ad51",
+      "step": 1490
+    },
+    "final_step": 1490,
+    "finished_bj": "2026-10-27T15:08:18.570137+08:00",
+    "fixed_distribution": true,
+    "fixed_distribution_digest": "53ec21e1fe195fce424a5377ea3126429591b24fc3d32820fe8fc46aef8421a5",
+    "initial_learning_rate": 0.0001,
+    "initial_step": 1192,
+    "learning_rate": 1e-05,
+    "new_VJP": 0,
+    "new_class_passes": 0,
+    "new_feedback_sessions": 0,
+    "new_optimizer_updates": 298,
+    "new_response_replay": 0,
+    "outer_updates": 0,
+    "parent_state_digest": "2dbeeb60a2eb99c8dac36768faf7eb09c8acdffc2b0ae3f4444a0204fcdaa340",
+    "post_intervention_state_digest": "be659147cb36647b8b7c84d7df28218c0fc1538e307208726d24b2c31bf83655",
+    "started_bj": "2026-10-27T11:51:37.185982+08:00"
+  }
+}

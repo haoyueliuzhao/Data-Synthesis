@@ -1,0 +1,1977 @@
+{
+  "CUDA_initialized": false,
+  "analysis": {
+    "automatic_Full_resume": false,
+    "automatic_followup": false,
+    "combination_recipe_effect_only": true,
+    "denominator": 883,
+    "development_is_unseen_confirmation": false,
+    "estimands": {
+      "B_correct": 431,
+      "P_correct": 536,
+      "S_correct": 557.0,
+      "S_minus_B": {
+        "baseline_accuracy": 0.4881087202718007,
+        "both_executable": {
+          "baseline_accuracy": 0.6698717948717948,
+          "candidate_accuracy": 0.6875,
+          "denominator": 624,
+          "explanatory_only": true
+        },
+        "candidate_accuracy": 0.6308040770101925,
+        "decomposition": {
+          "denominator": 883,
+          "exact_count_identity": true,
+          "invalid_correct_component": 0.13023782559456398,
+          "invalid_correct_net_count": 115,
+          "numerator": 126,
+          "wrong_correct_component": 0.01245753114382786,
+          "wrong_correct_net_count": 11
+        },
+        "denominator": 883,
+        "difference": 0.14269535673839184,
+        "lost_correct_known_pairs": 26,
+        "net_correct": 126,
+        "new_correct_known_pairs": 152,
+        "numerator": 126,
+        "status": "COMPLETE",
+        "transitions": {
+          "I->I": 38,
+          "I->R": 128,
+          "I->UNKNOWN": 0,
+          "I->W": 64,
+          "R->I": 13,
+          "R->R": 405,
+          "R->UNKNOWN": 0,
+          "R->W": 13,
+          "UNKNOWN->I": 0,
+          "UNKNOWN->R": 0,
+          "UNKNOWN->UNKNOWN": 0,
+          "UNKNOWN->W": 0,
+          "W->I": 16,
+          "W->R": 24,
+          "W->UNKNOWN": 0,
+          "W->W": 182
+        },
+        "unknown_pair_count": 0,
+        "unknown_pair_indices": []
+      },
+      "S_minus_P": {
+        "baseline_accuracy": 0.6070215175537939,
+        "both_executable": {
+          "baseline_accuracy": 0.6983695652173914,
+          "candidate_accuracy": 0.6942934782608695,
+          "denominator": 736,
+          "explanatory_only": true
+        },
+        "candidate_accuracy": 0.6308040770101925,
+        "decomposition": {
+          "denominator": 883,
+          "exact_count_identity": true,
+          "invalid_correct_component": 0.027180067950169876,
+          "invalid_correct_net_count": 24,
+          "numerator": 21,
+          "wrong_correct_component": -0.0033975084937712344,
+          "wrong_correct_net_count": -3
+        },
+        "denominator": 883,
+        "difference": 0.02378255945639864,
+        "lost_correct_known_pairs": 55,
+        "net_correct": 21,
+        "new_correct_known_pairs": 76,
+        "numerator": 21,
+        "status": "COMPLETE",
+        "transitions": {
+          "I->I": 25,
+          "I->R": 46,
+          "I->UNKNOWN": 0,
+          "I->W": 34,
+          "R->I": 22,
+          "R->R": 481,
+          "R->UNKNOWN": 0,
+          "R->W": 33,
+          "UNKNOWN->I": 0,
+          "UNKNOWN->R": 0,
+          "UNKNOWN->UNKNOWN": 0,
+          "UNKNOWN->W": 0,
+          "W->I": 20,
+          "W->R": 30,
+          "W->UNKNOWN": 0,
+          "W->W": 192
+        },
+        "unknown_pair_count": 0,
+        "unknown_pair_indices": []
+      },
+      "descriptive_count_case": "observed_recipe_increment_and_parent_net_gain_on_development",
+      "formulas": {
+        "S-B": "(S-431)/883",
+        "S-P": "(S-536)/883"
+      }
+    },
+    "fixed_old96_mechanism_slice": {
+      "F": {
+        "denominator": 48,
+        "independent_validation": false,
+        "native_metrics": {
+          "B": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.0,
+              "correct": 0.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.0,
+              "correct": 0.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 48,
+              "R": 0,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "P": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.75,
+              "correct": 36.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "S": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.75,
+              "correct": 36.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.5416666666666666,
+              "correct": 26.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 5,
+              "R": 36,
+              "UNKNOWN": 0,
+              "W": 7
+            }
+          }
+        },
+        "new_episodes": 0,
+        "no_call": {
+          "B": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 29,
+              "denominator": 48,
+              "rate": 0.6041666666666666
+            },
+            "post_tool": {
+              "count": 19,
+              "denominator": 48,
+              "rate": 0.3958333333333333
+            },
+            "total_no_call": 48
+          },
+          "P": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "S": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 1,
+              "denominator": 48,
+              "rate": 0.020833333333333332
+            },
+            "post_tool": {
+              "count": 4,
+              "denominator": 48,
+              "rate": 0.08333333333333333
+            },
+            "total_no_call": 5
+          }
+        },
+        "paired": {
+          "S-B": {
+            "execution_accuracy": {
+              "baseline_accuracy": 0.0,
+              "both_executable": {
+                "baseline_accuracy": null,
+                "candidate_accuracy": null,
+                "denominator": 0,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.75,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": 0.75,
+                "invalid_correct_net_count": 36,
+                "numerator": 36,
+                "wrong_correct_component": 0.0,
+                "wrong_correct_net_count": 0
+              },
+              "denominator": 48,
+              "difference": 0.75,
+              "lost_correct_known_pairs": 0,
+              "net_correct": 36,
+              "new_correct_known_pairs": 36,
+              "numerator": 36,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 5,
+                "I->R": 36,
+                "I->UNKNOWN": 0,
+                "I->W": 7,
+                "R->I": 0,
+                "R->R": 0,
+                "R->UNKNOWN": 0,
+                "R->W": 0,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 28,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 1,
+                    "R": 23,
+                    "UNKNOWN": 0,
+                    "W": 4
+                  },
+                  "old_source_tasks": [
+                    "draw20260928/finqa/MSI/2006/page_61.pdf-3",
+                    "draw20260928/finqa/ZBH/2003/page_58.pdf-1",
+                    "draw20260928/finqa/AMAT/2014/page_35.pdf-1",
+                    "draw20260928/finqa/ALXN/2007/page_104.pdf-2",
+                    "draw20260928/finqa/AES/2016/page_191.pdf-2",
+                    "draw20260928/finqa/AAPL/2008/page_78.pdf-2",
+                    "draw20260928/finqa/UNP/2008/page_27.pdf-1",
+                    "draw20260928/finqa/LMT/2017/page_80.pdf-1",
+                    "draw20260928/finqa/ADBE/2018/page_86.pdf-4",
+                    "draw20260928/finqa/MRO/2009/page_139.pdf-2",
+                    "draw20260928/finqa/MS/2014/page_267.pdf-1",
+                    "draw20260928/finqa/JPM/2005/page_37.pdf-2",
+                    "draw20260928/finqa/IPG/2015/page_48.pdf-3",
+                    "draw20260928/finqa/APD/2016/page_39.pdf-1",
+                    "draw20260928/finqa/GS/2017/page_106.pdf-1",
+                    "draw20260928/finqa/MRO/2011/page_73.pdf-3",
+                    "draw20260928/finqa/BLL/2010/page_28.pdf-2",
+                    "draw20260928/finqa/GS/2016/page_70.pdf-1",
+                    "draw20260928/finqa/PNC/2015/page_159.pdf-1",
+                    "draw20260928/finqa/MRO/2004/page_36.pdf-1",
+                    "draw20260928/finqa/APD/2013/page_40.pdf-1",
+                    "draw20260928/finqa/HIG/2008/page_318.pdf-3",
+                    "draw20260928/finqa/ZBH/2017/page_71.pdf-2",
+                    "draw20260928/finqa/LMT/2010/page_42.pdf-3",
+                    "draw20260928/finqa/UNP/2006/page_37.pdf-3",
+                    "draw20260928/finqa/PPG/2011/page_70.pdf-4",
+                    "draw20260928/finqa/BLK/2012/page_160.pdf-3",
+                    "draw20260928/finqa/UNP/2013/page_44.pdf-2",
+                    "draw20260928/finqa/LKQ/2018/page_83.pdf-3"
+                  ],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 2,
+                    "R": 23,
+                    "UNKNOWN": 0,
+                    "W": 4
+                  },
+                  "reduction_count": 28,
+                  "reduction_rate": 0.5833333333333334,
+                  "reference_count": 29,
+                  "reference_no_call_to_candidate_stop": {
+                    "final_answer": 27,
+                    "no_tool_call": 2
+                  },
+                  "still_any_no_call": 2
+                },
+                "post_tool": {
+                  "candidate_count": 4,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 16,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 13,
+                    "UNKNOWN": 0,
+                    "W": 3
+                  },
+                  "old_source_tasks": [
+                    "draw20260928/finqa/C/2017/page_328.pdf-1",
+                    "draw20260928/finqa/PNC/2009/page_46.pdf-2",
+                    "draw20260928/finqa/ETFC/2007/page_126.pdf-3",
+                    "draw20260928/finqa/AMT/2010/page_34.pdf-2",
+                    "draw20260928/finqa/LKQ/2010/page_84.pdf-1",
+                    "draw20260928/finqa/AES/2002/page_46.pdf-2",
+                    "draw20260928/finqa/ETR/2016/page_418.pdf-2",
+                    "draw20260928/finqa/CDNS/2018/page_31.pdf-4",
+                    "draw20260928/finqa/LKQ/2016/page_26.pdf-1",
+                    "draw20260928/finqa/C/2008/page_102.pdf-1",
+                    "draw20260928/finqa/UNP/2011/page_21.pdf-1",
+                    "draw20260928/finqa/VNO/2012/page_84.pdf-2",
+                    "draw20260928/finqa/ADI/2011/page_50.pdf-2",
+                    "draw20260928/finqa/AAL/2013/page_15.pdf-3",
+                    "draw20260928/finqa/INTC/2013/page_33.pdf-1",
+                    "draw20260928/finqa/SNA/2012/page_33.pdf-2",
+                    "draw20260928/finqa/GPN/2017/page_77.pdf-1",
+                    "draw20260928/finqa/HUM/2017/page_133.pdf-1",
+                    "draw20260928/finqa/IPG/2008/page_21.pdf-4"
+                  ],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 3,
+                    "R": 13,
+                    "UNKNOWN": 0,
+                    "W": 3
+                  },
+                  "reduction_count": 15,
+                  "reduction_rate": 0.3125,
+                  "reference_count": 19,
+                  "reference_no_call_to_candidate_stop": {
+                    "final_answer": 16,
+                    "no_tool_call": 3
+                  },
+                  "still_any_no_call": 3
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": 0.5416666666666666,
+              "lost_correct_known_pairs": 0,
+              "new_correct_known_pairs": 26,
+              "numerator": 26,
+              "transitions": {
+                "0->0": 22,
+                "0->1": 26,
+                "1->0": 0,
+                "1->1": 0
+              },
+              "unknown_pairs": 0
+            }
+          },
+          "S-P": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.8372093023255814,
+                "denominator": 43,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.75,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.10416666666666667,
+                "invalid_correct_net_count": -5,
+                "numerator": -12,
+                "wrong_correct_component": -0.14583333333333334,
+                "wrong_correct_net_count": -7
+              },
+              "denominator": 48,
+              "difference": -0.25,
+              "lost_correct_known_pairs": 12,
+              "net_correct": -12,
+              "new_correct_known_pairs": 0,
+              "numerator": -12,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 5,
+                "R->R": 36,
+                "R->UNKNOWN": 0,
+                "R->W": 7,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 4,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -4,
+                  "reduction_rate": -0.08333333333333333,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.20833333333333334,
+              "lost_correct_known_pairs": 10,
+              "new_correct_known_pairs": 0,
+              "numerator": -10,
+              "transitions": {
+                "0->0": 12,
+                "0->1": 0,
+                "1->0": 10,
+                "1->1": 26
+              },
+              "unknown_pairs": 0
+            }
+          }
+        },
+        "reused_conditional_selection": true
+      },
+      "K": {
+        "denominator": 48,
+        "independent_validation": false,
+        "native_metrics": {
+          "B": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.9166666666666666,
+              "correct": 44.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "P": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 1.0,
+              "correct": 48.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.9166666666666666,
+              "correct": 44.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 0,
+              "R": 48,
+              "UNKNOWN": 0,
+              "W": 0
+            }
+          },
+          "S": {
+            "execution_accuracy": {
+              "complete_dataset_mean": 0.9375,
+              "correct": 45.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "program_accuracy": {
+              "complete_dataset_mean": 0.875,
+              "correct": 42.0,
+              "denominator": 48,
+              "scored": 48,
+              "unknown": 0
+            },
+            "states": {
+              "I": 1,
+              "R": 45,
+              "UNKNOWN": 0,
+              "W": 2
+            }
+          }
+        },
+        "new_episodes": 0,
+        "no_call": {
+          "B": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "P": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 0
+          },
+          "S": {
+            "conditional_stage_failure_rate_used": false,
+            "denominator": 48,
+            "initial": {
+              "count": 1,
+              "denominator": 48,
+              "rate": 0.020833333333333332
+            },
+            "post_tool": {
+              "count": 0,
+              "denominator": 48,
+              "rate": 0.0
+            },
+            "total_no_call": 1
+          }
+        },
+        "paired": {
+          "S-B": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.9574468085106383,
+                "denominator": 47,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.9375,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.020833333333333332,
+                "invalid_correct_net_count": -1,
+                "numerator": -3,
+                "wrong_correct_component": -0.041666666666666664,
+                "wrong_correct_net_count": -2
+              },
+              "denominator": 48,
+              "difference": -0.0625,
+              "lost_correct_known_pairs": 3,
+              "net_correct": -3,
+              "new_correct_known_pairs": 0,
+              "numerator": -3,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 1,
+                "R->R": 45,
+                "R->UNKNOWN": 0,
+                "R->W": 2,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 0,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": 0,
+                  "reduction_rate": 0.0,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.041666666666666664,
+              "lost_correct_known_pairs": 2,
+              "new_correct_known_pairs": 0,
+              "numerator": -2,
+              "transitions": {
+                "0->0": 4,
+                "0->1": 0,
+                "1->0": 2,
+                "1->1": 42
+              },
+              "unknown_pairs": 0
+            }
+          },
+          "S-P": {
+            "execution_accuracy": {
+              "baseline_accuracy": 1.0,
+              "both_executable": {
+                "baseline_accuracy": 1.0,
+                "candidate_accuracy": 0.9574468085106383,
+                "denominator": 47,
+                "explanatory_only": true
+              },
+              "candidate_accuracy": 0.9375,
+              "decomposition": {
+                "denominator": 48,
+                "exact_count_identity": true,
+                "invalid_correct_component": -0.020833333333333332,
+                "invalid_correct_net_count": -1,
+                "numerator": -3,
+                "wrong_correct_component": -0.041666666666666664,
+                "wrong_correct_net_count": -2
+              },
+              "denominator": 48,
+              "difference": -0.0625,
+              "lost_correct_known_pairs": 3,
+              "net_correct": -3,
+              "new_correct_known_pairs": 0,
+              "numerator": -3,
+              "status": "COMPLETE",
+              "transitions": {
+                "I->I": 0,
+                "I->R": 0,
+                "I->UNKNOWN": 0,
+                "I->W": 0,
+                "R->I": 1,
+                "R->R": 45,
+                "R->UNKNOWN": 0,
+                "R->W": 2,
+                "UNKNOWN->I": 0,
+                "UNKNOWN->R": 0,
+                "UNKNOWN->UNKNOWN": 0,
+                "UNKNOWN->W": 0,
+                "W->I": 0,
+                "W->R": 0,
+                "W->UNKNOWN": 0,
+                "W->W": 0
+              },
+              "unknown_pair_count": 0,
+              "unknown_pair_indices": []
+            },
+            "no_call": {
+              "denominator": 48,
+              "full_denominators": true,
+              "more_actions_do_not_imply_higher_EA": true,
+              "stages": {
+                "initial": {
+                  "candidate_count": 1,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": -1,
+                  "reduction_rate": -0.020833333333333332,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                },
+                "post_tool": {
+                  "candidate_count": 0,
+                  "full_denominator": 48,
+                  "no_longer_same_stage_no_call_count": 0,
+                  "no_longer_same_stage_no_call_to_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "old_source_tasks": [],
+                  "old_stage_no_call_to_candidate_state": {
+                    "I": 0,
+                    "R": 0,
+                    "UNKNOWN": 0,
+                    "W": 0
+                  },
+                  "reduction_count": 0,
+                  "reduction_rate": 0.0,
+                  "reference_count": 0,
+                  "reference_no_call_to_candidate_stop": {},
+                  "still_any_no_call": 0
+                }
+              }
+            },
+            "program_accuracy": {
+              "denominator": 48,
+              "difference": -0.041666666666666664,
+              "lost_correct_known_pairs": 2,
+              "new_correct_known_pairs": 0,
+              "numerator": -2,
+              "transitions": {
+                "0->0": 4,
+                "0->1": 0,
+                "1->0": 2,
+                "1->1": 42
+              },
+              "unknown_pairs": 0
+            }
+          }
+        },
+        "reused_conditional_selection": true
+      }
+    },
+    "independent_parent_count": 1,
+    "independent_seed_replication": false,
+    "individual_components_identified": false,
+    "inherited_pi_was_never_reweighted": false,
+    "native_metrics": {
+      "B": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.4881087202718007,
+          "correct": 431.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.41336353340883353,
+          "correct": 365.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 230,
+          "R": 431,
+          "UNKNOWN": 0,
+          "W": 222
+        }
+      },
+      "P": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.6070215175537939,
+          "correct": 536.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.5028312570781427,
+          "correct": 444.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 105,
+          "R": 536,
+          "UNKNOWN": 0,
+          "W": 242
+        }
+      },
+      "S": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.6308040770101925,
+          "correct": 557.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.5288788221970555,
+          "correct": 467.0,
+          "denominator": 883,
+          "scored": 883,
+          "unknown": 0
+        },
+        "states": {
+          "I": 67,
+          "R": 557,
+          "UNKNOWN": 0,
+          "W": 259
+        }
+      }
+    },
+    "new_adaptive_distribution_updates": 0,
+    "new_old96_generations": 0,
+    "no_call": {
+      "B": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 127,
+          "denominator": 883,
+          "rate": 0.1438278595696489
+        },
+        "post_tool": {
+          "count": 91,
+          "denominator": 883,
+          "rate": 0.10305775764439411
+        },
+        "total_no_call": 218
+      },
+      "P": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 41,
+          "denominator": 883,
+          "rate": 0.0464326160815402
+        },
+        "post_tool": {
+          "count": 41,
+          "denominator": 883,
+          "rate": 0.0464326160815402
+        },
+        "total_no_call": 82
+      },
+      "S": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 883,
+        "initial": {
+          "count": 18,
+          "denominator": 883,
+          "rate": 0.020385050962627407
+        },
+        "post_tool": {
+          "count": 31,
+          "denominator": 883,
+          "rate": 0.035107587768969425
+        },
+        "total_no_call": 49
+      }
+    },
+    "old_scores_rescored": false,
+    "paired": {
+      "S-B": {
+        "execution_accuracy": {
+          "baseline_accuracy": 0.4881087202718007,
+          "both_executable": {
+            "baseline_accuracy": 0.6698717948717948,
+            "candidate_accuracy": 0.6875,
+            "denominator": 624,
+            "explanatory_only": true
+          },
+          "candidate_accuracy": 0.6308040770101925,
+          "decomposition": {
+            "denominator": 883,
+            "exact_count_identity": true,
+            "invalid_correct_component": 0.13023782559456398,
+            "invalid_correct_net_count": 115,
+            "numerator": 126,
+            "wrong_correct_component": 0.01245753114382786,
+            "wrong_correct_net_count": 11
+          },
+          "denominator": 883,
+          "difference": 0.14269535673839184,
+          "lost_correct_known_pairs": 26,
+          "net_correct": 126,
+          "new_correct_known_pairs": 152,
+          "numerator": 126,
+          "status": "COMPLETE",
+          "transitions": {
+            "I->I": 38,
+            "I->R": 128,
+            "I->UNKNOWN": 0,
+            "I->W": 64,
+            "R->I": 13,
+            "R->R": 405,
+            "R->UNKNOWN": 0,
+            "R->W": 13,
+            "UNKNOWN->I": 0,
+            "UNKNOWN->R": 0,
+            "UNKNOWN->UNKNOWN": 0,
+            "UNKNOWN->W": 0,
+            "W->I": 16,
+            "W->R": 24,
+            "W->UNKNOWN": 0,
+            "W->W": 182
+          },
+          "unknown_pair_count": 0,
+          "unknown_pair_indices": []
+        },
+        "no_call": {
+          "denominator": 883,
+          "full_denominators": true,
+          "more_actions_do_not_imply_higher_EA": true,
+          "stages": {
+            "initial": {
+              "candidate_count": 18,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 117,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 5,
+                "R": 80,
+                "UNKNOWN": 0,
+                "W": 32
+              },
+              "old_source_tasks": [
+                "draw20260928/finqa/V/2008/page_17.pdf-1",
+                "draw20260928/finqa/PM/2017/page_38.pdf-1",
+                "draw20260928/finqa/PNC/2013/page_207.pdf-1",
+                "draw20260928/finqa/STT/2011/page_83.pdf-1",
+                "draw20260928/finqa/MSI/2006/page_61.pdf-3",
+                "draw20260928/finqa/SPGI/2018/page_74.pdf-1",
+                "draw20260928/finqa/PM/2017/page_38.pdf-3",
+                "draw20260928/finqa/ETR/2002/page_86.pdf-3",
+                "draw20260928/finqa/ZBH/2003/page_58.pdf-1",
+                "draw20260928/finqa/AMAT/2014/page_35.pdf-1",
+                "draw20260928/finqa/GS/2017/page_106.pdf-4",
+                "draw20260928/finqa/CDNS/2018/page_31.pdf-3",
+                "draw20260928/finqa/ADI/2011/page_81.pdf-1",
+                "draw20260928/finqa/ALXN/2007/page_104.pdf-2",
+                "draw20260928/finqa/AES/2016/page_191.pdf-2",
+                "draw20260928/finqa/IP/2012/page_93.pdf-1",
+                "draw20260928/finqa/AAPL/2008/page_78.pdf-2",
+                "draw20260928/finqa/C/2008/page_102.pdf-2",
+                "draw20260928/finqa/AMT/2005/page_85.pdf-1",
+                "draw20260928/finqa/UNP/2008/page_27.pdf-1",
+                "draw20260928/finqa/MAS/2018/page_60.pdf-2",
+                "draw20260928/finqa/LMT/2017/page_80.pdf-1",
+                "draw20260928/finqa/MRO/2017/page_111.pdf-2",
+                "draw20260928/finqa/LMT/2015/page_56.pdf-3",
+                "draw20260928/finqa/DRE/2002/page_40.pdf-1",
+                "draw20260928/finqa/AON/2014/page_47.pdf-3",
+                "draw20260928/finqa/STZ/2006/page_68.pdf-3",
+                "draw20260928/finqa/AES/2017/page_157.pdf-2",
+                "draw20260928/finqa/PPG/2011/page_70.pdf-2",
+                "draw20260928/finqa/PNC/2013/page_112.pdf-2",
+                "draw20260928/finqa/ADBE/2018/page_86.pdf-4",
+                "draw20260928/finqa/ETR/2011/page_324.pdf-4",
+                "draw20260928/finqa/AAPL/2003/page_24.pdf-1",
+                "draw20260928/finqa/ETR/2017/page_26.pdf-3",
+                "draw20260928/finqa/DRE/2009/page_72.pdf-1",
+                "draw20260928/finqa/PNC/2011/page_87.pdf-4",
+                "draw20260928/finqa/HII/2017/page_104.pdf-4",
+                "draw20260928/finqa/HIG/2008/page_318.pdf-1",
+                "draw20260928/finqa/CME/2012/page_70.pdf-3",
+                "draw20260928/finqa/MRO/2009/page_139.pdf-2",
+                "draw20260928/finqa/ETR/2002/page_24.pdf-3",
+                "draw20260928/finqa/LMT/2005/page_40.pdf-2",
+                "draw20260928/finqa/MS/2014/page_267.pdf-1",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-2",
+                "draw20260928/finqa/MRO/2008/page_69.pdf-4",
+                "draw20260928/finqa/JPM/2005/page_37.pdf-2",
+                "draw20260928/finqa/STZ/2006/page_68.pdf-4",
+                "draw20260928/finqa/PM/2017/page_99.pdf-2",
+                "draw20260928/finqa/HII/2014/page_69.pdf-2",
+                "draw20260928/finqa/LMT/2015/page_99.pdf-3",
+                "draw20260928/finqa/DISH/2013/page_138.pdf-2",
+                "draw20260928/finqa/APD/2016/page_39.pdf-2",
+                "draw20260928/finqa/IPG/2015/page_48.pdf-3",
+                "draw20260928/finqa/MRO/2011/page_73.pdf-4",
+                "draw20260928/finqa/IP/2005/page_19.pdf-2",
+                "draw20260928/finqa/LMT/2005/page_40.pdf-1",
+                "draw20260928/finqa/ETR/2011/page_324.pdf-2",
+                "draw20260928/finqa/HII/2014/page_69.pdf-1",
+                "draw20260928/finqa/HIG/2008/page_318.pdf-2",
+                "draw20260928/finqa/APD/2019/page_48.pdf-1",
+                "draw20260928/finqa/AES/2017/page_157.pdf-4",
+                "draw20260928/finqa/PNC/2013/page_62.pdf-1",
+                "draw20260928/finqa/MRO/2011/page_73.pdf-2",
+                "draw20260928/finqa/UNP/2009/page_65.pdf-2",
+                "draw20260928/finqa/MAS/2018/page_35.pdf-1",
+                "draw20260928/finqa/HII/2014/page_69.pdf-3",
+                "draw20260928/finqa/MRO/2009/page_139.pdf-4",
+                "draw20260928/finqa/APD/2016/page_39.pdf-1",
+                "draw20260928/finqa/GS/2017/page_106.pdf-1",
+                "draw20260928/finqa/STT/2011/page_83.pdf-3",
+                "draw20260928/finqa/RCL/2014/page_17.pdf-1",
+                "draw20260928/finqa/ABMD/2004/page_26.pdf-1",
+                "draw20260928/finqa/LMT/2016/page_48.pdf-4",
+                "draw20260928/finqa/PNC/2011/page_78.pdf-1",
+                "draw20260928/finqa/LMT/2015/page_99.pdf-2",
+                "draw20260928/finqa/C/2008/page_211.pdf-1",
+                "draw20260928/finqa/LMT/2010/page_42.pdf-4",
+                "draw20260928/finqa/AON/2010/page_115.pdf-1",
+                "draw20260928/finqa/ABMD/2004/page_26.pdf-2",
+                "draw20260928/finqa/AMT/2012/page_125.pdf-1",
+                "draw20260928/finqa/MRO/2011/page_73.pdf-3",
+                "draw20260928/finqa/BLL/2010/page_28.pdf-2",
+                "draw20260928/finqa/GS/2016/page_70.pdf-1",
+                "draw20260928/finqa/RE/2015/page_33.pdf-4",
+                "draw20260928/finqa/PNC/2015/page_159.pdf-1",
+                "draw20260928/finqa/LMT/2015/page_99.pdf-1",
+                "draw20260928/finqa/CB/2010/page_88.pdf-1",
+                "draw20260928/finqa/MRO/2004/page_36.pdf-1",
+                "draw20260928/finqa/APD/2013/page_40.pdf-1",
+                "draw20260928/finqa/AMAT/2013/page_18.pdf-1",
+                "draw20260928/finqa/HII/2017/page_124.pdf-3",
+                "draw20260928/finqa/LKQ/2016/page_26.pdf-2",
+                "draw20260928/finqa/ETR/2011/page_324.pdf-3",
+                "draw20260928/finqa/IP/2005/page_19.pdf-1",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-4",
+                "draw20260928/finqa/PNC/2011/page_87.pdf-2",
+                "draw20260928/finqa/LMT/2016/page_48.pdf-1",
+                "draw20260928/finqa/FIS/2007/page_91.pdf-1",
+                "draw20260928/finqa/DRE/2007/page_59.pdf-2",
+                "draw20260928/finqa/AAL/2013/page_15.pdf-1",
+                "draw20260928/finqa/HIG/2008/page_318.pdf-3",
+                "draw20260928/finqa/PNC/2011/page_87.pdf-3",
+                "draw20260928/finqa/NKE/2016/page_37.pdf-1",
+                "draw20260928/finqa/MRO/2015/page_18.pdf-1",
+                "draw20260928/finqa/MRO/2008/page_69.pdf-3",
+                "draw20260928/finqa/MRO/2009/page_139.pdf-1",
+                "draw20260928/finqa/ZBH/2017/page_71.pdf-2",
+                "draw20260928/finqa/AON/2009/page_46.pdf-1",
+                "draw20260928/finqa/VTR/2007/page_47.pdf-1",
+                "draw20260928/finqa/LMT/2010/page_42.pdf-3",
+                "draw20260928/finqa/PNC/2009/page_41.pdf-4",
+                "draw20260928/finqa/IPG/2008/page_21.pdf-2",
+                "draw20260928/finqa/UNP/2014/page_25.pdf-3",
+                "draw20260928/finqa/UNP/2006/page_37.pdf-3",
+                "draw20260928/finqa/ABMD/2009/page_56.pdf-2",
+                "draw20260928/finqa/PPG/2011/page_70.pdf-4",
+                "draw20260928/finqa/BLK/2012/page_160.pdf-3",
+                "draw20260928/finqa/IP/2007/page_75.pdf-3",
+                "draw20260928/finqa/ABMD/2009/page_88.pdf-4",
+                "draw20260928/finqa/BLK/2013/page_124.pdf-3",
+                "draw20260928/finqa/UNP/2013/page_44.pdf-2",
+                "draw20260928/finqa/LKQ/2018/page_83.pdf-3",
+                "draw20260928/finqa/ABMD/2004/page_26.pdf-3",
+                "draw20260928/finqa/UNP/2006/page_37.pdf-4",
+                "draw20260928/finqa/BLK/2012/page_160.pdf-4",
+                "draw20260928/finqa/APTV/2014/page_49.pdf-3",
+                "draw20260928/finqa/ADI/2011/page_50.pdf-3"
+              ],
+              "old_stage_no_call_to_candidate_state": {
+                "I": 15,
+                "R": 80,
+                "UNKNOWN": 0,
+                "W": 32
+              },
+              "reduction_count": 109,
+              "reduction_rate": 0.12344280860702152,
+              "reference_count": 127,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 114,
+                "no_tool_call": 13
+              },
+              "still_any_no_call": 13
+            },
+            "post_tool": {
+              "candidate_count": 31,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 78,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 4,
+                "R": 47,
+                "UNKNOWN": 0,
+                "W": 27
+              },
+              "old_source_tasks": [
+                "draw20260928/finqa/C/2017/page_328.pdf-1",
+                "draw20260928/finqa/AMAT/2013/page_18.pdf-2",
+                "draw20260928/finqa/PNC/2009/page_46.pdf-2",
+                "draw20260928/finqa/ETR/2017/page_114.pdf-2",
+                "draw20260928/finqa/ETFC/2007/page_126.pdf-3",
+                "draw20260928/finqa/AES/2002/page_46.pdf-4",
+                "draw20260928/finqa/AMT/2010/page_34.pdf-2",
+                "draw20260928/finqa/PM/2017/page_99.pdf-1",
+                "draw20260928/finqa/LKQ/2010/page_84.pdf-1",
+                "draw20260928/finqa/ZBH/2003/page_58.pdf-4",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-3",
+                "draw20260928/finqa/INTC/2013/page_29.pdf-3",
+                "draw20260928/finqa/ZBH/2017/page_53.pdf-1",
+                "draw20260928/finqa/INTC/2013/page_33.pdf-2",
+                "draw20260928/finqa/AES/2016/page_191.pdf-1",
+                "draw20260928/finqa/GPN/2017/page_77.pdf-3",
+                "draw20260928/finqa/SWKS/2006/page_81.pdf-2",
+                "draw20260928/finqa/LMT/2017/page_80.pdf-2",
+                "draw20260928/finqa/CDNS/2018/page_31.pdf-2",
+                "draw20260928/finqa/IPG/2015/page_48.pdf-2",
+                "draw20260928/finqa/AES/2002/page_46.pdf-2",
+                "draw20260928/finqa/UAA/2016/page_52.pdf-2",
+                "draw20260928/finqa/ETR/2016/page_418.pdf-2",
+                "draw20260928/finqa/CDNS/2018/page_31.pdf-4",
+                "draw20260928/finqa/AON/2009/page_48.pdf-3",
+                "draw20260928/finqa/IPG/2008/page_21.pdf-3",
+                "draw20260928/finqa/MRO/2017/page_111.pdf-1",
+                "draw20260928/finqa/RSG/2017/page_138.pdf-1",
+                "draw20260928/finqa/PNC/2016/page_177.pdf-1",
+                "draw20260928/finqa/ETFC/2014/page_26.pdf-4",
+                "draw20260928/finqa/ETR/2008/page_321.pdf-1",
+                "draw20260928/finqa/LKQ/2016/page_26.pdf-1",
+                "draw20260928/finqa/AAL/2015/page_118.pdf-2",
+                "draw20260928/finqa/CME/2010/page_42.pdf-1",
+                "draw20260928/finqa/ETFC/2013/page_26.pdf-1",
+                "draw20260928/finqa/TSCO/2017/page_31.pdf-1",
+                "draw20260928/finqa/ETR/2002/page_86.pdf-1",
+                "draw20260928/finqa/PM/2018/page_24.pdf-1",
+                "draw20260928/finqa/C/2008/page_102.pdf-1",
+                "draw20260928/finqa/AMT/2005/page_85.pdf-2",
+                "draw20260928/finqa/UNP/2011/page_21.pdf-1",
+                "draw20260928/finqa/JPM/2008/page_85.pdf-2",
+                "draw20260928/finqa/IPG/2008/page_93.pdf-3",
+                "draw20260928/finqa/BLL/2007/page_35.pdf-3",
+                "draw20260928/finqa/AES/2017/page_175.pdf-3",
+                "draw20260928/finqa/VNO/2012/page_84.pdf-2",
+                "draw20260928/finqa/VTR/2007/page_47.pdf-3",
+                "draw20260928/finqa/UPS/2006/page_32.pdf-2",
+                "draw20260928/finqa/HII/2017/page_124.pdf-2",
+                "draw20260928/finqa/MAS/2012/page_70.pdf-2",
+                "draw20260928/finqa/AON/2011/page_134.pdf-2",
+                "draw20260928/finqa/AAL/2015/page_118.pdf-3",
+                "draw20260928/finqa/PM/2015/page_127.pdf-3",
+                "draw20260928/finqa/AAPL/2005/page_83.pdf-1",
+                "draw20260928/finqa/NWS/2016/page_61.pdf-1",
+                "draw20260928/finqa/AMT/2005/page_105.pdf-4",
+                "draw20260928/finqa/TSCO/2018/page_34.pdf-2",
+                "draw20260928/finqa/ADI/2011/page_50.pdf-2",
+                "draw20260928/finqa/AAL/2013/page_15.pdf-3",
+                "draw20260928/finqa/AMT/2010/page_34.pdf-4",
+                "draw20260928/finqa/TSCO/2018/page_34.pdf-1",
+                "draw20260928/finqa/DRE/2002/page_40.pdf-2",
+                "draw20260928/finqa/AON/2011/page_134.pdf-3",
+                "draw20260928/finqa/IPG/2015/page_48.pdf-1",
+                "draw20260928/finqa/ETR/2016/page_418.pdf-1",
+                "draw20260928/finqa/INTC/2013/page_33.pdf-1",
+                "draw20260928/finqa/ETFC/2011/page_82.pdf-4",
+                "draw20260928/finqa/APD/2016/page_96.pdf-1",
+                "draw20260928/finqa/SNA/2012/page_33.pdf-2",
+                "draw20260928/finqa/TROW/2010/page_22.pdf-1",
+                "draw20260928/finqa/ETR/2017/page_316.pdf-4",
+                "draw20260928/finqa/AES/2002/page_46.pdf-1",
+                "draw20260928/finqa/GPN/2017/page_77.pdf-1",
+                "draw20260928/finqa/PNC/2018/page_171.pdf-1",
+                "draw20260928/finqa/HIG/2011/page_188.pdf-1",
+                "draw20260928/finqa/HUM/2017/page_133.pdf-1",
+                "draw20260928/finqa/ETR/2008/page_377.pdf-3",
+                "draw20260928/finqa/RE/2017/page_159.pdf-1",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-1",
+                "draw20260928/finqa/APD/2013/page_36.pdf-2",
+                "draw20260928/finqa/UA/2009/page_50.pdf-2",
+                "draw20260928/finqa/LMT/2012/page_47.pdf-2",
+                "draw20260928/finqa/IPG/2008/page_21.pdf-4",
+                "draw20260928/finqa/IP/2007/page_31.pdf-2",
+                "draw20260928/finqa/ETR/2002/page_86.pdf-4",
+                "draw20260928/finqa/UAA/2016/page_52.pdf-3",
+                "draw20260928/finqa/CAT/2017/page_85.pdf-3",
+                "draw20260928/finqa/PPG/2011/page_70.pdf-3",
+                "draw20260928/finqa/BLK/2014/page_119.pdf-4",
+                "draw20260928/finqa/UNP/2014/page_35.pdf-4",
+                "draw20260928/finqa/AAP/2011/page_28.pdf-3"
+              ],
+              "old_stage_no_call_to_candidate_state": {
+                "I": 17,
+                "R": 47,
+                "UNKNOWN": 0,
+                "W": 27
+              },
+              "reduction_count": 60,
+              "reduction_rate": 0.06795016987542468,
+              "reference_count": 91,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 77,
+                "no_tool_call": 14
+              },
+              "still_any_no_call": 14
+            }
+          }
+        },
+        "program_accuracy": {
+          "denominator": 883,
+          "difference": 0.11551528878822197,
+          "lost_correct_known_pairs": 21,
+          "new_correct_known_pairs": 123,
+          "numerator": 102,
+          "transitions": {
+            "0->0": 395,
+            "0->1": 123,
+            "1->0": 21,
+            "1->1": 344
+          },
+          "unknown_pairs": 0
+        }
+      },
+      "S-P": {
+        "execution_accuracy": {
+          "baseline_accuracy": 0.6070215175537939,
+          "both_executable": {
+            "baseline_accuracy": 0.6983695652173914,
+            "candidate_accuracy": 0.6942934782608695,
+            "denominator": 736,
+            "explanatory_only": true
+          },
+          "candidate_accuracy": 0.6308040770101925,
+          "decomposition": {
+            "denominator": 883,
+            "exact_count_identity": true,
+            "invalid_correct_component": 0.027180067950169876,
+            "invalid_correct_net_count": 24,
+            "numerator": 21,
+            "wrong_correct_component": -0.0033975084937712344,
+            "wrong_correct_net_count": -3
+          },
+          "denominator": 883,
+          "difference": 0.02378255945639864,
+          "lost_correct_known_pairs": 55,
+          "net_correct": 21,
+          "new_correct_known_pairs": 76,
+          "numerator": 21,
+          "status": "COMPLETE",
+          "transitions": {
+            "I->I": 25,
+            "I->R": 46,
+            "I->UNKNOWN": 0,
+            "I->W": 34,
+            "R->I": 22,
+            "R->R": 481,
+            "R->UNKNOWN": 0,
+            "R->W": 33,
+            "UNKNOWN->I": 0,
+            "UNKNOWN->R": 0,
+            "UNKNOWN->UNKNOWN": 0,
+            "UNKNOWN->W": 0,
+            "W->I": 20,
+            "W->R": 30,
+            "W->UNKNOWN": 0,
+            "W->W": 192
+          },
+          "unknown_pair_count": 0,
+          "unknown_pair_indices": []
+        },
+        "no_call": {
+          "denominator": 883,
+          "full_denominators": true,
+          "more_actions_do_not_imply_higher_EA": true,
+          "stages": {
+            "initial": {
+              "candidate_count": 18,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 38,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 3,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 14
+              },
+              "old_source_tasks": [
+                "draw20260928/finqa/AON/2010/page_28.pdf-1",
+                "draw20260928/finqa/ZBH/2003/page_40.pdf-1",
+                "draw20260928/finqa/GS/2017/page_106.pdf-4",
+                "draw20260928/finqa/IP/2012/page_93.pdf-1",
+                "draw20260928/finqa/IPG/2009/page_85.pdf-3",
+                "draw20260928/finqa/AES/2017/page_157.pdf-2",
+                "draw20260928/finqa/LMT/2017/page_80.pdf-2",
+                "draw20260928/finqa/MSI/2006/page_61.pdf-4",
+                "draw20260928/finqa/MRO/2009/page_56.pdf-2",
+                "draw20260928/finqa/DRE/2009/page_72.pdf-1",
+                "draw20260928/finqa/HII/2017/page_104.pdf-4",
+                "draw20260928/finqa/C/2010/page_223.pdf-4",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-2",
+                "draw20260928/finqa/MRO/2008/page_69.pdf-4",
+                "draw20260928/finqa/PPG/2013/page_40.pdf-2",
+                "draw20260928/finqa/PNC/2011/page_78.pdf-3",
+                "draw20260928/finqa/HII/2014/page_69.pdf-2",
+                "draw20260928/finqa/ZBH/2003/page_40.pdf-2",
+                "draw20260928/finqa/MRO/2011/page_73.pdf-4",
+                "draw20260928/finqa/ETR/2011/page_324.pdf-2",
+                "draw20260928/finqa/HII/2014/page_69.pdf-1",
+                "draw20260928/finqa/STT/2011/page_83.pdf-2",
+                "draw20260928/finqa/HIG/2008/page_318.pdf-2",
+                "draw20260928/finqa/VLO/2018/page_25.pdf-2",
+                "draw20260928/finqa/ETR/2011/page_324.pdf-1",
+                "draw20260928/finqa/HII/2017/page_124.pdf-2",
+                "draw20260928/finqa/RCL/2014/page_17.pdf-2",
+                "draw20260928/finqa/MRO/2009/page_139.pdf-4",
+                "draw20260928/finqa/LMT/2015/page_54.pdf-3",
+                "draw20260928/finqa/GS/2016/page_70.pdf-2",
+                "draw20260928/finqa/HII/2014/page_69.pdf-4",
+                "draw20260928/finqa/CB/2010/page_88.pdf-3",
+                "draw20260928/finqa/MRO/2006/page_33.pdf-3",
+                "draw20260928/finqa/MRO/2015/page_18.pdf-1",
+                "draw20260928/finqa/FIS/2007/page_94.pdf-4",
+                "draw20260928/finqa/HOLX/2012/page_113.pdf-2",
+                "draw20260928/finqa/FIS/2007/page_94.pdf-1",
+                "draw20260928/finqa/UNP/2014/page_75.pdf-2",
+                "draw20260928/finqa/BLK/2014/page_119.pdf-3",
+                "draw20260928/finqa/BLK/2016/page_119.pdf-3",
+                "draw20260928/finqa/UNP/2006/page_37.pdf-4"
+              ],
+              "old_stage_no_call_to_candidate_state": {
+                "I": 6,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 14
+              },
+              "reduction_count": 23,
+              "reduction_rate": 0.026047565118912798,
+              "reference_count": 41,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 37,
+                "no_tool_call": 4
+              },
+              "still_any_no_call": 4
+            },
+            "post_tool": {
+              "candidate_count": 31,
+              "full_denominator": 883,
+              "no_longer_same_stage_no_call_count": 36,
+              "no_longer_same_stage_no_call_to_state": {
+                "I": 4,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 11
+              },
+              "old_source_tasks": [
+                "draw20260928/finqa/AAPL/2004/page_36.pdf-2",
+                "draw20260928/finqa/MRO/2007/page_149.pdf-2",
+                "draw20260928/finqa/ETR/2017/page_114.pdf-2",
+                "draw20260928/finqa/ETFC/2014/page_26.pdf-2",
+                "draw20260928/finqa/ETR/2002/page_24.pdf-1",
+                "draw20260928/finqa/PM/2015/page_38.pdf-1",
+                "draw20260928/finqa/AMT/2008/page_32.pdf-3",
+                "draw20260928/finqa/TROW/2010/page_22.pdf-2",
+                "draw20260928/finqa/UAA/2016/page_52.pdf-1",
+                "draw20260928/finqa/AES/2016/page_191.pdf-1",
+                "draw20260928/finqa/FBHS/2017/page_23.pdf-1",
+                "draw20260928/finqa/HOLX/2010/page_124.pdf-1",
+                "draw20260928/finqa/BLK/2012/page_160.pdf-1",
+                "draw20260928/finqa/HIG/2008/page_318.pdf-1",
+                "draw20260928/finqa/AON/2009/page_48.pdf-3",
+                "draw20260928/finqa/ETR/2002/page_24.pdf-3",
+                "draw20260928/finqa/IPG/2008/page_21.pdf-3",
+                "draw20260928/finqa/BLL/2010/page_28.pdf-1",
+                "draw20260928/finqa/UPS/2006/page_32.pdf-4",
+                "draw20260928/finqa/AAL/2015/page_118.pdf-2",
+                "draw20260928/finqa/ETR/2004/page_213.pdf-3",
+                "draw20260928/finqa/TSCO/2017/page_31.pdf-1",
+                "draw20260928/finqa/MRO/2006/page_33.pdf-2",
+                "draw20260928/finqa/HII/2017/page_124.pdf-4",
+                "draw20260928/finqa/UPS/2006/page_32.pdf-2",
+                "draw20260928/finqa/AES/2002/page_46.pdf-3",
+                "draw20260928/finqa/ABMD/2004/page_26.pdf-1",
+                "draw20260928/finqa/PKG/2009/page_65.pdf-1",
+                "draw20260928/finqa/UNP/2014/page_25.pdf-2",
+                "draw20260928/finqa/DRE/2002/page_40.pdf-2",
+                "draw20260928/finqa/LKQ/2016/page_26.pdf-2",
+                "draw20260928/finqa/UNP/2014/page_35.pdf-1",
+                "draw20260928/finqa/BLK/2013/page_124.pdf-1",
+                "draw20260928/finqa/AON/2014/page_47.pdf-2",
+                "draw20260928/finqa/PNC/2018/page_171.pdf-1",
+                "draw20260928/finqa/CDNS/2012/page_30.pdf-2",
+                "draw20260928/finqa/VTR/2007/page_47.pdf-1",
+                "draw20260928/finqa/PM/2017/page_99.pdf-4",
+                "draw20260928/finqa/UNP/2008/page_79.pdf-2",
+                "draw20260928/finqa/ANSS/2013/page_55.pdf-3",
+                "draw20260928/finqa/BLK/2016/page_119.pdf-4"
+              ],
+              "old_stage_no_call_to_candidate_state": {
+                "I": 9,
+                "R": 21,
+                "UNKNOWN": 0,
+                "W": 11
+              },
+              "reduction_count": 10,
+              "reduction_rate": 0.011325028312570781,
+              "reference_count": 41,
+              "reference_no_call_to_candidate_stop": {
+                "final_answer": 33,
+                "no_tool_call": 8
+              },
+              "still_any_no_call": 8
+            }
+          }
+        },
+        "program_accuracy": {
+          "denominator": 883,
+          "difference": 0.026047565118912798,
+          "lost_correct_known_pairs": 44,
+          "new_correct_known_pairs": 67,
+          "numerator": 23,
+          "transitions": {
+            "0->0": 372,
+            "0->1": 67,
+            "1->0": 44,
+            "1->1": 400
+          },
+          "unknown_pairs": 0
+        }
+      }
+    },
+    "schema": "v75_candidate_paired_complete_development_analysis.v1",
+    "source_cluster_sensitivity": {
+      "cluster_count": 224,
+      "cluster_task_counts": {
+        "finqa:report:AAL/2013": 4,
+        "finqa:report:AAL/2015": 3,
+        "finqa:report:AAP/2011": 3,
+        "finqa:report:AAP/2012": 3,
+        "finqa:report:AAPL/2003": 2,
+        "finqa:report:AAPL/2004": 2,
+        "finqa:report:AAPL/2005": 2,
+        "finqa:report:AAPL/2008": 1,
+        "finqa:report:AAPL/2014": 4,
+        "finqa:report:ABMD/2004": 4,
+        "finqa:report:ABMD/2006": 4,
+        "finqa:report:ABMD/2007": 4,
+        "finqa:report:ABMD/2009": 7,
+        "finqa:report:ADBE/2018": 4,
+        "finqa:report:ADI/2011": 6,
+        "finqa:report:AES/2001": 2,
+        "finqa:report:AES/2002": 4,
+        "finqa:report:AES/2003": 2,
+        "finqa:report:AES/2015": 4,
+        "finqa:report:AES/2016": 7,
+        "finqa:report:AES/2017": 8,
+        "finqa:report:ALLE/2016": 1,
+        "finqa:report:ALXN/2007": 2,
+        "finqa:report:AMAT/2013": 2,
+        "finqa:report:AMAT/2014": 3,
+        "finqa:report:AMT/2004": 3,
+        "finqa:report:AMT/2005": 8,
+        "finqa:report:AMT/2008": 4,
+        "finqa:report:AMT/2010": 4,
+        "finqa:report:AMT/2012": 2,
+        "finqa:report:ANSS/2013": 3,
+        "finqa:report:AON/2009": 7,
+        "finqa:report:AON/2010": 5,
+        "finqa:report:AON/2011": 4,
+        "finqa:report:AON/2014": 4,
+        "finqa:report:AOS/2004": 2,
+        "finqa:report:APD/2013": 5,
+        "finqa:report:APD/2014": 4,
+        "finqa:report:APD/2016": 6,
+        "finqa:report:APD/2018": 2,
+        "finqa:report:APD/2019": 4,
+        "finqa:report:APTV/2014": 3,
+        "finqa:report:AWK/2013": 4,
+        "finqa:report:BDX/2018": 4,
+        "finqa:report:BDX/2019": 1,
+        "finqa:report:BKR/2017": 4,
+        "finqa:report:BLK/2012": 8,
+        "finqa:report:BLK/2013": 8,
+        "finqa:report:BLK/2014": 4,
+        "finqa:report:BLK/2016": 4,
+        "finqa:report:BLK/2017": 3,
+        "finqa:report:BLL/2007": 8,
+        "finqa:report:BLL/2010": 4,
+        "finqa:report:C/2008": 7,
+        "finqa:report:C/2010": 4,
+        "finqa:report:C/2017": 4,
+        "finqa:report:CAG/2008": 2,
+        "finqa:report:CAT/2017": 4,
+        "finqa:report:CB/2010": 7,
+        "finqa:report:CDNS/2006": 4,
+        "finqa:report:CDNS/2012": 4,
+        "finqa:report:CDNS/2018": 4,
+        "finqa:report:CMCSA/2015": 3,
+        "finqa:report:CME/2010": 1,
+        "finqa:report:CME/2012": 4,
+        "finqa:report:CME/2017": 5,
+        "finqa:report:CNP/2010": 2,
+        "finqa:report:DISCA/2012": 4,
+        "finqa:report:DISH/2013": 3,
+        "finqa:report:DRE/2002": 2,
+        "finqa:report:DRE/2007": 3,
+        "finqa:report:DRE/2009": 3,
+        "finqa:report:DRE/2013": 2,
+        "finqa:report:DVN/2007": 2,
+        "finqa:report:DVN/2014": 2,
+        "finqa:report:ETFC/2007": 3,
+        "finqa:report:ETFC/2011": 4,
+        "finqa:report:ETFC/2013": 2,
+        "finqa:report:ETFC/2014": 4,
+        "finqa:report:ETR/2002": 8,
+        "finqa:report:ETR/2003": 2,
+        "finqa:report:ETR/2004": 4,
+        "finqa:report:ETR/2008": 11,
+        "finqa:report:ETR/2011": 11,
+        "finqa:report:ETR/2013": 4,
+        "finqa:report:ETR/2015": 5,
+        "finqa:report:ETR/2016": 4,
+        "finqa:report:ETR/2017": 10,
+        "finqa:report:EW/2016": 8,
+        "finqa:report:EW/2017": 2,
+        "finqa:report:FBHS/2017": 5,
+        "finqa:report:FIS/2007": 6,
+        "finqa:report:FRT/2005": 2,
+        "finqa:report:GIS/2012": 2,
+        "finqa:report:GIS/2019": 3,
+        "finqa:report:GPN/2009": 4,
+        "finqa:report:GPN/2017": 4,
+        "finqa:report:GS/2012": 3,
+        "finqa:report:GS/2013": 2,
+        "finqa:report:GS/2014": 2,
+        "finqa:report:GS/2016": 6,
+        "finqa:report:GS/2017": 6,
+        "finqa:report:HIG/2008": 3,
+        "finqa:report:HIG/2011": 3,
+        "finqa:report:HII/2014": 4,
+        "finqa:report:HII/2017": 10,
+        "finqa:report:HOLX/2007": 4,
+        "finqa:report:HOLX/2008": 6,
+        "finqa:report:HOLX/2010": 1,
+        "finqa:report:HOLX/2012": 2,
+        "finqa:report:HOLX/2015": 1,
+        "finqa:report:HUM/2017": 4,
+        "finqa:report:HWM/2016": 2,
+        "finqa:report:HWM/2017": 2,
+        "finqa:report:ILMN/2007": 4,
+        "finqa:report:INTC/2013": 7,
+        "finqa:report:IP/2005": 7,
+        "finqa:report:IP/2006": 4,
+        "finqa:report:IP/2007": 8,
+        "finqa:report:IP/2009": 4,
+        "finqa:report:IP/2012": 4,
+        "finqa:report:IPG/2008": 12,
+        "finqa:report:IPG/2009": 3,
+        "finqa:report:IPG/2015": 6,
+        "finqa:report:JKHY/2014": 2,
+        "finqa:report:JPM/2005": 3,
+        "finqa:report:JPM/2007": 7,
+        "finqa:report:JPM/2008": 5,
+        "finqa:report:JPM/2009": 2,
+        "finqa:report:JPM/2013": 3,
+        "finqa:report:JPM/2014": 5,
+        "finqa:report:JPM/2018": 5,
+        "finqa:report:K/2013": 2,
+        "finqa:report:KHC/2016": 4,
+        "finqa:report:L/2015": 4,
+        "finqa:report:LKQ/2010": 4,
+        "finqa:report:LKQ/2016": 3,
+        "finqa:report:LKQ/2018": 3,
+        "finqa:report:LLY/2018": 3,
+        "finqa:report:LMT/2005": 4,
+        "finqa:report:LMT/2006": 5,
+        "finqa:report:LMT/2010": 4,
+        "finqa:report:LMT/2012": 4,
+        "finqa:report:LMT/2013": 4,
+        "finqa:report:LMT/2015": 10,
+        "finqa:report:LMT/2016": 4,
+        "finqa:report:LMT/2017": 3,
+        "finqa:report:MA/2008": 2,
+        "finqa:report:MAS/2012": 3,
+        "finqa:report:MAS/2018": 5,
+        "finqa:report:MMM/2005": 1,
+        "finqa:report:MO/2012": 4,
+        "finqa:report:MRO/2004": 2,
+        "finqa:report:MRO/2006": 3,
+        "finqa:report:MRO/2007": 6,
+        "finqa:report:MRO/2008": 4,
+        "finqa:report:MRO/2009": 7,
+        "finqa:report:MRO/2011": 4,
+        "finqa:report:MRO/2014": 1,
+        "finqa:report:MRO/2015": 4,
+        "finqa:report:MRO/2017": 4,
+        "finqa:report:MS/2014": 3,
+        "finqa:report:MS/2017": 2,
+        "finqa:report:MSI/2006": 4,
+        "finqa:report:MSI/2009": 2,
+        "finqa:report:NKE/2016": 2,
+        "finqa:report:NWS/2016": 1,
+        "finqa:report:OKE/2008": 2,
+        "finqa:report:OKE/2012": 1,
+        "finqa:report:PKG/2009": 4,
+        "finqa:report:PM/2014": 3,
+        "finqa:report:PM/2015": 10,
+        "finqa:report:PM/2017": 8,
+        "finqa:report:PM/2018": 5,
+        "finqa:report:PNC/2009": 8,
+        "finqa:report:PNC/2011": 8,
+        "finqa:report:PNC/2013": 6,
+        "finqa:report:PNC/2015": 2,
+        "finqa:report:PNC/2016": 1,
+        "finqa:report:PNC/2018": 2,
+        "finqa:report:PPG/2011": 4,
+        "finqa:report:PPG/2013": 4,
+        "finqa:report:RCL/2014": 2,
+        "finqa:report:RE/2015": 4,
+        "finqa:report:RE/2017": 4,
+        "finqa:report:RSG/2009": 2,
+        "finqa:report:RSG/2015": 4,
+        "finqa:report:RSG/2016": 2,
+        "finqa:report:RSG/2017": 3,
+        "finqa:report:SLB/2012": 4,
+        "finqa:report:SNA/2012": 3,
+        "finqa:report:SNPS/2006": 4,
+        "finqa:report:SPGI/2015": 1,
+        "finqa:report:SPGI/2018": 1,
+        "finqa:report:STT/2008": 2,
+        "finqa:report:STT/2009": 3,
+        "finqa:report:STT/2011": 3,
+        "finqa:report:STZ/2006": 4,
+        "finqa:report:SWKS/2006": 2,
+        "finqa:report:SYY/2019": 2,
+        "finqa:report:TFX/2015": 3,
+        "finqa:report:TROW/2010": 4,
+        "finqa:report:TSCO/2017": 2,
+        "finqa:report:TSCO/2018": 2,
+        "finqa:report:UA/2009": 1,
+        "finqa:report:UA/2015": 2,
+        "finqa:report:UAA/2016": 3,
+        "finqa:report:UNP/2006": 4,
+        "finqa:report:UNP/2007": 3,
+        "finqa:report:UNP/2008": 7,
+        "finqa:report:UNP/2009": 2,
+        "finqa:report:UNP/2011": 8,
+        "finqa:report:UNP/2013": 7,
+        "finqa:report:UNP/2014": 11,
+        "finqa:report:UNP/2015": 6,
+        "finqa:report:UPS/2006": 4,
+        "finqa:report:V/2008": 2,
+        "finqa:report:V/2013": 1,
+        "finqa:report:VLO/2018": 3,
+        "finqa:report:VNO/2012": 2,
+        "finqa:report:VRTX/2003": 3,
+        "finqa:report:VTR/2007": 4,
+        "finqa:report:ZBH/2003": 6,
+        "finqa:report:ZBH/2017": 4
+      },
+      "comparisons": {
+        "execution_accuracy:S-B": {
+          "bootstrap_values_sha256": "16acd349457a2d3f1c898fef999c2ad1d91de2692cf2d8056d2411888825b0c6",
+          "level": 0.95,
+          "lower": 0.11252758127108967,
+          "mean_difference": 0.14269535673839184,
+          "upper": 0.17327333943334858
+        },
+        "execution_accuracy:S-P": {
+          "bootstrap_values_sha256": "ddf33aa58246182eea7f24adb5e00c77b8dc25221f33c6a9c50d1d72b3a67fae",
+          "level": 0.95,
+          "lower": -0.0011979310144843481,
+          "mean_difference": 0.02378255945639864,
+          "upper": 0.04900873349663179
+        },
+        "program_accuracy:S-B": {
+          "bootstrap_values_sha256": "e5ec856596eb83d6e15b5bda15985f0da3451de46825627b84bdea4215bf297c",
+          "level": 0.95,
+          "lower": 0.08899861916437733,
+          "mean_difference": 0.11551528878822197,
+          "upper": 0.14252620396881288
+        },
+        "program_accuracy:S-P": {
+          "bootstrap_values_sha256": "b39275ee390b1dc5a5cc080068cb7217e3b5fe73c4723e32ba8d39f616b3bc5f",
+          "level": 0.95,
+          "lower": 0.002270083213005217,
+          "mean_difference": 0.026047565118912798,
+          "upper": 0.05000139043381533
+        }
+      },
+      "cross_seed_uncertainty": false,
+      "incomplete_metrics_not_imputed": true,
+      "independent_training_parent_count": 1,
+      "replicates": 10000,
+      "same_weights_all_available_comparisons": true,
+      "seed": 20261018,
+      "shared_weight_sha256": "7e93674c4eca85921ff7a46af7315801f44e84fb1051074990b7bf0abe39cc13",
+      "status": "COMPLETE",
+      "task_count": 883,
+      "task_weighted": true,
+      "uncertainty_scope": "source-composition sensitivity conditional on one fixed parent and training realization"
+    },
+    "statistics_contract": {
+      "UNKNOWN_as_zero": false,
+      "UNKNOWN_denominator_reduced": false,
+      "advancement_threshold": null,
+      "automatic_Full_resume": false,
+      "automatic_followup": false,
+      "candidate": "S_StateDemo1490",
+      "causal_components_identified": false,
+      "denominator": 883,
+      "development_panel_is_unseen_confirmation": false,
+      "independent_training_parent_count": 1,
+      "intervention_is_combination": true,
+      "mechanism_slice": "the existing V73 fixed96 F/K48 tasks within this single dev883 run",
+      "metrics": [
+        "execution_accuracy",
+        "program_accuracy",
+        "I/W/R/UNKNOWN",
+        "new_correct",
+        "lost_correct"
+      ],
+      "new_candidate_training_branches": 1,
+      "new_slice_generation": 0,
+      "no_call_stage_denominator": 883,
+      "no_call_stages": [
+        "initial",
+        "post_tool"
+      ],
+      "no_p_values": true,
+      "paired_orientation": "old original trajectory -> candidate; candidate minus reference",
+      "parent_net_gain": "(S-536)/883",
+      "primary": "(S-431)/883",
+      "reused_control": "B_V72LowLR1490",
+      "reused_control_is_new_independent_replication": false,
+      "reused_correct": {
+        "B": 431,
+        "P": 536
+      },
+      "reused_parent": "P_Fixed1192",
+      "schema": "v75_one_parent_paired_development_statistics.v1",
+      "source_cluster": {
+        "cross_seed_uncertainty": false,
+        "draw": "G uniform source-cluster indices with replacement per replicate",
+        "implementation": "original frozen V54 source_cluster_sensitivity",
+        "ordered_clusters": "lexicographically sorted actual lineage.source_group",
+        "percentile_interval": [
+          0.025,
+          0.975
+        ],
+        "quantile_method": "linear",
+        "replicates": 10000,
+        "rng": "numpy.random.Generator(numpy.random.PCG64(seed))",
+        "same_cluster_weights_all_available_comparisons": true,
+        "seed": 20261018,
+        "significance_or_stability_confirmation": false,
+        "statistic": "sum(sampled cluster paired sums)/sum(sampled cluster question counts)",
+        "task_weighted": true,
+        "uncertainty_scope": "source-composition sensitivity conditional on one fixed parent and training realization"
+      },
+      "unit_compute_advantage_claimed": false
+    },
+    "status": "COMPLETE"
+  },
+  "automatic_followup_started": false,
+  "derived_at_beijing": "2026-10-28T15:07:58.691641+08:00",
+  "external_API_calls": 0,
+  "formal_final_summary_created": false,
+  "id": "f6e67e1505683aa612f6c568c394b1d3b8501ffa4ad5ff09ecdba3b2016ae34e",
+  "new_model_calls": 0,
+  "new_native_scores": 0,
+  "new_optimizer_updates": 0,
+  "new_tool_calls": 0,
+  "original_final_CPU_acceptance_completed": false,
+  "original_scientific_failure_changed": false,
+  "producer": {
+    "bytes": 6098,
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/report_derivation_20261028/paired_analysis_producer.py",
+    "sha256": "30fcb2dc726d87eba0ee1c6b51aa79f8433ebd6b5340ecbb2b9bed8ac9acfe89"
+  },
+  "raw_episodes_read": 0,
+  "report_only_CPU_statistics": true,
+  "schema": "v75_report_only_paired_derivation.v1",
+  "scientific_closeout_id": "9c33732cd28e60788e075d068ea2ff302431c47eace0a6d638831d03102043f9",
+  "scientific_closeout_status": "STOPPED_FAILURE_NO_RETRY",
+  "scope": "One fixed parent and training realization on the reused development panel; not a successful scientific closeout or independent seed replication.",
+  "sources": [
+    {
+      "bytes": 168449,
+      "id": "542895ea40b06c777336c5c7a68b56a21ccb657f4188333e44d7d3446a1903bb",
+      "label": "V75 protocol",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/protocol/record.json",
+      "sha256": "a0e72f01fe228b42fdcac6cfaa3fee0fbd0c48d45343c73f046f12715bec02fd"
+    },
+    {
+      "bytes": 7474,
+      "id": "9c33732cd28e60788e075d068ea2ff302431c47eace0a6d638831d03102043f9",
+      "label": "unchanged scientific failure closeout",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/closeout/record.json",
+      "sha256": "a88646932d972ae44f8f7dbf64bb504d5cab0f45d70938d2c990fa6db97618d6"
+    },
+    {
+      "bytes": 797719,
+      "id": "4a836c67f17521f32c281574bf2ef7ef20664460cd1d282b3b77cac5210dfa0a",
+      "label": "S sealed native scores",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/evaluations/native_scores/record.json",
+      "sha256": "73718de5e06efbe4567bc4da06fd2ddfc4a9210b0481b39fd2e9e59cb8052864"
+    },
+    {
+      "bytes": 800678,
+      "id": "f82852b739e18915a4312af774a9b577b2aeba9ea9d1c1368a79cbef6c3fcf2c",
+      "label": "B sealed reused native scores",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v72_low_lr_continuation_01/evaluations/jobs/step1490.dev_greedy/native_scores/record.json",
+      "sha256": "27327556f211e33c5eadea359ca91c399cc5d1738a2ffc69f91a158a8116b742"
+    },
+    {
+      "bytes": 798288,
+      "id": "984c4692bc3bef2c4c3b205ffd71d077d261b63bcf1b50ed6f171c29ce402d03",
+      "label": "P sealed reused native scores",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v72_low_lr_continuation_01/evaluations/jobs/step1192.dev_greedy/native_scores/record.json",
+      "sha256": "75424e652ed159b3872a11bdeb577f52100e04ac7c43919fa6224f4c8e48e62d"
+    },
+    {
+      "bytes": 243596,
+      "id": "a49e8f8fcf396673506e85b3d8b77761d715de3d4f8d2d40cd0a9bc8460cdb97",
+      "label": "fixed old96 selection",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v73_same_context_probe_01/selection/record.json",
+      "sha256": "d851c854913d6ef11898024d61528c952f63a1499e90f6454dd06d584e256817"
+    },
+    {
+      "bytes": 158558,
+      "id": "cca5d185b6b1a7c0368bcb5e63e576ef88210c4e020a8287032c2f539b941d73",
+      "label": "V75 frozen implementation manifest",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/implementation/record.json",
+      "sha256": "8505640126c287dd98a9eef8f05bf6b503b3e446aaa073ba0e2990969d101f8b"
+    },
+    {
+      "bytes": 83548,
+      "id": "4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8",
+      "label": "V63 frozen implementation manifest",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/record.json",
+      "sha256": "c83227d06b91b8cddc2994c889f144a2d74008a7d3128554a2fa8d215bf559bf"
+    },
+    {
+      "bytes": 14018,
+      "implementation_id": "4442335a0a1e881bbba25bd97a507f73ce3fcbf7fcc9c14b4b264f8a391b6dc8",
+      "kind": "frozen_CPU_producer",
+      "label": "v75_report_frozen_v54_statistics",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v63_balanced_feedback_repetition_01/implementation/finqa_v54_statistics.py",
+      "sha256": "91a3e0500856ef6a4f702c592cbb177b93b471c34509f98347b87011c80f5718"
+    },
+    {
+      "bytes": 14284,
+      "implementation_id": "cca5d185b6b1a7c0368bcb5e63e576ef88210c4e020a8287032c2f539b941d73",
+      "kind": "frozen_CPU_producer",
+      "label": "v75_report_frozen_analysis",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/implementation/finqa_v75_analysis.py",
+      "sha256": "37b513fc4418871bc6d5c908352484c0f88dd0bc639f44edad4b8e7098e0a3c5"
+    }
+  ],
+  "statistical_derivation_count": 1,
+  "status": "REPORT_DERIVATION_COMPLETE",
+  "tensors_read": 0
+}
