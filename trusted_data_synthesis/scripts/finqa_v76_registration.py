@@ -252,13 +252,44 @@ def checked_prepared(root=ROOT):
     return value
 
 
+def inherited_CPU_preparation():
+    old=binding.PREPARATION_ROOT
+    failure=checked(old/'activation_failure_01/record.json')
+    manifest=checked(old/'implementation/record.json')
+    require(failure['status']=='ACTIVATION_PRECONDITION_FAILED_ZERO_DISPATCH'
+        and failure['activation_intent_created'] is False and failure['new_GPU_workers']==0
+        and manifest['id']=='c05c1a17cc7f2e36b10ffd230babe92979e8d64c73fb50cc9e7e7b878b0215cf'
+        and not (old/'activation/intent/record.json').exists()
+        and not (old/'supervisor/launch/record.json').exists(),
+        'only the untouched zero-dispatch preparation may be inherited')
+    allowed_changes={'finqa_v76_binding.py','finqa_v76_controller.py','finqa_v76_registration.py'}
+    for name,sha in manifest['sha256'].items():
+        if name not in allowed_changes:
+            require(binding.sha(ROOT/'implementation'/name)==sha,'scientific/CPU preparation source changed: '+name)
+    accepted_ref=binding.entry(old/'preflight_execution/accepted/record.json')
+    accepted=binding.read_ref(accepted_ref);actual=binding.read_ref(accepted['actual_exit'])
+    result=binding.read_ref(accepted['result']);resources=binding.read_ref(accepted['resources'])
+    require(accepted['status']=='COMPLETE' and actual['actual_waitpid_observed'] and actual['returncode']==0
+        and result['status']==resources['status']=='COMPLETE' and resources['all_gates_passed']
+        and resources['CUDA_initialized'] is False,'prior independent CPU preparation did not succeed')
+    require(checked(old/'protocol/record.json')['scientific_contract']==scientific_contract(),
+        'zero-dispatch entry repair may not change the scientific dose or objective')
+    publish(ROOT/'inherited_preparation/record.json',dict(schema='v76_zero_dispatch_preparation_inheritance.v1',
+        status='COMPLETE',original_failure=binding.entry(old/'activation_failure_01/record.json'),
+        previous_prepared=binding.entry(old/'prepared/record.json'),preflight_accepted=accepted_ref,
+        allowed_operational_source_changes=sorted(allowed_changes),scientific_sources_unchanged=True,
+        CPU_repair_or_source_overlap_reexecuted=False,new_model_calls=0,new_native_scores=0,
+        new_bootstrap=0,new_GPU_workers=0))
+    return result['analysis'],accepted_ref
+
+
 def prepare(source_commit):
     require(not ROOT.exists(),'V76 requires one fresh independent experiment directory')
     loaded=modules();parent=parent_metadata();lineage=historical_source_bindings()
     policies=_policy_fields(loaded);free_disk=shutil.disk_usage(ROOT.parent).free
     require(free_disk>=MINIMUM_FREE_DISK_BYTES,'insufficient disk for three fresh mixed-gradient points and894 checkpoints')
     implementation=freeze(source_commit,lineage)
-    cpu=prepare_cpu()
+    cpu,preflight_ref=inherited_CPU_preparation()
     old=binding.checked(binding.V75_ROOT/'protocol/record.json');jobs=loaded['controller'].planned_jobs()
     protocol=publish(ROOT/'protocol/record.json',dict(schema=SCHEMA,output_root=str(ROOT),
         source_commit=implementation['source_commit'],authorization='参照审计修订并开展后续实验',
@@ -268,7 +299,7 @@ def prepare(source_commit):
         reused_evaluation=cpu['reused_evaluation'],evaluation_source_registration=cpu['evaluation_source_registration'],
         old_evaluation_registration=old['old_evaluation_registration'],
         v75_cpu_revision=cpu['v75_cpu_revision'],source_overlap=cpu['source_overlap'],
-        preflight_accepted=binding.entry(ROOT/'preflight_execution/accepted/record.json'),
+        preflight_accepted=preflight_ref,prior_zero_dispatch_failure=binding.entry(binding.PREPARATION_ROOT/'activation_failure_01/record.json'),
         jobs=jobs,allowed_gpu_indices=list(range(8)),gpu_uuids=loaded['resources'].GPU_UUIDS,
         cpu_affinity=loaded['resources'].CPU_AFFINITY,gpu_priority=list(binding.GPU_PRIORITY),
         gpu_lease_root=old['gpu_lease_root'],max_gpu_workers=6,max_workers_per_gpu=1,

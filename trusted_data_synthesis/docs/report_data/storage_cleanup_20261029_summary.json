@@ -1,0 +1,110 @@
+{
+  "all_copies_verified": {
+    "id": "0b013ad7e7a79a00ab39b67cc821812f7a6fcb6d3ada10f0d47ac6b083525284",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/all_copies_verified.json",
+    "sha256": "36ab070d69c70e641739e08d46d437b177eb0724180e5b0da648d055cf548a2f"
+  },
+  "all_original_contents_recoverable": true,
+  "data1_available_bytes": 156704305152,
+  "data1_original_allocated_bytes_unlinked": 154956140544,
+  "destination_capacity": [
+    {
+      "device": 66305,
+      "free_bytes": 33674383360,
+      "path": "/data0/zhuxinrui/cold_storage/Data-Synthesis/cold_archive_20261019_01"
+    },
+    {
+      "device": 64512,
+      "free_bytes": 70983643136,
+      "path": "/home/zhuxinrui/cold_storage/Data-Synthesis/cold_archive_20261019_01"
+    }
+  ],
+  "id": "6d29310b59f80f52fcb2356d240072da82eebe7cfcbc2cf1af83f33f9125f3cd",
+  "new_GPU_API_or_scientific_processes": 0,
+  "observed_Beijing_time": "2026-10-29T12:59:13.899775+08:00",
+  "plan": {
+    "id": "0f7e7c78039591b85c4e3beaa924b13b2595df68251600228acbb2abeec1701f",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/plan.json",
+    "sha256": "ac698d90dedbfd2bae531fb5223e01cf9362225a2bc9cf3540256e30cc3185c5"
+  },
+  "producer": {
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/report_producer.py",
+    "sha256": "aeb657ba52ae37c64a14611d3a6e6c768e2f47e9f426626475d9fc5d53ae1170"
+  },
+  "result": {
+    "id": "417a6b930d54842a1f89b1441c841c2157501e701ee924c1d06f12171306c8a4",
+    "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/result.json",
+    "sha256": "cbb0013450585cf21f05d5d92e9df9349d12500020620868c345514f9018fb03"
+  },
+  "rows": [
+    {
+      "atomic_replacement": {
+        "id": "dc910344936f0b3eb20866f2bbca2af3c06f94a56d7c29eee3ab0d74589c6498",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/replaced/old_class_seed137.json",
+        "sha256": "d31380264a1aeed93c688d7df399fffe0d914f6656cf07e45a2ec547d778a0ac"
+      },
+      "bytes": 25826693087,
+      "copy_verification": {
+        "id": "051aa5de29cb7d2686ee760ab53996e07756740577c35acf73b21de124d1c4c1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/copy_verified/old_class_seed137.json",
+        "sha256": "9db9104c3363cc3b823d00fa3d7c3ba2df28cfa69d35854ef7829a0ebb937bb9"
+      },
+      "destination": "/data0/zhuxinrui/cold_storage/Data-Synthesis/cold_archive_20261019_01/old_class_seed137.tar.zst",
+      "group": "old_class_seed137",
+      "original_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/cold_archive_20261019_01/old_class_seed137.tar.zst",
+      "original_receipt_unchanged": true,
+      "sha256": "8a9bcba481d99cb65f17be9d5feded46b3b88441c338fe07746e444c7b375719",
+      "source_is_symlink": true,
+      "target_mode": "0o600",
+      "target_uid": 1004
+    },
+    {
+      "atomic_replacement": {
+        "id": "82ae745ea78eb3f54b4f9ca92f20ac1cc9fbbc52de198233f8adf04edf67a6c8",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/replaced/old_class_seed251.json",
+        "sha256": "bd7daed115ed428c78d019dcca80681076a256c97340bb9cbd4562b1e617495b"
+      },
+      "bytes": 51650203894,
+      "copy_verification": {
+        "id": "351a10a98783b9ac024cf325b6473e87265bb21cd26c4183a11fa28f7358db73",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/copy_verified/old_class_seed251.json",
+        "sha256": "2635a975159755c47ed4fdb6222919d1b76eb645acb6cffc3760da1736a8f3c9"
+      },
+      "destination": "/data0/zhuxinrui/cold_storage/Data-Synthesis/cold_archive_20261019_01/old_class_seed251.tar.zst",
+      "group": "old_class_seed251",
+      "original_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/cold_archive_20261019_01/old_class_seed251.tar.zst",
+      "original_receipt_unchanged": true,
+      "sha256": "08dfb3940ad96bd6dfbde6424897fe9f2e1f082d768dfc4e7811fe0a8990eb12",
+      "source_is_symlink": true,
+      "target_mode": "0o600",
+      "target_uid": 1004
+    },
+    {
+      "atomic_replacement": {
+        "id": "c23dd76eb1fce44ecb85ab6a6e843c875def4b204a7ae8f9ef075a87443320f3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/replaced/old_class_seed389.json",
+        "sha256": "e4f4db67741d9b48f6a8e6d7fd45639847386c62f356aa8bcbe4ffa308889262"
+      },
+      "bytes": 77479236857,
+      "copy_verification": {
+        "id": "531d8315eb2677bf1afff5e84fa673fa9b6ccac982127fdbcaaccc4bd5a7fae3",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_cold_relocation_01/copy_verified/old_class_seed389.json",
+        "sha256": "50ae78e21ae1369388e53c82a80bebb1597f7144aacfe4cb0485db39a3c709cd"
+      },
+      "destination": "/home/zhuxinrui/cold_storage/Data-Synthesis/cold_archive_20261019_01/old_class_seed389.tar.zst",
+      "group": "old_class_seed389",
+      "original_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/cold_archive_20261019_01/old_class_seed389.tar.zst",
+      "original_receipt_unchanged": true,
+      "sha256": "aa9dc3dbd21d18d6ccc0f2e9d9a0f8ee4744d4cac000f10b458ae4d2403fddd3",
+      "source_is_symlink": true,
+      "target_mode": "0o600",
+      "target_uid": 1004
+    }
+  ],
+  "schema": "20261029_cold_archive_relocation_summary.v1",
+  "status": "COMPLETE",
+  "total_GiB": 144.31414551846683,
+  "total_logical_bytes": 154956133838,
+  "verification_scope": "read existing full source and destination SHA receipts; no repeated archive hashing or member extraction",
+  "whole_machine_net_reclamation_claimed": false
+}

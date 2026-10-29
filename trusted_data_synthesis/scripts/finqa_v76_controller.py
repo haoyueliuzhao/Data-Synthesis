@@ -418,8 +418,8 @@ def same_live_identity(runtime, pid, birth):
 def supervise(root=ROOT):
     root = Path(root).resolve()
     require(root == binding.ROOT.resolve(), "foreign supervisor root")
-    registration = importlibinding.import_module("finqa_v76_registration")
-    runtime = importlibinding.import_module("finqa_v76_resources").controller_runtime()
+    registration = importlib.import_module("finqa_v76_registration")
+    runtime = importlib.import_module("finqa_v76_resources").controller_runtime()
     protocol = registration.checked_protocol(root)
     directory = root / "supervisor"
     directory.mkdir(parents=True, exist_ok=True)
@@ -490,9 +490,9 @@ def supervise(root=ROOT):
 def activate(root=ROOT):
     root = Path(root).resolve()
     require(root == binding.ROOT.resolve(), "foreign activation root")
-    registration = importlibinding.import_module("finqa_v76_registration")
+    registration = importlib.import_module("finqa_v76_registration")
     protocol = registration.checked_protocol(root)
-    runtime = importlibinding.import_module("finqa_v76_resources").controller_runtime()
+    runtime = importlib.import_module("finqa_v76_resources").controller_runtime()
     registration.checked_prepared(root)
     checked_imports=binding.checked(root/"frozen_worker_import_verification/record.json")
     cold=binding.checked(root/"cold_controller_verification/record.json")

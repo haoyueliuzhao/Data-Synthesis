@@ -137,3 +137,44 @@ def test_actual_protocol_contract_survives_JSON_freeze_roundtrip():
     policies=reg._policy_fields(reg.modules())
     assert json.loads(json.dumps(policies))==policies
     assert json.loads(json.dumps(q.all_jobs()))==q.all_jobs()
+
+
+def _one_shot_fixture(tmp_path,monkeypatch):
+    monkeypatch.setattr(b,'ROOT',tmp_path)
+    protocol={'id':'protocol'}
+    monkeypatch.setattr(reg,'checked_protocol',lambda root:protocol)
+    monkeypatch.setattr(reg,'checked_prepared',lambda root:{'status':'PASS'})
+    monkeypatch.setattr(r,'controller_runtime',lambda:SimpleNamespace(birth=lambda pid:'777'))
+    monkeypatch.setattr(c,'_environment',lambda root:{'CUDA_VISIBLE_DEVICES':''})
+    return protocol
+
+
+def test_actual_activation_function_reaches_one_Popen_after_cold_gates(tmp_path,monkeypatch):
+    p=_one_shot_fixture(tmp_path,monkeypatch);calls=[]
+    b.publish(tmp_path/'frozen_worker_import_verification/record.json',dict(status='PASS',protocol_id=p['id'],CUDA_initialized=False))
+    b.publish(tmp_path/'cold_controller_verification/record.json',dict(status='PASS',protocol_id=p['id'],workers_dispatched=0))
+    def popen(command,**kwargs):
+        calls.append(command);return SimpleNamespace(pid=12345,poll=lambda:None)
+    monkeypatch.setattr(c.subprocess,'Popen',popen)
+    result=c.activate(tmp_path)
+    assert result['status']=='ACTIVATED' and result['pid']==12345 and len(calls)==1
+    assert calls[0][-2:]==['--mode','supervise']
+    with pytest.raises(ValueError,match='consumed'):c.activate(tmp_path)
+    assert len(calls)==1
+
+
+@pytest.mark.parametrize('code',[0,75])
+def test_actual_supervisor_function_launches_controller_once_and_never_retries(tmp_path,monkeypatch,code):
+    p=_one_shot_fixture(tmp_path,monkeypatch);calls=[]
+    monkeypatch.setattr(c,'stop_orphaned_workers',lambda *args:{'all_identities_observed_exited':True})
+    def popen(command,**kwargs):
+        calls.append(command)
+        if code==0:b.publish(tmp_path/'closeout/record.json',dict(protocol_id=p['id'],status='COMPLETE'))
+        return SimpleNamespace(pid=23456,poll=lambda:code,wait=lambda:code)
+    monkeypatch.setattr(c.subprocess,'Popen',popen)
+    result=c.supervise(tmp_path)
+    assert len(calls)==1 and calls[0][-2:]==['--mode','run']
+    assert result['controller_attempts']==1 and result['automatic_restart_stopped']
+    assert result['status']==('COMPLETE' if code==0 else 'STOPPED_CONTROLLER_FAILURE_NO_RETRY')
+    actual=b.read_ref(result['actual_controller_exit'])
+    assert actual['actual_waitpid_observed'] and actual['returncode']==code
