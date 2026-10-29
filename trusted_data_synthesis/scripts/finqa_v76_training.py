@@ -202,6 +202,8 @@ def planned_demonstration_dose(material, batches, mu):
 def _write_prepared_checkpoint(directory, state, evidence, rt):
     from trusted_synthesis.core.immutable_artifacts import write_immutable_artifact_directory
     directory = Path(directory)
+    require(directory.name == f"step{state['step']:04d}_v76_preparation",
+        'prepared checkpoint directory must retain its native step/phase coordinate')
     if directory.exists():
         reference = checkpoint_ref(directory)
         saved = read_checkpoint(reference, rt)
@@ -216,7 +218,11 @@ def _write_prepared_checkpoint(directory, state, evidence, rt):
         checkpoint_contains_actual_model_Adam_RNG_pi=True)
     write_immutable_artifact_directory(directory, {'state.pt':raw,
         'record.json':(json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)+'\n').encode()})
-    return checkpoint_ref(directory)
+    reference = checkpoint_ref(directory)
+    restored = read_checkpoint(reference, rt)
+    require(rt.v8._tree_digest(restored) == rt.v8._tree_digest(state),
+        'new prepared checkpoint must round-trip through the unchanged native reader')
+    return reference
 
 
 def prepare_state(source, common, rt, *, arm, step):
@@ -309,7 +315,8 @@ def prepare_point(root, step, protocol_id, checkpoint_reference=None, training_r
             changed_components=['schedule','execution_plan'] + (['optimizer.param_groups.lr'] if arm == 'A' else []),
             source_theta_Adam_moments_RNG_pi_prior_and_history_preserved=True,
             actual_CPU_tensor_snapshot=True, old_execution_plan_not_modified=True)
-        prepared_ref = _write_prepared_checkpoint(directory/'prepared_state', state, evidence, rt)
+        prepared_ref = _write_prepared_checkpoint(
+            directory/'prepared_state'/f'step{step:04d}_v76_preparation', state, evidence, rt)
         publish(directory/'preparation/record.json',dict(evidence,actual_checkpoint=prepared_ref))
     else:
         state, prepared_ref = source, source_ref

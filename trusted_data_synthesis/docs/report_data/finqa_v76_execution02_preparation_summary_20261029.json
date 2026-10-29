@@ -1,0 +1,1183 @@
+{
+  "activation": {
+    "automatic_controller_restart": false,
+    "birth": "567596981",
+    "command": [
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/.venv/bin/python",
+      "-u",
+      "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/implementation/finqa_v76_entry.py",
+      "--mode",
+      "supervise"
+    ],
+    "id": "863c3b9f60a3518273a6556ae5b723871ab0471926cec6e6331a5104428dcf7a",
+    "pid": 3485066,
+    "protocol_id": "0eb963e2d07a195c17d149803c7914d290634e2e273f41cd8ac7536d1757f975",
+    "started_epoch": 1793251575.003292,
+    "status": "ACTIVATED"
+  },
+  "actual_frozen_dependencies": 336,
+  "cold_archive_relocation_summary_id": "6d29310b59f80f52fcb2356d240072da82eebe7cfcbc2cf1af83f33f9125f3cd",
+  "different_CPU_tests_passed": 75,
+  "frozen_cold_controller": "ac225b7069b72345725e3a06724238d699e7313060b929f7d400104c964086c2",
+  "id": "1f5447a294877269e207c0f5a9ebc88c9dbd4ddd3895302905a9d9e3f1bd5f56",
+  "implementation_id": "3f3a1a3e01dcd0ebfd40b60e3a09afd6258445771cde56e3b4da7f27c0f17dd6",
+  "independent_V75_CPU_actual_exit": {
+    "actual_waitpid_observed": true,
+    "birth": "567436810",
+    "id": "c52de9eb35d16516dc5dce17a6471315597fcd597f3c58539604749a61c880c1",
+    "pid": 3459674,
+    "returncode": 0
+  },
+  "independent_V75_CPU_revision": "c18641b12ff7296f851dc70ee25e7d3d02db47aa4125f5039405d7081a943489",
+  "initial_job_ids": [
+    "D.step1490.train",
+    "step1192.shard00",
+    "step1192.shard01",
+    "step1192.shard02",
+    "step1192.shard03"
+  ],
+  "jobs": 30,
+  "new_scientific_calls_by_this_summary": 0,
+  "observed_bj": "2026-10-29T13:27:04.791374+08:00",
+  "old96_complement": {
+    "denominator": 787,
+    "native_metrics": {
+      "B": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.4866581956797967,
+          "correct": 383.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.4078780177890724,
+          "correct": 321.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "states": {
+          "I": 182,
+          "R": 383,
+          "UNKNOWN": 0,
+          "W": 222
+        }
+      },
+      "P": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.5590851334180432,
+          "correct": 440.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.4625158831003812,
+          "correct": 364.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "states": {
+          "I": 105,
+          "R": 440,
+          "UNKNOWN": 0,
+          "W": 242
+        }
+      },
+      "S": {
+        "execution_accuracy": {
+          "complete_dataset_mean": 0.6048284625158831,
+          "correct": 476.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "program_accuracy": {
+          "complete_dataset_mean": 0.5069885641677255,
+          "correct": 399.0,
+          "denominator": 787,
+          "scored": 787,
+          "unknown": 0
+        },
+        "states": {
+          "I": 61,
+          "R": 476,
+          "UNKNOWN": 0,
+          "W": 250
+        }
+      }
+    },
+    "no_call": {
+      "B": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 787,
+        "initial": {
+          "count": 98,
+          "denominator": 787,
+          "rate": 0.12452350698856417
+        },
+        "post_tool": {
+          "count": 72,
+          "denominator": 787,
+          "rate": 0.09148665819567979
+        },
+        "total_no_call": 170
+      },
+      "P": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 787,
+        "initial": {
+          "count": 41,
+          "denominator": 787,
+          "rate": 0.052096569250317665
+        },
+        "post_tool": {
+          "count": 41,
+          "denominator": 787,
+          "rate": 0.052096569250317665
+        },
+        "total_no_call": 82
+      },
+      "S": {
+        "conditional_stage_failure_rate_used": false,
+        "denominator": 787,
+        "initial": {
+          "count": 16,
+          "denominator": 787,
+          "rate": 0.020330368487928845
+        },
+        "post_tool": {
+          "count": 27,
+          "denominator": 787,
+          "rate": 0.03430749682337993
+        },
+        "total_no_call": 43
+      }
+    }
+  },
+  "original_V75_status_retained": "STOPPED_FAILURE_NO_RETRY",
+  "prepared_id": "34073d22d4d198243d78024ba9312a9aabeddc15b31b2790bf3f39b3007661ba",
+  "prepared_states": {
+    "A1192": {
+      "learning_rate": 1e-05,
+      "outer_done": [
+        298
+      ],
+      "parent_checkpoint": {
+        "actual_state_digest": "e2cbbc4a3381e5774172eca160c4505ece4ad8885b3d0f5465652e23fe707e25",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/points/step1192/prepared_state",
+        "phase": "v76_preparation",
+        "record_sha256": "51f610f24d0045083d16b414d0a0d423e89d12dceb2579a27a3982a40ddc5576",
+        "state_sha256": "87d44a8c8aa4246d2cd3ea33c27810cc4105b7434eaf06219820fad114541e4a",
+        "step": 1192
+      },
+      "parent_state_digest": "e2cbbc4a3381e5774172eca160c4505ece4ad8885b3d0f5465652e23fe707e25",
+      "planned_dose": {
+        "initial": "811/23840",
+        "old": "22403/23840",
+        "post": "313/11920"
+      },
+      "schedule_sha256": "20076282a6ca0bb6df6ef1298e43367cf9491f7f099dc6d9d644b6f2097019ec",
+      "source_parent_checkpoint": {
+        "actual_state_digest": "2dbeeb60a2eb99c8dac36768faf7eb09c8acdffc2b0ae3f4444a0204fcdaa340",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v71_fixed_distribution_control_01/execution_revision_01/training/step1192_step",
+        "phase": "step",
+        "record_sha256": "92198769658edf4a38debc618ffe7b3729227aa26b1f5bbc949fa42992d6a38f",
+        "state_sha256": "91b20fb6597ae124a16bfb9d95c6c49bf4e50f68e2578e0c106421d3bf3fbe09",
+        "step": 1192
+      }
+    },
+    "D1490": {
+      "learning_rate": 1e-05,
+      "outer_done": [
+        298
+      ],
+      "parent_checkpoint": {
+        "actual_state_digest": "5e02e4f209635ff6dffc11f63400352837d15a9edbbffecc7c86b99e7563240f",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/fixed/points/step1490/prepared_state",
+        "phase": "v76_preparation",
+        "record_sha256": "9bb21edf467b19db5d0ebb78e15b8bcf2ac7ef76a9562d8857117f806db3fb50",
+        "state_sha256": "57eca5512fe2d2e2f2d51637975eaafb9718a8e3c25637882f8064813f547721",
+        "step": 1490
+      },
+      "parent_state_digest": "5e02e4f209635ff6dffc11f63400352837d15a9edbbffecc7c86b99e7563240f",
+      "planned_dose": {
+        "initial": "809/23840",
+        "old": "11203/11920",
+        "post": "125/4768"
+      },
+      "schedule_sha256": "20076282a6ca0bb6df6ef1298e43367cf9491f7f099dc6d9d644b6f2097019ec",
+      "source_parent_checkpoint": {
+        "actual_state_digest": "4af6df33357787c85c32bc519ecb83efd1da3f6cfdd037657337b8bdcd642df1",
+        "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v75_training_state_demonstration_01/execution_revision_01/training/step1490_step",
+        "phase": "step",
+        "record_sha256": "8edb25effe33beb1b8e0793e3ccdeb737b34a560b5e12cd528bd504137980c32",
+        "state_sha256": "232e2d123925557cc2d8d40f554f81af7685dd21779fa54ccc8c4cbdaf40ad51",
+        "step": 1490
+      }
+    }
+  },
+  "protocol_id": "0eb963e2d07a195c17d149803c7914d290634e2e273f41cd8ac7536d1757f975",
+  "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02",
+  "schema": "v76_actual_preparation_and_activation_summary.v1",
+  "scientific_contract": {
+    "Full_windows": [
+      [
+        1193,
+        1490
+      ],
+      [
+        1491,
+        1788
+      ]
+    ],
+    "UNKNOWN_as_zero": false,
+    "V75_failure_reclassified": false,
+    "actual_parameter_points": [
+      1192,
+      1490,
+      1788
+    ],
+    "all_training_probe_and_generation_actual_exits_before_scoring": true,
+    "analysis_RNG_restored": true,
+    "applied_outer_steps": [
+      1192,
+      1490
+    ],
+    "automatic_followup_authorized": false,
+    "automatic_old_driver_outer_disabled": true,
+    "branches": [
+      "A_Full",
+      "D_fixed"
+    ],
+    "c_x_counted_once": true,
+    "class_shards_per_point": 4,
+    "contribution": "mu_x*c_x*inner(Adam_pullback_on_full_mixed_G(-gJ),old_g_xz-sum_pi_old_g_x)",
+    "contribution_exponent": 0.8,
+    "diagnostic_extra_VJPs_per_point": 2,
+    "diagnostic_extra_VJPs_total": 6,
+    "diagnostic_extra_centered_inner_products_total": 6,
+    "diagnostics": [
+      "R=current_to_q",
+      "G=current_to_frozen_fixed_point",
+      "D=successive_frozen_targets",
+      "two_draw_C_q",
+      "EA_and_no_call"
+    ],
+    "diagnostics_primary": "adjustable-task-normalized mu",
+    "diagnostics_secondary": "all-task mu",
+    "draw_diagnostic_denominator": 350,
+    "effective_old_rows_per_pass": 4974,
+    "epsilon": 0.05,
+    "equal_inner_training_dose": true,
+    "exactly_once_explicit_outer_commit": true,
+    "external_API_calls": 0,
+    "feedback_denominator_per_point": 700,
+    "feedback_draw_seeds": [
+      101,
+      103
+    ],
+    "feedback_tasks_per_draw": 350,
+    "feedback_temperature": 1.0,
+    "final_parent_comparisons": [
+      "A1788-P1192",
+      "D1788-P1192"
+    ],
+    "first_window_effect": "EA(A1490)-EA(S1490)",
+    "fixed_first_window": "read-only V75 S1490",
+    "fixed_maintenance": "EA(D1788)-EA(S1490)",
+    "fixed_new_window": [
+      1491,
+      1788
+    ],
+    "formal_q_uses_complete700": true,
+    "four_task_tail_batches_per_window": 2,
+    "full_G": "sum mu_x[c_x sum pi_xz old_g_xz + w0_x teacher0_g_x + w1_x teacher1_g_x]",
+    "full_denominator_I_W_R_UNKNOWN": true,
+    "full_online_convergence_proved": false,
+    "historical_C_G_theta_bar_pullback_reused": false,
+    "independent_parent_count": 1,
+    "initial_learning_rate": 0.0001,
+    "initial_teacher_weight": 0.25,
+    "lambda_current": 4.0,
+    "lambda_prior": 1.0,
+    "learning_rate": 1e-05,
+    "logical_updates_per_branch": 596,
+    "main_effect": "EA(A1788)-EA(D1788)",
+    "mean_of_normalized_draw_q_forbidden": true,
+    "missing_slot_mass_returns_to_old": true,
+    "new_Full_optimizer_updates": 596,
+    "new_calibration_sessions": 0,
+    "new_complete_class_passes": 3,
+    "new_complete_class_tasks": 2232,
+    "new_effective_old_class_rows": 14922,
+    "new_evaluation_endpoints": [
+      "A1490",
+      "A1788",
+      "D1788"
+    ],
+    "new_evaluation_sessions": 2649,
+    "new_feedback_sessions": 2100,
+    "new_fixed_optimizer_updates": 298,
+    "new_independent_seeds": 0,
+    "new_logical_sessions": 4749,
+    "new_optimizer_updates": 894,
+    "new_schedule_epochs": [
+      11,
+      12
+    ],
+    "new_special96_sessions": 0,
+    "new_task_exposures": 4464,
+    "new_teacher_sessions": 0,
+    "new_test_sessions": 0,
+    "no_call_stage_denominator": 883,
+    "no_material_LR_lambda_temperature_or_seed_search": true,
+    "no_midpoint_score_dependent_schedule": true,
+    "no_performance_advancement_gate": true,
+    "novelty_exponent": 0.2,
+    "novelty_temperature": 1.0,
+    "old_execution_plans_modified": false,
+    "old_schedule_prefix_unchanged": true,
+    "old_scientific_sources_modified": false,
+    "packages_per_pass": 2468,
+    "parent": "original complete P1192",
+    "post_teacher_weight": 0.25,
+    "prior_never_reset": true,
+    "restore_before_only_LR_change": true,
+    "reused_optimizer_updates": 298,
+    "rms_floor": 1e-08,
+    "same_new_window_schedule_both_branches": true,
+    "schema": "v76_fixed_teacher_two_window_paired_Full_contract.v1",
+    "seed": 137,
+    "source_cluster_replicates": 10000,
+    "source_cluster_scope": "fixed paths and reused development panel, not seed uncertainty",
+    "source_cluster_seed": 20261018,
+    "states_per_pass": 1360,
+    "task_atomic_old_and_fixed_teacher_gradients": true,
+    "task_exposures_per_window": 1488,
+    "tasks_per_pass": 744,
+    "teacher_added_to1360_adjustable_states": false,
+    "teacher_gradient_enters_virtual_Adam_and_pullback": true,
+    "teacher_initial_count": 101,
+    "teacher_post_count": 78,
+    "teacher_source": "V75 admitted179 complete teacher suffixes at111 tasks",
+    "teacher_support_or_slot_weights_changed": false,
+    "terminal_probe_applied": false,
+    "terminal_probe_step": 1788,
+    "total_compute_equal": false,
+    "training_loss": "sum mu_x[c_x sum pi_xz old_loss_xz + w0_x teacher0_loss_x + w1_x teacher1_loss_x]",
+    "updates_per_window": 298,
+    "zero_reward_sessions_remain_in_denominator": true
+  },
+  "source_commit": "5a7614a94e9e748e4e9d8e9afc3ecf185dfcaa93",
+  "source_records": [
+    {
+      "id": "0eb963e2d07a195c17d149803c7914d290634e2e273f41cd8ac7536d1757f975",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/protocol/record.json",
+      "sha256": "d40f73f6cf17afac71631b22cdf63b9538326d8e7a115640b8c750b0b9c0d390"
+    },
+    {
+      "id": "3f3a1a3e01dcd0ebfd40b60e3a09afd6258445771cde56e3b4da7f27c0f17dd6",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/implementation/record.json",
+      "sha256": "ed58641da6bcc6ba94fc038e1d7ce8038110db7dc7e88f059c90297a8c01a8da"
+    },
+    {
+      "id": "34073d22d4d198243d78024ba9312a9aabeddc15b31b2790bf3f39b3007661ba",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/prepared/record.json",
+      "sha256": "eee4a628c6f251db97d9d441d99a3c35fe5d4b25f0fcdc17910730774ccf2aee"
+    },
+    {
+      "id": "a63db2b4b863401e4d54e57d422e257e2817fc206fa014ea3a9d4a0fec744e20",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/frozen_worker_import_verification/record.json",
+      "sha256": "3cfb1c0aad6e8b081ca09481fdddf83b3e5da72a068accb138456afc5bc2866e"
+    },
+    {
+      "id": "ac225b7069b72345725e3a06724238d699e7313060b929f7d400104c964086c2",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/cold_controller_verification/record.json",
+      "sha256": "536fdd485f204222ffdc2359d2204a598a87ec3a339923c43fe409024a9f1137"
+    },
+    {
+      "id": "863c3b9f60a3518273a6556ae5b723871ab0471926cec6e6331a5104428dcf7a",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/activation/record.json",
+      "sha256": "bc494707da79e7a5347aa75141ec17dfdc25368b984adc0cc321537e496cd397"
+    },
+    {
+      "id": "fe87b9564aad9b782b64a89d77f674363374e1f68e5df218c992314db3f6f550",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/inherited_preparation/record.json",
+      "sha256": "e420a2c94a499626ad9de655881f7443f0071948bd64f8863dcd1c5d2f6805ad"
+    },
+    {
+      "id": "4d18793c908dadcbf01a880a09af472426176a5e297a8bf7065ca580c0748597",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/preflight_execution/accepted/record.json",
+      "sha256": "f5bd718ef32d5d09c33962f9113ff15b03e99afcdaf151a5e2dcbc0c6078d41e"
+    },
+    {
+      "id": "c52de9eb35d16516dc5dce17a6471315597fcd597f3c58539604749a61c880c1",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/preflight_execution/attempt0001/actual_exit/record.json",
+      "sha256": "ea606865aa07e022091225690116989c1ed3d4180f6a45dcb4a11c568e51c217"
+    },
+    {
+      "id": "c18641b12ff7296f851dc70ee25e7d3d02db47aa4125f5039405d7081a943489",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/v75_cpu_revision/record.json",
+      "sha256": "c341ec65106b95508731a1848ebd98756882db2ce2b207db31df4e93994e6a98"
+    },
+    {
+      "id": "11a65d5dad75b9dd3794e77890d8b27811b2688a4feae27f0d40d647dd67812c",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/source_overlap/record.json",
+      "sha256": "bbb158003c53073ccfa9df4aab08a18f40298216ee6106fa14aa87de5fd9c9be"
+    },
+    {
+      "id": "f7c09d5366cb4abd1e99480e62a007096322591cb41f33aaccbc4a15abc19229",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/activation_failure_01/record.json",
+      "sha256": "196e120affe511f501addbc79663cb4b7fc02c10fb26ea694215c37fd58f770d"
+    },
+    {
+      "id": "224e2886fc789f54624f62a4c8cd46bd65330474c45239836f675e7ef51d2d13",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_01/cold_entry_failure_audit/record.json",
+      "sha256": "7946204835e7171b802385a11e4bf7f84689ddd4bce0558665ff64efc66acc48"
+    },
+    {
+      "id": "236ac2dea3742b13f8a8bfea80ffde294e0b145d863c607cadb0d9f783cbc48c",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/points/step1192/context/record.json",
+      "sha256": "cd9f7a09c43fb419084016c9bb501cb362b45d97ad2d4fd7abbe441700446356"
+    },
+    {
+      "id": "6ad2f1b1062e9bc8b73aab675b98741516dbaf2d4be574eabf59475eeeb85605",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_02/fixed/points/step1490/context/record.json",
+      "sha256": "48d3248bcf8f105094fe28266af61ac5d1b19e3a82847dbfdfddaee2f984a8cb"
+    },
+    {
+      "id": "6d29310b59f80f52fcb2356d240072da82eebe7cfcbc2cf1af83f33f9125f3cd",
+      "path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/docs/report_data/storage_cleanup_20261029_summary.json",
+      "sha256": "ad7f3e5da388c5558bebed7082a9c7d4d426fa01b43cc0c12421c4151dc9ca66"
+    }
+  ],
+  "source_strata": {
+    "company": {
+      "actual_demo_overlap_group_count": 61,
+      "old_overlap_group_count": 66,
+      "slices": {
+        "no_explicit_train_overlap": {
+          "denominator": 267,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.5468164794007491,
+                "correct": 146.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.4868913857677903,
+                "correct": 130.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "states": {
+                "I": 54,
+                "R": 146,
+                "UNKNOWN": 0,
+                "W": 67
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6179775280898876,
+                "correct": 165.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5355805243445693,
+                "correct": 143.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "states": {
+                "I": 34,
+                "R": 165,
+                "UNKNOWN": 0,
+                "W": 68
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6479400749063671,
+                "correct": 173.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5580524344569289,
+                "correct": 149.0,
+                "denominator": 267,
+                "scored": 267,
+                "unknown": 0
+              },
+              "states": {
+                "I": 20,
+                "R": 173,
+                "UNKNOWN": 0,
+                "W": 74
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 267,
+              "initial": {
+                "count": 29,
+                "denominator": 267,
+                "rate": 0.10861423220973783
+              },
+              "post_tool": {
+                "count": 23,
+                "denominator": 267,
+                "rate": 0.08614232209737828
+              },
+              "total_no_call": 52
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 267,
+              "initial": {
+                "count": 16,
+                "denominator": 267,
+                "rate": 0.0599250936329588
+              },
+              "post_tool": {
+                "count": 13,
+                "denominator": 267,
+                "rate": 0.04868913857677903
+              },
+              "total_no_call": 29
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 267,
+              "initial": {
+                "count": 5,
+                "denominator": 267,
+                "rate": 0.018726591760299626
+              },
+              "post_tool": {
+                "count": 10,
+                "denominator": 267,
+                "rate": 0.03745318352059925
+              },
+              "total_no_call": 15
+            }
+          }
+        },
+        "shared_actual_demo": {
+          "denominator": 559,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.45796064400715564,
+                "correct": 256.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.3774597495527728,
+                "correct": 211.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "states": {
+                "I": 161,
+                "R": 256,
+                "UNKNOWN": 0,
+                "W": 142
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.5957066189624329,
+                "correct": 333.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.48300536672629696,
+                "correct": 270.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "states": {
+                "I": 67,
+                "R": 333,
+                "UNKNOWN": 0,
+                "W": 159
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6118067978533095,
+                "correct": 342.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5134168157423972,
+                "correct": 287.0,
+                "denominator": 559,
+                "scored": 559,
+                "unknown": 0
+              },
+              "states": {
+                "I": 45,
+                "R": 342,
+                "UNKNOWN": 0,
+                "W": 172
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 559,
+              "initial": {
+                "count": 90,
+                "denominator": 559,
+                "rate": 0.16100178890876565
+              },
+              "post_tool": {
+                "count": 62,
+                "denominator": 559,
+                "rate": 0.11091234347048301
+              },
+              "total_no_call": 152
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 559,
+              "initial": {
+                "count": 23,
+                "denominator": 559,
+                "rate": 0.04114490161001789
+              },
+              "post_tool": {
+                "count": 26,
+                "denominator": 559,
+                "rate": 0.046511627906976744
+              },
+              "total_no_call": 49
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 559,
+              "initial": {
+                "count": 12,
+                "denominator": 559,
+                "rate": 0.02146690518783542
+              },
+              "post_tool": {
+                "count": 20,
+                "denominator": 559,
+                "rate": 0.03577817531305903
+              },
+              "total_no_call": 32
+            }
+          }
+        },
+        "shared_old_only": {
+          "denominator": 57,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.5087719298245614,
+                "correct": 29.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.42105263157894735,
+                "correct": 24.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "states": {
+                "I": 15,
+                "R": 29,
+                "UNKNOWN": 0,
+                "W": 13
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6666666666666666,
+                "correct": 38.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.543859649122807,
+                "correct": 31.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "states": {
+                "I": 4,
+                "R": 38,
+                "UNKNOWN": 0,
+                "W": 15
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.7368421052631579,
+                "correct": 42.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.543859649122807,
+                "correct": 31.0,
+                "denominator": 57,
+                "scored": 57,
+                "unknown": 0
+              },
+              "states": {
+                "I": 2,
+                "R": 42,
+                "UNKNOWN": 0,
+                "W": 13
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 57,
+              "initial": {
+                "count": 8,
+                "denominator": 57,
+                "rate": 0.14035087719298245
+              },
+              "post_tool": {
+                "count": 6,
+                "denominator": 57,
+                "rate": 0.10526315789473684
+              },
+              "total_no_call": 14
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 57,
+              "initial": {
+                "count": 2,
+                "denominator": 57,
+                "rate": 0.03508771929824561
+              },
+              "post_tool": {
+                "count": 2,
+                "denominator": 57,
+                "rate": 0.03508771929824561
+              },
+              "total_no_call": 4
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 57,
+              "initial": {
+                "count": 1,
+                "denominator": 57,
+                "rate": 0.017543859649122806
+              },
+              "post_tool": {
+                "count": 1,
+                "denominator": 57,
+                "rate": 0.017543859649122806
+              },
+              "total_no_call": 2
+            }
+          }
+        }
+      }
+    },
+    "report": {
+      "actual_demo_overlap_group_count": 24,
+      "old_overlap_group_count": 30,
+      "slices": {
+        "no_explicit_train_overlap": {
+          "denominator": 781,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.49039692701664533,
+                "correct": 383.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.4174135723431498,
+                "correct": 326.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "states": {
+                "I": 205,
+                "R": 383,
+                "UNKNOWN": 0,
+                "W": 193
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6069142125480154,
+                "correct": 474.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5057618437900128,
+                "correct": 395.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "states": {
+                "I": 92,
+                "R": 474,
+                "UNKNOWN": 0,
+                "W": 215
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6338028169014085,
+                "correct": 495.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5339308578745199,
+                "correct": 417.0,
+                "denominator": 781,
+                "scored": 781,
+                "unknown": 0
+              },
+              "states": {
+                "I": 59,
+                "R": 495,
+                "UNKNOWN": 0,
+                "W": 227
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 781,
+              "initial": {
+                "count": 113,
+                "denominator": 781,
+                "rate": 0.1446862996158771
+              },
+              "post_tool": {
+                "count": 82,
+                "denominator": 781,
+                "rate": 0.10499359795134443
+              },
+              "total_no_call": 195
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 781,
+              "initial": {
+                "count": 37,
+                "denominator": 781,
+                "rate": 0.04737516005121639
+              },
+              "post_tool": {
+                "count": 36,
+                "denominator": 781,
+                "rate": 0.046094750320102434
+              },
+              "total_no_call": 73
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 781,
+              "initial": {
+                "count": 17,
+                "denominator": 781,
+                "rate": 0.02176696542893726
+              },
+              "post_tool": {
+                "count": 27,
+                "denominator": 781,
+                "rate": 0.034571062740076826
+              },
+              "total_no_call": 44
+            }
+          }
+        },
+        "shared_actual_demo": {
+          "denominator": 81,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.43209876543209874,
+                "correct": 35.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.345679012345679,
+                "correct": 28.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "states": {
+                "I": 22,
+                "R": 35,
+                "UNKNOWN": 0,
+                "W": 24
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6049382716049383,
+                "correct": 49.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.49382716049382713,
+                "correct": 40.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "states": {
+                "I": 12,
+                "R": 49,
+                "UNKNOWN": 0,
+                "W": 20
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6049382716049383,
+                "correct": 49.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.49382716049382713,
+                "correct": 40.0,
+                "denominator": 81,
+                "scored": 81,
+                "unknown": 0
+              },
+              "states": {
+                "I": 8,
+                "R": 49,
+                "UNKNOWN": 0,
+                "W": 24
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 81,
+              "initial": {
+                "count": 11,
+                "denominator": 81,
+                "rate": 0.13580246913580246
+              },
+              "post_tool": {
+                "count": 9,
+                "denominator": 81,
+                "rate": 0.1111111111111111
+              },
+              "total_no_call": 20
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 81,
+              "initial": {
+                "count": 3,
+                "denominator": 81,
+                "rate": 0.037037037037037035
+              },
+              "post_tool": {
+                "count": 5,
+                "denominator": 81,
+                "rate": 0.06172839506172839
+              },
+              "total_no_call": 8
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 81,
+              "initial": {
+                "count": 1,
+                "denominator": 81,
+                "rate": 0.012345679012345678
+              },
+              "post_tool": {
+                "count": 4,
+                "denominator": 81,
+                "rate": 0.04938271604938271
+              },
+              "total_no_call": 5
+            }
+          }
+        },
+        "shared_old_only": {
+          "denominator": 21,
+          "native_metrics": {
+            "B": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6190476190476191,
+                "correct": 13.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.5238095238095238,
+                "correct": 11.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "states": {
+                "I": 3,
+                "R": 13,
+                "UNKNOWN": 0,
+                "W": 5
+              }
+            },
+            "P": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6190476190476191,
+                "correct": 13.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.42857142857142855,
+                "correct": 9.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "states": {
+                "I": 1,
+                "R": 13,
+                "UNKNOWN": 0,
+                "W": 7
+              }
+            },
+            "S": {
+              "execution_accuracy": {
+                "complete_dataset_mean": 0.6190476190476191,
+                "correct": 13.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "program_accuracy": {
+                "complete_dataset_mean": 0.47619047619047616,
+                "correct": 10.0,
+                "denominator": 21,
+                "scored": 21,
+                "unknown": 0
+              },
+              "states": {
+                "I": 0,
+                "R": 13,
+                "UNKNOWN": 0,
+                "W": 8
+              }
+            }
+          },
+          "no_call": {
+            "B": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 21,
+              "initial": {
+                "count": 3,
+                "denominator": 21,
+                "rate": 0.14285714285714285
+              },
+              "post_tool": {
+                "count": 0,
+                "denominator": 21,
+                "rate": 0.0
+              },
+              "total_no_call": 3
+            },
+            "P": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 21,
+              "initial": {
+                "count": 1,
+                "denominator": 21,
+                "rate": 0.047619047619047616
+              },
+              "post_tool": {
+                "count": 0,
+                "denominator": 21,
+                "rate": 0.0
+              },
+              "total_no_call": 1
+            },
+            "S": {
+              "conditional_stage_failure_rate_used": false,
+              "denominator": 21,
+              "initial": {
+                "count": 0,
+                "denominator": 21,
+                "rate": 0.0
+              },
+              "post_tool": {
+                "count": 0,
+                "denominator": 21,
+                "rate": 0.0
+              },
+              "total_no_call": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "source_strata_id": "11a65d5dad75b9dd3794e77890d8b27811b2688a4feae27f0d40d647dd67812c",
+  "status": "PREPARED_ACTIVATED_STARTUP_OBSERVATION_PENDING",
+  "storage_fixture_tests_passed": 9,
+  "successful_CPU_preparation_reexecuted_in_revision02": false
+}

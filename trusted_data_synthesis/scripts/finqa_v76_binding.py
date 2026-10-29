@@ -16,7 +16,8 @@ import tempfile
 REPO = Path('/data1/zhuxinrui/projects/Data-Synthesis')
 V18 = REPO / 'trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01'
 PREPARATION_ROOT = V18 / 'v76_fixed_demonstration_closed_loop_01'
-ROOT = PREPARATION_ROOT / 'execution_revision_02'
+ROOT = PREPARATION_ROOT / 'execution_revision_03'
+CHECKPOINT_FAILURE_ROOT = PREPARATION_ROOT / 'execution_revision_02'
 PREVIOUS_EXECUTION_ROOT = PREPARATION_ROOT / 'execution_revision_01'
 V75_ROOT = V18 / 'v75_training_state_demonstration_01/execution_revision_01'
 V75_IMPLEMENTATION_ID = 'cca5d185b6b1a7c0368bcb5e63e576ef88210c4e020a8287032c2f539b941d73'
