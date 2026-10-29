@@ -1,0 +1,102 @@
+{
+  "schema": "unused_history_cleanup_summary.v1",
+  "at": "2026-10-29T22:52:50.063478+08:00",
+  "status": "COMPLETE",
+  "authorization": "清理历史无用数据",
+  "operations": [
+    {
+      "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_unused_01",
+      "result_id": "42ec8579c9142459e45ef34b39cf82ca18d9530dcb3414aa96fa724b8b30c9f2"
+    },
+    {
+      "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_stale_worktrees_01",
+      "result_id": "3f5a6e9865413095fd83abbe44b7c75bb02861975d96bf0190c7addbbf493104"
+    },
+    {
+      "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_unused_01/backup_relocation_01",
+      "result_id": "a9ef9dc7ce7d8a70ab60ba3fde154838cc0fa091c9021e496cab6730d06cc838"
+    }
+  ],
+  "counts": {
+    "test_cache_roots_removed": 6,
+    "regenerable_compression_samples_removed": 5,
+    "stale_worktree_registrations_removed": 5,
+    "test_archive_members_verified": 195
+  },
+  "data1": {
+    "removed_source_allocated_bytes": 6098944,
+    "retained_backups_and_operation_audit_bytes": 1142784,
+    "net_reclaimed_bytes": 4956160
+  },
+  "system_disk": {
+    "removed_source_allocated_bytes": 257347584,
+    "retained_new_test_archive_bytes_including_parent_directory": 113979392,
+    "net_reclaimed_bytes": 143368192
+  },
+  "whole_machine_net_reclaimed_bytes": 148324352,
+  "accounting_excludes_new_summary_docs_scripts_tests_git_and_later_directory_metadata": true,
+  "test_backup": {
+    "original_path": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_unused_01/test_fixtures.tar.gz",
+    "persistent_destination": "/home/zhuxinrui/cold_storage/Data-Synthesis/local_test_archive_20261029_01/test_fixtures.tar.gz",
+    "sha256": "4128779f5cab8107e4a7187dcb715230ccd80f792e59421d0e4430285170edd3",
+    "manifest": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/storage_cleanup_20261029_unused_01/member_manifest.json.gz",
+    "manifest_sha256": "3dfbfdeb27c30756f3ef941512b69592893643053e3970922ee6094d3c73b031",
+    "original_path_is_symlink": true
+  },
+  "retained_probe_record": "/tmp/v76_storage_delta_probe_20261029/record.json",
+  "retained_probe_producer": "/tmp/v76_storage_readonly_probe.py",
+  "retained_nonidentical_tmp_inputs": [
+    "/tmp/v74_inputs_prepared_20261026.json",
+    "/tmp/v75_collection_inputs_20261027.json"
+  ],
+  "current_science": {
+    "root": "/data1/zhuxinrui/projects/Data-Synthesis/trusted_data_synthesis/artifacts/finance_research_20260928/finqa_v6_01/v18_researcher_continuation_01/v76_fixed_demonstration_closed_loop_01/execution_revision_03",
+    "queue_status": "RUNNING",
+    "accepted_jobs": 8,
+    "active_workers": [
+      {
+        "attempt": 1,
+        "birth": "570598813",
+        "gpu_index": 5,
+        "job_id": "step1192.replay",
+        "lifecycle": "RUNNING",
+        "pid": 165553
+      }
+    ],
+    "replay_completed_responses": 99,
+    "replay_total_responses": 533,
+    "replay_observed_at": "2026-10-29T14:52:39.291835+00:00",
+    "protected_files_unchanged": true,
+    "processes_at_cleanup_end": [
+      {
+        "pid": 165553,
+        "expected_birth": "570598813",
+        "observed_birth": "570598813"
+      },
+      {
+        "pid": 3501796,
+        "expected_birth": "567676602",
+        "observed_birth": "567676602"
+      },
+      {
+        "pid": 3501866,
+        "expected_birth": "567676631",
+        "observed_birth": "567676631"
+      }
+    ],
+    "no_process_signals": true,
+    "new_scientific_operations": 0
+  },
+  "filesystem_free_bytes": {
+    "/data1": 104683933696,
+    "/tmp": 103780605952
+  },
+  "verification": {
+    "new_cpu_tests_passed": 4,
+    "archive_members_readback_verified": true,
+    "relocated_archive_source_and_destination_sha_verified": true,
+    "no_full_scientific_revalidation": true,
+    "original_scientific_tensor_payloads_rehashed": false
+  },
+  "id": "52d93ad2b909f45ee3138c3f26e4d08a820a95a42f70efcc5b9e3324a10a13e5"
+}
