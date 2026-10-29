@@ -178,3 +178,12 @@ def test_actual_supervisor_function_launches_controller_once_and_never_retries(t
     assert result['status']==('COMPLETE' if code==0 else 'STOPPED_CONTROLLER_FAILURE_NO_RETRY')
     actual=b.read_ref(result['actual_controller_exit'])
     assert actual['actual_waitpid_observed'] and actual['returncode']==code
+
+
+def test_first_hard_failure_stops_pool_before_independent_pending_jobs(monkeypatch):
+    value=object.__new__(c.Controller)
+    value.job_states={'D.step1490.train':{'status':'BACKOFF'},'step1192.shard00':{'status':'PENDING'}}
+    monkeypatch.setattr(c.inherited.Controller,'reap',lambda self:None)
+    value.reap()
+    value.job_states['D.step1490.train']['status']='HARD_BLOCKED'
+    with pytest.raises(ValueError,match='stops the whole pool'):value.reap()

@@ -262,10 +262,20 @@ def inherited_CPU_preparation():
         and not (old/'activation/intent/record.json').exists()
         and not (old/'supervisor/launch/record.json').exists(),
         'only the untouched zero-dispatch preparation may be inherited')
-    allowed_changes={'finqa_v76_binding.py','finqa_v76_controller.py','finqa_v76_registration.py'}
+    allowed_changes={'finqa_v76_binding.py','finqa_v76_controller.py','finqa_v76_registration.py','finqa_v76_entry.py'}
     for name,sha in manifest['sha256'].items():
         if name not in allowed_changes:
             require(binding.sha(ROOT/'implementation'/name)==sha,'scientific/CPU preparation source changed: '+name)
+    previous=binding.PREVIOUS_EXECUTION_ROOT
+    entry_failure=checked(previous/'cold_entry_failure_audit/record.json')
+    require(entry_failure['status']=='COLD_ENTRY_FAILED_ZERO_SCIENTIFIC_CALLS'
+        and entry_failure['dispatched_GPU_workers']==5 and entry_failure['new_model_calls']==0
+        and entry_failure['new_feedback_sessions']==0 and entry_failure['new_optimizer_updates']==0
+        and entry_failure['new_task_gradients']==0 and entry_failure['supervisor_identity_exited'] is True,
+        'cold-entry repair requires original complete zero-science failure evidence')
+    for reference in entry_failure['actual_exits']:
+        actual=binding.read_ref(reference)
+        require(actual['actual_waitpid_observed'] and actual['returncode'] in (1,2), 'old actual exits differ')
     accepted_ref=binding.entry(old/'preflight_execution/accepted/record.json')
     accepted=binding.read_ref(accepted_ref);actual=binding.read_ref(accepted['actual_exit'])
     result=binding.read_ref(accepted['result']);resources=binding.read_ref(accepted['resources'])
@@ -277,6 +287,7 @@ def inherited_CPU_preparation():
     publish(ROOT/'inherited_preparation/record.json',dict(schema='v76_zero_dispatch_preparation_inheritance.v1',
         status='COMPLETE',original_failure=binding.entry(old/'activation_failure_01/record.json'),
         previous_prepared=binding.entry(old/'prepared/record.json'),preflight_accepted=accepted_ref,
+        previous_cold_entry_failure=binding.entry(previous/'cold_entry_failure_audit/record.json'),
         allowed_operational_source_changes=sorted(allowed_changes),scientific_sources_unchanged=True,
         CPU_repair_or_source_overlap_reexecuted=False,new_model_calls=0,new_native_scores=0,
         new_bootstrap=0,new_GPU_workers=0))
@@ -300,6 +311,7 @@ def prepare(source_commit):
         old_evaluation_registration=old['old_evaluation_registration'],
         v75_cpu_revision=cpu['v75_cpu_revision'],source_overlap=cpu['source_overlap'],
         preflight_accepted=preflight_ref,prior_zero_dispatch_failure=binding.entry(binding.PREPARATION_ROOT/'activation_failure_01/record.json'),
+        prior_zero_science_failure=binding.entry(binding.PREVIOUS_EXECUTION_ROOT/'cold_entry_failure_audit/record.json'),
         jobs=jobs,allowed_gpu_indices=list(range(8)),gpu_uuids=loaded['resources'].GPU_UUIDS,
         cpu_affinity=loaded['resources'].CPU_AFFINITY,gpu_priority=list(binding.GPU_PRIORITY),
         gpu_lease_root=old['gpu_lease_root'],max_gpu_workers=6,max_workers_per_gpu=1,

@@ -153,7 +153,7 @@ def auto_recovery_policy():
         controller_confirmed_resource_failure_max_attempts=1,
         no_progress_limit_action="stop after three consecutive attempts with no durable progress",
         resource_job_backoff_seconds=[300], no_progress_resource_cooldown_seconds=None,
-        no_durable_progress_failure_limit=3)
+        no_durable_progress_failure_limit=3,first_hard_failure_stops_whole_pool=True)
     return policy
 
 
@@ -191,6 +191,12 @@ class Controller(inherited.Controller):
         require(math.isfinite(self.resource_wait_seconds) and self.resource_wait_seconds >= 0,
                 "invalid resource waiting statistics")
         self._restore_journal()
+
+    def reap(self):
+        super().reap()
+        blocked=[key for key,state in self.job_states.items() if state["status"]=="HARD_BLOCKED"]
+        if blocked:
+            raise ValueError("V76 hard failure stops the whole pool before further dispatch: "+", ".join(blocked))
 
     def _restore_journal(self):
         path = self.root / "journal/state.json"

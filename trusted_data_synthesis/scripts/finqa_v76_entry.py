@@ -47,12 +47,20 @@ def _validate_arguments(args):
                             and os.environ.get(prefix + "_ATTEMPT_ID") == attempt.name,
                             "new/inherited durable attempt aliases disagree")
     if args.mode == "worker":
-        queue = importlib.import_module("finqa_v76_queue_base")
-        binding.require(args.seed == 137 and args.stage in queue.core_jobs()
+        # CLI validation precedes signal installation: do not import the queue,
+        # resources, training or any scientific module on this path.
+        binding.require(args.seed == 137 and isinstance(args.stage,str)
                         and args.gpu_index in range(8), "unregistered V76 job/device")
-        job = queue.core_jobs()[args.stage]
-        binding.require(args.attempt_root.resolve().parent == queue.job_directory(root,job)/"attempts"
-                        and os.environ.get("V54_JOB_ID") == job["job_id"],
+        if args.stage == "D.step1490.train":
+            directory = root / "fixed/points/step1490/train"
+        else:
+            pieces=args.stage.split(".")
+            binding.require(len(pieces)==2 and pieces[0] in ("step1192","step1490","step1788")
+                and pieces[1] in (*[f"shard{i:02d}" for i in range(4)],"virtual_point","replay","distribution","train")
+                and args.stage!="step1788.train", "unregistered scientific point or terminal training")
+            directory=root/"points"/pieces[0]/pieces[1]
+        binding.require(args.attempt_root.resolve().parent == directory/"attempts"
+                        and os.environ.get("V54_JOB_ID") == args.stage,
                         "scientific attempt and project lease identity disagree")
     if args.mode == "generate":
         binding.require(isinstance(args.job, str) and args.job and "/" not in args.job
